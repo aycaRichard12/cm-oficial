@@ -834,7 +834,7 @@ class compras
         while($stock=$this->cm->fetch($nuevostock)){
             $cambioestado = $this->cm->query("update stock set estado=2 where productos_almacen_id_productos_almacen='$stock[0]' and estado=1");
             if($cambioestado === TRUE){
-                $registrostock=$this->cm->query("insert into stock(id_stock,cantidad,fecha,codigo,estado,productos_almacen_id_productos_almacen) value(null,'$stock[1]','$fecha','$codigo',1,'$stock[0]','$stock[2]')");
+                $registrostock=$this->cm->query("insert into stock(id_stock,cantidad,fecha,codigo,estado,productos_almacen_id_productos_almacen,idorigen) value(null,'$stock[1]','$fecha','$codigo',1,'$stock[0]','$stock[2]')");
             }
         }
             
@@ -915,7 +915,7 @@ class compras
 
             // 3. Actualizar stock: Obtener y procesar el nuevo stock
             $stmtDetalleIngresoStock = $this->cm->prepare(
-                "SELECT di.productos_almacen_id_productos_almacen, (di.cantidad + s.cantidad) AS nuevo_stock_cantidad
+                "SELECT di.productos_almacen_id_productos_almacen, (di.cantidad + s.cantidad) AS nuevo_stock_cantidad, di.      id_detalle_ingreso
                  FROM detalle_ingreso AS di
                  INNER JOIN stock AS s ON di.productos_almacen_id_productos_almacen = s.productos_almacen_id_productos_almacen
                  WHERE di.ingreso_id_ingreso = ? AND s.estado = 1"
@@ -932,7 +932,7 @@ class compras
             while ($filaStock = $resultadoStock->fetch_assoc()) {
                 $productoAlmacenId = $filaStock['productos_almacen_id_productos_almacen'];
                 $nuevaCantidadStock = $filaStock['nuevo_stock_cantidad'];
-
+                $idorigen = $filaStock['id_detalle_ingreso'];
                 // Desactivar el stock anterior para este producto
                 $stmtDesactivarStock = $this->cm->prepare("UPDATE stock SET estado = 2 WHERE productos_almacen_id_productos_almacen = ? AND estado = 1");
                 if (!$stmtDesactivarStock) {
@@ -945,13 +945,13 @@ class compras
                 $stmtDesactivarStock->close();
 
                 // Registrar el nuevo stock
-                $stmtRegistrarStock = $this->cm->prepare("INSERT INTO stock (cantidad, fecha, codigo, estado, productos_almacen_id_productos_almacen) VALUES (?, ?, ?, ?, ?)");
+                $stmtRegistrarStock = $this->cm->prepare("INSERT INTO stock (cantidad, fecha, codigo, estado, productos_almacen_id_productos_almacen, idorigen) VALUES (?, ?, ?, ?, ?,?)");
                 if (!$stmtRegistrarStock) {
                     throw new Exception("Error al preparar la consulta de registro de nuevo stock: " . $this->cm->error);
                 }
                 $estadoStockNuevo = 1; // Estado activo para el nuevo stock
-                $stmtRegistrarStock->bind_param("dssii", $nuevaCantidadStock, $fechaActual, $codigoStock, $estadoStockNuevo, $productoAlmacenId);
-                if (!$stmtRegistrarStock->execute()) {
+                $stmtRegistrarStock->bind_param("dssiii", $nuevaCantidadStock, $fechaActual, $codigoStock, $estadoStockNuevo, $productoAlmacenId, $idorigen);
+                if (!$stmtRegistrarStock->execute()){
                     throw new Exception("Error al registrar nuevo stock para producto " . $productoAlmacenId . ": " . $stmtRegistrarStock->error);
                 }
                 $stmtRegistrarStock->close();

@@ -649,10 +649,6 @@ elseif ($ver[0] == "reportecreditosatrasados") {
     $controlador = new reportes();
     $controlador->reporteventacampañas($ver[1], $ver[2], $ver[3]);
 } elseif ($ver[0] == "reporteindicerotacioncliente") {
-    echo "<pre>Parámetros recibidos en \$ver:\n";
-    print_r($ver);
-    echo "</pre>";
-
     $controlador = new reportes();
     $controlador->reporterotacionxcliente(
         $ver[1] ?? null,
@@ -667,7 +663,7 @@ elseif ($ver[0] == "reportecreditosatrasados") {
     $controlador = new reportes();
     $controlador->reporterotacionglobal($ver[1], $ver[2], $ver[3]);
 } elseif ($ver[0] == "kardex") {
-    $controlador = new reportes();
+    $controlador = new Kardex();
     $controlador->kardex($ver[1], $ver[2], $ver[3], $ver[4]);
 } elseif ($ver[0] == "reporteventasporproductos") {
     $controlador = new reportes();
@@ -832,8 +828,25 @@ elseif($ver[0]== "get_administrador"){
     $controlador = new ConfiguracionInicial();
     $controlador->get_administrador($ver[1],$ver[2]); 
 }
+elseif($ver[0]== "saldoPorId"){
+    $controlador = new Kardex();
+    $data = $controlador->obtenerPorId($ver[1]); 
+    echo json_encode($data); 
+
+}
+elseif($ver[0]== "listarSaldos"){
+    $controlador = new Kardex();
+    $data = $controlador->listarSaldos($ver[1]);
+    echo json_encode($data); 
+}
+elseif ($ver[0] == "eliminarSaldo") {
+    $controlador = new Kardex();
+    $idSaldo = intval($ver[1]);
+    $ok = $controlador->eliminarSaldo($idSaldo);
+    echo json_encode(["success" => $ok]);
+}
 
 if ($controlador === null) {
-    // Acción por defecto si no se encuentra una ruta valida reporteproductoalmacen cambiarestadodevolucion
+    // Acción por defecto si no se encuentra una ruta valida reporteproductoalmacen Kardex
     echo json_encode(array("error" => "La ruta ".$_GET['ver']." no existe"));
 }

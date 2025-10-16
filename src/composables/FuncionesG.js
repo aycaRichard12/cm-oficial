@@ -309,6 +309,12 @@ export function obtenerFechaActual(clase) {
     console.log(horaFormateada)
   })
 }
+export function obtenerFechaPrimerDiaMesActual() {
+  const date = new Date()
+  const anio = date.getFullYear()
+  const mes = String(date.getMonth() + 1).padStart(2, '0')
+  return `${anio}-${mes}-01`
+}
 
 export function obtenerFechaActualDato() {
   // Obtener todos los input de tipo date

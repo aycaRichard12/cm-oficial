@@ -1,0 +1,7 @@
+Conectado a ftp.vivasoft.link.
+220 FTP Server ready.
+200 UTF8 set to on
+331 Password required for u335921272.vaplicacion
+230 User u335921272.vaplicacion logged in
+250 CWD command successful
+221 Goodbye.

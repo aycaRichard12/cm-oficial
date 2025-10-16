@@ -40,6 +40,7 @@
         require_once "compras.php";
         require_once "pagosCompra.php";
         require_once "notaCreditoDebito.php";
+        require_once "kardex.php";
         if ($rutas[0] == "out") {
             require_once "apisOut/index.php";
             return;

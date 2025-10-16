@@ -613,9 +613,20 @@ elseif ($ver == "registrarNotaCreditoDebito"){
     $controlador = new Nota_Debito_Credito();
     $controlador->registrarNotaCreditoDebito($data);
 }
+elseif ($ver == "registrarSaldo"){
+    $controlador = new Kardex();
+    $controlador->registrarSaldo($data);
+}
+elseif ($ver == "editarSaldo") {
+    $controlador = new Kardex();
+    $ok = $controlador->editarSaldo($data);
+    echo json_encode(["success" => $ok]);
+}
+
+
 
 
 if ($controlador === null) {
-    // Acción por defecto si no se encuentra una ruta válida producto sendEmail ConfiguracionInicial cambiarestadodevolucion registrarConfiguracion
-    echo json_encode("El formulario ".$_POST['ver']." no existe");
+    // Acción por defecto si no se encuentra una ruta válida producto sendEmail ConfiguracionInicial registroPrueba registrarConfiguracion
+    echo json_encode("El formulario ".$ver." no existe");
 }

@@ -1,0 +1,13 @@
+Inicio del log: Wed Oct  8 16:53:19     2025
+✅ Carpeta 'cm' existe. Subiendo log...
+Conectado a ftp.vivasoft.link.
+220 FTP Server ready.
+200 UTF8 set to on
+331 Password required for u335921272.vaplicacion
+230 User u335921272.vaplicacion logged in
+250 CWD command successful
+200 PORT command successful
+150 Opening ASCII mode data connection for ftp_log.txt
+226 Transfer complete
+ftp: 367 bytes enviados en 0.00segundos 367.00a KB/s.
+221 Goodbye.

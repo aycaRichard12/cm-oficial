@@ -1,129 +1,151 @@
 <template>
   <q-page padding>
-    <q-card-section>
-      <q-form @submit="generarReporte">
-        <div class="row q-col-gutter-md">
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <label for="fechaINi">Fecha Inicial *</label>
-            <q-input
-              v-model="fechaiR"
-              type="date"
-              id="fechaINi"
-              dense
-              outlined
-              hint="Fecha de inicio para el reporte"
-              :rules="[(val) => !!val || 'Campo requerido']"
-            />
+    <div v-if="kardex">
+      <div class="titulo">Kardex de Productos</div>
+      <q-card-section>
+        <q-form @submit="generarReporte">
+          <div class="row q-col-gutter-x-lg flex justify-center">
+            <div class="col-md-4 col-12">
+              <label for="fechaINi">Fecha Inicial *</label>
+              <q-input
+                v-model="fechaiR"
+                type="date"
+                id="fechaINi"
+                dense
+                outlined
+                hint="Fecha de inicio para el reporte"
+                :rules="[(val) => !!val || 'Campo requerido']"
+              />
+            </div>
+            <div class="col-md-4 col-12">
+              <label for="fechafin">Fecha Final *</label>
+              <q-input
+                dense
+                outlined
+                v-model="fechafR"
+                type="date"
+                id="fechafin"
+                hint="Fecha de fin para el reporte"
+                :rules="[(val) => !!val || 'Campo requerido']"
+              />
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+              <label for="almacen">Almacén *</label>
+              <q-select
+                dense
+                outlined
+                v-model="almacenR"
+                :options="almacenesOptions"
+                id="almacen"
+                option-label="almacen"
+                option-value="idalmacen"
+                emit-value
+                map-options
+                :rules="[(val) => !!val || 'Campo requerido']"
+                @update:model-value="listaProductosDisponibles"
+              />
+            </div>
           </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <label for="fechafin">Fecha Final *</label>
-            <q-input
-              dense
-              outlined
-              v-model="fechafR"
-              type="date"
-              id="fechafin"
-              hint="Fecha de fin para el reporte"
-              :rules="[(val) => !!val || 'Campo requerido']"
-            />
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <label for="almacen">Almacén *</label>
-            <q-select
-              dense
-              outlined
-              v-model="almacenR"
-              :options="almacenesOptions"
-              id="almacen"
-              option-label="almacen"
-              option-value="idalmacen"
-              emit-value
-              map-options
-              :rules="[(val) => !!val || 'Campo requerido']"
-              @update:model-value="listaProductosDisponibles"
-            />
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <label for="producto">Producto *</label>
-            <q-select
-              dense
-              outlined
-              v-model="idproductoR"
-              use-input
-              input-debounce="0"
-              id="producto"
-              :options="productosFiltrados"
-              option-label="descripcion"
-              option-value="id"
-              emit-value
-              map-options
-              @filter="filterProductos"
-              :rules="[(val) => !!val || 'Campo requerido']"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey"> Sin resultados </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-        </div>
-        <div class="row q-col-gutter-md q-mt-sm">
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <label for="metodo">Método de valoración *</label>
-            <q-select
-              dense
-              outlined
-              v-model="metodoValoracion"
-              :options="metodosValoracion"
-              id="metodo"
-              emit-value
-              map-options
-              :rules="[(val) => !!val || 'Campo requerido']"
-              @update:model-value="recalcularKardex"
-            />
-          </div>
-        </div>
-        <div class="row q-mt-md justify-center">
-          <q-btn type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
-          <q-btn
-            v-if="datosFiltrados.length > 0"
-            label="Vista previa del Reporte"
-            color="secondary"
-            @click="cargarPDF"
-          />
-        </div>
-      </q-form>
-    </q-card-section>
 
-    <q-table
-      title="Reporte Kardex"
-      :rows="datosFiltrados"
-      :columns="columns"
-      row-key="c"
-      flat
-      bordered
-      no-data-label="Aún no se ha generado ningún Reporte"
-    />
-    <q-dialog v-model="mostrarPDF" persistent full-width full-height>
-      <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
-          <q-space />
-          <q-btn flat round icon="close" @click="mostrarPDF = false" />
-        </q-card-section>
+          <div class="row q-col-gutter-x-md flex justify-start">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+              <label for="producto">Producto *</label>
+              <q-select
+                dense
+                outlined
+                v-model="idproductoR"
+                use-input
+                input-debounce="0"
+                id="producto"
+                :options="productosFiltrados"
+                option-label="descripcion"
+                option-value="id"
+                emit-value
+                map-options
+                @filter="filterProductos"
+                :rules="[(val) => !!val || 'Campo requerido']"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey"> Sin resultados </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+              <label for="metodo">Método de valoración *</label>
+              <q-select
+                dense
+                outlined
+                v-model="metodoValoracion"
+                :options="metodosValoracion"
+                id="metodo"
+                emit-value
+                map-options
+                :rules="[(val) => !!val || 'Campo requerido']"
+                @update:model-value="recalcularKardex"
+              />
+            </div>
+          </div>
+          <div class="row q-mt-md justify-center">
+            <q-btn type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
+            <q-btn
+              v-if="datosFiltrados.length > 0"
+              label="Vista previa del Reporte"
+              color="secondary"
+              @click="cargarPDF"
+            />
+            <q-btn
+              v-if="datosFiltrados.length > 0"
+              label="Saldos Registrados"
+              color="secondary"
+              @click="kardex = false"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
 
-        <q-separator />
+      <q-table
+        title="Reporte Kardex"
+        :rows="datosFiltrados"
+        :columns="columns"
+        row-key="c"
+        flat
+        bordered
+        no-data-label="Aún no se ha generado ningún Reporte"
+      />
+      <q-dialog v-model="mostrarPDF" persistent full-width full-height>
+        <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Vista previa de PDF</div>
+            <q-space />
+            <q-btn flat round icon="close" @click="mostrarPDF = false" />
+          </q-card-section>
 
-        <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-          <iframe
-            v-if="pdfData"
-            :src="pdfData"
-            style="width: 100%; height: 100%; border: none"
-          ></iframe>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+          <q-separator />
+
+          <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
+            <iframe
+              v-if="pdfData"
+              :src="pdfData"
+              style="width: 100%; height: 100%; border: none"
+            ></iframe>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+      <kardexSaldoFinal :saldo-final="saldoFinal" />
+      <div class="row flex justify-end">
+        <q-btn
+          color="green"
+          text-color="white"
+          label="Confirmar saldo final"
+          @click="registrarSaldoFinal"
+        />
+      </div>
+    </div>
+    <div v-else>
+      <saldosPage :producto="idproductoR" @close="kardex = true" />
+    </div>
   </q-page>
 </template>
 
@@ -133,16 +155,22 @@ import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { PDFKardex } from 'src/utils/pdfReportGenerator'
-import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+import { obtenerFechaActualDato, obtenerFechaPrimerDiaMesActual } from 'src/composables/FuncionesG'
+import { useCurrencyStore } from 'src/stores/currencyStore'
+import kardexSaldoFinal from './kardexSaldoFinal.vue'
+import saldosPage from './saldosPage.vue'
+const divisaActiva = useCurrencyStore()
+console.log(divisaActiva)
 const usuario = validarUsuario()[0]
 const $q = useQuasar()
-
+const kardex = ref(true)
 // Variables del formulario
-const fechaiR = ref(obtenerFechaActualDato())
+const fechaiR = ref(obtenerFechaPrimerDiaMesActual())
 const fechafR = ref(obtenerFechaActualDato())
 const almacenR = ref(null)
 const idproductoR = ref(null)
 const metodoValoracion = ref('PEPS') // Valor por defecto
+const saldoFinal = ref({})
 
 // Opciones para el selector de métodos
 const metodosValoracion = [
@@ -164,65 +192,48 @@ const productosFiltrados = ref([])
 
 // Columnas de la tabla
 const columns = [
-  { name: 'c', label: 'N°', field: 'c', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: (row) => cambiarFormatoFecha(row.fecha), align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'Fecha', label: 'Fecha', field: 'Fecha', align: 'left', sortable: true },
+  { name: 'Concepto', label: 'Concepto', field: 'Concepto', align: 'left', sortable: true },
+  { name: 'Entrada', label: 'Entrada', field: 'Entrada', align: 'right', sortable: true },
+  { name: 'Salida', label: 'Salida', field: 'Salida', align: 'right', sortable: true },
+  { name: 'Existencia', label: 'Existencia', field: 'Existencia', align: 'right', sortable: true },
   {
-    name: 'canentrada',
-    label: 'Cant. Entrada',
-    field: (row) => Number(row.canentrada).toFixed(3),
+    name: 'CUnit',
+    label: 'C. Unitario',
+    field: 'C.Unit',
     align: 'right',
+    format: (val) => val,
+    sortable: true,
   },
   {
-    name: 'costoEntrada',
-    label: 'Costo Unit. Entrada',
-    field: (row) => Number(row.costoEntrada).toFixed(2),
+    name: 'Debe',
+    label: 'Debe',
+    field: 'Debe',
     align: 'right',
+    format: (val) => formatCurrency(val),
+    sortable: true,
   },
   {
-    name: 'cansalida',
-    label: 'Cant. Salida',
-    field: (row) => Number(row.cansalida).toFixed(3),
+    name: 'Haber',
+    label: 'Haber',
+    field: 'Haber',
     align: 'right',
+    format: (val) => formatCurrency(val),
+    sortable: true,
   },
   {
-    name: 'costoSalida',
-    label: 'Costo Unit. Salida',
-    field: (row) => Number(row.costoSalida).toFixed(2),
+    name: 'Saldo',
+    label: 'Saldo',
+    field: 'Saldo',
     align: 'right',
-  },
-  {
-    name: 'cansaldo',
-    label: 'Cant. Saldo',
-    field: (row) => Number(row.cansaldo).toFixed(3),
-    align: 'right',
-  },
-  {
-    name: 'costoSaldo',
-    label: 'Costo Unit. Saldo',
-    field: (row) => Number(row.costoSaldo).toFixed(2),
-    align: 'right',
-  },
-  {
-    name: 'ingreso',
-    label: 'Total Entrada',
-    field: (row) => Number(row.ingreso).toFixed(2),
-    align: 'right',
-  },
-  {
-    name: 'egreso',
-    label: 'Total Salida',
-    field: (row) => Number(row.egreso).toFixed(2),
-    align: 'right',
-  },
-  {
-    name: 'saldoT',
-    label: 'Total Saldo',
-    field: (row) => Number(row.saldoT).toFixed(2),
-    align: 'right',
+    format: (val) => formatCurrency(val),
+    sortable: true,
   },
 ]
-
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') return value
+  return new Intl.NumberFormat('es-BO', { style: 'currency', currency: 'BOB' }).format(value)
+}
 // Computed
 const almacenesOptions = computed(() => {
   return [{ almacen: 'Todos los almacenes', idalmacen: 0 }, ...almacenes.value]
@@ -269,12 +280,6 @@ const validarFechas = () => {
     return false
   }
   return true
-}
-
-const cambiarFormatoFecha = (fecha) => {
-  if (!fecha) return ''
-  const [year, month, day] = fecha.split('-')
-  return `${day}/${month}/${year}`
 }
 
 async function listaAlmacenes() {
@@ -338,15 +343,15 @@ async function generarReporte() {
 
   try {
     const endpoint = `kardex/${fechaiR.value}/${fechafR.value}/${almacenR.value}/${idproductoR.value}`
+    console.log(endpoint)
     const response = await api.get(endpoint)
     const data = response.data
     console.log(data)
     // Guardar los datos originales para recalcular con diferentes métodos
     movimientosOriginales.value = data
     datosOriginales.value = data
-
-    // Procesar según el método seleccionado
     procesarMovimientos()
+    // Procesar según el método seleccionado
 
     reporteGenerado.value = true
   } catch (error) {
@@ -372,7 +377,50 @@ function procesarMovimientos() {
       datosFiltrados.value = calcularPEPS(movimientosOriginales.value)
   }
 }
-
+async function registrarSaldoFinal() {
+  const movimientos = movimientosOriginales.value
+  const saldo_peps = movimientos.PEPS.saldo_final
+  const saldo_ueps = movimientos.UEPS.saldo_final
+  const saldo_promedio = movimientos.PROMEDIO.saldo_final
+  console.log(saldo_peps, saldo_ueps, saldo_promedio)
+  const peps = {
+    ver: 'registrarSaldo',
+    id: idproductoR.value,
+    fecha: fechafR.value,
+    metodo: 'PEPS',
+    cantidad: saldo_peps['Existencia_Final'],
+    precio: saldo_peps['Precio_Unitario_Promedio_Ponderado_Final'],
+  }
+  const ueps = {
+    ver: 'registrarSaldo',
+    id: idproductoR.value,
+    fecha: fechafR.value,
+    metodo: 'UEPS',
+    cantidad: saldo_ueps['Existencia_Final'],
+    precio: saldo_ueps['Precio_Unitario_Promedio_Ponderado_Final'],
+  }
+  const promedio = {
+    ver: 'registrarSaldo',
+    id: idproductoR.value,
+    fecha: fechafR.value,
+    metodo: 'PROMEDIO',
+    cantidad: saldo_promedio['Existencia_Final'],
+    precio: saldo_promedio['Precio_Unitario_Promedio_Ponderado_Final'],
+  }
+  console.log(peps, ueps, promedio)
+  try {
+    const [resPEPS, resUEPS, resPROM] = await Promise.all([
+      api.post('', peps),
+      api.post('', ueps),
+      api.post('', promedio),
+    ])
+    console.log('PEPS:', resPEPS.data)
+    console.log('UEPS:', resUEPS.data)
+    console.log('PROMEDIO:', resPROM.data)
+  } catch (error) {
+    console.error('Error al registrar saldos:', error)
+  }
+}
 function recalcularKardex() {
   if (reporteGenerado.value) {
     procesarMovimientos()
@@ -381,312 +429,36 @@ function recalcularKardex() {
 
 // Métodos de valoración de inventarios
 function calcularPEPS(movimientos) {
-  const code = {
-    VE: 'VENTAS',
-    MOV1: 'MOVIMIENTO+',
-    MOV2: 'MOVIMIENTO-',
-    MIC: 'COMPRAS',
-    RO: 'ROBOS',
-    MER: 'MERMAS',
-    AN: 'ANULADO',
-    EXT: 'EXTRAVIO',
-  }
+  console.log(movimientos.PEPS.kardex)
 
   let kardex = []
-  let inventario = [] // Array para manejar los lotes de inventario (PEPS)
-
-  // Procesar cada movimiento
-  movimientos.forEach((mov, index) => {
-    const descripcion = code[mov.codigo] || 'MOVIMIENTO DESCONOCIDO'
-    const esEntrada = ['MOVIMIENTO+', 'COMPRAS'].includes(descripcion)
-    const esSalida = ['VENTAS', 'MOVIMIENTO-', 'ROBOS', 'MERMAS', 'ANULADO'].includes(descripcion)
-
-    let registro = {
-      c: index + 1,
-      fecha: mov.fecha,
-      descripcion: descripcion,
-      canentrada: 0,
-      costoEntrada: 0,
-      cansalida: 0,
-      costoSalida: 0,
-      cansaldo: 0,
-      costoSaldo: 0,
-      ingreso: 0,
-      egreso: 0,
-      saldoT: 0,
-    }
-
-    if (index === 0) {
-      // Primer registro es el saldo inicial
-      inventario.push({
-        cantidad: mov.stock,
-        costo: mov.precio,
-        fecha: mov.fecha,
-      })
-
-      registro.cansaldo = mov.stock
-      registro.costoSaldo = mov.precio
-      registro.saldoT = mov.stock * mov.precio
-      registro.descripcion = 'SALDO INICIAL'
-    } else {
-      if (esEntrada) {
-        // Agregar al inventario como nuevo lote (al final)
-        const cantidad = Math.abs(mov.stock - getCantidadTotalInventario(inventario))
-        inventario.push({
-          cantidad: cantidad,
-          costo: mov.precio,
-          fecha: mov.fecha,
-        })
-
-        registro.canentrada = cantidad
-        registro.costoEntrada = mov.precio
-        registro.ingreso = cantidad * mov.precio
-      } else if (esSalida) {
-        // Sacar del inventario según PEPS (desde el principio)
-        const cantidadNecesaria = Math.abs(mov.stock - getCantidadTotalInventario(inventario))
-        let cantidadRestante = cantidadNecesaria
-        let costoTotalSalida = 0
-
-        while (cantidadRestante > 0 && inventario.length > 0) {
-          const primerLote = inventario[0]
-          const cantidadUsar = Math.min(primerLote.cantidad, cantidadRestante)
-
-          costoTotalSalida += cantidadUsar * primerLote.costo
-          cantidadRestante -= cantidadUsar
-          primerLote.cantidad -= cantidadUsar
-
-          if (primerLote.cantidad <= 0) {
-            inventario.shift() // Eliminar el lote si ya no queda cantidad
-          }
-        }
-
-        registro.cansalida = cantidadNecesaria
-        registro.costoSalida = cantidadNecesaria > 0 ? costoTotalSalida / cantidadNecesaria : 0
-        registro.egreso = costoTotalSalida
-      }
-
-      // Actualizar saldos
-      registro.cansaldo = getCantidadTotalInventario(inventario)
-      registro.costoSaldo = getCostoPromedioInventario(inventario)
-      registro.saldoT = getValorTotalInventario(inventario)
-    }
-
-    kardex.push(registro)
-  })
+  kardex = movimientos.PEPS.kardex
+  saldoFinal.value = movimientos.PEPS.saldo_final
+  console.log(saldoFinal.value)
 
   return kardex
 }
 
 function calcularUEPS(movimientos) {
-  const code = {
-    VE: 'VENTAS',
-    MOV1: 'MOVIMIENTO+',
-    MOV2: 'MOVIMIENTO-',
-    MIC: 'COMPRAS',
-    RO: 'ROBOS',
-    MER: 'MERMAS',
-    AN: 'ANULADO',
-    EXT: 'EXTRAVIO',
-  }
+  console.log(movimientos)
 
   let kardex = []
-  let inventario = [] // Array para manejar los lotes de inventario (UEPS)
-
-  // Procesar cada movimiento
-  movimientos.forEach((mov, index) => {
-    const descripcion = code[mov.codigo] || 'MOVIMIENTO DESCONOCIDO'
-
-    const esEntrada = ['MOVIMIENTO+', 'COMPRAS'].includes(descripcion)
-    const esSalida = ['VENTAS', 'MOVIMIENTO-', 'ROBOS', 'MERMAS', 'ANULADO'].includes(descripcion)
-
-    let registro = {
-      c: index + 1,
-      fecha: mov.fecha,
-      descripcion: descripcion,
-      canentrada: 0,
-      costoEntrada: 0,
-      cansalida: 0,
-      costoSalida: 0,
-      cansaldo: 0,
-      costoSaldo: 0,
-      ingreso: 0,
-      egreso: 0,
-      saldoT: 0,
-    }
-
-    if (index === 0) {
-      // Primer registro es el saldo inicial
-      inventario.push({
-        cantidad: mov.stock,
-        costo: mov.precio,
-        fecha: mov.fecha,
-      })
-
-      registro.cansaldo = mov.stock
-      registro.costoSaldo = mov.precio
-      registro.saldoT = mov.stock * mov.precio
-      registro.descripcion = 'SALDO INICIAL'
-    } else {
-      if (esEntrada) {
-        // Agregar al inventario como nuevo lote (al final)
-        const cantidad = Math.abs(mov.stock - getCantidadTotalInventario(inventario))
-        inventario.push({
-          cantidad: cantidad,
-          costo: mov.precio,
-          fecha: mov.fecha,
-        })
-
-        registro.canentrada = cantidad
-        registro.costoEntrada = mov.precio
-        registro.ingreso = cantidad * mov.precio
-      } else if (esSalida) {
-        // Sacar del inventario según UEPS (desde el final)
-        const cantidadNecesaria = Math.abs(mov.stock - getCantidadTotalInventario(inventario))
-        console.log(cantidadNecesaria)
-        let cantidadRestante = cantidadNecesaria
-        let costoTotalSalida = 0
-
-        while (cantidadRestante > 0 && inventario.length > 0) {
-          const ultimoLote = inventario[inventario.length - 1]
-          const cantidadUsar = Math.min(ultimoLote.cantidad, cantidadRestante)
-
-          costoTotalSalida += cantidadUsar * ultimoLote.costo
-          cantidadRestante -= cantidadUsar
-          ultimoLote.cantidad -= cantidadUsar
-
-          if (ultimoLote.cantidad <= 0) {
-            inventario.pop() // Eliminar el lote si ya no queda cantidad
-          }
-        }
-
-        registro.cansalida = cantidadNecesaria
-        registro.costoSalida = cantidadNecesaria > 0 ? costoTotalSalida / cantidadNecesaria : 0
-        registro.egreso = costoTotalSalida
-      }
-
-      // Actualizar saldos
-      registro.cansaldo = getCantidadTotalInventario(inventario)
-      registro.costoSaldo = getCostoPromedioInventario(inventario)
-      registro.saldoT = getValorTotalInventario(inventario)
-    }
-
-    kardex.push(registro)
-  })
+  kardex = movimientos.UEPS.kardex
+  saldoFinal.value = movimientos.UEPS.saldo_final
+  console.log(saldoFinal.value)
 
   return kardex
 }
 
 function calcularPromedio(movimientos) {
-  const code = {
-    VE: 'VENTAS',
-    MOV1: 'MOVIMIENTO+',
-    MOV2: 'MOVIMIENTO-',
-    MIC: 'COMPRAS',
-    RO: 'ROBOS',
-    MER: 'MERMAS',
-    AN: 'ANULADO',
-    EXT: 'EXTRAVIO',
-  }
+  console.log(movimientos)
 
   let kardex = []
-  let inventario = {
-    cantidad: 0,
-    costoPromedio: 0,
-    valorTotal: 0,
-  }
-
-  // Procesar cada movimiento
-  movimientos.forEach((mov, index) => {
-    const descripcion = code[mov.codigo] || 'MOVIMIENTO DESCONOCIDO'
-    const esEntrada = ['MOVIMIENTO+', 'COMPRAS'].includes(descripcion)
-    const esSalida = ['VENTAS', 'MOVIMIENTO-', 'ROBOS', 'MERMAS', 'ANULADO'].includes(descripcion)
-
-    let registro = {
-      c: index + 1,
-      fecha: mov.fecha,
-      descripcion: descripcion,
-      canentrada: 0,
-      costoEntrada: 0,
-      cansalida: 0,
-      costoSalida: 0,
-      cansaldo: 0,
-      costoSaldo: 0,
-      ingreso: 0,
-      egreso: 0,
-      saldoT: 0,
-    }
-
-    if (index === 0) {
-      // Primer registro es el saldo inicial
-      inventario = {
-        cantidad: mov.stock,
-        costoPromedio: mov.precio,
-        valorTotal: mov.stock * mov.precio,
-      }
-
-      registro.cansaldo = inventario.cantidad
-      registro.costoSaldo = inventario.costoPromedio
-      registro.saldoT = inventario.valorTotal
-      registro.descripcion = 'SALDO INICIAL'
-    } else {
-      if (esEntrada) {
-        const cantidadEntrada = Math.abs(mov.stock - inventario.cantidad)
-        const valorEntrada = cantidadEntrada * mov.precio
-
-        // Calcular nuevo costo promedio
-        const nuevoValorTotal = inventario.valorTotal + valorEntrada
-        const nuevaCantidad = inventario.cantidad + cantidadEntrada
-        const nuevoCostoPromedio = nuevaCantidad > 0 ? nuevoValorTotal / nuevaCantidad : 0
-
-        inventario = {
-          cantidad: nuevaCantidad,
-          costoPromedio: nuevoCostoPromedio,
-          valorTotal: nuevoValorTotal,
-        }
-
-        registro.canentrada = cantidadEntrada
-        registro.costoEntrada = mov.precio
-        registro.ingreso = valorEntrada
-      } else if (esSalida) {
-        const cantidadSalida = Math.abs(mov.stock - inventario.cantidad)
-        const valorSalida = cantidadSalida * inventario.costoPromedio
-
-        inventario = {
-          cantidad: inventario.cantidad - cantidadSalida,
-          costoPromedio: inventario.costoPromedio, // El costo promedio no cambia en salidas
-          valorTotal: inventario.valorTotal - valorSalida,
-        }
-
-        registro.cansalida = cantidadSalida
-        registro.costoSalida = inventario.costoPromedio
-        registro.egreso = valorSalida
-      }
-
-      // Actualizar saldos
-      registro.cansaldo = inventario.cantidad
-      registro.costoSaldo = inventario.costoPromedio
-      registro.saldoT = inventario.valorTotal
-    }
-
-    kardex.push(registro)
-  })
+  kardex = movimientos.PROMEDIO.kardex
+  saldoFinal.value = movimientos.PROMEDIO.saldo_final
+  console.log(saldoFinal.value)
 
   return kardex
-}
-
-// Funciones auxiliares para manejo de inventario
-function getCantidadTotalInventario(inventario) {
-  return inventario.reduce((total, lote) => total + lote.cantidad, 0)
-}
-
-function getValorTotalInventario(inventario) {
-  return inventario.reduce((total, lote) => total + lote.cantidad * lote.costo, 0)
-}
-
-function getCostoPromedioInventario(inventario) {
-  const cantidadTotal = getCantidadTotalInventario(inventario)
-  if (cantidadTotal === 0) return 0
-  return getValorTotalInventario(inventario) / cantidadTotal
 }
 
 function cargarPDF() {

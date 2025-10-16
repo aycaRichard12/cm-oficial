@@ -762,7 +762,6 @@ class reportes
     {
         $lista = [];
         $idempresa = $this->verificar->verificarIDEMPRESAMD5($idmd5);
-
         $rep = $this->cm->query("select dv.id_detalle_venta, v.fecha_venta, p.nombre, p.descripcion, p.caracteristicas, c.nombre, m.nombre_medida, ep.tipos_estado, u.nombre, sum(dv.cantidad) as cantidadventas, 
         ifnull((select sum(die.cantidad) from detalle_invexterno die
         inner join inv_externo ie on die.inv_externo_id_inv_externo=ie.id_inv_externo
@@ -788,43 +787,153 @@ class reportes
         echo json_encode($lista);
     }
 
-    public function kardex($fechainicio,$fechafinal,$idalmacen,$idproducto)
+    public function kardex($fechainicio, $fechafinal, $idalmacen, $idproducto)
     {
         $lista = [];
+        $lis =[];
 
-        $rep1 = $this->cm->query("select s.productos_almacen_id_productos_almacen, s.cantidad, s.codigo, s.fecha, 
-        (select di.precio_unitario from ingreso i
-        left join detalle_ingreso di on i.id_ingreso=di.ingreso_id_ingreso
-        where di.productos_almacen_id_productos_almacen='$idproducto'
-        order by di.id_detalle_ingreso desc limit 1) as precio, pa.almacen_id_almacen
-        from productos_almacen pa 
-        left join stock s on pa.id_productos_almacen=s.productos_almacen_id_productos_almacen
-        left join detalle_venta dv on pa.id_productos_almacen=dv.productos_almacen_id_productos_almacen
-        left join venta v on dv.venta_id_venta=v.id_venta
-        where s.productos_almacen_id_productos_almacen='$idproducto' and s.fecha between (DATE_ADD('$fechainicio', interval -1 month)) and (DATE_ADD('$fechainicio', interval -1 day)) and pa.almacen_id_almacen='$idalmacen'
-        group by s.id_stock
-        order by s.id_stock desc limit 1");
+        // Obtenemos el último registro antes del rango de fechas
+        $rep1 = $this->cm->query("
+            SELECT 
+                s.productos_almacen_id_productos_almacen AS idproducto, 
+                s.cantidad, 
+                s.codigo, 
+                s.fecha,
+                s.idorigen,
+                pa.almacen_id_almacen AS idalmacen
+            FROM productos_almacen pa
+            LEFT JOIN stock s ON pa.id_productos_almacen = s.productos_almacen_id_productos_almacen
+            WHERE
+                s.productos_almacen_id_productos_almacen = '$idproducto' 
+                AND s.fecha BETWEEN (DATE_ADD('$fechainicio', INTERVAL -1 MONTH)) AND (DATE_ADD('$fechainicio', INTERVAL -1 DAY))
+                AND pa.almacen_id_almacen = '$idalmacen'
+            ORDER BY s.id_stock DESC 
+            LIMIT 1
+        ");
+
         while ($qwe = $this->cm->fetch($rep1)) {
-            $res1 = array("idproducto" => $qwe[0], "stock" => $qwe[1], "codigo" => $qwe[2], "fecha" => $qwe[3], "precio" => $qwe[4], "idalmacen" => $qwe[5]);
-            array_push($lista, $res1);
+            // Caso 1: tiene idorigen → buscar precio exacto
+            if (!empty($qwe['idorigen'])) {
+                $p = $this->cm->query("
+                    SELECT precio_unitario 
+                    FROM detalle_ingreso 
+                    WHERE id_detalle_ingreso = '{$qwe['idorigen']}'
+                    LIMIT 1
+                ");
+                $pr = $this->cm->fetch($p);
+                $precio = $pr ? $pr['precio_unitario'] : 0;
+            }
+
+            // Caso 2: es "MIC" y no tiene idorigen → usar última compra
+            elseif (strtoupper(trim($qwe['codigo'])) == 'MIC') {
+                $p = $this->cm->query("
+                    SELECT precio_unitario 
+                    FROM detalle_ingreso 
+                    WHERE productos_almacen_id_productos_almacen = '$idproducto'
+                    ORDER BY id_detalle_ingreso DESC 
+                    LIMIT 1
+                ");
+                $pr = $this->cm->fetch($p);
+                $precio = $pr ? $pr['precio_unitario'] : 0;
+            }
+
+            // Caso 3: sin precio conocido
+            else {
+                $precio = 0;
+            }
+
+            $lista[] = [
+                "idproducto" => $qwe['idproducto'],
+                "stock"      => $qwe['cantidad'],
+                "codigo"     => $qwe['codigo'],
+                "fecha"      => $qwe['fecha'],
+                "precio"     => $precio,
+                "idalmacen"  => $qwe['idalmacen']
+            ];
         }
 
-        $rep = $this->cm->query("select s.productos_almacen_id_productos_almacen, s.cantidad, s.codigo, s.fecha, 
-        (select di.precio_unitario from ingreso i
-        left join detalle_ingreso di on i.id_ingreso=di.ingreso_id_ingreso
-        where di.productos_almacen_id_productos_almacen='$idproducto'
-        order by di.id_detalle_ingreso desc limit 1) as precio, pa.almacen_id_almacen 
-        from productos_almacen pa 
-        left join stock s on pa.id_productos_almacen=s.productos_almacen_id_productos_almacen
-        left join detalle_venta dv on pa.id_productos_almacen=dv.productos_almacen_id_productos_almacen
-        left join venta v on dv.venta_id_venta=v.id_venta
-        where s.productos_almacen_id_productos_almacen='$idproducto' and s.fecha between '$fechainicio' and '$fechafinal' and pa.almacen_id_almacen='$idalmacen'
-        group by s.id_stock");
-        while ($qwe = $this->cm->fetch($rep)) {
-            $res = array("idproducto" => $qwe[0], "stock" => $qwe[1], "codigo" => $qwe[2], "fecha" => $qwe[3], "precio" => $qwe[4], "idalmacen" => $qwe[5]);
-            array_push($lista, $res);
+        // Ahora obtenemos el stock dentro del rango principal
+       $sql = "
+            SELECT 
+                s.id_stock,
+                s.productos_almacen_id_productos_almacen AS idproducto,
+                s.cantidad, 
+                s.codigo, 
+                s.fecha,
+                s.idorigen,
+                pa.almacen_id_almacen AS idalmacen
+            FROM productos_almacen pa
+            LEFT JOIN stock s ON pa.id_productos_almacen = s.productos_almacen_id_productos_almacen
+            WHERE 
+                s.productos_almacen_id_productos_almacen = ?
+                AND s.fecha >= ? AND s.fecha <= ?
+                AND pa.almacen_id_almacen = ?
+            ORDER BY s.id_stock
+        ";
+
+        $stmt = $this->cm->prepare($sql);
+
+        $stmt->bind_param("sssi", $idproducto, $fechainicio, $fechafinal, $idalmacen);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $lis[] = $row;
+            $precio = $this->obtenerPrecioSeguro($this->cm, $row, $idproducto);
+            
+            $lista[] = [
+                "idproducto" => $row['idproducto'],
+                "stock"      => $row['cantidad'],
+                "codigo"     => $row['codigo'],
+                "fecha"      => $row['fecha'],
+                "precio"     => $precio,
+                "idalmacen"  => $row['idalmacen']
+            ];
         }
+
         echo json_encode($lista);
+    }
+
+    function obtenerPrecioSeguro($cm, $row, $idproducto)
+    {
+        $idorigen = $row['idorigen'];
+        $codigo = strtoupper(trim($row['codigo']));
+        $precio = 0;
+
+        // Caso 1️⃣: Tiene idorigen
+        if (!empty($idorigen)) {
+            $sql = "SELECT precio_unitario FROM detalle_ingreso WHERE id_detalle_ingreso = ? LIMIT 1";
+            $stmt = $cm->prepare($sql);
+            $stmt->bind_param("i", $idorigen);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($data = $result->fetch_assoc()) {
+                $precio = $data['precio_unitario'];
+            }
+            $stmt->close();
+        }
+
+        // Caso 2️⃣: Código MIC (última compra)
+        elseif ($codigo === 'MIC') {
+            $sql = "
+                SELECT precio_unitario 
+                FROM detalle_ingreso 
+                WHERE productos_almacen_id_productos_almacen = ?
+                ORDER BY id_detalle_ingreso DESC
+                LIMIT 1
+            ";
+            $stmt = $cm->prepare($sql);
+            $stmt->bind_param("i", $idproducto);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($data = $result->fetch_assoc()) {
+                $precio = $data['precio_unitario'];
+            }
+            $stmt->close();
+        }
+
+        return $precio;
     }
 
     // public function reporteventasporproductos($idmd5, $fechainicio, $fechafinal)
@@ -1589,4 +1698,4 @@ class reportes
 
 
 
-//listadoConfigParametricas
+//kardex

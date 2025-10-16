@@ -73,3 +73,8 @@ const handleSubmit = () => {
   emit('submit', localData.value)
 }
 </script>
+<!-- $productoAlmacenId = $data['id'];
+         $fecha= $data['fecha']; 
+         $metodo= $data['metodo']; 
+         $cantidad= $data['cantidad']; 
+         $costoUnitario = $data['precio']; -->
