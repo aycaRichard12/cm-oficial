@@ -29,7 +29,6 @@ const createInitialLocalStorage = () => {
     if (!localStorage.getItem('yofinanciero')) {
       const userData = usuario
       localStorage.setItem('yofinanciero', JSON.stringify(userData))
-      console.log("'yofinanciero' was created.")
     } else {
       console.log("'yofinanciero' already exists.")
     }
@@ -37,7 +36,6 @@ const createInitialLocalStorage = () => {
     if (!localStorage.getItem('yofinancieromenu')) {
       const menuData = menu
       localStorage.setItem('yofinancieromenu', JSON.stringify(menuData))
-      console.log("'yofinancieromenu' was created.")
     } else {
       console.log("'yofinancieromenu' already exists.")
     }

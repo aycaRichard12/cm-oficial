@@ -847,6 +847,6 @@ elseif ($ver[0] == "eliminarSaldo") {
 }
 
 if ($controlador === null) {
-    // Acción por defecto si no se encuentra una ruta valida reporteproductoalmacen Kardex
+    // Acción por defecto si no se encuentra una ruta valida reporteproductoalmacen cambiarestadodevolucion
     echo json_encode(array("error" => "La ruta ".$_GET['ver']." no existe"));
 }

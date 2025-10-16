@@ -497,7 +497,3 @@ export const menurichard50 = [
     ],
   },
 ]
-// venta.value = verificarexistenciapagina('registrarventaoculto')
-//       compra.value = verificarexistenciapagina('registrarcompra')
-//       dashboard.value = verificarexistenciapagina('dashboard')
-//       producto.value = verificarexistenciapagina('registrarproductos')
