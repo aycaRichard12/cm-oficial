@@ -110,16 +110,16 @@ export const menurichard50 = [
         titulo: 'Ventas-Atributos',
         codigo: 'opcionesocultas',
         submenu: [
-          // {
-          //   titulo: 'V-Generar Venta-Registrar Venta',
-          //   codigo: 'registrarventaoculto-03afdbd66e7929b125f8597834fa83a4',
-          //   permiso: '1111',
-          // },
-          // {
-          //   titulo: 'V-Generar Venta-Registrar Cotización',
-          //   codigo: 'registrarcotizacionoculto-03afdbd66e7929b125f8597834fa83a4',
-          //   permiso: '1111',
-          // },
+          {
+            titulo: 'V-Generar Venta-Registrar Venta',
+            codigo: 'registrarventaoculto-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Generar Venta-Registrar Cotización',
+            codigo: 'registrarcotizacionoculto-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
           {
             titulo: 'V-Generar Venta - Rep. de Ventas',
             codigo: 'reportedeventas-03afdbd66e7929b125f8597834fa83a4',
