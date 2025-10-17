@@ -487,7 +487,24 @@ const columnasCarrito = [
 ]
 
 const validarDescripcion = async (scope, row) => {
-  console.log(row)
+  console.log(scope.value)
+
+  let carrito = JSON.parse(localStorage.getItem('carrito'))
+
+  if (carrito && carrito.listaProductos) {
+    carrito.listaProductos = carrito.listaProductos.map((prod) => {
+      // Agregar o editar la descripción adicional
+      if (Number(prod.id) == Number(row.idproductoalmacen)) {
+        prod.descripcionAdicional = scope.value
+      }
+      return prod
+    })
+
+    localStorage.setItem('carrito', JSON.stringify(carrito))
+    console.log('Descripción adicional actualizada correctamente ')
+  } else {
+    console.warn('No se encontró la lista de productos en el localStorage')
+  }
 
   scope.set()
 }

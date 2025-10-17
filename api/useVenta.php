@@ -322,8 +322,8 @@ class UseVEnta
             $stmtVenta->close();
 
             // --- Insertar en 'detalle_venta' y actualizar 'stock' para cada producto ---
-            $sqlDetalle = "INSERT INTO detalle_venta (cantidad, precio_unitario, productos_almacen_id_productos_almacen, venta_id_venta, categoria) 
-                           VALUES (?, ?, ?, ?, ?)";
+            $sqlDetalle = "INSERT INTO detalle_venta (cantidad, precio_unitario, productos_almacen_id_productos_almacen, venta_id_venta, categoria, descripcion_adicional) 
+                           VALUES (?, ?, ?, ?, ?, ?)";
             $stmtDetalle = $this->cm->prepare($sqlDetalle);
 
             $sqlGetStock = "SELECT cantidad FROM stock WHERE id_stock = ? AND estado = 1";
@@ -338,7 +338,7 @@ class UseVEnta
 
             foreach ($listaProductos as $producto) {
                 // Insertar detalle de venta
-                $stmtDetalle->bind_param("ddiis", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIDventa, $producto['idporcentaje']);
+                $stmtDetalle->bind_param("ddiiss", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIDventa, $producto['idporcentaje'], $producto['descripcionAdicional']);
                 $stmtDetalle->execute();
                 if ($stmtDetalle->affected_rows == 0) {
                     throw new Exception("No se pudo insertar el detalle para el producto con ID almacén: " . $producto['idproductoalmacen']);
