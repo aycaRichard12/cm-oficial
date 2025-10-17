@@ -1370,7 +1370,7 @@ class ventas
     {
         $idempresa = $this->verificar->verificarIDEMPRESAMD5($idmd5);
         $lista = [];
-        $clien = $this->cm->query("SELECT dve.id_detalle_venta, pa.id_productos_almacen, p.nombre, p.descripcion, p.caracteristicas, dve.cantidad, dve.precio_unitario, p.codigo, p.codigosin, p.unidadsin, p.actividadsin FROM detalle_venta dve 
+        $clien = $this->cm->query("SELECT dve.id_detalle_venta, pa.id_productos_almacen, p.nombre, p.descripcion, p.caracteristicas, dve.cantidad, dve.precio_unitario, p.codigo, p.codigosin, p.unidadsin, p.actividadsin, dve.descripcion_adicional FROM detalle_venta dve 
         LEFT JOIN venta ve on dve.venta_id_venta=ve.id_venta
         LEFT JOIN productos_almacen pa on dve.productos_almacen_id_productos_almacen=pa.id_productos_almacen
         LEFT join productos p on pa.productos_id_productos=p.id_productos
@@ -1382,6 +1382,7 @@ class ventas
                 "idproducto" => $qwe['id_productos_almacen'],
                 "producto" => $qwe['nombre'],
                 "descripcion" => $qwe['descripcion'], 
+                "descripcionAdicional" => $qwe['descripcion_adicional'], 
                 "caracteristica" => $qwe['caracteristicas'], 
                 "cantidad" => $qwe['cantidad'], 
                 "precio" => $qwe['precio_unitario'],

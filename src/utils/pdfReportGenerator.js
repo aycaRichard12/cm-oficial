@@ -8,6 +8,7 @@ import { numeroALetras } from 'src/composables/FuncionesG'
 import { imagen } from 'src/boot/url'
 import { api } from 'src/boot/axios'
 import { cargarLogoBase64 } from 'src/composables/FuncionesG'
+import { convertirAMayusculas } from 'src/composables/FuncionesG'
 
 // Variables globales
 let logoBase64 = null
@@ -1186,8 +1187,6 @@ export function PDFComprovanteVenta(detalleVenta) {
   const nombreEmpresa = idempresa.empresa.nombre
   const direccionEmpresa = idempresa.empresa.direccion
   const telefonoEmpresa = idempresa.empresa.telefono
-  const logoEmpresa = idempresa.empresa.logo // Ruta relativa o base64
-
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Descripción', dataKey: 'descripcion' },
@@ -1229,6 +1228,7 @@ export function PDFComprovanteVenta(detalleVenta) {
       overflow: 'linebreak',
       fontSize: 5,
       cellPadding: 2,
+      minCellHeight: 7,
     },
     headStyles: {
       fillColor: ColoEncabezadoTabla,
@@ -1241,6 +1241,22 @@ export function PDFComprovanteVenta(detalleVenta) {
       cantidad: { cellWidth: 40, halign: 'right' },
       precio: { cellWidth: 40, halign: 'right' },
       total: { cellWidth: 50, halign: 'right' },
+    },
+    didDrawCell: function (data) {
+      if (data.column.dataKey === 'descripcion' && data.cell.section === 'body') {
+        const item = detallePlano[0].detalle[0][data.row.index]
+        if (item && item.descripcionAdicional) {
+          const text = convertirAMayusculas(doc.splitTextToSize(item.descripcionAdicional, 45))
+          doc.setFontSize(4)
+          doc.setTextColor(100)
+          doc.text(
+            text,
+            data.cell.x + 2,
+            data.cell.y + data.cell.height - 1, // justo debajo del texto principal
+          )
+          doc.setTextColor(0)
+        }
+      }
     },
     didParseCell: function (data) {
       // Ejemplo: destacar la última fila (que contiene el Monto Total)
@@ -1259,11 +1275,18 @@ export function PDFComprovanteVenta(detalleVenta) {
     startY: 50,
     margin: { horizontal: 5 },
     theme: 'striped',
+
     didDrawPage: () => {
       if (doc.internal.getNumberOfPages() === 1) {
         // Logo (requiere base64 o ruta absoluta en servidor si usas Node)
-        if (logoEmpresa) {
-          //doc.addImage(`${URL_APIE}${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
+        if (logoBase64) {
+          const pageWidth = doc.internal.pageSize.getWidth() // Ancho total página
+          const imgWidth = 20 // Ancho del logo en mm
+          const imgHeight = 20 // Alto del logo en mm
+          const xPos = pageWidth - imgWidth - 5 // 10mm de margen derecho
+          const yPos = 5 // margen superior
+          console.log(logoBase64)
+          doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
         }
 
         // Nombre y datos de empresa
@@ -4469,5 +4492,120 @@ export function PDF_REPORTE_MERMA(reporte, datosFormulario) {
     },
   })
 
+  return doc
+}
+export function DPF_REPORTE_PRODUCTO_ASIGNADOS(productoLista) {
+  console.log(productoLista.value)
+  const contenidousuario = validarUsuario()
+  const doc = new jsPDF({ orientation: 'portrait' })
+
+  const idempresa = contenidousuario[0]
+  const nombreEmpresa = idempresa.empresa.nombre
+  const direccionEmpresa = idempresa.empresa.direccion
+  const telefonoEmpresa = idempresa.empresa.telefono
+
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo' },
+    { header: 'Codigo Barra', dataKey: 'codigobarra' },
+    { header: 'Categoria', dataKey: 'categoria' },
+    { header: 'Sub Categoria', dataKey: 'subcategoria' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'País', dataKey: 'detalle' },
+    { header: 'Unidad', dataKey: 'unidad' },
+    { header: 'Característica', dataKey: 'medida' },
+    { header: 'Otras características', dataKey: 'caracteristica' },
+    { header: 'Estado', dataKey: 'estadoproducto' },
+    { header: 'Stock', dataKey: 'stock' },
+    { header: 'Stock min', dataKey: 'stockminimo' },
+    { header: 'Stock max', dataKey: 'stockmaximo' },
+    { header: 'Fecha creación', dataKey: 'fecha' },
+  ]
+
+  const datos = productoLista.value.map((item, indice) => ({
+    indice: indice + 1,
+    codigo: item.codigo,
+    codigobarra: item.codigobarra,
+    categoria: item.categoria,
+    subcategoria: item.subcategoria,
+    descripcion: item.descripcion,
+    detalle: item.detalle,
+    unidad: item.unidad,
+    medida: item.medida,
+    caracteristica: item.caracteristica,
+    estadoproducto: item.estadoproducto,
+    stock: item.stock,
+    stockminimo: item.stockminimo,
+    stockmaximo: item.stockmaximo,
+    fecha: cambiarFormatoFecha(item.fecha),
+  }))
+
+  autoTable(doc, {
+    columns,
+    body: datos,
+    styles: {
+      overflow: 'linebreak',
+      fontSize: 5,
+      cellPadding: 2,
+    },
+    headStyles: {
+      fillColor: [22, 160, 133],
+      textColor: 255,
+      halign: 'center',
+    },
+    columnStyles: {
+      indice: { cellWidth: 8, halign: 'center' },
+      codigo: { cellWidth: 15, halign: 'left' },
+      codigobarra: { cellWidth: 15, halign: 'left' },
+      categoria: { cellWidth: 15, halign: 'left' },
+      subcategoria: { cellWidth: 15, halign: 'left' },
+      descripcion: { cellWidth: 20, halign: 'left' },
+      detalle: { cellWidth: 15, halign: 'left' },
+      unidad: { cellWidth: 10, halign: 'center' },
+      medida: { cellWidth: 18, halign: 'center' },
+      caracteristica: { cellWidth: 18, halign: 'left' },
+      estadoproducto: { cellWidth: 10, halign: 'left' },
+      stock: { cellWidth: 8, halign: 'right' },
+      stockminimo: { cellWidth: 8, halign: 'right' },
+      stockmaximo: { cellWidth: 8, halign: 'right' },
+      fecha: { cellWidth: 15, halign: 'center' },
+    },
+    //20 + 15 + 20 + 25 + 30 + 20 + 20 + 25 + 20 + 15 + 20 + 15 + 20 = 265 mm
+
+    startY: 30,
+    margin: { horizontal: 5 },
+    theme: 'striped',
+    didDrawPage: () => {
+      if (doc.internal.getNumberOfPages() === 1) {
+        if (logoBase64) {
+          const pageWidth = doc.internal.pageSize.getWidth() // Ancho total página
+          const imgWidth = 20 // Ancho del logo en mm
+          const imgHeight = 20 // Alto del logo en mm
+          const xPos = pageWidth - imgWidth - 5 // 10mm de margen derecho
+          const yPos = 5 // margen superior
+          console.log(logoBase64)
+          doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
+        }
+
+        // Nombre y datos de empresa
+        doc.setFontSize(7)
+        doc.setFont(undefined, 'bold')
+        doc.text(nombreEmpresa, 5, 10)
+
+        doc.setFontSize(6)
+        doc.setFont(undefined, 'normal')
+        doc.text(direccionEmpresa, 5, 13)
+        doc.text(`Tel: ${telefonoEmpresa}`, 5, 16)
+
+        // Título centrado
+        doc.setFontSize(10)
+        doc.setFont(undefined, 'bold')
+        doc.text('Productos', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' })
+      }
+    },
+  })
+
+  // doc.save('proveedores.pdf') ← comenta o elimina esta línea
+  //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
   return doc
 }

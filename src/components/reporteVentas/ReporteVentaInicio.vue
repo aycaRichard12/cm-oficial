@@ -72,7 +72,7 @@ import { ref, onMounted, computed } from 'vue'
 import { api } from 'boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
-import { PDFdetalleVentaInicio } from 'src/utils/pdfReportGenerator'
+import { PDFComprovanteVenta } from 'src/utils/pdfReportGenerator'
 import { redondear } from 'src/composables/FuncionesG'
 import { decimas } from 'src/composables/FuncionesG'
 const $q = useQuasar()
@@ -173,7 +173,7 @@ const ir_a_impuestos = (row) => {
 async function imprimirReporte() {
   console.log(detalleVenta.value)
 
-  const doc = await PDFdetalleVentaInicio(detalleVenta)
+  const doc = await PDFComprovanteVenta(detalleVenta)
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal

@@ -266,6 +266,43 @@
           <q-btn icon="delete" color="negative" flat round @click="eliminarDelCarrito(props.row)" />
         </q-td>
       </template>
+      <template v-slot:body-cell-descripcion="props">
+        <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
+          <!-- Descripción principal -->
+          <div>{{ props.row.descripcion }}</div>
+
+          <!-- Descripción adicional editable debajo -->
+          <div
+            style="
+              margin-top: 4px;
+              font-size: 0.9em;
+              color: #555;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <q-popup-edit v-model="props.row.descripcionAdicional" v-slot="scope">
+              <label for="desAdicional">Añadir Descripción Adicional</label>
+              <q-input
+                v-model="scope.value"
+                outlined
+                dense
+                id="desAdicional"
+                autofocus
+                type="text"
+                @keyup.enter="validarDescripcion(scope, props.row)"
+                @keyup.esc="scope.cancel"
+              />
+            </q-popup-edit>
+
+            <!-- Mostrar valor actual y el ícono de editar -->
+
+            <span style="margin-left: 4px">{{ props.row.descripcionAdicional }}</span>
+            <q-icon name="edit" size="16px" color="primary" class="q-ml-xs" />
+          </div>
+        </q-td>
+      </template>
 
       <template v-slot:bottom-row>
         <q-tr>
@@ -368,6 +405,7 @@ import { api } from 'boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import { imagen } from 'src/boot/url'
+// import { showDialog } from 'src/utils/dialogs'
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
@@ -447,6 +485,29 @@ const columnasCarrito = [
   },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
 ]
+
+const validarDescripcion = async (scope, row) => {
+  console.log(scope.value)
+
+  let carrito = JSON.parse(localStorage.getItem('carrito'))
+
+  if (carrito && carrito.listaProductos) {
+    carrito.listaProductos = carrito.listaProductos.map((prod) => {
+      // Agregar o editar la descripción adicional
+      if (Number(prod.id) == Number(row.idproductoalmacen)) {
+        prod.descripcionAdicional = scope.value
+      }
+      return prod
+    })
+
+    localStorage.setItem('carrito', JSON.stringify(carrito))
+    console.log('Descripción adicional actualizada correctamente ')
+  } else {
+    console.warn('No se encontró la lista de productos en el localStorage')
+  }
+
+  scope.set()
+}
 
 // Computed properties
 const puedeAgregarProducto = computed(() => {
@@ -744,6 +805,7 @@ function agregarAlCarrito() {
     idporcentaje: producto.idporcentaje,
     candiponible: producto.stock,
     descripcion: producto.descripcion,
+    descripcionAdicional: '',
     codigo: producto.codigo,
     id: producto.id,
     subtotal: precioUnitario.value * cantidad.value,

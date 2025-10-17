@@ -89,11 +89,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
-import { URL_APIE } from 'src/composables/services'
-import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import { DPF_REPORTE_PRODUCTO_ASIGNADOS } from 'src/utils/pdfReportGenerator'
 // Props
 const mostrarModal = ref(false)
 const pdfData = ref(null)
@@ -207,115 +203,8 @@ const columns = [
   { name: 'opciones', label: 'Acciones', field: 'actions', align: 'center' },
 ]
 
-function onPrintReport() {
-  console.log(productoLista.value)
-  const contenidousuario = validarUsuario()
-  const doc = new jsPDF({ orientation: 'portrait' })
-
-  const idempresa = contenidousuario[0]
-  const nombreEmpresa = idempresa.empresa.nombre
-  const direccionEmpresa = idempresa.empresa.direccion
-  const telefonoEmpresa = idempresa.empresa.telefono
-  const logoEmpresa = idempresa.empresa.logo // Ruta relativa o base64
-
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Código', dataKey: 'codigo' },
-    { header: 'Codigo Barra', dataKey: 'codigobarra' },
-    { header: 'Categoria', dataKey: 'categoria' },
-    { header: 'Sub Categoria', dataKey: 'subcategoria' },
-    { header: 'Descripción', dataKey: 'descripcion' },
-    { header: 'País', dataKey: 'detalle' },
-    { header: 'Unidad', dataKey: 'unidad' },
-    { header: 'Característica', dataKey: 'medida' },
-    { header: 'Otras características', dataKey: 'caracteristica' },
-    { header: 'Estado', dataKey: 'estadoproducto' },
-    { header: 'Stock', dataKey: 'stock' },
-    { header: 'Stock min', dataKey: 'stockminimo' },
-    { header: 'Stock max', dataKey: 'stockmaximo' },
-    { header: 'Fecha creación', dataKey: 'fecha' },
-  ]
-
-  const datos = productoLista.value.map((item, indice) => ({
-    indice: indice + 1,
-    codigo: item.codigo,
-    codigobarra: item.codigobarra,
-    categoria: item.categoria,
-    subcategoria: item.subcategoria,
-    descripcion: item.descripcion,
-    detalle: item.detalle,
-    unidad: item.unidad,
-    medida: item.medida,
-    caracteristica: item.caracteristica,
-    estadoproducto: item.estadoproducto,
-    stock: item.stock,
-    stockminimo: item.stockminimo,
-    stockmaximo: item.stockmaximo,
-    fecha: cambiarFormatoFecha(item.fecha),
-  }))
-
-  autoTable(doc, {
-    columns,
-    body: datos,
-    styles: {
-      overflow: 'linebreak',
-      fontSize: 5,
-      cellPadding: 2,
-    },
-    headStyles: {
-      fillColor: [22, 160, 133],
-      textColor: 255,
-      halign: 'center',
-    },
-    columnStyles: {
-      indice: { cellWidth: 8, halign: 'center' },
-      codigo: { cellWidth: 15, halign: 'left' },
-      codigobarra: { cellWidth: 15, halign: 'left' },
-      categoria: { cellWidth: 15, halign: 'left' },
-      subcategoria: { cellWidth: 15, halign: 'left' },
-      descripcion: { cellWidth: 20, halign: 'left' },
-      detalle: { cellWidth: 15, halign: 'left' },
-      unidad: { cellWidth: 10, halign: 'center' },
-      medida: { cellWidth: 18, halign: 'center' },
-      caracteristica: { cellWidth: 18, halign: 'left' },
-      estadoproducto: { cellWidth: 10, halign: 'left' },
-      stock: { cellWidth: 8, halign: 'right' },
-      stockminimo: { cellWidth: 8, halign: 'right' },
-      stockmaximo: { cellWidth: 8, halign: 'right' },
-      fecha: { cellWidth: 15, halign: 'center' },
-    },
-    //20 + 15 + 20 + 25 + 30 + 20 + 20 + 25 + 20 + 15 + 20 + 15 + 20 = 265 mm
-
-    startY: 30,
-    margin: { horizontal: 5 },
-    theme: 'striped',
-    didDrawPage: () => {
-      if (doc.internal.getNumberOfPages() === 1) {
-        // Logo (requiere base64 o ruta absoluta en servidor si usas Node)
-        if (logoEmpresa) {
-          doc.addImage(`${URL_APIE}${logoEmpresa}`, 'PNG', 182.5, 8, 20, 20)
-        }
-
-        // Nombre y datos de empresa
-        doc.setFontSize(7)
-        doc.setFont(undefined, 'bold')
-        doc.text(nombreEmpresa, 5, 10)
-
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text(direccionEmpresa, 5, 13)
-        doc.text(`Tel: ${telefonoEmpresa}`, 5, 16)
-
-        // Título centrado
-        doc.setFontSize(10)
-        doc.setFont(undefined, 'bold')
-        doc.text('Productos', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' })
-      }
-    },
-  })
-
-  // doc.save('proveedores.pdf') ← comenta o elimina esta línea
-  //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
+async function onPrintReport() {
+  const doc = await DPF_REPORTE_PRODUCTO_ASIGNADOS(productoLista)
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
   mostrarModal.value = true
 }

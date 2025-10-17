@@ -4,6 +4,11 @@ import { useMenuStore } from 'src/stores/permitidos'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 
+export function convertirAMayusculas(texto) {
+  if (!texto) return ''
+  return texto.toString().toUpperCase()
+}
+
 export function getfechaCodigo() {
   const date = new Date()
   const year = date.getFullYear()
