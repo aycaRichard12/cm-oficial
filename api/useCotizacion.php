@@ -44,7 +44,49 @@ class UseCotizacion
         $this->rh = $this->conexion->rh;
         $this->em = $this->conexion->em;
     }
+    private function obtenerNumeroComprobanteCotizacion($idempresa, $tipoventa)
+    {
+        $nroFactura = null;
+        $contadorIntentos = 0;
 
+        // Bucle para asegurar que el número de factura no exista
+        while ($nroFactura === null) {
+            // 1. Contar ventas existentes para proponer un número inicial
+            $sqlConteo = "SELECT COUNT(co.id_cotizacion) 
+                          FROM cotizacion co
+                          LEFT JOIN cliente c ON co.cliente_id_cliente = c.id_cliente 
+                          WHERE c.idempresa = ? AND co.estado = ?";
+            $stmtConteo = $this->cm->prepare($sqlConteo);
+            $stmtConteo->bind_param("ii", $idempresa, $tipoventa);
+            $stmtConteo->execute();
+            $resultado = $stmtConteo->get_result()->fetch_row();
+            $nroFactura = $resultado[0] + 1 + $contadorIntentos;
+            $stmtConteo->close();
+
+            // 2. Verificar si el número propuesto ya existe
+            $sqlVerificacion = "SELECT co.num 
+                                FROM cotizacion co 
+                                LEFT JOIN cliente c ON co.cliente_id_cliente = c.id_cliente 
+                                WHERE c.idempresa = ? AND co.estado = ? AND co.num = ?";
+            $stmtVerificacion = $this->cm->prepare($sqlVerificacion);
+            $stmtVerificacion->bind_param("iii", $idempresa, $tipoventa, $nroFactura);
+            $stmtVerificacion->execute();
+            $stmtVerificacion->store_result();
+
+            if ($stmtVerificacion->num_rows > 0) {
+                $nroFactura = null; // El número existe, se reinicia para probar el siguiente
+                $contadorIntentos++;
+            }
+            $stmtVerificacion->close();
+
+            // 3. Salvaguarda contra bucles infinitos
+            if ($contadorIntentos > self::MAX_INTENTOS_NRO_FACTURA) {
+                throw new Exception("No se pudo encontrar un número de factura disponible después de " . self::MAX_INTENTOS_NRO_FACTURA . " intentos.");
+            }
+        }
+
+        return $nroFactura;
+    }
 
     /**
      * Punto de entrada principal para registrar una Venta o una Cotización.
@@ -119,26 +161,38 @@ class UseCotizacion
         $stmtStock->close();
         try {
             $idusuario = $this->verificar->verificarIDUSERMD5($detalles['idusuario']);
+            $idempresa = $this->verificar->verificarIDEMPRESAMD5($detalles['idempresa']);
+            $nroFactura = $this->obtenerNumeroComprobanteCotizacion($idempresa, $estado);
+
             if (!$idusuario) {
                 echo json_encode(["estado" => "error", "mensaje" => "El ID de usuario proporcionado no es válido."]);
                 return;
             }
-
+            if (!$idempresa) {
+                echo json_encode(["estado" => "error", "mensaje" => "El ID empresa proporcionado no es válido."]);
+                return;
+            }
+            if ($nroFactura === null) {
+                echo json_encode(["estado" => "error", "mensaje" => "No se pudo generar un número de factura único. Intente nuevamente."]);
+                return;
+            }
             $this->cm->begin_transaction();
+            
 
             // 1. Insertar la cotización principal
-            $sqlCotizacion = "INSERT INTO cotizacion (fecha_cotizacion, monto_total, descuento, cliente_id_cliente, divisas_id_divisas, id_usuario, idsucursal, estado) 
-                              VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)";
+            $sqlCotizacion = "INSERT INTO cotizacion (fecha_cotizacion, monto_total, descuento, cliente_id_cliente, divisas_id_divisas, id_usuario, idsucursal, estado, num) 
+                              VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmtCotizacion = $this->cm->prepare($sqlCotizacion);
             $stmtCotizacion->bind_param(
-                "ddiiiii",
+                "ddiiiiii",
                 $detalles['ventatotal'],
                 $detalles['descuento'],
                 $idcliente,
                 $detalles['divisa'],
                 $idusuario,
                 $idsucursal,
-                $estado
+                $estado, 
+                $nroFactura
             );
             $stmtCotizacion->execute();
 
@@ -153,8 +207,8 @@ class UseCotizacion
                 }
                 
                 
-                $sqlDetalle = "INSERT INTO detalle_cotizacion (cantidad, precio_unitario, productos_almacen_id_productos_almacen, cotizacion_id_cotizacion) 
-                               VALUES (?, ?, ?, ?)";
+                $sqlDetalle = "INSERT INTO detalle_cotizacion (cantidad, precio_unitario, productos_almacen_id_productos_almacen, cotizacion_id_cotizacion, descripcionAdicional ) 
+                               VALUES (?, ?, ?, ?, ?)";
                 $stmtDetalle = $this->cm->prepare($sqlDetalle);
 
                 $sqlGetStock = "SELECT cantidad FROM stock WHERE id_stock = ? AND estado = 1";
@@ -171,7 +225,7 @@ class UseCotizacion
                     if (!isset($producto['idproductoalmacen'])) {
                         throw new Exception("Producto en la lista no tiene 'idproductoalmacen'.");
                     }
-                    $stmtDetalle->bind_param("idii", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIdInsertado);
+                    $stmtDetalle->bind_param("idiis", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIdInsertado, $producto['descripcionAdicional']);
                     $stmtDetalle->execute();
                     if ((int)$producto['despachado'] == 2) {
                         $this->_registrar_cotizacion_no_despachada($ultimoIdInsertado, $producto);
@@ -267,7 +321,6 @@ class UseCotizacion
     /**
      * Guarda la operación como una cotización en la base de datos.
      * No afecta stock ni genera facturas.
-     *
      * @param int $idcliente ID del cliente.
      * @param int $idsucursal ID de la sucursal.
      * @param array $detalles Array con los detalles de la cotización.
@@ -278,26 +331,38 @@ class UseCotizacion
         $estado = 0;
         try {
             $idusuario = $this->verificar->verificarIDUSERMD5($detalles['idusuario']);
+            $idempresa = $this->verificar->verificarIDEMPRESAMD5($detalles['idempresa']);
+            $nroFactura = $this->obtenerNumeroComprobanteCotizacion($idempresa, $estado);
+
             if (!$idusuario) {
                 echo json_encode(["estado" => "error", "mensaje" => "El ID de usuario proporcionado no es válido."]);
+                return;
+            }
+            if (!$idempresa) {
+                echo json_encode(["estado" => "error", "mensaje" => "El ID empresa proporcionado no es válido."]);
+                return;
+            }
+            if ($nroFactura === null) {
+                echo json_encode(["estado" => "error", "mensaje" => "No se pudo generar un número de factura único. Intente nuevamente."]);
                 return;
             }
 
             $this->cm->begin_transaction();
 
             // 1. Insertar la cotización principal
-            $sqlCotizacion = "INSERT INTO cotizacion (fecha_cotizacion, monto_total, descuento, cliente_id_cliente, divisas_id_divisas, id_usuario, idsucursal, estado) 
-                              VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)";
+            $sqlCotizacion = "INSERT INTO cotizacion (fecha_cotizacion, monto_total, descuento, cliente_id_cliente, divisas_id_divisas, id_usuario, idsucursal, estado, num) 
+                              VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmtCotizacion = $this->cm->prepare($sqlCotizacion);
             $stmtCotizacion->bind_param(
-                "ddiiiii",
+                "ddiiiiii",
                 $detalles['ventatotal'],
                 $detalles['descuento'],
                 $idcliente,
                 $detalles['divisa'],
                 $idusuario,
                 $idsucursal,
-                $estado
+                $estado, 
+                $nroFactura
             );
             $stmtCotizacion->execute();
 
@@ -310,15 +375,15 @@ class UseCotizacion
                     throw new Exception("La lista de productos no puede estar vacía.");
                 }
                 
-                $sqlDetalle = "INSERT INTO detalle_cotizacion (cantidad, precio_unitario, productos_almacen_id_productos_almacen, cotizacion_id_cotizacion) 
-                               VALUES (?, ?, ?, ?)";
+                $sqlDetalle = "INSERT INTO detalle_cotizacion (cantidad, precio_unitario, productos_almacen_id_productos_almacen, cotizacion_id_cotizacion, descripcionAdicional) 
+                               VALUES (?, ?, ?, ?, ?)";
                 $stmtDetalle = $this->cm->prepare($sqlDetalle);
 
                 foreach ($detalles['listaProductos'] as $producto) {
                     if (!isset($producto['idproductoalmacen'])) {
                         throw new Exception("Producto en la lista no tiene 'idproductoalmacen'.");
                     }
-                    $stmtDetalle->bind_param("idii", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIdInsertado);
+                    $stmtDetalle->bind_param("idiis", $producto['cantidad'], $producto['precio'], $producto['idproductoalmacen'], $ultimoIdInsertado, $producto['descripcionAdicional']);
                     $stmtDetalle->execute();
                 }
                 $stmtDetalle->close();
@@ -352,6 +417,7 @@ class UseCotizacion
             pa.id_productos_almacen as idproductoalmacen,
             p.nombre,
             p.descripcion,
+            dco.descripcionAdicional,
             p.caracteristicas,
             p.codigo as  codigoProducto,
             p.codigosin as codigoProductoSin,
@@ -360,7 +426,6 @@ class UseCotizacion
             p.codigonandina as codigoNandina,
             dco.cantidad,
             dco.precio_unitario
-            
         from detalle_cotizacion dco 
         LEFT join cotizacion co on dco.cotizacion_id_cotizacion=co.id_cotizacion
         LEFT join productos_almacen pa on dco.productos_almacen_id_productos_almacen=pa.id_productos_almacen
@@ -373,6 +438,7 @@ class UseCotizacion
                 "idproductoalmacen" => $qwe['idproductoalmacen'],
                 "producto" => $qwe['nombre'],
                 "descripcion" => $qwe['descripcion'],
+                "descripcionAdicional" => $qwe['descripcionAdicional'],
                 "caracteristica" => $qwe['caracteristicas'],
                 "codigoProducto" => $qwe['codigoProducto'],
                 "codigoProductoSin" => $qwe['codigoProductoSin'],
@@ -414,32 +480,47 @@ class UseCotizacion
 
 
         $lista2 = [];
-        $alma = $this->cm->query("select 
-        co.id_cotizacion,
-        c.id_cliente as idcliente,
-        c.nombre as cliente,
-        c.nombrecomercial,
-        s.id_sucursal as idsucursal,
-        s.nombre as sucursal,
-        co.fecha_cotizacion,
-        c.direccion, 
-        c.nit, 
-        c.email, 
-        co.monto_total, 
-        co.descuento,
-        co.id_usuario,
-        d.nombre as divisa,
-        d.monedasin, 
-        a.id_almacen as idalmacen,
-        a.nombre as almacen
-        from cotizacion co
-        inner join cliente c on co.cliente_id_cliente=c.id_cliente
-        inner join sucursal s on co.idsucursal=s.id_sucursal
-        inner join divisas d on co.divisas_id_divisas=d.id_divisas
-        inner join detalle_cotizacion dc on dc.cotizacion_id_cotizacion = co.id_cotizacion
-        inner join productos_almacen pa on pa.id_productos_almacen = dc.productos_almacen_id_productos_almacen
-        inner join almacen a on a.id_almacen = pa.almacen_id_almacen
-        where co.id_cotizacion='$id'");
+        $alma = $this->cm->query("SELECT 
+                                    co.id_cotizacion,
+                                    c.id_cliente AS idcliente,
+                                    c.nombre AS cliente,
+                                    c.nombrecomercial,
+                                    s.id_sucursal AS idsucursal,
+                                    s.nombre AS sucursal,
+                                    co.fecha_cotizacion,
+                                    c.direccion, 
+                                    c.nit, 
+                                    c.email, 
+                                    co.monto_total, 
+                                    co.descuento,
+                                    co.id_usuario,
+                                    d.nombre AS divisa,
+                                    d.monedasin, 
+                                    a.id_almacen AS idalmacen,
+                                    a.nombre AS almacen,
+                                    CASE 
+                                        WHEN co.num IS NULL THEN COALESCE((
+                                            SELECT COUNT(z.id_cotizacion)
+                                            FROM cotizacion AS z
+                                            LEFT JOIN cliente c2 ON z.cliente_id_cliente = c2.id_cliente 
+                                            WHERE c2.idempresa = '$idempresa'
+                                            AND (
+                                                z.fecha_cotizacion < co.fecha_cotizacion
+                                                OR (z.fecha_cotizacion = co.fecha_cotizacion AND z.id_cotizacion <= co.id_cotizacion)
+                                            )
+                                        ), 0)
+                                        WHEN co.num IS NOT NULL THEN co.num
+                                        ELSE 0
+                                    END AS num
+                                FROM cotizacion co
+                                INNER JOIN cliente c ON co.cliente_id_cliente = c.id_cliente
+                                INNER JOIN sucursal s ON co.idsucursal = s.id_sucursal
+                                INNER JOIN divisas d ON co.divisas_id_divisas = d.id_divisas
+                                INNER JOIN detalle_cotizacion dc ON dc.cotizacion_id_cotizacion = co.id_cotizacion
+                                INNER JOIN productos_almacen pa ON pa.id_productos_almacen = dc.productos_almacen_id_productos_almacen
+                                INNER JOIN almacen a ON a.id_almacen = pa.almacen_id_almacen
+                                WHERE co.id_cotizacion = '$id'");
+
         while ($qwe = $this->cm->fetch($alma)) {
             $res = array(
                 "almacen" => array(
@@ -461,6 +542,7 @@ class UseCotizacion
                     "fecha" => $qwe['fecha_cotizacion'],
                     "montototal" => $qwe['monto_total'],
                     "descuento" => $qwe['descuento'],
+                    "nfactura" => $qwe['num'],
                 ),
                 "divisa"=> array(
                     "divisa" => $qwe['divisa'],

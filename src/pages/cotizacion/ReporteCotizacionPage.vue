@@ -131,7 +131,7 @@
           </q-badge>
           <q-badge
             color="blue"
-            v-if="Number(props.row.estado) === 2"
+            v-if="Number(props.row.estado) === 0"
             label="NOR"
             outline=""
           ></q-badge>
