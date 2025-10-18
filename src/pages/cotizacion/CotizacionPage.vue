@@ -216,6 +216,40 @@
         :pagination="{ rowsPerPage: 0 }"
         title="Resumen de cotización"
       >
+        <template v-slot:body-cell-descripcion="props">
+          <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
+            <!-- Descripción principal -->
+            <div>{{ props.row.descripcion }}</div>
+
+            <!-- Descripción adicional editable debajo -->
+            <div
+              style="
+                margin-top: 4px;
+                font-size: 0.9em;
+                color: #555;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <q-popup-edit v-model="props.row.descripcionAdicional" v-slot="scope">
+                <label for="desAdicional">Añadir Descripción Adicional</label>
+                <q-input
+                  v-model="scope.value"
+                  outlined
+                  dense
+                  id="desAdicional"
+                  autofocus
+                  type="text"
+                  @keyup.enter="validarDescripcion(scope, props.row)"
+                  @keyup.esc="scope.cancel"
+                />
+              </q-popup-edit>
+              <span style="margin-left: 4px">{{ props.row.descripcionAdicional }}</span>
+              <q-icon name="edit" size="16px" color="primary" class="q-ml-xs" />
+            </div>
+          </q-td>
+        </template>
         <template v-slot:body-cell-cantidad="props">
           <q-td :props="props" class="text-right">
             {{ props.row.cantidad }}
@@ -249,14 +283,14 @@
 
         <template v-slot:bottom-row>
           <q-tr>
-            <q-td colspan="4" class="text-right text-weight-bold">Sub Total:</q-td>
+            <q-td colspan="5" class="text-right text-weight-bold">Sub Total:</q-td>
             <q-td class="text-right"
               >{{ decimas(carritoCO.subtotal) }} {{ ' ' + divisaActiva.tipo }}</q-td
             >
             <q-td></q-td>
           </q-tr>
           <q-tr>
-            <q-td colspan="4" class="text-right text-weight-bold">Descuento:</q-td>
+            <q-td colspan="5" class="text-right text-weight-bold">Descuento:</q-td>
             <q-td class="text-right">
               <q-input
                 v-model.number="carritoCO.descuento"
@@ -275,7 +309,7 @@
             <q-td></q-td>
           </q-tr>
           <q-tr>
-            <q-td colspan="4" class="text-right text-weight-bold">Total:</q-td>
+            <q-td colspan="5" class="text-right text-weight-bold">Total:</q-td>
             <q-td class="text-right text-weight-bold text-primary">
               {{ decimas(carritoCO.ventatotal) }} {{ ' ' + divisaActiva.tipo }}
             </q-td>
@@ -496,11 +530,10 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
-import { peticionGET } from 'src/composables/peticionesFetch.js' // Adjusted path
-import { URL_APICM } from 'src/composables/services.js' // Adjusted path venta Proforma
 import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 const showAddModal = ref(false)
 
 import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
@@ -596,7 +629,7 @@ const permitirStockvacio = () => {
 const carritoColumns = [
   { name: 'num', label: 'N°', align: 'left', field: 'num' },
   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-  { name: 'descripcion', label: 'Descripción', align: 'center', field: 'descripcion' },
+  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
   {
     name: 'cantidad',
     label: 'Cantidad',
@@ -780,9 +813,10 @@ async function leyendaActiva() {
   const idempresa = contenidousuario?.empresa?.idempresa
   const token = contenidousuario?.factura?.access_token
   const tipo = contenidousuario?.factura?.tipo
-  const endpoint = `${URL_APICM}api/listaLeyendaFactura/${idempresa}/${token}/${tipo}`
+  const endpoint = `listaLeyendaFactura/${idempresa}/${token}/${tipo}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
@@ -802,9 +836,10 @@ async function divisaEmonedaActiva() {
   const idempresa = contenidousuario?.empresa?.idempresa
   const token = contenidousuario?.factura?.access_token
   const tipo = contenidousuario?.factura?.tipo
-  const endpoint = `${URL_APICM}api/listaDivisa/${idempresa}/${token}/${tipo}`
+  const endpoint = `listaDivisa/${idempresa}/${token}/${tipo}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     console.log(resultado)
     if (resultado[0] === 'error') {
       console.error(resultado.error)
@@ -827,9 +862,10 @@ async function listaAlmacenes() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   const idusuario = contenidousuario?.idusuario
-  const endpoint = `${URL_APICM}api/listaResponsableAlmacen/${idempresa}`
+  const endpoint = `listaResponsableAlmacen/${idempresa}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
@@ -850,9 +886,10 @@ watch(filtroAlmacenCO, (newVal) => {
 async function listaCategoria() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
-  const endpoint = `${URL_APICM}api/listaCategoriaPrecio/${idempresa}`
+  const endpoint = `listaCategoriaPrecio/${idempresa}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
@@ -883,9 +920,10 @@ async function listaProductosDisponibles() {
     return
   }
 
-  const endpoint = `${URL_APICM}api/listaProductosDisponiblesVenta/${idempresa}`
+  const endpoint = `listaProductosDisponiblesVenta/${idempresa}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
       productosDisponibles.value = []
@@ -915,9 +953,10 @@ async function listaCLientes() {
     $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
     return
   }
-  const endpoint = `${URL_APICM}api/listaCliente/${idempresa}`
+  const endpoint = `listaCliente/${idempresa}`
   try {
-    const resultado = await peticionGET(endpoint)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
@@ -939,8 +978,9 @@ async function selectSucursal(clientId) {
     return
   }
   try {
-    const resp = await fetch(`${URL_APICM}api/listaSucursal/${clientId}`)
-    const data = await resp.json()
+    const endpoint = `listaSucursal/${clientId}`
+    const response = await api.get(endpoint)
+    const data = response.data
     if (data.length === 0) {
       $q.notify({
         type: 'info',
@@ -970,8 +1010,11 @@ async function cargarLeyendasCotizacion() {
     leyendasCotizacion.value = []
     return
   }
+  const endpoint = `listaLeyendaCotizacion/${idempresa}`
+
   try {
-    const resultado = await peticionGET(`${URL_APICM}api/listaLeyendaCotizacion/${idempresa}`)
+    const response = await api.get(endpoint)
+    const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
       leyendasCotizacion.value = []
@@ -1146,6 +1189,7 @@ async function anadirProductoACarrito() {
     idporcentaje: idporcentajeCO.value,
     candiponible: cantidaddisponibleCO.value,
     descripcion: selectedProduct.value.descripcion,
+    descripcionAdicional: '',
     codigo: selectedProduct.value.codigo,
     despachado:
       Number(selectedProduct.value.stock) == 0 ||
@@ -1155,6 +1199,7 @@ async function anadirProductoACarrito() {
   }
   console.log(carritoCO.listaProductos.length)
   carritoCO.idusuario = idusuario
+  carritoCO.idempresa = idempresa_md5()
   carritoCO.divisa = divisaActiva.id // Asegúrate de que la divisa activa esté cargada
   carritoCO.listaProductos.push(nuevoProducto)
 
@@ -1170,7 +1215,25 @@ function eliminarProductoCarrito(idProductoAlmacen) {
   calcularTotalesCarrito()
   listaProductosDisponibles() // Recargar la lista de productos disponibles
 }
+const validarDescripcion = async (scope, row) => {
+  console.log(scope.value)
 
+  if (carritoCO && carritoCO.listaProductos) {
+    carritoCO.listaProductos = carritoCO.listaProductos.map((prod) => {
+      // Agregar o editar la descripción adicional
+      if (Number(prod.id) == Number(row.idproductoalmacen)) {
+        prod.descripcionAdicional = scope.value
+      }
+      return prod
+    })
+
+    console.log('Descripción adicional actualizada correctamente ')
+  } else {
+    console.warn('No se encontró la lista de productos en el localStorage')
+  }
+
+  scope.set()
+}
 function calcularTotalesCarrito() {
   carritoCO.subtotal = carritoCO.listaProductos.reduce((sub, producto) => {
     const precio = parseFloat(producto.precio)
@@ -1224,7 +1287,7 @@ async function enviarDatos() {
     })
     return
   }
-
+  //localStorage
   const isValidCliente = await formClientes.value.validate()
   if (!isValidCliente) {
     $q.notify({
@@ -1275,7 +1338,6 @@ async function enviarDatos() {
   $q.loading.show({
     message: 'Registrando cotización...',
   })
-
   try {
     // Asumo que tu backend espera 'listaProductos' como un JSON string.
     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
@@ -1286,7 +1348,7 @@ async function enviarDatos() {
     console.log(JSON.stringify(datosJson, null, 2))
     const response = await api.post(``, datosFormulario)
     const data = response.data
-    console.log('Datos recibidos:', response)
+    console.log('Datos recibidos:', response.data)
 
     if (data.estado === 'exito') {
       resetFormulario()

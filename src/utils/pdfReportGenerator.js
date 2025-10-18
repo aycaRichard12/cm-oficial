@@ -857,7 +857,6 @@ export function generarPdfCotizacion(data) {
   const nombreEmpresa = idempresa.empresa.nombre
   const direccionEmpresa = idempresa.empresa.direccion
   const telefonoEmpresa = idempresa.empresa.telefono
-  const logoEmpresa = idempresa.empresa.logo // Ruta relativa o base64
 
   const columns = [
     { header: 'N°', dataKey: 'indice' },
@@ -897,6 +896,7 @@ export function generarPdfCotizacion(data) {
       overflow: 'linebreak',
       fontSize: 5,
       cellPadding: 2,
+      minCellHeight: 7,
     },
     headStyles: {
       fillColor: ColoEncabezadoTabla,
@@ -909,6 +909,22 @@ export function generarPdfCotizacion(data) {
       cantidad: { cellWidth: 40, halign: 'right' },
       precio: { cellWidth: 40, halign: 'right' },
       total: { cellWidth: 50, halign: 'right' },
+    },
+    didDrawCell: function (data) {
+      if (data.column.dataKey === 'descripcion' && data.cell.section === 'body') {
+        const item = detallePlano.detalle[data.row.index]
+        if (item && item.descripcionAdicional) {
+          const text = convertirAMayusculas(doc.splitTextToSize(item.descripcionAdicional, 45))
+          doc.setFontSize(4)
+          doc.setTextColor(100)
+          doc.text(
+            text,
+            data.cell.x + 2,
+            data.cell.y + data.cell.height - 1, // justo debajo del texto principal
+          )
+          doc.setTextColor(0)
+        }
+      }
     },
     didParseCell: function (data) {
       // Ejemplo: destacar la última fila (que contiene el Monto Total)
@@ -930,8 +946,14 @@ export function generarPdfCotizacion(data) {
     didDrawPage: () => {
       if (doc.internal.getNumberOfPages() === 1) {
         // Logo (requiere base64 o ruta absoluta en servidor si usas Node)
-        if (logoEmpresa) {
-          // doc.addImage(`${URL_APIE}${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
+        if (logoBase64) {
+          const pageWidth = doc.internal.pageSize.getWidth() // Ancho total página
+          const imgWidth = 20 // Ancho del logo en mm
+          const imgHeight = 20 // Alto del logo en mm
+          const xPos = pageWidth - imgWidth - 5 // 10mm de margen derecho
+          const yPos = 5 // margen superior
+          console.log(logoBase64)
+          doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
         }
 
         // Nombre y datos de empresa
@@ -950,7 +972,7 @@ export function generarPdfCotizacion(data) {
         doc.text('COMPROBANTE', doc.internal.pageSize.getWidth() / 2, 15, {
           align: 'center',
         })
-        console.log(divisaCotizacion)
+        console.log(cotizacionInfo)
         const nfactura = cotizacionInfo.nfactura || ''
         const divisa = divisaCotizacion.divisa || ''
         doc.setFontSize(10)
