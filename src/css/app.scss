@@ -1,0 +1,113 @@
+// app global css in SCSS form
+
+$color-titulo: #004d40;
+$fuente-titulo: Arial, Helvetica, sans-serif;
+.responsive-dialog {
+  color: #004d40;
+  min-width: 95vw;
+  @media (min-width: 1000px) {
+    min-width: 1000px;
+  }
+}
+
+.responsive-qtable-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+
+  .q-table {
+    min-width: 700px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .q-table {
+      font-size: 13px;
+    }
+  }
+}
+.title-container {
+  text-align: center;
+  margin-top: 5px;
+
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 0.1rem;
+    color: #333;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #777; // gris plomo
+    font-weight: normal;
+  }
+}
+
+.title-p1 {
+  //general
+  text-align: center;
+  margin-top: 5px;
+  //celulares
+  .title {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #333;
+  }
+  @media (min-width: 1000px) {
+    //monitores
+    .title {
+      font-size: 1.5rem;
+      margin-bottom: 0.1rem;
+      color: #333;
+    }
+  }
+}
+
+.btn-res {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+
+  .icono {
+    font-size: 25px;
+    display: none;
+  }
+
+  .texto {
+    display: inline;
+  }
+
+  @media (max-width: 600px) {
+    .texto {
+      display: none;
+    }
+    .icono {
+      display: block;
+    }
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-titulo;
+  font-family: $fuente-titulo;
+  margin-bottom: 1rem;
+  text-align: start;
+  animation: fadeInDown 0.8s ease-out forwards;
+
+  // estilo opcional: subrayado decorativo uppercase
+}

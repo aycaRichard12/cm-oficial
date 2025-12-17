@@ -1,0 +1,139 @@
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NjE1NDI5NCwiZXhwIjoxNzg3Nzc2Njk0LCJkYXRhIjp7Im1kNSI6ImMwYzdjNzZkMzBiZDNkY2FlZmM5NmY0MDI3NWJkYzBhIiwiaWRfZW1wcmVzYSI6NTAsInRpcG8iOjF9fQ.0C5xqjVq_KB4t90o-TVJzoIlwIQt9fOaET0yZEnKHrg
+
+
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NjE1NDA2NSwiZXhwIjoxNzg3NjkwMDY1LCJkYXRhIjp7Im1kNSI6ImFkNjFhYjE0MzIyM2VmYmMyNGM3ZDI1ODNiZTY5MjUxIiwiaWRfZW1wcmVzYSI6NzQsInRpcG8iOjJ9fQ.UdKQCEFpx2a0WF8sAw4y0OtynB4gGHBJpnSi8ccPNvE
+
+
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzMDAzMzUiLCJqdGkiOiJlMWM4NDRkZjZhNzIyOWI0YTI3NTYxZDUzNWNlMWRiYWRkMmRkY2UwZWM1MTU4ZDBmZGIzZGRhZjEzYjIwOTJhMTQwZjlhMjAwZWY0YTRiNiIsImlhdCI6MTY5NTg3MTY0NCwibmJmIjoxNjk1ODcxNjQ0LCJleHAiOjE3Mjc0OTQwNDQsInN1YiI6IiIsInNjb3BlcyI6W119.qHDjZiE_qFPvipDr4Vas5fUXtbzBiFC0ekOomXpp9Q1rszMNknXiQFkCeZ1BdqOUezZ8G880o53ESdFUqTkl_qQMgNmfYwLOOjtnBGvucn79q3Ni17Ze6KPchfuvx86gf3gfFHLh6Idr-5CpNxxzKrAIZjlWiRU2tjYTFqCks_Uqla7eI_J5CYclR_4KN19mQrOYHnuORZEStJdi9BwQ3cWP1wvax0OAMIUSuF8ifyUn3XpRm6jAmycLms2TppGGaZxCdOD65hlhXPwTt6QBaRRG84I6rt0JJNuTEegECxBs0cZasrpfwottsRoOH9-WIjCVqJMYTiqgP4_cf6ohaRtPt1jKcWji_AW2yToIgCXPvIg3tYmRtGE4SAIKfip81OyZv25bhBJXhHjdQ7hmSMO_T_Exsx3is8tsoIkCTOxBvtIrLgZe_vFCamQoigEWs-0CkNt7wPEGjetY9pPk_9k1t-_md9TbLdRJkCdL3mWZr7Aq4OAJr4wO-0brR_flwAeHTPhj1PLEI_CxTVq8qGpANF_IvOEjn29PXixORkpaqCotwcfPBKbgTL8_gJ4F9UPp0fb4BAwB6wb6z8SJGg0RkWj-9dmg20hWruFeaQgPlklg4n30kbUQwQIJhHfwlF_gvnr3h0XwqD4YB3wiEL65cmcFd_tjt2EsG8-FyQc
+
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzMDAyMzIiLCJqdGkiOiJiMGM2MzI0Zjc2YTdiZmIwNzliYWRiMjIxM2E3MTQzMmFjYjg2MjlhMzA2YzZmZTY0ODAxNzBlNTFmMTRlYWU4ZTkwZDk3N2NjMDM2MTdmNCIsImlhdCI6MTcyNzQ3NTUyMywibmJmIjoxNzI3NDc1NTIzLCJleHAiOjE3NTkwMTE1MjMsInN1YiI6IiIsInNjb3BlcyI6W119.llLu_9D8mxSjwd3YsvNaFf5-OJWq3IUi5OnrYpwxLd8z-TNh4KlRpAS1RSmphcnc-wtaPoUsv5IisoXCrIvlC6vgLeCFgu92p3pijETH7usOALsFIPDxAgsAvVAxRvuDWP_CdpxH_2VbpmaLLYVtWGAu3nCvCGIC5JczO0ykxli_ruEN_WtcRVDWBig6n40MgQUks__1xRXw-ZG8Y1C6_Y2xJ87xP-5nJXalFbyj6PVK_GBx1Gw6e_So5X5Fl_RLrIqJ4eCkcalkezc3GRnEswusRx6H__93u2vWD1v7Wp5EkVGrGhU0cmSt_FTL753WfuKXfBW-gAFbAj3OMDG5yagd8MU3TvO2fkOdEw0CGhs4bTN9b6QVBygFXA1-k68wTBNyu7xkfN5-4u0YsglUm6uJd9p6gnfAg6mqpg6F7BDM3kNX_0JEaNlCauUhc-30fx83mVeS3d4r8jtEFjKGd2c4QSWn-_H-fR742J7rPOC_8BA8SmO10zUVWBiNkCZ1tsdDsmPyqIVFvXFBfw6VZHtHlFCKxOSiaoJRF--bO04XzLBQRm2jXsKMLgSg6Jd1lZQ-8Y8_OguMqMZd2GVnHezk5OSKDOafUQjiGlGNDGqQPJfw8I7t3b3_Jzgd0ZmsNVUdRd7uS1xrS_NOzff1uLfCPUxJObK6HPfqudZFoSQ
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzMDAzNDYiLCJqdGkiOiIzMGUyOGQzMjdmNTI1MTMyZGU3NTY1MDg4MDUzMzAxZTdjNWExM2VlYjExZmRkMGY0NmE4ZmYwNTFmMmQ2YWY4OGI5NGIxMzQxZjdlNTU1NCIsImlhdCI6MTY5NTc1NzE3OSwibmJmIjoxNjk1NzU3MTc5LCJleHAiOjE3MjczNzk1NzksInN1YiI6IiIsInNjb3BlcyI6W119.laC1y5QtbEI2Z65Ntn7r8nqRnufeOIDtYAyxDBBvCUttCJbGj33h2zrpAkl8La0s2TRHv3oAV5a3NDAAsN0Fu4cEjBpB2B9qzi-aB17HJkgfzmrleW5t2XutYBl_oGHa5EuQGz_iSqaSl-ESRR7TBxxADyVKGNBCNEEP65_TnQUdD7n4SYM1Nk_k8vBDwPikvajV3t3Yg54B6HGl6VNaGyMzaY0DfDPAIAEfoSuqK3ubQznx5Tamh8kjzsiCRbN8DgBciA0EdM-R4XCdS1WY2-O6zj9YvI1NcWPdAMoKGkCXdJzHie_inlm_ueOZP6VuNN7ej0JoVihwVIvfk5YUoriV6TwY3cEp9xMeuTcKTNr6NpgJaMDOQ3DNmpnk4oJsOHjLWxfUMEMQxZe4HAHViNI_xxMio9g0UT2mscLw9SVCFCt29aEANn7WPblenQAoTXDMdk_64lLLRtrb_7B5jQGoNbgqaS3kCYjbQFj9DdL05I21AXVbxj0FA18vrH8z8k7NbVaUVMPL8HuPuCYEW4_CMWVROQ3hfI16Gt7rKLmb_bYEyxbNJZpVjBLqbMAyVHKFlWaBjHkvTB4XxAsZDO7jwxPOd_84Zx9biT44YHq4eDbbSDfIx0VF1u6vGvMT0l0PH-4xpnkCzf1bHYlpgIwNpbgmJBdyyfE22D1jnKc
+
+
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NzQyMzc5OSwiZXhwIjoxNzg5MDQ2MTk5LCJkYXRhIjp7Im1kNSI6ImFkNjFhYjE0MzIyM2VmYmMyNGM3ZDI1ODNiZTY5MjUxIiwiaWRfZW1wcmVzYSI6NzQsInRpcG8iOjJ9fQ.QtsPFXQA_YZZyid_GtBGy6UNgvJAD4hLEzeKaWCiVVA
+
+
+
+EMPRESA 74
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NzQyMzc5OSwiZXhwIjoxNzg5MDQ2MTk5LCJkYXRhIjp7Im1kNSI6ImFkNjFhYjE0MzIyM2VmYmMyNGM3ZDI1ODNiZTY5MjUxIiwiaWRfZW1wcmVzYSI6NzQsInRpcG8iOjJ9fQ.QtsPFXQA_YZZyid_GtBGy6UNgvJAD4hLEzeKaWCiVVA
+
+//sin factura
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NzQ1MDE4MCwiZXhwIjoxNzU5Mzc3NjAwLCJkYXRhIjp7Im1kNSI6ImM5ZTEwNzRmNWIzZjlmYzhlYTE1ZDE1MmFkZDA3Mjk0IiwiaWRfZW1wcmVzYSI6IjEwNCIsInRpcG8iOjAsImZlY2hhX2ZpbmFsIjoiMjAyNS0xMC0wMiJ9fQ.4J96nTMFcLDj0CKJoZhc6inhSW6V5bgMybSGmXxw_Pg
+
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtaXN0ZXJzb2Z0cy5jb20iLCJhdWQiOiJtb2R1bG9jbSIsImlhdCI6MTc1NzQ1MTEwNSwiZXhwIjoxOTE1MTU2ODAwLCJkYXRhIjp7Im1kNSI6ImM5ZTEwNzRmNWIzZjlmYzhlYTE1ZDE1MmFkZDA3Mjk0IiwiaWRfZW1wcmVzYSI6IjEwNCIsInRpcG8iOjAsImZlY2hhX2ZpbmFsIjoiMjAzMC0wOS0wOSJ9fQ.96dDWzqlYMSmZZvHuhK52I0vV4P6g-KMU7A8qY8W1_E
+
+
+
+
+{
+            "id": "1343777b8ead1cef5a79b78a1a48d805",
+            "descripcionProducto": "Café Yungas, Molido, 400g",
+            "codigoProducto": "CYM-01",
+            "codigoProductoSin": "23911",
+            "codigoActividadSin": "107900",
+            "unidadSin": "4",
+            "codigoNandina": "0901.21.20.00",
+            "codigoStock": 16492,
+            "stock": 1,
+            "cantidad": 1,
+            "subTotal":2,
+            "montoDescuento":0,
+            "codigoPorcentaje": 192,
+            "CategoriaPrecio": "Precio al Detalle",
+            "precioUnitario": 120
+        },
+
+
+
+
+
+        {
+    "ver":"registrarVenta",
+    "codigoAlmacen": "SDKFN4",
+    "idusuario": "96da2f590cd7246bbde0051047b0d6f7",
+    "fecha": "2025-09-05",
+    "codigoMetodoPago": "6",
+    "codigoDivisa": 31,
+    "codigoPuntoVentaSin": "8",
+    "fechaEmision":"2025-09-09 12:20:10",
+    "descuentoAdicional":"100",
+    "complemento":"",
+    "numeroTarjeta":"",
+    "montoTotal":"2000",
+    "datosCliente":{
+        "nombre":"Andres Chiang",
+        "tipoDocumento":"5",
+        "nit":"6410259014"
+    },
+    "detalle":[
+        
+        {
+            "id": "5cbba2d075f0d1648e0851e1467ba79f",
+            "descripcionProducto": "Pantalla pulgadas x",
+            "codigoProducto": "SIS123",
+            "codigoStock": 62372,
+            "stock": 148,
+            "cantidad": 1,
+            "codigoPorcentaje": 214,
+            "CategoriaPrecio": "Menor",
+            "precioUnitario": 12,
+            "subTotal":2,
+            "montoDescuento":0
+            
+        }
+     
+    ]
+}
+
+
+
+
+
+
+
+
+{
+    "ver":"registrarVenta",
+    "codigoAlmacen": "VVTT",
+    "idusuario": "a8f15eda80c50adb0e71943adc8015cf",
+    "fecha": "2025-09-05",
+    "codigoMetodoPago": "6",
+    "codigoDivisa": 31,
+    "codigoPuntoVentaSin": "8",
+    "fechaEmision":"2025-09-09 12:20:10",
+    "descuentoAdicional":"100",
+    "complemento":"",
+    "numeroTarjeta":"",
+    "montoTotal":"2000",
+    "datosCliente":{
+        "nombre":"Andres Chiang",
+        "tipoDocumento":"5",
+        "nit":"6410259014"
+    },
+    "detalle":[
+        {
+            "id": "1343777b8ead1cef5a79b78a1a48d805",
+            "descripcionProducto": "Café Yungas, Molido, 400g",
+            "codigoProducto": "CYM-01",
+            "codigoProductoSin": "23911",
+            "codigoActividadSin": "107900",
+            "unidadSin": "4",
+            "codigoNandina": "0901.21.20.00",
+            "codigoStock": 16492,
+            "stock": 1,
+            "cantidad": 1,
+            "subTotal":2,
+            "montoDescuento":45,
+            "codigoPorcentaje": 192,
+            "CategoriaPrecio": "Precio al Detalle",
+            "precioUnitario": 120
+        }
+     
+    ]
+}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <p>
+      Aquí tienes un resumen didáctico y ligero del Capítulo 11 sobre Planificación, basado en el
+      documento que has proporcionado. Introducción: ¿Qué es la Planificación y Por Qué es Difícil?
+      Imagina que quieres construir un mueble de IKEA. No puedes simplemente atornillar piezas al
+      azar; necesitas un plan. En Inteligencia Artificial, la planificación es exactamente eso: el
+      proceso de encontrar una secuencia de acciones que lleven a un agente desde un estado inicial
+      (la caja con piezas) hasta un estado objetivo (el mueble armado). Este capítulo se enfoca en
+      la planificación clásica: un mundo ideal donde todo es predecible, conocido y nada cambia a
+      menos que nuestro agente actúe. Quizás pienses: "Esto suena como los algoritmos de búsqueda
+      (como A*) que ya conocemos". Pero los problemas del mundo real son tan gigantescos que esos
+      métodos simples fracasan. La planificación es necesaria para superar tres grandes obstáculos:
+      Acciones Irrelevantes: Si tu objetivo es comprar un libro específico, un algoritmo de búsqueda
+      simple podría perder tiempo evaluando la compra de todos los 10 mil millones de libros con un
+      ISBN. Un planificador inteligente sabe que el objetivo Tener(Libro_X) se logra directamente
+      con la acción Comprar(Libro_X). Malas Heurísticas: Un agente de búsqueda simple ve el objetivo
+      como una "caja negra": o está cumplido (Verdadero) o no (Falso). Un planificador puede ver la
+      estructura del objetivo. Si el objetivo es Tener(Libro_A) ∧ Tener(Libro_B), puede usar una
+      heurística simple: "el número de sub-objetivos que me faltan" (en este caso, 2). Falta de
+      Descomposición: Un buscador simple no puede dividir un problema. Un planificador sí. Si hay
+      que enviar 100 paquetes a 5 ciudades, puede dividir el problema en 5 sub-problemas, uno por
+      cada ciudad. Conceptos Principales: El Lenguaje de los Planificadores Para ser tan listos, los
+      planificadores necesitan un lenguaje especial para describir el mundo. El Lenguaje Clásico:
+      STRIPS El lenguaje STRIPS (un nombre histórico) es la base de todo. Define el mundo con tres
+      componentes: Estados: Una lista de todos los hechos positivos que son ciertos en un momento
+      dado. Por ejemplo: En(Avión1, SFO) ∧ Pobre ∧ Desconocido. Hipótesis del Mundo Cerrado: STRIPS
+      asume que cualquier hecho que no está en la lista de estado es falso. Objetivos: Una lista de
+      los hechos que queremos que sean ciertos. Por ejemplo: Rico ∧ Famoso. Acciones: Esta es la
+      parte más importante. Cada acción (como "Volar") se define por: Precondición: Lo que debe ser
+      verdad antes de ejecutar la acción (ej: En(Avión, Origen)). Efecto: Lo que cambia después de
+      la acción. Se divide en una Lista Añadir (hechos nuevos que se vuelven ciertos, ej: En(Avión,
+      Destino)) y una Lista Borrar (hechos que dejan de ser ciertos, ej: En(Avión, Origen)). Gracias
+      a esto, STRIPS soluciona elegantemente el "problema del marco": no necesitamos decir que el
+      color del avión sigue siendo azul después de volar. La Hipótesis STRIPS dice: "todo lo que no
+      se mencione en el efecto de una acción, permanece exactamente igual". El Lenguaje Moderno: ADL
+      STRIPS es simple, pero a veces demasiado simple. ADL (Lenguaje de Descripción de Acciones) es
+      una versión más avanzada que permite cosas más complejas, como: Objetivos con "O"
+      (Disyunciones): Pobre ∧ (Famoso ∨ Inteligente). Efectos Condicionales: cuando P: E (El efecto
+      E solo ocurre si la condición P es cierta). Variables con Tipos: Volar(p: Avión, desde:
+      Aeropuerto). Enfoques para Encontrar un Plan Una vez descrito el problema, ¿cómo encontramos
+      la solución? Hay varias estrategias: 1. Búsqueda en el Espacio de Estados (Progresión y
+      Regresión) Este es el enfoque más intuitivo. Búsqueda hacia Adelante (Progresión): Empezamos
+      en el estado inicial y vamos probando acciones una por una, avanzando hasta que un estado
+      coincida con el objetivo. Es simple, pero muy ineficaz por culpa de las acciones irrelevantes.
+      Búsqueda hacia Atrás (Regresión): Mucho más inteligente. Empezamos en el objetivo y vamos
+      hacia atrás. Si el objetivo es En(Carga, AeropuertoB), solo consideramos acciones que logren
+      eso, como Descargar(Carga, Avión, AeropuertoB). Esto reduce enormemente las opciones. Para que
+      estas búsquedas sean rápidas, se usa una heurística genial: el "problema relajado". Se calcula
+      un plan ignorando todas las "Listas Borrar" (efectos negativos). En este "mundo fácil" donde
+      nada se puede deshacer, encontrar un plan es muy rápido. El coste de ese plan fácil es una
+      excelente estimación de la dificultad del plan real. 2. Planificación de Orden Parcial (POP)
+      Los métodos anteriores crean planes de orden total: una secuencia estricta (paso 1, luego paso
+      2, luego paso 3). Pero, ¿es siempre necesario? Analogía: Para vestirte, tienes que ponerte el
+      calcetín antes que el zapato. Pero el orden entre (CalcetínDer, ZapatoDer) y (CalcetínIzq,
+      ZapatoIzq) no importa. Un planificador de orden parcial (POP) usa una estrategia de "mínimo
+      compromiso". Retrasa la decisión de qué acción va primero hasta que sea absolutamente
+      necesario. El plan se representa como un conjunto de acciones con enlaces causales (A --p-->
+      B, que significa "A logra el hecho p que B necesita") y restricciones de orden (A ≺ B, "A debe
+      ir en algún momento antes que B"). El trabajo del planificador es detectar conflictos (una
+      acción C que podría deshacer el hecho p entre A y B) y resolverlos añadiendo nuevas
+      restricciones de orden (ej: C ≺ A o B ≺ C). El resultado es un plan parcial flexible que
+      representa muchas posibles soluciones lineales. 3. Grafos de Planificación (GRAPHPLAN) Esta es
+      una técnica muy potente para estimar la dificultad (heurística) y también para encontrar
+      planes directamente. Construcción del Grafo: El grafo se construye por niveles que alternan
+      entre Niveles de Estado (S) y Niveles de Acción (A). S0: El estado inicial. A0: Todas las
+      acciones cuyas precondiciones están en S0 , más unas "acciones de persistencia" (que
+      simplemente copian un hecho de S0 a S1). S1: Todos los efectos de las acciones en A0. ...se
+      repite S1 -> A1 -> S2 ... hasta que el grafo se estabiliza (deja de crecer). Exclusión Mutua
+      (Mutex): La clave del grafo. Son marcas que indican qué cosas no pueden ir juntas. Dos
+      acciones son mutex si interfieren (una borra la precondición de la otra) o tienen efectos
+      inconsistentes (una añade P y la otra ¬P). Dos literales (hechos) son mutex si todas las
+      formas de lograrlos involucran acciones que son mutex entre sí. Extracción del Plan: El
+      algoritmo GRAPHPLAN primero expande el grafo hasta un nivel Sk donde aparezcan todos los
+      sub-objetivos y no sean mutex entre sí. Luego, busca hacia atrás en el grafo, seleccionando un
+      conjunto de acciones no-mutex en Ak-1 que logren esos objetivos, y repite el proceso para las
+      precondiciones de esas acciones en Sk-1. 4. Planificación como Lógica (SATPLAN) Este es el
+      enfoque más abstracto. En lugar de buscar, le damos el problema a un "solucionador lógico" (un
+      SAT solver). Analogía: Es como un detective lógico. Le damos una lista de todas las "pistas"
+      (axiomas) y le pedimos que encuentre un "escenario" (un modelo) donde todas las pistas sean
+      ciertas. El algoritmo SATPLAN traduce el problema a una fórmula lógica gigante. Intenta
+      encontrar un plan de longitud T=1, luego T=2, y así sucesivamente. Las "pistas" que le damos
+      incluyen: El estado inicial es cierto en el tiempo 0 (ej: En(P1, SFO)⁰). El objetivo es cierto
+      en el tiempo T (ej: En(P1, JFK)ᵀ). Axiomas que describen cómo cada acción cambia el mundo (ej:
+      En(P1, JFK)¹ ⇔ ...). El Truco: Hay que añadir más pistas para evitar "soluciones espurias"
+      (planes absurdos): Axiomas de Precondición: Para que una acción sea "Verdad" (parte del plan),
+      sus precondiciones también deben ser "Verdad" (ej: Volar(P1, JFK, SFO)⁰ ⇒ En(P1, JFK)⁰).
+      Axiomas de Exclusión: Para evitar lo imposible, como un avión volando a dos sitios a la vez
+      (ej: ¬(Volar(P2, JFK, SFO)⁰ ∧ Volar(P2, JFK, LAX)⁰)). Si el SAT solver encuentra un modelo,
+      las acciones que marcó como "Verdaderas" son el plan. Conclusión: Ideas Clave Este capítulo
+      nos muestra que la planificación es un campo vibrante que combina búsqueda y lógica. El mayor
+      desafío es siempre la explosión combinatoria (el número de posibles secuencias de acciones es
+      astronómico). No existe un "mejor" algoritmo. Cada enfoque tiene sus fortalezas: La búsqueda
+      hacia atrás (Regresión) es buena para reducir las opciones. POP es excelente para problemas
+      que se pueden descomponer (como la analogía de los calcetines). GRAPHPLAN es muy bueno para
+      encontrar heurísticas y detectar conflictos temprano. SATPLAN aprovecha los avances modernos
+      en resolución lógica. Los sistemas de planificación más avanzados de hoy en día suelen ser
+      híbridos, mezclando estas ideas para controlar la complejidad y encontrar soluciones a
+      problemas increíblemente difíciles.
+    </p>
+  </body>
+</html>

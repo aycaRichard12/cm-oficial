@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Editor de menurichard50</title>
+    <style>
+      :root {
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          'Helvetica Neue',
+          Arial;
+      }
+      body {
+        margin: 18px;
+        background: #f6f7fb;
+        color: #111;
+      }
+      h1 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #6b7280;
+      }
+      button.danger {
+        background: #ef4444;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+      }
+      th {
+        background: #f3f4f6;
+      }
+      .actions {
+        display: flex;
+        gap: 6px;
+      }
+      .collapse {
+        cursor: pointer;
+        color: #1d4ed8;
+        text-decoration: underline;
+      }
+      .submenu-list {
+        padding: 8px 14px;
+        background: #fafafa;
+        border-left: 3px solid #e5e7eb;
+      }
+      .submenu-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed #eee;
+      }
+      .badge {
+        background: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      /* Modal básico */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.48);
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        min-width: 320px;
+        box-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
+      }
+      .modal h3 {
+        margin-top: 0;
+      }
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 8px;
+      }
+      .form-row label {
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+      .form-row input,
+      .form-row select {
+        padding: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+      }
+      .modal-footer {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 10px;
+      }
+      .empty {
+        padding: 20px;
+        text-align: center;
+        color: #6b7280;
+      }
+      .note {
+        font-size: 13px;
+        color: #374151;
+        margin-top: 10px;
+      }
+      @media (max-width: 600px) {
+        th,
+        td {
+          padding: 8px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Editor de <code>menurichard50</code></h1>
+      <div class="controls">
+        <button id="btnAddMenu">Añadir menú</button>
+        <button id="btnExport" class="secondary">Exportar a consola</button>
+        <button id="btnReset" class="secondary">Reset (ejemplo)</button>
+        <div style="margin-left: auto" class="note">
+          Interfaz pensada solo para la estructura de <code>menurichard50</code>.
+        </div>
+      </div>
+
+      <div id="menusContainer"></div>
+
+      <div class="note">
+        Uso: selecciona "Añadir menú" para crear un nuevo menú. Pulsa el título para desplegar
+        submenús. Los cambios se mantienen en memoria y se pueden ver con "Exportar a consola".
+      </div>
+    </div>
+
+    <!-- Modal (reutilizable para Menú y Submenú) -->
+    <div id="modalBackdrop" class="modal-backdrop">
+      <div class="modal" role="dialog" aria-modal="true">
+        <h3 id="modalTitle">Título</h3>
+        <div id="modalBody">
+          <!-- formulario generado dinámicamente -->
+        </div>
+        <div class="modal-footer">
+          <button id="modalCancel" class="secondary">Cancelar</button>
+          <button id="modalSave">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /*****************************************************************
+       * Interface para visualizar/editar el objeto `menurichard50`     * Solo para la estructura especificada por el usuario.          *
+       * - Cambios se guardan en memoria (variable)                   *
+       * - Botón "Exportar a consola" imprime el JSON actualizado      *
+       *****************************************************************/
+
+      // Ejemplo inicial (se puede cambiar / resetear con el botón Reset)
+      let menurichard50 = [
+        {
+          modulo: '3',
+          menu: [
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Administración-Atributos',
+              codigo: 'opcionesocultas',
+              submenu: [
+                {
+                  titulo: 'Adm-Asignación-Almacén',
+                  codigo: 'asignaralmacen-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Asignación - Punto de Venta',
+                  codigo: 'asignarpuntodeventa-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Asignación - Producto',
+                  codigo: 'asignarproductos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Creación - Almacén',
+                  codigo: 'registraralmacen-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Creación - Punto de Venta',
+                  codigo: 'registrarpuntodeventa-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Creación - Producto o Servic',
+                  codigo: 'registrarproductos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Precios - Costo Unitario',
+                  codigo: 'costounitario-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Precios - Categorías de Prec',
+                  codigo: 'categoriasdeprecio-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Precios - Precios Sugeridos',
+                  codigo: 'preciossugeridos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Precios - Reporte de Costos ',
+                  codigo: 'reportedepreciosbase-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm - Precios - Reporte de Categor',
+                  codigo: 'reportedecategoriasdeprecio-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Reg.ClProv-Registro de Clientes',
+                  codigo: 'registrodecliente-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-RegCliPro-Registrar Proveedor',
+                  codigo: 'registrarproveedor-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Autorizar-Pedido',
+                  codigo: 'gestionPedido-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Autorizar-Ventas Pendientes',
+                  codigo: 'procesarventaspendientes-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Autorizar-Compras',
+                  codigo: 'autorizarcompra-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+
+                {
+                  titulo: 'Adm-Campana-Crear Campañas',
+                  codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Campana-Rep. Campañas',
+                  codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Adm-Campana-Rep. Ventas',
+                  codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Ventas-Atributos',
+              codigo: 'opcionesocultas',
+              submenu: [
+                {
+                  titulo: 'V-Generar Venta-Registrar Venta',
+                  codigo: 'registrarventaoculto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Generar Venta-Registrar Cotización',
+                  codigo: 'registrarcotizacionoculto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Generar Venta - Rep. de Ventas',
+                  codigo: 'reportedeventas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Generar Venta-Rep. de Cotizacion',
+                  codigo: 'reportedecotizacionesocultas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Generar Venta-Rep. Productos vendidos',
+                  codigo: 'reporteproductosvendidosindividual-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Generar Venta - Kardex',
+                  codigo: 'kardex-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Cuentas por Cobrar-Rep. Ctas Cobrar',
+                  codigo: 'reportecuentasporcobrarocultas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Cuentas por Cobra-Cobro Cuentas',
+                  codigo: 'cuentasporcobrarocultas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Cuentas por Cobrar-Rep. de Cobro',
+                  codigo: 'reportecuentasxpagarxperiodo-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Contingencias-Anulaciones',
+                  codigo: 'registraranulaciones-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Contingencias-Registro de Extravío',
+                  codigo: 'registrodeextravios-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Contingencias-Registro de Mermas',
+                  codigo: 'registrodemermas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Movimiento-Movimientos',
+                  codigo: 'movimientos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Movimiento-Rep. Movimientos',
+                  codigo: 'reportedemovimientos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Contingencias-Rep. de Extravíos',
+                  codigo: 'reportedeextravios-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'V-Contingencias-Rep. de Mermas',
+                  codigo: 'reportedemermas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Configuración-Atributos',
+              codigo: 'opcionesocultas',
+              submenu: [
+                {
+                  titulo: 'Configuracion-General-Tipo Almacén',
+                  codigo: 'tipodealmacen-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-General-Divisas',
+                  codigo: 'divisas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-General-Leyenda Proforma',
+                  codigo: 'leyendaproforma-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Producto-Categoría',
+                  codigo: 'categoriadeproducto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Producto-Estado',
+                  codigo: 'estadodeproducto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Producto-Unidad',
+                  codigo: 'unidaddeproducto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Producto-Característica',
+                  codigo: 'caracteristicadeproducto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Producto-Parámetros de obsolesc',
+                  codigo: 'parametrosdeobsolescencia-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Cliente-Tipo de Cliente',
+                  codigo: 'tiposdeclientes-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Configuración-Cliente-Canal de Venta',
+                  codigo: 'canalesdeventa-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Configuración',
+              codigo: 'configuraciongeneral',
+              submenu: [
+                {
+                  titulo: 'General',
+                  codigo: 'configuraciongeneral-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Producto o Servicio',
+                  codigo: 'configuracionproducto-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Cliente',
+                  codigo: 'configuracioncliente-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Apis',
+                  codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Administración',
+              codigo: 'administracion',
+              submenu: [
+                {
+                  titulo: 'Creación',
+                  codigo: 'administracioncreacion-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Asignación',
+                  codigo: 'administracionasignacion-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Precios',
+                  codigo: 'administracionprecios-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Registrar Cliente o Proveedor',
+                  codigo: 'registrarclienteoproveedor-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Cierre Caja',
+                  codigo: 'cierrecaja-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Autorizaciones',
+                  codigo: 'admautorizaciones-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Campañas',
+                  codigo: 'gestioncampanas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Compras',
+              codigo: 'compras',
+              submenu: [
+                {
+                  titulo: 'Pedidos',
+                  codigo: 'pedidos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Compras',
+                  codigo: 'gestioncompra-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Cuentas por Pagar',
+                  codigo: 'ingresocredito-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Compras-Atributos',
+              codigo: 'opcionesocultas',
+              submenu: [
+                {
+                  titulo: '-Compras-Registrar Compras',
+                  codigo: 'registrarcompra-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Compras-Compras Desglosado',
+                  codigo: 'reporteproductoscomprados-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Compras-Rep. Compras',
+                  codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Compras-Rep. Stock de Productos Individual',
+                  codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Pedidos-Generar Pedido',
+                  codigo: 'generarpedido-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Pedidos-Rep. Pedidos',
+                  codigo: 'reportedepedidos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: '-Pedidos-Rep. Pedidos',
+                  codigo: 'reportedepedidos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Ventas',
+              codigo: 'ventas',
+              submenu: [
+                {
+                  titulo: 'Generar Venta',
+                  codigo: 'registrarventa-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Contingencia',
+                  codigo: 'contingencias-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Cuentas por Cobrar',
+                  codigo: 'cuentasporcobrar-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Notas de Crédito/Débito',
+                  codigo: 'notascreditodebito-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Inventario Externo',
+                  codigo: 'inventarioexterno-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Reportes',
+              codigo: 'reportes',
+              submenu: [
+                {
+                  titulo: 'Reporte Stock de Productos Global',
+                  codigo: 'reportestockdeproductosglobal-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Reporte de Indice de Rotación',
+                  codigo: 'reportedeindicederotacion-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+
+                {
+                  titulo: 'Reporte de Caducidad de Productos',
+                  codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Reporte Productos vendidos Global',
+                  codigo: 'reporteproductosvendidosglobal-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Atributos',
+              codigo: 'opcionesocultas',
+              submenu: [
+                {
+                  titulo: 'Rep. de Clientes',
+                  codigo: 'reportedeclientes-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+
+                {
+                  titulo: 'Reporte - Reporte de Índice de Rotación - Alm',
+                  codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Reporte - Reporte de Índice de Rotación - Glo',
+                  codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Reporte - Reporte de Índice de Rotación - Cli',
+                  codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+
+                {
+                  titulo: 'Estadísticas',
+                  codigo: 'dashboard-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+            {
+              usuario: '03afdbd66e7929b125f8597834fa83a4',
+              titulo: 'Configuración Factura',
+              codigo: 'configuracionfactura',
+              submenu: [
+                {
+                  titulo: 'Leyendas de Facturas',
+                  codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+                {
+                  titulo: 'Métodos de Pago de Facturas',
+                  codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
+                  permiso: '1111',
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      // UTILIDADES ---------------------------------------------------
+      const el = (id) => document.getElementById(id)
+      const modalBackdrop = el('modalBackdrop')
+      let currentModalResolve = null // para promesas del modal
+
+      // RENDER -------------------------------------------------------
+      function renderMenus() {
+        const container = el('menusContainer')
+        container.innerHTML = ''
+
+        if (!Array.isArray(menurichard50) || menurichard50.length === 0) {
+          container.innerHTML =
+            '<div class="empty">El objeto <code>menurichard50</code> está vacío.</div>'
+          return
+        }
+
+        // Asumimos que menurichard50 tiene elementos con 'modulo' y 'menu' arrays.
+        menurichard50.forEach((bloque, bloqueIdx) => {
+          const title = document.createElement('h2')
+          title.textContent = `Módulo: ${bloque.modulo}`
+          container.appendChild(title)
+
+          // tabla de menus principales
+          const table = document.createElement('table')
+          const thead = document.createElement('thead')
+          thead.innerHTML =
+            '<tr><th>Título</th><th>Código</th><th>Submenú</th><th>Acciones</th></tr>'
+          table.appendChild(thead)
+
+          const tbody = document.createElement('tbody')
+          ;(bloque.menu || []).forEach((m, idx) => {
+            const tr = document.createElement('tr')
+            const tdTitulo = document.createElement('td')
+            const collapse = document.createElement('span')
+            collapse.textContent = m.titulo || '(sin título)'
+            collapse.className = 'collapse'
+            collapse.onclick = () => toggleSubmenu(bloqueIdx, idx, tr)
+            tdTitulo.appendChild(collapse)
+
+            const tdCodigo = document.createElement('td')
+            tdCodigo.textContent = m.codigo || ''
+
+            const tdSub = document.createElement('td')
+            const countBadge = document.createElement('span')
+            countBadge.className = 'badge'
+            countBadge.textContent = (m.submenu ? m.submenu.length : 0) + ' items'
+            tdSub.appendChild(countBadge)
+
+            const tdActions = document.createElement('td')
+            tdActions.className = 'actions'
+
+            // Editar menú
+            const btnEdit = document.createElement('button')
+            btnEdit.textContent = 'Editar'
+            btnEdit.onclick = () =>
+              openMenuModal(
+                'Editar menú',
+                { usuario: m.usuario, titulo: m.titulo, codigo: m.codigo },
+                (vals) => {
+                  // actualizar valores
+                  m.titulo = vals.titulo
+                  m.codigo = vals.codigo
+                  // opcion: permitir editar usuario si se requiere
+                  renderMenus()
+                },
+              )
+
+            // Añadir submenú
+            const btnAddSub = document.createElement('button')
+            btnAddSub.textContent = 'Añadir sub'
+            btnAddSub.onclick = () =>
+              openSubmenuModal(
+                'Añadir submenú',
+                { titulo: '', codigo: '', permiso: '' },
+                (vals) => {
+                  m.submenu = m.submenu || []
+                  m.submenu.push({
+                    titulo: vals.titulo,
+                    codigo: vals.codigo,
+                    permiso: vals.permiso,
+                  })
+                  renderMenus()
+                },
+              )
+
+            // Eliminar menú
+            const btnDel = document.createElement('button')
+            btnDel.textContent = 'Eliminar'
+            btnDel.className = 'danger'
+            btnDel.onclick = () => {
+              if (confirm(`¿Eliminar el menú "${m.titulo}"? Esta acción no se puede deshacer.`)) {
+                bloque.menu.splice(idx, 1)
+                renderMenus()
+              }
+            }
+
+            tdActions.appendChild(btnEdit)
+            tdActions.appendChild(btnAddSub)
+            tdActions.appendChild(btnDel)
+
+            tr.appendChild(tdTitulo)
+            tr.appendChild(tdCodigo)
+            tr.appendChild(tdSub)
+            tr.appendChild(tdActions)
+
+            tbody.appendChild(tr)
+          })
+
+          table.appendChild(tbody)
+          container.appendChild(table)
+        })
+      }
+
+      // Toggle para mostrar/ocultar el submenú debajo de una fila
+      function toggleSubmenu(bloqueIdx, menuIdx, tr) {
+        const bloque = menurichard50[bloqueIdx]
+        const menu = bloque.menu[menuIdx]
+
+        // Si ya existe un contenedor de submenu justo después, lo elimina
+        const next = tr.nextElementSibling
+        if (next && next.dataset && next.dataset.submenuRow == `${bloqueIdx}-${menuIdx}`) {
+          next.remove()
+          return
+        }
+
+        // generar fila nueva para submenú
+        const trSub = document.createElement('tr')
+        trSub.dataset.submenuRow = `${bloqueIdx}-${menuIdx}`
+        const td = document.createElement('td')
+        td.colSpan = 4
+
+        const div = document.createElement('div')
+        div.className = 'submenu-list'
+
+        const header = document.createElement('div')
+        header.style.display = 'flex'
+        header.style.justifyContent = 'space-between'
+        header.style.alignItems = 'center'
+        header.style.marginBottom = '6px'
+        header.innerHTML = `<strong>Submenús de: ${menu.titulo || '(sin título)'}</strong>`
+
+        const btnAdd = document.createElement('button')
+        btnAdd.textContent = 'Añadir submenú'
+        btnAdd.onclick = () =>
+          openSubmenuModal('Añadir submenú', { titulo: '', codigo: '', permiso: '' }, (vals) => {
+            menu.submenu = menu.submenu || []
+            menu.submenu.push({ titulo: vals.titulo, codigo: vals.codigo, permiso: vals.permiso })
+            renderMenus()
+            // reabrir el submenu para ver actualizados
+            setTimeout(() => {
+              // encontrar la nueva fila y abrirla
+              const rows = document.querySelectorAll('tr')
+              rows.forEach((r) => {
+                if (r.dataset && r.dataset.submenuRow == `${bloqueIdx}-${menuIdx}`) r.remove()
+              })
+              // render de nuevo y abrir otra vez
+              renderMenus()
+              // nota: simplificamos dejando al usuario volver a abrir
+            }, 50)
+          })
+
+        header.appendChild(btnAdd)
+        div.appendChild(header)
+
+        const list = document.createElement('div')
+        ;(menu.submenu || []).forEach((s, sidx) => {
+          const item = document.createElement('div')
+          item.className = 'submenu-item'
+          const left = document.createElement('div')
+          left.innerHTML = `<strong>${s.titulo || '(sin título)'}</strong><div style="font-size:12px;color:#4b5563">Código: ${s.codigo || ''} • Permiso: ${s.permiso || ''}</div>`
+          const right = document.createElement('div')
+
+          const btnEdit = document.createElement('button')
+          btnEdit.textContent = 'Editar'
+          btnEdit.onclick = () =>
+            openSubmenuModal(
+              'Editar submenú',
+              { titulo: s.titulo, codigo: s.codigo, permiso: s.permiso },
+              (vals) => {
+                s.titulo = vals.titulo
+                s.codigo = vals.codigo
+                s.permiso = vals.permiso
+                renderMenus()
+              },
+            )
+
+          const btnDel = document.createElement('button')
+          btnDel.textContent = 'Eliminar'
+          btnDel.className = 'danger'
+          btnDel.onclick = () => {
+            if (confirm(`¿Eliminar submenú "${s.titulo}"?`)) {
+              menu.submenu.splice(sidx, 1)
+              renderMenus()
+              // volver a abrir si quedan elementos (simplificamos)
+            }
+          }
+
+          right.appendChild(btnEdit)
+          right.appendChild(btnDel)
+          item.appendChild(left)
+          item.appendChild(right)
+          list.appendChild(item)
+        })
+
+        if ((menu.submenu || []).length === 0) {
+          const empty = document.createElement('div')
+          empty.className = 'empty'
+          empty.textContent = 'No hay submenús. Usa "Añadir submenú" para crear uno.'
+          list.appendChild(empty)
+        }
+
+        div.appendChild(list)
+        td.appendChild(div)
+        trSub.appendChild(td)
+
+        // insertar después de la fila original
+        tr.parentNode.insertBefore(trSub, tr.nextSibling)
+      }
+
+      // MODAL GENERIC -------------------------------------------------
+      function openModal(title, fieldsHtml) {
+        return new Promise((resolve) => {
+          el('modalTitle').textContent = title
+          el('modalBody').innerHTML = ''
+          el('modalBody').appendChild(fieldsHtml)
+          modalBackdrop.style.display = 'flex'
+
+          // enlazar botones
+          const cancel = el('modalCancel')
+          const save = el('modalSave')
+
+          function cleanup() {
+            cancel.removeEventListener('click', onCancel)
+            save.removeEventListener('click', onSave)
+            modalBackdrop.style.display = 'none'
+          }
+          function onCancel() {
+            cleanup()
+            resolve(null)
+          }
+          function onSave() {
+            // collect inputs inside modalBody
+            const inputs = el('modalBody').querySelectorAll('[data-field]')
+            const out = {}
+            inputs.forEach((inp) => {
+              out[inp.dataset.field] = inp.value
+            })
+            cleanup()
+            resolve(out)
+          }
+          cancel.addEventListener('click', onCancel)
+          save.addEventListener('click', onSave)
+        })
+      }
+
+      // Abrir modal para Menú
+      async function openMenuModal(
+        title,
+        initial = { usuario: '', titulo: '', codigo: '' },
+        onSave,
+      ) {
+        const wrapper = document.createElement('div')
+        // campos: usuario (opcional), titulo, codigo
+        wrapper.innerHTML = `
+        <div class="form-row"><label>Usuario (opcional)</label><input data-field="usuario" value="${escapeHtml(initial.usuario || '')}" /></div>
+        <div class="form-row"><label>Título</label><input data-field="titulo" value="${escapeHtml(initial.titulo || '')}" /></div>
+        <div class="form-row"><label>Código</label><input data-field="codigo" value="${escapeHtml(initial.codigo || '')}" /></div>
+      `
+
+        const result = await openModal(title, wrapper)
+        if (result) onSave(result)
+      }
+
+      // Abrir modal para Submenú
+      async function openSubmenuModal(
+        title,
+        initial = { titulo: '', codigo: '', permiso: '' },
+        onSave,
+      ) {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = `
+        <div class="form-row"><label>Título</label><input data-field="titulo" value="${escapeHtml(initial.titulo || '')}" /></div>
+        <div class="form-row"><label>Código</label><input data-field="codigo" value="${escapeHtml(initial.codigo || '')}" /></div>
+        <div class="form-row"><label>Permiso</label><input data-field="permiso" value="${escapeHtml(initial.permiso || '')}" /></div>
+      `
+
+        const result = await openModal(title, wrapper)
+        if (result) onSave(result)
+      }
+
+      // Helpers
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+      }
+
+      // BOTONES PRINCIPALES ------------------------------------------
+      el('btnAddMenu').addEventListener('click', () => {
+        // Por simplicidad añadimos al primer bloque (si existe). Si no existe, crear uno.
+        if (!menurichard50[0]) menurichard50[0] = { modulo: '1', menu: [] }
+        openMenuModal('Añadir nuevo menú', { usuario: '', titulo: '', codigo: '' }, (vals) => {
+          menurichard50[0].menu.push({
+            usuario: vals.usuario || '',
+            titulo: vals.titulo || '(sin título)',
+            codigo: vals.codigo || '',
+            submenu: [],
+          })
+          renderMenus()
+        })
+      })
+
+      el('btnExport').addEventListener('click', () => {
+        console.log('menurichard50 actualizado:')
+        console.log(menurichard50)
+        alert('JSON impreso en la consola del navegador. Abre la consola para copiarlo.')
+      })
+
+      el('btnReset').addEventListener('click', () => {
+        if (!confirm('Restablecer al ejemplo inicial? Los cambios no guardados se perderán.'))
+          return
+        menurichard50 = [
+          {
+            modulo: '3',
+            menu: [
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Administración-Atributos',
+                codigo: 'opcionesocultas',
+                submenu: [
+                  {
+                    titulo: 'Adm-Asignación-Almacén',
+                    codigo: 'asignaralmacen-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Asignación - Punto de Venta',
+                    codigo: 'asignarpuntodeventa-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Asignación - Producto',
+                    codigo: 'asignarproductos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Creación - Almacén',
+                    codigo: 'registraralmacen-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Creación - Punto de Venta',
+                    codigo: 'registrarpuntodeventa-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Creación - Producto o Servic',
+                    codigo: 'registrarproductos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Precios - Costo Unitario',
+                    codigo: 'costounitario-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Precios - Categorías de Prec',
+                    codigo: 'categoriasdeprecio-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Precios - Precios Sugeridos',
+                    codigo: 'preciossugeridos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Precios - Reporte de Costos ',
+                    codigo: 'reportedepreciosbase-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm - Precios - Reporte de Categor',
+                    codigo: 'reportedecategoriasdeprecio-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Reg.ClProv-Registro de Clientes',
+                    codigo: 'registrodecliente-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-RegCliPro-Registrar Proveedor',
+                    codigo: 'registrarproveedor-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Autorizar-Pedido',
+                    codigo: 'gestionPedido-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Autorizar-Ventas Pendientes',
+                    codigo: 'procesarventaspendientes-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Autorizar-Compras',
+                    codigo: 'autorizarcompra-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+
+                  {
+                    titulo: 'Adm-Campana-Crear Campañas',
+                    codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Campana-Rep. Campañas',
+                    codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Adm-Campana-Rep. Ventas',
+                    codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Ventas-Atributos',
+                codigo: 'opcionesocultas',
+                submenu: [
+                  {
+                    titulo: 'V-Generar Venta-Registrar Venta',
+                    codigo: 'registrarventaoculto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Generar Venta-Registrar Cotización',
+                    codigo: 'registrarcotizacionoculto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Generar Venta - Rep. de Ventas',
+                    codigo: 'reportedeventas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Generar Venta-Rep. de Cotizacion',
+                    codigo: 'reportedecotizacionesocultas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Generar Venta-Rep. Productos vendidos',
+                    codigo: 'reporteproductosvendidosindividual-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Generar Venta - Kardex',
+                    codigo: 'kardex-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Cuentas por Cobrar-Rep. Ctas Cobrar',
+                    codigo: 'reportecuentasporcobrarocultas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Cuentas por Cobra-Cobro Cuentas',
+                    codigo: 'cuentasporcobrarocultas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Cuentas por Cobrar-Rep. de Cobro',
+                    codigo: 'reportecuentasxpagarxperiodo-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Contingencias-Anulaciones',
+                    codigo: 'registraranulaciones-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Contingencias-Registro de Extravío',
+                    codigo: 'registrodeextravios-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Contingencias-Registro de Mermas',
+                    codigo: 'registrodemermas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Movimiento-Movimientos',
+                    codigo: 'movimientos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Movimiento-Rep. Movimientos',
+                    codigo: 'reportedemovimientos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Contingencias-Rep. de Extravíos',
+                    codigo: 'reportedeextravios-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'V-Contingencias-Rep. de Mermas',
+                    codigo: 'reportedemermas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Configuración-Atributos',
+                codigo: 'opcionesocultas',
+                submenu: [
+                  {
+                    titulo: 'Configuracion-General-Tipo Almacén',
+                    codigo: 'tipodealmacen-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-General-Divisas',
+                    codigo: 'divisas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-General-Leyenda Proforma',
+                    codigo: 'leyendaproforma-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Producto-Categoría',
+                    codigo: 'categoriadeproducto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Producto-Estado',
+                    codigo: 'estadodeproducto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Producto-Unidad',
+                    codigo: 'unidaddeproducto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Producto-Característica',
+                    codigo: 'caracteristicadeproducto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Producto-Parámetros de obsolesc',
+                    codigo: 'parametrosdeobsolescencia-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Cliente-Tipo de Cliente',
+                    codigo: 'tiposdeclientes-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Configuración-Cliente-Canal de Venta',
+                    codigo: 'canalesdeventa-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Configuración',
+                codigo: 'configuraciongeneral',
+                submenu: [
+                  {
+                    titulo: 'General',
+                    codigo: 'configuraciongeneral-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Producto o Servicio',
+                    codigo: 'configuracionproducto-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Cliente',
+                    codigo: 'configuracioncliente-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Apis',
+                    codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Administración',
+                codigo: 'administracion',
+                submenu: [
+                  {
+                    titulo: 'Creación',
+                    codigo: 'administracioncreacion-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Asignación',
+                    codigo: 'administracionasignacion-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Precios',
+                    codigo: 'administracionprecios-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Registrar Cliente o Proveedor',
+                    codigo: 'registrarclienteoproveedor-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Cierre Caja',
+                    codigo: 'cierrecaja-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Autorizaciones',
+                    codigo: 'admautorizaciones-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Campañas',
+                    codigo: 'gestioncampanas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Compras',
+                codigo: 'compras',
+                submenu: [
+                  {
+                    titulo: 'Pedidos',
+                    codigo: 'pedidos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Compras',
+                    codigo: 'gestioncompra-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Cuentas por Pagar',
+                    codigo: 'ingresocredito-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Compras-Atributos',
+                codigo: 'opcionesocultas',
+                submenu: [
+                  {
+                    titulo: '-Compras-Registrar Compras',
+                    codigo: 'registrarcompra-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Compras-Compras Desglosado',
+                    codigo: 'reporteproductoscomprados-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Compras-Rep. Compras',
+                    codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Compras-Rep. Stock de Productos Individual',
+                    codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Pedidos-Generar Pedido',
+                    codigo: 'generarpedido-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Pedidos-Rep. Pedidos',
+                    codigo: 'reportedepedidos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: '-Pedidos-Rep. Pedidos',
+                    codigo: 'reportedepedidos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Ventas',
+                codigo: 'ventas',
+                submenu: [
+                  {
+                    titulo: 'Generar Venta',
+                    codigo: 'registrarventa-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Contingencia',
+                    codigo: 'contingencias-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Cuentas por Cobrar',
+                    codigo: 'cuentasporcobrar-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Notas de Crédito/Débito',
+                    codigo: 'notascreditodebito-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Inventario Externo',
+                    codigo: 'inventarioexterno-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Reportes',
+                codigo: 'reportes',
+                submenu: [
+                  {
+                    titulo: 'Reporte Stock de Productos Global',
+                    codigo: 'reportestockdeproductosglobal-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Reporte de Indice de Rotación',
+                    codigo: 'reportedeindicederotacion-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+
+                  {
+                    titulo: 'Reporte de Caducidad de Productos',
+                    codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Reporte Productos vendidos Global',
+                    codigo: 'reporteproductosvendidosglobal-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Atributos',
+                codigo: 'opcionesocultas',
+                submenu: [
+                  {
+                    titulo: 'Rep. de Clientes',
+                    codigo: 'reportedeclientes-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+
+                  {
+                    titulo: 'Reporte - Reporte de Índice de Rotación - Alm',
+                    codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Reporte - Reporte de Índice de Rotación - Glo',
+                    codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Reporte - Reporte de Índice de Rotación - Cli',
+                    codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+
+                  {
+                    titulo: 'Estadísticas',
+                    codigo: 'dashboard-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+              {
+                usuario: '03afdbd66e7929b125f8597834fa83a4',
+                titulo: 'Configuración Factura',
+                codigo: 'configuracionfactura',
+                submenu: [
+                  {
+                    titulo: 'Leyendas de Facturas',
+                    codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                  {
+                    titulo: 'Métodos de Pago de Facturas',
+                    codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
+                    permiso: '1111',
+                  },
+                ],
+              },
+            ],
+          },
+        ]
+        renderMenus()
+      })
+
+      // Inicial render
+      renderMenus()
+
+      // Close modal on backdrop click (pero solo si clic fuera del diálogo)
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) {
+          // disparar cancelar
+          el('modalCancel').click()
+        }
+      })
+
+      // NOTAS FINALES: el código está modularizado en funciones pequeñas y
+      // comentarios para facilitar su mantenimiento. Solo manipula la
+      // variable global `menurichard50` y asume su estructura dada.
+    </script>
+  </body>
+</html>

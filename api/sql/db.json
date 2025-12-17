@@ -1,0 +1,64 @@
+{
+  "cobros_banco": {
+    "table_name": "cobros_banco",
+    "fields": {
+      "idecobros_banco": "PRIMARY KEY",
+      "idcobro": "FOREIGN KEY (references cobros.ideobro)",
+      "idcuenta": "FOREIGN KEY (references cuenta.idcuenta)"
+    }
+  },
+  "cobros": {
+    "table_name": "cobros",
+    "fields": {
+      "idcobro": "PRIMARY KEY",
+      "idtipo": "FOREIGN KEY (references tipo.idtipo)",
+      "monto": "DECIMAL/NUMBER",
+      "fecha": "DATE",
+      "fecha_sistema": "DATETIME/TIMESTAMP",
+      "idingreso": "FOREIGN KEY (references ingreso.idingreso)"
+    }
+  },
+  "ingreso": {
+    "table_name": "ingreso",
+    "fields": {
+      "idingreso": "PRIMARY KEY",
+      "orden_recibo": "VARCHAR/",
+      "fecha": "DATE",
+      "total_ingreso": "DECIMAL/",
+      "iddiente": "FOREIGN KEY (references cliente.iddiente)",
+      "idvendedor": "FOREIGN KEY (references vendedor.idvendedor)"
+    }
+  },
+  "cliente": {
+    "table_name": "cliente",
+    "fields": {
+      "idcliente": "PRIMARY KEY",
+      "nombre": "VARCHAR",
+      "descripcion": "TEXT",
+      "telefono": "VARCHAR"
+    }
+  },
+  "cuenta": {
+    "table_name": "cuenta",
+    "fields": {
+      "idcuenta": "PRIMARY KEY",
+      "cuenta_banco": "VARCHAR"
+    }
+  },
+  "vendedor": {
+    "table_name": "vendedor",
+    "fields": {
+      "idvendedor": "PRIMARY KEY",
+      "nombre": "VARCHAR",
+      "apellido": "VARCHAR",
+      "telefono": "VARCHAR"
+    }
+  },
+  "tipo": {
+    "table_name": "tipo",
+    "fields": {
+      "idtipo": "PRIMARY KEY",
+      "tipo": "VARCHAR"
+    }
+  }
+}
