@@ -132,12 +132,13 @@ const columnas = [
   { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'unidad', label: 'Medida', field: 'unidad', align: 'left' },
   {
     name: 'precio',
-    label: 'Precio',
+    label: 'Precio' + ' (' + currencyStore.simbolo + ')',
     field: 'precio',
     align: 'right',
-    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2) + currencyStore.simbolo),
+    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
 ]
