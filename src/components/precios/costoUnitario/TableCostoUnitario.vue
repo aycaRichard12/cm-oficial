@@ -182,12 +182,13 @@ const columnas = [
   },
   { name: 'codigo', label: 'Código', align: 'left', field: 'codigo' },
   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
+  { name: 'unidad', label: 'Unidad', align: 'left', field: 'unidad' },
   {
     name: 'precio',
-    label: 'Costo',
+    label: 'Costo' + ' (' + currencyStore.simbolo + ')',
     align: 'right',
     field: 'precio',
-    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2) + currencyStore.simbolo),
+    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
   { name: 'opciones', label: 'Opciones', align: 'center' },
 ]
