@@ -50,6 +50,7 @@ import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
+import { showDialog } from 'src/utils/dialogs'
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
 const $q = useQuasar()
@@ -160,14 +161,16 @@ function cancelarAsignacion() {
   almacenesAsignados.value = []
 }
 
-function eliminarAlmacen(id) {
+async function eliminarAlmacen(id) {
   almacenesAsignados.value = almacenesAsignados.value.filter((a) => a.id !== id)
-  $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Almacen?`,
-    cancel: true,
-    persistent: true,
-  }).onOk(async () => {
+
+  const result = await showDialog(
+    $q,
+    'Q',
+    '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+  )
+  console.log('Question dialog result:', result)
+  if (result) {
     try {
       const response = await api.get(`eliminarResponsableAlmacen/${id}/`) // Cambia a tu ruta real
       console.log(response)
@@ -185,7 +188,10 @@ function eliminarAlmacen(id) {
         message: 'No se pudieron cargar los datos',
       })
     }
-  })
+    $q.notify({ message: 'Registro eliminado', color: 'positive' })
+  } else {
+    $q.notify({ message: 'Acción cancelada', color: 'info' })
+  }
 }
 const toggleForm = () => {
   showForm.value = !showForm.value
