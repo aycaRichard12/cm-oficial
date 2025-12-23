@@ -2,126 +2,19 @@
   <q-page class="q-pa-md">
     <!-- Formulario de parámetros -->
     <div class="titulo">Stock Productos Global</div>
-    <div class="q-mb-md">
-      <q-card-section>
-        <div class="row justify-center q-col-gutter-md">
-          <div class="col-12 col-md-4">
-            <label for="fechafin">Fecha Final*</label>
-            <q-input
-              v-model="fechaFin"
-              id="fechafin"
-              type="date"
-              outlined
-              dense
-              @update:model-value="generarReporte"
-            />
-          </div>
-          <div class="col-12 col-md-4">
-            <label for="almacen">Almacén*</label>
-            <q-select
-              v-model="almacenSeleccionado"
-              :options="opcionesAlmacenes"
-              id="almacen"
-              dense=""
-              outlined=""
-              option-label="nombre"
-              option-value="id"
-              emit-value
-              map-options
-              clearable
-              required
-              @update:model-value="generarReporte"
-            />
-          </div>
-        </div>
 
-        <div class="row justify-center q-mt-md">
-          <!-- <q-btn color="primary" label="Generar reporte" class="q-mr-sm" @click="generarReporte" /> -->
-          <q-btn
-            color="primary"
-            label="Vista previa del Reporte"
-            @click="mostrarVistaPrevia"
-            :disable="!datosFiltrados.length"
-          />
-        </div>
-      </q-card-section>
-    </div>
+    <StockGlobalParams v-model:modelValueFecha="fechaFin" v-model:modelValueAlmacen="almacenSeleccionado"
+      :opcionesAlmacenes="opcionesAlmacenes" @generar="generarReporte" @vistaPrevia="mostrarVistaPrevia" />
 
     <!-- Filtros -->
-
-    <div class="row justify-center q-col-gutter-md">
-      <div class="col-12 col-md-6">
-        <label for="porestado">Filtrar por estado del producto</label>
-        <q-select
-          v-model="filtroEstado"
-          :options="opcionesEstado"
-          id="porestado"
-          dense
-          outlined
-          emit-value
-          map-options
-          @update:model-value="generarReporte"
-        />
-      </div>
-      <div class="col-12 col-md-6">
-        <label for="porstock">Ordenar por stock</label>
-        <q-select
-          v-model="ordenStock"
-          :options="opcionesOrden"
-          id="porstock"
-          dense
-          outlined
-          emit-value
-          map-options
-          @update:model-value="generarReporte"
-        />
-      </div>
-    </div>
+    <StockGlobalFilters v-model:filtroEstado="filtroEstado" v-model:ordenStock="ordenStock" @generar="generarReporte" />
 
     <!-- Tabla de resultados -->
-    <q-card v-if="datosFiltrados.length" class="q-mt-md">
-      <q-table
-        title="Stock De Productos"
-        :rows="datosFiltrados"
-        :columns="columnas"
-        row-key="id"
-        bordered
-        flat
-        separator="cell"
-      >
-        <template v-slot:bottom-row>
-          <q-tr>
-            <q-td colspan="10" class="text-right">Sumatorias</q-td>
-            <q-td class="text-right">{{ sumatoriaStock }}</q-td>
-            <q-td class="text-right">{{ sumatoriaCostoTotal }}</q-td>
-            <q-td></q-td>
-          </q-tr>
-        </template>
-      </q-table>
-    </q-card>
+    <StockGlobalTable :rows="datosFiltrados" :columns="columnas" :sumatoriaStock="sumatoriaStock"
+      :sumatoriaCostoTotal="sumatoriaCostoTotal" />
 
     <!-- Modal de vista previa PDF -->
-    <q-card-section>
-      <q-dialog v-model="mostrarModal" full-width full-height>
-        <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
-            <q-space />
-            <q-btn flat round icon="close" @click="mostrarModal = false" />
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-            <iframe
-              v-if="pdfData"
-              :src="pdfData"
-              style="width: 100%; height: 100%; border: none"
-            ></iframe>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-    </q-card-section>
+    <StockGlobalPdfModal v-model:modelValue="mostrarModal" :pdfData="pdfData" />
   </q-page>
 </template>
 
@@ -133,6 +26,13 @@ import { date } from 'quasar'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
+
+// Importar componentes refactorizados
+import StockGlobalParams from 'src/components/reporte/stockGlobal/StockGlobalParams.vue'
+import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
+import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
+import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
+
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const fechaFin = ref(obtenerFechaActualDato())
@@ -143,20 +43,8 @@ const datosOriginales = ref([])
 const datosFiltrados = ref([])
 const filtroEstado = ref(0)
 const ordenStock = ref(1)
-// const usuario = ref({})
-// const empresa = ref({})
 const nombreAlmacenSeleccionado = ref('')
 const idempresa = idempresa_md5()
-const opcionesEstado = [
-  { label: 'Todos', value: 0 },
-  { label: 'Activos', value: 1 },
-  { label: 'Inactivos', value: 2 },
-]
-
-const opcionesOrden = [
-  { label: 'Descendente', value: 1 },
-  { label: 'Ascendente', value: 2 },
-]
 
 const columnas = [
   { name: 'numero', label: 'N°', align: 'right', field: 'numero' },
@@ -208,7 +96,7 @@ const sumatoriaCostoTotal = computed(() => {
 
 onMounted(async () => {
   await cargarAlmacenes()
-  await generarReporte()
+  // await generarReporte()
 })
 
 async function cargarAlmacenes() {
@@ -224,7 +112,16 @@ async function cargarAlmacenes() {
           value: almacen.id,
         }))
     }
-    almacenSeleccionado.value = opcionesAlmacenes.value[0]
+    // No setear por defecto si queremos que el usuario seleccione explícitamente, pero el usuario no pidió remover esto.
+    // Mantendré la selección del primer almacén, pero sin generar el reporte.
+    if (opcionesAlmacenes.value.length > 0) {
+      almacenSeleccionado.value = opcionesAlmacenes.value[0].id // Use .id directly if value is the id
+    }
+
+
+    if (opcionesAlmacenes.value.length > 0) {
+      // almacenSeleccionado.value = opcionesAlmacenes.value[0].value
+    }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
@@ -236,10 +133,12 @@ async function cargarAlmacenes() {
 
 async function generarReporte() {
   if (!almacenSeleccionado.value) {
-    $q.notify({
-      type: 'warning',
-      message: 'Seleccione un almacén',
-    })
+    datosOriginales.value = []
+    datosFiltrados.value = []
+    // $q.notify({
+    //   type: 'warning',
+    //   message: 'Seleccione un almacén',
+    // })
     return
   }
 
@@ -291,12 +190,24 @@ function filtrarYOrdenarDatos() {
   datosFiltrados.value = datos
 }
 
-function mostrarVistaPrevia() {
-  if (!datosFiltrados.value.length) {
+async function mostrarVistaPrevia() {
+  if (!almacenSeleccionado.value) {
     $q.notify({
       type: 'warning',
-      message: 'No hay datos para mostrar',
+      message: 'Seleccione un almacén',
     })
+    return
+  }
+  await generarReporte()
+  if (!datosFiltrados.value.length) {
+    if (!almacenSeleccionado.value) {
+      // Already handled in generating report but double check
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: 'No hay datos para mostrar',
+      })
+    }
     return
   }
   const doc = PDFreporteStockProductosIndividual(datosFiltrados)
@@ -321,6 +232,7 @@ function estadoTexto(estado) {
   return Number(estado) === 1 ? 'Activo' : 'Inactivo'
 }
 </script>
+
 
 <style scoped>
 .invoice {
@@ -483,7 +395,7 @@ function estadoTexto(estado) {
     page-break-after: always;
   }
 
-  .invoice > div:last-child {
+  .invoice>div:last-child {
     page-break-before: always;
   }
 }
