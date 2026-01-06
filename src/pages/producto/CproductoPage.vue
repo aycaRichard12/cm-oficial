@@ -80,7 +80,8 @@ async function loadRows() {
     console.log('Endpoint:', point)
     response = await api.get(`${point}`) // Cambia a tu ruta con factura
     console.log(response)
-    productos.value = response.data // Asume que la API devuelve un array
+    productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
+     // Asume que la API devuelve un array
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
