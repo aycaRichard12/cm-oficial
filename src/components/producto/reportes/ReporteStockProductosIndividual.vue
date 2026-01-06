@@ -78,11 +78,12 @@
         </q-input>
       </div>
     </div>
-
-    <q-table
+    <BaseFilterableTable
+      ref="miTabla"
       title="Productos"
       :rows="processedRows"
       :columns="columnas"
+      :arrayHeaders="arrayHeaders"
       flat
       row-key="id"
       separator="horizontal"
@@ -101,7 +102,7 @@
           <q-td class="text-right text-bold">{{ sumatoriaCosto }}</q-td>
         </q-tr>
       </template>
-    </q-table>
+    </BaseFilterableTable>
   </q-card-section>
 
   <q-card-section>
@@ -138,7 +139,7 @@ import { imagen } from 'src/boot/url'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
 import { PDFreporteStockProductosIndividual_img } from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 const fechaFin = ref(obtenerFechaActualDato())
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -171,19 +172,47 @@ const ordenes = [
 const datos = ref([])
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripcion', field: 'descripcion', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'pais', label: 'País', field: 'pais', align: 'left' },
-  { name: 'stock', label: 'Stock', field: 'stock', align: 'right' },
-  { name: 'costo', label: 'Costo total', field: 'costo', align: 'right' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left' },
+  { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
+  { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
+  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', dataType: 'text' },
+  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
+  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+  {
+    name: 'subcategoria',
+    label: 'Sub categoría',
+    field: 'subcategoria',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'descripcion',
+    label: 'Descripcion',
+    field: 'descripcion',
+    align: 'left',
+    dataType: 'text',
+  },
+  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
+  { name: 'pais', label: 'País', field: 'pais', align: 'left', dataType: 'text' },
+  { name: 'stock', label: 'Stock', field: 'stock', align: 'right', dataType: 'number' },
+  { name: 'costo', label: 'Costo total', field: 'costo', align: 'right', dataType: 'number' },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
+]
+
+const arrayHeaders = [
+  'numero',
+  'fecha',
+  'almacen',
+  'codigo',
+  'producto',
+  'categoria',
+  'subcategoria',
+  'descripcion',
+  'unidad',
+  'pais',
+  'stock',
+  'costo',
+  'estado',
 ]
 
 async function cargarAlmacenes() {
