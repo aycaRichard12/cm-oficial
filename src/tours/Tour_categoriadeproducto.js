@@ -1,4 +1,4 @@
-export const Tour_lleyendaproforma = [
+export const Tour_categoriadeproducto = [
   {
     element: '#categoriadeproducto',
     popover: {

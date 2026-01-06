@@ -2,8 +2,8 @@ export const Tour_tipodealmacen = [
   {
     element: '#tipodealmacen',
     popover: {
-      title: 'Configuracion tipo almacen ',
-      description: 'Aquí puedes configurar tus datos para los almacenes y crear sus tipos ',
+        title: 'Configuración tipo almacén',
+      description: 'Aquí puedes configurar tus datos para los almacenes y crear sus tipos',
       side: 'left',
       align: 'start',
     },
@@ -11,8 +11,8 @@ export const Tour_tipodealmacen = [
   {
     element: '#divisas',
     popover: {
-      title: 'Configuracion de Divisas',
-      description: 'Creas las divisas utiles para la empresa',
+      title: 'Configuración de Divisas',
+      description: 'Creas las divisas útiles para la empresa',
       side: 'bottom',
       align: 'start',
     },
@@ -29,8 +29,8 @@ export const Tour_tipodealmacen = [
   {
     element: '#add',
     popover: {
-      title: 'Añadir una nueva configuracion para tipos de almacen',
-      description: 'Se abrira el modal para registrar el tiipo de almacen ',
+      title: 'Añadir una nueva configuración para tipos de almacén',
+      description: 'Se abrirá el modal para registrar el tipo de almacén',
       side: 'bottom',
       align: 'start',
     },
@@ -38,8 +38,8 @@ export const Tour_tipodealmacen = [
   {
     element: '#edit',
     popover: {
-      title: 'Editar informacion sobre un tipo de almacen ',
-      description: 'Editar informacion sobre un tipo de almacen',
+      title: 'Editar informacion sobre un tipo de almacén ',
+      description: 'Editar informacion sobre un tipo de almacén',
       side: 'bottom',
       align: 'start',
     },
@@ -47,8 +47,8 @@ export const Tour_tipodealmacen = [
   {
     element: '#delete',
     popover: {
-      title: 'Eliminar tipo de almacen ',
-      description: 'realizar eliminacion de datos de los tipos de almacen ',
+      title: 'Eliminar tipo de almacén ',
+      description: 'realizar eliminacion de datos de los tipos de almacén ',
       side: 'bottom',
       align: 'start',
     },
@@ -56,9 +56,9 @@ export const Tour_tipodealmacen = [
   {
     element: '#status',
     popover: {
-      title: 'Cambiar de estado de los tipos de almacen',
+      title: 'Cambiar de estado de los tipos de almacén',
       description:
-        'Se habilitara la configuracion donde se podra autorizar su uso para los regitro de uso de esta',
+        'Se habilitará la configuración donde se podrá autorizar su uso para los registros de uso de esta',
       side: 'bottom',
       align: 'start',
     },
@@ -66,9 +66,10 @@ export const Tour_tipodealmacen = [
   {
     element: '#table',
     popover: {
-      title: 'se mostrar todas los regostro de la tipos de almacen',
+      //title: 'se mostrar todas los registros de los tipos de almacén',
+      title: 'Se mostrarán todos los tipos de almacén registrados',
       description:
-        'Se habilitara la configuracion donde se podra autorizar su uso para los regitro de uso de esta',
+        'Se habilitará la configuración donde se podrá autorizar su uso para los registros de uso de esta',
       side: 'bottom',
       align: 'start',
     },

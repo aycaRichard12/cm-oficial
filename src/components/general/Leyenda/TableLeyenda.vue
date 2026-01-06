@@ -3,6 +3,7 @@
   <div>
     <div class="flex justify-between">
       <q-btn
+        id="add"
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
@@ -48,6 +49,7 @@
 
     <!-- Tabla -->
     <q-table
+      id="table"
       title="Leyendas"
       :rows="filtradas"
       :columns="columnas"
@@ -66,6 +68,7 @@
       <template v-slot:body-cell-acciones="props">
         <q-td align="center">
           <q-btn
+            id="edit"
             icon="edit"
             color="primary"
             dense
@@ -74,6 +77,7 @@
             title="Editar"
           />
           <q-btn
+            id="delete"
             icon="delete"
             dense
             flat

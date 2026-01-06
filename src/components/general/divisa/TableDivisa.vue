@@ -2,11 +2,12 @@
   <div>
     <div class="row items-center justify-between q-mb-md">
       <div>
-        <q-btn icon="add" label="Agregar" color="primary" @click="$emit('add')" />
+        <q-btn icon="add" label="Agregar" color="primary" @click="$emit('add')" id="add" />
       </div>
     </div>
 
     <q-table
+      id="table"
       flat
       :rows="filtradas"
       :columns="columns"
@@ -30,6 +31,7 @@
       <template v-slot:body-cell-opciones="props">
         <q-td align="center">
           <q-btn
+            id="edit"
             icon="edit"
             color="primary"
             dense
@@ -38,6 +40,7 @@
             title="Editar"
           />
           <q-btn
+            id="delete"
             icon="delete"
             dense
             flat
