@@ -24,6 +24,8 @@
       :rows="datosFiltrados"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
+      :sumColumns="sumColumns"
+      nombreColumnaTotales="descripcion"
       row-key="codigo"
       flat
       bordered
@@ -224,8 +226,18 @@ const arrayHeaders = [
   'proveedor',
   'unidad',
   'categoria',
+  'categoria',
   'subcategoria',
 ]
+
+const sumColumns = [
+  'cantidad',
+  'importe',
+  'costototal',
+  'compratotal',
+  'utilidad',
+]
+
 
 async function generarReporte() {
   try {
