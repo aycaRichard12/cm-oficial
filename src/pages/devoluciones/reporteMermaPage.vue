@@ -59,9 +59,13 @@
     <!-- Tabla de resultados -->
     <q-card>
       <div class="table-responsive">
-        <q-table
+        <BaseFilterableTable
+          title="Reporte de Merma"
+          ref="tableRef"
           :rows="datosFiltrados"
           :columns="columnas"
+          :arrayHeaders="arrayHeaders"
+          no-data-label="No hay datos"
           row-key="codigo"
           flat
           bordered
@@ -79,7 +83,7 @@
               />
             </q-td>
           </template>
-        </q-table>
+        </BaseFilterableTable>
       </div>
     </q-card>
 
@@ -104,6 +108,7 @@
         </q-card>
       </q-dialog>
     </q-card-section>
+
     <q-dialog v-model="modalDetalleMerma" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary flex justify-between text-h6 text-white">
@@ -142,10 +147,13 @@ import { PDF_REPORTE_MERMA } from 'src/utils/pdfReportGenerator'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 const idusuario = idusuario_md5()
 //pedf
 const pdfData = ref(null)
 const mostrarModal = ref(false)
+const tableRef = ref(null)
 
 const $q = useQuasar()
 const cargando = ref(false)
@@ -154,13 +162,31 @@ const cargando = ref(false)
 const modalDetalleMerma = ref(false)
 const productosDetalleMerma = ref([])
 const columnsMerma = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'caracteristica', label: 'Característica', field: 'caracteristica', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
-  { name: 'codigolote', label: 'Código Lote', field: 'codigolote', align: 'center' },
+  { name: 'index', label: 'N°', field: 'index', align: 'left', dataType: 'number' },
+  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center', dataType: 'text' },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'caracteristica',
+    label: 'Característica',
+    field: 'caracteristica',
+    align: 'left',
+    dataType: 'text',
+  },
+  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', dataType: 'number' },
+  {
+    name: 'codigolote',
+    label: 'Código Lote',
+    field: 'codigolote',
+    align: 'center',
+    dataType: 'text',
+  },
 ]
 
 // Datos del formulario
@@ -180,13 +206,27 @@ const tipo = { 1: 'Autorizado', 2: 'No autorizado' }
 
 // Configuración de la tabla
 const columnas = [
-  { name: 'numero', label: 'N°', field: (row) => row.index, align: 'left' },
-  { name: 'fecha', label: 'fecha', field: 'fecha', align: 'left' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'autorizacion', label: 'Autorizacion', field: 'autorizacion', align: 'left' },
+  { name: 'numero', label: 'N°', field: 'index', align: 'left', dataType: 'number' },
+  { name: 'fecha', label: 'fecha', field: 'fecha', align: 'left', dataType: 'date' },
+  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'autorizacion',
+    label: 'Autorizacion',
+    field: 'autorizacion',
+    align: 'left',
+    dataType: 'text',
+  },
   { name: 'actions', label: 'Opciones', field: 'actions', align: 'left' },
 ]
+
+const arrayHeaders = ['numero', 'fecha', 'almacen', 'descripcion', 'autorizacion']
 
 const pagination = {
   rowsPerPage: 10,
@@ -310,7 +350,8 @@ const mostrarVistaPrevia = () => {
     })
     return
   }
-  const doc = PDF_REPORTE_MERMA(datosFiltrados.value, {
+  const datosExportar = tableRef.value?.obtenerDatosFiltrados() || datosFiltrados.value
+  const doc = PDF_REPORTE_MERMA(datosExportar, {
     fechaInicio: fechaInicio.value,
     fechaFin: fechaFin.value,
     almacen: nombreAlmacenSeleccionado.value,
