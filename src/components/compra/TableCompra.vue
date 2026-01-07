@@ -18,6 +18,8 @@
         :rows="processedRows"
         :columns="columnas"
         :arrayHeaders="arrayHeaders"
+        :sumColumns="sumColumns"
+        nombreColumnaTotales="tipocompra"
         row-key="id"
         :filter="busqueda"
         flat
@@ -199,13 +201,13 @@ const columnas = [
   },
   {
     name: 'total',
-    label: 'Total compra',
+    label: 'Total compra' + ` \n(${divisaActiva.simbolo})`,
     align: 'right',
     field: 'total', // Use raw number for filtering
     format: (val) => {
       const valor = parseFloat(val)
       if (isNaN(valor)) return '0.00'
-      return decimas(redondear(valor)) + ' ' + divisaActiva.simbolo
+      return decimas(redondear(valor))
     },
     dataType: 'number',
   },
@@ -229,8 +231,12 @@ const arrayHeaders = [
   'nfactura',
   'tipocompra',
   'total',
+  'tipocompra',
+  'total',
   'autorizacion',
 ]
+
+const sumColumns = ['total']
 
 const emit = defineEmits([
   'add',
