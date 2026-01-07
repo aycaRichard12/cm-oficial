@@ -2,69 +2,27 @@
   <q-page>
     <div>
       <!-- Botones principales -->
-      <div class="row items-center justify-between q-mb-sm">
-        <div class="col-4 q-mt-lg flex flex-col gap-4">
-          <!-- Botón de nueva compra -->
-          <q-btn
-            color="primary"
-            class="btn-res"
-            id="btnNuevaCompra"
-            @click="$emit('add')"
-            icon="add"
-            label="Nueva Compra"
-            no-caps
-          />
+      <CompraActions @add="$emit('add')" @imprimirReporte="imprimirReporte" />
 
-          <!-- Botón de reporte -->
-          <!-- <q-btn
-            color="secondary"
-            class="btn-res"
-            id="btnReporteStockIndividual"
-            to="/reportestockdeproductosindividual"
-            icon="assessment"
-            label="Rep. Stock Producto Individual"
-            no-caps
-          /> -->
-        </div>
-
-        <div class="col-2 q-mt-lg flex justify-end">
-          <q-btn color="info" @click="imprimirReporte" class="btn-res" outline>
-            <q-icon name="picture_as_pdf" class="icono" />
-            <span class="texto">Vista Previa PDF</span>
-          </q-btn>
-        </div>
-
-        <!-- Filtro de almacén -->
-      </div>
-      <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
-        <div class="col-12 col-md-4">
-          <label for="almacen">Seleccione un Almacén</label>
-          <q-select
-            v-model="filtroAlmacen"
-            :options="almacenes"
-            id="almacen"
-            clearable
-            dense
-            outlined
-          />
-        </div>
-        <div class="col-12 col-md-2">
-          <label for="buscar">Buscar...</label>
-          <q-input dense debounce="300" v-model="busqueda" id="buscar" outlined>
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-      </div>
+      <!-- Filtro de almacén -->
+      <CompraFilters
+        :almacenes="almacenes"
+        v-model:filtroAlmacen="filtroAlmacen"
+        v-model:busqueda="busqueda"
+      />
 
       <!-- Tabla -->
-      <q-table
+      <BaseFilterableTable
+        ref="tableRef"
         title="Compras"
         :rows="processedRows"
         :columns="columnas"
+        :arrayHeaders="arrayHeaders"
+        :sumColumns="sumColumns"
+        nombreColumnaTotales="tipocompra"
         row-key="id"
         :filter="busqueda"
+        flat
         dense
       >
         <template v-slot:top-right> </template>
@@ -128,38 +86,15 @@
             </div>
           </q-td>
         </template>
-      </q-table>
+      </BaseFilterableTable>
     </div>
-    <q-dialog v-model="mostrarModal" full-width full-height>
-      <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
-          <q-space />
-          <q-btn flat round icon="close" @click="mostrarModal = false" />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-          <iframe
-            v-if="pdfData"
-            :src="pdfData"
-            style="width: 100%; height: 100%; border: none"
-          ></iframe>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="credito">
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div class="text-h6">Registrar Datos para Credito</div>
-          <q-btn icon="close" dense flat round @click="credito = false" />
-        </q-card-section>
-        <q-card-section>
-          <pagos-credito :compra="compra" @cerrar="closeModalCredito"></pagos-credito>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <CompraDialogs
+      v-model:mostrarModal="mostrarModal"
+      :pdfData="pdfData"
+      v-model:credito="credito"
+      :compra="compra"
+      @cerrarCredito="closeModalCredito"
+    />
   </q-page>
 </template>
 
@@ -167,13 +102,19 @@
 import { ref, computed, watch } from 'vue'
 
 import { decimas, redondear } from 'src/composables/FuncionesG'
-import pagosCredito from './pagosCredito.vue'
+// import pagosCredito from './pagosCredito.vue' // Movido a CompraDialogs
+import CompraActions from './CompraActions.vue'
+import CompraFilters from './CompraFilters.vue'
+import CompraDialogs from './CompraDialogs.vue'
 import { useQuasar } from 'quasar'
 import { showDialog } from 'src/utils/dialogs'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { PDF_REPORTE_COMPRAS } from 'src/utils/pdfReportGenerator'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
+const tableRef = ref(null)
 const props = defineProps({
   rows: {
     type: Array,
@@ -202,29 +143,101 @@ const mostrarModal = ref(false)
 const credito = ref(false)
 const compra = ref({})
 const columnas = [
-  { name: 'numero', label: 'N°', align: 'right', field: 'numero' },
-  { name: 'fecha', label: 'Fecha', align: 'right', field: 'fecha' },
-  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
-  { name: 'lote', label: 'Nombre lote', field: 'lote', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo' },
-  { name: 'nfactura', label: 'N° Factura', align: 'right', field: 'nfactura' },
-  { name: 'tipocompra', label: 'Tipo compra', field: 'tipocompra', align: 'center' },
+  {
+    name: 'numero',
+    label: 'N°',
+    align: 'right',
+    field: 'numero',
+    dataType: 'number',
+  },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    align: 'right', // Align right for dates usually looks better or same as numbers
+    field: 'fecha',
+    format: (val) => {
+      // Assuming val is YYYY-MM-DD or similar sortable string
+      // If val is already DD/MM/YYYY, this might not be needed, but good for safety
+      if (!val) return ''
+      // If it's standard ISO, format it. If it's already customized, leave it.
+      // Simple check or just return val if it's already formatted by backend
+      return val
+    },
+    dataType: 'date',
+  },
+  {
+    name: 'proveedor',
+    label: 'Proveedor',
+    field: 'proveedor',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'lote',
+    label: 'Nombre lote',
+    field: 'lote',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'codigo',
+    label: 'Código',
+    field: 'codigo',
+    dataType: 'text',
+  },
+  {
+    name: 'nfactura',
+    label: 'N°Factura',
+    align: 'right',
+    field: 'nfactura',
+    dataType: 'number',
+  },
+  {
+    name: 'tipocompra',
+    label: 'Tipo compra',
+    field: 'tipocompra_label', // Use label for friendly filtering
+    align: 'center',
+    dataType: 'text',
+  },
   {
     name: 'total',
-    label: 'Total compra',
+    label: 'Total compra' + ` \n(${divisaActiva.simbolo})`,
     align: 'right',
-    field: (row) => {
-      const valor = parseFloat(row.total)
-
-      if (isNaN(valor)) return '0.00' // evita NaN
-
-      return decimas(redondear(valor)) + ' ' + divisaActiva.simbolo
+    field: 'total', // Use raw number for filtering
+    format: (val) => {
+      const valor = parseFloat(val)
+      if (isNaN(valor)) return '0.00'
+      return decimas(redondear(valor))
     },
+    dataType: 'number',
   },
-  { name: 'autorizacion', label: 'Autorización', field: 'autorizacion', align: 'center' },
+  {
+    name: 'autorizacion',
+    label: 'Autorización',
+    field: 'autorizacion_label', // Use label for friendly filtering
+    align: 'center',
+    dataType: 'text',
+  },
   { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'right' },
   { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
 ]
+
+const arrayHeaders = [
+  'numero',
+  'fecha',
+  'proveedor',
+  'lote',
+  'codigo',
+  'nfactura',
+  'tipocompra',
+  'total',
+  'tipocompra',
+  'total',
+  'autorizacion',
+]
+
+const sumColumns = ['total']
+
 const emit = defineEmits([
   'add',
   'repDesglosado',
@@ -236,7 +249,7 @@ const emit = defineEmits([
 
 const filteredCompra = computed(() => {
   if (!filtroAlmacen.value) {
-    return props.rows // ← muestra todos si no hay filtro
+    return [] // ← muestra vacío si no hay filtro
   }
   return props.rows.filter((compra) => compra.idalmacen == filtroAlmacen.value.value)
 })
@@ -246,6 +259,8 @@ const processedRows = computed(() => {
   return filteredCompra.value.map((row, index) => ({
     ...row,
     numero: index + 1,
+    tipocompra_label: Number(row.tipocompra) === 2 ? 'Contado' : 'A crédito',
+    autorizacion_label: Number(row.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
   }))
 })
 
@@ -278,8 +293,21 @@ function closeModalCredito() {
   credito.value = false
   emit('actualizarTablaPrincipal')
 }
-function imprimirReporte() {
-  const doc = PDF_REPORTE_COMPRAS(filteredCompra, filtroAlmacen)
+async function imprimirReporte() {
+  if (!filtroAlmacen.value) {
+    await showDialog($q, 'W', 'Debe seleccionar un almacén para ver el reporte.')
+    return
+  }
+
+  // Obtener datos filtrados de la tabla si existe la referencia
+  const datosParaReporte = tableRef.value
+    ? tableRef.value.obtenerDatosFiltrados()
+    : filteredCompra.value
+
+  // Envolver en { value: ... } para simular una ref, ya que PDF_REPORTE_COMPRAS accede a .value
+  const datosRef = { value: datosParaReporte }
+
+  const doc = PDF_REPORTE_COMPRAS(datosRef, filtroAlmacen)
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
