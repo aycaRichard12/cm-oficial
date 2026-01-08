@@ -6,6 +6,7 @@
         @click="$emit('add')"
         class="btn-res q-mt-lg"
         title="Registrar Tipo Cliente"
+        id="agregarTipoCliente"
       >
         <q-icon name="add" class="icono" />
         <span class="texto">Agregar</span>
@@ -18,7 +19,7 @@
           </template>
         </q-input>
       </div> -->
-      <div>
+      <div id="buscarTipoCliente">
         <label for="buscar">Buscar...</label>
         <q-input
           v-model="search"
@@ -37,6 +38,7 @@
     </div>
 
     <q-table
+      id="tablaTipoCliente"
       title="Tipos Clientes"
       :rows="ordenados"
       :columns="columns"
@@ -63,6 +65,7 @@
             @click="$emit('edit-item', props.row)"
             title="Editar"
             flat
+            id="editarTipoCliente"
           />
           <q-btn
             icon="delete"
@@ -71,6 +74,7 @@
             @click="$emit('delete-item', props.row)"
             title="Eliminar"
             flat
+            id="eliminarTipoCliente"
           />
           <q-btn
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
@@ -79,6 +83,7 @@
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
             title="Cambiar de Estado"
+            id="cambiarEstadoTipoCliente"
           />
         </q-td>
       </template>
