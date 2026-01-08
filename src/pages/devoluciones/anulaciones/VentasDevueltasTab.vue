@@ -10,12 +10,14 @@
       :columnas-busqueda="columnasBusqueda"
     />
 
-    <q-table
+    <BaseFilterableTable
       title="Devoluciones"
       :rows="filteredRows"
       :columns="columnas"
+      :arrayHeaders="arrayHeaders"
+      no-data-label="No hay devoluciones"
       row-key="id"
-      :filter="busqueda"
+      :search="busqueda"
       :filter-method="filtrarRows"
       :loading="loading"
       :pagination="pagination"
@@ -41,7 +43,7 @@
           />
         </q-td>
       </template>
-    </q-table>
+    </BaseFilterableTable>
   </q-tab-panel>
 </template>
 
@@ -50,6 +52,7 @@ import { ref, computed } from 'vue'
 import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
 import VentasTableVerButtons from './VentasTableVerButtons.vue'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -79,18 +82,28 @@ const columnasBusqueda = [
 ]
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'fechadevolucion', label: 'Fecha devolución', field: 'fechadevolucion', align: 'center', },
-  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center' },
-  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left' },
-  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left' },
-  { name: 'motivo', label: 'Motivo', field: 'motivo', align: 'left' },
-  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center' },
+  { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
+  { name: 'fechadevolucion', label: 'Fecha devolución', field: 'fechadevolucion', align: 'center', dataType: 'date' },
+  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
+  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
+  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
+  { name: 'motivo', label: 'Motivo', field: 'motivo', align: 'left', dataType: 'text' },
+  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center', dataType: 'number' },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
   { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
 ]
 
+const arrayHeaders = [
+  'numero',
+  'fechadevolucion',
+  'fechaventa',
+  'cliente',
+  'sucursal',
+  'tipov',
+  'motivo',
+  'nfactura',
+]
 const opcionesEstadoFactura = [
   { label: 'Seleccione', value: '' },
   { label: 'Ver estado', value: 3 },
@@ -108,7 +121,17 @@ const filteredRows = computed(() => {
 
 const filtrarRows = (rows, terms, cols, cellValue) => {
   const lowerTerms = terms ? terms.toLowerCase() : ''
-  if (!lowerTerms || columnaBusqueda.value === 0) return rows
+  if (!lowerTerms) return rows
+
+  // Si se selecciona "Todas" (value 0)
+  if (columnaBusqueda.value === 0) {
+    return rows.filter(row => {
+      return cols.some(col => {
+        const val = cellValue(col, row)?.toString().toLowerCase() || ''
+        return val.includes(lowerTerms)
+      })
+    })
+  }
   
   const col = cols[columnaBusqueda.value]
   return rows.filter((row) => {
