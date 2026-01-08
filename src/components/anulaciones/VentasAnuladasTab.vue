@@ -16,7 +16,6 @@
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
       no-data-label="No hay ventas anuladas"
-  
       row-key="id"
       :search="busqueda"
       :filter-method="filtrarRows"
@@ -26,8 +25,8 @@
     >
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props">
-          <VentasTableActions 
-            :row="props.row" 
+          <VentasTableActions
+            :row="props.row"
             :opciones="props.row.tipoventa === 0 ? [] : opcionesEstadoFactura"
             @accion="handleAccion"
           />
@@ -36,7 +35,7 @@
 
       <template v-slot:body-cell-ver="props">
         <q-td :props="props">
-          <VentasTableVerButtons 
+          <VentasTableVerButtons
             :row="props.row"
             @pdf="$emit('pdf', $event)"
             @ver-factura="$emit('ver-factura', $event)"
@@ -59,7 +58,7 @@ const props = defineProps({
   rows: { type: Array, required: true },
   loading: { type: Boolean, default: false },
   almacenesOptions: { type: Array, default: () => [] },
-  tiposVentaOptions: { type: Array, default: () => [] }
+  tiposVentaOptions: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['accion', 'pdf', 'ver-factura', 'ver-siat'])
@@ -83,18 +82,30 @@ const columnasBusqueda = [
 
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
-  { name: 'fecharegistro', label: 'Fecha anulación', field: 'fecharegistro', align: 'center', dataType: 'date' },
+  {
+    name: 'fecharegistro',
+    label: 'Fecha anulación',
+    field: 'fecharegistro',
+    align: 'center',
+    dataType: 'date',
+  },
   { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
   { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
   { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
   { name: 'motivo', label: 'Motivo', field: 'motivo', align: 'left', dataType: 'text' },
-  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center', dataType: 'number' },
+  {
+    name: 'nfactura',
+    label: 'Nro. factura',
+    field: 'nfactura',
+    align: 'center',
+    dataType: 'number',
+  },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
   { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
 ]
 
-const arrayHeaders=[
+const arrayHeaders = [
   'numero',
   'fecharegistro',
   'fechaventa',
@@ -104,8 +115,6 @@ const arrayHeaders=[
   'motivo',
   'nfactura',
 ]
-
-
 
 const opcionesEstadoFactura = [
   { label: 'Seleccione', value: '' },
@@ -124,15 +133,15 @@ const filteredRows = computed(() => {
 
 const filtrarRows = (rows, terms, cols, cellValue) => {
   const lowerTerms = terms ? terms.toLowerCase() : ''
-  
+
   if (!lowerTerms) {
     return rows
   }
 
   // Si se selecciona "Todas" (value 0)
   if (columnaBusqueda.value === 0) {
-    return rows.filter(row => {
-      return cols.some(col => {
+    return rows.filter((row) => {
+      return cols.some((col) => {
         const val = cellValue(col, row)?.toString().toLowerCase() || ''
         return val.includes(lowerTerms)
       })
@@ -140,9 +149,9 @@ const filtrarRows = (rows, terms, cols, cellValue) => {
   }
 
   const col = cols[columnaBusqueda.value]
-  
+
   return rows.filter((row) => {
-    if(!col) return false
+    if (!col) return false
     const val = cellValue(col, row)?.toString().toLowerCase() || ''
     return val.includes(lowerTerms)
   })
