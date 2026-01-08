@@ -11,6 +11,7 @@
           :loading="loading"
           @on-delete="handleDelete"
           @on-edit="handleEdit"
+          @toggle-status="toggleStatus"
         />
       </div>
     </div>
@@ -37,7 +38,13 @@ const fetchOperaciones = async () => {
     const data = await api.get(`listarOperaciones/${IDMD5}`)
     const response = data.data
     console.log(response)
-    operaciones.value = response.data
+    operaciones.value = response.data.map((obj, index) => {
+      return {
+        ...obj,
+        id: index + 1,
+        usuario: obj.usuario[0]?.usuario || 'N/A',
+      }
+    })
   } catch (error) {
     $q.notify({ color: 'negative', message: 'Error al cargar operaciones: ' + error })
   } finally {
@@ -59,7 +66,8 @@ const handleSave = async (payload) => {
       idmd5: IDMD5,
     }
 
-    await api[method](url, body)
+    const response = await api[method](url, body)
+    console.log(response.data)
     $q.notify({
       color: 'positive',
       message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
@@ -93,6 +101,25 @@ const handleDelete = async (id) => {
       loading.value = false
     }
   })
+}
+
+const toggleStatus = async (item) => {
+  console.log('toggleStatus item', item)
+  const nuevoEstado = Number(item.estado) === 2 ? 1 : 2
+  console.log('nuevoEstado', nuevoEstado)
+  try {
+    const response = await api.get(
+      `CambiarEstadoPermisosOperacionUsuario/${item.id_operacion}/${nuevoEstado}`,
+    ) // Cambia a tu ruta real
+    console.log(response)
+    fetchOperaciones()
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar los datos',
+    })
+  }
 }
 
 onMounted(fetchOperaciones)
