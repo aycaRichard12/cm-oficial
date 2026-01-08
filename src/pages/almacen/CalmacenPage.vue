@@ -31,13 +31,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import FormularioAlmacen from 'components/almacen/creacion/almacenForm.vue'
 import TablaAlmacen from 'components/almacen/creacion/almacenTable.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
+
+
+
 const idempresa = idempresa_md5()
 const $q = useQuasar()
 const showForm = ref(false)
