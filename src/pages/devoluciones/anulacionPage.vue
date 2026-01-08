@@ -75,10 +75,7 @@
       @confirmar="onConfirmarDevolucion"
     />
 
-    <PdfViewerDialog
-      v-model="modalComprobantePDF"
-      :src="pdfData"
-    />
+    <PdfViewerDialog v-model="modalComprobantePDF" :src="pdfData" />
 
     <!-- Modal para ver estado de factura -->
     <q-dialog v-model="modalEstadoFactura">
@@ -119,25 +116,25 @@ import { useVentas } from 'src/composables/useVentas'
 import { useAccionesVenta } from 'src/composables/useAccionesVenta'
 
 // Components
-import VentasValidasTab from './anulaciones/VentasValidasTab.vue'
-import VentasAnuladasTab from './anulaciones/VentasAnuladasTab.vue'
-import VentasDevueltasTab from './anulaciones/VentasDevueltasTab.vue'
-import DetalleDevolucionTab from './anulaciones/DetalleDevolucionTab.vue'
-import MotivoAnulacionDialog from './anulaciones/MotivoAnulacionDialog.vue'
-import MotivoDevolucionDialog from './anulaciones/MotivoDevolucionDialog.vue'
-import PdfViewerDialog from './anulaciones/PdfViewerDialog.vue'
+import VentasValidasTab from 'src/components/anulaciones/VentasValidasTab.vue'
+import VentasAnuladasTab from 'src/components/anulaciones/VentasAnuladasTab.vue'
+import VentasDevueltasTab from 'src/components/anulaciones/VentasDevueltasTab.vue'
+import DetalleDevolucionTab from 'src/components/anulaciones/DetalleDevolucionTab.vue'
+import MotivoAnulacionDialog from 'src/components/anulaciones/MotivoAnulacionDialog.vue'
+import MotivoDevolucionDialog from 'src/components/anulaciones/MotivoDevolucionDialog.vue'
+import PdfViewerDialog from 'src/components/anulaciones/PdfViewerDialog.vue'
 import RegistrarNotaCreditoDebito from 'src/pages/NotasCreditoDebito/RegistrarNotaCreditoDebito.vue'
 
 const $q = useQuasar()
 
 // --- State and Composables ---
-const { 
-  ventasValidas, 
-  ventasAnuladas, 
-  ventasDevueltas, 
-  cargando, 
+const {
+  ventasValidas,
+  ventasAnuladas,
+  ventasDevueltas,
+  cargando,
   cargarTodosLosDatos,
-  listarDatosDEV
+  listarDatosDEV,
 } = useVentas()
 
 const {
@@ -154,7 +151,7 @@ const {
   verificarYProcesarDevolucion,
   confirmarDevolucion,
   verificarEstadoFactura,
-  verificarEstadoCotizacion
+  verificarEstadoCotizacion,
 } = useAccionesVenta()
 
 // UI State
@@ -193,7 +190,7 @@ const cargarConfiguracion = async () => {
   const tipoFactura = getTipoFactura()
 
   try {
-     // Cargar almacenes
+    // Cargar almacenes
     const almacenesResponse = await api.get(`listaResponsableAlmacen/${idempresa}`)
     almacenesOptions.value = [
       { value: 0, label: 'Seleccione un Almacén' },
@@ -207,7 +204,7 @@ const cargarConfiguracion = async () => {
       const enpoint = `listaLeyendaSIN/tiposector/${token}/${tipoFactura}`
       const tiposResponse = await api.get(enpoint)
       const codigosPermitidos = [0, 1, 2, 3]
-      
+
       const filtrarYEliminarDuplicados = (datos, codigosPermitidos) => {
         const codigosVistos = new Set()
         return datos.filter((item) => {
@@ -226,7 +223,7 @@ const cargarConfiguracion = async () => {
         [...tiposResponse.data.data],
         codigosPermitidos,
       )
-      
+
       tiposVentaOptions.value = [
         { value: 0, label: 'comprobante de venta' },
         { value: -1, label: 'cotizacion de venta' },
@@ -255,13 +252,15 @@ const handleAccion = (row) => {
   const idventa = Number(row.idventa) // sometimes present
   const tipo = row.tipo
 
-  if (value == 1) { // Anulacion
+  if (value == 1) {
+    // Anulacion
     if (TipoVenta == -1) {
       iniciarAnulacionCotizacion(dataValue)
     } else {
       iniciarAnulacionVenta(dataValue)
     }
-  } else if (value == 2) { // Devolucion
+  } else if (value == 2) {
+    // Devolucion
     if (TipoVenta == 0) {
       verificarYProcesarDevolucion(dataValue, 'VE', abrirDetalleExistente)
     } else if (TipoVenta == 1) {
@@ -272,9 +271,10 @@ const handleAccion = (row) => {
       }
       abrirModalNota(rowVenta)
     } else if (TipoVenta == -1) {
-       verificarYProcesarDevolucion(dataValue, 'COT', abrirDetalleExistente)
+      verificarYProcesarDevolucion(dataValue, 'COT', abrirDetalleExistente)
     }
-  } else if (value == 3) { // Ver Estado
+  } else if (value == 3) {
+    // Ver Estado
     if (TipoVenta == -1) {
       if (tipo == 'cotizacion') {
         verificarEstadoCotizacion(dataValue)
@@ -288,56 +288,56 @@ const handleAccion = (row) => {
 }
 
 const onConfirmarAnulacion = async () => {
-    const success = await confirmarAnulacion()
-    if(success) {
-        await cargarTodosLosDatos()
-    }
+  const success = await confirmarAnulacion()
+  if (success) {
+    await cargarTodosLosDatos()
+  }
 }
 
 const abrirDetalleExistente = (idDevolucion) => {
-    $q.notify({
-        type: 'info',
-        message: 'Su registro de devolución se inició. Debe concluir con los pasos siguientes...',
-    })
-    showDevolucionDetail.value = true
-    idDevolucionActual.value = idDevolucion
-    tab.value = 'detalleDevolucion'
+  $q.notify({
+    type: 'info',
+    message: 'Su registro de devolución se inició. Debe concluir con los pasos siguientes...',
+  })
+  showDevolucionDetail.value = true
+  idDevolucionActual.value = idDevolucion
+  tab.value = 'detalleDevolucion'
 }
 
 const onConfirmarDevolucion = async () => {
-    await confirmarDevolucion((idDevolucion) => {
-        showDevolucionDetail.value = true
-        idDevolucionActual.value = idDevolucion
-        tab.value = 'detalleDevolucion'
-    })
+  await confirmarDevolucion((idDevolucion) => {
+    showDevolucionDetail.value = true
+    idDevolucionActual.value = idDevolucion
+    tab.value = 'detalleDevolucion'
+  })
 }
 
 // --- Detalle Devolucion Navigation ---
 
 const cerrarDetalleDevolucion = () => {
-    showDevolucionDetail.value = false
-    tab.value = 'devueltas'
-    idDevolucionActual.value = null
+  showDevolucionDetail.value = false
+  tab.value = 'devueltas'
+  idDevolucionActual.value = null
 }
 
 const onDevolucionFinalizada = async () => {
-    cerrarDetalleDevolucion()
-    await listarDatosDEV()
+  cerrarDetalleDevolucion()
+  await listarDatosDEV()
 }
 
 // --- PDF Logic ---
 
 const generarComprobantePDF = async (row) => {
-    // Keep this logic here as it depends on pdf util imports
-  let id = Number(row.tipoventa) === -1 
-    ? (row.tipo === 'cotizacion' ? row.id : row.idventa) 
-    : row.id
+  // Keep this logic here as it depends on pdf util imports
+  let id =
+    Number(row.tipoventa) === -1 ? (row.tipo === 'cotizacion' ? row.id : row.idventa) : row.id
 
   try {
     const idempresa = idempresa_md5()
     $q.loading.show({ message: 'Generando comprobante...' })
 
-    const endpoint = Number(row.tipoventa) === -1
+    const endpoint =
+      Number(row.tipoventa) === -1
         ? `detallesCotizacion/${id}/${idempresa}`
         : `detallesVenta/${id}/${idempresa}`
 
@@ -376,7 +376,6 @@ const verFactura = (url) => {
 const verFacturaSIAT = (url) => {
   window.open(url, '_blank', 'noopener,noreferrer')
 }
-
 
 onMounted(async () => {
   await cargarConfiguracion()
