@@ -10,10 +10,14 @@
       :columnas-busqueda="columnasBusqueda"
     />
 
-    <q-table
+    <BaseFilterableTable
       title="Ventas Validas"
       :rows="filteredRows"
       :columns="columnas"
+      :arrayHeaders="arrayHeaders"
+      :sumColumns="summationHeaders"
+      nombre-columna-totales="nfactura"
+      no-data-label="No hay ventas validas"
       row-key="id"
       :filter="busqueda"
       :filter-method="filtrarRows"
@@ -41,7 +45,7 @@
           />
         </q-td>
       </template>
-    </q-table>
+    </BaseFilterableTable>
   </q-tab-panel>
 </template>
 
@@ -50,6 +54,8 @@ import { ref, computed } from 'vue'
 import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
 import VentasTableVerButtons from './VentasTableVerButtons.vue'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -83,21 +89,43 @@ const columnasBusqueda = [
 ]
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center', sortable: true },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', sortable: true },
-  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', sortable: true },
-  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', sortable: true },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', sortable: true },
-  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', sortable: true },
-  { name: 'tipopago', label: 'Tipo pago', field: 'tipopago', align: 'left', sortable: true },
-  { name: 'canal', label: 'Canal', field: 'canal', align: 'left', sortable: true },
-  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center', sortable: true },
-  { name: 'total', label: 'Total', field: 'total', align: 'right', sortable: true },
-  { name: 'descuento', label: 'Dscto', field: 'descuento', align: 'right', sortable: true },
-  { name: 'montototal', label: 'Monto', field: 'montototal', align: 'right', sortable: true },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', sortable: true },
+  { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
+  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType:'text' },
+  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
+  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
+  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
+  { name: 'tipopago', label: 'Tipo pago', field: 'tipopago', align: 'left', dataType: 'text' },
+  { name: 'canal', label: 'Canal', field: 'canal', align: 'left', dataType: 'text' },
+  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center', dataType: 'number' },
+  { name: 'total', label: 'Total', field: 'total', align: 'right', dataType: 'number' },
+  { name: 'descuento', label: 'Dscto', field: 'descuento', align: 'right', dataType: 'number' },
+  { name: 'montototal', label: 'Monto', field: 'montototal', align: 'right', dataType: 'number' },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
   { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
+]
+
+const arrayHeaders =[
+  'numero',
+  'almacen',
+  'fechaventa',
+  'cliente',
+  'sucursal',
+  'tipov',
+  'tipopago',
+  'canal',
+  'nfactura',
+  'total',
+  'descuento',
+  'montototal',
+  'estado',
+]
+
+const summationHeaders = [
+  'total',
+  'descuento',
+  'montototal',
 ]
 
 const opcionesAccionSimple = [
