@@ -1,4 +1,24 @@
 export const Tour_tiposdeclientes = [
+   
+   
+    {
+        element:'#tiposdeclientes',
+        popover: {
+            title: 'Tipos de Clientes',
+            description: 'En esta sección se pueden gestionar los tipos de clientes',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element:'#canalesdeventa',
+        popover: {
+            title: 'Canal de Venta',
+            description: 'En esta sección se pueden gestionar los canales de venta',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
     {
         element: '#agregarTipoCliente',
         popover: {
