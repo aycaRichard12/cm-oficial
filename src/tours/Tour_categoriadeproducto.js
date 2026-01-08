@@ -48,39 +48,59 @@ export const Tour_categoriadeproducto = [
     },
   },
   {
-    element: '#add',
+    element: '#agregarCategoria',
     popover: {
-      title: 'Añadir un leyenda Proforma',
-      description: 'Aqui puede generar una nueva Leyenda Proforma',
+      title: 'Agregar Categoria',
+      description: 'Aqui puede generar una nueva Categoria ',
       side: 'left',
       align: 'start',
     },
   },
   {
-    element: '#edit',
+    element: '#buscarCategoria',
     popover: {
-      title: 'Editar Leyenda Proforma',
-      description: 'Editar Leyenda Proforma la informacion ya registrada',
+      title: 'Buscar Categoria',
+      description: 'Buscar Categoria la informacion de la categoria ya registrada',
+      side: 'bottom',
+      align: 'start',
+    },
+  },
+   {
+    element: '#tablaCategorias',
+    popover: {
+      title: 'Categorias ',
+      description: 'Aqui se mostrar todas las Categorias ',
       side: 'bottom',
       align: 'start',
     },
   },
   {
-    element: '#delete',
+    element: '#editarCategoria',
     popover: {
-      title: 'Eliminar Leyenda Proforma',
-      description: 'Eliminar Leyenda Proforma seleccionada ',
+      title: 'Editar Categoria',
+      description: 'Editar Categoria la informacion de la categoria ya registrada',
       side: 'bottom',
       align: 'start',
     },
   },
   {
-    element: '#table',
+    element: '#eliminarCategoria',
     popover: {
-      title: 'Leyendas Proforma ',
-      description: 'Aqui se mostrar todas las Leyendas Proforma ',
+      title: 'Eliminar Categoria',
+      description: 'Eliminar Categoria la informacion de la categoria ya registrada',
       side: 'bottom',
       align: 'start',
     },
   },
+
+  {
+    element: '#cambiarEstadoCategoria',
+    popover: {
+      title: 'Cambiar Estado Categoria',
+      description: 'Cambiar Estado Categoria la informacion de la categoria ya registrada',
+      side: 'bottom',
+      align: 'start',
+    },
+  },
+ 
 ]
