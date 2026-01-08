@@ -5,6 +5,7 @@
       @click="$emit('add')"
       class="btn-res q-mt-lg"
       title="Registrar Parametro"
+      id="agregarParametro"
     >
       <q-icon name="add" class="icono" />
       <span class="texto">Agregar</span>
@@ -17,7 +18,7 @@
         </template>
       </q-input>
     </div> -->
-    <div>
+    <div id="buscarParametro">
       <label for="buscar"> Buscar...</label>
       <q-input
         v-model="search"
@@ -36,6 +37,7 @@
   </div>
 
   <q-table
+    id="tablaParametro"
     :rows="processedRows"
     :columns="columns"
     row-key="id"
@@ -61,6 +63,7 @@
           @click="$emit('edit-item', props.row)"
           title="Editar"
           flat
+          id="editarParametro"
         />
         <q-btn
           icon="delete"
@@ -69,6 +72,7 @@
           @click="$emit('delete-item', props.row)"
           title="Eliminar"
           flat
+          id="eliminarParametro"
         />
       </q-td>
     </template>
