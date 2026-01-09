@@ -6,6 +6,7 @@
       unelevated
       class="btn-res q-mt-lg"
       title="Registrar Unidad"
+      id="agregarUnidadMedidaProducto"
     >
       <q-icon name="add" class="icono" />
       <span class="texto">Agregar</span>
@@ -17,7 +18,7 @@
         </template>
       </q-input>
     </div> -->
-    <div>
+    <div id="buscarUnidadMedidaProducto">
       <label for="buscar">Buscar...</label>
       <q-input
         v-model="search"
@@ -35,7 +36,7 @@
     </div>
   </div>
 
-  <q-table title="Unidades" :rows="ordenados" :columns="columns" row-key="id" :filter="search">
+  <q-table title="Unidades" :rows="ordenados" :columns="columns" row-key="id" :filter="search" id="tablaUnidadMedidaProducto">
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
@@ -53,6 +54,7 @@
           @click="$emit('edit-item', props.row)"
           title="Editar"
           flat
+          id="editarUnidadMedidaProducto"
         />
         <q-btn
           icon="delete"
@@ -61,6 +63,7 @@
           @click="$emit('delete-item', props.row)"
           title="Eliminar"
           flat
+          id="eliminarUnidadMedidaProducto"
         />
         <q-btn
           :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
@@ -69,6 +72,7 @@
           :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
           @click="$emit('toggle-status', props.row)"
           title="Cambiar de Estado"
+          id="cambiarEstadoUnidadMedidaProducto"
         />
       </q-td>
     </template>
@@ -89,11 +93,11 @@ const props = defineProps({
 defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 
 const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'nombre', label: 'Unidad', field: 'nombre', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'numero', label: 'N°', field: 'numero', align: 'center' , id: 'numeroUnidadMedidaProducto'},
+  { name: 'nombre', label: 'Unidad', field: 'nombre', align: 'left' , id: 'nombreUnidadMedidaProducto'},
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' , id: 'descripcionUnidadMedidaProducto'},
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' , id: 'estadoUnidadMedidaProducto'},
+  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' , id: 'opcionesUnidadMedidaProducto'},
 ]
 const ordenados = computed(() =>
   props.rows.map((row, index) => ({
