@@ -6,16 +6,17 @@
         @click="$emit('add')"
         class="btn-res q-mt-lg"
         title="Registrar Almacen"
+        id="agregarAlmacen"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">Agregar</span>
+        <span class="texto" >Agregar</span>
       </q-btn>
       <q-btn color="info" outline @click="mostrarReporte" class="btn-res q-mt-lg">
         <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista previa PDF</span>
+        <span class="texto" id="vistaPreviaPDF">Vista previa PDF</span>
       </q-btn>
-      <div>
-        <label for="buscar">Buscar...</label>
+      <div id="buscarAlmacen">
+        <label for="buscar" >Buscar...</label>
         <q-input
           v-model="search"
           id="buscar"
@@ -33,6 +34,7 @@
     </div>
 
     <BaseFilterableTable
+      id="tablaAlmacenes"
       title="Almacenes"
       :rows="decoratedRows"
       :columns="columnas"
@@ -68,6 +70,8 @@
             @click="$emit('edit-item', props.row)"
             title="Editar"
             flat
+            id="editarAlmacen"
+
           />
           <q-btn
             icon="delete"
@@ -76,6 +80,7 @@
             @click="$emit('delete-item', props.row)"
             title="Eliminar"
             flat
+            id="eliminarAlmacen"
           />
           <q-btn
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
@@ -84,6 +89,7 @@
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
             title="Cambiar de Estadato"
+            id="cambiarEstadoAlmacen"
           />
         </q-td>
       </template>

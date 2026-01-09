@@ -7,6 +7,7 @@
         unelevated
         class="btn-res q-mt-lg"
         title="Registrar Estado"
+        id="agregarEstadoProducto"
       >
         <q-icon name="add" class="icono" />
         <span class="texto">Agregar</span>
@@ -18,7 +19,7 @@
           </template>
         </q-input>
       </div> -->
-      <div>
+      <div id="buscarEstado">
         <label for="buscar">Buscar...</label>
         <q-input
           v-model="search"
@@ -43,6 +44,7 @@
       :columns="columns"
       row-key="id"
       :filter="search"
+      id="tablaEstadoProducto"
     >
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
@@ -61,6 +63,7 @@
             @click="$emit('edit-item', props.row)"
             title="Editar"
             flat
+            id="editarEstadoProducto"
           />
           <q-btn
             icon="delete"
@@ -69,6 +72,7 @@
             @click="$emit('delete-item', props.row)"
             title="Eliminar"
             flat
+            id="eliminarEstadoProducto"
           />
           <q-btn
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
@@ -77,6 +81,7 @@
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
             title="Cambiar de Estado"
+            id="cambiarEstadoEstadoProducto"
           />
         </q-td>
       </template>
