@@ -8,6 +8,7 @@
           label="Volver"
           size="sm"
           @click="$emit('volver')"
+          id="btnVolverAsignacion"
         />
       </div>
     </div>
@@ -15,10 +16,10 @@
     <q-form @submit.prevent="handleSubmit" ref="myForm">
       <div class="title-container">
         <div class="title">Asignación de puntos de venta</div>
-        <div class="subtitle">{{ user.name }}</div>
+        <div class="subtitle" id="nombreUsuario">{{ user.name }}</div>
       </div>
       <q-card-section class="row q-col-gutter-x-md justify-center">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="almacenPuntoVenta">
           <label for="almacen">Almacén*</label>
           <q-select
             v-model="warehouse"
@@ -34,7 +35,7 @@
           />
         </div>
 
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="puntoVenta">
           <label for="puntoventa">Punto de venta*</label>
           <q-select
             v-model="pointOfSale"
@@ -50,7 +51,7 @@
         </div>
       </q-card-section>
       <q-card-section class="flex justify-center">
-        <q-btn type="submit" color="primary" label="Registrar" />
+        <q-btn type="submit" color="primary" label="Registrar" id="registrarPuntoVenta" />
       </q-card-section>
     </q-form>
   </div>
