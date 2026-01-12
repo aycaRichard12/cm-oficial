@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-center">
-      <div style="width: 400px">
+      <div style="width: 400px" id="filtrarAlmacenes">
         <label for="alamacen">Almacén</label>
         <q-select
           v-model="filterWarehouse"
