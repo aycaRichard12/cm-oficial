@@ -1,5 +1,5 @@
 <template>
-  <q-table title="Almacenes Asignados" :rows="rows" :columns="columns" row-key="id" flat bordered>
+  <q-table title="Almacenes Asignados" :rows="rows" :columns="columns" row-key="id" flat bordered  id="tablaAlmacenesAsignados">
     <template v-slot:body-cell-opciones="props">
       <q-td align="center">
         <q-btn
@@ -9,6 +9,7 @@
           @click="eliminar(props.row.id)"
           title="Eliminar"
           flat
+          id="eliminarAlmacen"
         />
       </q-td>
     </template>

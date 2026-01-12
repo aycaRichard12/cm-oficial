@@ -8,18 +8,19 @@
           label="Volver"
           size="sm"
           @click="$emit('volver')"
+          id="volverListado"
         />
       </div>
     </div>
     <q-form @submit.prevent="handleSubmit">
       <div class="title-container">
         <div class="title">Asignación de Almacenes</div>
-        <div class="subtitle">
+        <div class="subtitle" id="nombreResponsable">
           {{ `${responsableNombre.usuario.usuario} ${responsableNombre.usuario.nombre}` }}
         </div>
       </div>
-      <q-card-section class="row q-col-gutter-x-md flex justify-center">
-        <div class="col-12 col-md-3">
+      <q-card-section class="row q-col-gutter-x-md flex justify-center" >
+        <div class="col-12 col-md-3" id="darleAlmacen">
           <label for="almacen">Almacenes*</label>
           <q-select
             v-model="localData.almacen"
@@ -37,8 +38,8 @@
         </div>
       </q-card-section>
 
-      <q-card-actions class="flex justify-end">
-        <q-btn label="Guardar" type="submit" color="primary" />
+      <q-card-actions class="flex justify-end" >
+        <q-btn label="Guardar" type="submit" color="primary" id="guardarAlmacen"/>
       </q-card-actions>
     </q-form>
   </div>

@@ -1,4 +1,90 @@
 export const Tour_asignaralmacen = [
+
+
+
+
+
+
+
+
+    
+
+    {
+    element: "#volverListado",
+    popover: {
+      title: "Volver",
+      description: "Clic para volver al listado de usuarios responsables de almacenes",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
+    element: "#nombreResponsable",
+    popover: {
+      title: "Nombre del responsable",
+      description: "Esta usuario estar a cargo de los almacenes que le vayas asignando",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
+    element: "#darleAlmacen",
+    popover: {
+      title: "Asignar almacen a un usuario responsable",
+      description: "Clic para seleccionar un almacen y asignarlo a un usuario responsable",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
+    element: "#guardarAlmacen",
+    popover: {
+      title: "Guardar",
+      description: "Clic para guardar los almacenes asignados",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
+    element: "#tablaAlmacenesAsignados",
+    popover: {
+      title: "Tabla de Almacenes Asignados",
+      description: "Tabla que muestra los datos de los almacenes asignados al usuario responsable",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
+    element: "#eliminarAlmacen",
+    popover: {
+      title: "Eliminar Almacén",
+      description: "Clic para eliminar un almacén asignado a este usuario ",
+      side: "bottom",
+      align: "start",
+    },
+  },
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   {
     element: "#asignaralmacen",
     popover: {
@@ -12,7 +98,7 @@ export const Tour_asignaralmacen = [
     element: "#asignarpuntodeventa",
     popover: {
       title: "Asignar Punto de Venta",
-      description: "Clic para asignar un punto de venta",
+      description: "Clic para asignar un punto de venta a un usuario",
       side: "bottom",
       align: "start",
     },
@@ -80,4 +166,6 @@ export const Tour_asignaralmacen = [
       align: "start",
     },
   },
+
+  
 ];
