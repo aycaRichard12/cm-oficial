@@ -1,13 +1,13 @@
 <template>
   <div class="row q-col-gutter-x-md flex justify-between">
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="agregarPuntoVenta">
       <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
         <q-icon name="add" class="icono" />
         <span class="texto"> Agregar</span>
       </q-btn>
     </div>
 
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="tipoAlmacen">
       <label for="almacen">Almacén</label>
       <q-select
         v-model="filtroTipoAlmacen"
@@ -20,7 +20,7 @@
         clearable
       />
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="buscarPuntoVenta">
       <label for="buscar">Buscar...</label>
       <q-input
         v-model="search"
@@ -50,6 +50,7 @@
     @edit-item="$emit('edit-item', $event)"
     @delete-item="$emit('delete-item', $event)"
     @toggle-status="$emit('toggle-status', $event)"
+    id="tablaPuntosVenta"
   >
     <template v-slot:top-right> </template>
     <template v-slot:body-cell-opciones="props">
@@ -60,6 +61,7 @@
           color="primary"
           flat=""
           @click="abrirModal(props.row)"
+          id="asignarPuntoVenta"
         />
 
         <q-btn
@@ -69,8 +71,9 @@
           class="q-mr-sm"
           @click="$emit('edit-item', props.row)"
           flat
+            id="editarPuntoVenta"
         />
-        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat />
+        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat id="eliminarPuntoVenta" />
       </q-td>
     </template>
   </BaseFilterableTable>
