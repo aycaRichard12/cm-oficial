@@ -1,6 +1,6 @@
 <template>
   <div class="row flex justify-between">
-    <div class="row q-col-gutter-x-md">
+    <div class="row q-col-gutter-x-md" id="agregarproducto">
       <div class="col-12 col-md-6">
         <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
           <q-icon name="add" class="icono" />
@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div>
+    <div id="buscarproducto">
       <label for="buscar"> Buscar...</label>
       <q-input
         v-model="search"
@@ -27,6 +27,8 @@
     </div>
   </div>
   <BaseFilterableTable
+      id="tablaProductos"
+
     ref="reHijo"
     title="Listado de Productos"
     :rows="props.rows"
@@ -40,7 +42,7 @@
     <template v-slot:top-right> </template>
 
     <template v-slot:body-cell-imagen="props">
-      <q-td :props="props">
+      <q-td :props="props" id="imagenproducto">
         <q-img
           :src="imagen + props.row.imagen"
           @click="abrirModal(props.row.imagen)"
@@ -58,7 +60,7 @@
         </q-img>
       </q-td>
     </template>
-    <template v-slot:body-cell-productosin="props">
+    <template v-slot:body-cell-productosin="props" >
       <q-td :props="props">
         <div class="text-truncate" @click.stop>
           {{ props.row.productosin.descripcion }}
@@ -81,8 +83,9 @@
           class="q-mr-sm"
           @click="$emit('edit-item', props.row)"
           flat
+          id="editarproducto"
         />
-        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat />
+        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat id="eliminarproducto" />
         <!-- <q-btn color="blue" text-color="black" label="" dense="" /> -->
       </q-td>
     </template>
