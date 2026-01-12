@@ -28,6 +28,7 @@
       @showDetail="onShowDetail"
       @editItem="onEditItem"
       @deleteItem="deleteItem"
+      @viewMap="onViewMap"
     />
 
     <InventarioExteriorDetalleDialog
@@ -47,11 +48,17 @@
       @edit-detail="actualizarDetalleINV"
       @delete-detail="onDeleteDetail"
     />
+
+    <InventarioExteriorMapaDialog
+      v-model="showMapDialog"
+      :latitud="selectedLocation.lat"
+      :longitud="selectedLocation.lng"
+    />
   </q-page>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useMenuStore } from 'src/stores/permitidos'
@@ -63,6 +70,7 @@ import InventarioExteriorFormDialog from 'src/components/inventarioExterior/Inve
 import InventarioExteriorToolbar from 'src/components/inventarioExterior/InventarioExteriorToolbar.vue'
 import InventarioExteriorTable from 'src/components/inventarioExterior/InventarioExteriorTable.vue'
 import InventarioExteriorDetalleDialog from 'src/components/inventarioExterior/InventarioExteriorDetalleDialog.vue'
+import InventarioExteriorMapaDialog from 'src/components/inventarioExterior/InventarioExteriorMapaDialog.vue'
 
 // Composables
 import { useCatalogosInventario } from 'src/composables/useCatalogosInventario'
@@ -75,6 +83,18 @@ const idusuario = idusuario_md5()
 const [, escritura, editar, eliminar] = menuStore.permisoPagina(
   route.path.replace(/^\//, '') + `-${idusuario}`,
 )
+
+// Map Dialog specific state
+const showMapDialog = ref(false)
+const selectedLocation = ref({ lat: '', lng: '' })
+
+const onViewMap = (row) => {
+    selectedLocation.value = {
+        lat: row.latitud, // Ensure 'latitud' is in 'row' (from inventarioData mapping)
+        lng: row.longitud
+    }
+    showMapDialog.value = true
+}
 
 // Destructure Composables
 const {

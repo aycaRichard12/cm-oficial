@@ -1,7 +1,4 @@
-
-import { ref, computed } from 'vue'
-import { useQuasar } from 'quasar'
-import { api } from 'src/boot/axios'
+import { computed, ref } from 'vue'
 import {
   obtenerFechaActualDato,
   validarUsuario,
@@ -9,8 +6,9 @@ import {
   obtenerUbicacion,
   msgNegative,
 } from 'src/composables/FuncionesG'
+import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-
 
 export function useInventarioExterior() {
   const $q = useQuasar()
@@ -34,39 +32,41 @@ export function useInventarioExterior() {
     imagen: null,
     observacion: '',
     latitud: '',
-    longitud: '' // Added missing field init
+    longitud: '', // Added missing field init
   })
 
-  // Permisos - Note: This needs to be checked inside component usually, but if we pass it, it's fine. 
+  // Permisos - Note: This needs to be checked inside component usually, but if we pass it, it's fine.
   // However, since hooks run in setup, we can access store here.
   // We'll expose a function or verify permissions where needed.
   // For now we assume the consumer handles permissions or we can use store here.
 
-    // Columnas para la tabla principal
-    const columns = [
-        { name: 'indice', label: 'N°', field: 'indice', align: 'right', sortable: true },
-        { name: 'Fecha', label: 'Fecha', field: 'Fecha', align: 'right', sortable: true },
-        { name: 'Almacén', label: 'Almacén', field: 'Almacén', align: 'left', sortable: true },
-        { name: 'Cliente', label: 'Cliente', field: 'Cliente', align: 'left', sortable: true },
-        { name: 'Sucursal', label: 'Sucursal', field: 'Sucursal', align: 'left', sortable: true },
-        {
-          name: 'Observación',
-          label: 'Observación',
-          field: 'Observación',
-          align: 'left',
-          sortable: true,
-        },
-        { name: 'Imagen', label: 'Imagen', field: 'Imagen', align: 'center' },
-        { name: 'Autorización', label: 'Autorización', field: 'Autorización', align: 'center' },
-        { name: 'Detalle', label: 'Detalle', field: 'Detalle', align: 'center' },
-        { name: 'Opciones', label: 'Opciones', field: 'Opciones', align: 'center' },
-      ]
+  // Columnas para la tabla principal
+  const columns = [
+    { name: 'indice', label: 'N°', field: 'indice', align: 'right', sortable: true },
+    { name: 'Fecha', label: 'Fecha', field: 'Fecha', align: 'right', sortable: true },
+    { name: 'Almacén', label: 'Almacén', field: 'Almacén', align: 'left', sortable: true },
+    { name: 'Cliente', label: 'Cliente', field: 'Cliente', align: 'left', sortable: true },
+    { name: 'Sucursal', label: 'Sucursal', field: 'Sucursal', align: 'left', sortable: true },
+    {
+      name: 'Observación',
+      label: 'Observación',
+      field: 'Observación',
+      align: 'left',
+      sortable: true,
+    },
+    { name: 'Imagen', label: 'Imagen', field: 'Imagen', align: 'center' },
+    { name: 'Autorización', label: 'Autorización', field: 'Autorización', align: 'center' },
+    { name: 'Detalle', label: 'Detalle', field: 'Detalle', align: 'center' },
+    { name: 'Opciones', label: 'Opciones', field: 'Opciones', align: 'center' },
+  ]
 
   const filteredInventario = computed(() => {
     let tempInventario = inventarioData.value
 
     if (filtroAlmacen.value) {
-      tempInventario = tempInventario.filter((item) => String(item.almacenId) === filtroAlmacen.value)
+      tempInventario = tempInventario.filter(
+        (item) => String(item.almacenId) === filtroAlmacen.value,
+      )
     }
 
     if (searchQuery.value) {
@@ -81,7 +81,6 @@ export function useInventarioExterior() {
   async function listarDatos() {
     const contenidousuario = validarUsuario()
     const idempresa = contenidousuario[0]?.empresa?.idempresa
-
     if (!idempresa) {
       console.error('ID de empresa no disponible para listar inventario.')
       return
@@ -91,6 +90,7 @@ export function useInventarioExterior() {
     try {
       const response = await api.get(endpoint)
       const resultado = response.data
+      console.log('Respuesta completa API de datos :', resultado)
       if (resultado[0] === 'error') {
         console.error(resultado.error)
         inventarioData.value = []
@@ -105,20 +105,22 @@ export function useInventarioExterior() {
         // Let's keep `inventarioData` as the full list or filtered list from server?
         // Original: `inventarioData.value = filteredResult.map(...)` where filteredResult came from `resultado`
         // AND `filtroAlmacen` check.
-        // So `inventarioData` only held filtered items? 
+        // So `inventarioData` only held filtered items?
         // IF so, `filteredInventario` computed doing another filter is weird but ok.
         // Let's preserve original behavior: keys mapping.
-        
+
         let filteredResult = resultado
         // Keeping original logic where it filters immediately upon fetch if filter is present?
         // Actually original code refetched on watcher of `filtroAlmacen`.
-        
+
         // Let's just store everything in `inventarioData` if possible, OR filter it here.
         // Original:
         // if (filtroAlmacen.value) { filteredResult = resultado.filter(...) }
-        
+
         if (filtroAlmacen.value) {
-             filteredResult = resultado.filter((item) => Number(item.idalmacen) === Number(filtroAlmacen.value))
+          filteredResult = resultado.filter(
+            (item) => Number(item.idalmacen) === Number(filtroAlmacen.value),
+          )
         }
 
         inventarioData.value = filteredResult.map((key, index) => ({
@@ -134,6 +136,8 @@ export function useInventarioExterior() {
           almacenId: key.idalmacen,
           clienteId: key.idcliente,
           idsucursal: key.idsucursal,
+          latitud: key.latitud,
+          longitud: key.longitud,
         }))
       }
     } catch (error) {
@@ -158,7 +162,8 @@ export function useInventarioExterior() {
     }
   }
 
-  async function handleMainFormSubmit(escritura) { // Pass permissions needed
+  async function handleMainFormSubmit(escritura) {
+    // Pass permissions needed
     if (!escritura) {
       msgNegative($q)
       return
@@ -171,21 +176,21 @@ export function useInventarioExterior() {
       // Check if cliente is object or value
       const idClienteVal = formData.value.cliente?.value ?? formData.value.cliente
       formDatos.append('idcliente', idClienteVal)
-      
+
       formDatos.append('observacion', formData.value.observacion)
       formDatos.append('almacen', formData.value.almacen)
       formDatos.append('fecha', formData.value.fecha)
-      
+
       const idSucursalVal = formData.value.sucursal?.value ?? formData.value.sucursal
       formDatos.append('sucursal', idSucursalVal)
-      
+
       formDatos.append('latitud', formData.value.latitud)
       formDatos.append('longitud', formData.value.longitud)
-      
+
       if (formData.value.id != null && formData.value.id !== '') {
         formDatos.append('id', formData.value.id)
       }
-      
+
       const response = await api.post('', formDatos)
       const data = response.data
 
@@ -219,7 +224,7 @@ export function useInventarioExterior() {
     }
   }
 
-   const toggleAutorizacion = async (row) => {
+  const toggleAutorizacion = async (row) => {
     const newEstado = Number(row.Autorización) === 2 ? 1 : 2
     const endpoint = `cambiarEstadoinvexterno/${row.id}/${newEstado}`
     try {
@@ -247,7 +252,7 @@ export function useInventarioExterior() {
       })
     }
   }
-  
+
   const deleteItem = (row) => {
     $q.dialog({
       title: 'Confirmar Eliminación',
@@ -282,15 +287,17 @@ export function useInventarioExterior() {
 
   const editItem = async (row, clientesOptions) => {
     const endpoint = `verificarExistenciainvexterno/${row.id}`
+    console.log('Endpoint:', row)
     try {
       const response = await api.get(endpoint)
+      console.log('Respuesta completa API:', response.data)
       const resultado = response.data
       if (resultado.estado === 'exito') {
         formData.value.ver = 'editarInventarioExterno'
         formData.value.id = String(resultado.datos.id)
         formData.value.fecha = resultado.datos.fecha
         formData.value.almacen = String(resultado.datos.idalmacen)
-        
+
         const clienteSeleccionado = clientesOptions.find((c) => {
           return Number(c.value) == Number(resultado.datos.idcliente)
         })
@@ -299,10 +306,16 @@ export function useInventarioExterior() {
 
         tituloFormulario.value = 'Editar registro'
         formCollapse.value = true
-        
-        // Note: consumer needs to call selectSucursal logic after this if needed, 
+        formData.value.latitud = row.latitud
+        formData.value.longitud = row.longitud
+      
+        // Note: consumer needs to call selectSucursal logic after this if needed,
         // or we handle it in the watcher inside the component or here.
+        console.log('resultado',resultado.datos)
         return resultado.datos.idcliente // Return client ID so component can trigger sucursal load
+
+
+
       } else {
         $q.notify({
           message: resultado.mensaje || 'Error al cargar datos para edición.',
@@ -334,12 +347,14 @@ export function useInventarioExterior() {
     formData.value.sucursal = null
     formData.value.imagen = null
     formData.value.observacion = ''
+    formData.value.latitud = ''
+    formData.value.longitud = ''
     formData.value.fecha = obtenerFechaActualDato()
     if (latitud) formData.value.latitud = latitud
     if (longitud) formData.value.longitud = longitud
     tituloFormulario.value = 'Nuevo registro'
   }
-  
+
   const toggleFormCollapse = async (escritura) => {
     const position = await displayLocation()
     if (position) {
@@ -365,6 +380,6 @@ export function useInventarioExterior() {
     deleteItem,
     editItem,
     resetearFormulario,
-    toggleFormCollapse
+    toggleFormCollapse,
   }
 }
