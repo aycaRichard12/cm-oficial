@@ -12,6 +12,7 @@
             emit-value
             map-options
             id="usuario"
+            :rules="[(val) => !!val || 'Seleccione un usuario']"
           />
         </div>
         <div class="col-12 col-md-4">
@@ -30,7 +31,12 @@
 
       <q-card-actions class="flex justify-end">
         <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn label="Aprobar" type="submit" color="primary" />
+        <q-btn
+          label="Aprobar"
+          type="submit"
+          color="primary"
+          :disable="!formData.usuario"
+        />
       </q-card-actions>
     </q-form>
   </q-card>
@@ -97,6 +103,13 @@ watch(
 
 // Manejo del formulario
 const handleSubmit = async () => {
+  if (!formData.value.usuario) {
+    $q.notify({
+      type: 'warning',
+      message: 'Debe seleccionar un usuario',
+    })
+    return
+  }
   const data = {
     ...formData.value,
     nombre: nombre.value,
