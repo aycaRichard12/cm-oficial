@@ -1,10 +1,10 @@
 <template>
   <div class="flex justify-between">
-    <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
+    <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="nuevaAsignacion">
       <q-icon name="add" class="icono" />
       <span class="texto">Nueva Asignación</span>
     </q-btn>
-    <div>
+    <div id="buscarAsignacion">
       <label for="buscar">Buscar...</label>
       <q-input dense outlined debounce="300" v-model="search" id="buscar" />
     </div>
@@ -18,6 +18,7 @@
     :filter="search"
     flat
     bordered
+    id="tablaAsignacion"
   >
     <template v-slot:body-cell-opciones="props">
       <q-td>
@@ -29,6 +30,7 @@
             @click="eliminar(props.row.id)"
             title="Eliminar"
             flat
+            id="eliminarAsignacion"
           />
           <q-btn
             dense
@@ -37,6 +39,7 @@
             @click="asignarAlmacenes(props.row)"
             title="Asignar Almacen"
             flat
+            id="asignarAlmacenes"
           />
         </q-btn-group>
       </q-td>

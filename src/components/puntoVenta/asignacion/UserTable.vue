@@ -1,12 +1,13 @@
 <template>
   <div class="flex justify-end">
-    <div class="q-mb-md">
+    <div class="q-mb-md" id="buscadorUsuarios">
       <label for="buscar">Buscar...</label>
       <q-input dense outlined debounce="300" v-model="filter" id="buscar" />
     </div>
   </div>
 
   <q-table
+    id="tableUsuarios"
     bordered
     title="Usuarios"
     :rows="processedRows"
@@ -23,6 +24,7 @@
           size="sm"
           @click="asignarPuntoVenta(props.row)"
           title="Asignar Puntos de Venta"
+          id="agregarPuntosVenta"
         />
       </q-td>
     </template>

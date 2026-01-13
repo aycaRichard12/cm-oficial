@@ -4,7 +4,7 @@
 
     <!-- Pantallas pequeñas -->
     <div class="row flex justify-between">
-      <q-btn color="primary" @click="$emit('atras')" class="btn-res" dense>
+      <q-btn color="primary" @click="$emit('atras')" class="btn-res" dense id="btnAtras">
         <q-icon name="arrow_back" class="icono" style="" />
         <span class="texto"> Volver</span>
       </q-btn>
@@ -14,14 +14,14 @@
         <div></div>
       </div>
 
-      <q-btn color="primary" @click="$emit('continuar')" class="btn-res" dense>
+      <q-btn color="primary" @click="$emit('continuar')" class="btn-res" dense id="btnContinuar">
         <q-icon name="arrow_forward" class="icono" />
         <span class="texto">Continuar</span>
       </q-btn>
     </div>
 
     <!-- Filtros -->
-    <div class="row q-col-gutter-x-md flex justify-between">
+    <div class="row q-col-gutter-x-md flex justify-between" id="filtroProductos">
       <div class="col-12 col-md-4">
         <label for="almacen">Almacén</label>
         <q-select
@@ -77,7 +77,7 @@
       </template>
       <template #body-cell-seleccion="props">
         <q-td :props="props">
-          <q-checkbox v-model="seleccionados" :val="props.row.id" />
+          <q-checkbox v-model="seleccionados" :val="props.row.id" id="checkboxProductos" />
         </q-td>
       </template>
     </q-table>
