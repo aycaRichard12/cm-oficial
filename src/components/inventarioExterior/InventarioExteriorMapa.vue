@@ -4,7 +4,6 @@
 
     <div class="map-controls absolute-bottom-right q-ma-md column q-gutter-sm">
       <q-btn
-        v-if="!readonly"
         round
         color="primary"
         icon="my_location"
@@ -156,7 +155,9 @@ async function usarMiUbicacion() {
     setTimeout(() => {
       if (map) {
         map.setView([pos.lat, pos.lng], 18)
-        updateLocation(pos.lat, pos.lng)
+        if (!props.readonly) {
+          updateLocation(pos.lat, pos.lng)
+        }
       }
     }, 100)
   } catch (e) {
