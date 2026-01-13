@@ -231,6 +231,8 @@ const arrayHeaders = [
 ]
 
 const sumColumns = [
+  'costounitario',
+  'precio',
   'cantidad',
   'importe',
   'costototal',

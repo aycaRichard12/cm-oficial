@@ -1,12 +1,18 @@
 <template>
   <div class="row flex justify-between">
-    <q-btn color="primary" @click="$emit('add')" unelevated class="btn-res q-mt-lg">
+    <q-btn
+      color="primary"
+      @click="$emit('add')"
+      unelevated
+      class="btn-res q-mt-lg"
+      id="btnNuevaAsignacion"
+    >
       <q-icon name="inventory_2" class="icono" />
       <span class="texto">Nueva Asignación</span>
     </q-btn>
 
     <!-- Filtro por almacén -->
-    <div class="col-2">
+    <div class="col-2" id="filtroAlmacenProductos">
       <label for="almacen">Almacén</label>
       <q-select
         v-model="filtro"
@@ -22,14 +28,20 @@
 
     <!-- Botón imprimir -->
 
-    <q-btn outline="" color="info" @click="onPrintReport" class="btn-res q-mt-lg">
+    <q-btn
+      outline=""
+      color="info"
+      @click="onPrintReport"
+      class="btn-res q-mt-lg"
+      id="btnPDFpreview"
+    >
       <q-icon name="picture_as_pdf" class="icono" />
 
       <span class="texto">Vista previa PDF</span>
     </q-btn>
   </div>
   <div class="flex justify-end q-mb-md">
-    <div>
+    <div id="buscadorProductos">
       <label for="buscar">Buscar...</label>
       <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar...">
         <template v-slot:append>
@@ -40,6 +52,7 @@
   </div>
 
   <q-table
+    id="tableProductos"
     title="Productos Asignados"
     :rows="rows"
     :columns="columns"
@@ -62,7 +75,14 @@
           color="primary"
           @click="$emit('edit-item', props.row)"
         /> -->
-        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat />
+        <q-btn
+          icon="delete"
+          color="negative"
+          dense
+          @click="$emit('delete-item', props.row)"
+          flat
+          id="btnEliminar"
+        />
       </q-td>
     </template>
   </q-table>
