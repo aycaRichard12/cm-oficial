@@ -10,6 +10,7 @@
               id="fechafin"
               type="date"
               outlined
+              2
               dense
               @update:model-value="generarReporte"
             />
@@ -84,23 +85,18 @@
       :rows="processedRows"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
+      :sumColumns="sumColumns"
       flat
       row-key="id"
       separator="horizontal"
       :filter="search"
+      nombreColumnaTotales="pais"
     >
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
           {{ Number(props.row.estado) === 1 ? 'Activo' : 'No Activo' }}
         </q-td>
-      </template>
-      <template v-slot:bottom-row>
-        <q-tr>
-          <q-td colspan="11" class="text-right text-bold">Sumatorias</q-td>
-          <q-td class="text-right text-bold">{{ sumatoriaStock }}</q-td>
-          <q-td class="text-right text-bold">{{ sumatoriaCosto }}</q-td>
-        </q-tr>
       </template>
     </BaseFilterableTable>
   </q-card-section>
@@ -194,8 +190,22 @@ const columnas = [
   },
   { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
   { name: 'pais', label: 'País', field: 'pais', align: 'left', dataType: 'text' },
-  { name: 'stock', label: 'Stock', field: 'stock', align: 'right', dataType: 'number' },
-  { name: 'costo', label: 'Costo total', field: 'costo', align: 'right', dataType: 'number' },
+  {
+    name: 'stock',
+    label: 'Stock',
+    field: 'stock',
+    align: 'right',
+    dataType: 'number',
+    format: (val) => decimas(val),
+  },
+  {
+    name: 'costo',
+    label: 'Costo total',
+    field: 'costo',
+    align: 'right',
+    dataType: 'number',
+    format: (val) => decimas(val),
+  },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
 ]
 
@@ -215,6 +225,8 @@ const arrayHeaders = [
   'estado',
 ]
 
+const sumColumns = ['stock', 'costo']
+
 async function cargarAlmacenes() {
   try {
     const response = await api.get(`listaResponsableAlmacenReportes/${idempresa}`)
@@ -231,17 +243,7 @@ async function cargarAlmacenes() {
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
   }
 }
-const sumatoriaStock = computed(() =>
-  processedRows.value.reduce((acc, item) => acc + Number(item.stock), 0),
-)
 
-const sumatoriaCosto = computed(() => {
-  const total = processedRows.value.reduce((acc, item) => {
-    const costo = parseFloat(item.costo)
-    return acc + (isNaN(costo) ? 0 : costo)
-  }, 0)
-  return total.toFixed(2)
-})
 
 // Métodos simulados
 const generarReporte = async () => {
@@ -277,7 +279,7 @@ const processedRows = computed(() => {
   return rows.map((item, index) => ({
     ...item,
     numero: index + 1,
-    costo: decimas(redondear(parseFloat(item.costounitario) * parseFloat(item.stock))),
+    costo: redondear(parseFloat(item.costounitario) * parseFloat(item.stock)),
   }))
 })
 

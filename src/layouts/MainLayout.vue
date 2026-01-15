@@ -289,6 +289,8 @@ const iconos = ref({
   gestioncompra: 'shopping_basket',
   ingresocredito: 'request_quote',
   gestioncampanas: 'campaign',
+  reporteinventarioexterior: 'report',
+  actualizacionescomercial: 'update',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {
