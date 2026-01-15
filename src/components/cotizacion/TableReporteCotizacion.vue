@@ -48,6 +48,41 @@
         </q-badge>
       </q-td>
     </template>
+
+    <template v-slot:body-cell-estado_cobro="props">
+      <!-- estados de cobro -->
+      <q-td class="flex justify-center">
+        <q-badge color="green" v-if="Number(props.row.estado_cobro) === 2" :label="hola" outline="">
+        </q-badge>
+        <q-badge
+          color="orange"
+          v-if="Number(props.row.estado_cobro) === 1 || Number(props.row.estado_cobro) === 3"
+          :label="estadoCobro[0].pendiente"
+          icon="visibility"
+          @click="irCuentasPorCobrar"
+          outline
+          class="cursor-pointer q-px-sm"
+        />
+
+        <!-- mostras pagado si no me llega ningun dato o si me llega 2 -->
+        <q-badge
+          color="blue"
+          v-if="[2, 0, null].includes(Number(props.row.estado_cobro))"
+          :label="estadoCobro[0].pagado"
+          outline
+          @click="irCuentasPorCobrar(props.row)"
+        />
+
+        <q-badge
+          color="red"
+          v-if="Number(props.row.estado_cobro) === 4"
+          :label="estadoCobro[0].anulado"
+          outline=""
+        >
+        </q-badge>
+      </q-td>
+    </template>
+
     <template v-slot:body-cell-acciones="props">
       <q-td :props="props">
         <q-btn
@@ -83,6 +118,8 @@
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { getTipoFactura } from 'src/composables/FuncionesG'
+import emitter from 'src/event-bus'
+import { verificarexistenciapagina } from 'src/composables/FuncionesG'
 
 const tipoFactura = getTipoFactura()
 const refHijo = ref(null)
@@ -95,6 +132,7 @@ const props = defineProps({
     default: () => [],
   },
 })
+console.log('Props recibidas en TableReporteCotizacion:', props.rows)
 defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
 
 function getActiveFiltersReport() {
@@ -155,8 +193,34 @@ const columnas = [
     field: 'total_sumatorias',
     dataType: 'number',
   },
+  {
+    name: 'estado_cobro',
+    label: 'Estado  de Cobro',
+    align: 'left',
+    field: 'estado_cobro',
+    dataType: 'text',
+  },
   { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
 ]
+
+const estadoCobro = [
+  {
+    pendiente: 'Pendiente',
+    pagado: 'Pagado',
+    anulado: 'Anulado',
+  },
+]
+
+// estado de cobro
+// 1: 'Activo',
+//   2: 'Finalizado',
+//   3: 'Atrasado',
+//   4: 'Anulado',
+
+function irCuentasPorCobrar() {
+  const gestionCuentasPorCobrar = verificarexistenciapagina('cuentasporcobrar')
+  emitter.emit('abrir-submenu', gestionCuentasPorCobrar)
+}
 
 // Headers para la tabla filtrable (copiado del archivo original)
 const ArrayHeaders = [
@@ -168,5 +232,4 @@ const ArrayHeaders = [
   'descuento',
   'total_sumatorias',
 ]
-const summationHeaders = ['monto', 'descuento', 'total_sumatorias']
 </script>

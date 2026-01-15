@@ -4043,3 +4043,93 @@ function agregarPieDePagina(doc) {
     })
   }
 }
+
+export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  const dataRaw = detalleData[0] // Asumimos que viene como array de 1 elemento según el JSON ejemplo
+
+  // 1. Columnas
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo_producto' },
+    { header: 'Producto', dataKey: 'producto' },
+    { header: 'Descripción', dataKey: 'descripcion_producto' },
+    { header: 'Cant.', dataKey: 'cantidad' },
+    { header: 'Fecha Ing.', dataKey: 'fecha_ingreso' },
+  ]
+
+  // 2. Datos
+  const datos = dataRaw.detalle.map((item, index) => ({
+    indice: index + 1,
+    codigo_producto: item.codigo_producto,
+    producto: item.producto,
+    descripcion_producto: item.descripcion_producto,
+    cantidad: decimas(item.cantidad),
+    fecha_ingreso: cambiarFormatoFecha(item.fecha_ingreso),
+  }))
+
+  const totalCantidad = dataRaw.detalle.reduce((acc, curr) => acc + parseFloat(curr.cantidad), 0)
+  datos.push({
+    descripcion_producto: 'TOTAL',
+    cantidad: decimas(totalCantidad),
+  })
+
+  // 3. Estilos
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    codigo_producto: { cellWidth: 25, halign: 'left' },
+    producto: { cellWidth: 40, halign: 'left' },
+    descripcion_producto: { cellWidth: 50, halign: 'left' },
+    cantidad: { cellWidth: 20, halign: 'right' },
+    fecha_ingreso: { cellWidth: 25, halign: 'center' },
+  }
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    codigo_producto: { halign: 'left' },
+    producto: { halign: 'left' },
+    descripcion_producto: { halign: 'left' },
+    cantidad: { halign: 'right' },
+    fecha_ingreso: { halign: 'center' },
+  }
+
+  // 4. Cabeceras (Izquierda / Derecha)
+  // Cliente: CLI_... R-Varias S.A.
+  // Parseamos el cliente si es necesario o lo mostramos directo
+  const clienteStr = dataRaw.cliente || ''
+  // Extraer nombre comercial si es posible o usar el string completo
+  // El formato parece ser "CODIGO-Nombre Comercial R-Razon Social..."
+  
+  const Izquierda = {
+    titulo: 'DATOS DEL CLIENTE',
+    campos: [
+      { label: 'Cliente', valor: clienteStr },
+      { label: 'Sucursal', valor: dataRaw.sucursal || '' },
+      { label: 'Almacén', valor: dataRaw.almacen || '' },
+      { label: 'Fecha Control', valor: cambiarFormatoFecha(dataRaw.fecha_control) || '' },
+    ],
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL USUARIO',
+    campos: [
+      { label: 'Usuario', valor: dataRaw.usuario?.usuario || '' },
+      { label: 'Cargo', valor: dataRaw.usuario?.cargo || '' },
+    ],
+  }
+
+  // 5. Dibujar
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'DETALLE INVENTARIO EXTERIOR',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    true, // conImpresionEncargado (firma footer)
+    null,
+  )
+
+  return doc
+}

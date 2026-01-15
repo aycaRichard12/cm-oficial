@@ -351,6 +351,7 @@ const generarReporte = async () => {
 
   try {
     const endpoint = `reportecotizacion/${idusuario}/${fechai.value}/${fechaf.value}`
+    console.log('recuerda esto', endpoint)
     const response = await api.get(endpoint)
     const data = response.data
     console.log(response.data)
@@ -379,6 +380,7 @@ const generarReporte = async () => {
         condicion: p.condicion,
         total_sumatorias: Number(parseFloat(p.cotizaciontotal) + parseFloat(p.descuento)),
         almacen: p.almacen,
+        estado_cobro: Number(p.estado_cobro),
         nro: index + 1,
       })) // Initialize with all data
       $q.notify({
