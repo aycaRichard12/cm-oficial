@@ -3,7 +3,7 @@
     <!-- Filtro por almacén -->
 
     <div class="col-auto flex flex-col gap-3">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="filtroAlmacenCostoUnitario">
         <label for="almacen">Almacén</label>
         <q-select
           v-model="filtroAlmacen"
@@ -28,14 +28,21 @@
 
     <!-- Botón imprimir -->
 
-    <q-btn outline="" color="info" @click="onPrintReport" class="btn-res q-mt-lg" dense>
+    <q-btn
+      outline=""
+      color="info"
+      @click="onPrintReport"
+      class="btn-res q-mt-lg"
+      dense
+      id="btnVistaPDF"
+    >
       <q-icon name="picture_as_pdf" class="icono" />
 
       <span class="texto">Vista previa PDF</span>
     </q-btn>
   </div>
   <div class="row flex justify-end">
-    <div class="">
+    <div class="" id="inputBuscarCostoUnitario">
       <label for="buscar">Buscar...</label>
       <q-input v-model="filter" dense outlined debounce="300" id="buscar">
         <template v-slot:append>
@@ -56,6 +63,7 @@
     :filter="filter"
     :loading="loading"
     v-model:pagination="pagination"
+    id="tableCostoUnitario"
   >
     <template v-slot:top-right> </template>
     <!-- Botones de opciones -->
@@ -68,6 +76,7 @@
           color="primary"
           @click="editarProducto(props.row)"
           title="Editar producto"
+          id="btnEditarCostoUnitario"
         />
       </q-td>
     </template>
