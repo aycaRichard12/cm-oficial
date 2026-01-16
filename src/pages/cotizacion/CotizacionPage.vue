@@ -242,7 +242,7 @@
         bordered
         hide-bottom
         :pagination="{ rowsPerPage: 0 }"
-        title="Resumen de cotización"
+        title="Resumen de Cotización"
       >
         <template v-slot:body-cell-descripcion="props">
           <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
