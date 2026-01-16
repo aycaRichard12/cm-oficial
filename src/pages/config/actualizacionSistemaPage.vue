@@ -139,19 +139,14 @@
                     <div class="text-subtitle1 text-weight-bold">Video de Novedades</div>
                   </div>
 
-                  <q-badge
-                    outline
-                    color="white"
-                    label="Actualización"
-                    class="text-weight-medium"
-                  />
+                  <q-badge outline color="white" label="Actualización" class="text-weight-medium" />
                 </div>
 
                 <!-- Padding lateral (costados) -->
                 <div class="q-px-xl q-py-lg bg-grey-9">
                   <q-responsive :ratio="16 / 9" style="max-height: 460px">
                     <iframe
-                      src="https://www.youtube.com/embed/GnJCM18pb9U?si=O7ETT9CmwJNAEFkw"
+                      src="https://www.youtube.com/embed/bvTBbz2AdFQ?si=RhtXAXCnJsx5AQFI"
                       title="Video de Novedades"
                       frameborder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
