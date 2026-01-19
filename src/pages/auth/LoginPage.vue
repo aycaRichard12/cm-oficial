@@ -3,14 +3,15 @@
     <q-page-container>
       <q-page class="window-height window-width row no-wrap overflow-hidden">
         <!-- Left Side: Form -->
-<div
-  class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white"
->
-
-
-        <div class="q-pa-xl full-width" style="max-width: 480px">
+        <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
+          <div class="q-pa-xl full-width" style="max-width: 480px">
             <div class="text-center q-mb-xl">
-              <q-img src="~assets/IMAGOTIPO-02.png" width="180px" class="q-mb-md" style="background-color: #004d40; border-radius: 8px;" />
+              <q-img
+                src="~assets/IMAGOTIPO-02.png"
+                width="180px"
+                class="q-mb-md"
+                style="background-color: #004d40; border-radius: 8px"
+              />
               <div class="text-h4 text-weight-bolder text-primary q-mb-sm">Bienvenido</div>
               <div class="text-subtitle1 text-grey-8">Ingresa a tu cuenta para continuar</div>
             </div>
@@ -90,16 +91,15 @@
 
               <div class="text-center q-mt-md text-body2 text-grey-8">
                 ¿No tienes una cuenta?
-            <a 
-  href="https://mistersofts.com/app/crearcuenta" 
-  target="_blank" 
-  rel="noopener noreferrer"
-  class="text-weight-bold text-primary" 
-  style="text-decoration: none"
->
-  Regístrate
-</a>
-
+                <a
+                  href="https://mistersofts.com/app/crearcuenta"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-weight-bold text-primary"
+                  style="text-decoration: none"
+                >
+                  Regístrate
+                </a>
               </div>
             </q-form>
           </div>
@@ -157,10 +157,9 @@
               class="q-mb-md"
               style="opacity: 0.9"
             />
-            <div class="text-h3 text-weight-bold q-mb-md">Gestión Empresarial</div>
+            <div class="text-h3 text-weight-bold q-mb-md">Gestión Comercial</div>
             <div class="text-h6 text-grey-4" style="max-width: 500px; margin: 0 auto">
-              Administra tu negocio de manera eficiente, controla tus ventas, inventarios y finanzas
-              en un solo lugar.
+              Administra tus ventas, compras e inventarios de manera eficiente y sencilla.
             </div>
           </div>
         </div>
