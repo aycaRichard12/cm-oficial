@@ -35,3 +35,4 @@ api/vendor/
 api/vendor/
 .env
 pyCherryPick.py
+cherry_pick_history.json
