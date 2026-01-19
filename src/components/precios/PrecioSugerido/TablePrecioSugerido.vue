@@ -14,17 +14,23 @@
     </div>
     <div class="col-12 col-md-4">
       <label for="categoria">Categoria</label>
-      <q-select v-model="filtroscategoria" :options="categorias" dense outlined />
+      <q-select
+        id="filtroCategoria"
+        v-model="filtroscategoria"
+        :options="categorias"
+        dense
+        outlined
+      />
     </div>
     <div class="col-12 col-md-4 flex justify-end">
-      <q-btn color="info" outline @click="onPrintReport" class="btn-res q-mt-lg">
+      <q-btn color="info" outline @click="onPrintReport" class="btn-res q-mt-lg" id="btnPDFps">
         <q-icon name="picture_as_pdf" class="icono" />
         <span class="texto">Vista Previa PDF</span>
       </q-btn>
     </div>
     <!-- Filtros -->
   </div>
-  <div class="row justify-end">
+  <div class="row justify-end" id="inputBuscarPS">
     <div class="q-mb-md">
       <label for="buscar">Buscar...</label>
       <q-input v-model="filter" dense outlined debounce="300" style="background-color: white">
@@ -44,6 +50,7 @@
     bordered
     :filter="filter"
     :loading="loading"
+    id="tablaPrecioSugerido"
   >
     <template v-slot:top-right> </template>
     <template #body-cell-opciones="props">
@@ -55,6 +62,7 @@
           color="primary"
           @click="editarProducto(props.row)"
           title="Editar producto"
+          id="btnEditarPS"
         />
       </q-td>
     </template>

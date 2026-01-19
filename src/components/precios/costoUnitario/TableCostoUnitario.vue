@@ -1,96 +1,137 @@
 <template>
-  <div class="row flex justify-between">
-    <!-- Filtro por almacén -->
-
-    <div class="col-auto flex flex-col gap-3">
-      <div class="col-12 col-md-4">
-        <label for="almacen">Almacén</label>
+  <div class="q-pa-md">
+    <!-- Header Controls: Filters and Actions -->
+    <div class="row q-col-gutter-md q-mb-lg items-center">
+      <!-- Filtro Almacén -->
+      <div class="col-12 col-md-3" id="filtroAlmacenCostoUnitario">
         <q-select
           v-model="filtroAlmacen"
           :options="almacenes"
-          id="almacen"
-          map-options
+          label="Seleccionar Almacén"
           dense
           outlined
-        />
+          map-options
+          options-dense
+          emit-value
+          class="full-width"
+          id="almacen"
+        >
+          <template v-slot:prepend>
+            <q-icon name="store" color="primary" />
+          </template>
+        </q-select>
       </div>
 
-      <q-btn
-        color="secondary"
-        class="btn-res q-mt-lg"
-        id="reportedepreciosbase"
-        to="/reportedepreciosbase"
-        icon="assessment"
-        label="Reporte de Costos"
-        no-caps
-      />
-    </div>
-
-    <!-- Botón imprimir -->
-
-    <q-btn outline="" color="info" @click="onPrintReport" class="btn-res q-mt-lg" dense>
-      <q-icon name="picture_as_pdf" class="icono" />
-
-      <span class="texto">Vista previa PDF</span>
-    </q-btn>
-  </div>
-  <div class="row flex justify-end">
-    <div class="">
-      <label for="buscar">Buscar...</label>
-      <q-input v-model="filter" dense outlined debounce="300" id="buscar">
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
-  </div>
-
-  <!-- Tabla de productos -->
-  <q-table
-    title="Costo Unitario"
-    :columns="columnas"
-    :rows="filtrados"
-    row-key="id"
-    flat
-    bordered
-    :filter="filter"
-    :loading="loading"
-    v-model:pagination="pagination"
-  >
-    <template v-slot:top-right> </template>
-    <!-- Botones de opciones -->
-    <template #body-cell-opciones="props">
-      <q-td :props="props" class="text-nowrap">
-        <q-btn
-          flat
+      <!-- Search Input -->
+      <div class="col-12 col-md-4" id="inputBuscarCostoUnitario">
+        <q-input
+          v-model="filter"
+          label="Buscar costo unitario..."
           dense
-          icon="edit"
-          color="primary"
-          @click="editarProducto(props.row)"
-          title="Editar producto"
+          outlined
+          debounce="300"
+          id="buscar"
+          class="full-width bg-white"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-12 col-md-5 row justify-end q-gutter-x-sm">
+        <q-btn
+          color="secondary"
+          id="reportedepreciosbase"
+          to="/reportedepreciosbase"
+          icon="assessment"
+          label="Reporte de Costos"
+          no-caps
+          outline
         />
-      </q-td>
-    </template>
-  </q-table>
-  <q-dialog v-model="mostrarModal" full-width full-height>
-    <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
-        <q-space />
-        <q-btn flat round icon="close" @click="mostrarModal = false" />
-      </q-card-section>
 
-      <q-separator />
+        <q-btn
+          color="primary"
+          icon="picture_as_pdf"
+          label="Vista Previa PDF"
+          no-caps
+          @click="onPrintReport"
+          id="btnVistaPDF"
+          outline
+        />
+      </div>
+    </div>
 
-      <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-        <iframe
-          v-if="pdfData"
-          :src="pdfData"
-          style="width: 100%; height: 100%; border: none"
-        ></iframe>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+    <!-- Tabla de productos -->
+    <q-table
+      :rows="filtrados"
+      :columns="columnas"
+      row-key="id"
+      flat
+      bordered
+      :filter="filter"
+      :loading="loading"
+      v-model:pagination="pagination"
+      id="tableCostoUnitario"
+      class="shadow-1 rounded-borders"
+      header-class="bg-grey-2 text-grey-9 text-weight-bold"
+    >
+      <template v-slot:top-left>
+         <div class="text-h6 text-primary">Costo Unitario</div>
+      </template>
+
+      <!-- Botones de opciones -->
+      <template #body-cell-opciones="props">
+        <q-td :props="props" class="text-center">
+          <q-btn
+            flat
+            round
+            dense
+            icon="edit"
+            color="primary"
+            @click="editarProducto(props.row)"
+            title="Editar producto"
+            id="btnEditarCostoUnitario"
+          >
+            <q-tooltip>Editar Costo</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
+
+      <!-- Loading State -->
+      <template v-slot:loading>
+        <q-inner-loading showing color="primary" />
+      </template>
+
+      <!-- No Data State -->
+      <template v-slot:no-data>
+        <div class="full-width row flex-center text-grey-8 q-pa-md">
+          <q-icon size="2em" name="sentiment_dissatisfied" />
+          <span class="q-ml-sm">No se encontraron resultados</span>
+        </div>
+      </template>
+    </q-table>
+
+    <!-- Modal PDF -->
+    <q-dialog v-model="mostrarModal" full-width full-height maximized transition-show="slide-up" transition-hide="slide-down">
+      <q-card class="column no-wrap">
+        <q-toolbar class="bg-primary text-white">
+          <q-toolbar-title>Vista Previa de Reporte</q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+
+        <q-card-section class="col q-pa-none">
+          <iframe
+            v-if="pdfData"
+            :src="pdfData"
+            class="fit"
+            style="border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script setup>

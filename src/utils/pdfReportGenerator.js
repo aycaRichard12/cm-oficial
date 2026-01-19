@@ -4054,8 +4054,8 @@ export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
     { header: 'Código', dataKey: 'codigo_producto' },
     { header: 'Producto', dataKey: 'producto' },
     { header: 'Descripción', dataKey: 'descripcion_producto' },
-    { header: 'Cant.', dataKey: 'cantidad' },
-    { header: 'Fecha Ing.', dataKey: 'fecha_ingreso' },
+    { header: 'Cantidad', dataKey: 'cantidad' },
+    { header: 'Fecha Ingreso', dataKey: 'fecha_ingreso' },
   ]
 
   // 2. Datos
@@ -4064,31 +4064,33 @@ export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
     codigo_producto: item.codigo_producto,
     producto: item.producto,
     descripcion_producto: item.descripcion_producto,
-    cantidad: decimas(item.cantidad),
+    //NUMERO ENTERO SIN DECIMAL
+    cantidad: parseInt(item.cantidad),
     fecha_ingreso: cambiarFormatoFecha(item.fecha_ingreso),
   }))
 
   const totalCantidad = dataRaw.detalle.reduce((acc, curr) => acc + parseFloat(curr.cantidad), 0)
   datos.push({
     descripcion_producto: 'TOTAL',
-    cantidad: decimas(totalCantidad),
+    cantidad: parseInt(totalCantidad),
   })
 
-  // 3. Estilos
+  // 3. Estilos QUE OCUPEN TODO EL ANCHO DE LA HOJA
   const columnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
-    codigo_producto: { cellWidth: 25, halign: 'left' },
-    producto: { cellWidth: 40, halign: 'left' },
-    descripcion_producto: { cellWidth: 50, halign: 'left' },
-    cantidad: { cellWidth: 20, halign: 'right' },
+    codigo_producto: { cellWidth: 30, halign: 'center' },
+    producto: { cellWidth: 40, halign: 'center' },
+    descripcion_producto: { cellWidth: 71, halign: 'center' },
+
+    cantidad: { cellWidth: 20, halign: 'center' },
     fecha_ingreso: { cellWidth: 25, halign: 'center' },
   }
   const headerColumnStyles = {
     indice: { halign: 'center' },
-    codigo_producto: { halign: 'left' },
-    producto: { halign: 'left' },
-    descripcion_producto: { halign: 'left' },
-    cantidad: { halign: 'right' },
+    codigo_producto: { halign: 'center' },
+    producto: { halign: 'center' },
+    descripcion_producto: { halign: 'center' },
+    cantidad: { halign: 'center' },
     fecha_ingreso: { halign: 'center' },
   }
 
