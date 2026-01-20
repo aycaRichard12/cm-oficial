@@ -67,7 +67,7 @@
         row-key="id"
         flat
         bordered
-        :filter="filter"
+
         :loading="loading"
         id="tablaPrecioSugerido"
         dense
@@ -75,7 +75,7 @@
         no-data-label="No se encontraron registros"
         rows-per-page-label="Filas por página"
       >
-        <!-- Search Input in Table Top Slot -->
+        <!--  Input in para buscar Table Top Slot -->
         <template v-slot:top>
           <div class="full-width row justify-between items-center q-py-xs">
             <div class="text-h6 text-primary q-ml-sm">Lista de Precios</div>
@@ -200,7 +200,7 @@ const columnas = [
     field: 'precio',
     align: 'right',
     sortable: true,
-    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2) + ' ' + currencyStore.simbolo),
+
     format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
@@ -214,9 +214,9 @@ const filtrados = computed(() => {
       filtroscategoria.value !== null
     const matchesCodigo =
       !filter.value ||
-      p.codigo.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.descripcion.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.precio.toLowerCase().includes(filter.value.toLowerCase())
+      p.codigo?.toLowerCase().includes(filter.value.toLowerCase()) ||
+      p.descripcion?.toLowerCase().includes(filter.value.toLowerCase()) ||
+      String(p.precio).toLowerCase().includes(filter.value.toLowerCase())
     return matchesCodigo && matchesCateforia
   })
 
@@ -237,14 +237,14 @@ const filtrados = computed(() => {
   }))
 })
 const cargarCategoriaPrecio = async () => {
-  console.log(filtroAlmacen.value)
-  const almacen = filtroAlmacen.value
+  /* console.log(filtroAlmacen.value) */
+  const almacenId = filtroAlmacen.value
   try {
     const response = await api.get(`listaCategoriaPrecio/${idempresa}`)
     console.log(response.data)
     console.log(idusuario)
     const filtrado = response.data.filter(
-      (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(almacen.value),
+      (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(almacenId),
     )
     categorias.value = filtrado.map((item) => ({
       label: item.nombre,
@@ -268,15 +268,17 @@ watch(
   (nuevosAlmacenes) => {
     if (nuevosAlmacenes.length > 0 && !filtroAlmacen.value) {
       console.log(nuevosAlmacenes)
-      filtroAlmacen.value = nuevosAlmacenes[0]
+      filtroAlmacen.value = nuevosAlmacenes[0].value
       cargarCategoriaPrecio()
     }
   },
   { immediate: true },
 )
 function onPrintReport() {
-  const almacen = filtroAlmacen.value
-  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, almacen.label)
+  const almacenId = filtroAlmacen.value
+  const almacenObj = props.almacenes.find(a => a.value === almacenId)
+  const label = almacenObj ? almacenObj.label : ''
+  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, label)
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
