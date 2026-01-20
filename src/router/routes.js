@@ -26,15 +26,24 @@ const routes = [
   {
     path: '/',
     beforeEnter: async (to, from, next) => {
+      // 1. Verificar Autenticación (Simulada)
+      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+
+      if (!isAuthenticated) {
+        next('/login')
+        return
+      }
+
+      // 2. Verificar Configuración (Lógica Existente)
       const estaConfigurado = await checkConfiguracion()
       console.log(estaConfigurado)
       if (estaConfigurado) {
         next() // sigue normalmente a MainLayout
       } else {
         next('/configuracioninicial') // redirige a formulario de configuración
-        //next() // redirige a formulario de configuración
       }
     },
+
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
@@ -367,6 +376,10 @@ const routes = [
   {
     path: '/configuracioninicial',
     component: () => import('pages/config/FormularioConfiguracionInicial.vue'),
+  },
+  {
+    path: '/login',
+    component: () => import('pages/auth/LoginPage.vue'),
   },
   // Always leave this as last one,
   // but you can also remove it reportedecompras registrarventa
