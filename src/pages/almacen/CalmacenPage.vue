@@ -38,6 +38,7 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
+import { showDialog } from 'src/composables/FuncionesGenerales'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
