@@ -173,8 +173,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
-const username = ref('david')
-const password = ref('david.123')
+const username = ref('usuario.comercial')
+const password = ref('comercial.123')
 const showPassword = ref(false)
 const loading = ref(false)
 
@@ -193,13 +193,13 @@ const login = () => {
 
   // Simulating API call
   setTimeout(() => {
-    if (username.value === 'david' && password.value === 'david.123') {
+    if (username.value === 'usuario.comercial' && password.value === 'comercial.123') {
       // Mock Data mimicking the project structure found in FuncionesG.js logic
       // contenidousuario[0]?.empresa?.idempresa etc.
       const mockUser = [
         {
           usuario: {
-            name: 'David',
+            name: 'Usuario Comercial',
             username: username.value,
           },
           empresa: {
