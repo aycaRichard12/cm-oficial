@@ -113,7 +113,10 @@ export function useReporteProductosVendidosGlobal() {
         }))
         sucursalesOptions.value = [...sucursalesOriginal.value]
         if (response.data.length === 0) {
-          $q.notify({ type: 'info', message: 'No existen sucursales registradas del cliente seleccionado' })
+          $q.notify({
+            type: 'info',
+            message: 'No existen sucursales registradas del cliente seleccionado',
+          })
         }
       }
     } catch (error) {
@@ -148,18 +151,20 @@ export function useReporteProductosVendidosGlobal() {
         datosOriginales.value = response.data.filter((item) => item.estado == 1)
         console.log(datosOriginales.value)
         datosFiltrados.value = [...datosOriginales.value]
-        
-        // Cargar listas filtros si no se cargaron (aunque se llaman en onMounted usualmente en el componente, 
+
+        // Cargar listas filtros si no se cargaron (aunque se llaman en onMounted usualmente en el componente,
         // aquí los llamamos on demand si se quiere, o desde el componente)
         // Optamos por separar la lógica: el componente montado llama a cargarAlmacenes si quiere.
         // Aquí los cargamos tras generar para asegurar consistencia si los selectores están vacíos
-        if(almacenesOptions.value.length <= 1) await cargarAlmacenes()
-        if(clientesOriginal.value.length === 0) await cargarClientes()
-
+        if (almacenesOptions.value.length <= 1) await cargarAlmacenes()
+        if (clientesOriginal.value.length === 0) await cargarClientes()
       } else {
         datosOriginales.value = []
         datosFiltrados.value = []
-        $q.notify({ type: 'info', message: 'No se encontraron datos para el rango de fechas seleccionado' })
+        $q.notify({
+          type: 'info',
+          message: 'No se encontraron datos para el rango de fechas seleccionado',
+        })
       }
     } catch (error) {
       console.error('Error al generar reporte:', error)
@@ -257,6 +262,6 @@ export function useReporteProductosVendidosGlobal() {
     formatearFecha,
     formatearNumero,
     decimas,
-    redondear
+    redondear,
   }
 }
