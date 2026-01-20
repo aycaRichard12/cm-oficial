@@ -30,6 +30,7 @@
       @verDetalle="onVerDetalle"
       @delete="confirmDelete"
       @verimagen="onVerimagen"
+      @toggle-status="toggleStatus"
     />
     <q-dialog v-model="showDetallePedido" persistent>
       <q-card class="responsive-dialog">
@@ -222,6 +223,55 @@ const confirmDelete = (item) => {
       })
     }
   })
+}
+const toggleStatus = async (item) => {
+  try {
+    const responsev = await api.get(`verificarDetallePedido/${item.id}`)
+    console.log(responsev.data)
+    if (!responsev.data.tieneDetalle) {
+      $q.notify({
+        type: 'negative',
+        message: 'El pedido está vacío y no puede ser confirmado.',
+      })
+      return
+    }
+
+    $q.dialog({
+      title: 'Confirmar',
+      message: '¿Deseas confirmar este pedido?',
+      cancel: true,
+      persistent: true,
+    }).onOk(async () => {
+      try {
+        const response = await api.get(`actualizarEstadoPedido/${item.id}/1`)
+        if (response.data.estado === 'error') {
+          $q.notify({
+            type: 'negative',
+            message: response.data.mensaje,
+          })
+        } else {
+          getPedidos()
+          enviarPDFPorWhatsApp(item) // llamada a función si es exitosa
+        }
+      } catch (error) {
+        console.error('Error al autorizar el pedido:', error)
+        $q.notify({
+          type: 'negative',
+          message: 'No se pudo autorizar el pedido. Intenta de nuevo.',
+        })
+      }
+    })
+  } catch (error) {
+    console.error('Error al verificar detalle del pedido:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al verificar si el pedido tiene productos.',
+    })
+  }
+}
+
+const enviarPDFPorWhatsApp = async (row) => {
+  console.log(row)
 }
 
 // Cambiar estado de autorización

@@ -66,7 +66,6 @@
         :columns="columnasTabla"
         row-key="id"
         flat
-        bordered
         separator="cell"
         class="q-mt-md"
       >
@@ -74,6 +73,32 @@
           <div class="full-width row flex-center q-gutter-sm">
             <span> No hay datos para mostrar. Genere un reporte primero. </span>
           </div>
+        </template>
+        <template v-slot:body-cell-acciones="props">
+          <q-td :props="props" class="text-nowrap">
+            <div class="q-pa-none">
+              <template v-if="Number(props.row.autorizacion) === 2">
+                <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
+                  <q-tooltip>Ver Pedido</q-tooltip>
+                </q-btn>
+              </template>
+              <template v-else>
+                <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
+                  <q-tooltip>Ver Pedido</q-tooltip>
+                </q-btn>
+                <q-btn
+                  size="sm"
+                  icon="mdi-whatsapp"
+                  color="green"
+                  flat
+                  @click="enviarPDFPorWhatsApp(props.row)"
+                  dense
+                >
+                  <q-tooltip>Enviar PDF por WhatsApp</q-tooltip>
+                </q-btn>
+              </template>
+            </div>
+          </q-td>
         </template>
       </q-table>
     </div>
@@ -109,12 +134,18 @@ import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG.js'
 import { validarUsuario } from 'src/composables/FuncionesG.js'
 import { PDF_REPORTE_PEDIDOS } from 'src/utils/pdfReportGenerator'
+import { useWhatsapp } from 'src/composables/useWhatsapp'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { PDF_DETALLE_PEDIDO } from 'src/utils/pdfReportGenerator'
+const { mostrarDialogoWhatsapp } = useWhatsapp()
+const idempresa = idempresa_md5()
 const $q = useQuasar()
 const tipo = { 1: 'Pedido Compra', 2: 'Pedido Movimiento' }
 const tipoestados = { 1: 'Procesado', 2: 'Pendiente', 3: 'Descartado' }
 //pdf
 const pdfData = ref(null)
 const mostrarModal = ref(false)
+const detallePedido = ref(null)
 
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
@@ -173,6 +204,13 @@ const columnasTabla = [
     label: 'Estado',
     field: 'estado',
     align: 'left',
+  },
+  {
+    name: 'acciones',
+    label: 'Acciones',
+    field: 'acciones',
+    align: 'center',
+    sortable: false,
   },
 ]
 
@@ -265,7 +303,7 @@ async function generarReporte() {
     const idusuario = datosUsuario.idusuario
     const point = `reportepedidos/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
     const response = await api.get(point)
-    console.log(response.status)
+    console.log(response.data)
     const data = response.data.map((item, index) => ({
       n: index + 1,
       fecha: cambiarFormatoFecha(item.fecha),
@@ -277,6 +315,8 @@ async function generarReporte() {
       idalmacen: item.idalmacen,
       observacion: item.observacion,
       estado: tipoestados[Number(item.estado)],
+      id: item.id,
+      autorizacion: item.autorizacion,
     }))
 
     if (response.status === 200) {
@@ -331,7 +371,31 @@ async function handleGenerarReporte() {
     await cargarListaAlmacenes() // Recarga los almacenes después de generar el reporte
   }
 }
+const verDetalle = async (row) => {
+  console.log(row)
+  await getDatallePedido(row.id)
+  if (detallePedido.value) {
+    imprimirReporte()
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: 'Pedido  sin items',
+    })
+  }
+}
 
+function imprimirReporte() {
+  if (detallePedido.value) {
+    const doc = PDF_DETALLE_PEDIDO(detallePedido.value)
+    pdfData.value = doc.output('dataurlstring')
+    mostrarModal.value = true
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: 'Pedido  sin items',
+    })
+  }
+}
 /**
  * Descarga el PDF del reporte.
  */
@@ -346,6 +410,74 @@ function descargarPDF() {
   const doc = PDF_REPORTE_PEDIDOS(datosFiltrados.value, datosFormulario)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
+}
+const getDatallePedido = async (id) => {
+  try {
+    const response = await api.get(`getPedido_/${id}/${idempresa}`) // Cambia a tu ruta real
+    console.log(response.data)
+    detallePedido.value = response.data
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar los datos',
+    })
+  }
+}
+const enviarPDFPorWhatsApp = async (row) => {
+  console.log(row)
+  await getDatallePedido(row.id)
+
+  if (!detallePedido.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Pedido sin items',
+    })
+    return
+  }
+
+  const doc = PDF_DETALLE_PEDIDO(detallePedido.value)
+
+  // ✅ Convertir PDF a Blob
+  const pdfBlob = doc.output('blob')
+
+  // ✅ Crear objeto FormData para enviarlo al servidor
+  const formData = new FormData()
+
+  const nombreArchivo = `OrdenPedido_${row.id}.pdf`
+  formData.append('ver', 'subir_pdf')
+
+  formData.append('file', pdfBlob, nombreArchivo)
+
+  const response = await fetch('https://mistersofts.com/app/cmv1/api/', {
+    method: 'POST',
+    body: formData,
+    mode: 'cors', // Esto fuerza a mostrar errores CORS claramente
+  })
+
+  console.log('Tamaño del PDF:', pdfBlob.size)
+  if (pdfBlob.size === 0) throw new Error('El PDF está vacío')
+  const result = await response.text() // Si el servidor no envía JSON
+  console.log('Respuesta del servidor:', result)
+  console.log('Response completo:', {
+    status: response.status,
+    statusText: response.statusText,
+    headers: [...response.headers],
+    body: result,
+  })
+  if (result.includes('error') || result.includes('fail')) {
+    // Ajusta según lo que devuelva tu servidor
+    throw new Error(result)
+  }
+  if (!response.ok) {
+    throw new Error(result || 'Error al subir el PDF')
+  }
+
+  // WhatsApp después de la subida exitosa
+  const linkPDF = `https://mistersofts.com/app/cmv1/api/pdfs/${nombreArchivo}`
+  mostrarDialogoWhatsapp(
+    `Aquí tienes la orden de pedido: ${linkPDF}\n\n*Nota: Este enlace estará activo por 48 horas y luego será eliminado.*`,
+  )
 }
 
 // --- Ciclo de Vida ---

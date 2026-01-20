@@ -76,13 +76,14 @@
                 flat
                 @click="$emit('delete', props.row)"
               />
-              <!-- <q-btn
+              <q-btn
+                v-if="permisosStore.tienePermiso('registrarcompra')"
                 icon="toggle_off"
                 dense
                 flat
                 color="grey"
                 @click="$emit('toggle-status', props.row)"
-              /> -->
+              />
             </div>
           </q-td>
         </template>
@@ -111,7 +112,10 @@ import { showDialog } from 'src/utils/dialogs'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { PDF_REPORTE_COMPRAS } from 'src/utils/pdfReportGenerator'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
+const permisosStore = useOperacionesPermitidas()
+console.log('Permisos cargados en TableCompra.vue:', permisosStore.permisos)
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
 const tableRef = ref(null)

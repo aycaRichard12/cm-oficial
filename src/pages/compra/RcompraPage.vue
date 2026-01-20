@@ -319,9 +319,9 @@ async function autorizarCompra(compra) {
         const response = await api.get(point)
         console.log(response)
         if (response.data.estado === 'error') {
-          $q.notify({ type: 'negative', message: response.data.mensaje })
+          $q.notify({ type: 'negative', message: response.data.message })
         } else {
-          $q.notify({ type: 'positive', message: response.data.mensaje })
+          $q.notify({ type: 'positive', message: response.data.message })
 
           iniciar()
         }
