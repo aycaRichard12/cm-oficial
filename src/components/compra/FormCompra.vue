@@ -165,7 +165,8 @@ async function cargarPedidos() {
   try {
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
     const response = await api.get(`listaPedido/${idempresa}`)
-
+    console.log(response.data)
+    console.log(idAlmacenes)
     const filtrados = response.data.filter(
       (item) => idAlmacenes.includes(item.idalmacen) && item.estado == 2 && item.autorizacion == 1,
     )

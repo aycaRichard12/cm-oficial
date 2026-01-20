@@ -67,7 +67,7 @@ export const showDialog = ($q, tipo, mensaje) => {
   // Agregar botón de cancelar solo para preguntas
   if (tipo === 'Q') {
     dialogOptions.cancel = {
-      label: `${dialogConfig.cancelLabel}<`,
+      label: `${dialogConfig.cancelLabel}`,
       color: 'grey-7',
       flat: true,
     }

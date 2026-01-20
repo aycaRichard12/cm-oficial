@@ -5,21 +5,21 @@ import { validarUsuario } from 'src/composables/FuncionesG'
 
 export function useAccionesVenta() {
   const $q = useQuasar()
-  
+
   // State for modals/dialogs
   const modalMotivoAnulacion = ref(false)
   const modalMotivoDevolucion = ref(false)
   const modalEstadoFactura = ref(false)
-  
+
   // Selection state
   const motivoAnulacionSeleccionado = ref(null)
   const ventaAAnular = ref(null)
   const cotizacionAAnular = ref(null)
-  
+
   const motivoDevolucion = ref('')
   const ventaADevolver = ref(null)
   const tipo_devolucion = ref(null)
-  
+
   const estadoFactura = ref('')
 
   // Opciones
@@ -59,7 +59,7 @@ export function useAccionesVenta() {
       const tipo = usuario?.factura?.tipo
 
       $q.loading.show({ message: 'Anulando venta...' })
-      
+
       let response = null
 
       if (ventaAAnular.value == null) {
@@ -67,7 +67,10 @@ export function useAccionesVenta() {
         response = await api.get(`${endpoint}`)
       } else if (cotizacionAAnular.value == null) {
         const endpoint = `cambiarestadoventa/${ventaAAnular.value}/2/${motivoAnulacionSeleccionado.value}/${idusuario}/${token}/${tipo}`
+        console.log('Anulacion endpoint', endpoint)
         response = await api.get(`${endpoint}`)
+
+        console.log('Anulacion response', response.data)
       }
 
       if (response.data.estado === 'exito') {
@@ -93,8 +96,8 @@ export function useAccionesVenta() {
 
       if (response.data.estado === 100) {
         if (response.data.codigo === 1) {
-             // Devolucion en proceso
-             if(callbackYaExiste) callbackYaExiste(response.data.id)
+          // Devolucion en proceso
+          if (callbackYaExiste) callbackYaExiste(response.data.id)
         } else {
           // Nueva devolucion
           tipo_devolucion.value = codigo
@@ -132,10 +135,10 @@ export function useAccionesVenta() {
       formData.append('tipo_dev', tipo_devolucion.value)
 
       const response = await api.post('', formData)
-      
+
       if (response.data.estado === 100) {
         $q.notify({ type: 'positive', message: 'Devolución registrada correctamente' })
-        if(callbackSuccess) callbackSuccess(response.data.id)
+        if (callbackSuccess) callbackSuccess(response.data.id)
       } else {
         throw new Error(response.data.error || 'Error al registrar devolución')
       }
@@ -206,6 +209,6 @@ export function useAccionesVenta() {
     verificarYProcesarDevolucion,
     confirmarDevolucion,
     verificarEstadoFactura,
-    verificarEstadoCotizacion
+    verificarEstadoCotizacion,
   }
 }
