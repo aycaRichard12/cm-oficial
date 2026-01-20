@@ -36,7 +36,7 @@
             options-dense
             bg-color="white"
           >
-             <template v-slot:prepend>
+            <template v-slot:prepend>
               <q-icon name="category" />
             </template>
           </q-select>
@@ -77,23 +77,23 @@
       >
         <!-- Search Input in Table Top Slot -->
         <template v-slot:top>
-           <div class="full-width row justify-between items-center q-py-xs">
-             <div class="text-h6 text-primary q-ml-sm">Lista de Precios</div>
-             <q-input
-                v-model="filter"
-                dense
-                outlined
-                debounce="300"
-                placeholder="Buscar..."
-                bg-color="grey-1"
-                class="q-ml-md"
-                style="min-width: 250px"
-              >
+          <div class="full-width row justify-between items-center q-py-xs">
+            <div class="text-h6 text-primary q-ml-sm">Lista de Precios</div>
+            <q-input
+              v-model="filter"
+              dense
+              outlined
+              debounce="300"
+              placeholder="Buscar..."
+              bg-color="grey-1"
+              class="q-ml-md"
+              style="min-width: 250px"
+            >
               <template v-slot:append>
                 <q-icon name="search" color="primary" />
               </template>
             </q-input>
-           </div>
+          </div>
         </template>
 
         <template #body-cell-opciones="props">
@@ -115,7 +115,13 @@
   </q-card>
 
   <!-- PDF Modal -->
-  <q-dialog v-model="mostrarModal" full-width full-height transition-show="slide-up" transition-hide="slide-down">
+  <q-dialog
+    v-model="mostrarModal"
+    full-width
+    full-height
+    transition-show="slide-up"
+    transition-hide="slide-down"
+  >
     <q-card class="column full-height">
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>Vista Previa del Reporte</q-toolbar-title>
@@ -176,14 +182,26 @@ const categorias = ref([])
 const columnas = [
   { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center', sortable: true },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', sortable: true, style: 'min-width: 300px; white-space: normal;' },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    sortable: true,
+    style: 'min-width: 300px; white-space: normal;',
+  },
+  { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'unidad', label: 'Medida', field: 'unidad', align: 'left' },
   {
     name: 'precio',
-    label: 'Precio',
+    label: 'Precio' + ' (' + currencyStore.simbolo + ')',
     field: 'precio',
     align: 'right',
     sortable: true,
     format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2) + ' ' + currencyStore.simbolo),
+    format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
 ]

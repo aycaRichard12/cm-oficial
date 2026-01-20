@@ -145,7 +145,7 @@
       <template v-slot:bottom-row>
         <q-tr>
           <q-td colspan="4" class="text-right text-weight-bold text-grey-8">
-            Total {{ divisaActiva.simbolo }}.:
+            Total {{ '(' + divisaActiva.simbolo + ')' }}.:
           </q-td>
           <q-td class="text-center text-weight-bold text-h6"> {{ total.toFixed(2) }}</q-td>
         </q-tr>
@@ -200,13 +200,18 @@ const columnas = [
   },
   {
     name: 'precio',
-    label: `Precio Unit. ${divisaActiva.simbolo}`,
+    label: `Precio Unit. (${divisaActiva.simbolo})`,
     field: 'precio',
     align: 'right',
     sortable: true,
   },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
-  { name: 'subtotal', label: 'Subtotal', align: 'right', sortable: true },
+  {
+    name: 'subtotal',
+    label: `Sub Total (${divisaActiva.simbolo})`,
+    align: 'right',
+    sortable: true,
+  },
   { name: 'opciones', label: 'Opciones', align: 'center' },
 ]
 

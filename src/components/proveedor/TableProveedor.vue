@@ -1,26 +1,26 @@
 <template>
   <div class="q-pa-md">
     <div class="row q-col-gutter-x-md q-mb-md">
-      <div class="col-3 col-md-3 flex justify-start">
+      <div>
         <q-btn color="primary" @click="$emit('add')" class="btn-res">
           <q-icon name="add" class="icono" />
           <span class="texto">Agregar</span>
         </q-btn>
       </div>
 
-      <div class="col-3 col-md-3 flex justify-center">
-        <q-btn color="info" @click="$emit('importFromExcel')" class="btn-res" outline>
+      <div>
+        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res" outline>
           <q-icon name="upload" class="icono" />
           <span class="texto">Importar Excel</span>
         </q-btn>
       </div>
-      <div class="col-3 col-md-3 flex justify-center">
-        <q-btn color="info" outline @click="exportarProveedoresPDF" class="btn-res">
+      <div>
+        <q-btn color="red" outline @click="exportarProveedoresPDF" class="btn-res">
           <q-icon name="picture_as_pdf" class="icono" />
           <span class="texto">Vista Previa PDF</span>
         </q-btn>
       </div>
-      <div class="col-3 col-md-3 flex justify-end">
+      <div>
         <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res" outline>
           <q-icon name="file_download" class="icono" />
           <span class="texto">Exportar Excel</span>

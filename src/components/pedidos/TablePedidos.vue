@@ -133,6 +133,16 @@
           <div v-if="Number(props.row.autorizacion) === 2">
             <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" />
             <q-btn icon="delete" color="negative" dense flat @click="$emit('delete', props.row)" />
+            <q-btn
+              v-if="permisosStore.tienePermiso('generarpedido')"
+              icon="toggle_off"
+              dense
+              flat
+              color="grey"
+              @click="$emit('toggle-status', props.row)"
+            >
+              <q-tooltip>Autorizar Pedido</q-tooltip>
+            </q-btn>
             <template v-if="Number(props.row.tipopedido) === 2">
               <q-btn
                 icon="attach_file"
@@ -188,6 +198,9 @@
 import { ref, computed, watch } from 'vue'
 import { PDFpedidos } from 'src/utils/pdfReportGenerator'
 import baucherPedido from './baucherPedido.vue'
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+
+const permisosStore = useOperacionesPermitidas()
 //filtroAlmacen
 const props = defineProps({
   pedidos: {

@@ -38,8 +38,7 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
-
-
+import { showDialog } from 'src/composables/FuncionesGenerales'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
@@ -148,13 +147,14 @@ const editUnit = (item) => {
   showForm.value = true
 }
 
-const confirmDelete = (item) => {
-  $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Almacen "${item.nombre}"?`,
-    cancel: true,
-    persistent: true,
-  }).onOk(async () => {
+const confirmDelete = async (item) => {
+  const result = await showDialog(
+    $q,
+    'Q',
+    '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+  )
+  console.log('Question dialog result:', result)
+  if (result) {
     try {
       const response = await api.get(`eliminarAlmacen/${item.id}/`) // Cambia a tu ruta real
       console.log(response)
@@ -164,6 +164,8 @@ const confirmDelete = (item) => {
           type: 'positive',
           message: response.data.mensaje,
         })
+      } else {
+        await showDialog($q, 'I', response.data.mensaje)
       }
     } catch (error) {
       console.error('Error al cargar datos:', error)
@@ -172,7 +174,9 @@ const confirmDelete = (item) => {
         message: 'No se pudieron cargar los datos',
       })
     }
-  })
+  } else {
+    $q.notify({ message: 'Acción cancelada', color: 'info' })
+  }
 }
 
 const toggleStatus = async (item) => {
