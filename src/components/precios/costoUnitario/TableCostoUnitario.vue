@@ -1,67 +1,55 @@
 <template>
-  <div class="q-pa-md">
+  <q-card flat bordered class="shadow-2 rounded-borders">
     <!-- Header Controls: Filters and Actions -->
-    <div class="row q-col-gutter-md q-mb-lg items-center">
-      <!-- Filtro Almacén -->
-      <div class="col-12 col-md-3" id="filtroAlmacenCostoUnitario">
-        <q-select
-          v-model="filtroAlmacen"
-          :options="almacenes"
-          label="Seleccionar Almacén"
-          dense
-          outlined
-          map-options
-          options-dense
-          emit-value
-          class="full-width"
-          id="almacen"
-        >
-          <template v-slot:prepend>
-            <q-icon name="store" color="primary" />
-          </template>
-        </q-select>
-      </div>
+    <q-card-section class="q-pa-md">
+      <div class="row q-col-gutter-md items-center justify-between">
+        <!-- Filtro Almacén -->
+        <div class="col-12 col-sm-6 col-md-4" id="filtroAlmacenCostoUnitario">
+          <q-select
+            v-model="filtroAlmacen"
+            :options="almacenes"
+            label="Seleccionar Almacén"
+            dense
+            outlined
+            map-options
+            options-dense
+            emit-value
+            class="full-width"
+            id="almacen"
+            bg-color="white"
+          >
+            <template v-slot:prepend>
+              <q-icon name="store" color="primary" />
+            </template>
+          </q-select>
+        </div>
 
-      <!-- Search Input -->
-      <div class="col-12 col-md-4" id="inputBuscarCostoUnitario">
-        <q-input
-          v-model="filter"
-          label="Buscar costo unitario..."
-          dense
-          outlined
-          debounce="300"
-          id="buscar"
-          class="full-width bg-white"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div>
+        <!-- Action Buttons -->
+        <div class="col-12 col-sm-6 col-md-8 row justify-end q-gutter-x-sm">
+          <q-btn
+            color="secondary"
+            id="reportedepreciosbase"
+            to="/reportedepreciosbase"
+            icon="assessment"
+            label="Reporte de Costos"
+            no-caps
+            unelevated
+          />
 
-      <!-- Action Buttons -->
-      <div class="col-12 col-md-5 row justify-end q-gutter-x-sm">
-        <q-btn
-          color="secondary"
-          id="reportedepreciosbase"
-          to="/reportedepreciosbase"
-          icon="assessment"
-          label="Reporte de Costos"
-          no-caps
-          outline
-        />
-
-        <q-btn
-          color="primary"
-          icon="picture_as_pdf"
-          label="Vista Previa PDF"
-          no-caps
-          @click="onPrintReport"
-          id="btnVistaPDF"
-          outline
-        />
+          <q-btn
+            color="negative"
+            icon="picture_as_pdf"
+            label="Vista Previa PDF"
+            no-caps
+            @click="onPrintReport"
+            id="btnVistaPDF"
+            unelevated
+          />
+        </div>
       </div>
-    </div>
+    </q-card-section>
+    
+    <q-separator />
 
     <!-- Tabla de productos -->
     <q-table
@@ -74,16 +62,37 @@
       :loading="loading"
       v-model:pagination="pagination"
       id="tableCostoUnitario"
-      class="shadow-1 rounded-borders"
-      header-class="bg-grey-2 text-grey-9 text-weight-bold"
+      dense
+      separator="cell"
+      no-data-label="No se encontraron resultados"
+      rows-per-page-label="Filas por página"
     >
-      <template v-slot:top-left>
-         <div class="text-h6 text-primary">Costo Unitario</div>
+      <template v-slot:top>
+         <div class="full-width row justify-between items-center q-py-xs">
+           <div class="text-h6 text-primary q-ml-sm">Costo Unitario</div>
+           
+           <!-- Search Input -->
+           <q-input
+             v-model="filter"
+             placeholder="Buscar costo unitario..."
+             dense
+             outlined
+             debounce="300"
+             id="buscar"
+             bg-color="grey-1"
+             class="q-ml-md"
+             style="min-width: 250px"
+           >
+             <template v-slot:append>
+               <q-icon name="search" color="primary" />
+             </template>
+           </q-input>
+         </div>
       </template>
 
       <!-- Botones de opciones -->
       <template #body-cell-opciones="props">
-        <q-td :props="props" class="text-center">
+        <q-td :props="props" class="text-center" auto-width>
           <q-btn
             flat
             round
@@ -104,7 +113,7 @@
         <q-inner-loading showing color="primary" />
       </template>
 
-      <!-- No Data State -->
+      <!-- No Data State: Customizing the default 'no-data' slot overrides no-data-label, but we can keep it consistent -->
       <template v-slot:no-data>
         <div class="full-width row flex-center text-grey-8 q-pa-md">
           <q-icon size="2em" name="sentiment_dissatisfied" />
@@ -131,7 +140,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-  </div>
+  </q-card>
 </template>
 
 <script setup>
