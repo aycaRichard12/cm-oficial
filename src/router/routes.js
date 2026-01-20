@@ -367,6 +367,10 @@ const routes = [
         path: '/actualizacionescomercial',
         component: () => import('src/pages/config/actualizacionSistemaPage.vue'),
       },
+      {
+        path: '/autorizarOperaciones',
+        component: () => import('src/pages/config/autorizarPermisosPage.vue'),
+      },
     ],
   },
   {

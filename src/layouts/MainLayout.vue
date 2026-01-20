@@ -198,9 +198,15 @@ import NotificacionLayout from './NotificacionLayout.vue'
 import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import ComandoVoz from './ComandoVoz.vue'
+//import { usePusher } from 'src/composables/usePusher'
+import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
 import { LocalStorage } from 'quasar'
 
+const permisosStore = useOperacionesPermitidas()
+const idusuario = idusuario_md5()
 const ocultarTabs = () => {
   tabsVisible.value = false
 }
@@ -398,7 +404,7 @@ function llevarPrimeraPAgina(submenu) {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   const loadData = (key, defaultValue = []) => {
     try {
       const data = localStorage.getItem(key)
@@ -427,6 +433,25 @@ onMounted(() => {
     const ruta = '/' + llevarPrimeraPAgina(submenu)
     router.push(ruta)
   })
+  console.log(idusuario)
+  //initPusher(idusuario)
+  // pusherActions = usePusher()
+  // setTimeout(() => {
+  //   console.log('Iniciando Pusher en segundo plano...')
+  //   if (pusherActions) {
+  //     pusherActions.initPusher(idusuario)
+  //   }
+  // }, 1000)
+
+  await permisosStore.cargarPermisos()
+  console.log('Permisos cargados en MainLayout.vue:', permisosStore.permisos)
+  // const tempInitPusher = (id) => console.log('ID en modo local:', id)
+
+  // const idusuario = idusuario_md5() // Verifica si esto falla solo
+
+  // setTimeout(() => {
+  //   tempInitPusher(idusuario)
+  // }, 1000)
 })
 
 const toggleLeftDrawer = () => {

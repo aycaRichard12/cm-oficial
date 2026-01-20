@@ -27,9 +27,11 @@
     >
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props">
-          <VentasTableActions 
-            :row="props.row" 
-            :opciones="getNumber(props.row.tipoventa) == 0 ? opcionesAccionSimple : opcionesAccionCompleta"
+          <VentasTableActions
+            :row="props.row"
+            :opciones="
+              getNumber(props.row.tipoventa) == 0 ? opcionesAccionSimple : opcionesAccionCompleta
+            "
             @accion="handleAccion"
           />
         </q-td>
@@ -37,7 +39,7 @@
 
       <template v-slot:body-cell-ver="props">
         <q-td :props="props">
-          <VentasTableVerButtons 
+          <VentasTableVerButtons
             :row="props.row"
             @pdf="$emit('pdf', $event)"
             @ver-factura="$emit('ver-factura', $event)"
@@ -56,12 +58,11 @@ import VentasTableActions from './VentasTableActions.vue'
 import VentasTableVerButtons from './VentasTableVerButtons.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
-
 const props = defineProps({
   rows: { type: Array, required: true },
   loading: { type: Boolean, default: false },
   almacenesOptions: { type: Array, default: () => [] },
-  tiposVentaOptions: { type: Array, default: () => [] }
+  tiposVentaOptions: { type: Array, default: () => [] },
 })
 
 const emit = defineEmits(['accion', 'pdf', 'ver-factura', 'ver-siat'])
@@ -90,14 +91,20 @@ const columnasBusqueda = [
 
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType:'text' },
+  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
   { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
   { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
   { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
   { name: 'tipopago', label: 'Tipo pago', field: 'tipopago', align: 'left', dataType: 'text' },
   { name: 'canal', label: 'Canal', field: 'canal', align: 'left', dataType: 'text' },
-  { name: 'nfactura', label: 'Nro. factura', field: 'nfactura', align: 'center', dataType: 'number' },
+  {
+    name: 'nfactura',
+    label: 'Nro. factura',
+    field: 'nfactura',
+    align: 'center',
+    dataType: 'number',
+  },
   { name: 'total', label: 'Total', field: 'total', align: 'right', dataType: 'number' },
   { name: 'descuento', label: 'Dscto', field: 'descuento', align: 'right', dataType: 'number' },
   { name: 'montototal', label: 'Monto', field: 'montototal', align: 'right', dataType: 'number' },
@@ -106,7 +113,7 @@ const columnas = [
   { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
 ]
 
-const arrayHeaders =[
+const arrayHeaders = [
   'numero',
   'almacen',
   'fechaventa',
@@ -122,11 +129,7 @@ const arrayHeaders =[
   'estado',
 ]
 
-const summationHeaders = [
-  'total',
-  'descuento',
-  'montototal',
-]
+const summationHeaders = ['total', 'descuento', 'montototal']
 
 const opcionesAccionSimple = [
   { label: 'Seleccione', value: '' },
@@ -147,11 +150,11 @@ const getNumber = (val) => Number(val)
 const filteredRows = computed(() => {
   if (filtroAlmacen.value || filtroTipo.value) {
     if (filtroAlmacen.value) {
-       return props.rows
-         .filter((v) => filtroAlmacen.value === 0 || v.idalmacen == filtroAlmacen.value)
-         .filter((v) => v.tipoventa == filtroTipo.value)
+      return props.rows
+        .filter((v) => filtroAlmacen.value === 0 || v.idalmacen == filtroAlmacen.value)
+        .filter((v) => v.tipoventa == filtroTipo.value)
     }
-    return [] 
+    return []
   }
   return []
 })
@@ -161,12 +164,12 @@ const filtrarRows = (rows, terms, cols, cellValue) => {
   if (!lowerTerms || columnaBusqueda.value === 0) {
     return rows
   }
-  
-  const col = cols[columnaBusqueda.value] 
-  
+
+  const col = cols[columnaBusqueda.value]
+
   return rows.filter((row) => {
-     // Safety check if col exists
-    if(!col) return false
+    // Safety check if col exists
+    if (!col) return false
     const val = cellValue(col, row)?.toString().toLowerCase() || ''
     return val.includes(lowerTerms)
   })
