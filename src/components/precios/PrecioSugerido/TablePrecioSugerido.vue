@@ -1,88 +1,139 @@
 <template>
-  <!-- Botón Cancelar Registro -->
-  <div class="row q-col-gutter-x-md q-mb-md">
-    <div class="col-12 col-md-4">
-      <label for="almacen">Almacén</label>
-      <q-select
-        v-model="filtroAlmacen"
-        :options="almacenes"
-        id="almacen"
+  <q-card flat bordered class="shadow-2 rounded-borders">
+    <!-- Header / Filters Section -->
+    <q-card-section class="q-pa-md">
+      <div class="row q-col-gutter-md items-end">
+        <!-- Almacén Filter -->
+        <div class="col-12 col-sm-4">
+          <label class="text-weight-bold text-grey-8 q-mb-sm block">Almacén</label>
+          <q-select
+            v-model="filtroAlmacen"
+            :options="almacenes"
+            id="almacen"
+            dense
+            outlined
+            options-dense
+            emit-value
+            map-options
+            bg-color="white"
+            @update:model-value="cargarCategoriaPrecio"
+          >
+            <template v-slot:prepend>
+              <q-icon name="store" />
+            </template>
+          </q-select>
+        </div>
+
+        <!-- Categoria Filter -->
+        <div class="col-12 col-sm-4">
+          <label class="text-weight-bold text-grey-8 q-mb-sm block">Categoría</label>
+          <q-select
+            id="filtroCategoria"
+            v-model="filtroscategoria"
+            :options="categorias"
+            dense
+            outlined
+            options-dense
+            bg-color="white"
+          >
+            <template v-slot:prepend>
+              <q-icon name="category" />
+            </template>
+          </q-select>
+        </div>
+
+        <!-- PDF Button (Align with inputs) -->
+        <div class="col-12 col-sm-4 flex justify-end">
+          <q-btn
+            color="negative"
+            icon="picture_as_pdf"
+            label="Vista Previa PDF"
+            unelevated
+            @click="onPrintReport"
+            class="full-width"
+            id="btnPDFps"
+          />
+        </div>
+      </div>
+    </q-card-section>
+
+    <q-separator />
+
+    <!-- Table Section -->
+    <q-card-section class="q-pa-none">
+      <q-table
+        :rows="filtrados"
+        :columns="columnas"
+        row-key="id"
+        flat
+        bordered
+
+        :loading="loading"
+        id="tablaPrecioSugerido"
         dense
-        outlined
-        @update:model-value="cargarCategoriaPrecio"
-      />
-    </div>
-    <div class="col-12 col-md-4">
-      <label for="categoria">Categoria</label>
-      <q-select
-        id="filtroCategoria"
-        v-model="filtroscategoria"
-        :options="categorias"
-        dense
-        outlined
-      />
-    </div>
-    <div class="col-12 col-md-4 flex justify-end">
-      <q-btn color="info" outline @click="onPrintReport" class="btn-res q-mt-lg" id="btnPDFps">
-        <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista Previa PDF</span>
-      </q-btn>
-    </div>
-    <!-- Filtros -->
-  </div>
-  <div class="row justify-end" id="inputBuscarPS">
-    <div class="q-mb-md">
-      <label for="buscar">Buscar...</label>
-      <q-input v-model="filter" dense outlined debounce="300" style="background-color: white">
-        <template v-slot:append>
-          <q-icon name="search" />
+        separator="cell"
+        no-data-label="No se encontraron registros"
+        rows-per-page-label="Filas por página"
+      >
+        <!--  Input in para buscar Table Top Slot -->
+        <template v-slot:top>
+          <div class="full-width row justify-between items-center q-py-xs">
+            <div class="text-h6 text-primary q-ml-sm">Lista de Precios</div>
+            <q-input
+              v-model="filter"
+              dense
+              outlined
+              debounce="300"
+              placeholder="Buscar..."
+              bg-color="grey-1"
+              class="q-ml-md"
+              style="min-width: 250px"
+            >
+              <template v-slot:append>
+                <q-icon name="search" color="primary" />
+              </template>
+            </q-input>
+          </div>
         </template>
-      </q-input>
-    </div>
-  </div>
 
-  <!-- Tabla -->
-  <q-table
-    :rows="filtrados"
-    :columns="columnas"
-    row-key="id"
-    flat
-    bordered
-    :filter="filter"
-    :loading="loading"
-    id="tablaPrecioSugerido"
+        <template #body-cell-opciones="props">
+          <q-td :props="props" auto-width>
+            <q-btn
+              flat
+              dense
+              round
+              icon="edit"
+              color="primary"
+              @click="editarProducto(props.row)"
+              title="Editar producto"
+              id="btnEditarPS"
+            />
+          </q-td>
+        </template>
+      </q-table>
+    </q-card-section>
+  </q-card>
+
+  <!-- PDF Modal -->
+  <q-dialog
+    v-model="mostrarModal"
+    full-width
+    full-height
+    transition-show="slide-up"
+    transition-hide="slide-down"
   >
-    <template v-slot:top-right> </template>
-    <template #body-cell-opciones="props">
-      <q-td :props="props" class="text-nowrap">
-        <q-btn
-          flat
-          dense
-          icon="edit"
-          color="primary"
-          @click="editarProducto(props.row)"
-          title="Editar producto"
-          id="btnEditarPS"
-        />
-      </q-td>
-    </template>
-  </q-table>
+    <q-card class="column full-height">
+      <q-toolbar class="bg-primary text-white">
+        <q-toolbar-title>Vista Previa del Reporte</q-toolbar-title>
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
 
-  <q-dialog v-model="mostrarModal" full-width full-height>
-    <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
-        <q-space />
-        <q-btn flat round icon="close" @click="mostrarModal = false" />
-      </q-card-section>
-
-      <q-separator />
-
-      <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
+      <q-card-section class="col q-pa-none">
         <iframe
           v-if="pdfData"
           :src="pdfData"
-          style="width: 100%; height: 100%; border: none"
+          class="full-width full-height"
+          style="border: none"
         ></iframe>
       </q-card-section>
     </q-card>
@@ -129,6 +180,16 @@ const categorias = ref([])
 // ])
 
 const columnas = [
+  { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center', sortable: true },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    sortable: true,
+    style: 'min-width: 300px; white-space: normal;',
+  },
   { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
@@ -138,6 +199,8 @@ const columnas = [
     label: 'Precio' + ' (' + currencyStore.simbolo + ')',
     field: 'precio',
     align: 'right',
+    sortable: true,
+
     format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
@@ -151,9 +214,9 @@ const filtrados = computed(() => {
       filtroscategoria.value !== null
     const matchesCodigo =
       !filter.value ||
-      p.codigo.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.descripcion.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.precio.toLowerCase().includes(filter.value.toLowerCase())
+      p.codigo?.toLowerCase().includes(filter.value.toLowerCase()) ||
+      p.descripcion?.toLowerCase().includes(filter.value.toLowerCase()) ||
+      String(p.precio).toLowerCase().includes(filter.value.toLowerCase())
     return matchesCodigo && matchesCateforia
   })
 
@@ -174,14 +237,14 @@ const filtrados = computed(() => {
   }))
 })
 const cargarCategoriaPrecio = async () => {
-  console.log(filtroAlmacen.value)
-  const almacen = filtroAlmacen.value
+  /* console.log(filtroAlmacen.value) */
+  const almacenId = filtroAlmacen.value
   try {
     const response = await api.get(`listaCategoriaPrecio/${idempresa}`)
     console.log(response.data)
     console.log(idusuario)
     const filtrado = response.data.filter(
-      (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(almacen.value),
+      (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(almacenId),
     )
     categorias.value = filtrado.map((item) => ({
       label: item.nombre,
@@ -205,15 +268,17 @@ watch(
   (nuevosAlmacenes) => {
     if (nuevosAlmacenes.length > 0 && !filtroAlmacen.value) {
       console.log(nuevosAlmacenes)
-      filtroAlmacen.value = nuevosAlmacenes[0]
+      filtroAlmacen.value = nuevosAlmacenes[0].value
       cargarCategoriaPrecio()
     }
   },
   { immediate: true },
 )
 function onPrintReport() {
-  const almacen = filtroAlmacen.value
-  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, almacen.label)
+  const almacenId = filtroAlmacen.value
+  const almacenObj = props.almacenes.find(a => a.value === almacenId)
+  const label = almacenObj ? almacenObj.label : ''
+  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, label)
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador

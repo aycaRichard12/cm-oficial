@@ -19,13 +19,26 @@
           <q-btn icon="help_outline" color="blue" flat @click="IniciarGuia" />
 
           <notificacion-layout v-if="permitidoNotificaciones" />
+          <!-- <q-btn
+            flat
+            dense
+            icon="exit_to_app"
+            text-color="white"
+            label="Salir123"
+            @click="irdashboard"
+          /> -->
           <q-btn
             flat
             dense
             icon="exit_to_app"
             text-color="white"
             label="Salir"
-            @click="irdashboard"
+            @click="
+              () => {
+                LocalStorage.remove('puedeIniciarsesion')
+                $router.push('/login')
+              }
+            "
           />
         </q-toolbar-title>
       </q-toolbar>
@@ -190,14 +203,16 @@ import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
+import { LocalStorage } from 'quasar'
+
 const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
 const ocultarTabs = () => {
   tabsVisible.value = false
 }
-const irdashboard = () => {
-  window.location.href = '/app/dashboard'
-}
+// const irdashboard = () => {
+//   window.location.href = '/app/dashboard'
+// }
 const router = useRouter()
 const menuStore = useMenuStore()
 
