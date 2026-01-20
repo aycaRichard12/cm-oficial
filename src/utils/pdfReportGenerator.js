@@ -80,6 +80,187 @@ function getEstadoText(estado) {
   return estados[Number(estado)] || ''
 }
 
+export function PDF_DETALLE_PEDIDO(detalle_pedido) {
+  console.log(detalle_pedido)
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  const detallePlano = JSON.parse(JSON.stringify(detalle_pedido))
+  const datos = detallePlano[0].detalle.map((item, indice) => ({
+    indice: indice + 1,
+    descripcion: item.descripcion,
+    cantidad: decimas(item.cantidad),
+  }))
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Cantidad', dataKey: 'cantidad' },
+  ]
+  const columnStyles = {
+    indice: { cellWidth: 15, halign: 'center' },
+    descripcion: { cellWidth: 100, halign: 'left' },
+    cantidad: { cellWidth: 80, halign: 'right' },
+  }
+  const headerColumnStyles = {
+    indice: { cellWidth: 15, halign: 'center' },
+    descripcion: { cellWidth: 100, halign: 'left' },
+    cantidad: { cellWidth: 80, halign: 'right' },
+  }
+
+  const izquierda = {
+    titulo: 'Datos Pedido',
+    campos: [
+      {
+        label: 'Fecha',
+        valor: cambiarFormatoFecha(detallePlano[0].fecha) || '',
+      },
+      {
+        label: 'Codigo',
+        valor: detallePlano[0].codigo || '',
+      },
+      {
+        label: 'Solicitante',
+        valor: detallePlano[0].usuarios[0].usuario || '',
+      },
+      {
+        label: 'Observación',
+        valor: detallePlano[0].observacion || '',
+      },
+    ],
+  }
+  const derecho = {
+    titulo: 'N°' + detallePlano[0].nropedido,
+    campos: [
+      {
+        label: 'Almacen Origen',
+        valor: detallePlano[0].almacen_origen || null,
+      },
+      {
+        label: 'Almacen Destino',
+        valor: detallePlano[0].almacen || '',
+      },
+      {
+        label: 'Estado',
+        valor: Number(detallePlano[0].estado) == 2 ? 'Pendiente' : 'Finalizado',
+      },
+    ].filter((campo) => campo.valor !== null),
+  }
+  const extras = {
+    centreado: {
+      campos: [
+        {
+          label: 'Tipo',
+          valor: Number(detallePlano[0].tipopedido) == 2 ? 'Pedido Movimiento' : 'Pedido Compra',
+        },
+      ],
+    },
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'NOTA DE PEDIDO ',
+    columnStyles,
+    headerColumnStyles,
+    izquierda,
+    derecho,
+    true,
+    null,
+    extras,
+  )
+  return doc
+}
+export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  const dataRaw = detalleData[0] // Asumimos que viene como array de 1 elemento según el JSON ejemplo
+
+  // 1. Columnas
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo_producto' },
+    { header: 'Producto', dataKey: 'producto' },
+    { header: 'Descripción', dataKey: 'descripcion_producto' },
+    { header: 'Cantidad', dataKey: 'cantidad' },
+    { header: 'Fecha Ingreso', dataKey: 'fecha_ingreso' },
+  ]
+
+  // 2. Datos
+  const datos = dataRaw.detalle.map((item, index) => ({
+    indice: index + 1,
+    codigo_producto: item.codigo_producto,
+    producto: item.producto,
+    descripcion_producto: item.descripcion_producto,
+    //NUMERO ENTERO SIN DECIMAL
+    cantidad: parseInt(item.cantidad),
+    fecha_ingreso: cambiarFormatoFecha(item.fecha_ingreso),
+  }))
+
+  const totalCantidad = dataRaw.detalle.reduce((acc, curr) => acc + parseFloat(curr.cantidad), 0)
+  datos.push({
+    descripcion_producto: 'TOTAL',
+    cantidad: parseInt(totalCantidad),
+  })
+
+  // 3. Estilos QUE OCUPEN TODO EL ANCHO DE LA HOJA
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    codigo_producto: { cellWidth: 30, halign: 'center' },
+    producto: { cellWidth: 40, halign: 'center' },
+    descripcion_producto: { cellWidth: 71, halign: 'center' },
+
+    cantidad: { cellWidth: 20, halign: 'center' },
+    fecha_ingreso: { cellWidth: 25, halign: 'center' },
+  }
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    codigo_producto: { halign: 'center' },
+    producto: { halign: 'center' },
+    descripcion_producto: { halign: 'center' },
+    cantidad: { halign: 'center' },
+    fecha_ingreso: { halign: 'center' },
+  }
+
+  // 4. Cabeceras (Izquierda / Derecha)
+  // Cliente: CLI_... R-Varias S.A.
+  // Parseamos el cliente si es necesario o lo mostramos directo
+  const clienteStr = dataRaw.cliente || ''
+  // Extraer nombre comercial si es posible o usar el string completo
+  // El formato parece ser "CODIGO-Nombre Comercial R-Razon Social..."
+
+  const Izquierda = {
+    titulo: 'DATOS DEL CLIENTE',
+    campos: [
+      { label: 'Cliente', valor: clienteStr },
+      { label: 'Sucursal', valor: dataRaw.sucursal || '' },
+      { label: 'Almacén', valor: dataRaw.almacen || '' },
+      { label: 'Fecha Control', valor: cambiarFormatoFecha(dataRaw.fecha_control) || '' },
+    ],
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL USUARIO',
+    campos: [
+      { label: 'Usuario', valor: dataRaw.usuario?.usuario || '' },
+      { label: 'Cargo', valor: dataRaw.usuario?.cargo || '' },
+    ],
+  }
+
+  // 5. Dibujar
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'DETALLE INVENTARIO EXTERIOR',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    true, // conImpresionEncargado (firma footer)
+    null,
+  )
+
+  return doc
+}
+
 export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
   const doc = new jsPDF({ orientation: 'landscape' })
 
@@ -3557,215 +3738,6 @@ export function PDF_REPORTE_COMPRAS(filteredCompra, filtroAlmacen) {
   return doc
 }
 
-// 2. CUERPO (BODY) - COMPONENTE ESCALABLE
-// function dibujarCuerpoTabla(
-//   doc,
-//   columns,
-//   datos,
-//   tituloReporte,
-//   columnStyles,
-//   headerColumnStyles,
-//   datosIzquierda = null,
-//   datosDerecho = null,
-//   conImpresionEncargado = null,
-//   fechas = null,
-//   extras = null,
-// ) {
-//   // Definición de estilos de columna específicos para este reporte (pueden generalizarse)
-//   let ultimaPaginaTabla = 0
-
-//   autoTable(doc, {
-//     columns,
-//     body: datos,
-//     styles: {
-//       overflow: 'linebreak',
-//       fontSize: fontSize,
-//       cellPadding: cellPadding,
-//       textColor: [0, 0, 0],
-//     },
-//     headStyles: {
-//       fillColor: false,
-//       textColor: [0, 0, 0],
-//       fontSize: fontSize,
-//       halign: 'center',
-//     },
-//     // headStyles: {
-//     //   fillColor: false,
-//     //   textColor: [0, 0, 0],
-//     //   halign: 'center',
-//     //   fontSize: fontSize,
-//     //   lineWidth: 0.3,
-//     //   lineColor: [0, 0, 0],
-//     // },
-
-//     // columnStyles: columnStyles,
-//     // Posición inicial de la tabla, justo debajo del encabezado
-//     startY: 55,
-//     margin: { horizontal: 10, bottom: 20 },
-//     tableWidth: 'auto',
-//     theme: 'plain',
-//     didParseCell: function (data) {
-//       const key = data.column.dataKey
-//       // for (const styleName in data.cell.styles) {
-//       //   // Aseguramos que la propiedad es propia del objeto y no heredada
-//       //   if (Object.prototype.hasOwnProperty.call(data.cell.styles, styleName)) {
-//       //     // styleName es el nombre de la propiedad (ej: 'color', 'fontSize')
-//       //     const styleValue = data.cell.styles[styleName]
-
-//       //     console.log(`Nombre del Estilo: ${styleName}`)
-//       //     console.log(`Valor del Estilo: ${styleValue}`)
-//       //     // console.log(styleName, ':', styleValue);
-//       //   }
-//       // }
-
-//       if (data.section === 'head') {
-//         // aplicar estilos específicos de la columna
-
-//         if (headerColumnStyles[key]) {
-//           Object.assign(data.cell.styles, headerColumnStyles[key])
-//         }
-
-//         if (extras && extras.cabezeraVertical) {
-//           data.cell.text = ['']
-//         }
-//       }
-
-//       if (data.section === 'body') {
-//         // aplica los estilos personalizados del body por columna
-//         if (columnStyles[key]) {
-//           Object.assign(data.cell.styles, columnStyles[key])
-//         }
-//       }
-//     },
-//     didDrawCell: function (data) {
-//       console.log(data)
-//       // if (extras) {
-//       //   if (data.column.dataKey === extras.descripcion && data.cell.section === 'body') {
-//       //     const item = datos[data.row.index]
-//       //     if (extras && extras.descripcionAdicional && extras.descripcionAdicional != '') {
-//       //       if (item[extras.descripcionAdicional]) {
-//       //         const text = convertirAMayusculas(
-//       //           doc.splitTextToSize('(' + item[extras.descripcionAdicional] + ')', 45),
-//       //         )
-//       //         doc.setFontSize(6)
-//       //         doc.setTextColor(0)
-//       //         doc.text(
-//       //           text,
-//       //           data.cell.x + 40,
-//       //           data.cell.y + data.cell.height - 1, // justo debajo del texto principal
-//       //         )
-//       //         doc.setTextColor(0)
-//       //       }
-//       //     }
-//       //   }
-//       // }
-//       // if (extras && extras.cabezeraVertical) {
-//       //   if (data.section === 'head') {
-//       //     const cell = data.cell
-//       //     const text = data.column.raw.header || '' // El texto del encabezado
-//       //     console.log(data.cell)
-//       //     console.log(data.column.raw.header)
-
-//       //     if (!text) return // Evitar errores si el texto es nulo
-
-//       //     // 1. Opciones de Rotación y Posición:
-//       //     // Posición X: Desplazamos un poco a la izquierda (restamos 2-3mm)
-//       //     // para que el texto rotado a 45° no se salga por el borde derecho.
-//       //     //const offsetX = 3
-//       //     const textX = cell.x + cell.width // Cerca del borde derecho, desplazado
-
-//       //     // Posición Y: Cerca de la parte inferior de la celda
-//       //     const textY = cell.y + cell.height // -2mm desde el final
-
-//       //     // 2. Configurar el estilo
-//       //     doc.setFont(doc.getFont().fontName, 'bold')
-//       //     doc.setFontSize(8)
-//       //     doc.setTextColor(0, 0, 0)
-
-//       //     // 3. Aplicar la rotación y dibujar el texto
-//       //     doc.text(text, textX, textY, {
-//       //       // *** CAMBIO CLAVE: 45 grados ***
-//       //       angle: 45,
-//       //       align: 'right', // Alineación a la derecha para que el punto de anclaje sea el borde
-//       //       baseline: 'bottom',
-//       //     })
-//       //     data.row.height = 15
-//       //   }
-//       // }
-//       if (data.column.dataKey === 'imagen' && data.cell.section === 'body') {
-//         console.log(data.column.dataKey)
-//         const imageData = data.cell.text[0] // La celda contiene el string Base64
-//         console.log(data.cell.raw)
-
-//         // Verifica que el string no esté vacío (no es la fila de Total)
-//         if (imageData && imageData.startsWith('data:image/')) {
-//           const cell = data.cell
-
-//           // Definir el tamaño y posición de la imagen dentro de la celda
-//           const imageWidth = 12 // Ancho deseado de la imagen en mm
-//           const imageHeight = 12 // Altura deseada de la imagen en mm
-
-//           // Calcular la posición central para centrar la imagen
-//           const x = cell.x + cell.width / 2 - imageWidth / 2
-//           const y = cell.y + cell.height / 2 - imageHeight / 2
-
-//           // El formato Base64 debe ser 'data:image/jpeg;base64,...' o similar.
-//           // La función addImage lo maneja automáticamente si el prefijo es correcto.
-//           console.log(imageData)
-//           doc.addImage(imageData, 'auto', x, y, imageWidth, imageHeight)
-//         }
-
-//         // Borra el texto de la celda después de dibujar la imagen
-//         data.cell.text = []
-//       }
-//       if (data.section === 'head') {
-//         const cell = data.cell
-
-//         // Configura color y grosor de línea
-//         doc.setDrawColor(0, 0, 0) // Negro
-//         doc.setLineWidth(0.2) // Grosor
-
-//         // ---- LÍNEA SUPERIOR ----
-//         doc.line(cell.x, cell.y, cell.x + cell.width, cell.y)
-
-//         // ---- LÍNEA INFERIOR ----
-//         doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height)
-//       }
-//       ultimaPaginaTabla = data.table.pageNumber
-//     },
-//     // ENCABEZADO Y PIE DE PÁGINA: Se dibuja en cada página.
-//     didDrawPage: (data) => {
-//       agregarEncabezado(doc)
-//       agregarEncabezadoInfo(
-//         doc,
-//         tituloReporte,
-//         fechas,
-//         datosIzquierda,
-//         datosDerecho,
-//         conImpresionEncargado,
-//         extras,
-//       )
-
-//       // Dibuja el encabezado en cada página
-
-//       // Dibuja el pie de página en cada página
-//       agregarPieDePagina(doc, data)
-//     },
-//   })
-
-//   // Solo insertar contenido en la página donde la tabla termina
-//   doc.setPage(ultimaPaginaTabla)
-
-//   // Coordenada exacta debajo de la tabla
-//   const y = doc.lastAutoTable.finalY + 5
-
-//   doc.setFontSize(8)
-//   const fechaGeneracion = cambiarFormatoFecha(obtenerFechaActualDato())
-//   //doc.text('FUSTO: Información debajo de la tabla', 14, y)
-//   doc.text(`Fecha hora reporte: ${fechaGeneracion} ${obtenerHora()}`, 14, y, {
-//     align: 'left',
-//   })
-// }
 function dibujarCuerpoTabla(
   doc,
   columns,
@@ -3965,6 +3937,25 @@ function agregarEncabezadoInfo(
         align: 'center',
       })
     }
+    if (extras.centreado) {
+      // Título
+      doc.setFontSize(8)
+      doc.setFont(undefined, 'normal')
+
+      // Valores dinámicos
+      let y = 36 // posición inicial
+
+      extras.centreado.campos.forEach((campo) => {
+        let texto = campo.valor
+        if (campo.label && campo.label.trim() !== '') {
+          texto = `${campo.label}: ${campo.valor}`
+        }
+        doc.text(texto, pageWidth / 2, y, {
+          align: 'center',
+        })
+        y += 3 // separación entre líneas
+      })
+    }
   }
 
   // -------------------------
@@ -4042,96 +4033,4 @@ function agregarPieDePagina(doc) {
       align: 'right',
     })
   }
-}
-
-export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  const dataRaw = detalleData[0] // Asumimos que viene como array de 1 elemento según el JSON ejemplo
-
-  // 1. Columnas
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Código', dataKey: 'codigo_producto' },
-    { header: 'Producto', dataKey: 'producto' },
-    { header: 'Descripción', dataKey: 'descripcion_producto' },
-    { header: 'Cantidad', dataKey: 'cantidad' },
-    { header: 'Fecha Ingreso', dataKey: 'fecha_ingreso' },
-  ]
-
-  // 2. Datos
-  const datos = dataRaw.detalle.map((item, index) => ({
-    indice: index + 1,
-    codigo_producto: item.codigo_producto,
-    producto: item.producto,
-    descripcion_producto: item.descripcion_producto,
-    //NUMERO ENTERO SIN DECIMAL
-    cantidad: parseInt(item.cantidad),
-    fecha_ingreso: cambiarFormatoFecha(item.fecha_ingreso),
-  }))
-
-  const totalCantidad = dataRaw.detalle.reduce((acc, curr) => acc + parseFloat(curr.cantidad), 0)
-  datos.push({
-    descripcion_producto: 'TOTAL',
-    cantidad: parseInt(totalCantidad),
-  })
-
-  // 3. Estilos QUE OCUPEN TODO EL ANCHO DE LA HOJA
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    codigo_producto: { cellWidth: 30, halign: 'center' },
-    producto: { cellWidth: 40, halign: 'center' },
-    descripcion_producto: { cellWidth: 71, halign: 'center' },
-
-    cantidad: { cellWidth: 20, halign: 'center' },
-    fecha_ingreso: { cellWidth: 25, halign: 'center' },
-  }
-  const headerColumnStyles = {
-    indice: { halign: 'center' },
-    codigo_producto: { halign: 'center' },
-    producto: { halign: 'center' },
-    descripcion_producto: { halign: 'center' },
-    cantidad: { halign: 'center' },
-    fecha_ingreso: { halign: 'center' },
-  }
-
-  // 4. Cabeceras (Izquierda / Derecha)
-  // Cliente: CLI_... R-Varias S.A.
-  // Parseamos el cliente si es necesario o lo mostramos directo
-  const clienteStr = dataRaw.cliente || ''
-  // Extraer nombre comercial si es posible o usar el string completo
-  // El formato parece ser "CODIGO-Nombre Comercial R-Razon Social..."
-  
-  const Izquierda = {
-    titulo: 'DATOS DEL CLIENTE',
-    campos: [
-      { label: 'Cliente', valor: clienteStr },
-      { label: 'Sucursal', valor: dataRaw.sucursal || '' },
-      { label: 'Almacén', valor: dataRaw.almacen || '' },
-      { label: 'Fecha Control', valor: cambiarFormatoFecha(dataRaw.fecha_control) || '' },
-    ],
-  }
-
-  const derecho = {
-    titulo: 'DATOS DEL USUARIO',
-    campos: [
-      { label: 'Usuario', valor: dataRaw.usuario?.usuario || '' },
-      { label: 'Cargo', valor: dataRaw.usuario?.cargo || '' },
-    ],
-  }
-
-  // 5. Dibujar
-  dibujarCuerpoTabla(
-    doc,
-    columns,
-    datos,
-    'DETALLE INVENTARIO EXTERIOR',
-    columnStyles,
-    headerColumnStyles,
-    Izquierda,
-    derecho,
-    true, // conImpresionEncargado (firma footer)
-    null,
-  )
-
-  return doc
 }
