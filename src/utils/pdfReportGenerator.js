@@ -163,11 +163,12 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
 }
 export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-
+  console.log('datos que estan llegando', filtrados)
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Unidad de Medida', dataKey: 'unidad' },
     { header: 'Precio', dataKey: 'precio' },
   ]
 
@@ -175,22 +176,23 @@ export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen) {
     indice: indice + 1,
     codigo: item.codigo,
     descripcion: item.descripcion,
+    unidad: item.unidad,
     precio: decimas(item.precio),
   }))
 
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 50, halign: 'left' },
-    cantidad: { cellWidth: 40, halign: 'right' },
-    precio: { cellWidth: 40, halign: 'right' },
-    total: { cellWidth: 50, halign: 'right' },
+    codigo: { cellWidth: 20, halign: 'center' },
+    descripcion: { cellWidth: 81, halign: 'center' },
+    unidad: { cellWidth: 40, halign: 'center' },
+    precio: { cellWidth: 40, halign: 'center' },
   }
   const headerColumnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 50, halign: 'left' },
-    cantidad: { cellWidth: 40, halign: 'right' },
-    precio: { cellWidth: 40, halign: 'right' },
-    total: { cellWidth: 50, halign: 'right' },
+    codigo: { cellWidth: 20, halign: 'center' },
+    descripcion: { cellWidth: 81, halign: 'center' },
+    unidad: { cellWidth: 40, halign: 'center' },
+    precio: { cellWidth: 40, halign: 'center' },
   }
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
@@ -219,12 +221,13 @@ export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen) {
   return doc
 }
 export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
-  console.log(filtroAlmacen)
+  console.log('datos del almacen traidos',filtroAlmacen, filtrados)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Unidad', dataKey: 'unidad' },  
     { header: 'Precio', dataKey: 'precio' },
   ]
 
@@ -232,23 +235,28 @@ export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
     indice: indice + 1,
     codigo: item.codigo,
     descripcion: item.descripcion,
+    unidad: item.unidad,
     precio: decimas(item.precio),
   }))
 
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 50, halign: 'left' },
-    cantidad: { cellWidth: 40, halign: 'right' },
-    precio: { cellWidth: 40, halign: 'right' },
-    total: { cellWidth: 50, halign: 'right' },
+    codigo: { cellWidth: 20, halign: 'center' },
+    descripcion: { cellWidth: 80, halign: 'center' },
+    unidad: { cellWidth: 40, halign: 'center' },
+    precio: { cellWidth: 41, halign: 'center' },
   }
   const headerColumnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 50, halign: 'left' },
-    cantidad: { cellWidth: 40, halign: 'right' },
-    precio: { cellWidth: 40, halign: 'right' },
-    total: { cellWidth: 50, halign: 'right' },
+    codigo: { cellWidth: 20, halign: 'center' },
+    descripcion: { cellWidth: 80, halign: 'center' },
+    unidad: { cellWidth: 40, halign: 'center' },
+    precio: { cellWidth: 41, halign: 'center' },
   }
+
+
+
+
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
     campos: [
