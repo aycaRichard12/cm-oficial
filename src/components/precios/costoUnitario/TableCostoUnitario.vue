@@ -69,7 +69,7 @@
     >
       <template v-slot:top>
         <div class="full-width row justify-between items-center q-py-xs">
-          <div class="text-h6 text-primary q-ml-sm">Costo Unitario</div>
+          <div class="text-h6 text-white q-ml-sm">Tabla con Costos Unitarios</div>
 
           <!-- Search Input -->
           <q-input
@@ -209,7 +209,7 @@ const columnas = [
 const filtrados = computed(() => {
   const almacenId = filtroAlmacen.value
   const searchTerm = filter.value ? filter.value.toLowerCase() : ''
-  
+
   console.log('🏪 Almacén seleccionado (ID):', almacenId)
   if (searchTerm) console.log('🔍 Término de búsqueda:', searchTerm)
 
@@ -220,23 +220,24 @@ const filtrados = computed(() => {
 
     // Filtro de búsqueda con null safety
     if (!searchTerm) return true
-    
+
     const codigo = (p.codigo || '').toString().toLowerCase()
     const descripcion = (p.descripcion || '').toString().toLowerCase()
     const unidad = (p.unidad || '').toString().toLowerCase()
     const precio = (p.precio || '').toString().toLowerCase()
 
-    return codigo.includes(searchTerm) ||
-           descripcion.includes(searchTerm) ||
-           unidad.includes(searchTerm) ||
-           precio.includes(searchTerm)
+    return (
+      codigo.includes(searchTerm) ||
+      descripcion.includes(searchTerm) ||
+      unidad.includes(searchTerm) ||
+      precio.includes(searchTerm)
+    )
   })
 
   console.log(`✅ Registros del almacén ${almacenId}:`, res.length)
   const response = res.map((row, index) => ({
     ...row,
     numero: index + 1,
-
   }))
   console.log(`✅ Registros con el almacen ${almacenId}:`, response)
   return response
@@ -261,11 +262,11 @@ function editarProducto(id) {
 function onPrintReport() {
   const almacenId = filtroAlmacen.value
   // Buscar el objeto almacén completo para obtener el label
-  const almacenObj = props.almacenes.find(a => a.value === almacenId)
+  const almacenObj = props.almacenes.find((a) => a.value === almacenId)
   const almacenLabel = almacenObj ? almacenObj.label : 'Todos los Almacenes'
-  
+
   console.log('📊 Generando PDF para almacén:', almacenLabel)
-  
+
   const doc = PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados.value, almacenLabel)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
