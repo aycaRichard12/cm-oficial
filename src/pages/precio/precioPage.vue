@@ -41,6 +41,7 @@ const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const listaAlmacenes = ref([])
 const productos = ref([])
+const cargando = ref(false)
 const ProductoSeleccionado = ref({
   ver: '',
   idempresa: idempresa,
@@ -126,8 +127,9 @@ const abrirFormularioEditar = async (item) => {
   }
 }
 async function loadRows() {
+  cargando.value = true
   try {
-    const response = await api.get(`listaPrecioBase/${idempresa}`) // Cambia a tu ruta real
+    const response = await api.get(`listaPrecioBase/${idempresa}`)
     console.log(response.data)
     productos.value = response.data
   } catch (error) {
@@ -136,6 +138,8 @@ async function loadRows() {
       type: 'negative',
       message: 'No se pudieron cargar los datos',
     })
+  } finally {
+    cargando.value = false
   }
 }
 const toggleForm = () => {

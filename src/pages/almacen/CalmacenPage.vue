@@ -38,7 +38,7 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
-import { showDialog } from 'src/composables/FuncionesGenerales'
+import { showDialog } from 'src/utils/dialogs'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
@@ -201,9 +201,11 @@ const handleSubmit = async (data) => {
   }
   try {
     if (isEditing.value) {
+      console.log('datos para editar', formData)
       const response = await api.post(``, formData)
       console.log(response)
     } else {
+      console.log('datos para registrar', formData)
       const response = await api.post(``, formData)
       console.log(response)
     }
