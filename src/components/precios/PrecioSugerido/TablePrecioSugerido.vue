@@ -1,92 +1,134 @@
 <template>
-  <!-- Botón Cancelar Registro -->
-  <div class="row q-col-gutter-x-md q-mb-md">
-    <div class="col-12 col-md-4">
-      <label for="almacen">Almacén</label>
-      <q-select
-        v-model="filtroAlmacen"
-        :options="almacenes"
-        id="almacen"
-        dense
-        outlined
-        @update:model-value="cargarCategoriaPrecio"
-      />
-    </div>
-    <div class="col-12 col-md-4">
-      <label for="categoria">Categoria</label>
-      <q-select
-        id="filtroCategoria"
-        v-model="filtroscategoria"
-        :options="categorias"
-        dense
-        outlined
-      />
-    </div>
-    <div class="col-12 col-md-4 flex justify-end">
-      <q-btn color="info" outline @click="onPrintReport" class="btn-res q-mt-lg" id="btnPDFps">
-        <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista Previa PDF</span>
-      </q-btn>
-    </div>
+  <div class="q-pa-sm">
     <!-- Filtros -->
-  </div>
-  <div class="row justify-end" id="inputBuscarPS">
-    <div class="q-mb-md">
-      <label for="buscar">Buscar...</label>
-      <q-input v-model="filter" dense outlined debounce="300" style="background-color: white">
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
-  </div>
-
-  <!-- Tabla -->
-  <q-table
-    :rows="filtrados"
-    :columns="columnas"
-    row-key="id"
-    flat
-    bordered
-    :filter="filter"
-    :loading="loading"
-    id="tablaPrecioSugerido"
-  >
-    <template v-slot:top-right> </template>
-    <template #body-cell-opciones="props">
-      <q-td :props="props" class="text-nowrap">
-        <q-btn
-          flat
-          dense
-          icon="edit"
-          color="primary"
-          @click="editarProducto(props.row)"
-          title="Editar producto"
-          id="btnEditarPS"
-        />
-      </q-td>
-    </template>
-  </q-table>
-
-  <q-dialog v-model="mostrarModal" full-width full-height>
-    <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
-        <q-space />
-        <q-btn flat round icon="close" @click="mostrarModal = false" />
-      </q-card-section>
-
-      <q-separator />
-
-      <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-        <iframe
-          v-if="pdfData"
-          :src="pdfData"
-          style="width: 100%; height: 100%; border: none"
-        ></iframe>
+    <q-card class="q-mb-md shadow-2 rounded-borders">
+      <q-card-section>
+        <div class="row q-col-gutter-md items-center">
+          <div class="col-12 col-md-4">
+            <span class="text-subtitle2 text-grey-8 q-mb-xs db">Almacén</span>
+            <q-select
+              v-model="filtroAlmacen"
+              :options="almacenes"
+              id="almacen"
+              dense
+              outlined
+              options-dense
+              bg-color="white"
+              @update:model-value="cargarCategoriaPrecio"
+            >
+              <template v-slot:prepend>
+                <q-icon name="store" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-4">
+            <span class="text-subtitle2 text-grey-8 q-mb-xs db">Categoría</span>
+            <q-select
+              id="filtroCategoria"
+              v-model="filtroscategoria"
+              :options="categorias"
+              dense
+              outlined
+              options-dense
+              bg-color="white"
+            >
+              <template v-slot:prepend>
+                <q-icon name="category" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-4 flex justify-end">
+            <q-btn
+              color="primary"
+              icon="picture_as_pdf"
+              label="Vista Previa PDF"
+              @click="onPrintReport"
+              class="q-mt-md full-width-lt-md"
+              id="btnPDFps"
+              no-caps
+            />
+          </div>
+        </div>
       </q-card-section>
     </q-card>
-  </q-dialog>
+
+    <!-- Buscador -->
+    <div class="row justify-end q-mb-md" id="inputBuscarPS">
+      <div class="col-12 col-sm-6 col-md-4">
+        <q-input
+          v-model="filter"
+          dense
+          outlined
+          debounce="300"
+          placeholder="Buscar producto, código..."
+          bg-color="white"
+          class="shadow-1 rounded-borders"
+        >
+          <template v-slot:append>
+            <q-icon name="search" color="primary" />
+          </template>
+        </q-input>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <q-table
+      :rows="filtrados"
+      :columns="columnas"
+      row-key="id"
+      flat
+      bordered
+      :filter="filter"
+      :loading="loading"
+      id="tablaPrecioSugerido"
+      class="shadow-2 rounded-borders"
+      header-class="bg-grey-2 text-grey-9 text-weight-bold"
+    >
+      <template #body-cell-opciones="props">
+        <q-td :props="props" auto-width>
+          <q-btn
+            flat
+            round
+            dense
+            icon="edit"
+            color="primary"
+            @click="editarProducto(props.row)"
+            id="btnEditarPS"
+          >
+            <q-tooltip content-class="bg-primary">Editar producto</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
+
+      <!-- Loading State Customization -->
+      <template v-slot:loading>
+        <q-inner-loading showing color="primary">
+          <q-spinner-dots size="50px" color="primary" />
+        </q-inner-loading>
+      </template>
+    </q-table>
+
+    <!-- Modal PDF -->
+    <q-dialog v-model="mostrarModal" full-width full-height>
+      <q-card class="column full-height">
+        <q-card-section class="row items-center bg-primary text-white q-py-sm">
+          <div class="text-h6">Vista previa de PDF</div>
+          <q-space />
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="col q-pa-none overflow-hidden">
+          <iframe
+            v-if="pdfData"
+            :src="pdfData"
+            style="width: 100%; height: 100%; border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script setup>
@@ -153,7 +195,7 @@ const filtrados = computed(() => {
       !filter.value ||
       p.codigo.toLowerCase().includes(filter.value.toLowerCase()) ||
       p.descripcion.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.precio.toLowerCase().includes(filter.value.toLowerCase())
+      String(p.precio).toLowerCase().includes(filter.value.toLowerCase())
     return matchesCodigo && matchesCateforia
   })
 
@@ -162,10 +204,10 @@ const filtrados = computed(() => {
   //     buscar.value === '' ||
   //     row.descripcion.toLowerCase().includes(buscar.value.toLowerCase()) ||
   //     row.codigo.toLowerCase().includes(buscar.value.toLowerCase())
-
+  //
   //   const coincideAlmacen = !filtros.value.almacen || true // Agrega lógica si almacenes filtran productos
   //   const coincideCategoria = !filtros.value.categoria || true // Agrega lógica si categorías filtran productos
-
+  //
   //   return coincideBusqueda && coincideAlmacen && coincideCategoria
   // })
   return res.map((row, index) => ({
