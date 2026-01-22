@@ -215,21 +215,35 @@ const filtrados = computed(() => {
     numero: index + 1,
   }))
 })
-const cargarCategoriaPrecio = async () => {
+const cargarCategoriaPrecio = async (dataOrEvent) => {
   console.log(filtroAlmacen.value)
   const almacen = filtroAlmacen.value
+  // check if dataOrEvent is an array (pre-fetched data) or event (null/mouseevent/value)
+  let data = null
+  if (Array.isArray(dataOrEvent)) {
+    data = dataOrEvent
+  }
+
   try {
-    const response = await api.get(`listaCategoriaPrecio/${idempresa}`)
-    console.log(response.data)
-    console.log(idusuario)
-    const filtrado = response.data.filter(
+    if (!data) {
+      const response = await api.get(`listaCategoriaPrecio/${idempresa}`)
+      console.log(response.data)
+      console.log(idusuario)
+      data = response.data
+    }
+
+    const filtrado = data.filter(
       (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(almacen.value),
     )
     categorias.value = filtrado.map((item) => ({
       label: item.nombre,
       value: item.id,
     }))
-    filtroscategoria.value = categorias.value[0]
+    if (categorias.value.length > 0) {
+      filtroscategoria.value = categorias.value[0]
+    } else {
+      filtroscategoria.value = null
+    }
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -244,18 +258,33 @@ function editarProducto(row) {
 }
 watch(
   () => props.almacenes,
-  (nuevosAlmacenes) => {
+  async (nuevosAlmacenes) => {
     if (nuevosAlmacenes.length > 0 && !filtroAlmacen.value) {
-      console.log(nuevosAlmacenes)
-      filtroAlmacen.value = nuevosAlmacenes[0]
-      cargarCategoriaPrecio()
+      try {
+        const response = await api.get(`listaCategoriaPrecio/${idempresa}`)
+        const allData = response.data
+        // Find first warehouse that has categories
+        const almacenConDatos = nuevosAlmacenes.find((alm) =>
+          allData.some(
+            (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(alm.value),
+          ),
+        )
+
+        if (almacenConDatos) {
+          filtroAlmacen.value = almacenConDatos
+          cargarCategoriaPrecio(allData)
+        }
+      } catch (e) {
+        console.error(e)
+      }
     }
   },
   { immediate: true },
 )
 function onPrintReport() {
   const almacen = filtroAlmacen.value
-  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, almacen.label)
+  const categoria = filtroscategoria.value
+  const doc = PDF_PRECIOS_SUGERIDOS(filtrados.value, almacen.label, categoria?.label)
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
