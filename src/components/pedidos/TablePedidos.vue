@@ -23,7 +23,6 @@
           :options="almacenes"
           id="almacen"
           map-options
-          clearable
           dense
           outlined
           style="min-width: 200px"

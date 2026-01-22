@@ -48,7 +48,7 @@
         </div>
       </div>
     </q-card-section>
-    
+
     <q-separator />
 
     <!-- Tabla de productos -->
@@ -68,26 +68,26 @@
       rows-per-page-label="Filas por página"
     >
       <template v-slot:top>
-         <div class="full-width row justify-between items-center q-py-xs">
-           <div class="text-h6 text-primary q-ml-sm">Costo Unitario</div>
-           
-           <!-- Search Input -->
-           <q-input
-             v-model="filter"
-             placeholder="Buscar costo unitario..."
-             dense
-             outlined
-             debounce="300"
-             id="buscar"
-             bg-color="grey-1"
-             class="q-ml-md"
-             style="min-width: 250px"
-           >
-             <template v-slot:append>
-               <q-icon name="search" color="primary" />
-             </template>
-           </q-input>
-         </div>
+        <div class="full-width row justify-between items-center q-py-xs">
+          <div class="text-h6 text-white q-ml-sm">Tabla con Costos Unitarios</div>
+
+          <!-- Search Input -->
+          <q-input
+            v-model="filter"
+            placeholder="Buscar costo unitario..."
+            dense
+            outlined
+            debounce="300"
+            id="buscar"
+            bg-color="grey-1"
+            class="q-ml-md"
+            style="min-width: 250px"
+          >
+            <template v-slot:append>
+              <q-icon name="search" color="primary" />
+            </template>
+          </q-input>
+        </div>
       </template>
 
       <!-- Botones de opciones -->
@@ -123,7 +123,14 @@
     </q-table>
 
     <!-- Modal PDF -->
-    <q-dialog v-model="mostrarModal" full-width full-height maximized transition-show="slide-up" transition-hide="slide-down">
+    <q-dialog
+      v-model="mostrarModal"
+      full-width
+      full-height
+      maximized
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
       <q-card class="column no-wrap">
         <q-toolbar class="bg-primary text-white">
           <q-toolbar-title>Vista Previa de Reporte</q-toolbar-title>
@@ -131,12 +138,7 @@
         </q-toolbar>
 
         <q-card-section class="col q-pa-none">
-          <iframe
-            v-if="pdfData"
-            :src="pdfData"
-            class="fit"
-            style="border: none"
-          ></iframe>
+          <iframe v-if="pdfData" :src="pdfData" class="fit" style="border: none"></iframe>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -182,6 +184,7 @@ const pagination = ref({ page: 1, rowsPerPage: 10 })
 // })
 
 // Columnas de la tabla
+// Columnas de la tabla
 const columnas = [
   {
     name: 'numero',
@@ -204,33 +207,49 @@ const columnas = [
 
 // Filtro combinado por búsqueda y almacén
 const filtrados = computed(() => {
-  console.log(props.rows)
-  console.log(filtroAlmacen.value)
-  const almacen = filtroAlmacen.value
+  const almacenId = filtroAlmacen.value
+  const searchTerm = filter.value ? filter.value.toLowerCase() : ''
+
+  console.log('🏪 Almacén seleccionado (ID):', almacenId)
+  if (searchTerm) console.log('🔍 Término de búsqueda:', searchTerm)
+
   const res = props.rows.filter((p) => {
-    console.log(filtroAlmacen.value)
-    const matchesAlmacen =
-      (!filtroAlmacen.value || Number(p.idalmacen) === Number(almacen.value)) &&
-      filtroAlmacen.value !== null
-    const matchesCodigo =
-      !filter.value ||
-      p.codigo.toLowerCase().includes(filter.value.toLowerCase()) ||
-      p.descripcion.toLowerCase().includes(filter.value.toLowerCase())
-    return matchesCodigo && matchesAlmacen
+    // Filtro por almacén - emit-value devuelve solo el ID
+    const matchesAlmacen = !almacenId || Number(p.idalmacen) === Number(almacenId)
+    if (!matchesAlmacen) return false
+
+    // Filtro de búsqueda con null safety
+    if (!searchTerm) return true
+
+    const codigo = (p.codigo || '').toString().toLowerCase()
+    const descripcion = (p.descripcion || '').toString().toLowerCase()
+    const unidad = (p.unidad || '').toString().toLowerCase()
+    const precio = (p.precio || '').toString().toLowerCase()
+
+    return (
+      codigo.includes(searchTerm) ||
+      descripcion.includes(searchTerm) ||
+      unidad.includes(searchTerm) ||
+      precio.includes(searchTerm)
+    )
   })
 
-  return res.map((row, index) => ({
+  console.log(`✅ Registros del almacén ${almacenId}:`, res.length)
+  const response = res.map((row, index) => ({
     ...row,
     numero: index + 1,
   }))
+  console.log(`✅ Registros con el almacen ${almacenId}:`, response)
+  return response
 })
 
 watch(
   () => props.almacenes,
   (nuevosAlmacenes) => {
     if (nuevosAlmacenes.length > 0 && !filtroAlmacen.value) {
-      console.log(nuevosAlmacenes)
-      filtroAlmacen.value = nuevosAlmacenes[0]
+      console.log('📦 Almacenes disponibles:', nuevosAlmacenes)
+      // emit-value requiere solo el ID, no el objeto completo
+      filtroAlmacen.value = nuevosAlmacenes[0].value
     }
   },
   { immediate: true },
@@ -239,10 +258,16 @@ watch(
 function editarProducto(id) {
   emit('edit', id)
 }
-// Función imprimir (puedes reemplazar con lógica real)
+// Función imprimir
 function onPrintReport() {
-  const almacen = filtroAlmacen.value
-  const doc = PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados.value, almacen.label)
+  const almacenId = filtroAlmacen.value
+  // Buscar el objeto almacén completo para obtener el label
+  const almacenObj = props.almacenes.find((a) => a.value === almacenId)
+  const almacenLabel = almacenObj ? almacenObj.label : 'Todos los Almacenes'
+
+  console.log('📊 Generando PDF para almacén:', almacenLabel)
+
+  const doc = PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados.value, almacenLabel)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }

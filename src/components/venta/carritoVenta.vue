@@ -344,6 +344,13 @@
       </template>
     </q-table>
   </div>
+  <RegistrarAlmacenDialog
+    v-model="showWarningDialog"
+    title="¡Advertencia!"
+    message="No tienes un almacén asignado. Para desbloquear las funcionalidades del sistema, debes crear y asignarte un almacén o asignar un almacén y un punto de venta a otros usuarios."
+    @accepted="redirectToAssignment"
+    @closed="redirectToAssignment"
+  />
 </template>
 
 <style scoped>
@@ -405,6 +412,8 @@ import { api } from 'boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import { imagen } from 'src/boot/url'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+import { useRouter } from 'vue-router'
 // import { showDialog } from 'src/utils/dialogs'
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
@@ -463,6 +472,8 @@ const categoriasPrecio = ref([])
 const categoriasCampania = ref([])
 const productos = ref([])
 const productosFiltrados = ref([])
+const showWarningDialog = ref(false)
+const router = useRouter()
 
 // Columnas para la tabla del carritoPrueba sucursal
 const columnasCarrito = [
@@ -572,13 +583,17 @@ async function cargarAlmacenes() {
     if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
     console.log(data)
     // Filtrar por usuario y mapear
-    almacenes.value = data
+    const filter = data
       .filter((item) => item.idusuario == usuario.value.idusuario)
       .map((item) => ({
         label: item.almacen,
         value: item.idalmacen,
         codigosin: item.sucursales[0]?.codigosin || '',
       }))
+    if (filter.length === 0) {
+      showWarningDialog.value = true
+    }
+    almacenes.value = filter
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
@@ -588,6 +603,10 @@ async function cargarAlmacenes() {
   } finally {
     cargandoAlmacenes.value = false
   }
+}
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
 }
 
 //permitirStockvacio carrito

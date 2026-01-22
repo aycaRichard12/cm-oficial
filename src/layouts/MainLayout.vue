@@ -312,6 +312,7 @@ const iconos = ref({
   gestioncampanas: 'campaign',
   reporteinventarioexterior: 'report',
   actualizacionescomercial: 'update',
+  permisosusuario: 'security',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {

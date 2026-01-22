@@ -279,6 +279,11 @@ export const menutest75 = [
             codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
             permiso: '1111',
           },
+          {
+            titulo: 'Permisos Usuarios',
+            codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
+            permiso: '1111',
+          },
         ],
       },
       {
