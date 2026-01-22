@@ -7,19 +7,22 @@
       <q-card-section class="column items-center q-pt-lg q-pb-sm">
         <q-avatar
           size="72px"
-          font-size="36px"
+          font-size="66px"
           color="orange-1"
           text-color="warning"
           icon="warning_amber"
           class="q-mb-md"
         />
-        <div class="text-h6 text-weight-bold text-center text-grey-9 q-px-md" style="line-height: 1.2">
+        <div
+          class="text-h3 text-weight-bold text-center text-grey-9 q-px-md"
+          style="line-height: 1.2"
+        >
           {{ title }}
         </div>
       </q-card-section>
 
       <q-card-section class="q-py-sm text-center q-px-lg">
-        <div class="text-body2 text-grey-7">{{ message }}</div>
+        <div class="text-body1 text-grey-7">{{ message }}</div>
       </q-card-section>
 
       <q-card-actions align="center" class="q-pa-md q-pt-lg">
