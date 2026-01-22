@@ -46,7 +46,7 @@ export const PAGINAS = Object.freeze({
     'gestionPedido',
     'procesarventaspendientes',
     'autorizarcompra',
-    'autorizarOperaciones',
+    // 'autorizarOperaciones',
   ]),
   gestioncompra: Object.freeze(['registrarcompra']),
   gestioncampanas: Object.freeze([
