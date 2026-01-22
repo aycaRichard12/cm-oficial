@@ -27,12 +27,12 @@ const routes = [
     path: '/',
     beforeEnter: async (to, from, next) => {
       // 1. Verificar Autenticación (Simulada)
-      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+      // const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
-      if (!isAuthenticated) {
-        next('/login')
-        return
-      }
+      // // if (!isAuthenticated) {
+      // //   next('/login')
+      // //   return
+      // // }
 
       // 2. Verificar Configuración (Lógica Existente)
       const estaConfigurado = await checkConfiguracion()
@@ -367,9 +367,13 @@ const routes = [
         path: '/actualizacionescomercial',
         component: () => import('src/pages/config/actualizacionSistemaPage.vue'),
       },
+      // {
+      //   path: '/autorizarOperaciones',
+      //   component: () => import('src/pages/config/autorizarPermisosPage.vue'),
+      // },
       {
-        path: '/autorizarOperaciones',
-        component: () => import('src/pages/config/autorizarPermisosPage.vue'),
+        path: '/permisosusuario',
+        component: () => import('src/pages/config/permisosUsuariosPage.vue'),
       },
     ],
   },

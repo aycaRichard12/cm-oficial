@@ -17,6 +17,15 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <RegistrarAlmacenDialog
+      v-model="showWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
+
     <TablaPDV
       :rows="puntosVenta"
       :tipos-almacen="tiposAlmacen"
@@ -33,16 +42,21 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import FormularioRegistroPDV from 'components/puntoVenta/creacion/puntoVentaForm.vue'
 import TablaPDV from 'components/puntoVenta/creacion/puntoVentaTable.vue'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
+import { useRouter } from 'vue-router'
+
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const $q = useQuasar()
+const router = useRouter()
 const showForm = ref(false)
 const isEditing = ref(false)
 const tipoSeleccionado = ref(null)
+const showWarningDialog = ref(false)
 
 const formData = ref({
   ver: 'registrarPuntoventa',
@@ -56,7 +70,11 @@ const cargarTiposAlmacen = async () => {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`) // ejemplo
     const filtrados = response.data.filter((u) => u.idusuario == idusuario)
-
+    console.log('datos de la respuestas', response)
+    console.log('datos filtrados', filtrados.length)
+    if (filtrados.length === 0) {
+      showWarningDialog.value = true
+    }
     const formateado = filtrados.map((item) => ({
       label: item.almacen,
       value: item.idalmacen,
@@ -71,6 +89,11 @@ const cargarTiposAlmacen = async () => {
     })
   }
 }
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
+}
+
 const cargarPuntosPorTipo = async (tipo) => {
   tipoSeleccionado.value = tipo
 

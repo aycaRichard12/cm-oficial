@@ -44,15 +44,18 @@
   <div class="row justify-between q-gutter-md q-mt-md q-mb-md">
     <!-- Filtro de almacén -->
 
-    <div id="select-filtro-almacen">
+    <div class="col-auto">
       <q-select
         v-model="filtroAlmacen"
         :options="almacenes"
-        label="Seleccione un Almacén"
+        label="Almacén"
         dense
         outlined
         map-options
-        class="min-w-[220px]"
+        clearable
+        class="min-w-[200px]"
+        :hint="filtroAlmacen ? `Filtrando: ${filtroAlmacen.label}` : 'Todos los almacenes'"
+        style="width: 220px"
       />
     </div>
 

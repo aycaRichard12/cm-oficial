@@ -25,6 +25,14 @@
       :loading="cargando"
       @edit="abrirFormularioEditar"
     />
+
+    <RegistrarAlmacenDialog
+      v-model="showWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
   </q-page>
 </template>
 <script setup>
@@ -35,17 +43,24 @@ import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+
 const showForm = ref(false)
 const isEditing = ref(false)
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const listaAlmacenes = ref([])
 const productos = ref([])
+const cargando = ref(false)
 const ProductoSeleccionado = ref({
   ver: '',
   idempresa: idempresa,
 })
 const $q = useQuasar()
+const router = useRouter()
+const showWarningDialog = ref(false)
+
 const cargarListaAlmacenes = async () => {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
@@ -55,6 +70,11 @@ const cargarListaAlmacenes = async () => {
       label: item.almacen,
       value: item.idalmacen,
     }))
+
+    if (filtrado.length === 0) {
+      showWarningDialog.value = true
+    }
+
     listaAlmacenes.value = formateado
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -64,6 +84,11 @@ const cargarListaAlmacenes = async () => {
     })
   }
 }
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
+}
+
 const guardarPrecioBase = async (data) => {
   const formData = objectToFormData(data)
   for (let [k, v] of formData.entries()) {
@@ -126,9 +151,14 @@ const abrirFormularioEditar = async (item) => {
   }
 }
 async function loadRows() {
+  cargando.value = true
   try {
-    const response = await api.get(`listaPrecioBase/${idempresa}`) // Cambia a tu ruta real
-    console.log(response.data)
+    const response = await api.get(`listaPrecioBase/${idempresa}`)
+    // console.log('precios baseeeeessssss', response.data)
+    if (listaAlmacenes.value.length === 0) {
+      showWarningDialog.value = true
+      return 0
+    }
     productos.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -136,6 +166,8 @@ async function loadRows() {
       type: 'negative',
       message: 'No se pudieron cargar los datos',
     })
+  } finally {
+    cargando.value = false
   }
 }
 const toggleForm = () => {

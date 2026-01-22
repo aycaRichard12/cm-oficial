@@ -1,4 +1,5 @@
 import { useFetchList } from 'src/composables/useFetchList'
+
 //vapp
 const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
 export function idempresa_md5() {
