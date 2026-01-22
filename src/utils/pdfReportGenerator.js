@@ -342,7 +342,9 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
   )
   return doc
 }
-export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen) {
+
+//a esta funcion tienes que enviarle si es mayor menor o de fabrica lo que selecciono en el select de categoria
+export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen, filtroCategoria) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   console.log('datos que estan llegando', filtrados)
   const columns = [
@@ -381,6 +383,10 @@ export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen) {
       {
         label: 'Nombre del Almacén',
         valor: filtroAlmacen || 'Todos los Almacenes',
+      },
+      {
+        label: `Precio Sugerido`,
+        valor: filtroCategoria || 'Todas las Categorías',
       },
     ],
   }
