@@ -37,6 +37,14 @@
       </div>
     </div>
 
+    <RegistrarAlmacenDialog
+      v-model="showWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
+
     <!-- Report Modal -->
     <q-dialog v-model="reportModal" full-width>
       <report-modal
@@ -57,6 +65,11 @@ import ReportModal from 'components/producto/asignacion/ReportModal.vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import { validarUsuario } from 'src/composables/FuncionesG'
+import { useRouter } from 'vue-router'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+
+const showWarningDialog = ref(false)
+
 const $q = useQuasar()
 const contenidousuario = validarUsuario()
 const idempresa = contenidousuario[0]?.empresa?.idempresa
@@ -66,6 +79,7 @@ const productos = ref([]) // todos los productos
 const almacenes = ref([]) // lista de almacenes
 const currentView = ref('list')
 const almacenSeleccionado = ref(null)
+const router = useRouter()
 
 const productosFiltrados = computed(() => {
   console.log(almacenSeleccionado.value)
@@ -83,6 +97,12 @@ const getAlmacenes = async () => {
       value: Number(item.idalmacen),
     }))
 
+    console.log('datos de la respuestas', response)
+    console.log('datos filtrados', filtrado.length)
+    if (filtrado.length === 0) {
+      showWarningDialog.value = true
+    }
+
     almacenes.value = formateado
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -92,6 +112,11 @@ const getAlmacenes = async () => {
     })
   }
 }
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
+}
+
 const getProductoAlmacen = async () => {
   try {
     const response = await api.get(`listaProductoAlmacen/${idempresa}`) // ejemplo

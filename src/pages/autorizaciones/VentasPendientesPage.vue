@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { useProductosDisponibleAlmacen } from 'src/stores/productosDisponibles'
@@ -214,6 +214,7 @@ const columns = [
 
 // Filtra las ventas según los criterios seleccionados
 const filteredSales = computed(() => {
+  if (!almacenSeleccionado.value) return []
   let tempSales = sales.value
 
   // Filtrar por estado
@@ -221,7 +222,6 @@ const filteredSales = computed(() => {
     tempSales = tempSales.filter((sale) => sale.estado === filterStatus.value)
   }
 
-  console.log(almacenSeleccionado.value)
   // Filtrar por almacén
   if (almacenSeleccionado.value) {
     tempSales = tempSales.filter((sale) => sale.id_almacen === almacenSeleccionado.value)
@@ -266,7 +266,7 @@ const fetchSales = async () => {
   errorMessage.value = ''
   try {
     const response = await api.get(`listar_ventas_no_despachadas/${idempresa_md5()}`)
-    console.log(response)
+    console.log('listado de ventas no despachadas', response)
     if (response.data.status === 'ok') {
       sales.value = response.data.ventas
     } else {
@@ -370,6 +370,17 @@ onMounted(() => {
     cargarProductos(almacenSeleccionado.value)
   }
 })
+
+watch(
+  () => almacenOptions.value,
+  (newOptions) => {
+    if (newOptions.length > 0 && !almacenSeleccionado.value) {
+      almacenSeleccionado.value = newOptions[0].value
+      cargarProductos(almacenSeleccionado.value)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>

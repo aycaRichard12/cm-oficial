@@ -113,6 +113,14 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <RegistrarAlmacenDialog
+      v-model="ShowWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
   </q-page>
 </template>
 
@@ -129,6 +137,9 @@ import { decimas } from 'src/composables/FuncionesG'
 import { useWhatsapp } from 'src/composables/useWhatsapp'
 import { PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE } from '../../utils/pdfReportGenerator'
 import { PDF_REPORTE_GESTION_PEDIDOS } from '../../utils/pdfReportGenerator'
+import { useRouter } from 'vue-router'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+
 const { mostrarDialogoWhatsapp } = useWhatsapp()
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -154,6 +165,9 @@ const tipopago = ref('')
 // Opciones select
 const almacenes = ref([])
 
+const router = useRouter()
+const ShowWarningDialog = ref(false)
+
 async function cargarAlmacenes() {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
@@ -162,10 +176,15 @@ async function cargarAlmacenes() {
       label: item.almacen,
       value: item.idalmacen,
     }))
+    filtrados.length > 0 ? (almacen.value = almacenes.value[0]) : (ShowWarningDialog.value = true)
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
   }
+}
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
 }
 
 // Datos de la tabla

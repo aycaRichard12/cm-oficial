@@ -59,6 +59,13 @@
         />
       </q-card>
     </q-dialog>
+
+    <RegistrarAlmacenDialog
+      v-model="ShowWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes almacenes asignados. Por favor, asigna un almacén para continuar."
+      @confirm="redirectToAssignment"
+    />
   </q-page>
 </template>
 
@@ -72,7 +79,8 @@ import FormCompraEditar from 'src/components/compra/EditarCompra.vue'
 import TableCompra from 'src/components/compra/TableCompra.vue'
 import DetalleCompra from 'src/components/compra/DetalleCompra.vue'
 import { useCompraStore } from 'src/stores/compras'
-
+import { useRouter } from 'vue-router'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 const compraStore = useCompraStore()
 
 const $q = useQuasar()
@@ -97,6 +105,10 @@ const showFormEdit = ref(false)
 const formularioDetalleCompra = ref({ ver: 'registrarDetalleCompra' })
 const detalleCompra = ref([])
 const productosDisponibles = ref([])
+
+const router = useRouter()
+const ShowWarningDialog = ref(false)
+
 async function editarCompra(compra) {
   console.log(compra)
   registroActual.value = {
@@ -225,11 +237,19 @@ async function cargarAlmacenes() {
       label: item.almacen,
       value: item.idalmacen,
     }))
+    if (almacenes.value.length === 0) {
+      ShowWarningDialog.value = true
+    }
+
     almacenSeleccionado.value = almacenes.value.length > 0 ? almacenes.value[0] : null
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
   }
+}
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
 }
 
 async function loadRows() {

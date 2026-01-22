@@ -59,6 +59,13 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <RegistrarAlmacenDialog
+      v-model="ShowWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
   </q-page>
 </template>
 
@@ -70,6 +77,8 @@ import DetallePedido from 'src/components/pedidos/DetallePedido.vue'
 import { idempresa_md5, idusuario_md5, objectToFormData } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 
 const $q = useQuasar()
 const showDetallePedido = ref(false)
@@ -84,6 +93,8 @@ const listaAlmacenes = ref([])
 const mostrarImagen = ref(false)
 const imagenSeleccionada = ref('')
 
+const router = useRouter()
+const ShowWarningDialog = ref(false)
 async function getAlmacen() {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
@@ -92,11 +103,19 @@ async function getAlmacen() {
       label: item.almacen,
       value: item.idalmacen,
     }))
+    if (listaAlmacenes.value.length === 0) {
+      ShowWarningDialog.value = true
+    }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
   }
 }
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
+}
+
 async function getPedidos() {
   try {
     const response = await api.get(`listaPedido/${idempresa}`)

@@ -10,7 +10,7 @@
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || 'Ingrese un nombre']"
           />
         </div>
 
@@ -22,7 +22,7 @@
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || 'Ingrese una direccion']"
           />
         </div>
 
@@ -35,7 +35,7 @@
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || 'Ingrese un telefono o numero de WhatsApp']"
           />
         </div>
 
@@ -49,6 +49,7 @@
             outlined
             dense
             autocomplete="off"
+            :rules="[(val) => !!val || 'Ingrese un email']"
           />
         </div>
 
@@ -88,7 +89,7 @@
             type="text"
             outlined
             dense
-            :rules="[(val) => !!val || 'Seleccione una sucursal']"
+            :rules="[(val) => !!val || 'Ingrese un codigo para la web']"
           />
         </div>
 
