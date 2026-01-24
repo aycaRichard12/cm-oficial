@@ -34,10 +34,11 @@
             text-color="white"
             label="Salir"
             @click="
-              () => {
-                LocalStorage.remove('puedeIniciarsesion')
-                $router.push('/login')
-              }
+              // () => {
+              //   LocalStorage.remove('puedeIniciarsesion')
+              //   $router.push('/login')
+              // }
+              irdashboard
             "
           />
         </q-toolbar-title>
@@ -203,16 +204,16 @@ import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
-import { LocalStorage } from 'quasar'
+//import { LocalStorage } from 'quasar'
 
 const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
 const ocultarTabs = () => {
   tabsVisible.value = false
 }
-// const irdashboard = () => {
-//   window.location.href = '/app/dashboard'
-// }
+const irdashboard = () => {
+  window.location.href = '/app/dashboard'
+}
 const router = useRouter()
 const menuStore = useMenuStore()
 
