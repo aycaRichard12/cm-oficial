@@ -131,6 +131,9 @@ import { ref, onMounted } from 'vue'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
+import { useCurrencyStore } from 'src/stores/currencyStore'
+
+const divisaActiva = useCurrencyStore()
 
 // Composable
 const { compras, detalleCompra, loading, loadingDetalle, fetchCompras, fetchDetalleCompra } =
@@ -208,7 +211,7 @@ const columnas = [
     sortable: true,
   },
   {
-    name: 'totalIngreso',
+    name: 'totalIngreso' + ` (${divisaActiva.simbolo})`,
     label: 'Total Ingreso',
     field: 'totalIngreso',
     align: 'right',
@@ -221,6 +224,7 @@ const columnas = [
     field: 'autorizacion',
     align: 'center',
     sortable: true,
+    dataType: 'text',
   },
   {
     name: 'estado',
@@ -289,7 +293,13 @@ onMounted(() => {
 })
 
 // Cleanup on unmount
-onMounted(() => {
+onMounted(async () => {
+  await divisaActiva.cargarDivisaActiva()
+
+  if (!divisaActiva.divisa) {
+    console.error('No se pudo cargar la divisa')
+    return
+  }
   return () => {
     if (pdfUrl.value) {
       URL.revokeObjectURL(pdfUrl.value)
