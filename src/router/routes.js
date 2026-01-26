@@ -312,6 +312,10 @@ const routes = [
         component: () => import('src/pages/compra/RepComprasPage.vue'),
       },
       {
+        path: '/reporteproveedorcompras',
+        component: () => import('src/pages/compra/ReporteProveedorComprasPage.vue'),
+      },
+      {
         path: '/reportedeindicederotacionporalmacen',
         component: () => import('src/pages/reportes/rotacionAlmacenPague.vue'),
       },
