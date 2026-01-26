@@ -4089,3 +4089,186 @@ function agregarPieDePagina(doc) {
     })
   }
 }
+
+export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Fecha', dataKey: 'fecha' },
+    { header: 'Almacén Origen', dataKey: 'almacenOrigenName' },
+    { header: 'Almacén Destino', dataKey: 'almacenDestinoName' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Autorización', dataKey: 'estado' },
+  ]
+
+  const datos = data.map((item, indice) => ({
+    indice: indice + 1,
+    fecha: item.fecha,
+    almacenOrigenName: item.almacenOrigenName,
+    almacenDestinoName: item.almacenDestinoName,
+    descripcion: item.descripcion,
+    estado: item.autorizacion == 2 ? 'No Autorizado' : 'Autorizado',
+  }))
+
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    fecha: { cellWidth: 20, halign: 'center' },
+    almacenOrigenName: { cellWidth: 45, halign: 'left' },
+    almacenDestinoName: { cellWidth: 45, halign: 'left' },
+    descripcion: { cellWidth: 50, halign: 'left' },
+    estado: { cellWidth: 20, halign: 'center' },
+  }
+
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    fecha: { halign: 'center' },
+    almacenOrigenName: { halign: 'left' },
+    almacenDestinoName: { halign: 'left' },
+    descripcion: { halign: 'left' },
+    estado: { halign: 'center' },
+  }
+
+  const Izquierda = {
+    titulo: 'DATOS DEL REPORTE',
+    campos: [
+      {
+        label: 'Nombre del Almacén',
+        valor: datosFormulario.almacen || 'Todos los Almacenes',
+      },
+    ],
+  }
+
+
+  const derecho = {
+    titulo: 'DATOS DEL ENCARGADO',
+    campos: [
+      { label: '', valor: datosFormulario.nombreEncargado || encargadoNombre },
+      { label: '', valor: datosFormulario.cargoEncargado || cargo },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'MOVIMIENTOS',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    false,
+    null,
+  )
+
+  return doc
+}
+
+export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  
+  // Extraer el primer elemento del array (según la estructura de la API)
+  const detalle = Array.isArray(detalleCompra) ? detalleCompra[0] : detalleCompra
+
+  // Columnas para la tabla de productos
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo' },
+    { header: 'Producto', dataKey: 'producto' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Cantidad', dataKey: 'cantidad' },
+    { header: 'Precio', dataKey: 'precio' },
+    { header: 'Subtotal', dataKey: 'subTotal' },
+  ]
+
+  // Mapear datos de productos
+  const datos = (detalle.detalle || []).map((item, index) => ({
+    indice: index + 1,
+    codigo: item.codigo || '-',
+    producto: item.producto || '-',
+    descripcion: item.descripcion || '-',
+    cantidad: item.cantidad || '0',
+    precio: decimas(item.precio || 0),
+    subTotal: decimas(item.subTotal || 0),
+  }))
+
+  // Calcular total
+  const totalGeneral = (detalle.detalle || []).reduce((sum, item) => sum + parseFloat(item.subTotal || 0), 0)
+  
+  // Agregar fila de total
+  datos.push({
+    descripcion: 'TOTAL GENERAL',
+    subTotal: decimas(totalGeneral),
+  })
+
+  // Estilos de columnas
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    codigo: { cellWidth: 20, halign: 'center' },
+    producto: { cellWidth: 35, halign: 'left' },
+    descripcion: { cellWidth: 45, halign: 'left' },
+    cantidad: { cellWidth: 20, halign: 'center' },
+    precio: { cellWidth: 25, halign: 'right' },
+    subTotal: { cellWidth: 25, halign: 'right' },
+  }
+
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    codigo: { halign: 'center' },
+    producto: { halign: 'left' },
+    descripcion: { halign: 'left' },
+    cantidad: { halign: 'center' },
+    precio: { halign: 'right' },
+    subTotal: { halign: 'right' },
+  }
+
+  // Información izquierda - Datos de la compra
+  const Izquierda = {
+    titulo: 'DATOS DE LA COMPRA',
+    campos: [
+      { label: 'Fecha', valor: cambiarFormatoFecha(detalle.fechaIngreso) || '' },
+      { label: 'Código', valor: detalle.codigoIngreso || '' },
+      { label: 'N° Factura', valor: detalle.nfactura || '' },
+      { label: 'Autorización', valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado' },
+      { label: 'Almacén', valor: detalle.almacen || '' },
+      { label: 'Nombre Ingreso', valor: detalle.nombreIngreso || '' },
+    ],
+  }
+
+  // Información derecha - Proveedor
+  const derecho = {
+    titulo: 'PROVEEDOR',
+    campos: [
+      { label: 'Nombre', valor: detalle.proveedor?.nombre || '' },
+      { label: 'Código', valor: detalle.proveedor?.codigo || '' },
+    ],
+  }
+
+  // Información adicional centrada - Usuario y Empresa
+  const extras = {
+    centreado: {
+      campos: [
+        { label: 'Usuario', valor: detalle.usuario?.usuario || '' },
+        { label: 'Cargo', valor: detalle.usuario?.cargo || '' },
+      ],
+    },
+  }
+
+  // Dibujar el PDF
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'DETALLE DE COMPRA',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    true, // con impresión de encargado
+    null,
+    extras,
+  )
+
+  return doc
+}
+
