@@ -1,7 +1,7 @@
-// src/stores/movement-store.js
 import { defineStore } from 'pinia'
 import { api } from 'boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
+// src/stores/movement-store.js
 
 export const useMovementStore = defineStore('movement', {
   state: () => ({
@@ -34,6 +34,12 @@ export const useMovementStore = defineStore('movement', {
         const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
         const StoresAsignados = response.data.filter((u) => u.idusuario === idusuario)
 
+        // console.log('id del usuario', idusuario)
+        // console.log(
+        //   'id del usuario',
+        //   response.data.filter((u) => u.idusuario),
+        // )
+        // console.log('Almacenes asignados al usuario:', StoresAsignados)
         this.originStores = StoresAsignados.map((item) => ({
           label: item.almacen,
           value: item.idalmacen,

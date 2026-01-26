@@ -29,10 +29,10 @@ const routes = [
       // 1. Verificar Autenticación (Simulada)
       // const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
-      // // if (!isAuthenticated) {
-      // //   next('/login')
-      // //   return
-      // // }
+      // if (!isAuthenticated) {
+      //   next('/login')
+      //   return
+      // }
 
       // 2. Verificar Configuración (Lógica Existente)
       const estaConfigurado = await checkConfiguracion()
