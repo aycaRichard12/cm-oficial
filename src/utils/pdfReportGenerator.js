@@ -4139,7 +4139,6 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
     ],
   }
 
-
   const derecho = {
     titulo: 'DATOS DEL ENCARGADO',
     campos: [
@@ -4165,8 +4164,9 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
 }
 
 export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
+  console.log(divisaActiva)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  
+
   // Extraer el primer elemento del array (según la estructura de la API)
   const detalle = Array.isArray(detalleCompra) ? detalleCompra[0] : detalleCompra
 
@@ -4176,9 +4176,10 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Producto', dataKey: 'producto' },
     { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Cantidad', dataKey: 'cantidad' },
-    { header: 'Precio', dataKey: 'precio' },
-    { header: 'Subtotal', dataKey: 'subTotal' },
+    { header: 'Precio (' + divisaActiva + ')', dataKey: 'precio' },
+    { header: 'Subtotal (' + divisaActiva + ')', dataKey: 'subTotal' },
   ]
 
   // Mapear datos de productos
@@ -4187,17 +4188,21 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     codigo: item.codigo || '-',
     producto: item.producto || '-',
     descripcion: item.descripcion || '-',
+    unidad: item.unidad || '-',
     cantidad: item.cantidad || '0',
     precio: decimas(item.precio || 0),
     subTotal: decimas(item.subTotal || 0),
   }))
 
   // Calcular total
-  const totalGeneral = (detalle.detalle || []).reduce((sum, item) => sum + parseFloat(item.subTotal || 0), 0)
-  
+  const totalGeneral = (detalle.detalle || []).reduce(
+    (sum, item) => sum + parseFloat(item.subTotal || 0),
+    0,
+  )
+
   // Agregar fila de total
   datos.push({
-    descripcion: 'TOTAL GENERAL',
+    descripcion: 'TOTAL GENERAL (' + divisaActiva + ')',
     subTotal: decimas(totalGeneral),
   })
 
@@ -4206,7 +4211,8 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     indice: { cellWidth: 10, halign: 'center' },
     codigo: { cellWidth: 20, halign: 'center' },
     producto: { cellWidth: 35, halign: 'left' },
-    descripcion: { cellWidth: 45, halign: 'left' },
+    descripcion: { cellWidth: 40, halign: 'left' },
+    unidad: { cellWidth: 20, halign: 'center' },
     cantidad: { cellWidth: 20, halign: 'center' },
     precio: { cellWidth: 25, halign: 'right' },
     subTotal: { cellWidth: 25, halign: 'right' },
@@ -4217,6 +4223,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     codigo: { halign: 'center' },
     producto: { halign: 'left' },
     descripcion: { halign: 'left' },
+    unidad: { halign: 'center' },
     cantidad: { halign: 'center' },
     precio: { halign: 'right' },
     subTotal: { halign: 'right' },
@@ -4227,11 +4234,13 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     titulo: 'DATOS DE LA COMPRA',
     campos: [
       { label: 'Fecha', valor: cambiarFormatoFecha(detalle.fechaIngreso) || '' },
-      { label: 'Código', valor: detalle.codigoIngreso || '' },
       { label: 'N° Factura', valor: detalle.nfactura || '' },
-      { label: 'Autorización', valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado' },
-      { label: 'Almacén', valor: detalle.almacen || '' },
-      { label: 'Nombre Ingreso', valor: detalle.nombreIngreso || '' },
+      // {
+      //   label: 'Autorización',
+      //   valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado',
+      // },
+      // { label: 'Almacén', valor: detalle.almacen || '' },
+      { label: 'Nombre Lote', valor: detalle.nombreIngreso || '' },
     ],
   }
 
@@ -4239,19 +4248,19 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   const derecho = {
     titulo: 'PROVEEDOR',
     campos: [
-      { label: 'Nombre', valor: detalle.proveedor?.nombre || '' },
-      { label: 'Código', valor: detalle.proveedor?.codigo || '' },
+      { label: 'Cod. Proveedor', valor: detalle.proveedor?.codigo || '' },
+      { label: 'Proveedor', valor: detalle.proveedor?.nombre || '' },
     ],
   }
 
   // Información adicional centrada - Usuario y Empresa
   const extras = {
-    centreado: {
-      campos: [
-        { label: 'Usuario', valor: detalle.usuario?.usuario || '' },
-        { label: 'Cargo', valor: detalle.usuario?.cargo || '' },
-      ],
-    },
+    // centreado: {
+    //   campos: [
+    //     { label: '', valor: detalle.usuario?.usuario || '' },
+    //     { label: '', valor: detalle.usuario?.cargo || '' },
+    //   ],
+    // },
   }
 
   // Dibujar el PDF
@@ -4259,7 +4268,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     doc,
     columns,
     datos,
-    'DETALLE DE COMPRA',
+    'REPORTE DE COMPRA',
     columnStyles,
     headerColumnStyles,
     Izquierda,
@@ -4271,4 +4280,3 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
 
   return doc
 }
-
