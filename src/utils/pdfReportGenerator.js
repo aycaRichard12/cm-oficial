@@ -4139,7 +4139,6 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
     ],
   }
 
-
   const derecho = {
     titulo: 'DATOS DEL ENCARGADO',
     campos: [
@@ -4166,7 +4165,7 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
 
 export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  
+
   // Extraer el primer elemento del array (según la estructura de la API)
   const detalle = Array.isArray(detalleCompra) ? detalleCompra[0] : detalleCompra
 
@@ -4193,8 +4192,11 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   }))
 
   // Calcular total
-  const totalGeneral = (detalle.detalle || []).reduce((sum, item) => sum + parseFloat(item.subTotal || 0), 0)
-  
+  const totalGeneral = (detalle.detalle || []).reduce(
+    (sum, item) => sum + parseFloat(item.subTotal || 0),
+    0,
+  )
+
   // Agregar fila de total
   datos.push({
     descripcion: 'TOTAL GENERAL',
@@ -4229,7 +4231,10 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
       { label: 'Fecha', valor: cambiarFormatoFecha(detalle.fechaIngreso) || '' },
       { label: 'Código', valor: detalle.codigoIngreso || '' },
       { label: 'N° Factura', valor: detalle.nfactura || '' },
-      { label: 'Autorización', valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado' },
+      {
+        label: 'Autorización',
+        valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado',
+      },
       { label: 'Almacén', valor: detalle.almacen || '' },
       { label: 'Nombre Ingreso', valor: detalle.nombreIngreso || '' },
     ],
@@ -4272,3 +4277,152 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   return doc
 }
 
+// export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
+//   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+//   const columns = [
+//     { header: 'N°', dataKey: 'indice' },
+//     { header: 'Fecha', dataKey: 'fechaIngreso' },
+//     { header: 'Proveedor', dataKey: 'proveedor' },
+//     { header: 'Factura', dataKey: 'nFactura' },
+//     { header: 'Almacen', dataKey: 'nombreAlmacen' },
+//     { header: 'Total', dataKey: 'totalIngreso' },
+//     { header: 'Estado', dataKey: 'estado' },
+//   ]
+
+//   const datos = compras.map((item, index) => ({
+//     indice: index + 1,
+//     fechaIngreso: cambiarFormatoFecha(item.fechaIngreso) || '-',
+//     proveedor: item.proveedor || '-',
+//     nFactura: item.nFactura || '-',
+//     nombreAlmacen: item.nombreAlmacen || '-',
+//     totalIngreso: decimas(item.totalIngreso || 0),
+//     estado: item.estado == 1 ? 'Activo' : 'Inactivo',
+//   }))
+
+//   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
+
+//   datos.push({
+//     nombreAlmacen: 'TOTAL GENERAL',
+//     totalIngreso: decimas(totalGeneral),
+//   })
+
+//   const columnStyles = {
+//     indice: { cellWidth: 10, halign: 'center' },
+//     fechaIngreso: { cellWidth: 25, halign: 'center' },
+//     proveedor: { cellWidth: 50, halign: 'left' },
+//     nFactura: { cellWidth: 20, halign: 'center' },
+//     nombreAlmacen: { cellWidth: 35, halign: 'left' },
+//     totalIngreso: { cellWidth: 30, halign: 'right' },
+//     estado: { cellWidth: 20, halign: 'center' },
+//   }
+
+//   const headerColumnStyles = {
+//     indice: { halign: 'center' },
+//     fechaIngreso: { halign: 'center' },
+//     proveedor: { halign: 'left' },
+//     nFactura: { halign: 'center' },
+//     nombreAlmacen: { halign: 'left' },
+//     totalIngreso: { halign: 'right' },
+//     estado: { halign: 'center' },
+//   }
+
+//   const Izquierda = {
+//     titulo: 'REPORTE DE COMPRAS POR PROVEEDOR',
+//     campos: [
+//       { label: 'Fecha Inicio', valor: filters.fechaInicio || '-' },
+//       { label: 'Fecha Fin', valor: filters.fechaFin || '-' },
+//       { label: 'Proveedor', valor: filters.proveedor || 'TODOS' },
+//     ],
+//   }
+
+//   dibujarCuerpoTabla(
+//     doc,
+//     columns,
+//     datos,
+//     'LISTADO DE COMPRAS',
+//     columnStyles,
+//     headerColumnStyles,
+//     Izquierda,
+//     null,
+//     true,
+//     null,
+//   )
+
+//   return doc
+// }
+
+export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Fecha', dataKey: 'fechaIngreso' },
+    { header: 'Proveedor', dataKey: 'proveedor' },
+    { header: 'Factura', dataKey: 'nFactura' },
+    { header: 'Almacen', dataKey: 'nombreAlmacen' },
+    { header: 'Total', dataKey: 'totalIngreso' },
+    { header: 'Estado', dataKey: 'estado' },
+  ]
+
+  const datos = compras.map((item, index) => ({
+    indice: index + 1,
+    fechaIngreso: cambiarFormatoFecha(item.fechaIngreso) || '-',
+    proveedor: item.proveedor || '-',
+    nFactura: item.nFactura || '-',
+    nombreAlmacen: item.nombreAlmacen || '-',
+    totalIngreso: decimas(item.totalIngreso || 0),
+    estado: item.estado,
+  }))
+
+  const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
+
+  datos.push({
+    nombreAlmacen: 'TOTAL GENERAL',
+    totalIngreso: decimas(totalGeneral),
+  })
+
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    fechaIngreso: { cellWidth: 25, halign: 'center' },
+    proveedor: { cellWidth: 50, halign: 'left' },
+    nFactura: { cellWidth: 20, halign: 'center' },
+    nombreAlmacen: { cellWidth: 35, halign: 'left' },
+    totalIngreso: { cellWidth: 30, halign: 'right' },
+    estado: { cellWidth: 20, halign: 'center' },
+  }
+
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    fechaIngreso: { halign: 'center' },
+    proveedor: { halign: 'left' },
+    nFactura: { halign: 'center' },
+    nombreAlmacen: { halign: 'left' },
+    totalIngreso: { halign: 'right' },
+    estado: { halign: 'center' },
+  }
+
+  const Izquierda = {
+    titulo: 'REPORTE DE COMPRAS POR PROVEEDOR',
+    campos: [
+      { label: 'Fecha Inicio', valor: filters.fechaInicio || '-' },
+      { label: 'Fecha Fin', valor: filters.fechaFin || '-' },
+      { label: 'Proveedor', valor: filters.proveedor || 'TODOS' },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'LISTADO DE COMPRAS',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    null,
+    true,
+    null,
+  )
+
+  return doc
+}
