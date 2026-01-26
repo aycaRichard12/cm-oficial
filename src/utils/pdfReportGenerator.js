@@ -4372,7 +4372,7 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
     nFactura: item.nFactura || '-',
     nombreAlmacen: item.nombreAlmacen || '-',
     totalIngreso: decimas(item.totalIngreso || 0),
-    estado: item.estado,
+    estado: item.estado == 1 ? 'Activo' : 'Inactivo',
   }))
 
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
@@ -4426,3 +4426,4 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
 
   return doc
 }
+
