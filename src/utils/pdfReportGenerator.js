@@ -86,22 +86,30 @@ export function PDF_DETALLE_PEDIDO(detalle_pedido) {
   const detallePlano = JSON.parse(JSON.stringify(detalle_pedido))
   const datos = detallePlano[0].detalle.map((item, indice) => ({
     indice: indice + 1,
+    codigo: item.codigo,
     descripcion: item.descripcion,
+    unidad: item.unidad,
     cantidad: decimas(item.cantidad),
   }))
   const columns = [
     { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo' },
     { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Cantidad', dataKey: 'cantidad' },
   ]
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 100, halign: 'left' },
+    codigo: { cellWidth: 25, halign: 'center' },
+    descripcion: { cellWidth: 50, halign: 'left' },
+    unidad: { cellWidth: 25, halign: 'left' },
     cantidad: { cellWidth: 80, halign: 'right' },
   }
   const headerColumnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 100, halign: 'left' },
+    codigo: { cellWidth: 25, halign: 'center' },
+    descripcion: { cellWidth: 50, halign: 'left' },
+    unidad: { cellWidth: 25, halign: 'left' },
     cantidad: { cellWidth: 80, halign: 'right' },
   }
 
@@ -408,13 +416,13 @@ export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen, filtroCategoria)
   return doc
 }
 export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
-  console.log('datos del almacen traidos',filtroAlmacen, filtrados)
+  console.log('datos del almacen traidos', filtroAlmacen, filtrados)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Descripción', dataKey: 'descripcion' },
-    { header: 'Unidad', dataKey: 'unidad' },  
+    { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Precio', dataKey: 'precio' },
   ]
 
@@ -440,9 +448,6 @@ export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
     unidad: { cellWidth: 40, halign: 'center' },
     precio: { cellWidth: 41, halign: 'center' },
   }
-
-
-
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
@@ -3981,19 +3986,32 @@ function agregarEncabezadoInfo(
     doc.setFont(undefined, 'bold')
     doc.text(datosIzquierda.titulo + ':', 10, 33)
 
-    // Valores dinámicos
-    let y = 36 // posición inicial
+    let y = 36
 
     doc.setFontSize(8)
-    doc.setFont(undefined, 'normal')
 
     datosIzquierda.campos.forEach((campo) => {
-      let texto = campo.valor
+      let x = 10
+
       if (campo.label && campo.label.trim() !== '') {
-        texto = `${campo.label}: ${campo.valor}`
+        // LABEL en negrilla
+        doc.setFont(undefined, 'bold')
+        doc.text(`${campo.label}:`, x, y)
+
+        // calcular ancho del label para continuar el texto
+        const anchoLabel = doc.getTextWidth(`${campo.label}: `)
+        x += anchoLabel
+
+        // VALOR normal
+        doc.setFont(undefined, 'normal')
+        doc.text(String(campo.valor), x, y)
+      } else {
+        // si no hay label, todo normal
+        doc.setFont(undefined, 'normal')
+        doc.text(String(campo.valor), x, y)
       }
-      doc.text(texto, 10, y)
-      y += 3 // separación entre líneas
+
+      y += 3
     })
   }
 
@@ -4006,19 +4024,42 @@ function agregarEncabezadoInfo(
     doc.setFont(undefined, 'bold')
     doc.text(datosDerecho.titulo, pageWidth - 10, 33, { align: 'right' })
 
-    // Imprimir campos dinámicos
-    let y = 36 // posición inicial
-
+    let y = 36
     doc.setFontSize(8)
-    doc.setFont(undefined, 'normal')
 
     datosDerecho.campos.forEach((campo) => {
-      let texto = campo.valor
+      const xRight = pageWidth - 10
+
       if (campo.label && campo.label.trim() !== '') {
-        texto = `${campo.label}: ${campo.valor}`
+        const labelText = `${campo.label}: `
+        const valueText = String(campo.valor)
+
+        // medir anchos
+        doc.setFont(undefined, 'bold')
+        const labelWidth = doc.getTextWidth(labelText)
+
+        doc.setFont(undefined, 'normal')
+        const valueWidth = doc.getTextWidth(valueText)
+
+        const totalWidth = labelWidth + valueWidth
+
+        // posición inicial para que todo quede alineado a la derecha
+        let xStart = xRight - totalWidth
+
+        // LABEL en negrilla
+        doc.setFont(undefined, 'bold')
+        doc.text(labelText, xStart, y)
+
+        // VALOR normal
+        doc.setFont(undefined, 'normal')
+        doc.text(valueText, xStart + labelWidth, y)
+      } else {
+        // sin label → todo normal alineado a la derecha
+        doc.setFont(undefined, 'normal')
+        doc.text(String(campo.valor), xRight, y, { align: 'right' })
       }
-      doc.text(texto, pageWidth - 10, y, { align: 'right' })
-      y += 3 // separación vertical
+
+      y += 3
     })
   } else if (conImpresionEncargado) {
     doc.setFontSize(9)
