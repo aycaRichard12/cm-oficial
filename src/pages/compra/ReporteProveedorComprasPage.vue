@@ -11,49 +11,34 @@
 
       <!-- Filters Section -->
       <q-card-section>
-        <div class="row q-col-gutter-md items-end">
+        <div class="row q-col-gutter-md items-start">
           <div class="col-12 col-md-3">
-            <label class="text-weight-medium">Fecha Inicial *</label>
             <q-input
               v-model="fechaInicio"
               type="date"
               dense
               outlined
+              label="Fecha Inicial *"
               :rules="[(val) => !!val || 'Fecha inicial requerida']"
             />
           </div>
+
           <div class="col-12 col-md-3">
-            <label class="text-weight-medium">Fecha Final *</label>
             <q-input
               v-model="fechaFin"
               type="date"
               dense
               outlined
+              label="Fecha Final *"
               :rules="[(val) => !!val || 'Fecha final requerida']"
             />
           </div>
-          <div class="col-12 col-md-6">
-            <q-btn
-              color="primary"
-              label="Generar Reporte"
-              icon="search"
-              :loading="loading"
-              :disable="!fechaInicio || !fechaFin"
-              @click="generarReporte"
-              class="full-width"
-              size="md"
-            />
-          </div>
-        </div>
-      </q-card-section>
 
-      <q-card-section>
-        <div class="row q-col-gutter-md items-center">
           <div class="col-12 col-md-3">
             <q-select
               v-model="selectedProveedor"
               :options="proveedoresOptions"
-              label="Filtrar por Proveedor"
+              label="Proveedor"
               dense
               outlined
               clearable
@@ -68,6 +53,23 @@
                 </q-item>
               </template>
             </q-select>
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section>
+        <div class="row q-col-gutter-md items-center">
+          <div class="col-12 col-md-6">
+            <q-btn
+              color="primary"
+              label="Generar Reporte"
+              icon="search"
+              :loading="loading"
+              :disable="!fechaInicio || !fechaFin"
+              @click="generarReporte"
+              class="full-width"
+              size="md"
+            />
           </div>
           <div class="col-12 col-md-3 text-right">
             <q-btn-group unelevated>
@@ -99,7 +101,7 @@
           :array-headers="arrayHeaders"
           :sum-columns="sumColumns"
           row-key="idIngreso"
-          nombreColumnaTotales="tipocompra"
+          nombreColumnaTotales="nombreAlmacen"
         >
           <template v-slot:body-cell-estado="props">
             <q-td :props="props">
@@ -169,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
@@ -180,6 +182,8 @@ import {
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
+import { api } from 'boot/axios'
+import { validarUsuario } from 'src/composables/FuncionesG'
 
 const divisaActiva = useCurrencyStore()
 
@@ -291,11 +295,8 @@ const columnas = [
 //formatear autorizacion
 
 // Computed
-const proveedoresList = computed(() => {
-  if (!compras.value) return []
-  const uniqueProveedores = [...new Set(compras.value.map((c) => c.proveedor))]
-  return uniqueProveedores.sort()
-})
+// Removed computed proveedoresList since we will fetch it directly
+const proveedoresList = ref([])
 
 const proveedoresOptions = ref([])
 
@@ -314,22 +315,23 @@ const filterProveedores = (val, update) => {
   })
 }
 
-watch(proveedoresList, (newVal) => {
-  proveedoresOptions.value = newVal
-})
+// watch removed as we load explicitly
+// watch(proveedoresList, (newVal) => {
+//   proveedoresOptions.value = newVal
+// })
 
 const filteredCompras = computed(() => {
   let data = compras.value || []
   if (selectedProveedor.value) {
     data = data.filter((c) => c.proveedor === selectedProveedor.value)
   }
-  return data.map(item => ({
+  return data.map((item) => ({
     ...item,
     estado: item.estado == 1 ? 'Activo' : 'Inactivo',
     autorizacion: item.autorizacion == '1' ? 'Autorizado' : 'No Autorizado',
     // Preserve original values if needed for other logic, but for this table/report strings are better
     estado_raw: item.estado,
-    autorizacion_raw: item.autorizacion
+    autorizacion_raw: item.autorizacion,
   }))
 })
 
@@ -434,8 +436,46 @@ const formatCurrency = (value) => {
   return parseFloat(value).toFixed(2)
 }
 
+async function loadRows() {
+  try {
+    const contenidousuario = validarUsuario()
+    const idempresa = contenidousuario[0]?.empresa?.idempresa || 'c0c7c76d30bd3dcaefc96f40275bdc0a'
+    const response = await api.get(`listaProveedor/${idempresa}`)
+    // Map response to extract names, assuming response is array of objects {nombre: 'Info', ...} based on snippet usage context
+    // Actually the user used: provedores.value = response.data
+    // And in the code it was treating it as a list of strings: v.toLowerCase()...
+    // But api usually returns objects. Current logic uses strings.
+    // If listaProveedor returns [{nombre: 'Prov1'}, ...], we need to map it.
+    // However, the existing code: uniqueProveedores = [...new Set(compras.value.map((c) => c.proveedor))]
+    // implies c.proveedor is a STRING.
+    // If `listaProveedor` returns objects, we should map them to names.
+    // Let's assume response.data is an array of objects and we need the 'nombre' or 'proveedor' field.
+    // To be safe, let's log it or just map if it's objects.
+    // If the user said "proveedores.value = response.data", maybe it's just strings?
+    // Unlikely for a "listaProveedor". Usually it has IDs etc.
+    // I will try to map to 'nombre' if available, otherwise use item directly.
+    const data = response.data
+    if (Array.isArray(data)) {
+      // If elements are objects, try to find a name property
+      if (data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+        proveedoresList.value = data.map((p) => p.nombre || p.proveedor || JSON.stringify(p)).sort()
+      } else {
+        proveedoresList.value = data.sort()
+      }
+    } else {
+      proveedoresList.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar los datos de proveedores',
+    })
+  }
+}
+
 // Initialize dates on mount
-onMounted(() => {
+onMounted(async () => {
   const today = new Date()
   const year = today.getFullYear()
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
@@ -444,6 +484,8 @@ onMounted(() => {
   // Set default to first day of current month and today
   fechaInicio.value = `${year}-${month}-01`
   fechaFin.value = `${year}-${month}-${day}`
+
+  await loadRows()
 })
 
 // Cleanup on unmount

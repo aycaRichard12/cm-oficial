@@ -1,4 +1,16 @@
+import { validarUsuario } from 'src/composables/FuncionesGenerales'
+import { decimas, redondear } from 'src/composables/FuncionesG'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+import { numeroALetras } from 'src/composables/FuncionesG'
+import { api } from 'src/boot/axios'
+import { cargarLogoBase64 } from 'src/composables/FuncionesG'
+import { getComercialImagenProducto } from 'src/composables/FuncionesG'
 // import { convertirAMayusculas } from 'src/composables/FuncionesG'
+import { useCurrencyStore } from 'src/stores/currencyStore'
+import { obtenerHora } from 'src/composables/FuncionesG'
 const divisaActiva = useCurrencyStore().simbolo
 
 // Variables globales
@@ -4152,7 +4164,7 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
 }
 
 export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
-  console.log(divisaActiva)
+  console.log('esto son las divisas', divisaActiva)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
   // Extraer el primer elemento del array (según la estructura de la API)
@@ -4264,6 +4276,81 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     true, // con impresión de encargado
     null,
     extras,
+  )
+
+  return doc
+}
+
+export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Fecha', dataKey: 'fechaIngreso' },
+    { header: 'Proveedor', dataKey: 'proveedor' },
+    { header: 'Factura', dataKey: 'nFactura' },
+    { header: 'Almacen', dataKey: 'nombreAlmacen' },
+    { header: `Total (${divisaActiva})`, dataKey: 'totalIngreso' },
+    { header: 'Estado', dataKey: 'estado' },
+  ]
+
+  const datos = compras.map((item, index) => ({
+    indice: index + 1,
+    fechaIngreso: cambiarFormatoFecha(item.fechaIngreso),
+    proveedor: item.proveedor || '-',
+    nFactura: item.nFactura || '-',
+    nombreAlmacen: item.nombreAlmacen || '-',
+    totalIngreso: decimas(item.totalIngreso || 0),
+    estado: item.estado,
+  }))
+
+  const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
+
+  datos.push({
+    nombreAlmacen: 'TOTAL GENERAL (' + divisaActiva + ')',
+    totalIngreso: decimas(totalGeneral),
+  })
+
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    fechaIngreso: { cellWidth: 25, halign: 'center' },
+    proveedor: { cellWidth: 50, halign: 'left' },
+    nFactura: { cellWidth: 20, halign: 'center' },
+    nombreAlmacen: { cellWidth: 35, halign: 'left' },
+    totalIngreso: { cellWidth: 36, halign: 'right' },
+    estado: { cellWidth: 20, halign: 'center' },
+  }
+
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    fechaIngreso: { halign: 'center' },
+    proveedor: { halign: 'left' },
+    nFactura: { halign: 'center' },
+    nombreAlmacen: { halign: 'left' },
+    totalIngreso: { halign: 'right' },
+    estado: { halign: 'center' },
+  }
+
+  const Izquierda = {
+    titulo: 'REPORTE DE COMPRAS POR PROVEEDOR',
+    campos: [
+      { label: 'Fecha Inicio', valor: cambiarFormatoFecha(filters.fechaInicio) || '-' },
+      { label: 'Fecha Fin', valor: cambiarFormatoFecha(filters.fechaFin) || '-' },
+      { label: 'Proveedor', valor: filters.proveedor || 'TODOS' },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'LISTADO DE COMPRAS',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    null,
+    true,
+    null,
   )
 
   return doc
