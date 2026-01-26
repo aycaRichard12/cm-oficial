@@ -99,6 +99,11 @@ export const menurichard50 = [
           // },
 
           {
+            titulo: 'Adm-Cliente roveedor-Reporte de Proveedor Compras',
+            codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
             titulo: 'Adm-Campana-Crear Campañas',
             codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
