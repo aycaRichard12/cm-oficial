@@ -379,10 +379,10 @@ const routes = [
         path: '/permisosusuario',
         component: () => import('src/pages/config/permisosUsuariosPage.vue'),
       },
-      {
-        path: '/reporteproductocompras',
-        component: () => import('src/pages/compra/ReporteProductoComprasPage.vue'),
-      },
+      // {
+      //   path: '/reporteproductocompras',
+      //   component: () => import('src/pages/compra/ReporteProductoComprasPage.vue'),
+      // },
     ],
   },
   {
