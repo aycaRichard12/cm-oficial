@@ -4048,3 +4048,76 @@ function agregarPieDePagina(doc) {
     })
   }
 }
+
+export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Fecha', dataKey: 'fecha' },
+    { header: 'Almacén Origen', dataKey: 'almacenOrigenName' },
+    { header: 'Almacén Destino', dataKey: 'almacenDestinoName' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Autorización', dataKey: 'estado' },
+  ]
+
+  const datos = data.map((item, indice) => ({
+    indice: indice + 1,
+    fecha: item.fecha,
+    almacenOrigenName: item.almacenOrigenName,
+    almacenDestinoName: item.almacenDestinoName,
+    descripcion: item.descripcion,
+    estado: item.autorizacion == 2 ? 'No Autorizado' : 'Autorizado',
+  }))
+
+  const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
+    fecha: { cellWidth: 20, halign: 'center' },
+    almacenOrigenName: { cellWidth: 45, halign: 'left' },
+    almacenDestinoName: { cellWidth: 45, halign: 'left' },
+    descripcion: { cellWidth: 50, halign: 'left' },
+    estado: { cellWidth: 20, halign: 'center' },
+  }
+
+  const headerColumnStyles = {
+    indice: { halign: 'center' },
+    fecha: { halign: 'center' },
+    almacenOrigenName: { halign: 'left' },
+    almacenDestinoName: { halign: 'left' },
+    descripcion: { halign: 'left' },
+    estado: { halign: 'center' },
+  }
+
+  const Izquierda = {
+    titulo: 'DATOS DEL REPORTE',
+    campos: [
+      {
+        label: 'Nombre del Almacén',
+        valor: datosFormulario.almacen || 'Todos los Almacenes',
+      },
+    ],
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL ENCARGADO',
+    campos: [
+      { label: '', valor: datosFormulario.nombreEncargado || encargadoNombre },
+      { label: '', valor: datosFormulario.cargoEncargado || cargo },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'MOVIMIENTOS',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    false,
+    null,
+  )
+
+  return doc
+}
