@@ -441,19 +441,7 @@ async function loadRows() {
     const contenidousuario = validarUsuario()
     const idempresa = contenidousuario[0]?.empresa?.idempresa || 'c0c7c76d30bd3dcaefc96f40275bdc0a'
     const response = await api.get(`listaProveedor/${idempresa}`)
-    // Map response to extract names, assuming response is array of objects {nombre: 'Info', ...} based on snippet usage context
-    // Actually the user used: provedores.value = response.data
-    // And in the code it was treating it as a list of strings: v.toLowerCase()...
-    // But api usually returns objects. Current logic uses strings.
-    // If listaProveedor returns [{nombre: 'Prov1'}, ...], we need to map it.
-    // However, the existing code: uniqueProveedores = [...new Set(compras.value.map((c) => c.proveedor))]
-    // implies c.proveedor is a STRING.
-    // If `listaProveedor` returns objects, we should map them to names.
-    // Let's assume response.data is an array of objects and we need the 'nombre' or 'proveedor' field.
-    // To be safe, let's log it or just map if it's objects.
-    // If the user said "proveedores.value = response.data", maybe it's just strings?
-    // Unlikely for a "listaProveedor". Usually it has IDs etc.
-    // I will try to map to 'nombre' if available, otherwise use item directly.
+
     const data = response.data
     if (Array.isArray(data)) {
       // If elements are objects, try to find a name property
