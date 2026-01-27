@@ -40,11 +40,12 @@ export function useProductoSelector() {
     try {
       const user = validarUsuario()
       const idEmpresa = user?.[0]?.empresa?.idempresa
+      //opcionales
       const token = getToken()
       const tipo = getTipoFactura()
 
-      if (!idEmpresa || !token || !tipo) {
-        console.warn('Faltan datos para cargar productos', { idEmpresa, token, tipo })
+      if (!idEmpresa ) {
+        console.warn('Faltan datos para cargar productos', { idEmpresa })
         return
       }
 
