@@ -311,10 +311,7 @@ const routes = [
         path: '/reportedecompras',
         component: () => import('src/pages/compra/RepComprasPage.vue'),
       },
-      {
-        path: '/reporteproveedorcompras',
-        component: () => import('src/pages/compra/ReporteProveedorComprasPage.vue'),
-      },
+
       {
         path: '/reportedeindicederotacionporalmacen',
         component: () => import('src/pages/reportes/rotacionAlmacenPague.vue'),
@@ -380,8 +377,12 @@ const routes = [
         component: () => import('src/pages/config/permisosUsuariosPage.vue'),
       },
       {
-        path: '/reporteproductocompras',
-        component: () => import('src/pages/compra/ReporteProductoComprasPage.vue'),
+        path: '/reporteproveedorcompras',
+        component: () => import('src/pages/proveedor/ReporteProveedorComprasPage.vue'),
+      },
+      {
+        path: '/reporteproductoproveedorcompras',
+        component: () => import('src/pages/proveedor/ReporteProductoComprasPage.vue'),
       },
     ],
   },
