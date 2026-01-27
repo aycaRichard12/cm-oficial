@@ -140,6 +140,8 @@ const editUnit = (item) => {
     nombre: item.nombre,
     descripcion: item.descripcion,
     idalmacen: tipoSeleccionado.value,
+    id: item.id,
+    tipo: item.tipo,
   }
 
   isEditing.value = true
@@ -195,9 +197,12 @@ const handleSubmit = async (data) => {
   }
   try {
     if (isEditing.value) {
+      //mostrar datos que llegaron
+      console.log('datos que llegaron', data)
       const response = await api.post(``, formData)
-      console.log(response)
+      console.log('que cosa responde',response)
     } else {
+      console.log('entro a registrar')
       const response = await api.post(``, formData)
       console.log(response)
     }
