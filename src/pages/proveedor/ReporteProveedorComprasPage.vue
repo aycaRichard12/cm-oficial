@@ -11,27 +11,54 @@
 
       <!-- Filters Section -->
       <q-card-section>
-        <div class="row q-col-gutter-md items-end">
+        <div class="row q-col-gutter-md items-start">
           <div class="col-12 col-md-3">
-            <label class="text-weight-medium">Fecha Inicial *</label>
             <q-input
               v-model="fechaInicio"
               type="date"
               dense
               outlined
+              label="Fecha Inicial *"
               :rules="[(val) => !!val || 'Fecha inicial requerida']"
             />
           </div>
+
           <div class="col-12 col-md-3">
-            <label class="text-weight-medium">Fecha Final *</label>
             <q-input
               v-model="fechaFin"
               type="date"
               dense
               outlined
+              label="Fecha Final *"
               :rules="[(val) => !!val || 'Fecha final requerida']"
             />
           </div>
+
+          <div class="col-12 col-md-3">
+            <q-select
+              v-model="selectedProveedor"
+              :options="proveedoresOptions"
+              label="Proveedor"
+              dense
+              outlined
+              clearable
+              use-input
+              input-debounce="0"
+              behavior="menu"
+              @filter="filterProveedores"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-section>
+        <div class="row q-col-gutter-md items-center">
           <div class="col-12 col-md-6">
             <q-btn
               color="primary"
@@ -44,6 +71,24 @@
               size="md"
             />
           </div>
+          <div class="col-12 col-md-3 text-right">
+            <q-btn-group unelevated>
+              <q-btn
+                color="negative"
+                icon="picture_as_pdf"
+                label="PDF"
+                @click="generarPDF"
+                :disable="!filteredCompras.length"
+              />
+              <q-btn
+                color="positive"
+                icon="table_view"
+                label="Excel"
+                @click="generarExcel"
+                :disable="!filteredCompras.length"
+              />
+            </q-btn-group>
+          </div>
         </div>
       </q-card-section>
 
@@ -51,18 +96,18 @@
       <q-card-section>
         <BaseFilterableTable
           title="Listado de Compras"
-          :rows="compras"
+          :rows="filteredCompras"
           :columns="columnas"
           :array-headers="arrayHeaders"
           :sum-columns="sumColumns"
-          nombre-column-totales="proveedor"
           row-key="idIngreso"
+          nombreColumnaTotales="nombreAlmacen"
         >
           <template v-slot:body-cell-estado="props">
             <q-td :props="props">
               <q-badge
-                :color="props.row.estado == 1 ? 'positive' : 'negative'"
-                :label="props.row.estado == 1 ? 'Activo' : 'Inactivo'"
+                :color="props.row.estado === 'Activo' ? 'positive' : 'negative'"
+                :label="props.row.estado"
               />
             </q-td>
           </template>
@@ -70,8 +115,8 @@
           <template v-slot:body-cell-autorizacion="props">
             <q-td :props="props">
               <q-badge
-                :color="props.row.autorizacion == '1' ? 'green' : 'orange'"
-                :label="props.row.autorizacion == '1' ? 'Autorizado' : 'No Autorizado'"
+                :color="props.row.autorizacion === 'Autorizado' ? 'green' : 'orange'"
+                :label="props.row.autorizacion"
               />
             </q-td>
           </template>
@@ -126,12 +171,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
+import {
+  PDF_DETALLE_COMPRA_PROVEEDOR,
+  PDF_REPORTE_COMPRAS_GENERAL,
+} from 'src/utils/pdfReportGenerator'
 import { useCurrencyStore } from 'src/stores/currencyStore'
+import { useQuasar } from 'quasar'
+import * as XLSX from 'xlsx'
+import { api } from 'boot/axios'
+import { validarUsuario } from 'src/composables/FuncionesG'
 
 const divisaActiva = useCurrencyStore()
 
@@ -145,6 +197,8 @@ const fechaFin = ref(null)
 const showPdfDialog = ref(false)
 const pdfUrl = ref(null)
 const selectedIdIngreso = ref(null)
+const selectedProveedor = ref(null)
+const $q = useQuasar()
 
 // Table configuration
 const arrayHeaders = [
@@ -157,6 +211,8 @@ const arrayHeaders = [
   'autorizacion',
   'estado',
 ]
+
+//devolver con 2 decimales
 const sumColumns = ['totalIngreso']
 
 const columnas = [
@@ -165,28 +221,24 @@ const columnas = [
     label: 'N°',
     field: 'num',
     align: 'center',
-    sortable: true,
   },
   {
     name: 'codigoProveedor',
     label: 'Código Proveedor',
     field: 'codigoProveedor',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'proveedor',
     label: 'Proveedor',
     field: 'proveedor',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'fechaIngreso',
     label: 'Fecha Ingreso',
     field: 'fechaIngreso',
     align: 'center',
-    sortable: true,
     dataType: 'date',
   },
   {
@@ -194,28 +246,25 @@ const columnas = [
     label: 'Nombre Ingreso',
     field: 'nombreIngreso',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'nFactura',
     label: 'N° Factura',
     field: 'nFactura',
     align: 'center',
-    sortable: true,
   },
   {
     name: 'nombreAlmacen',
     label: 'Almacén',
     field: 'nombreAlmacen',
     align: 'left',
-    sortable: true,
   },
   {
-    name: 'totalIngreso' + ` (${divisaActiva.simbolo})`,
-    label: 'Total Ingreso',
+    name: 'totalIngreso',
+    label: `Total Ingreso (${divisaActiva.simbolo})`,
     field: 'totalIngreso',
     align: 'right',
-    sortable: true,
+
     dataType: 'number',
   },
   {
@@ -223,15 +272,17 @@ const columnas = [
     label: 'Autorización',
     field: 'autorizacion',
     align: 'center',
-    sortable: true,
     dataType: 'text',
+    format: (val) => {
+      return val === '1' ? 'Autorizado' : 'No Autorizado'
+    },
   },
   {
     name: 'estado',
     label: 'Estado',
     field: 'estado',
     align: 'center',
-    sortable: true,
+    dataType: 'text',
   },
   {
     name: 'acciones',
@@ -241,12 +292,117 @@ const columnas = [
   },
 ]
 
+//formatear autorizacion
+
+// Computed
+// Removed computed proveedoresList since we will fetch it directly
+const proveedoresList = ref([])
+
+const proveedoresOptions = ref([])
+
+const filterProveedores = (val, update) => {
+  if (val === '') {
+    update(() => {
+      proveedoresOptions.value = proveedoresList.value
+    })
+    return
+  }
+  update(() => {
+    const needle = val.toLowerCase()
+    proveedoresOptions.value = proveedoresList.value.filter(
+      (v) => v.toLowerCase().indexOf(needle) > -1,
+    )
+  })
+}
+
+// watch removed as we load explicitly
+// watch(proveedoresList, (newVal) => {
+//   proveedoresOptions.value = newVal
+// })
+
+const filteredCompras = computed(() => {
+  let data = compras.value || []
+  if (selectedProveedor.value) {
+    data = data.filter((c) => c.proveedor === selectedProveedor.value)
+  }
+  return data.map((item) => ({
+    ...item,
+    estado: item.estado == 1 ? 'Activo' : 'Inactivo',
+    autorizacion: item.autorizacion == '1' ? 'Autorizado' : 'No Autorizado',
+    // Preserve original values if needed for other logic, but for this table/report strings are better
+    estado_raw: item.estado,
+    autorizacion_raw: item.autorizacion,
+  }))
+})
+
 // Methods
 const generarReporte = async () => {
   if (!fechaInicio.value || !fechaFin.value) {
     return
   }
   await fetchCompras(fechaInicio.value, fechaFin.value)
+}
+
+const generarPDF = () => {
+  if (filteredCompras.value.length === 0) {
+    $q.notify({
+      message: 'No hay datos para generar el reporte',
+      color: 'warning',
+      icon: 'warning',
+    })
+    return
+  }
+
+  const filters = {
+    fechaInicio: fechaInicio.value,
+    fechaFin: fechaFin.value,
+    proveedor: selectedProveedor.value,
+  }
+
+  const doc = PDF_REPORTE_COMPRAS_GENERAL(filteredCompras.value, filters)
+  // Convertir a blob URL para mostrar en iframe
+  const pdfBlob = doc.output('blob')
+
+  // Revocar URL anterior si existe
+  if (pdfUrl.value) {
+    URL.revokeObjectURL(pdfUrl.value)
+  }
+
+  // Crear nueva URL
+  pdfUrl.value = URL.createObjectURL(pdfBlob)
+
+  // Mostrar dialog
+  showPdfDialog.value = true
+}
+
+const generarExcel = () => {
+  if (filteredCompras.value.length === 0) {
+    $q.notify({
+      message: 'No hay datos para exportar',
+      color: 'warning',
+      icon: 'warning',
+    })
+    return
+  }
+
+  const dataToExport = filteredCompras.value.map((item, index) => ({
+    'N°': index + 1,
+    'Código Proveedor': item.codigoProveedor,
+    Proveedor: item.proveedor,
+    'Fecha Ingreso': item.fechaIngreso,
+    'Nombre Ingreso': item.nombreIngreso,
+    'N° Factura': item.nFactura,
+    Almacén: item.nombreAlmacen,
+    'Total Ingreso': parseFloat(item.totalIngreso || 0),
+    Autorización: item.autorizacion,
+    Estado: item.estado,
+  }))
+
+  const ws = XLSX.utils.json_to_sheet(dataToExport)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Compras')
+
+  XLSX.writeFile(wb, `Reporte_Compras_${fechaInicio.value}_${fechaFin.value}.xlsx`)
 }
 
 const verDetallePDF = async (idIngreso) => {
@@ -280,8 +436,34 @@ const formatCurrency = (value) => {
   return parseFloat(value).toFixed(2)
 }
 
+async function loadRows() {
+  try {
+    const contenidousuario = validarUsuario()
+    const idempresa = contenidousuario[0]?.empresa?.idempresa || 'c0c7c76d30bd3dcaefc96f40275bdc0a'
+    const response = await api.get(`listaProveedor/${idempresa}`)
+
+    const data = response.data
+    if (Array.isArray(data)) {
+      // If elements are objects, try to find a name property
+      if (data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+        proveedoresList.value = data.map((p) => p.nombre || p.proveedor || JSON.stringify(p)).sort()
+      } else {
+        proveedoresList.value = data.sort()
+      }
+    } else {
+      proveedoresList.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar los datos de proveedores',
+    })
+  }
+}
+
 // Initialize dates on mount
-onMounted(() => {
+onMounted(async () => {
   const today = new Date()
   const year = today.getFullYear()
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
@@ -290,6 +472,8 @@ onMounted(() => {
   // Set default to first day of current month and today
   fechaInicio.value = `${year}-${month}-01`
   fechaFin.value = `${year}-${month}-${day}`
+
+  await loadRows()
 })
 
 // Cleanup on unmount
