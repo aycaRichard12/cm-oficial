@@ -81,7 +81,7 @@ async function loadRows() {
     response = await api.get(`${point}`) // Cambia a tu ruta con factura
     console.log(response)
     productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
-     // Asume que la API devuelve un array
+    // Asume que la API devuelve un array
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -157,7 +157,7 @@ async function loadunidades() {
     console.log(response)
     const filtrados = response.data.filter((u) => u.estado == 1)
     const formateado = filtrados.map((item) => ({
-      label: item.nombre,
+      label: item.nombre + ' : ' + item.descripcion,
       value: item.id,
     }))
     unidades.value = formateado // Asume que la API devuelve un array
