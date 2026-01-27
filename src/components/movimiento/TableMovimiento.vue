@@ -1,192 +1,256 @@
 <template>
-  <div class="q-gutter-md">
-    <div class="row items-center justify-between q-mt-lg">
-      <div class="col-auto flex flex-col gap-3">
-        <div class="col-12 col-md-4 q-mt-lg">
-          <q-btn color="primary" @click="$emit('addRecord')" class="btn-res">
-            <q-icon name="add" class="icono" />
-            <span class="texto">Agregar</span>
-          </q-btn>
-        </div>
-
-        <q-btn
-          color="secondary"
-          class="btn-res q-mt-lg"
-          id="reportedepreciosbase"
-          to="/reportedemovimientos"
-          icon="assessment"
-          label="Reporte de Movimientos"
-          no-caps
-        />
-      </div>
-
-      <div class="col-8 col-md-3">
-        <label for="almacen">Seleccione un Almacén</label>
-        <q-select
-          v-model="selectedFilterStore"
-          :options="filterStores"
-          id="almacen"
-          map-options
-          class="q-mr-sm"
-          dense
-          outlined
-          clearable
-        />
-      </div>
-
-      <q-btn
-        color="info"
-        @click="printFilteredTable"
-        id="generarReporteMOV"
-        title="Imprimir tabla del almacén seleccionado"
-        class="btn-res"
-      >
-        <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista Previa PDF</span>
-      </q-btn>
-    </div>
-
-    <div class="row flex justify-between">
-      <div>
-        <q-btn
-          color="secondary"
-          label="Lista de Pedidos"
-          @click="showOrderList"
-          id="listaPedidosMOV"
-          title="Lista de Pedidos del almacén seleccionado"
-          class="q-mt-lg"
-        />
-      </div>
-
-      <div>
-        <label for="buscar">Buscar...</label>
-        <q-input
-          v-model="searchQuery"
-          placeholder="Buscar..."
-          dense
-          outlined
-          debounce="300"
-          class="q-mb-md"
-          style="background-color: white"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div>
-    </div>
-
-    <q-table
-      :rows="filteredRows"
-      :columns="columns"
-      row-key="id"
-      :loading="props.loading || movementStore.isLoadingOriginStores"
-      :filter="searchQuery"
-      v-model:pagination="pagination"
-      flat
-      bordered
-      title="Movimientos Almacén"
-    >
-      <template v-slot:top-right> </template>
-      <template v-slot:body-cell-Autorizacion="props">
-        <q-td :props="props">
-          <q-badge :color="props.row.autorizacionStatus === 'Autorizado' ? 'green' : 'red'">{{
-            props.row.autorizacionStatus
-          }}</q-badge>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-Detalle="props">
-        <q-td :props="props">
-          <q-btn
-            icon="shopping_cart"
-            color="blue"
-            dense
-            flat
-            title="Añadir Productos Carrito"
-            @click="$emit('viewProductDetails', props.row)"
-          />
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-Opciones="props">
-        <q-td :props="props">
-          <div v-if="Number(props.row.autorizacion) === 2">
+  <div class="q-pa-md">
+    <q-card flat bordered class="shadow-1">
+      <!-- Header Section -->
+      <q-card-section class="q-pb-none">
+        <div class="row items-center justify-between q-mb-md">
+          <div class="text-h6 text-primary row items-center">
+             <q-icon name="inventory_2" class="q-mr-sm" />
+             Movimientos de Almacén
+          </div>
+          <div>
             <q-btn
-              title="Ver comprobante"
-              size="sm"
-              icon="visibility"
-              color="amber-11"
-              flat
-              @click="verDetalle(props.row)"
-            />
-
-            <q-btn
-              icon="edit"
               color="primary"
-              dense
-              flat
-              @click="$emit('editRecord', props.row)"
-              title="Editar movimiento"
-            />
-
-            <q-btn
-              icon="delete"
-              color="negative"
-              dense
-              flat
-              @click="$emit('deleteRecord', props.row)"
-              title="Eliminar movimiento"
-            />
-
-            <q-btn
-              icon="toggle_off"
-              dense
-              flat
-              color="grey"
-              @click="$emit('toggleStatus', props.row)"
-              title="Activar movimiento"
+              label="Agregar Nuevo"
+              icon="add"
+              unelevated
+              @click="$emit('addRecord')"
+              class="btn-res"
             />
           </div>
-          <div v-else>
-            <q-btn
-              size="sm"
-              title="Ver comprobante"
-              icon="visibility"
-              flat
-              @click="verDetalle(props.row)"
-            />
+        </div>
+      </q-card-section>
+
+      <!-- Filters and Actions Toolbar -->
+      <q-card-section class="q-pt-none">
+        <div class="row q-col-gutter-md items-center">
+          <!-- Almacen Select -->
+          <div class="col-12 col-md-4">
+             <q-select
+              v-model="selectedFilterStore"
+              :options="filterStores"
+              id="almacen"
+              label="Seleccione un Almacén"
+              map-options
+              dense
+              outlined
+              clearable
+              options-dense
+              behavior="menu"
+            >
+              <template v-slot:prepend>
+                <q-icon name="store" color="primary" />
+              </template>
+            </q-select>
           </div>
-        </q-td>
-      </template>
-    </q-table>
-  </div>
-  <q-dialog v-model="mostrarModal" full-width full-height>
-    <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
-        <q-space />
-        <q-btn flat round icon="close" @click="mostrarModal = false" />
+
+          <!-- Search Input -->
+          <div class="col-12 col-md-4">
+             <q-input
+              v-model="searchQuery"
+              placeholder="Buscar por descripción..."
+              dense
+              outlined
+              debounce="300"
+              clearable
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="col-12 col-md-4 row justify-end q-gutter-sm">
+             <q-btn
+              color="secondary"
+              icon="assessment"
+              label="Reporte"
+              id="reportedepreciosbase"
+              to="/reportedemovimientos"
+              outline
+              no-caps
+              dense
+            >
+              <q-tooltip>Ir al Reporte de Movimientos</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              color="secondary"
+              icon="list_alt"
+              label="Pedidos"
+              id="listaPedidosMOV"
+              @click="showOrderList"
+              outline
+              no-caps
+               dense
+            >
+               <q-tooltip>Ver Lista de Pedidos</q-tooltip>
+            </q-btn>
+
+             <q-btn
+              color="info"
+              icon="picture_as_pdf"
+              label="PDF"
+              id="generarReporteMOV"
+              @click="printFilteredTable"
+              outline
+              no-caps
+              dense
+            >
+               <q-tooltip>Vista Previa PDF</q-tooltip>
+            </q-btn>
+          </div>
+        </div>
       </q-card-section>
 
       <q-separator />
 
-      <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-        <iframe
-          v-if="pdfData"
-          :src="pdfData"
-          style="width: 100%; height: 100%; border: none"
-        ></iframe>
+      <!-- Table -->
+      <q-card-section class="q-pa-none">
+        <q-table
+          :rows="filteredRows"
+          :columns="columns"
+          row-key="id"
+          :loading="props.loading || movementStore.isLoadingOriginStores"
+          :filter="searchQuery"
+          v-model:pagination="pagination"
+          flat
+          class="no-border"
+          wrap-cells
+        >
+           <!-- Loading Slot (Optional enhancement) -->
+          <template v-slot:loading>
+            <q-inner-loading showing color="primary" />
+          </template>
+
+          <template v-slot:body-cell-Autorizacion="props">
+            <q-td :props="props" class="text-center">
+              <q-chip
+                :color="props.row.autorizacionStatus === 'Autorizado' ? 'positive' : 'negative'"
+                text-color="white"
+                size="12px"
+                dense
+                icon-right="verified"
+              >
+                {{ props.row.autorizacionStatus }}
+              </q-chip>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-Detalle="props">
+            <q-td :props="props" class="text-center">
+              <q-btn
+                icon="shopping_cart"
+                color="blue"
+                dense
+                flat
+                round
+                size="sm"
+                @click="$emit('viewProductDetails', props.row)"
+              >
+                <q-tooltip>Añadir Productos Carrito</q-tooltip>
+              </q-btn>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-Opciones="props">
+            <q-td :props="props" class="text-center">
+              <div class="row justify-center no-wrap q-gutter-xs">
+                 <q-btn
+                  icon="visibility"
+                  color="amber-8"
+                  dense
+                  flat
+                  round
+                  size="sm"
+                  @click="verDetalle(props.row)"
+                >
+                  <q-tooltip>Ver comprobante</q-tooltip>
+                </q-btn>
+
+                <div v-if="Number(props.row.autorizacion) === 2" class="row no-wrap q-gutter-xs">
+                  <q-btn
+                    icon="edit"
+                    color="primary"
+                    dense
+                    flat
+                    round
+                     size="sm"
+                    @click="$emit('editRecord', props.row)"
+                  >
+                    <q-tooltip>Editar movimiento</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    icon="delete"
+                    color="negative"
+                    dense
+                    flat
+                    round
+                     size="sm"
+                    @click="$emit('deleteRecord', props.row)"
+                  >
+                    <q-tooltip>Eliminar movimiento</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    icon="toggle_off"
+                    dense
+                    flat
+                    round
+                     size="sm"
+                    color="grey-7"
+                    @click="$emit('toggleStatus', props.row)"
+                  >
+                    <q-tooltip>Activar movimiento</q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </q-td>
+          </template>
+        </q-table>
       </q-card-section>
     </q-card>
-  </q-dialog>
-  <pedidosMovimiento
-    v-if="isModalOpen"
-    :title="modalTitle"
-    :initial-data="selectedFilterStore"
-    @ok="handleModalOk"
-    @hide="handleModalHide"
-  />
+
+    <!-- PDF Modal -->
+    <q-dialog v-model="mostrarModal" full-width full-height>
+      <q-card class="column full-height">
+        <q-card-section class="row items-center q-pb-none bg-grey-2">
+          <div class="text-h6 text-grey-9">Vista previa de PDF</div>
+          <q-space />
+          <q-btn flat round dense icon="close" v-close-popup color="negative" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="col q-pa-none relative-position">
+          <iframe
+            v-if="pdfData"
+            :src="pdfData"
+            class="full-width full-height"
+            style="border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <pedidosMovimiento
+      v-if="isModalOpen"
+      :title="modalTitle"
+      :initial-data="selectedFilterStore"
+      @ok="handleModalOk"
+      @hide="handleModalHide"
+    />
+
+    <RegistrarAlmacenDialog
+      v-model="ShowWarningDialog"
+      title="¡Advertencia!"
+      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      @accepted="redirectToAssignment"
+      @closed="redirectToAssignment"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -196,10 +260,13 @@ import { useMovementStore } from 'src/stores/movement-store'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
-import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
 import pedidosMovimiento from './pedidosMovimiento.vue'
+import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+import { useRouter } from 'vue-router'
+import { PDF_LISTA_MOVIMIENTOS } from 'src/utils/pdfReportGenerator'
 //import { URL_APIE } from 'src/composables/services'
 const mostrarModal = ref(false)
 const pdfData = ref(null)
@@ -214,6 +281,9 @@ const props = defineProps({
     default: false,
   },
 })
+
+const router = useRouter()
+const ShowWarningDialog = ref(false)
 
 // Initialize Quasar and Pinia store
 const $q = useQuasar()
@@ -251,9 +321,9 @@ watch(
   () => movementStore.originStores,
   (newStores) => {
     if (newStores.length > 0 && !selectedFilterStore.value?.value) {
-      // Find the first store that is not the placeholder and set it
-      const firstValidStore = newStores.find((store) => store.value !== '')
-      if (firstValidStore.value) {
+      // Find the first store that has a valid value and set it
+      const firstValidStore = newStores.find((store) => store.value !== null && store.value !== '')
+      if (firstValidStore) {
         selectedFilterStore.value = firstValidStore
       }
     }
@@ -310,14 +380,13 @@ const columns = [
 
 // Filter table rows based on selectedFilterStore
 const filteredRows = computed(() => {
-  console.log(selectedFilterStore.value)
   if (!selectedFilterStore.value?.value) {
-    return rows.value
+    return []
   }
   const filtrado = rows.value.filter(
     (row) =>
-      row.idalmacenorigen == selectedFilterStore.value?.value ||
-      row.idalmacendestino == selectedFilterStore.value?.value,
+      Number(row.idalmacenorigen) === Number(selectedFilterStore.value?.value) ||
+      Number(row.idalmacendestino) === Number(selectedFilterStore.value?.value),
   )
   return filtrado.map((item, indice) => ({
     indice: indice + 1,
@@ -335,125 +404,27 @@ const printFilteredTable = () => {
     color: 'blue-7',
     icon: 'print',
   })
-  const contenidousuario = validarUsuario()
-  const doc = new jsPDF({ orientation: 'portrait' })
 
-  const idempresa = contenidousuario[0]
-  const nombreEmpresa = idempresa.empresa.nombre
-  const direccionEmpresa = idempresa.empresa.direccion
-  const telefonoEmpresa = idempresa.empresa.telefono
-  const logoEmpresa = idempresa.empresa.logo // Ruta relativa o base64
-  const nombre = idempresa.nombre
-  const cargo = idempresa.cargo
-  const columns = [
-    { header: 'N', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fecha' },
-    { header: 'Almacén Origen', dataKey: 'almacenOrigenName' },
+  try {
+    const contenidousuario = validarUsuario()
+    const usuario = contenidousuario[0]
 
-    { header: 'Almacén Destino', dataKey: 'almacenDestinoName' },
-    { header: 'Descripción', dataKey: 'descripcion' },
+    const datosFormulario = {
+      almacen: selectedFilterStore.value?.label,
+      nombreEncargado: usuario.nombre,
+      cargoEncargado: usuario.cargo,
+    }
 
-    { header: 'Esatado', dataKey: 'estado' },
-  ]
-
-  const datos = filteredRows.value.map((item, indice) => ({
-    indice: indice + 1,
-    fecha: item.fecha,
-    almacenOrigenName: item.almacenOrigenName,
-    almacenDestinoName: item.almacenDestinoName,
-    descripcion: item.descripcion,
-    estado: item.autorizacion == 2 ? 'No Autorizado' : 'Autorizado',
-  }))
-
-  autoTable(doc, {
-    columns,
-    body: datos,
-    styles: {
-      overflow: 'linebreak',
-      fontSize: 5,
-      cellPadding: 2,
-    },
-    headStyles: {
-      fillColor: [22, 160, 133],
-      textColor: 255,
-      halign: 'center',
-    },
-    columnStyles: {
-      indice: { cellWidth: 10, halign: 'center' },
-      fecha: { cellWidth: 15, halign: 'center' },
-      almacenOrigenName: { cellWidth: 50, halign: 'left' },
-      almacenDestinoName: { cellWidth: 50, halign: 'left' },
-      descripcion: { cellWidth: 50, halign: 'left' },
-
-      estado: { cellWidth: 20, halign: 'center' },
-    },
-    //20 + 15 + 20 + 25 + 30 + 20 + 20 + 25 + 20 + 15 + 20 + 15 + 20 = 265 mm
-
-    startY: 45,
-    margin: { horizontal: 5 },
-    theme: 'striped',
-    didDrawPage: () => {
-      if (doc.internal.getNumberOfPages() === 1) {
-        // Logo (requiere base64 o ruta absoluta en servidor si usas Node)
-        if (logoEmpresa) {
-          //doc.addImage(`${URL_APIE}${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
-        }
-
-        // Nombre y datos de empresa
-        doc.setFontSize(7)
-        doc.setFont(undefined, 'bold')
-        doc.text(nombreEmpresa, 5, 10)
-
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text(direccionEmpresa, 5, 13)
-        doc.text(`Tel: ${telefonoEmpresa}`, 5, 16)
-
-        // Título centrado
-        doc.setFontSize(10)
-        doc.setFont(undefined, 'bold')
-        doc.text('MOVIMIENTOS', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' })
-
-        doc.setDrawColor(0) // Color negro
-        doc.setLineWidth(0.2) // Grosor de la línea
-        doc.line(5, 30, 200, 30) // De (x1=5, y1=25) a (x2=200, y2=25)
-
-        doc.setFontSize(7)
-        doc.setFont(undefined, 'bold')
-        doc.text('DATOS DEL REPORTE', 5, 35)
-        console.log(selectedFilterStore.value)
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text(
-          'Nombre del Almacen: ' + (selectedFilterStore.value?.label || 'Todos los Almacenes'),
-          5,
-          38,
-        )
-
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text('Fecha de Impresion: ' + cambiarFormatoFecha(obtenerFechaActualDato()), 5, 41)
-
-        doc.setFontSize(7)
-        doc.setFont(undefined, 'bold')
-        doc.text('DATOS DEL ENCARGADO:', 200, 35, { align: 'right' })
-
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text(nombre, 200, 38, { align: 'right' })
-
-        doc.setFontSize(6)
-        doc.setFont(undefined, 'normal')
-        doc.text(cargo, 200, 41, { align: 'right' })
-      }
-    },
-  })
-
-  // doc.save('proveedores.pdf') ← comenta o elimina esta línea
-  //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
-  pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
-  mostrarModal.value = true
-  // Logic to print the filtered table (e.g., generate PDF of current table data)
+    const doc = PDF_LISTA_MOVIMIENTOS(filteredRows.value, datosFormulario)
+    pdfData.value = doc.output('dataurlstring')
+    mostrarModal.value = true
+  } catch (error) {
+    console.error('Error al generar el PDF:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al generar el PDF de movimientos.',
+    })
+  }
 }
 
 const showOrderList = () => {
@@ -625,6 +596,11 @@ onMounted(async () => {
     if (movementStore.errorOriginStores) {
       $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes de origen.' })
     }
+
+    console.log('Almacenes de origen cargados:', movementStore.originStores)
+    if (movementStore.originStores.length === 0) {
+      ShowWarningDialog.value = true
+    }
   } catch (error) {
     // This catches errors re-thrown from the store (e.g., network errors)
     console.error('Error al cargar los almacenes:', error)
@@ -634,23 +610,10 @@ onMounted(async () => {
     })
   }
 })
+
+const redirectToAssignment = () => {
+  router.push('/asignaralmacen')
+}
 </script>
 
-<style lang="sass">
-.my-sticky-header-table
-  height: 500px
 
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th
-    background-color: #fff
-
-  thead tr th
-    position: sticky
-    z-index: 1
-  thead tr:first-child th
-    top: 0
-
-  &.q-table--loading thead tr:last-child th
-    top: 48px
-</style>

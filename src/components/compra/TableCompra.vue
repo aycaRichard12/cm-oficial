@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 import { decimas, redondear } from 'src/composables/FuncionesG'
 // import pagosCredito from './pagosCredito.vue' // Movido a CompraDialogs
@@ -318,4 +318,13 @@ async function imprimirReporte() {
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
   mostrarModal.value = true
 }
+
+onMounted(async () => {
+  await divisaActiva.cargarDivisaActiva()
+
+  if (!divisaActiva.divisa) {
+    console.error('No se pudo cargar la divisa')
+    return
+  }
+})
 </script>

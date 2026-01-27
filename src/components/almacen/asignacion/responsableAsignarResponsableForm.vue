@@ -19,9 +19,11 @@
           {{ `${responsableNombre.usuario.usuario} ${responsableNombre.usuario.nombre}` }}
         </div>
       </div>
-      <q-card-section class="row q-col-gutter-x-md flex justify-center" >
-        <div class="col-12 col-md-3" id="darleAlmacen">
-          <label for="almacen">Almacenes*</label>
+      <q-card-section class="row q-col-gutter-x-md flex justify-center">
+        <div class="col-12 col-md-auto flex items-center q-mb-lg">
+          <label for="almacen" class="text-weight-medium">Almacenes por asignar:</label>
+        </div>
+        <div class="col-12 col-md-4" id="darleAlmacen">
           <q-select
             v-model="localData.almacen"
             :options="almacenes"
@@ -36,11 +38,17 @@
             :rules="[(val) => !!val || 'Seleccione Almacen']"
           />
         </div>
-      </q-card-section>
 
-      <q-card-actions class="flex justify-end" >
-        <q-btn label="Guardar" type="submit" color="primary" id="guardarAlmacen"/>
-      </q-card-actions>
+        <div class="col-12 col-md-auto flex items-center q-pb-lg">
+          <q-btn
+            label="Asignar"
+            type="submit"
+            color="primary"
+            id="asignarAlmacen"
+            class="full-width"
+          />
+        </div>
+      </q-card-section>
     </q-form>
   </div>
 </template>
