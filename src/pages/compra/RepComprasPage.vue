@@ -24,7 +24,43 @@
       :columns="columnas"
       row-key="codigo"
       class="q-mt-lg"
-    />
+    >
+      <template v-slot:body-cell-acciones="props">
+        <q-td :props="props">
+          <q-btn
+            flat
+            round
+            dense
+            color="primary"
+            icon="picture_as_pdf"
+            @click="verDetallePDF(props.row)"
+            :loading="loadingDetalle && selectedIdIngreso === props.row.idIngreso"
+          >
+            <q-tooltip>Ver Detalle en PDF</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
+    </q-table>
+    <q-dialog v-model="showPdfDialog" maximized>
+      <q-card>
+        <q-toolbar class="bg-primary text-white">
+          <q-toolbar-title>
+            <q-icon name="picture_as_pdf" size="sm" class="q-mr-sm" />
+            Detalle de Compra - PDF
+          </q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+
+        <q-card-section class="q-pa-none" style="height: calc(100vh - 50px)">
+          <iframe
+            v-if="pdfUrl"
+            :src="pdfUrl"
+            style="width: 100%; height: 100%; border: none"
+            title="Detalle de Compra PDF"
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -34,6 +70,12 @@ import { api } from 'boot/axios'
 import { date } from 'quasar'
 import * as XLSX from 'xlsx'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
+import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
+const { detalleCompra, loadingDetalle, fetchDetalleCompra } = useReporteProveedorCompras()
+const showPdfDialog = ref(false)
+const pdfUrl = ref(null)
+
 const idusuario = idusuario_md5()
 const startDate = ref(null)
 const endDate = ref(null)
@@ -70,6 +112,12 @@ const columnas = [
     name: 'autorizacion',
     label: 'Autorización',
     field: (row) => (row.autorizacion == 1 ? 'Autorizado' : 'No Autorizado'),
+    align: 'left',
+  },
+  {
+    name: 'acciones',
+    label: 'Acciones',
+    field: 'acciones',
     align: 'left',
   },
 ]
@@ -110,6 +158,31 @@ function exportarExcel() {
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
   XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
+}
+
+const verDetallePDF = async (row) => {
+  console.log('Generando PDF para la compra:', row)
+  const detalle = await fetchDetalleCompra(row.idcompra)
+  console.log('Detalle de la compra obtenido:', detalleCompra.value)
+
+  if (detalle) {
+    // Generar PDF
+    const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value)
+
+    // Convertir a blob URL para mostrar en iframe
+    const pdfBlob = doc.output('blob')
+
+    // Revocar URL anterior si existe
+    if (pdfUrl.value) {
+      URL.revokeObjectURL(pdfUrl.value)
+    }
+
+    // Crear nueva URL
+    pdfUrl.value = URL.createObjectURL(pdfBlob)
+
+    // Mostrar dialog
+    showPdfDialog.value = true
+  }
 }
 onMounted(() => {
   const today = new Date()

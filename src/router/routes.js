@@ -29,10 +29,10 @@ const routes = [
       // 1. Verificar Autenticación (Simulada)
       // const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
-      // // if (!isAuthenticated) {
-      // //   next('/login')
-      // //   return
-      // // }
+      // if (!isAuthenticated) {
+      //   next('/login')
+      //   return
+      // }
 
       // 2. Verificar Configuración (Lógica Existente)
       const estaConfigurado = await checkConfiguracion()
@@ -311,6 +311,7 @@ const routes = [
         path: '/reportedecompras',
         component: () => import('src/pages/compra/RepComprasPage.vue'),
       },
+
       {
         path: '/reportedeindicederotacionporalmacen',
         component: () => import('src/pages/reportes/rotacionAlmacenPague.vue'),
@@ -374,6 +375,14 @@ const routes = [
       {
         path: '/permisosusuario',
         component: () => import('src/pages/config/permisosUsuariosPage.vue'),
+      },
+      {
+        path: '/reporteproveedorcompras',
+        component: () => import('src/pages/proveedor/ReporteProveedorComprasPage.vue'),
+      },
+      {
+        path: '/reporteproductoproveedorcompras',
+        component: () => import('src/pages/proveedor/ReporteProductoComprasPage.vue'),
       },
     ],
   },
