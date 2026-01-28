@@ -162,8 +162,6 @@ function cancelarAsignacion() {
 }
 
 async function eliminarAlmacen(id) {
-  almacenesAsignados.value = almacenesAsignados.value.filter((a) => a.id !== id)
-
   const result = await showDialog(
     $q,
     'Q',
@@ -176,6 +174,7 @@ async function eliminarAlmacen(id) {
       console.log(response)
       if (response.data.estado === 'exito') {
         iniciarAsignacion(responsableSeleccionado.value)
+        almacenesAsignados.value = almacenesAsignados.value.filter((a) => a.id !== id)
         $q.notify({
           type: 'positive',
           message: response.data.mensaje,
