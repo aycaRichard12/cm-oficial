@@ -9,14 +9,52 @@
         @asignar="showAssignForm"
       />
       <div v-else>
-        <AsignacionForm
-          :user="selectedUser"
-          :warehouses="warehouses"
-          :pointsOfSale="pointsOfSale"
-          @submit="submitAssignment"
-          @volver="showFirstView = true"
-          @load="loadPointsOfSale"
-        />
+        <q-dialog v-model="showModal" persistent>
+          <q-card class="responsive-dialog">
+            <q-card-section class="bg-primary flex justify-between text-h6 text-white">
+              <div class="text-h6">Asignación de Puntos de Venta</div>
+              <q-space />
+              <q-btn icon="close" flat round dense v-close-popup />
+            </q-card-section>
+
+            <q-card-section>
+              <AsignacionForm
+                :user="selectedUser"
+                :warehouses="warehouses"
+                :pointsOfSale="pointsOfSale"
+                @submit="submitAssignment"
+                @volver="showFirstView = true"
+                @load="loadPointsOfSale"
+              />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+        <div>
+          <div class="row items-center q-mb-xl">
+            <div class="col-auto">
+              <q-btn
+                flat
+                color="grey-7"
+                icon="arrow_back"
+                label="Volver"
+                size="md"
+                @click="showFirstView = true"
+                id="btnVolverAsignacion"
+                class="q-px-sm"
+                :ripple="{ center: true }"
+                style="transition: all 0.2s ease"
+              />
+            </div>
+            <q-btn
+              color="primary"
+              size="md"
+              label="Asignar Punto de Venta"
+              @click="showModal = true"
+            />
+          </div>
+        </div>
+
         <AsignacionTable
           :assignments="assignments"
           :columns="assignmentColumns"
@@ -38,6 +76,7 @@ import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { useQuasar } from 'quasar'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
+const showModal = ref(false)
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const showFirstView = ref(true)
