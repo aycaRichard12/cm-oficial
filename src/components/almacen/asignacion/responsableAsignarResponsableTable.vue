@@ -1,19 +1,29 @@
 <template>
-  <q-table title="Almacenes Asignados" :rows="rows" :columns="columns" row-key="id" flat bordered  id="tablaAlmacenesAsignados">
-    <template v-slot:body-cell-opciones="props">
-      <q-td align="center">
-        <q-btn
-          dense
-          icon="delete"
-          color="negative"
-          @click="eliminar(props.row.id)"
-          title="Eliminar"
-          flat
-          id="eliminarAlmacen"
-        />
-      </q-td>
-    </template>
-  </q-table>
+  <q-card flat class="my-card">
+    <q-table
+      title="Almacenes Asignados"
+      :rows="rows"
+      :columns="columns"
+      row-key="id"
+      flat
+      bordered
+      id="tablaAlmacenesAsignados"
+    >
+      <template v-slot:body-cell-opciones="props">
+        <q-td align="center">
+          <q-btn
+            dense
+            icon="delete"
+            color="negative"
+            @click="eliminar(props.row.id)"
+            title="Eliminar"
+            flat
+            id="eliminarAlmacen"
+          />
+        </q-td>
+      </template>
+    </q-table>
+  </q-card>
 </template>
 
 <script setup>
