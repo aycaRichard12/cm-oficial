@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="row items-center q-mb-md">
-      <div class="text-h5 text-weight-medium text-primary">Movimientos</div>
+      <!-- <div class="text-h5 text-weight-medium text-primary">Movimientos</div> -->
     </div>
     <q-dialog v-model="showMovimientoFormDialog" persistent>
       <q-card class="responsive-dialog">

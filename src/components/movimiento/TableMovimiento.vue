@@ -5,8 +5,8 @@
       <q-card-section class="q-pb-none">
         <div class="row items-center justify-between q-mb-md">
           <div class="text-h6 text-primary row items-center">
-             <q-icon name="inventory_2" class="q-mr-sm" />
-             Movimientos de Almacén
+            <q-icon name="inventory_2" class="q-mr-sm" />
+            Movimientos de Almacén
           </div>
           <div>
             <q-btn
@@ -26,7 +26,7 @@
         <div class="row q-col-gutter-md items-center">
           <!-- Almacen Select -->
           <div class="col-12 col-md-4">
-             <q-select
+            <!-- <q-select
               v-model="selectedFilterStore"
               :options="filterStores"
               id="almacen"
@@ -41,12 +41,13 @@
               <template v-slot:prepend>
                 <q-icon name="store" color="primary" />
               </template>
-            </q-select>
+            </q-select> -->
+            <AlmacenSelector />
           </div>
 
           <!-- Search Input -->
           <div class="col-12 col-md-4">
-             <q-input
+            <q-input
               v-model="searchQuery"
               placeholder="Buscar por descripción..."
               dense
@@ -62,7 +63,7 @@
 
           <!-- Action Buttons -->
           <div class="col-12 col-md-4 row justify-end q-gutter-sm">
-             <q-btn
+            <q-btn
               color="secondary"
               icon="assessment"
               label="Reporte"
@@ -83,12 +84,12 @@
               @click="showOrderList"
               outline
               no-caps
-               dense
+              dense
             >
-               <q-tooltip>Ver Lista de Pedidos</q-tooltip>
+              <q-tooltip>Ver Lista de Pedidos</q-tooltip>
             </q-btn>
 
-             <q-btn
+            <q-btn
               color="info"
               icon="picture_as_pdf"
               label="PDF"
@@ -98,7 +99,7 @@
               no-caps
               dense
             >
-               <q-tooltip>Vista Previa PDF</q-tooltip>
+              <q-tooltip>Vista Previa PDF</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -119,7 +120,7 @@
           class="no-border"
           wrap-cells
         >
-           <!-- Loading Slot (Optional enhancement) -->
+          <!-- Loading Slot (Optional enhancement) -->
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
@@ -157,7 +158,7 @@
           <template v-slot:body-cell-Opciones="props">
             <q-td :props="props" class="text-center">
               <div class="row justify-center no-wrap q-gutter-xs">
-                 <q-btn
+                <q-btn
                   icon="visibility"
                   color="amber-8"
                   dense
@@ -176,7 +177,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     @click="$emit('editRecord', props.row)"
                   >
                     <q-tooltip>Editar movimiento</q-tooltip>
@@ -188,7 +189,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     @click="$emit('deleteRecord', props.row)"
                   >
                     <q-tooltip>Eliminar movimiento</q-tooltip>
@@ -199,7 +200,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     color="grey-7"
                     @click="$emit('toggleStatus', props.row)"
                   >
@@ -238,7 +239,6 @@
     <pedidosMovimiento
       v-if="isModalOpen"
       :title="modalTitle"
-      :initial-data="selectedFilterStore"
       @ok="handleModalOk"
       @hide="handleModalHide"
     />
@@ -264,9 +264,12 @@ import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
 import pedidosMovimiento from './pedidosMovimiento.vue'
+import AlmacenSelector from './AlmacenSelector.vue'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
 import { PDF_LISTA_MOVIMIENTOS } from 'src/utils/pdfReportGenerator'
+import { useAlmacenStore } from 'src/composables/movimiento/useAlmacenStore'
+
 //import { URL_APIE } from 'src/composables/services'
 const mostrarModal = ref(false)
 const pdfData = ref(null)
@@ -288,6 +291,7 @@ const ShowWarningDialog = ref(false)
 // Initialize Quasar and Pinia store
 const $q = useQuasar()
 const movementStore = useMovementStore()
+const { selectedAlmacen, setSelectedAlmacen } = useAlmacenStore()
 
 // Define emits for clarity and validation
 defineEmits([
@@ -300,8 +304,7 @@ defineEmits([
 ])
 
 const searchQuery = ref('')
-const selectedFilterStore = ref('')
-// 'loading' ref removed, now using props.loading for table data loading
+// const selectedFilterStore = ref('') // Replaced by selectedAlmacen
 const rows = ref([]) // Data for the QTable
 
 const pagination = ref({
@@ -310,21 +313,21 @@ const pagination = ref({
 
 // filterStores now comes directly from the Pinia store
 // This computed property will react to changes in movementStore.originStores
-const filterStores = computed(() => {
-  // Add a default "Seleccione un Almacén" option
-  return [...movementStore.originStores]
-})
+// const filterStores = computed(() => {
+//   // Add a default "Seleccione un Almacén" option
+//   return [...movementStore.originStores]
+// })
 
 // Watch for changes in movementStore.originStores and automatically select the first valid option
 // if nothing is selected and stores become available.
 watch(
   () => movementStore.originStores,
   (newStores) => {
-    if (newStores.length > 0 && !selectedFilterStore.value?.value) {
+    if (newStores.length > 0 && !selectedAlmacen.value) {
       // Find the first store that has a valid value and set it
       const firstValidStore = newStores.find((store) => store.value !== null && store.value !== '')
       if (firstValidStore) {
-        selectedFilterStore.value = firstValidStore
+        setSelectedAlmacen(firstValidStore)
       }
     }
   },
@@ -378,15 +381,18 @@ const columns = [
   { name: 'Opciones', label: 'Opciones', align: 'center', field: 'id', sortable: false },
 ]
 
-// Filter table rows based on selectedFilterStore
+// Filter table rows based on selectedAlmacen
 const filteredRows = computed(() => {
-  if (!selectedFilterStore.value?.value) {
+  if (!selectedAlmacen.value) {
     return []
   }
+  // Access the ID safely
+  const storeId = selectedAlmacen.value.value || selectedAlmacen.value.id
+
   const filtrado = rows.value.filter(
     (row) =>
-      Number(row.idalmacenorigen) === Number(selectedFilterStore.value?.value) ||
-      Number(row.idalmacendestino) === Number(selectedFilterStore.value?.value),
+      Number(row.idalmacenorigen) === Number(storeId) ||
+      Number(row.idalmacendestino) === Number(storeId),
   )
   return filtrado.map((item, indice) => ({
     indice: indice + 1,
@@ -398,9 +404,7 @@ const filteredRows = computed(() => {
 
 const printFilteredTable = () => {
   $q.notify({
-    message: `Imprimiendo tabla para el almacén: ${
-      filterStores.value.find((s) => s.value === selectedFilterStore.value?.value)?.label || 'N/A'
-    }`,
+    message: `Imprimiendo tabla para el almacén: ${selectedAlmacen.value?.label || 'N/A'}`,
     color: 'blue-7',
     icon: 'print',
   })
@@ -410,7 +414,7 @@ const printFilteredTable = () => {
     const usuario = contenidousuario[0]
 
     const datosFormulario = {
-      almacen: selectedFilterStore.value?.label,
+      almacen: selectedAlmacen.value?.label,
       nombreEncargado: usuario.nombre,
       cargoEncargado: usuario.cargo,
     }
@@ -429,12 +433,19 @@ const printFilteredTable = () => {
 
 const showOrderList = () => {
   $q.notify({
-    message: 'Mostrando Lista de Pedidos (función pendiente)...',
+    message: 'Mostrando Lista de Pedidos...',
     color: 'purple-7',
   })
   isModalOpen.value = true
   // Logic to navigate to or display the order list for the selected store
 }
+
+/*
+// Not needed if AlmacenSelector handles store updates directly
+const onAlmacenChange = (val) => {
+   // Already handled by AlmacenSelector component updating the store
+}
+*/
 
 const verDetalle = async (row) => {
   try {
@@ -571,7 +582,7 @@ const verDetalle = async (row) => {
 
 const isModalOpen = ref(false)
 const modalTitle = computed(() => {
-  return selectedFilterStore.value?.label || 'Todos los almacenes'
+  return selectedAlmacen.value?.label || 'Todos los almacenes'
 })
 
 const handleModalOk = () => {
@@ -615,5 +626,3 @@ const redirectToAssignment = () => {
   router.push('/asignaralmacen')
 }
 </script>
-
-
