@@ -258,17 +258,13 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useMovementStore } from 'src/stores/movement-store'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
-import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
-import { decimas } from 'src/composables/FuncionesG'
 import pedidosMovimiento from './pedidosMovimiento.vue'
 import AlmacenSelector from './AlmacenSelector.vue'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
-import { PDF_LISTA_MOVIMIENTOS } from 'src/utils/pdfReportGenerator'
+import { PDF_LISTA_MOVIMIENTOS, PDFComprobanteMovimiento } from 'src/utils/pdfReportGenerator'
 import { useAlmacenStore } from 'src/composables/movimiento/useAlmacenStore'
 
 //import { URL_APIE } from 'src/composables/services'
@@ -454,129 +450,31 @@ const verDetalle = async (row) => {
   try {
     console.log(row.id)
     const contenidousuario = validarUsuario()
-    const doc = new jsPDF({ orientation: 'portrait' })
-
     const usuario = contenidousuario[0]
     const idempresa = usuario.empresa.idempresa
-    const nombreEmpresa = usuario.empresa.nombre
-    const direccionEmpresa = usuario.empresa.direccion
-    const telefonoEmpresa = usuario.empresa.telefono
-    const logoEmpresa = usuario.empresa.logo
-    const nombre = usuario.nombre
-    const cargo = usuario.cargo
-    const detallePedido = await api.get(`comprobanteMovimiento/${row.id}/${idempresa}`) // Dispatch Pinia action to load filter options
-    console.log(detallePedido)
-
-    const columns = [
-      { header: 'N°', dataKey: 'indice' },
-      { header: 'Descripción', dataKey: 'descripcion' },
-      { header: 'Cantidad', dataKey: 'cantidad' },
-    ]
-
-    const detallePlano = JSON.parse(JSON.stringify(detallePedido.data))
-    console.log(detallePlano.datos.detalle)
-    const datos = detallePlano.datos.detalle.map((item, indice) => ({
-      indice: indice + 1,
-      descripcion: item.descripcion,
-      cantidad: decimas(item.cantidad),
-    }))
-    const cantidadTotal = datos.reduce((sum, u) => {
-      return sum + Number(u.cantidad)
-    }, 0)
-    const pieReporte = {
-      descripcion: 'Total:',
-      cantidad: cantidadTotal.toFixed(2),
+    
+    // Obtener los detalles del movimiento
+    const detallePedido = await api.get(`comprobanteMovimiento/${row.id}/${idempresa}`)
+    console.log('a qui que esta llegando',detallePedido)
+  console.log('ruta donde sea hace la peticion', `${api}/comprobanteMovimiento/${row.id}/${idempresa}`)
+    if (detallePedido.data) {
+      // Generar el PDF usando la función centralizada
+      const doc = PDFComprobanteMovimiento(detallePedido.data)
+      pdfData.value = doc.output('dataurlstring')
+      mostrarModal.value = true
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: 'No se encontraron detalles para este movimiento.',
+      })
     }
-    console.log(pieReporte)
-    datos.push(pieReporte)
-    autoTable(doc, {
-      columns,
-      body: datos,
-      styles: {
-        overflow: 'linebreak',
-        fontSize: 5,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [22, 160, 133],
-        textColor: 255,
-        halign: 'center',
-      },
-      columnStyles: {
-        indice: { cellWidth: 15, halign: 'center' },
-        descripcion: { cellWidth: 100, halign: 'left' },
-        cantidad: { cellWidth: 80, halign: 'right' },
-      },
-      didParseCell: function (data) {
-        if (data.row.index >= datos.length - 1) {
-          data.cell.styles.halign = 'left'
-          if (data.column.index === 1) {
-            // If the current cell is in the first column
-            data.cell.styles.halign = 'right' // Align that specific cell to the right
-          }
-        }
-      },
-      startY: 50,
-      margin: { horizontal: 5 },
-      theme: 'striped',
-      didDrawPage: () => {
-        if (doc.internal.getNumberOfPages() === 1) {
-          if (logoEmpresa) {
-            //doc.addImage(`${URL_APIE}/${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
-          }
 
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text(nombreEmpresa, 5, 10)
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          doc.text(direccionEmpresa, 5, 13)
-          doc.text(`Tel: ${telefonoEmpresa}`, 5, 16)
-
-          doc.setFontSize(10)
-          doc.setFont(undefined, 'bold')
-          doc.text('ORDEN PEDIDO', doc.internal.pageSize.getWidth() / 2, 15, {
-            align: 'center',
-          })
-
-          doc.setDrawColor(0)
-          doc.setLineWidth(0.2)
-          doc.line(5, 30, 200, 30)
-
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text('DATOS ORDEN:', 5, 35)
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          const cliente = `${detallePlano.datos.almacenorigen} a ${detallePlano.datos.almacendestino}`
-          doc.text(cliente, 5, 38)
-
-          doc.text(detallePlano.datos.descripcion, 5, 41)
-
-          doc.text('Fecha de Orden: ' + cambiarFormatoFecha(detallePlano.datos.fecha), 5, 47)
-
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text('DATOS DEL USUARIO:', 200, 35, { align: 'right' })
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          doc.text(nombre, 200, 38, { align: 'right' })
-          doc.text(cargo, 200, 41, { align: 'right' })
-        }
-      },
-    })
-
-    pdfData.value = doc.output('dataurlstring')
-    mostrarModal.value = true
   } catch (error) {
     // This catches errors re-thrown from the store (e.g., network errors)
     console.error('Error al obtener el movimiento:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error en la comunicación al cargar almacenes de origen.',
+      message: 'Error en la comunicación al obtener el detalle del movimiento.',
     })
   }
 }
