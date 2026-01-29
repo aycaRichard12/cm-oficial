@@ -1,1 +1,2 @@
-export const imagen = 'https://mistersofts.com/app/cm/api/'
+const baseURL = process.env.VITE_API_URL
+export const imagen = baseURL
