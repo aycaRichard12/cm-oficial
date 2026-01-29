@@ -29,6 +29,7 @@
       @editRecord="handleEditRecord"
       @deleteRecord="handleDeleteRecord"
       @toggleStatus="handleToggleStatus"
+      @refresh="fetchMovimientos"
     />
     <q-dialog v-model="showDetalleMovimiento" persistent>
       <q-card class="responsive-dialog">

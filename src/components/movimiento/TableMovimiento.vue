@@ -241,6 +241,7 @@
       :title="modalTitle"
       @ok="handleModalOk"
       @hide="handleModalHide"
+      @orders-processed="$emit('refresh')"
     />
 
     <RegistrarAlmacenDialog
@@ -300,7 +301,9 @@ defineEmits([
   'viewProductDetails',
   'editRecord',
   'deleteRecord',
+  'deleteRecord',
   'toggleStatus',
+  'refresh',
 ])
 
 const searchQuery = ref('')
