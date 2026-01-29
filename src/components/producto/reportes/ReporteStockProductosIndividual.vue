@@ -90,7 +90,7 @@
       row-key="id"
       separator="horizontal"
       :filter="search"
-      nombreColumnaTotales="pais"
+      nombreColumnaTotales="costounitario"
     >
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
@@ -136,6 +136,7 @@ import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator
 import { PDFreporteStockProductosIndividual_img } from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { useCurrencyStore } from 'src/stores/currencyStore'
 const fechaFin = ref(obtenerFechaActualDato())
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -148,7 +149,7 @@ const filtroEstado = ref(null)
 const filtroOrden = ref(null)
 const almacenes = ref([])
 const search = ref('')
-
+const divisaActiva = useCurrencyStore().simbolo
 const filtros = ref({
   estado: '0',
   orden: '1',
@@ -167,10 +168,10 @@ const ordenes = [
 
 const datos = ref([])
 
-const columnas = [
+const definicionColumnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
-  { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  // { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
+  // { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', dataType: 'text' },
   { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
   { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
@@ -191,6 +192,13 @@ const columnas = [
   { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
   { name: 'pais', label: 'País', field: 'pais', align: 'left', dataType: 'text' },
   {
+    name: 'estado',
+    label: 'Estado',
+    field: 'estado',
+    align: 'left',
+    datatype: 'text',
+  },
+  {
     name: 'stock',
     label: 'Stock',
     field: 'stock',
@@ -199,15 +207,37 @@ const columnas = [
     format: (val) => decimas(val),
   },
   {
+    name: 'costounitario',
+    label: `C. Unit. (${divisaActiva})`,
+    field: 'costounitario',
+    align: 'right',
+    dataType: 'number',
+    format: (val) => decimas(val),
+  },
+  {
     name: 'costo',
-    label: 'Costo total',
+    label: `Costo total (${divisaActiva})`,
     field: 'costo',
     align: 'right',
     dataType: 'number',
     format: (val) => decimas(val),
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
 ]
+
+const columnas = computed(() => {
+  const rows = processedRows.value
+  if (!rows || rows.length === 0) return definicionColumnas
+
+  return definicionColumnas.filter((col) => {
+    // Si la columna es 'numero' siempre mostrar
+    if (col.name === 'numero') return true
+
+    return rows.some((row) => {
+      const val = row[col.field]
+      return val !== null && val !== undefined && val !== ''
+    })
+  })
+})
 
 const arrayHeaders = [
   'numero',
@@ -222,10 +252,11 @@ const arrayHeaders = [
   'pais',
   'stock',
   'costo',
+  'costounitario',
   'estado',
 ]
 
-const sumColumns = ['stock', 'costo']
+const sumColumns = ['costo']
 
 async function cargarAlmacenes() {
   try {
@@ -243,7 +274,6 @@ async function cargarAlmacenes() {
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
   }
 }
-
 
 // Métodos simulados
 const generarReporte = async () => {
@@ -280,6 +310,7 @@ const processedRows = computed(() => {
     ...item,
     numero: index + 1,
     costo: redondear(parseFloat(item.costounitario) * parseFloat(item.stock)),
+    estado: estadoTexto(item.estado),
   }))
 })
 
@@ -403,6 +434,9 @@ const vistaCatalogo = async () => {
 
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
+}
+function estadoTexto(estado) {
+  return Number(estado) === 1 ? 'Activo' : 'Inactivo'
 }
 </script>
 <style></style>
