@@ -2,16 +2,32 @@
   <q-page class="q-pa-md">
     <!-- Formulario de parámetros -->
     <div class="titulo">Stock Productos Global</div>
+    <div v-if="nombreAlmacenSeleccionado" class="text-subtitle1 q-mb-md text-center">
+      Almacén: {{ nombreAlmacenSeleccionado }}
+    </div>
 
-    <StockGlobalParams v-model:modelValueFecha="fechaFin" v-model:modelValueAlmacen="almacenSeleccionado"
-      :opcionesAlmacenes="opcionesAlmacenes" @generar="generarReporte" @vistaPrevia="mostrarVistaPrevia" />
+    <StockGlobalParams
+      v-model:modelValueFecha="fechaFin"
+      v-model:modelValueAlmacen="almacenSeleccionado"
+      :opcionesAlmacenes="opcionesAlmacenes"
+      @generar="generarReporte"
+      @vistaPrevia="mostrarVistaPrevia"
+    />
 
     <!-- Filtros -->
-    <StockGlobalFilters v-model:filtroEstado="filtroEstado" v-model:ordenStock="ordenStock" @generar="generarReporte" />
+    <StockGlobalFilters
+      v-model:filtroEstado="filtroEstado"
+      v-model:ordenStock="ordenStock"
+      @generar="generarReporte"
+    />
 
     <!-- Tabla de resultados -->
-    <StockGlobalTable :rows="datosFiltrados" :columns="columnas" :sumatoriaStock="sumatoriaStock"
-      :sumatoriaCostoTotal="sumatoriaCostoTotal" />
+    <StockGlobalTable
+      :rows="datosFiltrados"
+      :columns="columnas"
+      :sumatoriaStock="sumatoriaStock"
+      :sumatoriaCostoTotal="sumatoriaCostoTotal"
+    />
 
     <!-- Modal de vista previa PDF -->
     <StockGlobalPdfModal v-model:modelValue="mostrarModal" :pdfData="pdfData" />
@@ -22,7 +38,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
-import { date } from 'quasar'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
@@ -32,6 +47,9 @@ import StockGlobalParams from 'src/components/reporte/stockGlobal/StockGlobalPar
 import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
 import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
 import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
+import { useCurrencyStore } from 'src/stores/currencyStore'
+
+const divisaActiva = useCurrencyStore().simbolo
 
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -47,36 +65,47 @@ const nombreAlmacenSeleccionado = ref('')
 const idempresa = idempresa_md5()
 
 const columnas = [
-  { name: 'numero', label: 'N°', align: 'right', field: 'numero' },
-  {
-    name: 'fecha',
-    label: 'Fecha registro',
-    field: 'fecha',
-    format: (val) => formatearFecha(val),
-  },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'pais', label: 'País', field: 'pais', align: 'left' },
-  { name: 'stock', label: 'Stock', field: 'stock', align: 'right' },
-  {
-    name: 'costototal',
-    label: 'Costo total',
-    align: 'right',
-    field: (row) => calcularCostoTotal(row),
-    format: (val) => formatearDecimal(val),
-  },
-  {
+  { name: 'numero', label: 'N°', align: 'right', field: 'numero', datatype: 'text' },
+  // {
+  //   name: 'fecha',
+  //   label: 'Fecha registro',
+  //   field: 'fecha',
+  //   format: (val) => formatearFecha(val),
+  // },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', datatype: 'text' },
+  // { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
+
+  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', datatype: 'text' },
+  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', datatype: 'text' },
+  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria', align: 'left', datatype: 'text' },
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', datatype: 'text' },
+  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', datatype: 'text' },
+  { name: 'pais', label: 'País', field: 'pais', align: 'left', datatype: 'text' },
+  { name: 'stock', label: 'Stock', field: 'stock', align: 'right', datatype: 'number' },
+    {
     name: 'estado',
     label: 'Estado',
     field: 'estado',
-    format: (val) => estadoTexto(val),
     align: 'left',
+    datatype: 'text',
   },
+  {
+    name: 'costounitario',
+    label: `C.Unit (${divisaActiva})`,
+    field: 'costounitario',
+    format: (val) => formatearDecimal(val),
+    align: 'right',
+    datatype: 'number',
+  },
+  {
+    name: 'costototal',
+    label: `Costo total (${divisaActiva})`,
+    align: 'right',
+    field: 'costototal',
+    datatype: 'number',
+    format: (val) => formatearDecimal(val),
+  },
+
 ]
 
 const sumatoriaStock = computed(() => {
@@ -118,7 +147,6 @@ async function cargarAlmacenes() {
       almacenSeleccionado.value = opcionesAlmacenes.value[0].id // Use .id directly if value is the id
     }
 
-
     if (opcionesAlmacenes.value.length > 0) {
       // almacenSeleccionado.value = opcionesAlmacenes.value[0].value
     }
@@ -155,6 +183,8 @@ async function generarReporte() {
         numero: index + 1,
         idstock: item.idstock ?? 0, // reemplaza null por 0
         imagen: item.imagen && item.imagen !== 'undefined' ? item.imagen : '', // reemplaza 'undefined'
+        costototal: parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0),
+        estado: estadoTexto(item.estado),
       }))
     }
 
@@ -181,11 +211,21 @@ function filtrarYOrdenarDatos() {
   }
 
   // Aplicar orden
+  // Requisito: Ordenar p/código
+  datos.sort((a, b) => {
+    const codA = a.codigo || ''
+    const codB = b.codigo || ''
+    return codA.localeCompare(codB, undefined, { numeric: true, sensitivity: 'base' })
+  })
+
+  // Orden anterior por stock (deshabilitado para cumplir requisito de imagen)
+  /*
   if (ordenStock.value === 2) {
     datos.sort((a, b) => parseFloat(a.stock) - parseFloat(b.stock))
   } else {
     datos.sort((a, b) => parseFloat(b.stock) - parseFloat(a.stock))
   }
+  */
 
   datosFiltrados.value = datos
 }
@@ -216,23 +256,22 @@ async function mostrarVistaPrevia() {
 }
 
 // Funciones de utilidad
-function formatearFecha(fecha) {
-  return date.formatDate(fecha, 'DD/MM/YYYY')
-}
+// function formatearFecha(fecha) {
+//   return date.formatDate(fecha, 'DD/MM/YYYY')
+// }
 
 function formatearDecimal(valor) {
   return parseFloat(valor || 0).toFixed(2)
 }
 
-function calcularCostoTotal(item) {
-  return parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0)
-}
+// function calcularCostoTotal(item) {
+//   return parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0)
+// }
 
 function estadoTexto(estado) {
   return Number(estado) === 1 ? 'Activo' : 'Inactivo'
 }
 </script>
-
 
 <style scoped>
 .invoice {
@@ -395,7 +434,7 @@ function estadoTexto(estado) {
     page-break-after: always;
   }
 
-  .invoice>div:last-child {
+  .invoice > div:last-child {
     page-break-before: always;
   }
 }
