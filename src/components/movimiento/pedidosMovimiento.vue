@@ -167,7 +167,7 @@ const pdfData = ref(null)
 const mostrarModal = ref(false)
 
 // Define Emits
-const emit = defineEmits(['ok', 'hide'])
+const emit = defineEmits(['ok', 'hide', 'orders-processed'])
 
 // Reactive state
 const showDialog = ref(true)
@@ -352,6 +352,8 @@ async function processing(row) {
         color: 'positive',
         ok: true,
         persistent: false,
+      }).onDismiss(() => {
+        emit('orders-processed')
       })
     })
     .onCancel(() => {
@@ -512,6 +514,7 @@ const enviarPedidos = async () => {
     // Limpiar y recargar
     selected.value = []
     destinoSeleccionado.value = null
+    emit('orders-processed')
     getPedidos()
   } catch (error) {
     console.error('Error:', error)
