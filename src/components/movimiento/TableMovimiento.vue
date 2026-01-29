@@ -5,8 +5,8 @@
       <q-card-section class="q-pb-none">
         <div class="row items-center justify-between q-mb-md">
           <div class="text-h6 text-primary row items-center">
-             <q-icon name="inventory_2" class="q-mr-sm" />
-             Movimientos de Almacén
+            <q-icon name="inventory_2" class="q-mr-sm" />
+            Movimientos de Almacén
           </div>
           <div>
             <q-btn
@@ -26,7 +26,7 @@
         <div class="row q-col-gutter-md items-center">
           <!-- Almacen Select -->
           <div class="col-12 col-md-4">
-             <q-select
+            <!-- <q-select
               v-model="selectedFilterStore"
               :options="filterStores"
               id="almacen"
@@ -41,12 +41,13 @@
               <template v-slot:prepend>
                 <q-icon name="store" color="primary" />
               </template>
-            </q-select>
+            </q-select> -->
+            <AlmacenSelector />
           </div>
 
           <!-- Search Input -->
           <div class="col-12 col-md-4">
-             <q-input
+            <q-input
               v-model="searchQuery"
               placeholder="Buscar por descripción..."
               dense
@@ -62,7 +63,7 @@
 
           <!-- Action Buttons -->
           <div class="col-12 col-md-4 row justify-end q-gutter-sm">
-             <q-btn
+            <q-btn
               color="secondary"
               icon="assessment"
               label="Reporte"
@@ -83,12 +84,12 @@
               @click="showOrderList"
               outline
               no-caps
-               dense
+              dense
             >
-               <q-tooltip>Ver Lista de Pedidos</q-tooltip>
+              <q-tooltip>Ver Lista de Pedidos</q-tooltip>
             </q-btn>
 
-             <q-btn
+            <q-btn
               color="info"
               icon="picture_as_pdf"
               label="PDF"
@@ -98,7 +99,7 @@
               no-caps
               dense
             >
-               <q-tooltip>Vista Previa PDF</q-tooltip>
+              <q-tooltip>Vista Previa PDF</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -119,7 +120,7 @@
           class="no-border"
           wrap-cells
         >
-           <!-- Loading Slot (Optional enhancement) -->
+          <!-- Loading Slot (Optional enhancement) -->
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
@@ -157,7 +158,7 @@
           <template v-slot:body-cell-Opciones="props">
             <q-td :props="props" class="text-center">
               <div class="row justify-center no-wrap q-gutter-xs">
-                 <q-btn
+                <q-btn
                   icon="visibility"
                   color="amber-8"
                   dense
@@ -176,7 +177,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     @click="$emit('editRecord', props.row)"
                   >
                     <q-tooltip>Editar movimiento</q-tooltip>
@@ -188,7 +189,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     @click="$emit('deleteRecord', props.row)"
                   >
                     <q-tooltip>Eliminar movimiento</q-tooltip>
@@ -199,7 +200,7 @@
                     dense
                     flat
                     round
-                     size="sm"
+                    size="sm"
                     color="grey-7"
                     @click="$emit('toggleStatus', props.row)"
                   >
@@ -238,9 +239,9 @@
     <pedidosMovimiento
       v-if="isModalOpen"
       :title="modalTitle"
-      :initial-data="selectedFilterStore"
       @ok="handleModalOk"
       @hide="handleModalHide"
+      @orders-processed="$emit('refresh')"
     />
 
     <RegistrarAlmacenDialog
@@ -257,16 +258,15 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useMovementStore } from 'src/stores/movement-store'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
-import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
-import { decimas } from 'src/composables/FuncionesG'
 import pedidosMovimiento from './pedidosMovimiento.vue'
+import AlmacenSelector from './AlmacenSelector.vue'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
-import { PDF_LISTA_MOVIMIENTOS } from 'src/utils/pdfReportGenerator'
+import { PDF_LISTA_MOVIMIENTOS, PDFComprobanteMovimiento } from 'src/utils/pdfReportGenerator'
+import { useAlmacenStore } from 'src/composables/movimiento/useAlmacenStore'
+
 //import { URL_APIE } from 'src/composables/services'
 const mostrarModal = ref(false)
 const pdfData = ref(null)
@@ -288,6 +288,7 @@ const ShowWarningDialog = ref(false)
 // Initialize Quasar and Pinia store
 const $q = useQuasar()
 const movementStore = useMovementStore()
+const { selectedAlmacen, setSelectedAlmacen } = useAlmacenStore()
 
 // Define emits for clarity and validation
 defineEmits([
@@ -296,12 +297,13 @@ defineEmits([
   'viewProductDetails',
   'editRecord',
   'deleteRecord',
+  'deleteRecord',
   'toggleStatus',
+  'refresh',
 ])
 
 const searchQuery = ref('')
-const selectedFilterStore = ref('')
-// 'loading' ref removed, now using props.loading for table data loading
+// const selectedFilterStore = ref('') // Replaced by selectedAlmacen
 const rows = ref([]) // Data for the QTable
 
 const pagination = ref({
@@ -310,21 +312,21 @@ const pagination = ref({
 
 // filterStores now comes directly from the Pinia store
 // This computed property will react to changes in movementStore.originStores
-const filterStores = computed(() => {
-  // Add a default "Seleccione un Almacén" option
-  return [...movementStore.originStores]
-})
+// const filterStores = computed(() => {
+//   // Add a default "Seleccione un Almacén" option
+//   return [...movementStore.originStores]
+// })
 
 // Watch for changes in movementStore.originStores and automatically select the first valid option
 // if nothing is selected and stores become available.
 watch(
   () => movementStore.originStores,
   (newStores) => {
-    if (newStores.length > 0 && !selectedFilterStore.value?.value) {
+    if (newStores.length > 0 && !selectedAlmacen.value) {
       // Find the first store that has a valid value and set it
       const firstValidStore = newStores.find((store) => store.value !== null && store.value !== '')
       if (firstValidStore) {
-        selectedFilterStore.value = firstValidStore
+        setSelectedAlmacen(firstValidStore)
       }
     }
   },
@@ -378,15 +380,18 @@ const columns = [
   { name: 'Opciones', label: 'Opciones', align: 'center', field: 'id', sortable: false },
 ]
 
-// Filter table rows based on selectedFilterStore
+// Filter table rows based on selectedAlmacen
 const filteredRows = computed(() => {
-  if (!selectedFilterStore.value?.value) {
+  if (!selectedAlmacen.value) {
     return []
   }
+  // Access the ID safely
+  const storeId = selectedAlmacen.value.value || selectedAlmacen.value.id
+
   const filtrado = rows.value.filter(
     (row) =>
-      Number(row.idalmacenorigen) === Number(selectedFilterStore.value?.value) ||
-      Number(row.idalmacendestino) === Number(selectedFilterStore.value?.value),
+      Number(row.idalmacenorigen) === Number(storeId) ||
+      Number(row.idalmacendestino) === Number(storeId),
   )
   return filtrado.map((item, indice) => ({
     indice: indice + 1,
@@ -398,9 +403,7 @@ const filteredRows = computed(() => {
 
 const printFilteredTable = () => {
   $q.notify({
-    message: `Imprimiendo tabla para el almacén: ${
-      filterStores.value.find((s) => s.value === selectedFilterStore.value?.value)?.label || 'N/A'
-    }`,
+    message: `Imprimiendo tabla para el almacén: ${selectedAlmacen.value?.label || 'N/A'}`,
     color: 'blue-7',
     icon: 'print',
   })
@@ -410,7 +413,7 @@ const printFilteredTable = () => {
     const usuario = contenidousuario[0]
 
     const datosFormulario = {
-      almacen: selectedFilterStore.value?.label,
+      almacen: selectedAlmacen.value?.label,
       nombreEncargado: usuario.nombre,
       cargoEncargado: usuario.cargo,
     }
@@ -429,140 +432,49 @@ const printFilteredTable = () => {
 
 const showOrderList = () => {
   $q.notify({
-    message: 'Mostrando Lista de Pedidos (función pendiente)...',
+    message: 'Mostrando Lista de Pedidos...',
     color: 'purple-7',
   })
   isModalOpen.value = true
   // Logic to navigate to or display the order list for the selected store
 }
 
+/*
+// Not needed if AlmacenSelector handles store updates directly
+const onAlmacenChange = (val) => {
+   // Already handled by AlmacenSelector component updating the store
+}
+*/
+
 const verDetalle = async (row) => {
   try {
     console.log(row.id)
     const contenidousuario = validarUsuario()
-    const doc = new jsPDF({ orientation: 'portrait' })
-
     const usuario = contenidousuario[0]
     const idempresa = usuario.empresa.idempresa
-    const nombreEmpresa = usuario.empresa.nombre
-    const direccionEmpresa = usuario.empresa.direccion
-    const telefonoEmpresa = usuario.empresa.telefono
-    const logoEmpresa = usuario.empresa.logo
-    const nombre = usuario.nombre
-    const cargo = usuario.cargo
-    const detallePedido = await api.get(`comprobanteMovimiento/${row.id}/${idempresa}`) // Dispatch Pinia action to load filter options
-    console.log(detallePedido)
-
-    const columns = [
-      { header: 'N°', dataKey: 'indice' },
-      { header: 'Descripción', dataKey: 'descripcion' },
-      { header: 'Cantidad', dataKey: 'cantidad' },
-    ]
-
-    const detallePlano = JSON.parse(JSON.stringify(detallePedido.data))
-    console.log(detallePlano.datos.detalle)
-    const datos = detallePlano.datos.detalle.map((item, indice) => ({
-      indice: indice + 1,
-      descripcion: item.descripcion,
-      cantidad: decimas(item.cantidad),
-    }))
-    const cantidadTotal = datos.reduce((sum, u) => {
-      return sum + Number(u.cantidad)
-    }, 0)
-    const pieReporte = {
-      descripcion: 'Total:',
-      cantidad: cantidadTotal.toFixed(2),
+    
+    // Obtener los detalles del movimiento
+    const detallePedido = await api.get(`comprobanteMovimiento/${row.id}/${idempresa}`)
+    console.log('a qui que esta llegando',detallePedido)
+  console.log('ruta donde sea hace la peticion', `${api}/comprobanteMovimiento/${row.id}/${idempresa}`)
+    if (detallePedido.data) {
+      // Generar el PDF usando la función centralizada
+      const doc = PDFComprobanteMovimiento(detallePedido.data)
+      pdfData.value = doc.output('dataurlstring')
+      mostrarModal.value = true
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: 'No se encontraron detalles para este movimiento.',
+      })
     }
-    console.log(pieReporte)
-    datos.push(pieReporte)
-    autoTable(doc, {
-      columns,
-      body: datos,
-      styles: {
-        overflow: 'linebreak',
-        fontSize: 5,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [22, 160, 133],
-        textColor: 255,
-        halign: 'center',
-      },
-      columnStyles: {
-        indice: { cellWidth: 15, halign: 'center' },
-        descripcion: { cellWidth: 100, halign: 'left' },
-        cantidad: { cellWidth: 80, halign: 'right' },
-      },
-      didParseCell: function (data) {
-        if (data.row.index >= datos.length - 1) {
-          data.cell.styles.halign = 'left'
-          if (data.column.index === 1) {
-            // If the current cell is in the first column
-            data.cell.styles.halign = 'right' // Align that specific cell to the right
-          }
-        }
-      },
-      startY: 50,
-      margin: { horizontal: 5 },
-      theme: 'striped',
-      didDrawPage: () => {
-        if (doc.internal.getNumberOfPages() === 1) {
-          if (logoEmpresa) {
-            //doc.addImage(`${URL_APIE}/${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
-          }
 
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text(nombreEmpresa, 5, 10)
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          doc.text(direccionEmpresa, 5, 13)
-          doc.text(`Tel: ${telefonoEmpresa}`, 5, 16)
-
-          doc.setFontSize(10)
-          doc.setFont(undefined, 'bold')
-          doc.text('ORDEN PEDIDO', doc.internal.pageSize.getWidth() / 2, 15, {
-            align: 'center',
-          })
-
-          doc.setDrawColor(0)
-          doc.setLineWidth(0.2)
-          doc.line(5, 30, 200, 30)
-
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text('DATOS ORDEN:', 5, 35)
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          const cliente = `${detallePlano.datos.almacenorigen} a ${detallePlano.datos.almacendestino}`
-          doc.text(cliente, 5, 38)
-
-          doc.text(detallePlano.datos.descripcion, 5, 41)
-
-          doc.text('Fecha de Orden: ' + cambiarFormatoFecha(detallePlano.datos.fecha), 5, 47)
-
-          doc.setFontSize(7)
-          doc.setFont(undefined, 'bold')
-          doc.text('DATOS DEL USUARIO:', 200, 35, { align: 'right' })
-
-          doc.setFontSize(6)
-          doc.setFont(undefined, 'normal')
-          doc.text(nombre, 200, 38, { align: 'right' })
-          doc.text(cargo, 200, 41, { align: 'right' })
-        }
-      },
-    })
-
-    pdfData.value = doc.output('dataurlstring')
-    mostrarModal.value = true
   } catch (error) {
     // This catches errors re-thrown from the store (e.g., network errors)
     console.error('Error al obtener el movimiento:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error en la comunicación al cargar almacenes de origen.',
+      message: 'Error en la comunicación al obtener el detalle del movimiento.',
     })
   }
 }
@@ -571,7 +483,7 @@ const verDetalle = async (row) => {
 
 const isModalOpen = ref(false)
 const modalTitle = computed(() => {
-  return selectedFilterStore.value?.label || 'Todos los almacenes'
+  return selectedAlmacen.value?.label || 'Todos los almacenes'
 })
 
 const handleModalOk = () => {
@@ -615,5 +527,3 @@ const redirectToAssignment = () => {
   router.push('/asignaralmacen')
 }
 </script>
-
-

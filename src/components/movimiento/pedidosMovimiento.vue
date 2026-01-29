@@ -1,110 +1,130 @@
 <template>
   <q-dialog v-model="showDialog" @hide="onDialogHide" :maximized="true">
-    <q-card
-      class="q-dialog-plugin"
-      :style="{ maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto' }"
-    >
-      <q-card-section class="bg-primary text-white row items-center no-wrap">
-        <div class="text-h6">
-          <strong>{{ title }}</strong>
-        </div>
-        <q-space />
-        <q-btn icon="close" flat round dense @click="onDialogHide" />
-      </q-card-section>
+    <q-card class="column full-height bg-grey-1">
+      <!-- Header -->
+      <q-card-section class="bg-primary text-white q-py-sm q-px-md col-auto shadow-2 z-top">
+        <div class="row items-center justify-between no-wrap">
+          <div class="row items-center q-gutter-x-md">
+            <q-icon name="assignment" size="md" />
+            <div class="text-h6 text-weight-bold">{{ title }}</div>
+          </div>
 
-      <q-card-section class="q-ma-lg">
-        <div class="table-responsive-container">
-          <q-table
-            :rows="dataRows"
-            :columns="columns"
-            row-key="id"
-            flat
-            bordered
-            hide-pagination
-            :rows-per-page-options="[0]"
-            class="my-sticky-header-table"
-          >
-            <template v-slot:header-cell-indice="props">
-              <q-th :props="props" class="text-nowrap">
-                {{ props.col.label }}
-              </q-th>
-            </template>
-            <template v-slot:header-cell-fecha="props">
-              <q-th :props="props" class="text-nowrap">
-                {{ props.col.label }}
-              </q-th>
-            </template>
-            <template v-slot:header-cell-destino="props">
-              <q-th :props="props" class="text-nowrap">
-                {{ props.col.label }}
-              </q-th>
-            </template>
-            <template v-slot:header-cell-observacion="props">
-              <q-th :props="props" class="text-nowrap">
-                {{ props.col.label }}
-              </q-th>
-            </template>
-            <template v-slot:header-cell-opciones="props">
-              <q-th :props="props" class="text-nowrap">
-                {{ props.col.label }}
-              </q-th>
-            </template>
+          <div class="row items-center q-gutter-x-md">
+            <!-- Selector de Almacén -->
+            <div class="bg-white rounded-borders shadow-1" style="min-width: 300px">
+              <AlmacenSelector />
+            </div>
 
-            <template v-slot:body-cell-opciones="props">
-              <q-td :props="props" class="text-nowrap">
-                <q-btn
-                  icon="visibility"
-                  color="info"
-                  size="sm"
-                  class="q-mr-xs"
-                  title="VER PEDIDO"
-                  @click="emitAction('view', props.row)"
-                />
-                <q-btn
-                  icon="cancel"
-                  color="negative"
-                  size="sm"
-                  class="q-mr-xs"
-                  title="DESCARTAR PEDIDO"
-                  @click="emitAction('discard', props.row)"
-                />
-                <q-btn
-                  icon="check_circle_outline"
-                  color="positive"
-                  size="sm"
-                  title="PROCESAR PEDIDO"
-                  @click="emitAction('process', props.row)"
-                />
-              </q-td>
-            </template>
-
-            <template v-slot:body-cell-indice="props">
-              <q-td :props="props" class="text-nowrap">
-                {{ props.value }}
-              </q-td>
-            </template>
-            <template v-slot:body-cell-fecha="props">
-              <q-td :props="props" class="text-nowrap">
-                {{ props.value }}
-              </q-td>
-            </template>
-            <template v-slot:body-cell-destino="props">
-              <q-td :props="props" class="text-nowrap">
-                {{ props.value }}
-              </q-td>
-            </template>
-            <template v-slot:body-cell-observacion="props">
-              <q-td :props="props" class="text-nowrap">
-                {{ props.value }}
-              </q-td>
-            </template>
-          </q-table>
+            <q-btn icon="close" flat round dense class="text-white" @click="onDialogHide">
+              <q-tooltip>Cerrar</q-tooltip>
+            </q-btn>
+          </div>
         </div>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary q-pt-none">
-        <q-btn flat label="OK" @click="onDialogOK" />
-        <q-btn flat @click="onDialogHide"> <q-icon class="q-mr-xs" />Cerrar </q-btn>
+      <!-- Table Content -->
+      <q-card-section class="col q-pa-md overflow-hidden">
+        <q-table
+          :rows="dataRows"
+          :columns="columns"
+          row-key="id"
+          class="my-sticky-header-table full-height"
+          flat
+          bordered
+          virtual-scroll
+          :rows-per-page-options="[0]"
+          :row-class="rowClass"
+          @row-click="onRowClick"
+        >
+          <!-- Custom Header Slots -->
+          <template v-slot:header-cell="props">
+            <q-th :props="props" class="bg-grey-2 text-primary text-weight-bold">
+              {{ props.col.label }}
+            </q-th>
+          </template>
+
+          <template v-slot:header-cell-opciones="props">
+            <q-th :props="props" class="bg-grey-2 text-primary text-weight-bold text-center">
+              {{ props.col.label }}
+            </q-th>
+          </template>
+
+          <!-- Custom Body Slots -->
+          <template v-slot:body-cell-opciones="props">
+            <q-td :props="props" class="text-center">
+              <div class="row items-center justify-center q-gutter-x-xs no-wrap">
+                <q-btn-group unelevated rounded>
+                  <q-btn
+                    icon="visibility"
+                    color="info"
+                    size="sm"
+                    dense
+                    @click="emitAction('view', props.row)"
+                  >
+                    <q-tooltip>Ver Pedido</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    icon="cancel"
+                    color="negative"
+                    size="sm"
+                    dense
+                    @click="emitAction('discard', props.row)"
+                  >
+                    <q-tooltip>Descartar Pedido</q-tooltip>
+                  </q-btn>
+                  <q-btn
+                    icon="check_circle"
+                    color="positive"
+                    size="sm"
+                    dense
+                    @click="emitAction('process', props.row)"
+                  >
+                    <q-tooltip>Procesar Pedido</q-tooltip>
+                  </q-btn>
+                </q-btn-group>
+
+                <q-separator vertical class="q-mx-sm" />
+
+                <q-checkbox
+                  :model-value="isRowSelected(props.row)"
+                  @update:model-value="(val) => toggleRowSelection(props.row, val)"
+                  dense
+                  color="primary"
+                >
+                  <q-tooltip v-if="!canSelectRow(props.row)" class="bg-warning text-black">
+                    Destino diferente al seleccionado
+                  </q-tooltip>
+                </q-checkbox>
+              </div>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-indice="props">
+            <q-td :props="props">
+              <q-badge color="grey-3" text-color="black" :label="props.value" />
+            </q-td>
+          </template>
+        </q-table>
+      </q-card-section>
+
+      <q-separator />
+
+      <!-- Footer Actions -->
+      <q-card-actions align="right" class="col-auto bg-white q-pa-md">
+        <q-btn flat label="Cerrar" color="grey-8" icon="close" @click="onDialogHide" />
+        <q-btn
+          unelevated
+          color="primary"
+          icon="send"
+          label="Enviar Pedidos"
+          :disable="selected.length === 0"
+          :loading="loadingObj"
+          @click="enviarPedidos"
+        >
+          <q-badge color="orange" floating v-if="selected.length > 0">{{
+            selected.length
+          }}</q-badge>
+        </q-btn>
       </q-card-actions>
     </q-card>
     <q-dialog v-model="mostrarModal" full-width full-height>
@@ -130,102 +150,91 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, computed, onMounted } from 'vue' // Import computed and watch
+import { ref, defineEmits, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-// import { validarUsuario } from 'src/composables/FuncionesG'
-// import jsPDF from 'jspdf'
-// import autoTable from 'jspdf-autotable'
-// import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
-// //import { URL_APIE } from 'src/composables/services'
-// import { decimas } from 'src/composables/FuncionesG'
 import imprimirReporte from 'src/utils/pdfReportGenerator'
+import AlmacenSelector from './AlmacenSelector.vue'
+import { useAlmacenStore } from 'src/composables/movimiento/useAlmacenStore'
+
+const { selectedAlmacen } = useAlmacenStore()
 const idusuario = idusuario_md5()
-//import { generatePdfReport } from 'src/utils/pdfReportGenerator'
 const idempresa = idempresa_md5()
 const $q = useQuasar()
 const pdfData = ref(null)
 const mostrarModal = ref(false)
-// const tipo = { 1: 'Pedido Compra', 2: 'Pedido Movimiento' }
-
-// Define Props
-const props = defineProps({
-  title: {
-    type: String,
-    default: 'Tabla de Datos',
-  },
-  initialData: {
-    type: Object,
-  },
-})
 
 // Define Emits
-const emit = defineEmits(['ok', 'hide'])
+const emit = defineEmits(['ok', 'hide', 'orders-processed'])
 
 // Reactive state
-const showDialog = ref(true) // Controls the visibility of the dialog
+const showDialog = ref(true)
 const detallePedido = ref([])
+
 // Define table columns
 const columns = [
-  { name: 'indice', required: true, label: 'N°', align: 'left', field: 'indice', sortable: true },
-  { name: 'fecha', required: true, label: 'Fecha', align: 'left', field: 'fecha', sortable: true },
+  {
+    name: 'indice',
+    required: true,
+    label: 'N°',
+    align: 'center',
+    field: 'indice',
+    sortable: true,
+    headerClasses: 'text-bold',
+  },
+  {
+    name: 'fecha',
+    required: true,
+    label: 'FECHA',
+    align: 'left',
+    field: 'fecha',
+    sortable: true,
+    format: (val) => val,
+    headerClasses: 'text-bold',
+  },
   {
     name: 'destino',
     required: true,
-    label: 'Destino',
+    label: 'DESTINO',
     align: 'left',
     field: 'destino',
     sortable: true,
+    headerClasses: 'text-bold',
   },
   {
     name: 'observacion',
     required: true,
-    label: 'Observación',
+    label: 'OBSERVACIÓN',
     align: 'left',
     field: 'observacion',
     sortable: true,
+    classes: 'text-grey-8',
+    headerClasses: 'text-bold',
   },
-  { name: 'opciones', label: 'Opciones', align: 'center', field: 'opciones' },
+  {
+    name: 'opciones',
+    label: 'ACCIONES',
+    align: 'center',
+    field: 'opciones',
+    required: true,
+    headerClasses: 'text-bold',
+  },
 ]
+
 const tableData = ref([])
-const almacen = props.initialData
-const getPedidos = async () => {
-  // Add a guard clause: only proceed if selectedFilterStore.value is valid
-  if (!almacen.value) {
-    console.warn('selectedFilterStore is not yet defined, skipping API call.')
-    tableData.value = [] // Clear table data if filter is not ready
-    return
-  }
-  try {
-    const response = await api.get(`listaPedido/${idempresa}`)
-    console.log('Raw API response:', response.data)
-    console.log('selectedFilterStore.value.value for filter:', almacen.value)
-    const filtrado = response.data.filter((u) => {
-      const x = Number(u.idalmacenorigen) === Number(almacen.value) // No need for ?. after guard clause
-      const y = Number(u.estado) === 2
-      const z = Number(u.autorizacion) === 1
-      return x && y && z
-    })
-    tableData.value = filtrado
-    console.log('Filtered data:', tableData.value)
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
-  }
-}
-// --- SOLUTION: Use a computed property for dataRows ---
+// const almacen = props.initialData // Ya no usamos initialData, usamos el store
+const selected = ref([])
+const destinoSeleccionado = ref(null)
+
+// Computed properties
 const dataRows = computed(() => {
-  console.log('Re-mapping dataRows from initialData:', props.initialData) // For debugging
   return tableData.value.map((item, index) => ({
     id: item.id,
     indice: index + 1,
     fecha: item.fecha,
-    destino: item.almacen, // Make sure 'almacen' exists on item, if not use a fallback
+    destino: item.almacen,
     observacion: item.observacion,
     estado: item.estado,
     autorizacion: item.autorizacion,
@@ -240,22 +249,72 @@ const dataRows = computed(() => {
   }))
 })
 
+// Methods
 const onDialogHide = () => {
   showDialog.value = false
   emit('hide')
 }
 
-const onDialogOK = () => {
-  emit('ok')
-  onDialogHide() // Close the dialog after OK
+// const onDialogOK = () => {
+//   emit('ok')
+//   onDialogHide()
+// }
+
+const isRowSelected = (row) => {
+  return selected.value.some((selectedRow) => selectedRow.id === row.id)
 }
+
+const canSelectRow = (row) => {
+  // Si no hay destino seleccionado, todas las filas son seleccionables
+  if (!destinoSeleccionado.value) return true
+
+  // Si ya hay un destino seleccionado, solo permitir filas con ese destino
+  return row.destino === destinoSeleccionado.value
+}
+
+const toggleRowSelection = (row, val) => {
+  // Verificar primero si se puede seleccionar
+  if (val && !canSelectRow(row)) {
+    $q.notify({
+      type: 'warning',
+      message: `Solo puedes seleccionar pedidos para el destino: ${destinoSeleccionado.value}`,
+      timeout: 3000,
+      position: 'top',
+      actions: [{ icon: 'close', color: 'white' }],
+    })
+    return // No hacer nada, el checkbox no cambiará gracias a :model-value
+  }
+
+  if (!val) {
+    // Deseleccionar
+    selected.value = selected.value.filter((r) => r.id !== row.id)
+
+    // Si no quedan seleccionados, resetear el destino
+    if (selected.value.length === 0) {
+      destinoSeleccionado.value = null
+    }
+  } else {
+    // Si es la primera selección, establecer el destino
+    if (selected.value.length === 0) {
+      destinoSeleccionado.value = row.destino
+    }
+
+    // Agregar a la selección si no está ya seleccionado
+    if (!isRowSelected(row)) {
+      selected.value = [...selected.value, row]
+    }
+  }
+}
+
+// const onRowClick = (evt, row) => {
+//   // Opcional: puedes hacer que el clic en la fila también seleccione/deseleccione
+//   // toggleRowSelection(row, !isRowSelected(row))
+// }
 
 const emitAction = (actionType, row) => {
   if (actionType === 'view') {
-    // Implement view logic
     verDetalle(row)
   } else if (actionType === 'discard') {
-    // Implement discard logic
     console.log('Discarding item:', row.id)
     discarding(row)
   } else if (actionType === 'process') {
@@ -263,106 +322,89 @@ const emitAction = (actionType, row) => {
     console.log('Processing item:', row.id)
   }
 }
+
 async function processing(row) {
   console.log(row)
   $q.dialog({
-    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.', // Title of the dialog
-    message: 'Esto creara un nuevo registro de movimiento con los datos del pedido', // The main message
-    persistent: true, // User must explicitly choose OK or Cancel, cannot dismiss by clicking outside
-    color: 'positive', // Sets the color of the OK button (and some other elements depending on theme)
-    // Optional: You can add other Quasar button properties to the OK/Cancel buttons
+    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.',
+    message: 'Esto creara un nuevo registro de movimiento con los datos del pedido',
+    persistent: true,
+    color: 'positive',
     ok: {
       label: 'Sí, continuar',
       color: 'positive',
-      flat: false, // Make it a filled button
+      flat: false,
     },
     cancel: {
       label: 'No, cancelar',
       color: 'negative',
-      flat: true, // Make it a flat button
+      flat: true,
     },
   })
     .onOk(async () => {
-      // This code runs if the user clicks "Sí, continuar" (OK)
       const endpoint = `cambiarEstadoPedido/${row.id}/1/${idusuario}`
-
-      const result = await api.get(endpoint) // Using api.get as per your original code
+      const result = await api.get(endpoint)
       const resultado = result.data
       console.log(result)
       $q.dialog({
-        title: 'Pedido Registrado', // Use title here for a dialog
+        title: 'Pedido Registrado',
         message: resultado.detalles.lista || 'El pedido ha sido descartado exitosamente.',
-        color: 'positive', // Sets button color
-        ok: true, // Just show a single 'OK' button
-        persistent: false, // User can dismiss it
+        color: 'positive',
+        ok: true,
+        persistent: false,
+      }).onDismiss(() => {
+        emit('orders-processed')
       })
-
-      // Call your actual action function here, e.g., performDeletion();
     })
     .onCancel(() => {
-      // This code runs if the user clicks "No, cancelar" (Cancel)
-      // or presses Escape, or clicks outside if `persistent` is false
       $q.notify({
         type: 'info',
         message: 'Acción cancelada.',
         icon: 'cancel',
       })
     })
-    .onDismiss(() => {
-      // This code runs regardless of how the dialog was dismissed (OK, Cancel, Escape, outside click)
-      console.log('Dialog dismissed')
-    })
 }
+
 async function discarding(row) {
   console.log(row)
   $q.dialog({
-    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.', // Title of the dialog
-    message: 'No podra usar este pedido al descartarlo', // The main message
-    persistent: true, // User must explicitly choose OK or Cancel, cannot dismiss by clicking outside
-    color: 'negative', // Sets the color of the OK button (and some other elements depending on theme)
-    // Optional: You can add other Quasar button properties to the OK/Cancel buttons
+    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.',
+    message: 'No podra usar este pedido al descartarlo',
+    persistent: true,
+    color: 'negative',
     ok: {
       label: 'Sí, continuar',
       color: 'positive',
-      flat: false, // Make it a filled button
+      flat: false,
     },
     cancel: {
       label: 'No, cancelar',
       color: 'negative',
-      flat: true, // Make it a flat button
+      flat: true,
     },
   })
     .onOk(async () => {
-      // This code runs if the user clicks "Sí, continuar" (OK)
       const endpoint = `cambiarEstadoPedido/${row.id}/3/${idusuario}`
-
-      const result = await api.get(endpoint) // Using api.get as per your original code
+      const result = await api.get(endpoint)
       const resultado = result.data
       console.log(result)
       $q.dialog({
-        title: 'Pedido Descartado', // Use title here for a dialog
+        title: 'Pedido Descartado',
         message: resultado.detalles || 'El pedido ha sido descartado exitosamente.',
-        color: 'positive', // Sets button color
-        ok: true, // Just show a single 'OK' button
-        persistent: false, // User can dismiss it
+        color: 'positive',
+        ok: true,
+        persistent: false,
       })
-
-      // Call your actual action function here, e.g., performDeletion();
     })
     .onCancel(() => {
-      // This code runs if the user clicks "No, cancelar" (Cancel)
-      // or presses Escape, or clicks outside if `persistent` is false
       $q.notify({
         type: 'info',
         message: 'Acción cancelada.',
         icon: 'cancel',
       })
     })
-    .onDismiss(() => {
-      // This code runs regardless of how the dialog was dismissed (OK, Cancel, Escape, outside click)
-      console.log('Dialog dismissed')
-    })
 }
+
 const verDetalle = async (row) => {
   console.log(row)
   await getDatallePedido(row.id)
@@ -380,7 +422,7 @@ const verDetalle = async (row) => {
 
 const getDatallePedido = async (id) => {
   try {
-    const response = await api.get(`getPedido_/${id}/${idempresa}`) // Cambia a tu ruta real
+    const response = await api.get(`getPedido_/${id}/${idempresa}`)
     console.log(response.data)
     detallePedido.value = response.data
   } catch (error) {
@@ -391,41 +433,126 @@ const getDatallePedido = async (id) => {
     })
   }
 }
+
+const getPedidos = async () => {
+  if (!selectedAlmacen.value) {
+    console.warn('selectedAlmacen is not yet defined, skipping API call.')
+    tableData.value = []
+    return
+  }
+  try {
+    const response = await api.get(`listaPedido/${idempresa}`)
+    console.log('Raw API response:', response.data)
+    console.log('selectedAlmacen.value for filter:', selectedAlmacen.value)
+
+    // El store guarda el objeto completo, usamos .value o .id segun corresponda
+    const almacenId = selectedAlmacen.value.value || selectedAlmacen.value.id
+
+    const filtrado = response.data.filter((u) => {
+      const x = Number(u.idalmacenorigen) === Number(almacenId)
+      const y = Number(u.estado) === 2
+      const z = Number(u.autorizacion) === 1
+      return x && y && z
+    })
+    tableData.value = filtrado
+    console.log('Filtered data:', tableData.value)
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar los datos',
+    })
+  }
+}
+
+// const enviarPedidos = async () => {
+//   const ids = selected.value.map((p) => p.id)
+//   console.log('Pedidos seleccionados:', ids)
+//   console.log('Destino común:', destinoSeleccionado.value)
+//   const body = {
+//     ver: 'cambiarestadopedidoOptimizado',
+//     idsPedido: ids,
+//     estado: 1,
+//     idUsuarioMd5: idusuario,
+//   }
+
+//   const response = await api.post('', body)
+//   console.log('Respuesta del servidor:', response.data)
+//   getPedidos()
+//   $q.notify({
+//     type: 'positive',
+//     message: `${ids.length} pedidos enviados exitosamente`,
+//   })
+// }
+const enviarPedidos = async () => {
+  // Validación básica
+  if (selected.value.length === 0) {
+    $q.notify('Seleccione pedidos primero')
+    return
+  }
+
+  try {
+    // Preparar datos
+    const ids = selected.value.map((p) => p.id)
+    const body = {
+      ver: 'cambiarestadopedidoOptimizado',
+      idsPedido: ids,
+      estado: 1,
+      idUsuarioMd5: idusuario,
+    }
+
+    // Enviar
+    await api.post('', body)
+
+    // Éxito
+    $q.notify({
+      icon: 'check',
+      color: 'positive',
+      message: `${ids.length} pedido(s) enviados`,
+    })
+
+    // Limpiar y recargar
+    selected.value = []
+    destinoSeleccionado.value = null
+    emit('orders-processed')
+    getPedidos()
+  } catch (error) {
+    console.error('Error:', error)
+    $q.notify({
+      icon: 'error',
+      color: 'negative',
+      message: 'Error al enviar pedidos',
+    })
+  }
+}
+
 onMounted(() => {
   getPedidos()
-  console.log(props.initialData)
+})
+
+// Watch for store changes to re-fetch/filter
+watch(selectedAlmacen, () => {
+  getPedidos()
+})
+
+// Watch para limpiar selección si cambian los datos
+watch(dataRows, (newRows) => {
+  // Filtrar la selección actual para mantener solo las filas que todavía existen
+  selected.value = selected.value.filter((selectedRow) =>
+    newRows.some((row) => row.id === selectedRow.id),
+  )
 })
 </script>
 
 <style lang="scss" scoped>
-.q-dialog-plugin {
-  // Max-width from your swal2-popup
-  max-width: 1824px;
-  // Margin from your swal2-popup, adjust as needed or let Quasar handle it
-  margin-left: 656px;
-  margin-right: auto;
-}
+// Corrección para altura de tabla con sticky header
+.my-sticky-header-table {
+  height: 100%;
 
-.table-responsive-container {
-  max-height: calc(100vh - 200px); /* Adjust based on dialog height */
-  overflow-y: auto;
-  width: 100%;
-}
-
-// For text-nowrap on table cells
-.text-nowrap {
-  white-space: nowrap;
-}
-
-// Apply background to thead similar to .thead-dark
-// Quasar's QTable handles thead styling implicitly, but you can override
-.q-table__container {
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th {
-    /* bg-dark equivalent for thead */
-    //background-color: var(--q-primary); // Or a specific dark color like #343a40
-    color: rgb(0, 0, 0);
+  :deep(.q-table__top),
+  :deep(.q-table__bottom),
+  :deep(thead tr:first-child th) {
+    background-color: #f5f5f5;
   }
 }
 </style>
