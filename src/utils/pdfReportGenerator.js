@@ -4469,3 +4469,97 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
 
   return doc
 }
+
+export function PDFComprobanteMovimiento(detalleMovimiento) {
+  console.log('PDFComprobanteMovimiento received:', detalleMovimiento)
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Cantidad', dataKey: 'cantidad' },
+  ]
+
+  // Handle structure variations (flat vs .datos wrapper)
+  const isNested = !!detalleMovimiento.datos
+  const dataRoot = isNested ? detalleMovimiento.datos : detalleMovimiento
+  
+  const detalleArray = dataRoot.detalle || []
+  
+  const datos = detalleArray.map((item, indice) => ({
+    indice: indice + 1,
+    descripcion: item.descripcion,
+    cantidad: decimas(item.cantidad),
+  }))
+
+  const columnStyles = {
+    indice: { cellWidth: 15, halign: 'center' },
+    descripcion: { cellWidth: 100, halign: 'left' },
+    cantidad: { cellWidth: 80, halign: 'right' },
+  }
+  const headerColumnStyles = {
+    indice: { cellWidth: 15, halign: 'center' },
+    descripcion: { cellWidth: 100, halign: 'left' },
+    cantidad: { cellWidth: 80, halign: 'right' },
+  }
+
+  const Izquierda = {
+    titulo: 'DATOS MOVIMIENTO',
+    campos: [
+      {
+        label: 'Almacén Origen',
+        valor: dataRoot.almacenorigen || '',
+      },
+      {
+        label: 'Almacén Destino',
+        valor: dataRoot.almacendestino || '',
+      },
+      {
+        label: 'Fecha',
+        valor: cambiarFormatoFecha(dataRoot.fecha) || '',
+      },
+    ],
+  }
+
+  // Handle Usuario structure variations (object vs array)
+  let nombreUsuario = ''
+  let cargoUsuario = ''
+  
+  if (dataRoot.usuario) {
+    if (Array.isArray(dataRoot.usuario) && dataRoot.usuario.length > 0) {
+       nombreUsuario = dataRoot.usuario[0].usuario || ''
+       cargoUsuario = dataRoot.usuario[0].cargo || ''
+    } else if (typeof dataRoot.usuario === 'object') {
+       nombreUsuario = dataRoot.usuario.nombre || dataRoot.usuario.usuario || ''
+       cargoUsuario = dataRoot.usuario.cargo || ''
+    }
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL USUARIO',
+    campos: [
+      {
+        label: 'Usuario',
+        valor: nombreUsuario,
+      },
+      {
+        label: 'Cargo',
+        valor: cargoUsuario,
+      },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'COMPROBANTE DE MOVIMIENTO',
+    columnStyles,
+    headerColumnStyles,
+    Izquierda,
+    derecho,
+    true,
+    null,
+  )
+
+  return doc
+}
