@@ -416,15 +416,8 @@ const vistaCatalogo = async () => {
     doc.text(`Costo Unitario: ${item.costounitario}`, margenIzq, startY + 35)
     doc.text(`Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`, margenIzq, startY + 40)
     console.log(item.imagen)
-    doc.addImage(
-      `${'https://vivasoft.link/app/cmv1/api/imagen/almacen.png'}`,
-      'JPEG',
-      margenDer,
-      startY,
-      60,
-      40,
-    )
-
+    doc.addImage(`${imagen}${item.imagen}`, 'JPEG', margenDer, startY, 60, 40)
+    console.log(imagen, item.imagen)
     startY += 55
     if (startY + 50 > doc.internal.pageSize.getHeight()) {
       doc.addPage()

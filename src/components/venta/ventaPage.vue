@@ -1,12 +1,14 @@
 <template>
   <q-page padding>
-    <carritoVenta
-      ref="carritoVentaRef"
-      v-show="!showCart"
-      :key="carritoKey"
-      @volver="toggleComponents"
-      @reiniciar="forzarReinicioCarrito"
-    />
+    <div v-show="!showCart">
+      <carritoVenta
+        ref="carritoVentaRef"
+        :key="carritoKey"
+        @volver="toggleComponents"
+        @reiniciar="forzarReinicioCarrito"
+      />
+    </div>
+
     <component
       v-show="showCart"
       :is="componenteSeleccionado"
