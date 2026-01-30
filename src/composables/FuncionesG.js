@@ -777,7 +777,7 @@ export function crearModal({ code, type, x, y, id, header, body, footerButtons =
   variable.innerHTML = `
         <div class="modal-header">
             ${header}
-            
+
         </div>
         <div class="modal-body">
             ${body}
