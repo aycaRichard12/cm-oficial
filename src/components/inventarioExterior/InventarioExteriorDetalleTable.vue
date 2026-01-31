@@ -42,9 +42,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
-import { api } from 'src/boot/axios'
-import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { onMounted, computed } from 'vue'
+import { usePermisosUsuario } from 'src/composables/inventarioExterior/usePermisosUsuario'
 
 const props = defineProps({
   rows: Array,
@@ -56,9 +55,8 @@ const props = defineProps({
 
 defineEmits(['edit', 'delete'])
 
-const permisoInventarioExterno = ref(false)
-const IDMD5 = idempresa_md5()
-const idUsuarioMD5 = idusuario_md5()
+// Usar el composable
+const { permisoInventarioExterno, verificarPermisoUsuario } = usePermisosUsuario()
 
 const computedColumns = computed(() => {
   if (permisoInventarioExterno.value) {
@@ -66,32 +64,6 @@ const computedColumns = computed(() => {
   }
   return props.columns.filter(col => col.name !== 'Opciones')
 })
-
-async function verificarPermisoUsuario() {
-  try {
-    const { data: response } = await api.get(`listarOperaciones/${IDMD5}`)
-
-    if (!response?.data || !Array.isArray(response.data)) {
-      console.error('Respuesta inválida de permisos')
-      return
-    }
-
-    const permisos = response.data.filter(
-      item => item.idusuario === idUsuarioMD5 && item.estado === 1
-    )
-
-    permisoInventarioExterno.value = permisos.some(
-      item => item.codigo === 'inventarioexterno'
-    )
-
-    console.log('Permisos cargados table:', permisos)
-    console.log('Permiso inventario externo table:', permisoInventarioExterno.value)
-
-  } catch (error) {
-    console.error('Error al verificar permisos del usuario table:', error)
-    permisoInventarioExterno.value = false
-  }
-}
 
 onMounted(() => {
   verificarPermisoUsuario()
