@@ -7,7 +7,7 @@
         <q-btn icon="close" @click="$emit('close')" flat round dense />
       </q-card-section>
       <q-card-section>
-        <q-form @submit="$emit('submit')">
+        <q-form @submit="$emit('submit')" v-if="permisoInventarioExterno">
           <div class="row q-col-gutter-x-md">
             <!-- Hidden inputs -->
             <div class="col-md-12" style="display: none">
@@ -127,8 +127,10 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import InventarioExteriorDetalleTable from './InventarioExteriorDetalleTable.vue'
+import { api } from 'src/boot/axios'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -154,6 +156,9 @@ const emit = defineEmits([
 ])
 
 const localDetalleFormData = ref({ ...props.detalleFormData })
+const permisoInventarioExterno = ref(false)
+const IDMD5 = idempresa_md5()
+const idUsuarioMD5 = idusuario_md5()
 
 watch(() => props.detalleFormData, (newVal) => {
   Object.assign(localDetalleFormData.value, newVal)
@@ -176,4 +181,33 @@ const modelValue = computed({
 const onFilterProductos = (val, update) => emit('filterProductos', val, update)
 const onSelectProductOption = (val) => emit('selectProductOption', val)
 
+async function verificarPermisoUsuario() {
+  try {
+    const { data: response } = await api.get(`listarOperaciones/${IDMD5}`)
+
+    if (!response?.data || !Array.isArray(response.data)) {
+      console.error('Respuesta inválida de permisos')
+      return
+    }
+
+    const permisos = response.data.filter(
+      item => item.idusuario === idUsuarioMD5 && item.estado === 1
+    )
+
+    permisoInventarioExterno.value = permisos.some(
+      item => item.codigo === 'inventarioexterno'
+    )
+
+    console.log('Permisos cargados dialog:', permisos)
+    console.log('Permiso inventario externo dialog:', permisoInventarioExterno.value)
+
+  } catch (error) {
+    console.error('Error al verificar permisos del usuario dialog:', error)
+    permisoInventarioExterno.value = false
+  }
+}
+
+onMounted(() => {
+  verificarPermisoUsuario()
+})
 </script>
