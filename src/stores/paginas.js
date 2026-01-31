@@ -44,8 +44,7 @@ export const PAGINAS = Object.freeze({
   registrarclienteoproveedor: Object.freeze([
     'registrodecliente',
     'registrarproveedor',
-    'reporteproveedorcompras',
-    'reporteproductoproveedorcompras',
+   
   ]),
   admautorizaciones: Object.freeze([
     'gestionPedido',
@@ -129,6 +128,8 @@ export const PAGINAS_ICONS = Object.freeze({
   reporteproductoscomprados: 'receipt_long',
   reportedecompras: 'bar_chart',
   reportestockdeproductosindividual: 'inventory',
+   reporteproveedorcompras: 'bar_chart',
+    reporteproductoproveedorcompras: 'receipt_long',
   //campañas
   crearcampanas: 'campaign',
   reportedecampanas: 'summarize',
@@ -158,6 +159,8 @@ export const PAGINAS_SELECT = Object.freeze({
     'reporteproductoscomprados',
     'reportedecompras',
     'reportestockdeproductosindividual',
+     'reporteproveedorcompras',
+    'reporteproductoproveedorcompras',
   ]),
 })
 /**
