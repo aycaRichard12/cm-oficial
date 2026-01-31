@@ -4,6 +4,7 @@ export const PAGINAS = Object.freeze({
     'divisas',
     'leyendaproforma',
     'tipokardex',
+    'servicios',
   ]),
   configuracionproducto: Object.freeze([
     'categoriadeproducto',
