@@ -57,7 +57,7 @@ const fetchOperaciones = async () => {
   try {
     const data = await api.get(`listarOperaciones/${IDMD5}`)
     const response = data.data
-    console.log(response)
+    console.log('operaciones que pueden hacer creo ',response)
     operaciones.value = response.data.map((obj, index) => {
       return {
         ...obj,
