@@ -237,9 +237,14 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-           {
+          {
             titulo: 'Configuración-General-Servicios',
             codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-General-Credenciales de Servicios',
+            codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
@@ -277,7 +282,6 @@ export const menurichard50 = [
             codigo: 'canalesdeventa-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-         
         ],
       },
       {
