@@ -49,6 +49,13 @@
             flat
             :pagination="{ rowsPerPage: 10 }"
           >
+            <!-- Slot de Numeracion -->
+            <template v-slot:body-cell-id="props">
+              <q-td :props="props" align="center">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+
             <!-- Slot de Icono -->
             <template v-slot:body-cell-icono="props">
               <q-td :props="props">
@@ -162,8 +169,12 @@
                   outlined
                   dense
                   color="primary"
-                  hint="Identificador único"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  hint="Solo letras, números y guiones bajos (_)"
+                  @input="formatSlug"
+                  :rules="[
+                    (val) => !!val || 'Requerido',
+                    (val) => /^[a-z0-9_]+$/.test(val) || 'Solo minúsculas, números y guiones bajos (_)'
+                  ]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="code" color="grey-6" />
@@ -273,7 +284,7 @@ const form = ref({
 
 // Columnas
 const columns = [
-  { name: 'id', align: 'left', label: 'ID', field: 'id', sortable: true, style: 'width: 60px' },
+  { name: 'id', align: 'left', label: '#', field: 'id', sortable: true, style: 'width: 60px' },
   { name: 'icono', align: 'center', label: 'Icono', field: 'icono', style: 'width: 70px' },
   { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true, classes: 'text-weight-bold text-grey-9' },
   { name: 'slug', align: 'left', label: 'Slug', field: 'slug', sortable: true, classes: 'text-caption text-grey-7' },
@@ -311,6 +322,18 @@ const fetchServices = async () => {
     })
   } finally {
     loading.value = false
+  }
+}
+
+// Format slug to use underscores
+const formatSlug = () => {
+  if (form.value.slug) {
+    form.value.slug = form.value.slug
+      .toLowerCase() // Convert to lowercase
+      .replace(/\s+/g, '_') // Replace spaces with underscores
+      .replace(/-+/g, '_') // Replace hyphens with underscores
+      .replace(/[^a-z0-9_]/g, '') // Remove any character that is not letter, number, or underscore
+      .replace(/_+/g, '_') // Replace multiple underscores with single underscore
   }
 }
 

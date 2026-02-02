@@ -388,6 +388,10 @@ const routes = [
         path: '/servicios',
         component: () => import('src/pages/General/serviciosPage.vue'),
       },
+      {
+        path: '/credencialesservicio',
+        component: () => import('src/pages/General/credencialesServicioPage.vue'),
+      },
     ],
   },
   {
