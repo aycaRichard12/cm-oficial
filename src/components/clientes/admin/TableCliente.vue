@@ -219,7 +219,6 @@ const emit = defineEmits(['add', 'importFromExcel', 'exportToExcel', 'edit', 'de
 // Filtrar los clientes según los filtros aplicados
 const filteredClients = computed(() => {
   return processedRows.value.filter((client) => {
-    console.log(filtroCanalVenta.value)
     const matchesTipo =
       !filtroTipoCliente.value ||
       filtroTipoCliente.value.value === '0' ||

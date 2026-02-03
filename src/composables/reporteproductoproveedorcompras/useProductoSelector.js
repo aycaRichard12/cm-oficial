@@ -58,7 +58,7 @@ export function useProductoSelector() {
         todosProductos.value = data.map((obj, index) => ({
           ...obj,
           idProducto: obj.idProducto || obj.id || obj.idproducto,
-          nombreProducto: obj.nombre + ' - ' + obj.codigo +' - '+ obj.descripcion,
+          nombreProducto:  obj.codigo +' - '+ obj.descripcion,
           numero: index + 1,
         }))
         productosOptions.value = todosProductos.value

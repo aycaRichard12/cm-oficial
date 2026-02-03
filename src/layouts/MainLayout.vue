@@ -185,6 +185,9 @@
     <q-page-container style="height: calc(100vh - 50px)">
       <router-view style="background-color: #eeebe2; overflow-y: auto; height: 100%" />
     </q-page-container>
+
+    <!-- Dialog de Notificación Recibida -->
+    <NotificacionRecibidaDialog ref="notificacionDialogRef" />
   </q-layout>
 </template>
 
@@ -196,18 +199,25 @@ import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
 import logo from 'src/assets/IMAGOTIPO-02.png'
 import NotificacionLayout from './NotificacionLayout.vue'
+import NotificacionRecibidaDialog from 'src/components/pusher-notificaciones/NotificacionRecibidaDialog.vue'
 import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import ComandoVoz from './ComandoVoz.vue'
-//import { usePusher } from 'src/composables/usePusher'
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { usePusherStore } from 'src/stores/pusher-store'
+//import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+//const $q = useQuasar()
 
+const pusherStore = usePusherStore()
 //import { LocalStorage } from 'quasar'
-
+const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
+
+// Referencia al dialog de notificaciones
+const notificacionDialogRef = ref(null)
+
 const ocultarTabs = () => {
   tabsVisible.value = false
 }
@@ -444,6 +454,16 @@ onMounted(async () => {
   //     pusherActions.initPusher(idusuario)
   //   }
   // }, 1000)
+  await pusherStore.cargarYConectar(idempresa, idusuario)
+
+  pusherStore.escucharEvento('notificacion-interna', (data) => {
+    console.log('Notificación recibida desde Pusher:', data)
+    
+    // Mostrar el dialog automáticamente
+    if (notificacionDialogRef.value) {
+      notificacionDialogRef.value.mostrarNotificacion(data)
+    }
+  })
 
   await permisosStore.cargarPermisos()
   console.log('Permisos cargados en MainLayout.vue:', permisosStore.permisos)
