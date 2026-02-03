@@ -142,6 +142,15 @@
             >
               <q-tooltip>Autorizar Pedido</q-tooltip>
             </q-btn>
+            <q-btn
+              icon="notifications"
+              color="warning"
+              dense
+              flat
+              @click="abrirDialogNotificacion(props.row)"
+            >
+              <q-tooltip>Enviar Notificación</q-tooltip>
+            </q-btn>
             <template v-if="Number(props.row.tipopedido) === 2">
               <q-btn
                 icon="attach_file"
@@ -191,15 +200,35 @@
     </q-card>
   </q-dialog>
   <baucherPedido v-model="baucherPedidomodal" :modal-value="pedido" :idPedido="pedidoId" />
+  
+  <!-- Dialog de Notificación -->
+  <NotificacionDialog
+    v-model="dialogNotificacionOpen"
+    :title="tituloNotificacion"
+    @notificacion-enviada="onNotificacionEnviada"
+  />
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useQuasar } from 'quasar'
 import { PDFpedidos } from 'src/utils/pdfReportGenerator'
 import baucherPedido from './baucherPedido.vue'
+import NotificacionDialog from 'src/components/pusher-notificaciones/NotificacionDialog.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
 const permisosStore = useOperacionesPermitidas()
+const $q = useQuasar()
+
+// Estado para el dialog de notificación
+const dialogNotificacionOpen = ref(false)
+const pedidoSeleccionado = ref(null)
+const tituloNotificacion = computed(() => {
+  if (!pedidoSeleccionado.value) return 'Enviar Notificación'
+  const tipo = Number(pedidoSeleccionado.value.tipopedido) === 1 ? 'Compra' : 'Movimiento'
+  return `Notificación - Pedido de ${tipo} #${pedidoSeleccionado.value.codigo}`
+})
+
 //filtroAlmacen
 const props = defineProps({
   pedidos: {
@@ -317,6 +346,27 @@ const subirBaucher = (item) => {
 }
 const abrirEnNuevaPestana = (ruta) => {
   window.open(ruta, '_blank')
+}
+
+const abrirDialogNotificacion = (pedido) => {
+  pedidoSeleccionado.value = pedido
+  dialogNotificacionOpen.value = true
+}
+
+const onNotificacionEnviada = (datos) => {
+  console.log('Notificación enviada para pedido:', pedidoSeleccionado.value)
+  console.log('Datos de notificación:', datos)
+  
+  $q.notify({
+    type: 'positive',
+    message: `Notificación enviada para el pedido ${pedidoSeleccionado.value.codigo}`,
+    position: 'top',
+    icon: 'check_circle',
+    timeout: 2500
+  })
+  
+  // Resetear selección
+  pedidoSeleccionado.value = null
 }
 
 watch(

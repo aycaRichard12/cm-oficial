@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div>
     <q-card class="my-card q-mb-md">
       <div
         class="bg-primary text-white q-py-lg q-bar--dense"
@@ -344,13 +345,14 @@
       </template>
     </q-table>
   </div>
-  <RegistrarAlmacenDialog
+    <RegistrarAlmacenDialog
     v-model="showWarningDialog"
     title="¡Advertencia!"
     message="No tienes un almacén asignado. Para desbloquear las funcionalidades del sistema, debes crear y asignarte un almacén o asignar un almacén y un punto de venta a otros usuarios."
     @accepted="redirectToAssignment"
     @closed="redirectToAssignment"
   />
+  </div>
 </template>
 
 <style scoped>
@@ -447,8 +449,16 @@ const usuario = ref({
 })
 
 const handleBack = () => {
-  continuarVenta()
-  emit('volver') // Esto activará el toggle en el padre
+  try {
+    continuarVenta()
+    emit('volver') // Esto activará el toggle en el padre
+  } catch (error) {
+    console.error('Error al continuar venta:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Hubo un error al procesar los datos para continuar.',
+    })
+  }
 }
 // Estado del componente
 const almacenSeleccionado = ref(null)

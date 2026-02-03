@@ -25,7 +25,7 @@ const createInitialLocalStorage = () => {
   }
 }
 const iniciarSesion = () => {
-  const idx = 0
+  const idx = 2
   const usuario = USUARIOS[idx].usuario
   const menu = USUARIOS[idx].menu
   localStorage.clear()

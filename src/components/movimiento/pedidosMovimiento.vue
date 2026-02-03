@@ -111,6 +111,13 @@
 
       <!-- Footer Actions -->
       <q-card-actions align="right" class="col-auto bg-white q-pa-md">
+        <q-btn
+          flat
+          label="Ver Pedidos Acumulados"
+          color="primary"
+          icon="list"
+          @click="verAcumulados"
+        />
         <q-btn flat label="Cerrar" color="grey-8" icon="close" @click="onDialogHide" />
         <q-btn
           unelevated
@@ -127,6 +134,46 @@
         </q-btn>
       </q-card-actions>
     </q-card>
+
+    <!-- Modal de Pedidos Acumulados -->
+    <q-dialog v-model="showAcumuladosDialog">
+      <q-card style="min-width: 700px; max-width: 80vw">
+        <q-card-section class="row items-center q-pb-none bg-primary text-white">
+          <div class="text-h6">Pedidos y Productos Acumulados</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pa-md">
+          <div v-if="pedidosAcumulados.length === 0" class="text-center text-grey-6 q-pa-lg">
+            <q-icon name="shopping_cart" size="4em" />
+            <div class="text-h6 q-mt-md">No hay productos acumulados</div>
+            <div>Seleccione pedidos para acumular sus productos</div>
+          </div>
+
+          <q-table
+            v-else
+            :rows="pedidosAcumulados"
+            :columns="columnsAcumulados"
+            row-key="codigo"
+            flat
+            bordered
+            dense
+          >
+            <template v-slot:body-cell-indice="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
+          </q-table>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
@@ -165,6 +212,20 @@ const idempresa = idempresa_md5()
 const $q = useQuasar()
 const pdfData = ref(null)
 const mostrarModal = ref(false)
+const showAcumuladosDialog = ref(false)
+
+const pedidosAcumulados = ref([])
+
+const columnsAcumulados = [
+  { name: 'indice', label: '#', field: 'indice', align: 'left' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
+  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
+]
+
+const verAcumulados = () => {
+  showAcumuladosDialog.value = true
+}
 
 // Define Emits
 const emit = defineEmits(['ok', 'hide', 'orders-processed'])
@@ -302,8 +363,31 @@ const toggleRowSelection = (row, val) => {
     // Agregar a la selección si no está ya seleccionado
     if (!isRowSelected(row)) {
       selected.value = [...selected.value, row]
+      acumularPedidos(row.id)
     }
   }
+}
+
+async function acumularPedidos(idPedido) {
+  const response = await api.get(`getPedido_/${idPedido}/${idempresa}`)
+  const data = response.data
+  const items = data[0].detalle
+  items.map((item) => {
+    console.log('item', item)
+    console.log('pedidosAcumulados.value', pedidosAcumulados.value)
+    if (!pedidosAcumulados.value.some((pedido) => pedido.codigo === item.codigo)) {
+      pedidosAcumulados.value.push(item)
+      console.log(
+        'pedidosAcumulados.value 2',
+        !pedidosAcumulados.value.some((pedido) => pedido.codigo === item.codigo),
+      )
+    } else {
+      const index = pedidosAcumulados.value.findIndex((pedido) => pedido.codigo === item.codigo)
+      pedidosAcumulados.value[index].cantidad =
+        Number(pedidosAcumulados.value[index].cantidad) + Number(item.cantidad)
+    }
+  })
+  console.log('pedidosAcumulados.value', pedidosAcumulados.value)
 }
 
 // const onRowClick = (evt, row) => {
@@ -382,6 +466,11 @@ async function discarding(row) {
       color: 'negative',
       flat: true,
     },
+    verAcumulado: {
+      label: 'Ver acumulado',
+      color: 'bluestyle',
+      flat: true,
+    },
   })
     .onOk(async () => {
       const endpoint = `cambiarEstadoPedido/${row.id}/3/${idusuario}`
@@ -423,7 +512,7 @@ const verDetalle = async (row) => {
 const getDatallePedido = async (id) => {
   try {
     const response = await api.get(`getPedido_/${id}/${idempresa}`)
-    console.log(response.data)
+    console.log('detalle', response.data)
     detallePedido.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)

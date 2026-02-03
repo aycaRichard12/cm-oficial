@@ -90,7 +90,7 @@
       row-key="id"
       separator="horizontal"
       :filter="search"
-      nombreColumnaTotales="pais"
+      nombreColumnaTotales="costounitario"
     >
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
@@ -136,6 +136,7 @@ import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator
 import { PDFreporteStockProductosIndividual_img } from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { useCurrencyStore } from 'src/stores/currencyStore'
 const fechaFin = ref(obtenerFechaActualDato())
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -148,7 +149,7 @@ const filtroEstado = ref(null)
 const filtroOrden = ref(null)
 const almacenes = ref([])
 const search = ref('')
-
+const divisaActiva = useCurrencyStore().simbolo
 const filtros = ref({
   estado: '0',
   orden: '1',
@@ -167,10 +168,10 @@ const ordenes = [
 
 const datos = ref([])
 
-const columnas = [
+const definicionColumnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
-  { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  // { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
+  // { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', dataType: 'text' },
   { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
   { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
@@ -191,6 +192,13 @@ const columnas = [
   { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
   { name: 'pais', label: 'País', field: 'pais', align: 'left', dataType: 'text' },
   {
+    name: 'estado',
+    label: 'Estado',
+    field: 'estado',
+    align: 'left',
+    datatype: 'text',
+  },
+  {
     name: 'stock',
     label: 'Stock',
     field: 'stock',
@@ -199,15 +207,37 @@ const columnas = [
     format: (val) => decimas(val),
   },
   {
+    name: 'costounitario',
+    label: `C. Unit. (${divisaActiva})`,
+    field: 'costounitario',
+    align: 'right',
+    dataType: 'number',
+    format: (val) => decimas(val),
+  },
+  {
     name: 'costo',
-    label: 'Costo total',
+    label: `Costo total (${divisaActiva})`,
     field: 'costo',
     align: 'right',
     dataType: 'number',
     format: (val) => decimas(val),
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
 ]
+
+const columnas = computed(() => {
+  const rows = processedRows.value
+  if (!rows || rows.length === 0) return definicionColumnas
+
+  return definicionColumnas.filter((col) => {
+    // Si la columna es 'numero' siempre mostrar
+    if (col.name === 'numero') return true
+
+    return rows.some((row) => {
+      const val = row[col.field]
+      return val !== null && val !== undefined && val !== ''
+    })
+  })
+})
 
 const arrayHeaders = [
   'numero',
@@ -222,10 +252,11 @@ const arrayHeaders = [
   'pais',
   'stock',
   'costo',
+  'costounitario',
   'estado',
 ]
 
-const sumColumns = ['stock', 'costo']
+const sumColumns = ['costo']
 
 async function cargarAlmacenes() {
   try {
@@ -279,6 +310,7 @@ const processedRows = computed(() => {
     ...item,
     numero: index + 1,
     costo: redondear(parseFloat(item.costounitario) * parseFloat(item.stock)),
+    estado: estadoTexto(item.estado),
   }))
 })
 
@@ -319,9 +351,7 @@ const prepararImagenes = async () => {
     processedRows.value.map(async (item) => {
       try {
         console.log(`${imagen}${item.imagen}`)
-        const base64 = await convertirImagenARutaBase64(
-          `https://vivasoft.link/app/cmv1/api/imagen/almacen.png`,
-        )
+        const base64 = await convertirImagenARutaBase64(`${imagen}${item.imagen}`)
         console.log(base64)
         return { ...item, imagenBase64: base64 }
       } catch (e) {
@@ -368,33 +398,56 @@ const vistaCatalogo = async () => {
   productos.forEach((item) => {
     const margenIzq = 10
     const margenDer = 120
+    const paginaAlto = doc.internal.pageSize.getHeight()
+
+    // 1. Verificar si hay espacio para el siguiente bloque (aprox 50 unidades)
+    if (startY + 50 > paginaAlto) {
+      doc.addPage()
+      startY = 20
+    }
 
     doc.setFontSize(9)
     doc.setFont(undefined, 'bold')
     doc.text(`Producto: ${item.producto}`, margenIzq, startY)
+
     doc.setFont(undefined, 'normal')
     doc.setFontSize(8)
 
-    doc.text(`Código: ${item.codigo}`, margenIzq, startY + 5)
-    doc.text(`Categoría: ${item.categoria}`, margenIzq, startY + 10)
-    doc.text(`Subcategoría: ${item.subcategoria}`, margenIzq, startY + 15)
-    doc.text(`Descripción: ${item.descripcion}`, margenIzq, startY + 20)
-    doc.text(`Unidad: ${item.unidad}`, margenIzq, startY + 25)
-    doc.text(`Stock: ${item.stock}`, margenIzq, startY + 30)
-    doc.text(`Costo Unitario: ${item.costounitario}`, margenIzq, startY + 35)
-    doc.text(`Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`, margenIzq, startY + 40)
-    console.log(item.imagen)
-    doc.addImage(`${imagen}${item.imagen}`, 'JPEG', margenDer, startY, 60, 40)
-    console.log(imagen, item.imagen)
-    startY += 55
-    if (startY + 50 > doc.internal.pageSize.getHeight()) {
-      doc.addPage()
-      startY = 20
+    // Listado de datos (usando un pequeño bucle o manual como tenías)
+    const datos = [
+      `Código: ${item.codigo}`,
+      `Categoría: ${item.categoria}`,
+      `Subcategoría: ${item.subcategoria}`,
+      `Descripción: ${item.descripcion}`,
+      `Unidad: ${item.unidad}`,
+      `Stock: ${item.stock}`,
+      `Costo Unitario: ${item.costounitario}`,
+      `Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`,
+    ]
+
+    datos.forEach((texto, index) => {
+      doc.text(texto, margenIzq, startY + 5 + index * 5)
+    })
+
+    // 2. Manejo de la Imagen
+    if (item.imagenBase64) {
+      try {
+        // 'FAST' ayuda si el PDF se vuelve muy pesado
+        doc.addImage(item.imagenBase64, 'JPEG', margenDer, startY, 60, 40, undefined, 'FAST')
+      } catch (e) {
+        console.error('Error al añadir imagen para el producto:', item.producto, e)
+        doc.text('[Imagen no disponible]', margenDer, startY + 20)
+      }
     }
+
+    startY += 55 // Espaciado entre productos
   })
 
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
+}
+function estadoTexto(estado) {
+  return Number(estado) === 1 ? 'Activo' : 'Inactivo'
 }
 </script>
 <style></style>
