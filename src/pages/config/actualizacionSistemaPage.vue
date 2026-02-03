@@ -65,8 +65,8 @@
               />
             </div>
 
-            <!-- Content: v2.3.0 -->
-            <div v-if="selectedVersion.content === 'v2.3.0'">
+            <!-- Content: v1.0 -->
+            <div v-if="selectedVersion.content === 'v1.0'">
               <div class="row q-col-gutter-lg">
                 <!-- Feature List -->
                 <div class="col-12 col-md-6">
@@ -203,14 +203,14 @@ const modulesV230 = [
 const versions = ref([
   {
     id: 1,
-    title: 'v2.3.0',
+    title: 'v1.0',
     date: '14 ENE 2026',
     icon: 'rocket_launch',
     status: true,
     statusName: 'Publicado',
     statusColor: 'primary',
     statusIcon: 'check_circle',
-    content: 'v2.3.0',
+    content: 'v1.0',
     isNew: true,
   },
   {
