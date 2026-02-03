@@ -112,6 +112,10 @@ onMounted(() => {
       titulo: 'Registrar Compras',
       codigo: 'registrarcompra',
     },
+    {
+      titulo: 'Edición de Inventario Externo',
+      codigo: 'inventarioexterno',
+    }
   ]
   const mappedMenus = menus.map((menu) => {
     return {
