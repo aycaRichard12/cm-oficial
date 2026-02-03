@@ -7,7 +7,7 @@
         <q-btn icon="close" @click="$emit('close')" flat round dense />
       </q-card-section>
       <q-card-section>
-        <q-form @submit="$emit('submit')">
+        <q-form @submit="$emit('submit')" v-if="permisoInventarioExterno">
           <div class="row q-col-gutter-x-md">
             <!-- Hidden inputs -->
             <div class="col-md-12" style="display: none">
@@ -127,8 +127,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import InventarioExteriorDetalleTable from './InventarioExteriorDetalleTable.vue'
+import { usePermisosUsuario } from 'src/composables/inventarioExterior/usePermisosUsuario'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -155,6 +156,9 @@ const emit = defineEmits([
 
 const localDetalleFormData = ref({ ...props.detalleFormData })
 
+// Usar el composable
+const { permisoInventarioExterno, verificarPermisoUsuario } = usePermisosUsuario()
+
 watch(() => props.detalleFormData, (newVal) => {
   Object.assign(localDetalleFormData.value, newVal)
 }, { deep: true })
@@ -176,4 +180,7 @@ const modelValue = computed({
 const onFilterProductos = (val, update) => emit('filterProductos', val, update)
 const onSelectProductOption = (val) => emit('selectProductOption', val)
 
+onMounted(() => {
+  verificarPermisoUsuario()
+})
 </script>

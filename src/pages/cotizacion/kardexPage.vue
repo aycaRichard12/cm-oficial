@@ -201,7 +201,7 @@ const idproductoR = ref(null)
 const metodoValoracion = ref('PEPS') // Valor por defecto
 const saldoFinal = ref({})
 const mostrarSaldos = ref(false) // controla si se muestran los saldos iniciales
-const title = ref('Reporte Kardex')
+const title = ref('')
 // Opciones para el selector de métodos
 
 // Datos y estados
@@ -371,8 +371,9 @@ async function generarReporte() {
     // Guardar los datos originales para recalcular con diferentes métodos
     movimientosOriginales.value = data
     datosOriginales.value = data
+    console.log('datos que se estan mostrando', response.data)
     metodoValoracion.value = Object.keys(response.data)[0]
-    title.value += ' ' + metodoValoracion.value
+    title.value = 'Reporte Kardex ' + metodoValoracion.value
     procesarMovimientos()
     // Procesar según el método seleccionado
     reporteGenerado.value = true
