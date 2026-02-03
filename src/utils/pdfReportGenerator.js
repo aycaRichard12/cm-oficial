@@ -839,10 +839,13 @@ export function PDFreporteCreditos(
 export function PDFreporteStockProductosIndividual(processedRows) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
+  /* =========================
+   * 1. TODAS LAS COLUMNAS (sin filtrar)
+   ========================= */
   const columns = [
     { header: 'N°', dataKey: 'indice' },
-    { header: 'Fecha Registro', dataKey: 'fecha' },
-    { header: 'Almacén', dataKey: 'almacen' },
+    // { header: 'Fecha Registro', dataKey: 'fecha' },
+    // { header: 'Almacén', dataKey: 'almacen' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Producto', dataKey: 'producto' },
     { header: 'Categoría', dataKey: 'categoria' },
@@ -850,9 +853,13 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     { header: 'Descripción', dataKey: 'descripcion' },
     { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Stock', dataKey: 'stock' },
-    { header: 'Costo total', dataKey: 'costo' },
+    { header: `C. Unit. (${divisaActiva})`, dataKey: 'costounitario' },
+    { header: `Costo total (${divisaActiva})`, dataKey: 'costo' },
   ]
 
+  /* =========================
+   * 2. DATOS
+   ========================= */
   const datos = processedRows.value.map((item, indice) => ({
     indice: indice + 1,
     fecha: cambiarFormatoFecha(item.fecha),
@@ -860,71 +867,85 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     codigo: item.codigo,
     producto: item.producto,
     categoria: item.categoria,
-    subcategoria: item.subcategoria,
+    subcategoria: item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+
     descripcion: item.descripcion,
     unidad: item.unidad,
     stock: item.stock,
+    costounitario: decimas(redondear(parseFloat(item.costounitario))),
     costo: decimas(redondear(parseFloat(item.costounitario) * parseFloat(item.stock))),
   }))
-  const totalstock = processedRows.value.reduce(
-    (sum, dato) => sum + redondear(parseFloat(dato.stock)),
-    0,
-  )
 
+  /* =========================
+   * 3. TOTALES
+   ========================= */
   const costoTotal = processedRows.value.reduce(
-    (sum, dato) => sum + redondear(parseFloat(dato.stock) * parseFloat(dato.costounitario)),
+    (sum, row) => sum + redondear(parseFloat(row.stock) * parseFloat(row.costounitario)),
     0,
   )
 
-  datos.push({ unidad: 'Total:', stock: totalstock, costo: decimas(costoTotal) })
+  datos.push({
+    costounitario: `Total: (${divisaActiva})`,
+    costo: decimas(costoTotal),
+  })
 
-  const columnStyles = {
+  /* =========================
+   * 4. ESTILOS
+   ========================= */
+  const allColumnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
-    fecha: { cellWidth: 20, halign: 'center' },
-    almacen: { cellWidth: 15, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'left' },
-    producto: { cellWidth: 25, halign: 'left' },
-    categoria: { cellWidth: 15, halign: 'left' },
-    subcategoria: { cellWidth: 15, halign: 'left' },
-    descripcion: { cellWidth: 30, halign: 'left' },
-    unidad: { cellWidth: 15, halign: 'center' },
-    stock: { cellWidth: 15, halign: 'right' },
-    costo: { cellWidth: 15, halign: 'right' },
-  }
-  const headerColumnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    fecha: { cellWidth: 20, halign: 'center' },
-    almacen: { cellWidth: 15, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'left' },
-    producto: { cellWidth: 25, halign: 'left' },
-    categoria: { cellWidth: 15, halign: 'left' },
-    subcategoria: { cellWidth: 15, halign: 'left' },
-    descripcion: { cellWidth: 30, halign: 'left' },
-    unidad: { cellWidth: 15, halign: 'center' },
-    stock: { cellWidth: 15, halign: 'right' },
-    costo: { cellWidth: 15, halign: 'right' },
+    // fecha: { cellWidth: 20, halign: 'center' },
+    // almacen: { cellWidth: 20, halign: 'left' },
+    codigo: { cellWidth: 15, halign: 'center' },
+    producto: { cellWidth: 20, halign: 'center' },
+    categoria: { cellWidth: 15, halign: 'center' },
+    subcategoria: { cellWidth: 25, halign: 'center' },
+    descripcion: { cellWidth: 35, halign: 'center' },
+    unidad: { cellWidth: 10, halign: 'center' },
+    stock: { cellWidth: 15, halign: 'center' },
+    costounitario: { cellWidth: 20, halign: 'center' },
+    costo: { cellWidth: 25, halign: 'center' },
   }
 
+  const columnStyles = {}
+  columns.forEach((col) => {
+    if (allColumnStyles[col.dataKey]) {
+      columnStyles[col.dataKey] = allColumnStyles[col.dataKey]
+    }
+  })
+
+  const headerColumnStyles = columnStyles
+
+  /* =========================
+   * 5. CABECERA IZQUIERDA
+   ========================= */
+  const Izquierda = {
+    titulo: 'DATOS DEL REPORTE',
+    campos: datos[0]?.almacen ? [{ label: 'Almacén', valor: datos[0].almacen }] : [],
+  }
+
+  /* =========================
+   * 6. DIBUJAR PDF
+   ========================= */
   dibujarCuerpoTabla(
     doc,
     columns,
     datos,
-    'REPORTE PRODUCTOS STOCK INDIVIDUAL',
+    'REPORTE STOCK PRODUCTOS',
     columnStyles,
     headerColumnStyles,
-    null,
+    Izquierda,
     null,
     true,
     null,
     null,
   )
 
-  // doc.save('proveedores.pdf') ← comenta o elimina esta línea
-  //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
   return doc
 }
 
 export function PDFreporteStockProductosIndividual_img(processedRows) {
+  console.log('procesed rows imagenes', processedRows)
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const columns = [
     { header: 'N°', dataKey: 'indice' },
@@ -4482,9 +4503,9 @@ export function PDFComprobanteMovimiento(detalleMovimiento) {
   // Handle structure variations (flat vs .datos wrapper)
   const isNested = !!detalleMovimiento.datos
   const dataRoot = isNested ? detalleMovimiento.datos : detalleMovimiento
-  
+
   const detalleArray = dataRoot.detalle || []
-  
+
   const datos = detalleArray.map((item, indice) => ({
     indice: indice + 1,
     descripcion: item.descripcion,
@@ -4523,14 +4544,14 @@ export function PDFComprobanteMovimiento(detalleMovimiento) {
   // Handle Usuario structure variations (object vs array)
   let nombreUsuario = ''
   let cargoUsuario = ''
-  
+
   if (dataRoot.usuario) {
     if (Array.isArray(dataRoot.usuario) && dataRoot.usuario.length > 0) {
-       nombreUsuario = dataRoot.usuario[0].usuario || ''
-       cargoUsuario = dataRoot.usuario[0].cargo || ''
+      nombreUsuario = dataRoot.usuario[0].usuario || ''
+      cargoUsuario = dataRoot.usuario[0].cargo || ''
     } else if (typeof dataRoot.usuario === 'object') {
-       nombreUsuario = dataRoot.usuario.nombre || dataRoot.usuario.usuario || ''
-       cargoUsuario = dataRoot.usuario.cargo || ''
+      nombreUsuario = dataRoot.usuario.nombre || dataRoot.usuario.usuario || ''
+      cargoUsuario = dataRoot.usuario.cargo || ''
     }
   }
 

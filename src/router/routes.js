@@ -384,6 +384,14 @@ const routes = [
         path: '/reporteproductoproveedorcompras',
         component: () => import('src/pages/proveedor/ReporteProductoComprasPage.vue'),
       },
+      {
+        path: '/servicios',
+        component: () => import('src/pages/General/serviciosPage.vue'),
+      },
+      {
+        path: '/credencialesservicio',
+        component: () => import('src/pages/General/credencialesServicioPage.vue'),
+      },
     ],
   },
   {
