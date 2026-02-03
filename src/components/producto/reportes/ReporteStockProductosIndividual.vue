@@ -319,9 +319,7 @@ const prepararImagenes = async () => {
     processedRows.value.map(async (item) => {
       try {
         console.log(`${imagen}${item.imagen}`)
-        const base64 = await convertirImagenARutaBase64(
-          `https://vivasoft.link/app/cmv1/api/imagen/almacen.png`,
-        )
+        const base64 = await convertirImagenARutaBase64(`${imagen}${item.imagen}`)
         console.log(base64)
         return { ...item, imagenBase64: base64 }
       } catch (e) {
@@ -368,29 +366,49 @@ const vistaCatalogo = async () => {
   productos.forEach((item) => {
     const margenIzq = 10
     const margenDer = 120
+    const paginaAlto = doc.internal.pageSize.getHeight()
+
+    // 1. Verificar si hay espacio para el siguiente bloque (aprox 50 unidades)
+    if (startY + 50 > paginaAlto) {
+      doc.addPage()
+      startY = 20
+    }
 
     doc.setFontSize(9)
     doc.setFont(undefined, 'bold')
     doc.text(`Producto: ${item.producto}`, margenIzq, startY)
+
     doc.setFont(undefined, 'normal')
     doc.setFontSize(8)
 
-    doc.text(`Código: ${item.codigo}`, margenIzq, startY + 5)
-    doc.text(`Categoría: ${item.categoria}`, margenIzq, startY + 10)
-    doc.text(`Subcategoría: ${item.subcategoria}`, margenIzq, startY + 15)
-    doc.text(`Descripción: ${item.descripcion}`, margenIzq, startY + 20)
-    doc.text(`Unidad: ${item.unidad}`, margenIzq, startY + 25)
-    doc.text(`Stock: ${item.stock}`, margenIzq, startY + 30)
-    doc.text(`Costo Unitario: ${item.costounitario}`, margenIzq, startY + 35)
-    doc.text(`Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`, margenIzq, startY + 40)
-    console.log(item.imagen)
-    doc.addImage(`${imagen}${item.imagen}`, 'JPEG', margenDer, startY, 60, 40)
-    console.log(imagen, item.imagen)
-    startY += 55
-    if (startY + 50 > doc.internal.pageSize.getHeight()) {
-      doc.addPage()
-      startY = 20
+    // Listado de datos (usando un pequeño bucle o manual como tenías)
+    const datos = [
+      `Código: ${item.codigo}`,
+      `Categoría: ${item.categoria}`,
+      `Subcategoría: ${item.subcategoria}`,
+      `Descripción: ${item.descripcion}`,
+      `Unidad: ${item.unidad}`,
+      `Stock: ${item.stock}`,
+      `Costo Unitario: ${item.costounitario}`,
+      `Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`,
+    ]
+
+    datos.forEach((texto, index) => {
+      doc.text(texto, margenIzq, startY + 5 + index * 5)
+    })
+
+    // 2. Manejo de la Imagen
+    if (item.imagenBase64) {
+      try {
+        // 'FAST' ayuda si el PDF se vuelve muy pesado
+        doc.addImage(item.imagenBase64, 'JPEG', margenDer, startY, 60, 40, undefined, 'FAST')
+      } catch (e) {
+        console.error('Error al añadir imagen para el producto:', item.producto, e)
+        doc.text('[Imagen no disponible]', margenDer, startY + 20)
+      }
     }
+
+    startY += 55 // Espaciado entre productos
   })
 
   pdfData.value = doc.output('dataurlstring')
