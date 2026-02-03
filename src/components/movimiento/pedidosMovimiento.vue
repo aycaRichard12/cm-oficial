@@ -111,7 +111,13 @@
 
       <!-- Footer Actions -->
       <q-card-actions align="right" class="col-auto bg-white q-pa-md">
-        <q-btn flat label="Ver Pedidos Acumulados" color="primary" icon="list" @click="verAcumulados" />
+        <q-btn
+          flat
+          label="Ver Pedidos Acumulados"
+          color="primary"
+          icon="list"
+          @click="verAcumulados"
+        />
         <q-btn flat label="Cerrar" color="grey-8" icon="close" @click="onDialogHide" />
         <q-btn
           unelevated
@@ -131,7 +137,7 @@
 
     <!-- Modal de Pedidos Acumulados -->
     <q-dialog v-model="showAcumuladosDialog">
-      <q-card style="min-width: 700px; max-width: 80vw;">
+      <q-card style="min-width: 700px; max-width: 80vw">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
           <div class="text-h6">Pedidos y Productos Acumulados</div>
           <q-space />
@@ -144,7 +150,7 @@
             <div class="text-h6 q-mt-md">No hay productos acumulados</div>
             <div>Seleccione pedidos para acumular sus productos</div>
           </div>
-          
+
           <q-table
             v-else
             :rows="pedidosAcumulados"
@@ -154,11 +160,11 @@
             bordered
             dense
           >
-             <template v-slot:body-cell-indice="props">
-                <q-td :props="props">
-                  {{ props.rowIndex + 1 }}
-                </q-td>
-             </template>
+            <template v-slot:body-cell-indice="props">
+              <q-td :props="props">
+                {{ props.rowIndex + 1 }}
+              </q-td>
+            </template>
           </q-table>
         </q-card-section>
 
@@ -214,11 +220,11 @@ const columnsAcumulados = [
   { name: 'indice', label: '#', field: 'indice', align: 'left' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
   { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true }
+  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
 ]
 
 const verAcumulados = () => {
-    showAcumuladosDialog.value = true
+  showAcumuladosDialog.value = true
 }
 
 // Define Emits
@@ -362,25 +368,26 @@ const toggleRowSelection = (row, val) => {
   }
 }
 
-async function acumularPedidos(idPedido){
- const response = await api.get(`getPedido_/${idPedido}/${idempresa}`)
- console.log(response.data)
- const data = response.data
- const items = data[0].detalle
-items.map(item => {
-  console.log('item',item)
-  console.log('pedidosAcumulados.value',pedidosAcumulados.value)
-  if(!pedidosAcumulados.value.some(pedido => pedido.codigo === item.codigo ) ){
-    pedidosAcumulados.value.push(item)
-    console.log('pedidosAcumulados.value 2',!pedidosAcumulados.value.some(pedido => pedido.codigo === item.codigo))
-  }
-  else{
-    const index = pedidosAcumulados.value.findIndex(pedido => pedido.codigo === item.codigo)
-    pedidosAcumulados.value[index].cantidad = Number(pedidosAcumulados.value[index].cantidad) + Number(item.cantidad)
-  }
-
-}) 
- console.log('pedidosAcumulados.value',pedidosAcumulados.value)
+async function acumularPedidos(idPedido) {
+  const response = await api.get(`getPedido_/${idPedido}/${idempresa}`)
+  const data = response.data
+  const items = data[0].detalle
+  items.map((item) => {
+    console.log('item', item)
+    console.log('pedidosAcumulados.value', pedidosAcumulados.value)
+    if (!pedidosAcumulados.value.some((pedido) => pedido.codigo === item.codigo)) {
+      pedidosAcumulados.value.push(item)
+      console.log(
+        'pedidosAcumulados.value 2',
+        !pedidosAcumulados.value.some((pedido) => pedido.codigo === item.codigo),
+      )
+    } else {
+      const index = pedidosAcumulados.value.findIndex((pedido) => pedido.codigo === item.codigo)
+      pedidosAcumulados.value[index].cantidad =
+        Number(pedidosAcumulados.value[index].cantidad) + Number(item.cantidad)
+    }
+  })
+  console.log('pedidosAcumulados.value', pedidosAcumulados.value)
 }
 
 // const onRowClick = (evt, row) => {
@@ -399,8 +406,6 @@ const emitAction = (actionType, row) => {
     console.log('Processing item:', row.id)
   }
 }
-
-
 
 async function processing(row) {
   console.log(row)
@@ -461,11 +466,11 @@ async function discarding(row) {
       color: 'negative',
       flat: true,
     },
-    verAcumulado:{
+    verAcumulado: {
       label: 'Ver acumulado',
       color: 'bluestyle',
       flat: true,
-    }
+    },
   })
     .onOk(async () => {
       const endpoint = `cambiarEstadoPedido/${row.id}/3/${idusuario}`
@@ -507,7 +512,7 @@ const verDetalle = async (row) => {
 const getDatallePedido = async (id) => {
   try {
     const response = await api.get(`getPedido_/${id}/${idempresa}`)
-    console.log(response.data)
+    console.log('detalle', response.data)
     detallePedido.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)

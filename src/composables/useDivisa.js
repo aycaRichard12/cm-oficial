@@ -4,10 +4,12 @@ import { api } from 'boot/axios'
 import { getToken } from './FuncionesG'
 import { getTipoFactura } from './FuncionesG'
 import { idempresa_md5 } from './FuncionesGenerales'
-const idempresa = idempresa_md5()
-const tipoFactura = getTipoFactura()
-const token = getToken()
+
 export function useDivisa() {
+  const idempresa = idempresa_md5()
+  const tipoFactura = getTipoFactura()
+  const token = getToken()
+  
   const divisa = ref(null)
   const loading = ref(false)
   const error = ref(null)
