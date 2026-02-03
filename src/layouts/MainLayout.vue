@@ -199,13 +199,15 @@ import NotificacionLayout from './NotificacionLayout.vue'
 import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import ComandoVoz from './ComandoVoz.vue'
-//import { usePusher } from 'src/composables/usePusher'
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { usePusherStore } from 'src/stores/pusher-store'
+//import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+//const $q = useQuasar()
 
+const pusherStore = usePusherStore()
 //import { LocalStorage } from 'quasar'
-
+const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
 const ocultarTabs = () => {
@@ -444,6 +446,11 @@ onMounted(async () => {
   //     pusherActions.initPusher(idusuario)
   //   }
   // }, 1000)
+  await pusherStore.cargarYConectar(idempresa, idusuario)
+
+  pusherStore.escucharEvento('notificacion-interna', (data) => {
+    console.log(data)
+  })
 
   await permisosStore.cargarPermisos()
   console.log('Permisos cargados en MainLayout.vue:', permisosStore.permisos)
