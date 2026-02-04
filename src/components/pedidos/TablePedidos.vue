@@ -200,7 +200,7 @@
     </q-card>
   </q-dialog>
   <baucherPedido v-model="baucherPedidomodal" :modal-value="pedido" :idPedido="pedidoId" />
-  
+
   <!-- Dialog de Notificación -->
   <NotificacionDialog
     v-model="dialogNotificacionOpen"
@@ -356,15 +356,15 @@ const abrirDialogNotificacion = (pedido) => {
 const onNotificacionEnviada = (datos) => {
   console.log('Notificación enviada para pedido:', pedidoSeleccionado.value)
   console.log('Datos de notificación:', datos)
-  
+
   $q.notify({
     type: 'positive',
     message: `Notificación enviada para el pedido ${pedidoSeleccionado.value.codigo}`,
     position: 'top',
     icon: 'check_circle',
-    timeout: 2500
+    timeout: 2500,
   })
-  
+
   // Resetear selección
   pedidoSeleccionado.value = null
 }
