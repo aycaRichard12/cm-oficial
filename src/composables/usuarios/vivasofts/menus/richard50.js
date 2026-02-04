@@ -214,6 +214,61 @@ export const menurichard50 = [
       },
       {
         usuario: '03afdbd66e7929b125f8597834fa83a4',
+        titulo: 'Inventario Externo-Atributos',
+        codigo: 'opcionesocultas',
+        submenu: [
+          {
+            titulo: 'V-Inventario Externo-Inventario Externo',
+            codigo: 'inventarioexterno-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Inventario Externo-Rotación por Almacén',
+            codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Inventario Externo-Rotación Global',
+            codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Inventario Externo- Rotación por Cliente',
+            codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Inventario Externo- Caducidad de Productos',
+            codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+
+          {
+            titulo: 'V-Inventario Externo-Rep. Inventario Externo',
+            codigo: 'reporteinventarioexterior-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+        ],
+      },
+      // {
+      //   usuario: '03afdbd66e7929b125f8597834fa83a4',
+      //   titulo: 'Factura-Atributos',
+      //   codigo: 'opcionesocultas',
+      //   submenu: [
+      //     {
+      //       titulo: 'C-F-Leyendas de Facturas',
+      //       codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
+      //       permiso: '1111',
+      //     },
+      //     {
+      //       titulo: 'C-F-Métodos de Pago de Facturas',
+      //       codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
+      //       permiso: '1111',
+      //     },
+      //   ],
+      // },
+      {
+        usuario: '03afdbd66e7929b125f8597834fa83a4',
         titulo: 'Configuración-Atributos',
         codigo: 'opcionesocultas',
         submenu: [
@@ -282,6 +337,16 @@ export const menurichard50 = [
             codigo: 'canalesdeventa-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'Configuración-Cliente-Leyendas de Facturas',
+            codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-Cliente-Pago de Facturas',
+            codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
         ],
       },
       {
@@ -317,6 +382,11 @@ export const menurichard50 = [
           {
             titulo: 'Permisos Usuarios',
             codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración de Factura',
+            codigo: 'leyendasdefacturas-f457c545a9ded88f18ecee47145a72c0',
             permiso: '1111',
           },
         ],
@@ -475,27 +545,27 @@ export const menurichard50 = [
             codigo: 'reportestockdeproductosglobal-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Reporte de Indice de Rotación',
-            codigo: 'reportedeindicederotacion-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Indicadores de rotación',
+          //   codigo: 'indicadoresderotacion-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
 
+          // {
+          //   titulo: 'Reporte de Caducidad de Productos',
+          //   codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
-            titulo: 'Reporte de Caducidad de Productos',
-            codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Reporte Productos vendidos Global',
+            titulo: 'Reporte Ventas Detallado',
             codigo: 'reporteproductosvendidosglobal-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Reporte Inventario Exterior',
-            codigo: 'reporteinventarioexterior-f457c545a9ded88f18ecee47145a72c0',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Reporte Inventario Exterior',
+          //   codigo: 'reporteinventarioexterior-f457c545a9ded88f18ecee47145a72c0',
+          //   permiso: '1111',
+          // },
         ],
       },
       {
@@ -509,18 +579,18 @@ export const menurichard50 = [
             permiso: '1111',
           },
 
+          // {
+          //   titulo: 'V-Inventario Externo-Indicadores - Rotación por Almacén',
+          //   codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
-            titulo: 'Reporte - Reporte de Índice de Rotación - Alm',
-            codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Reporte - Reporte de Índice de Rotación - Glo',
+            titulo: 'V-Inventario Externo-Indicadores - Rotación Global',
             codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: 'Reporte - Reporte de Índice de Rotación - Cli',
+            titulo: 'V-Inventario Externo-Indicadores - Rotación por Cliente',
             codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
@@ -532,23 +602,23 @@ export const menurichard50 = [
           },
         ],
       },
-      {
-        usuario: '03afdbd66e7929b125f8597834fa83a4',
-        titulo: 'Configuración Factura',
-        codigo: 'configuracionfactura',
-        submenu: [
-          {
-            titulo: 'Leyendas de Facturas',
-            codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Métodos de Pago de Facturas',
-            codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-        ],
-      },
+      // {
+      //   usuario: '03afdbd66e7929b125f8597834fa83a4',
+      //   titulo: 'Configuración Factura',
+      //   codigo: 'configuracionfactura',
+      //   submenu: [
+      //     {
+      //       titulo: 'Leyendas de Facturas',
+      //       codigo: 'leyendasdefacturas-03afdbd66e7929b125f8597834fa83a4',
+      //       permiso: '1111',
+      //     },
+      //     {
+      //       titulo: 'Métodos de Pago de Facturas',
+      //       codigo: 'metodosdepagodefacturas-03afdbd66e7929b125f8597834fa83a4',
+      //       permiso: '1111',
+      //     },
+      //   ],
+      // },
     ],
   },
 ]
