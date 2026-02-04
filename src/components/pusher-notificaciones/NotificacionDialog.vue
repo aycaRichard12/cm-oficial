@@ -26,7 +26,7 @@
           outlined
           dense
           label="Seleccionar usuario *"
-          :rules="[val => !!val || 'Debe seleccionar un usuario']"
+          :rules="[(val) => !!val || 'Debe seleccionar un usuario']"
           :loading="loadingUsuarios"
         >
           <template v-slot:prepend>
@@ -34,9 +34,7 @@
           </template>
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey">
-                No hay usuarios disponibles
-              </q-item-section>
+              <q-item-section class="text-grey"> No hay usuarios disponibles </q-item-section>
             </q-item>
           </template>
         </q-select>
@@ -50,14 +48,14 @@
           <q-icon name="mail" class="q-mr-xs" />
           Detalles de la Notificación
         </div>
-        
+
         <q-input
           v-model="formData.asunto"
           outlined
           dense
           label="Asunto *"
           placeholder="Ej: Venta, Pedido, Alerta"
-          :rules="[val => !!val || 'El asunto es obligatorio']"
+          :rules="[(val) => !!val || 'El asunto es obligatorio']"
           class="q-mb-md"
         >
           <template v-slot:prepend>
@@ -72,7 +70,7 @@
           rows="5"
           label="Mensaje *"
           placeholder="Escriba el contenido de la notificación..."
-          :rules="[val => !!val || 'El mensaje es obligatorio']"
+          :rules="[(val) => !!val || 'El mensaje es obligatorio']"
         >
           <template v-slot:prepend>
             <q-icon name="message" />
@@ -103,12 +101,12 @@ import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNoti
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    default: 'Enviar Notificación'
-  }
+    default: 'Enviar Notificación',
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'notificacion-enviada'])
@@ -122,24 +120,24 @@ const loadingUsuarios = ref(false)
 const formData = ref({
   usuarioSeleccionado: null,
   asunto: '',
-  mensaje: ''
+  mensaje: '',
 })
 
 const isOpen = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val) => emit('update:modelValue', val),
 })
 
 const usuariosOptions = computed(() => {
-  return responsables.value.map(user => ({
+  return responsables.value.map((user) => ({
     label: user.label || user.nombre || user.usuario,
-    value: user.value || user.id_usuario || user.id
+    value: user.value || user.id_usuario || user.id,
   }))
 })
 
 async function handleEnviar() {
   const isValid = await formRef.value.validate()
-  
+
   if (!isValid) {
     return
   }
@@ -147,14 +145,14 @@ async function handleEnviar() {
   try {
     // Capturar automáticamente la ruta actual
     const rutaActual = route.path.replace('/', '') || 'dashboard'
-    
+
     await enviarNotificacion({
       id_usuario: formData.value.usuarioSeleccionado,
       asunto: formData.value.asunto,
       mensaje: formData.value.mensaje,
       datos_adicionales: {
-        url_de_envio: rutaActual
-      }
+        url_de_envio: rutaActual,
+      },
     })
 
     emit('notificacion-enviada', formData.value)
@@ -173,7 +171,7 @@ function resetForm() {
   formData.value = {
     usuarioSeleccionado: null,
     asunto: '',
-    mensaje: ''
+    mensaje: '',
   }
   formRef.value?.resetValidation()
 }
