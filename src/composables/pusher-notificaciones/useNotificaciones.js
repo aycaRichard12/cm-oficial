@@ -118,7 +118,9 @@ export function useNotificaciones() {
 
       console.log('Enviando notificación:', payload)
 
-      const response = await api.post('services', payload)
+      const response = await api.post('services/', payload)
+
+      console.log('Respuesta del servidor:', response)
 
       $q.notify({
         type: 'positive',
