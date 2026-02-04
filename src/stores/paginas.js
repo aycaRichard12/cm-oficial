@@ -38,11 +38,11 @@ export const PAGINAS = Object.freeze({
   ]),
   contingencias: Object.freeze(['registraranulaciones', 'registrodeextravios', 'registrodemermas']),
   cuentasporcobrar: Object.freeze(['cuentasporcobrarocultas']),
-  reportedeindicederotacion: Object.freeze([
-    'reportedeindicederotacionporalmacen',
-    'reportedeindicederotacionglobal',
-    'reportedeindicederotacionporcliente',
-  ]),
+  // indicadoresderotacion: Object.freeze([
+  //   'reportedeindicederotacionporalmacen',
+  //   'reportedeindicederotacionglobal',
+  //   'reportedeindicederotacionporcliente',
+  // ]),
   registrarclienteoproveedor: Object.freeze(['registrodecliente', 'registrarproveedor']),
   admautorizaciones: Object.freeze([
     'gestionPedido',
@@ -59,6 +59,11 @@ export const PAGINAS = Object.freeze({
   gestionmovimientos: Object.freeze(['movimientos', 'reportedemovimientos']),
   pedidos: Object.freeze(['generarpedido', 'reportedepedidos']),
   // ... (otros grupos con el mismo formato)
+  inventarioexterno: Object.freeze([
+    'inventarioexterno',
+    // 'reportedeindicederotacion',
+  ]),
+  leyendasdefacturas: Object.freeze(['leyendasdefacturas', 'metodosdepagodefacturas']),
 })
 
 export const PAGINAS_ICONS = Object.freeze({
@@ -100,6 +105,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reportedecotizacionesocultas: 'visibility_off',
   reporteproductosvendidosindividual: 'shopping_cart',
   kardex: 'list_alt',
+  indicadoresderotacion: 'rotate_right',
 
   // Íconos para los submenús de Contingencias
   registraranulaciones: 'cancel',
@@ -140,6 +146,10 @@ export const PAGINAS_ICONS = Object.freeze({
   //pedidos
   generarpedido: 'add_shopping_cart',
   reportedepedidos: 'assignment',
+  //inventario externo
+  inventarioexterno: 'inventory_2',
+  reportedecaducidaddeproductos: 'event_busy',
+  reporteinventarioexterior: 'inventory',
 })
 export const PAGINAS_SELECT = Object.freeze({
   registrarventa: Object.freeze([
@@ -159,6 +169,13 @@ export const PAGINAS_SELECT = Object.freeze({
     'reportestockdeproductosindividual',
     'reporteproveedorcompras',
     'reporteproductoproveedorcompras',
+  ]),
+  inventarioexterno: Object.freeze([
+    'reportedeindicederotacionporalmacen',
+    'reportedeindicederotacionglobal',
+    'reportedeindicederotacionporcliente',
+    'reportedecaducidaddeproductos',
+    'reporteinventarioexterior',
   ]),
 })
 /**
