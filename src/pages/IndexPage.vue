@@ -168,7 +168,7 @@ const orderedTopBoxes = computed(() => {
       data: venta.value,
       iconComponent: IconVentas,
       title: 'VENTAS',
-      subtitle: 'Registrar Venta',
+      subtitle: '',
       cardId: 'venta-card',
     })
   if (compra.value)
@@ -178,7 +178,7 @@ const orderedTopBoxes = computed(() => {
       data: compra.value,
       iconComponent: IconPedidos,
       title: 'COMPRAS',
-      subtitle: 'Compras o Producción',
+      subtitle: '',
       cardId: 'compra-card',
     })
   if (producto.value)
@@ -188,7 +188,7 @@ const orderedTopBoxes = computed(() => {
       data: producto.value,
       iconComponent: IconAdmin,
       title: 'PRODUCTOS',
-      subtitle: 'Administración Productos',
+      subtitle: '',
       cardId: 'producto-card',
     })
   if (dashboard.value)
@@ -197,8 +197,8 @@ const orderedTopBoxes = computed(() => {
       component: ReporteComponent,
       data: dashboard.value,
       iconComponent: IconReportes,
-      title: 'REPORTES',
-      subtitle: dashboard.value.titulo || 'Reportes',
+      title: 'ESTADÍSTICAS',
+      subtitle: '',
       cardId: 'reportes-card',
     })
   return boxes

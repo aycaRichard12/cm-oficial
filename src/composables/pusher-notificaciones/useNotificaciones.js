@@ -1,7 +1,7 @@
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { api } from 'src/boot/axios';
-import { idempresa_md5 } from '../FuncionesGenerales';
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
+import { idempresa_md5 } from '../FuncionesGenerales'
 
 export function useNotificaciones() {
   const $q = useQuasar()
@@ -18,7 +18,6 @@ export function useNotificaciones() {
     loading.value = true
     try {
       const response = await api.get(`listaResponsable/${idempresa}`)
-      console.log('Usuarios cargados:', response.data)
 
       responsables.value = response.data.map((item) => {
         // Extraer datos del usuario (puede ser objeto o array)
@@ -50,7 +49,7 @@ export function useNotificaciones() {
           ...item,
           usuarioData: usuarioData, // Guardar datos completos del usuario
           label: label,
-          value: usuarioData?.idusuario || item.idusuario || item.id,
+          value: item.idusuarioMD5 || '',
         }
       })
 
