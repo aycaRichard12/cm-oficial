@@ -1,19 +1,33 @@
 <template>
-  <div>
-    <!-- Debug: Verificar datos -->
-    <!-- <pre v-if="debug">{{ { chartOptions, series, rawData: chartData } }}</pre> -->
-
-    <q-card class="q-pa-md">
-      <q-card-section>
-        <div class="text-h6">Productos más Vendidos</div>
+  <div class="full-width full-height">
+    <q-card flat class="shadow-2 rounded-borders full-height">
+      <q-card-section class="q-pb-none">
+        <div class="row items-center">
+          <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
+          <div class="text-h6 text-weight-medium">Productos más Vendidos</div>
+        </div>
+        <div class="text-caption text-grey-7 q-mt-xs">
+          Ranking de productos por ingresos generados
+        </div>
       </q-card-section>
-      <q-card-section>
-        <VueApexCharts type="bar" height="350" :options="chartOptions" :series="series" />
+      <q-card-section class="full-height">
+        <div 
+          class="full-width" 
+          :style="{ 
+            minHeight: $q.screen.lt.md ? '300px' : $q.screen.lt.lg ? '350px' : '400px',
+            height: $q.screen.lt.md ? '45vh' : $q.screen.lt.lg ? '50vh' : '60vh',
+            maxHeight: '600px'
+          }"
+        >
+          <VueApexCharts 
+            type="bar" 
+            height="100%" 
+            :options="chartOptions" 
+            :series="series" 
+          />
+        </div>
       </q-card-section>
     </q-card>
-
-    <!-- Debug temporal -->
-    <!-- <pre>{{ chartData }}</pre> -->
   </div>
 </template>
 
@@ -22,9 +36,10 @@ import { ref, computed, watch } from 'vue'
 import { useFetchList } from 'src/composables/useFetchList'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const empresa = idempresa_md5()
-// const debug = ref(true) // Activa para ver datos de depuración
 
 const { items: pPreferido } = useFetchList(`/productos_mayor_venta_monetario/${empresa || null}`)
 
@@ -40,80 +55,175 @@ const chartData = computed(() => {
 const chartOptions = ref({
   chart: {
     type: 'bar',
-    height: 350,
+    height: '100%',
     stacked: false,
-    toolbar: { show: true },
+    toolbar: { 
+      show: true,
+      tools: {
+        download: true,
+        selection: true,
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: true,
+        reset: true
+      }
+    },
+    animations: {
+      enabled: true,
+      easing: 'easeinout',
+      speed: 800,
+    },
   },
   plotOptions: {
     bar: {
       horizontal: false,
-      borderRadius: 4,
-      columnWidth: '70%',
+      borderRadius: 6,
+      columnWidth: '60%',
       dataLabels: {
         position: 'top',
-        hideOverflowingLabels: false,
       },
+      distributed: true, // Cada barra con un color diferente
     },
   },
   dataLabels: {
     enabled: true,
     formatter: function (val) {
-      return val > 0 ? val : ''
+      return val > 0 ? val.toFixed(2) + ' Bs' : ''
     },
+    offsetY: -20,
     style: {
-      fontSize: '12px',
-      colors: ['#333'],
+      fontSize: '11px',
+      fontWeight: 'bold',
+      colors: ['#304758'],
     },
   },
   xaxis: {
     categories: [],
     labels: {
       rotate: -45,
+      rotateAlways: false,
+      hideOverlappingLabels: true,
+      trim: true,
       style: {
-        fontSize: '12px',
+        fontSize: '11px',
+        fontWeight: 500,
       },
       formatter: function (value) {
-        return value.length > 20 ? value.substring(0, 20) + '...' : value
+        if (!value) return ''
+        return value.length > 30 ? value.substring(0, 30) + '...' : value
       },
     },
+    tickPlacement: 'on',
   },
   yaxis: {
-    title: { text: 'Ingresos por Ventas' },
+    title: { 
+      text: 'Ingresos (Bs)',
+      style: {
+        fontSize: '12px',
+        fontWeight: 600,
+      }
+    },
     labels: {
       formatter: function (val) {
-        return Math.floor(val) === val ? val : ''
+        return val ? val.toFixed(2) : '0.00'
       },
+      style: {
+        fontSize: '11px',
+      }
     },
   },
   tooltip: {
+    enabled: true,
+    shared: false,
+    followCursor: true,
     y: {
       formatter: function (val) {
-        return `${val} costo`
+        return `${val.toFixed(2)} Bs`
       },
+      title: {
+        formatter: () => 'Ingresos:'
+      }
     },
   },
-  colors: [
-    '#008FFB',
-    '#00E396',
-    '#FEB019',
-    '#FF4560',
-    '#775DD0',
-    '#008FFB',
-    '#00E396',
-    '#FEB019',
-    '#FF4560',
-    '#775DD0',
+  colors: ['#1976D2', '#00897B', '#FB8C00', '#E53935', '#8E24AA', '#5E35B1', '#00ACC1', '#43A047', '#F4511E', '#6D4C41'],
+  grid: {
+    borderColor: '#e7e7e7',
+    strokeDashArray: 4,
+    xaxis: {
+      lines: {
+        show: false
+      }
+    },
+    yaxis: {
+      lines: {
+        show: true
+      }
+    },
+    padding: {
+      top: 0,
+      right: 10,
+      bottom: 0,
+      left: 10
+    }
+  },
+  legend: {
+    show: false // Ocultamos la leyenda ya que usamos distributed colors
+  },
+  responsive: [
+    {
+      breakpoint: 1024,
+      options: {
+        plotOptions: {
+          bar: {
+            columnWidth: '70%',
+          },
+        },
+        xaxis: {
+          labels: {
+            rotate: -45,
+            style: {
+              fontSize: '10px',
+            },
+          },
+        },
+      },
+    },
+    {
+      breakpoint: 768,
+      options: {
+        plotOptions: {
+          bar: {
+            columnWidth: '80%',
+          },
+        },
+        xaxis: {
+          labels: {
+            rotate: -90,
+            style: {
+              fontSize: '9px',
+            },
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+      },
+    },
   ],
   noData: {
     text: 'Cargando datos...',
     align: 'center',
     verticalAlign: 'middle',
+    style: {
+      fontSize: '14px',
+    }
   },
 })
 
 const series = ref([
   {
-    name: 'Ventas',
+    name: 'Ingresos',
     data: [],
   },
 ])
@@ -123,20 +233,18 @@ watch(
   (newData) => {
     if (!newData || newData.length === 0) {
       chartOptions.value.noData.text = 'No hay datos disponibles'
+      series.value = [{ name: 'Ingresos', data: [] }]
       return
     }
 
-    // ✅ Declaramos primero los arreglos
     const categories = []
     const seriesData = []
 
-    // ✅ Luego los llenamos
     newData.forEach((item) => {
       categories.push(item.nombre_producto)
       seriesData.push(item.total_vendido)
     })
 
-    // ✅ Y actualizamos la configuración del gráfico
     chartOptions.value = {
       ...chartOptions.value,
       xaxis: {
@@ -147,7 +255,7 @@ watch(
 
     series.value = [
       {
-        name: 'Ventas',
+        name: 'Ingresos por Producto',
         data: seriesData,
       },
     ]
