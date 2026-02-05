@@ -374,11 +374,11 @@ export const menurichard50 = [
             codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Actualizaciones',
-            codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Actualizaciones',
+          //   codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Permisos Usuarios',
             codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
@@ -619,6 +619,18 @@ export const menurichard50 = [
       //     },
       //   ],
       // },
+      {
+        usuario: '03afdbd66e7929b125f8597834fa83a4',
+        titulo: 'Ayuda',
+        codigo: 'ayuda',
+        submenu: [
+          {
+            titulo: 'Actualizaciones',
+            codigo: 'actualizacionescomercial-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+        ],
+      },
     ],
   },
 ]
