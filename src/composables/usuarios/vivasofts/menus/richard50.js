@@ -298,7 +298,7 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'Configuración-General-Credenciales de Servicios',
+            titulo: 'Configuración-General-Credenciales Servicios',
             codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
