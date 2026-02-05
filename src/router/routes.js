@@ -392,6 +392,10 @@ const routes = [
         path: '/credencialesservicio',
         component: () => import('src/pages/General/credencialesServicioPage.vue'),
       },
+      {
+        path: '/autorizarventassinstock',
+        component: () => import('src/pages/autorizaciones/ventaSinStockPage.vue'),
+      },
     ],
   },
   {

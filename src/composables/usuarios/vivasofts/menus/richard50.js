@@ -92,6 +92,11 @@ export const menurichard50 = [
             codigo: 'autorizarcompra-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'Adm-Autorizar-Ventas Sin Stock',
+            codigo: 'autorizarventassinstock-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
           // {
           //   titulo: 'Adm-Autorizar-Autorizar Operaciones',
           //   codigo: 'autorizarOperaciones-03afdbd66e7929b125f8597834fa83a4',
