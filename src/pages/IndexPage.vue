@@ -48,10 +48,18 @@
     </div>
 
     <div class="row q-col-gutter-x-md">
-      <div class="col-xs-12 col-md-8" ref="componentContainer" id="carrito">
+      <div 
+        :class="componenteActivo === VentaComponent ? 'col-xs-12 col-md-8' : 'col-12'" 
+        ref="componentContainer" 
+        id="carrito"
+      >
         <component :is="componenteActivo" />
       </div>
-      <div class="col-xs-12 col-md-4" id="reportes-hoy">
+      <div 
+        v-if="componenteActivo === VentaComponent" 
+        class="col-xs-12 col-md-4" 
+        id="reportes-hoy"
+      >
         <div class="full-height"><ReporteVentaInicio /></div>
       </div>
     </div>
@@ -104,6 +112,9 @@ const componentsMap = {
 }
 
 const componenteActivo = shallowRef(inicialComponent)
+
+// Expose VentaComponent for template comparison
+defineExpose({ VentaComponent })
 
 const cambiarComponente = (id) => {
   const newComponent = componentsMap[id]

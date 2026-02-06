@@ -244,6 +244,10 @@ const routes = [
         component: () => import('src/pages/devoluciones/registrodemermasPage.vue'),
       },
       {
+        path: '/indicesrotacion',
+        component: () => import('src/pages/reportes/indicesRotacionPage.vue'),
+      },
+      {
         path: '/reportedeindicederotacion',
         component: () => import('src/pages/reportes/rotacionAlmacenPague.vue'),
       },
@@ -391,6 +395,10 @@ const routes = [
       {
         path: '/credencialesservicio',
         component: () => import('src/pages/General/credencialesServicioPage.vue'),
+      },
+      {
+        path: '/autorizarventassinstock',
+        component: () => import('src/pages/autorizaciones/ventaSinStockPage.vue'),
       },
     ],
   },

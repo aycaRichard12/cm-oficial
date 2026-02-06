@@ -18,7 +18,7 @@
         <!-- Navegación de versiones -->
         <div class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm">
           <q-btn
-            v-for="version in versions"
+            v-for="version in versiones"
             :key="version.id"
             :label="version.title"
             :icon="version.icon"
@@ -65,97 +65,27 @@
               />
             </div>
 
-            <!-- Content: v2.3.0 -->
-            <div v-if="selectedVersion.content === 'v2.3.0'">
+            <!-- Content: Versión publicada -->
+            <div v-if="selectedVersion.content !== 'future'">
               <div class="row q-col-gutter-lg">
                 <!-- Feature List -->
                 <div class="col-12 col-md-6">
-                  <q-card flat class="full-height bg-white shadow-1">
-                    <q-card-section>
-                      <div class="text-h6 q-mb-md text-primary row items-center">
-                        <q-icon name="stars" class="q-mr-sm" />
-                        <div>Novedades Principales</div>
-                      </div>
-                      <q-separator class="q-mb-md" />
-                      <q-list class="q-gutter-y-sm">
-                        <q-item v-for="(item, idx) in featuresV230" :key="idx" dense>
-                          <q-item-section avatar>
-                            <q-icon name="check_circle" color="primary" />
-                          </q-item-section>
-                          <q-item-section>
-                            <q-item-label class="text-body1 text-grey-9">{{ item }}</q-item-label>
-                          </q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-card-section>
-                  </q-card>
+                  <FeatureList :features="selectedVersion.features" />
                 </div>
 
                 <!-- Modules Grid -->
                 <div class="col-12 col-md-6">
-                  <q-card flat class="full-height bg-white shadow-1">
-                    <q-card-section>
-                      <!-- Título -->
-                      <div class="text-h6 q-mb-md text-primary row items-center">
-                        <q-icon name="widgets" class="q-mr-sm" />
-                        <div>Módulos Impactados</div>
-                      </div>
-
-                      <q-separator class="q-mb-md" />
-
-                      <!-- Grid -->
-                      <div class="row q-col-gutter-md">
-                        <div class="col-6" v-for="(mod, idx) in modulesV230" :key="idx">
-                          <q-card
-                            class="bg-blue-1 text-primary text-center shadow-2 cursor-pointer q-hoverable rounded-borders"
-                          >
-                            <q-card-section>
-                              <q-icon :name="mod.icon" size="3em" class="q-mb-sm text-primary" />
-                              <div class="text-weight-bold">
-                                {{ mod.name }}
-                              </div>
-                            </q-card-section>
-
-                            <q-tooltip class="bg-primary text-white text-body2">
-                              {{ mod.tooltip }}
-                            </q-tooltip>
-                          </q-card>
-                        </div>
-                      </div>
-                    </q-card-section>
-                  </q-card>
+                  <ModulesGrid :modules="selectedVersion.modules" />
                 </div>
               </div>
 
-              <!-- Hero Video -->
-              <q-card
-                flat
-                class="q-mb-lg text-white shadow-3 rounded-borders overflow-hidden bg-primary q-mt-md"
-              >
-                <!-- Header -->
-                <div class="row items-center justify-between q-px-xl q-py-md bg-primary">
-                  <div class="row items-center">
-                    <q-icon name="play_circle_filled" size="28px" class="q-mr-sm text-white" />
-                    <div class="text-subtitle1 text-weight-bold">Video de Novedades</div>
-                  </div>
-
-                  <q-badge outline color="white" label="Actualización" class="text-weight-medium" />
-                </div>
-
-                <!-- Padding lateral (costados) -->
-                <div class="q-px-xl q-py-lg bg-grey-9">
-                  <q-responsive :ratio="16 / 9" style="max-height: 460px">
-                    <iframe
-                      src="https://www.youtube.com/embed/bvTBbz2AdFQ?si=RhtXAXCnJsx5AQFI"
-                      title="Video de Novedades"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                      class="fit rounded-borders"
-                    ></iframe>
-                  </q-responsive>
-                </div>
-              </q-card>
+              <!-- Video Player -->
+              <VideoPlayer
+                v-if="selectedVersion.videoUrl"
+                :video-url="selectedVersion.videoUrl"
+                :title="`Video de Novedades ${selectedVersion.title}`"
+                badge="Actualización"
+              />
             </div>
 
             <!-- Content: Future -->
@@ -185,47 +115,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import FeatureList from 'src/components/actualizaciones/FeatureList.vue'
+import ModulesGrid from 'src/components/actualizaciones/ModulesGrid.vue'
+import VideoPlayer from 'src/components/actualizaciones/VideoPlayer.vue'
+import { versionesConfig } from 'src/config/versionesConfig.js'
 
-const featuresV230 = [
-  'Filtros avanzados en tablas principales (Fecha, Numéricos, Texto).',
-  'Botones de acceso rápido en cabeceras de columnas.',
-  'Optimización de rendimiento en carga de reportes.',
-  'Nueva interfaz de usuario más limpia y amigable.',
-]
-
-const modulesV230 = [
-  { name: 'Compras', tooltip: 'Reporte de Compras Desglosado', icon: 'shopping_cart' },
-  { name: 'Stock', tooltip: 'Reporte individual de productos', icon: 'inventory_2' },
-  { name: 'Ventas', tooltip: 'Ventas y Contingencias', icon: 'point_of_sale' },
-  { name: 'Anulaciones', tooltip: 'Gestión de devoluciones', icon: 'remove_shopping_cart' },
-]
-
-const versions = ref([
-  {
-    id: 1,
-    title: 'v2.3.0',
-    date: '14 ENE 2026',
-    icon: 'rocket_launch',
-    status: true,
-    statusName: 'Publicado',
-    statusColor: 'primary',
-    statusIcon: 'check_circle',
-    content: 'v2.3.0',
-    isNew: true,
-  },
-  {
-    id: 2,
-    title: 'Próximamente',
-    date: 'En desarrollo',
-    icon: 'construction',
-    status: true,
-    statusName: 'En Progreso',
-    statusColor: 'orange',
-    statusIcon: 'engineering',
-    content: 'future',
-    isNew: false,
-  },
-])
-
-const selectedVersion = ref(versions.value[0])
+const versiones = ref(versionesConfig)
+const selectedVersion = ref(versiones.value[1]) // Seleccionar v1.1 por defecto (la más nueva)
 </script>

@@ -220,6 +220,7 @@ const columnsAcumulados = [
   { name: 'indice', label: '#', field: 'indice', align: 'left' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
   { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
+  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', sortable: true },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
 ]
 
@@ -347,7 +348,8 @@ const toggleRowSelection = (row, val) => {
   }
 
   if (!val) {
-    // Deseleccionar
+    // Deseleccionar - RESTAR productos del acumulado
+    desacumularPedidos(row.id)
     selected.value = selected.value.filter((r) => r.id !== row.id)
 
     // Si no quedan seleccionados, resetear el destino
@@ -388,6 +390,37 @@ async function acumularPedidos(idPedido) {
     }
   })
   console.log('pedidosAcumulados.value', pedidosAcumulados.value)
+}
+
+async function desacumularPedidos(idPedido) {
+  try {
+    const response = await api.get(`getPedido_/${idPedido}/${idempresa}`)
+    const data = response.data
+    const items = data[0].detalle
+
+    items.forEach((item) => {
+      const index = pedidosAcumulados.value.findIndex((pedido) => pedido.codigo === item.codigo)
+
+      if (index !== -1) {
+        // Restar la cantidad
+        pedidosAcumulados.value[index].cantidad =
+          Number(pedidosAcumulados.value[index].cantidad) - Number(item.cantidad)
+
+        // Si la cantidad llega a 0 o menos, eliminar el producto del acumulado
+        if (pedidosAcumulados.value[index].cantidad <= 0) {
+          pedidosAcumulados.value.splice(index, 1)
+        }
+      }
+    })
+
+    console.log('Productos desacumulados. Acumulado actual:', pedidosAcumulados.value)
+  } catch (error) {
+    console.error('Error al desacumular pedidos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al actualizar productos acumulados',
+    })
+  }
 }
 
 // const onRowClick = (evt, row) => {
@@ -603,6 +636,7 @@ const enviarPedidos = async () => {
     // Limpiar y recargar
     selected.value = []
     destinoSeleccionado.value = null
+    pedidosAcumulados.value = [] // Limpiar productos acumulados
     emit('orders-processed')
     getPedidos()
   } catch (error) {
