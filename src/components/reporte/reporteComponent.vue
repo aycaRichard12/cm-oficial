@@ -6,11 +6,11 @@
         v-model="visibleChart"
         toggle-color="primary"
         :options="[
+          { label: 'Todos', value: 'todos' },
           { label: 'Categorías', value: 'categoria' },
           { label: 'Preferidos', value: 'preferido' },
           { label: 'Monetario', value: 'monetario' },
           { label: 'Almacen', value: 'almacen' },
-          { label: 'Todos', value: 'todos' },
         ]"
         class="q-mb-md"
       />
