@@ -228,20 +228,25 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'V-Inventario Externo-Rotación por Almacén',
-            codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+            titulo: 'V-Inventario Externo-Índices de Rotación',
+            codigo: 'indicesrotacion-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'V-Inventario Externo-Rotación Global',
-            codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'V-Inventario Externo- Rotación por Cliente',
-            codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'V-Inventario Externo-Rotación por Almacén',
+          //   codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'V-Inventario Externo-Rotación Global',
+          //   codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'V-Inventario Externo- Rotación por Cliente',
+          //   codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'V-Inventario Externo- Caducidad de Productos',
             codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
