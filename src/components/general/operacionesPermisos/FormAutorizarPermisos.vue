@@ -1,18 +1,21 @@
 <template>
-  <q-card flat bordered>
-    <q-card-section>
-      <div class="text-h6">Gestionar Permiso</div>
-    </q-card-section>
+  <div>
+    <div class="row items-center q-mb-md">
+      <q-icon name="admin_panel_settings" color="primary" size="1.8rem" class="q-mr-sm" />
+      <div class="text-h6 text-weight-medium text-grey-8">Gestionar Permiso</div>
+    </div>
 
-    <q-card-section>
-      <q-form @submit="submitForm" class="q-gutter-md">
-        <div class="col-12 col-md-3">
-          <label for="operacion">Seleccionar operación</label>
+    <q-form @submit="submitForm" class="q-gutter-md">
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-6">
+          <label for="operacion" class="text-weight-medium text-grey-8 q-mb-xs block">
+            <q-icon name="settings" size="xs" class="q-mr-xs" />
+            Operación
+          </label>
           <q-select
             v-model="form.menuSeleccionado"
             :options="menuOptions"
             id="operacion"
-            dense
             outlined
             emit-value
             map-options
@@ -22,15 +25,24 @@
             input-debounce="0"
             @filter="filterFn"
             :rules="[(val) => !!val || 'Campo requerido']"
-          />
+            placeholder="Seleccione una operación"
+            class="q-mb-sm"
+          >
+            <template v-slot:prepend>
+              <q-icon name="task_alt" color="primary" />
+            </template>
+          </q-select>
         </div>
-        <div class="col-12 col-md-3">
-          <label for="usuario">Seleccionar Usuario</label>
+
+        <div class="col-12 col-md-6">
+          <label for="usuario" class="text-weight-medium text-grey-8 q-mb-xs block">
+            <q-icon name="person" size="xs" class="q-mr-xs" />
+            Usuario
+          </label>
           <q-select
             v-model="form.usuarioSeleccionado"
             :options="usuarios"
             id="usuario"
-            dense
             outlined
             emit-value
             map-options
@@ -40,21 +52,39 @@
             input-debounce="0"
             @filter="filterUsuarios"
             :rules="[(val) => !!val || 'Campo requerido']"
-          />
+            placeholder="Seleccione un usuario"
+            class="q-mb-sm"
+          >
+            <template v-slot:prepend>
+              <q-icon name="account_circle" color="primary" />
+            </template>
+          </q-select>
         </div>
+      </div>
 
-        <div class="row justify-end">
-          <q-btn label="Limpiar" flat color="primary" @click="resetForm" />
-          <q-btn
-            :label="form.id ? 'Actualizar' : 'Crear'"
-            type="submit"
-            color="primary"
-            :loading="loading"
-          />
-        </div>
-      </q-form>
-    </q-card-section>
-  </q-card>
+      <q-separator class="q-my-md" />
+
+      <div class="row justify-end q-gutter-sm">
+        <q-btn 
+          label="Limpiar" 
+          flat 
+          color="grey-7" 
+          @click="resetForm"
+          icon="refresh"
+          class="q-px-lg"
+        />
+        <q-btn
+          :label="form.id ? 'Actualizar Permiso' : 'Crear Permiso'"
+          type="submit"
+          color="primary"
+          :loading="loading"
+          :icon="form.id ? 'edit' : 'add'"
+          unelevated
+          class="q-px-lg"
+        />
+      </div>
+    </q-form>
+  </div>
 </template>
 
 <script setup>

@@ -61,6 +61,7 @@ export const PAGINAS = Object.freeze({
   // ... (otros grupos con el mismo formato)
   inventarioexterno: Object.freeze([
     'inventarioexterno',
+    'indicesrotacion',
     // 'reportedeindicederotacion',
   ]),
   leyendasdefacturas: Object.freeze(['leyendasdefacturas', 'metodosdepagodefacturas']),
@@ -148,6 +149,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reportedepedidos: 'assignment',
   //inventario externo
   inventarioexterno: 'inventory_2',
+  indicesrotacion: 'rotate_right',
   reportedecaducidaddeproductos: 'event_busy',
   reporteinventarioexterior: 'inventory',
 })
@@ -170,13 +172,7 @@ export const PAGINAS_SELECT = Object.freeze({
     'reporteproveedorcompras',
     'reporteproductoproveedorcompras',
   ]),
-  inventarioexterno: Object.freeze([
-    'reportedeindicederotacionporalmacen',
-    'reportedeindicederotacionglobal',
-    'reportedeindicederotacionporcliente',
-    'reportedecaducidaddeproductos',
-    'reporteinventarioexterior',
-  ]),
+  inventarioexterno: Object.freeze(['reportedecaducidaddeproductos', 'reporteinventarioexterior']),
 })
 /**
  * Helper para verificar si una clave existe en los atributos.
