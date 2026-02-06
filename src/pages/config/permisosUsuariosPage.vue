@@ -1,38 +1,91 @@
 <template>
   <q-page padding class="bg-grey-1">
     <!-- Header Section -->
-    <div class="row q-col-gutter-md q-mb-md">
+    <div class="row q-mb-md">
       <div class="col-12">
-        <q-card flat class="bg-white q-pa-sm border-rounded shadow-1">
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="security" color="primary" size="2.5rem" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label class="text-h5 text-weight-bold text-primary">Permisos de Usuarios</q-item-label>
-              <q-item-label caption class="text-grey-7">Gestiona las operaciones y niveles de autorización para los usuarios del sistema.</q-item-label>
-            </q-item-section>
-          </q-item>
+        <q-card flat class="bg-white shadow-2 rounded-borders">
+          <q-card-section class="q-pa-md">
+            <div class="row items-center">
+              <q-icon name="security" color="primary" size="3rem" class="q-mr-md" />
+              <div>
+                <div class="text-h4 text-weight-bold text-primary">Permisos de Usuarios</div>
+                <div class="text-subtitle1 text-grey-7 q-mt-xs">
+                  Gestiona las operaciones y niveles de autorización para los usuarios del sistema
+                </div>
+              </div>
+            </div>
+          </q-card-section>
         </q-card>
       </div>
     </div>
 
-    <!-- Content Section -->
-    <div class="row q-col-gutter-md">
-      <div class="col-12 col-md-4">
-        <div class="sticky-top">
-          <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
-        </div>
+    <!-- Form Section -->
+    <div class="row q-mb-md">
+      <div class="col-12">
+        <q-card flat class="bg-white shadow-2 rounded-borders">
+          <q-card-section class="q-pa-md">
+            <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
+          </q-card-section>
+        </q-card>
       </div>
+    </div>
 
-      <div class="col-12 col-md-8">
-        <table-autorizar-permisos
-          :rows="operaciones"
-          :loading="loading"
-          @on-delete="handleDelete"
-          @on-edit="handleEdit"
-          @toggle-status="toggleStatus"
-        />
+    <!-- Table Section -->
+    <div class="row">
+      <div class="col-12">
+        <q-card flat class="bg-white shadow-2 rounded-borders">
+          <q-card-section class="q-pa-md">
+            <base-filterable-table
+              title="Operaciones Registradas"
+              :rows="operaciones"
+              :columns="columns"
+              :array-headers="['usuario', 'codigo', 'operacion', 'estado']"
+              row-key="id"
+            >
+              <template v-slot:body-cell-estado="props">
+                <q-td :props="props">
+                  <q-badge
+                    :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
+                    :label="Number(props.row.estado) === 1 ? 'Autorizado' : 'No Autorizado'"
+                    outline
+                    class="q-px-sm q-py-xs"
+                  />
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-acciones="props">
+                <q-td :props="props">
+                  <div class="row q-gutter-xs no-wrap">
+                    <q-btn
+                      :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
+                      dense
+                      flat
+                      round
+                      :color="Number(props.row.estado) === 1 ? 'positive' : 'grey-6'"
+                      @click="toggleStatus(props.row)"
+                      size="sm"
+                    >
+                      <q-tooltip class="bg-grey-8 text-body2">
+                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }} Operación
+                      </q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      icon="delete"
+                      color="negative"
+                      dense
+                      flat
+                      round
+                      @click="handleDelete(props.row.id_operacion)"
+                      size="sm"
+                    >
+                      <q-tooltip class="bg-grey-8 text-body2">Eliminar Permiso</q-tooltip>
+                    </q-btn>
+                  </div>
+                </q-td>
+              </template>
+            </base-filterable-table>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
   </q-page>
@@ -43,13 +96,64 @@ import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 import FormAutorizarPermisos from 'src/components/general/operacionesPermisos/FormAutorizarPermisos.vue'
-import TableAutorizarPermisos from 'src/components/general/operacionesPermisos/TableAutorizarPermisos.vue'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 
 const $q = useQuasar()
 const operaciones = ref([])
 const loading = ref(false)
 const IDMD5 = idempresa_md5()
+
+// Definición de columnas para la tabla
+const columns = [
+  { 
+    name: 'id', 
+    align: 'left', 
+    label: 'N°', 
+    field: 'id', 
+    sortable: true,
+    dataType: 'number'
+  },
+  { 
+    name: 'usuario', 
+    align: 'left', 
+    label: 'Usuario', 
+    field: 'usuario', 
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'codigo', 
+    align: 'left', 
+    label: 'Código', 
+    field: 'codigo', 
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'operacion', 
+    align: 'left', 
+    label: 'Operación', 
+    field: 'operacion',
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'estado', 
+    align: 'center', 
+    label: 'Estado', 
+    field: 'estado',
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'acciones', 
+    align: 'center', 
+    label: 'Acciones', 
+    field: 'acciones',
+    sortable: false
+  },
+]
 
 // Obtener Operaciones
 const fetchOperaciones = async () => {

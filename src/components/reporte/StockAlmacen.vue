@@ -1,45 +1,85 @@
 <template>
-  <div class="stock-almacen-container">
-    <!-- Selector de almacén -->
-    <q-select
-      v-model="almacenSeleccionado"
-      :options="opcionesAlmacenes"
-      label="Seleccionar almacén"
-      outlined
-      dense
-      class="q-mb-md"
-      @update:model-value="actualizarGrafico"
-    />
+  <div class="full-width full-height">
+    <q-card flat class="shadow-2 rounded-borders full-height">
+      <!-- Header -->
+      <q-card-section class="q-pb-none">
+        <div class="row items-center q-mb-sm">
+          <q-icon name="inventory_2" color="primary" size="1.5rem" class="q-mr-sm" />
+          <div class="text-h6 text-weight-medium">Stock por Almacén</div>
+        </div>
+        <div class="text-caption text-grey-7">Distribución de inventario por producto</div>
+      </q-card-section>
 
-    <!-- Título del gráfico -->
-    <h4 class="text-center q-mb-md">Stock {{ almacenSeleccionado || '' }}</h4>
+      <!-- Selector de Almacén -->
+      <q-card-section class="q-pt-md">
+        <q-select
+          v-model="almacenSeleccionado"
+          :options="opcionesAlmacenes"
+          label="Seleccionar almacén"
+          outlined
+          emit-value
+          map-options
+          :loading="!opcionesAlmacenes.length"
+          @update:model-value="actualizarGrafico"
+          class="q-mb-md"
+        >
+          <template v-slot:prepend>
+            <q-icon name="warehouse" color="primary" />
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey"> No hay almacenes disponibles </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+      </q-card-section>
 
-    <!-- Gráfico -->
-    <div v-if="mostrarGrafico">
-      <apexchart type="donut" :options="chartOptions" :series="series" height="350"></apexchart>
-    </div>
+      <!-- Gráfico -->
+      <q-card-section v-if="mostrarGrafico">
+        <div
+          class="full-width"
+          :style="{
+            minHeight: $q.screen.lt.md ? '300px' : '400px',
+            height: $q.screen.lt.md ? '40vh' : '50vh',
+            maxHeight: '500px',
+          }"
+        >
+          <VueApexCharts type="donut" height="100%" :options="chartOptions" :series="series" />
+        </div>
+      </q-card-section>
 
-    <!-- Mensaje cuando no hay datos -->
-    <div v-if="!mostrarGrafico" class="text-center q-mt-lg">
-      <div v-if="hayProductosConStockCero">
-        Todos los productos en este almacén tienen stock cero
-      </div>
-      <div v-else>No hay productos en este almacén</div>
-    </div>
-
-    <!-- Depuración -->
-    <div class="q-mt-md" v-if="debugMode">
-      <pre>Productos con stock: {{ productosConStock.length }}</pre>
-      <pre>Total stock: {{ totalStock }}</pre>
-    </div>
+      <!-- Mensaje cuando no hay datos -->
+      <q-card-section v-if="!mostrarGrafico">
+        <div class="text-center q-py-xl">
+          <q-icon
+            :name="hayProductosConStockCero ? 'inventory' : 'info'"
+            size="4rem"
+            :color="hayProductosConStockCero ? 'warning' : 'grey-5'"
+            class="q-mb-md"
+          />
+          <div class="text-h6 text-grey-7">
+            {{
+              hayProductosConStockCero
+                ? 'Todos los productos tienen stock cero'
+                : 'No hay productos en este almacén'
+            }}
+          </div>
+          <div class="text-caption text-grey-6 q-mt-sm">
+            {{ almacenSeleccionado || 'Seleccione un almacén para ver el stock' }}
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useQuasar } from 'quasar'
+import VueApexCharts from 'vue3-apexcharts'
 import * as funGeneral from 'src/composables/FuncionesG'
 
-const debugMode = ref(true) // Cambiar a false en producción
+const $q = useQuasar()
 
 // Datos reactivos
 const Lista_stock = ref([])
@@ -51,11 +91,12 @@ const hayProductosConStockCero = ref(false)
 // Computed properties
 const stockPorAlmacen = computed(() => {
   return Lista_stock.value.reduce((acc, item) => {
-    if (!acc[item.almacen]) acc[item.almacen] = []
-    acc[item.almacen].push({
-      producto: item.producto.trim(),
-      stock: Number(item.stock),
-      codigo: item.codigo,
+    const almacen = item.almacen?.trim() || 'Sin Almacén'
+    if (!acc[almacen]) acc[almacen] = []
+    acc[almacen].push({
+      producto: item.producto?.trim() || 'Sin nombre',
+      stock: Number(item.stock) || 0,
+      codigo: item.codigo?.trim() || 'S/C',
     })
     return acc
   }, {})
@@ -74,38 +115,79 @@ const totalStock = computed(() => {
   return productosConStock.value.reduce((sum, item) => sum + item.stock, 0)
 })
 
-// Configuración del gráfico
+// Configuración del gráfico mejorada
 const chartOptions = ref({
   chart: {
     type: 'donut',
+    height: '100%',
     animations: {
       enabled: true,
+      easing: 'easeinout',
+      speed: 800,
+    },
+    toolbar: {
+      show: true,
+      tools: {
+        download: true,
+      },
     },
   },
   labels: [],
-  colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'],
+  colors: [
+    '#1976D2',
+    '#00897B',
+    '#FB8C00',
+    '#E53935',
+    '#8E24AA',
+    '#5E35B1',
+    '#00ACC1',
+    '#43A047',
+    '#F4511E',
+    '#6D4C41',
+    '#039BE5',
+    '#00897B',
+    '#FFB300',
+    '#E53935',
+    '#8E24AA',
+  ],
   legend: {
-    position: 'right',
+    position: $q.screen.lt.md ? 'bottom' : 'right',
+    horizontalAlign: 'center',
     markers: {
-      width: 10,
-      height: 10,
-      radius: 10,
+      width: 12,
+      height: 12,
+      radius: 12,
     },
     itemMargin: {
-      horizontal: 5,
-      vertical: 5,
+      horizontal: 8,
+      vertical: 4,
     },
     fontSize: '12px',
+    fontWeight: 500,
   },
   plotOptions: {
     pie: {
       donut: {
-        size: '65%',
+        size: '70%',
         labels: {
           show: true,
+          name: {
+            show: true,
+            fontSize: '14px',
+            fontWeight: 600,
+          },
+          value: {
+            show: true,
+            fontSize: '20px',
+            fontWeight: 'bold',
+            formatter: (val) => val,
+          },
           total: {
             show: true,
             label: 'Total Stock',
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#304758',
             formatter: () => totalStock.value.toString(),
           },
         },
@@ -114,19 +196,46 @@ const chartOptions = ref({
   },
   dataLabels: {
     enabled: true,
-    formatter: function (val, { seriesIndex, w }) {
-      return `${w.config.labels[seriesIndex]}: ${val}`
+    formatter: function (val) {
+      return val.toFixed(1) + '%'
     },
     style: {
-      fontSize: '12px',
+      fontSize: '11px',
       fontWeight: 'bold',
+      colors: ['#fff'],
+    },
+    dropShadow: {
+      enabled: true,
+      blur: 3,
+      opacity: 0.8,
     },
   },
   tooltip: {
+    enabled: true,
     y: {
       formatter: (value) => `${value} unidades`,
+      title: {
+        formatter: (seriesName) => seriesName,
+      },
     },
   },
+  responsive: [
+    {
+      breakpoint: 768,
+      options: {
+        legend: {
+          position: 'bottom',
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '65%',
+            },
+          },
+        },
+      },
+    },
+  ],
 })
 
 const series = ref([])
@@ -140,6 +249,10 @@ async function cargarDatos() {
 
     if (!idEmpresa) {
       console.error('ID de empresa no encontrado.')
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudo obtener la información de la empresa',
+      })
       return
     }
 
@@ -154,9 +267,18 @@ async function cargarDatos() {
         almacenSeleccionado.value = opcionesAlmacenes.value[0]
         actualizarGrafico()
       }
+    } else {
+      $q.notify({
+        type: 'info',
+        message: 'No hay datos de stock disponibles',
+      })
     }
   } catch (error) {
     console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar los datos de stock',
+    })
   }
 }
 
@@ -175,11 +297,7 @@ function actualizarGrafico() {
     // Mostrar gráfico con productos que tienen stock
     chartOptions.value = {
       ...chartOptions.value,
-      labels: productosConStock.value.map((p) => `${p.producto} (${p.codigo})`),
-      title: {
-        text: `Stock en ${almacenSeleccionado.value}`,
-        align: 'center',
-      },
+      labels: productosConStock.value.map((p) => `${p.codigo} - ${p.producto}`),
     }
     series.value = productosConStock.value.map((p) => p.stock)
     mostrarGrafico.value = true
@@ -199,11 +317,3 @@ onMounted(() => {
   cargarDatos()
 })
 </script>
-
-<style scoped>
-.stock-almacen-container {
-  width: 100%;
-  height: 100%;
-  padding: 16px;
-}
-</style>
