@@ -52,8 +52,12 @@ import FormCompraEditar from 'src/components/compra/EditarCompra.vue'
 import TableCompra from 'src/components/compra/autCompra.vue'
 import DetalleCompra from 'src/components/compra/DetalleCompra.vue'
 import { useCompraStore } from 'src/stores/compras'
+import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
 
 const compraStore = useCompraStore()
+const { enviarNotificacion } = useNotificaciones()
+
+const tipo = { 1: 'Pedido Compra', 2: 'Pedido Movimiento' }
 
 const $q = useQuasar()
 const idempresa = idempresa_md5()
@@ -106,6 +110,24 @@ async function eliminarCompra(compra) {
           type: 'positive',
           message: response.data.mensaje,
         })
+
+        // Enviar notificación al usuario que creó la compra
+        try {
+          await enviarNotificacion({
+            id_usuario: compra.idusuario_md5,
+            asunto: 'Compra Eliminada',
+            mensaje: `Tu compra solicitada en fecha ${compra.fecha} \n ha sido eliminada.`,
+            datos_adicionales: {
+              url_de_envio: 'registrarcompra',
+              tipo_compra: tipo[Number(compra.tipocompra)],
+              proveedor: compra.proveedor,
+            },
+          })
+          console.log('Notificación enviada exitosamente', compra.idusuario_md5)
+        } catch (notifError) {
+          console.error('Error al enviar notificación:', notifError)
+          // No bloqueamos el flujo si falla la notificación
+        }
       } else {
         $q.notify({
           type: 'negative',
@@ -208,6 +230,7 @@ async function loadRows() {
   try {
     const response = await api.get(`listaCompra/${idempresa}`)
     compras.value = response.data
+    console.log('id de compra', compras.value)
   } catch (error) {
     console.error('Error al cargar compras:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar las compras' })
@@ -276,6 +299,8 @@ function cancelarDetalle() {
 
 async function autorizarCompra(compra) {
   console.log(compra)
+  console.log('detalle compra', compra.idusuario_md5)
+
   $q.dialog({
     title: 'Confirmar',
     message: `¿Confirmar Compra?`,
@@ -284,9 +309,9 @@ async function autorizarCompra(compra) {
   }).onOk(async () => {
     try {
       const verificar = await api.get(`listaDetalleCompra/${compra.id}`)
-      console.log(verificar.data)
       if (verificar.data.length > 0) {
         const point = `actualizarEstadoCompra/${compra.id}/1/${compra.idpedido}/${compra.idalmacen}`
+        ///pepe
         const response = await api.get(point)
         console.log(response)
         if (response.data.estado === 'error') {
@@ -295,6 +320,22 @@ async function autorizarCompra(compra) {
           $q.notify({ type: 'positive', message: response.data.mensaje })
 
           iniciar()
+          try {
+            await enviarNotificacion({
+              id_usuario: compra.idusuario_md5,
+              asunto: 'Compra Autorizada',
+              mensaje: `Tu compra solicitada en fecha ${compra.fecha} \n ha sido autorizada exitosamente.`,
+              datos_adicionales: {
+                url_de_envio: 'registrarcompra',
+                tipo_compra: tipo[Number(compra.tipocompra)],
+                proveedor: compra.proveedor,
+              },
+            })
+            console.log('Notificación enviada exitosamente', compra.idusuario_md5)
+          } catch (notifError) {
+            console.error('Error al enviar notificación:', notifError)
+            // No bloqueamos el flujo si falla la notificación
+          }
         }
       } else {
         $q.notify({ type: 'negative', message: 'No se ingreso ningun producto' })

@@ -51,7 +51,7 @@ export const versionesConfig = [
       { name: 'Reportes', tooltip: 'Generación de PDF de pedidos', icon: 'picture_as_pdf' },
       { name: 'Almacenes', tooltip: 'Sincronización de almacenes', icon: 'warehouse' },
     ],
-    videoUrl: 'https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE', // Reemplazar con el ID real del video
+    videoUrl: 'https://www.youtube.com/embed/v7wT0NREf-0?si=aHJpH-SFyANYhYz9', // Reemplazar con el ID real del video
   },
   {
     id: 3,

@@ -92,6 +92,11 @@ export const menurichard50 = [
             codigo: 'autorizarcompra-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'Adm-Autorizar-Ventas Sin Stock',
+            codigo: 'autorizarventassinstock-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
           // {
           //   titulo: 'Adm-Autorizar-Autorizar Operaciones',
           //   codigo: 'autorizarOperaciones-03afdbd66e7929b125f8597834fa83a4',
@@ -223,20 +228,25 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'V-Inventario Externo-Rotación por Almacén',
-            codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+            titulo: 'V-Inventario Externo-Índices de Rotación',
+            codigo: 'indicesrotacion-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'V-Inventario Externo-Rotación Global',
-            codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'V-Inventario Externo- Rotación por Cliente',
-            codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'V-Inventario Externo-Rotación por Almacén',
+          //   codigo: 'reportedeindicederotacionporalmacen-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'V-Inventario Externo-Rotación Global',
+          //   codigo: 'reportedeindicederotacionglobal-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'V-Inventario Externo- Rotación por Cliente',
+          //   codigo: 'reportedeindicederotacionporcliente-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'V-Inventario Externo- Caducidad de Productos',
             codigo: 'reportedecaducidaddeproductos-03afdbd66e7929b125f8597834fa83a4',
@@ -298,7 +308,7 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'Configuración-General-Credenciales de Servicios',
+            titulo: 'Configuración-General-Credenciales Servicios',
             codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
@@ -374,11 +384,11 @@ export const menurichard50 = [
             codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Actualizaciones',
-            codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Actualizaciones',
+          //   codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Permisos Usuarios',
             codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
@@ -619,6 +629,18 @@ export const menurichard50 = [
       //     },
       //   ],
       // },
+      {
+        usuario: '03afdbd66e7929b125f8597834fa83a4',
+        titulo: 'Ayuda',
+        codigo: 'ayuda',
+        submenu: [
+          {
+            titulo: 'Actualizaciones',
+            codigo: 'actualizacionescomercial-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+        ],
+      },
     ],
   },
 ]
