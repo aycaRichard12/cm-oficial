@@ -3558,53 +3558,84 @@ export function DPF_REPORTE_PRODUCTO_ASIGNADOS(productoLista, almacen) {
 
 export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-
+  console.log('estos son los detalles del pedido', detallePedido)
   const columns = [
     { header: 'N°', dataKey: 'indice' },
+    { header: 'Código', dataKey: 'codigo' },
+    { header: 'Producto', dataKey: 'producto' },
     { header: 'Descripción', dataKey: 'descripcion' },
+    { header: 'Observación', dataKey: 'observacion' },
     { header: 'Cantidad', dataKey: 'cantidad' },
+    { header: 'Unidad', dataKey: 'unidad' },
   ]
 
   const detallePlano = JSON.parse(JSON.stringify(detallePedido.value))
 
   const datos = detallePlano[0].detalle.map((item, indice) => ({
     indice: indice + 1,
+    codigo: item.codigo,
+    producto: item.producto,
     descripcion: item.descripcion,
+    observacion: item.observacion,
     cantidad: decimas(item.cantidad),
+    unidad: item.unidad,
   }))
 
   const columnStyles = {
+
     indice: { cellWidth: 15, halign: 'center' },
-    descripcion: { cellWidth: 100, halign: 'left' },
-    cantidad: { cellWidth: 80, halign: 'right' },
+    codigo: { cellWidth: 25, halign: 'center' },
+    producto: { cellWidth: 25, halign: 'center' },
+    descripcion: { cellWidth: 46, halign: 'center' },
+    observacion: { cellWidth: 45, halign: 'center' },
+    cantidad: { cellWidth: 25, halign: 'center' },
+    unidad: { cellWidth: 15, halign: 'center' },
   }
   const headerColumnStyles = {
     indice: { halign: 'center' },
-    descripcion: { halign: 'left' },
-    cantidad: { halign: 'right' },
+    codigo: { halign: 'center'},
+    producto: { halign: 'center' },
+    descripcion: { halign: 'center' },
+    cantidad: { halign: 'center' },
+    unidad: { halign: 'center' },
   }
   const cliente = `${detallePlano[0].almacen}`
+  const almacen_origen = `${detallePlano[0].almacen_origen}`
   const Izquierda = {
     titulo: 'DATOS ORDEN',
     campos: [
-      { label: 'Cliente', valor: cliente || '' },
-      { label: 'Fecha de Orden', valor: detallePlano[0].fecha || '' },
+      { label: 'Almacén solicitante', valor: cliente || '' },
+      { label: 'Almacén origen', valor: almacen_origen || '' },
+      { label: 'Fecha de Orden', valor: cambiarFormatoFecha(detallePlano[0].fecha) || '' },
+       { label: 'Tipo', valor: tipo[detallePlano[0].tipopedido] || '' },
     ],
   }
+  const usuarioData = detallePlano[0].usuarios?.[0]?.[0] || {}
+
+const autorizacion = Number(detallePlano[0].autorizacion) == 1 
+  ? 'Autorizado' 
+  : 'No Autorizado'
+const estadoCompraEnvio = Number(detallePlano[0].estado) == 1 
+  ? 'Procesado' 
+  : 'Pendiente'
   const derecho = {
-    titulo: 'DATOS DEL USUARIO',
+    titulo: 'USUARIO SOLICITANTE',
     campos: [
-      { label: '', valor: detallePlano[0].usuarios[0].usuario || '' },
-      { label: '', valor: detallePlano[0].usuarios[0].cargo || '' },
-      { label: 'Tipo', valor: tipo[detallePlano[0].tipopedido] || '' },
+      { label: 'Usuario', valor: usuarioData.usuario || '' },
+      { label: 'Cargo', valor: usuarioData.cargo || '' },
+      { label: 'Estado Autotrización', valor: autorizacion || '' },
+      { label: 'Estado Compra/Envío', valor: estadoCompraEnvio || '' },
+     
     ],
   }
+
+  const tituloReporte = `ORDEN PEDIDO N° ${detallePlano[0].nropedido}`
 
   dibujarCuerpoTabla(
     doc,
     columns,
     datos,
-    'ORDEN PEDIDO',
+    tituloReporte,
     columnStyles,
     headerColumnStyles,
     Izquierda,
