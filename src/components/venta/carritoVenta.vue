@@ -149,22 +149,25 @@
                 </template>
               </q-select>
             </div>
-            <div class="q-ma-md flex justify-around" style="width: 80px; height: 80px">
-              <q-img
-                :src="imagen + productoSeleccionado?.originalData?.imagen || null"
-                @click="mostrarGrande = true"
-                style="max-width: 70px; max-height: 70px; cursor: pointer"
-                spinner-color="primary"
-              >
-                <template v-slot:error>
-                  <div
-                    class="column items-center justify-center bg-grey-3"
-                    style="height: 100%; width: 100%"
-                  >
-                    <q-icon name="image_not_supported" size="md" color="grey-7" />
-                  </div>
-                </template>
-              </q-img>
+            <div class="q-ma-md flex justify-around" style="width: 120px; height: 120px">
+        <q-img
+          :src="imagen + productoSeleccionado?.originalData?.imagen || null"
+          @click="mostrarGrande = true"
+          fit="contain"
+          style="width: 100%; cursor: pointer"
+          spinner-color="primary"
+        >
+          <template v-slot:error>
+            <div
+              class="column items-center justify-center bg-grey-3"
+              style="height: 100%; width: 100%"
+            >
+              <q-icon name="image_not_supported" size="md" color="grey-7" />
+            </div>
+          </template>
+        </q-img>
+
+
 
               <q-dialog v-model="mostrarGrande">
                 <q-card class="responsive-dialog">
