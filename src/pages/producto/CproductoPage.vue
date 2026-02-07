@@ -79,7 +79,7 @@ async function loadRows() {
 
     console.log('Endpoint:', point)
     response = await api.get(`${point}`) // Cambia a tu ruta con factura
-    console.log(response)
+    console.log('estos son los datos',response.data)
     productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
     // Asume que la API devuelve un array
   } catch (error) {
@@ -244,24 +244,25 @@ async function loadmedidas() {
 }
 
 const handleSubmit = async (data) => {
-  console.log(data)
-  if (data.categoria || data.categoria == '') {
-    console.log('entro')
-    data.categoria = data.subcategoria
-  }
-  console.log(data)
+  console.log('=== PAGE HANDLESUBMIT DEBUG ===')
+  console.log('Received data from form:', data)
+  console.log('data.categoria:', data.categoria)
+  console.log('data.subcategoria:', data.subcategoria)
+  
   const formData = objectToFormData(data)
+  
+  console.log('=== FormData entries ===')
   for (let [k, v] of formData.entries()) {
     console.log(`${k}: ${v}`)
   }
+  
   try {
     if (isEditing.value) {
       const response = await api.post(``, formData)
-      console.log(response.data)
+      console.log('Edit response:', response.data)
     } else {
       const response = await api.post(``, formData)
-
-      console.log(response.data)
+      console.log('Create response:', response.data)
     }
     $q.notify({
       type: 'positive',
@@ -297,9 +298,15 @@ const editUnit = async (row) => {
   const endpoint = `verificarExistenciaProducto/${row.id}/${token}/${tipo}`
   console.log(endpoint)
   const response = await api.get(endpoint) // Cambia a tu ruta real
-  console.log(response.data)
+  console.log('API Response:', response.data)
   const item = response.data.datos
-  console.log(item)
+  console.log('Item data:', item)
+  
+  // Handle subcategoria - it might be missing, null, 0, or empty string
+  const subcategoriaValue = item.idsubcategoria && item.idsubcategoria !== '0' && item.idsubcategoria !== 0 
+    ? item.idsubcategoria 
+    : null
+  
   formData.value = {
     ver: 'editarProducto',
     id: item.id,
@@ -308,18 +315,20 @@ const editUnit = async (row) => {
     nombre: item.nombre,
     descripcion: item.descripcion,
     codigobarras: item.codbarras,
-    categoria: item.idsubcategoria,
-    subcategoria: item.idcategoria,
+    categoria: item.idcategoria,
+    subcategoria: subcategoriaValue,
     estadoproductos: item.idestadoproducto,
     unidad: item.idunidad,
     medida: item.idmedida,
-    caracteristica: item.caracteristica,
+    caracteristica: item.caracteristica && item.caracteristica !== '0' ? item.caracteristica : '',
     vista: imagen + item.imagen,
     imagen: item.imagen,
-    codigosin: tipoFactura ? item.productosin[0].codigo : '',
-    unidadsin: tipoFactura ? item.unidadsin[0].codigo : '',
-    codigoNandina: tipoFactura ? item.codigonandina : '',
+    codigosin: tipoFactura && item.productosin && item.productosin[0] ? item.productosin[0].codigo : '',
+    unidadsin: tipoFactura && item.unidadsin && item.unidadsin[0] ? item.unidadsin[0].codigo : '',
+    codigoNandina: tipoFactura && item.codigonandina && item.codigonandina !== '0' ? item.codigonandina : '',
   }
+  
+  console.log('FormData to load:', formData.value)
   loadsubcategorias(item.idcategoria)
   isEditing.value = true
   showForm.value = true

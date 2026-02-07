@@ -84,6 +84,15 @@
                 color="grey"
                 @click="$emit('toggle-status', props.row)"
               />
+              <q-btn
+                icon="notifications"
+                color="warning"
+                dense
+                flat
+                @click="abrirDialogNotificacion(props.row)"
+              >
+                <q-tooltip>Enviar Notificación</q-tooltip>
+              </q-btn>
             </div>
           </q-td>
         </template>
@@ -96,6 +105,13 @@
       :compra="compra"
       @cerrarCredito="closeModalCredito"
     />
+
+    <!-- Dialog de Notificación -->
+    <NotificacionDialog
+      v-model="dialogNotificacionOpen"
+      :title="tituloNotificacion"
+      @notificacion-enviada="onNotificacionEnviada"
+    />
   </q-page>
 </template>
 
@@ -107,6 +123,7 @@ import { decimas, redondear } from 'src/composables/FuncionesG'
 import CompraActions from './CompraActions.vue'
 import CompraFilters from './CompraFilters.vue'
 import CompraDialogs from './CompraDialogs.vue'
+import NotificacionDialog from 'src/components/pusher-notificaciones/NotificacionDialog.vue'
 import { useQuasar } from 'quasar'
 import { showDialog } from 'src/utils/dialogs'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -146,6 +163,10 @@ const filtroAlmacen = ref(null)
 const mostrarModal = ref(false)
 const credito = ref(false)
 const compra = ref({})
+
+// Estado para el dialog de notificación
+const dialogNotificacionOpen = ref(false)
+const compraSeleccionada = ref(null)
 const columnas = [
   {
     name: 'numero',
@@ -268,6 +289,11 @@ const processedRows = computed(() => {
   }))
 })
 
+const tituloNotificacion = computed(() => {
+  if (!compraSeleccionada.value) return 'Enviar Notificación'
+  return `Notificación - Compra ${compraSeleccionada.value.codigo} (${compraSeleccionada.value.proveedor})`
+})
+
 watch(
   () => props.almacenSeleccionado,
   (nuevoAlmacen) => {
@@ -317,6 +343,27 @@ async function imprimirReporte() {
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
   mostrarModal.value = true
+}
+
+const abrirDialogNotificacion = (compra) => {
+  compraSeleccionada.value = compra
+  dialogNotificacionOpen.value = true
+}
+
+const onNotificacionEnviada = (datos) => {
+  console.log('Notificación enviada para compra:', compraSeleccionada.value)
+  console.log('Datos de notificación:', datos)
+
+  $q.notify({
+    type: 'positive',
+    message: `Notificación enviada para la compra ${compraSeleccionada.value.codigo}`,
+    position: 'top',
+    icon: 'check_circle',
+    timeout: 2500,
+  })
+
+  // Resetear selección
+  compraSeleccionada.value = null
 }
 
 onMounted(async () => {

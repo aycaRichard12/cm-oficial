@@ -139,8 +139,10 @@ import { PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE } from '../../utils/pdfReportGenera
 import { PDF_REPORTE_GESTION_PEDIDOS } from '../../utils/pdfReportGenerator'
 import { useRouter } from 'vue-router'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
 
 const { mostrarDialogoWhatsapp } = useWhatsapp()
+const { enviarNotificacion } = useNotificaciones()
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 
@@ -222,7 +224,12 @@ const onSubmit = async () => {
   try {
     const response = await api.get(`reportepedidos/${idusuario}/${fechai.value}/${fechaf.value}`) // Cambia a tu ruta real
     rows.value = response.data // Asume que la API devuelve un array
-    console.log(rows.value)
+    console.log('datos de la fila', rows.value)
+    // Debug: Ver el primer elemento completo para identificar campos disponibles
+    if (rows.value.length > 0) {
+      console.log('Primer pedido completo:', rows.value[0])
+      console.log('Campos disponibles:', Object.keys(rows.value[0]))
+    }
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -245,6 +252,7 @@ const processedRows = computed(() => {
     idalmacenorigen: row.idalmacenorigen,
     almacenorigen: row.almacenorigen,
     idusuario: row.idusuario,
+    idusuariomd5: row.idusuariomd5, // Agregar el campo MD5 del usuario
     nropedido: row.nropedido,
     nro: index + 1,
   }))
@@ -260,7 +268,7 @@ const filterPedido = computed(() => {
 const getDatallePedido = async (id) => {
   try {
     const response = await api.get(`getPedido_/${id}/${idempresa}`) // Cambia a tu ruta real
-    console.log(response.data)
+    console.log('detalle pedido', response.data)
     detallePedido.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -307,7 +315,7 @@ const vistaPrevia = () => {
 const toggleStatus = async (item) => {
   try {
     const responsev = await api.get(`verificarDetallePedido/${item.id}`)
-    console.log(responsev.data)
+    console.log('informacion necesaria', responsev.data)
     if (!responsev.data.tieneDetalle) {
       $q.notify({
         type: 'negative',
@@ -332,6 +340,25 @@ const toggleStatus = async (item) => {
         } else {
           onSubmit()
           enviarPDFPorWhatsApp(item) // llamada a función si es exitosa
+          console.log('item', item)
+          // Enviar notificación al usuario que creó el pedido
+          try {
+            await enviarNotificacion({
+              id_usuario: item.idusuariomd5,
+
+              asunto: 'Pedido Autorizado',
+              mensaje: `Tu pedido solicitado en fecha ${item.fecha} \n ha sido autorizado exitosamente.`,
+              datos_adicionales: {
+                url_de_envio: 'generarpedido',
+                tipo_pedido: tipo[Number(item.tipopedido)],
+                almacen: item.almacen,
+              },
+            })
+            console.log('Notificación enviada exitosamente', item.idusuariomd5)
+          } catch (notifError) {
+            console.error('Error al enviar notificación:', notifError)
+            // No bloqueamos el flujo si falla la notificación
+          }
         }
       } catch (error) {
         console.error('Error al autorizar el pedido:', error)
@@ -365,6 +392,24 @@ const confirmDelete = (item) => {
           type: 'positive',
           message: response.data.mensaje,
         })
+
+        // Enviar notificación al usuario que creó el pedido
+        try {
+          await enviarNotificacion({
+            id_usuario: item.idusuariomd5,
+            asunto: 'Pedido Eliminado',
+            mensaje: `Tu pedido solicitado en fecha ${item.fecha} \n ha sido eliminado.`,
+            datos_adicionales: {
+              url_de_envio: 'generarpedido',
+              tipo_pedido: tipo[Number(item.tipopedido)],
+              almacen: item.almacen,
+            },
+          })
+          console.log('Notificación enviada exitosamente', item.idusuariomd5)
+        } catch (notifError) {
+          console.error('Error al enviar notificación:', notifError)
+          // No bloqueamos el flujo si falla la notificación
+        }
       } else {
         $q.notify({
           type: 'negative',
