@@ -1889,7 +1889,7 @@ export async function PDFenviarFacturaCorreoAlInicio(idcliente, detalleVenta, $q
 export function DPFReporteCotizacion(cotizaciones, almacen) {
   console.log(cotizaciones.value)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-
+  console.log('estas son las cotizacoines', cotizaciones)
   // Columns for jsPDF-autoTable
   const columns = [
     { header: 'N', dataKey: 'nro' },
@@ -1902,7 +1902,16 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-  const datos = cotizaciones.value.map((key) => ({
+
+function parseFecha(fecha) {
+  const [dia, mes, anio] = fecha.split('/')
+  return new Date(anio, mes - 1, dia)
+}
+
+
+const datos = [...cotizaciones.value]
+  .sort((a, b) => parseFecha(a.fecha) - parseFecha(b.fecha))
+  .map((key) => ({
     nro: key.nro,
     fecha: key.fecha,
     cliente: key.cliente,
@@ -1911,6 +1920,8 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
     descuento: decimas(parseFloat(key.descuento)),
     total_sumatorias: decimas(parseFloat(key.total_sumatorias)),
   }))
+
+
   // Data for jsPDF-autoTable - map from `reportData.
   // value`
 
