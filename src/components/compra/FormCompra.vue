@@ -162,19 +162,58 @@ const verificar = () => {
   conPEdido.value = tipo == 1
 }
 async function cargarPedidos() {
+  console.log('=== CARGANDO PEDIDOS ===')
+  console.log('props.almacenes:', props.almacenes)
+  console.log('props.almacenes.length:', props.almacenes?.length)
+  
+  if (!props.almacenes || props.almacenes.length === 0) {
+    console.warn('No hay almacenes disponibles para cargar pedidos')
+    pedidos.value = []
+    return
+  }
+  
   try {
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
+    console.log('IDs de almacenes:', idAlmacenes)
+    
     const response = await api.get(`listaPedido/${idempresa}`)
-    console.log(response.data)
-    console.log(idAlmacenes)
+    console.log('Respuesta API pedidos:', response.data)
+    console.log('Total pedidos recibidos:', response.data.length)
+    
     const filtrados = response.data.filter(
-      (item) => idAlmacenes.includes(item.idalmacen) && item.estado == 2 && item.autorizacion == 1,
+      (item) => {
+        // Convert to number for comparison since API returns strings
+        const idAlmacenNum = Number(item.idalmacen)
+        const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
+        const cumpleEstado = Number(item.estado) == 2  // Pendiente
+        const cumpleAutorizacion = Number(item.autorizacion) == 1  // Autorizado
+        const cumpleTipoPedido = Number(item.tipopedido) == 1  // Solo pedidos de compra
+        
+        console.log(`Pedido ${item.id}:`, {
+          idalmacen: item.idalmacen,
+          idAlmacenNum,
+          cumpleAlmacen,
+          estado: item.estado,
+          cumpleEstado,
+          autorizacion: item.autorizacion,
+          cumpleAutorizacion,
+          tipopedido: item.tipopedido,
+          cumpleTipoPedido,
+          pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
+        })
+        
+        return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
+      }
     )
+    
+    console.log('Pedidos filtrados:', filtrados)
+    
     PedidosAlmacen.value = filtrados
     pedidos.value = filtrados.map((item) => ({
       label: `${item.almacen} - ${item.observacion || 'Sin observación'}`,
       value: item.id,
     }))
+    console.log('Pedidos formateados para select:', pedidos.value)
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -205,12 +244,25 @@ function filterFn(val, update) {
 watch(
   () => props.almacenes,
   (newVal) => {
-    if (newVal.length > 0) {
+    console.log('Watch almacenes triggered, length:', newVal?.length)
+    if (newVal && newVal.length > 0) {
       cargarPedidos()
     }
   },
   { immediate: true },
 )
+
+// Cargar pedidos cuando se activa "con pedido"
+watch(
+  () => conPEdido.value,
+  (newVal) => {
+    console.log('Watch conPEdido triggered:', newVal)
+    if (newVal && props.almacenes && props.almacenes.length > 0) {
+      cargarPedidos()
+    }
+  },
+)
+
 // asignar almacen si selecciona un pedido
 watch(
   () => localData.value.pedido,
@@ -219,17 +271,18 @@ watch(
     if (pedido) {
       localData.value.almacen = pedido.idalmacen
     }
-    console.log(localData.value.almacen)
+    console.log('Almacén asignado:', localData.value.almacen)
   },
 )
 // Resetear pedido si cambia tipoRegistro
 watch(
   () => localData.value.tipoRegistro,
   (newVal) => {
-    if (newVal === '2') {
+    console.log('Watch tipoRegistro triggered:', newVal)
+    if (newVal === '2' || newVal === 2) {
       localData.value.pedido = null
       localData.value.almacen = null
-    } else if (newVal === '1') {
+    } else if (newVal === '1' || newVal === 1) {
       localData.value.almacen = null
     }
   },
