@@ -362,60 +362,12 @@
       @closed="redirectToAssignment"
     />
   </div>
+  <SolicitudesDialog
+    v-model="showSolicitudesDialog"
+    :title="tituloNotificacion"
+    @solicitud-enviada="onSolicitudEnviada"
+  />
 </template>
-
-<style scoped>
-.my-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.bg-gradient {
-  background: linear-gradient(to right, #219286, #044e49);
-}
-
-.text-white {
-  color: #ffffff;
-}
-
-.text-grey-8 {
-  color: #424242;
-}
-
-.text-primary {
-  color: #219286 !important;
-}
-
-.text-accent {
-  color: #f2c037 !important;
-}
-
-.bg-grey-1 {
-  background-color: #f5f5f5;
-}
-
-.q-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.q-table th {
-  font-weight: bold;
-  background-color: #f0f0f0;
-  color: #424242;
-}
-
-.q-btn {
-  font-weight: 500;
-  text-transform: none;
-}
-
-/* Typography */
-body {
-  font-family: 'Roboto', 'Open Sans', 'Lato', sans-serif;
-}
-</style>
-
 <script setup>
 import { ref, computed, onMounted, defineExpose, watch } from 'vue'
 import { useQuasar } from 'quasar'
@@ -425,11 +377,14 @@ import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import { imagen } from 'src/boot/url'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
+import SolicitudesDialog from './SolicitudesDialog.vue'
 // import { showDialog } from 'src/utils/dialogs'
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
 leyendaActiva.cargarLeyendaActivo()
+const showSolicitudesDialog = ref(false)
+const tituloNotificacion = ref('Solicitud de permiso para venta sin stock')
 
 console.log(divisaActiva)
 console.log(leyendaActiva)
@@ -516,6 +471,17 @@ const columnasCarrito = [
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
 ]
 
+const onSolicitudEnviada = (datos) => {
+  console.log('Solicitud enviada con los siguientes datos:', datos)
+
+  $q.notify({
+    type: 'positive',
+    message: `Solicitud enviada para venta sin stock ${datos}`,
+    position: 'top',
+    icon: 'check_circle',
+    timeout: 2500,
+  })
+}
 const validarDescripcion = async (scope, row) => {
   console.log(scope.value)
 
@@ -559,21 +525,37 @@ const puedeAgregarProducto = computed(() => {
 })
 
 const permitirStockvacio = () => {
-  permitirStock.value = !permitirStock.value
-  if (!permitirStock.value) {
-    const datos = JSON.parse(localStorage.getItem('carrito')) || {}
+  if (verificarPermisoVentaSinStock()) {
+    permitirStock.value = !permitirStock.value
+    if (!permitirStock.value) {
+      const datos = JSON.parse(localStorage.getItem('carrito')) || {}
 
-    const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
+      const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
 
-    const facturados =
-      Array.isArray(datos.listaProductosFactura) && datos.listaProductosFactura.length > 0
+      const facturados =
+        Array.isArray(datos.listaProductosFactura) && datos.listaProductosFactura.length > 0
 
-    const carrito = Array.isArray(carritoPrueba.value) && carritoPrueba.value.length > 0
+      const carrito = Array.isArray(carritoPrueba.value) && carritoPrueba.value.length > 0
 
-    if (carrito || facturados || productos) {
-      emit('reiniciar')
+      if (carrito || facturados || productos) {
+        emit('reiniciar')
+      }
     }
+  } else {
+    solicitarPermisoVentaSinStock()
   }
+}
+const verificarPermisoVentaSinStock = () => {
+  // Aquí puedes implementar la lógica para verificar si el usuario tiene permiso para venta sin stock
+  // Por ejemplo, podrías hacer una llamada a la API o revisar un estado global de permisos
+  // Para este ejemplo, vamos a simular que el usuario no tiene permiso y mostrar el diálogo de solicitud
+
+  return false
+}
+const solicitarPermisoVentaSinStock = () => {
+  // Aquí puedes implementar la lógica para mostrar el diálogo de solicitud de permiso
+  // Por ejemplo, podrías abrir un componente de diálogo donde el usuario pueda enviar una solicitud al administrador
+  showSolicitudesDialog.value = true
 }
 
 const subTotal = computed(() => {
@@ -1043,3 +1025,54 @@ onMounted(async () => {
   }
 })
 </script>
+<style scoped>
+.my-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.bg-gradient {
+  background: linear-gradient(to right, #219286, #044e49);
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-grey-8 {
+  color: #424242;
+}
+
+.text-primary {
+  color: #219286 !important;
+}
+
+.text-accent {
+  color: #f2c037 !important;
+}
+
+.bg-grey-1 {
+  background-color: #f5f5f5;
+}
+
+.q-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.q-table th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  color: #424242;
+}
+
+.q-btn {
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* Typography */
+body {
+  font-family: 'Roboto', 'Open Sans', 'Lato', sans-serif;
+}
+</style>
