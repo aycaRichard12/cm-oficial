@@ -1,0 +1,126 @@
+{
+    '$id': 'almacen',
+    almacenesResponsable: Array(6) [
+      {
+        id: 256,
+        idresponsable: 148,
+        idalmacen: 97,
+        almacen: 'Almacén - Real',
+        fecha: '2026-02-03',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
+        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
+      },
+      {
+        id: 251,
+        idresponsable: 148,
+        idalmacen: 129,
+        almacen: 'almacén - pepe',
+        fecha: '2026-01-27',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
+        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
+      },
+      {
+        id: 232,
+        idresponsable: 148,
+        idalmacen: 31,
+        almacen: 'Sacaba',
+        fecha: '2026-01-15',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 231,
+        idresponsable: 148,
+        idalmacen: 33,
+        almacen: 'céntrál',
+        fecha: '2026-01-15',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 210,
+        idresponsable: 148,
+        idalmacen: 18,
+        almacen: 'Almacén Fábrica',
+        fecha: '2025-09-17',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 209,
+        idresponsable: 148,
+        idalmacen: 93,
+        almacen: 'Bodega Norte Quillacollo',
+        fecha: '2025-09-17',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '98dce83da57b0395e163467c9dae521b',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      }
+    ],
+    almacenes: Array(6) [
+      {
+        id: 256,
+        idresponsable: 148,
+        idalmacen: 97,
+        almacen: 'Almacén - Real',
+        fecha: '2026-02-03',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
+        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
+      },
+      {
+        id: 251,
+        idresponsable: 148,
+        idalmacen: 129,
+        almacen: 'almacén - pepe',
+        fecha: '2026-01-27',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
+        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
+      },
+      {
+        id: 232,
+        idresponsable: 148,
+        idalmacen: 31,
+        almacen: 'Sacaba',
+        fecha: '2026-01-15',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 231,
+        idresponsable: 148,
+        idalmacen: 33,
+        almacen: 'céntrál',
+        fecha: '2026-01-15',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 210,
+        idresponsable: 148,
+        idalmacen: 18,
+        almacen: 'Almacén Fábrica',
+        fecha: '2025-09-17',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      },
+      {
+        id: 209,
+        idresponsable: 148,
+        idalmacen: 93,
+        almacen: 'Bodega Norte Quillacollo',
+        fecha: '2025-09-17',
+        idusuario: '03afdbd66e7929b125f8597834fa83a4',
+        idalmacenM: '98dce83da57b0395e163467c9dae521b',
+        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
+      }
+    ],
