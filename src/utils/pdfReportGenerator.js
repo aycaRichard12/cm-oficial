@@ -274,8 +274,9 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
 
   // Ruta relativa o base64
   const columns = [
-    { header: 'Nombre', dataKey: 'nombre' },
+    { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
+    { header: 'Nombre', dataKey: 'nombre' },
     { header: 'NIT', dataKey: 'nit' },
     { header: 'Detalle', dataKey: 'detalle' },
     { header: 'Dirección', dataKey: 'direccion' },
@@ -288,23 +289,27 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
     { header: 'Zona', dataKey: 'zona' },
     { header: 'Contacto', dataKey: 'contacto' },
   ]
+  //mostrar del mas antiguo al mas nuevo
+// mostrar del más antiguo al más nuevo
+const datos = filtrarProveedores.map((item, index) => ({
+  indice: index + 1,
+  nombre: item.nombre,
+  codigo: item.codigo,
+  nit: item.nit,
+  detalle: item.detalle,
+  direccion: item.direccion,
+  telefono: item.telefono,
+  movil: item.mobil,
+  email: item.email,
+  web: item.web,
+  pais: item.pais,
+  ciudad: item.ciudad,
+  zona: item.zona,
+  contacto: item.contacto
+}))
 
-  const datos = filtrarProveedores.map((item) => ({
-    nombre: item.nombre,
-    codigo: item.codigo,
-    nit: item.nit,
-    detalle: item.detalle,
-    direccion: item.direccion,
-    telefono: item.telefono,
-    mobil: item.mobil,
-    email: item.email,
-    web: item.web,
-    pais: item.pais,
-    ciudad: item.ciudad,
-    zona: item.zona,
-    contacto: item.contacto,
-  }))
   const columnStyles = {
+    indice: { cellWidth: 10, halign: 'center' },
     nombre: { cellWidth: 20, halign: 'left' },
     codigo: { cellWidth: 15, halign: 'left' },
     nit: { cellWidth: 20, halign: 'right' },
