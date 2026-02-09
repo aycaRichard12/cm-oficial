@@ -80,6 +80,58 @@ function getEstadoText(estado) {
   return estados[Number(estado)] || ''
 }
 
+/**
+ * Crea una fila de total general con formato de colSpan para jsPDF-autoTable
+ * 
+ * @param {string} label - Texto del label (ej: "TOTAL GENERAL")
+ * @param {Array<{valor: number, halign?: string}>} columnasTotales - Array de objetos con los valores de totales
+ * @param {number} colSpan - Número de columnas que ocupará el label (default: 6)
+ * @returns {Array} Fila formateada para jsPDF-autoTable con colSpan
+ * 
+ * @example
+ * // Ejemplo básico con 2 columnas de totales
+ * const filaTota = crearFilaTotalGeneral(
+ *   `TOTAL GENERAL (${divisaActiva})`,
+ *   [
+ *     { valor: 123.50, halign: 'center' },
+ *     { valor: 980.00, halign: 'center' }
+ *   ],
+ *   6
+ * )
+ * datos.push(filaTota)
+ */
+export function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
+  const fila = [
+    {
+      content: label,
+      colSpan: colSpan || 6,
+      styles: {
+        halign: 'right',
+        fontStyle: 'bold',
+        // fillColor: [240, 230, 240],
+        lineWidth: { top: 0.3, bottom: 0.3 },
+        lineColor: [0, 0, 0], 
+      },
+    },
+  ]
+
+  // Agregar las columnas de totales
+  columnasTotales.forEach((columna) => {
+    fila.push({
+      content: decimas(columna.valor),
+      styles: {
+        halign: columna.halign || 'center',
+        fontStyle: 'bold',
+        // pintar bordes una sola vez
+        lineWidth: { top: 0.3, bottom: 0.3,  left: 0.3},
+        lineColor: [0, 0, 0], 
+      },
+    })
+  })
+
+  return fila
+}
+
 export function PDF_DETALLE_PEDIDO(detalle_pedido) {
   console.log(detalle_pedido)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -290,23 +342,23 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
     { header: 'Contacto', dataKey: 'contacto' },
   ]
   //mostrar del mas antiguo al mas nuevo
-// mostrar del más antiguo al más nuevo
-const datos = filtrarProveedores.map((item, index) => ({
-  indice: index + 1,
-  nombre: item.nombre,
-  codigo: item.codigo,
-  nit: item.nit,
-  detalle: item.detalle,
-  direccion: item.direccion,
-  telefono: item.telefono,
-  movil: item.mobil,
-  email: item.email,
-  web: item.web,
-  pais: item.pais,
-  ciudad: item.ciudad,
-  zona: item.zona,
-  contacto: item.contacto
-}))
+  // mostrar del más antiguo al más nuevo
+  const datos = filtrarProveedores.map((item, index) => ({
+    indice: index + 1,
+    nombre: item.nombre,
+    codigo: item.codigo,
+    nit: item.nit,
+    detalle: item.detalle,
+    direccion: item.direccion,
+    telefono: item.telefono,
+    movil: item.mobil,
+    email: item.email,
+    web: item.web,
+    pais: item.pais,
+    ciudad: item.ciudad,
+    zona: item.zona,
+    contacto: item.contacto,
+  }))
 
   const columnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
@@ -889,10 +941,17 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     0,
   )
 
-  datos.push({
-    costounitario: `Total: (${divisaActiva})`,
-    costo: decimas(costoTotal),
-  })
+  // datos.push({
+  //   costounitario: `Total: (${divisaActiva})`,
+  //   costo: decimas(costoTotal),
+  // })
+  datos.push(
+    crearFilaTotalGeneral(
+      `TOTAL GENERAL (${divisaActiva})`,
+      [{ valor: costoTotal, halign: 'right' }],
+      9,   
+    )
+  )
 
   /* =========================
    * 4. ESTILOS
@@ -940,6 +999,7 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     columnStyles,
     headerColumnStyles,
     Izquierda,
+
     null,
     true,
     null,
@@ -1504,12 +1564,25 @@ export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
     0,
   )
 
-  datos.push({
-    canal: 'Total Sumatorias',
-    total: decimas(total),
-    descuento: decimas(descuento),
-    ventatotal: decimas(total + descuento),
-  })
+  // datos.push({
+  //   canal: 'Total Sumatorias',
+  //   total: decimas(total),
+  //   descuento: decimas(descuento),
+  //   ventatotal: decimas(total + descuento),
+  // })
+
+  datos.push(
+    crearFilaTotalGeneral(
+      `Total Sumatorias (${divisaActiva})`,
+      [
+        { valor: total, halign: 'right' },
+        { valor: descuento, halign: 'right' },
+        { valor: total + descuento, halign: 'right' },
+      ],
+      8,
+    )
+  )
+
   const columnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
     fecha: { cellWidth: 20, halign: 'left' },
@@ -1903,24 +1976,22 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
 
-function parseFecha(fecha) {
-  const [dia, mes, anio] = fecha.split('/')
-  return new Date(anio, mes - 1, dia)
-}
+  function parseFecha(fecha) {
+    const [dia, mes, anio] = fecha.split('/')
+    return new Date(anio, mes - 1, dia)
+  }
 
-
-const datos = [...cotizaciones.value]
-  .sort((a, b) => parseFecha(a.fecha) - parseFecha(b.fecha))
-  .map((key) => ({
-    nro: key.nro,
-    fecha: key.fecha,
-    cliente: key.cliente,
-    sucursal: key.sucursal,
-    monto: decimas(parseFloat(key.monto)),
-    descuento: decimas(parseFloat(key.descuento)),
-    total_sumatorias: decimas(parseFloat(key.total_sumatorias)),
-  }))
-
+  const datos = [...cotizaciones.value]
+    .sort((a, b) => parseFecha(a.fecha) - parseFecha(b.fecha))
+    .map((key) => ({
+      nro: key.nro,
+      fecha: key.fecha,
+      cliente: key.cliente,
+      sucursal: key.sucursal,
+      monto: decimas(parseFloat(key.monto)),
+      descuento: decimas(parseFloat(key.descuento)),
+      total_sumatorias: decimas(parseFloat(key.total_sumatorias)),
+    }))
 
   // Data for jsPDF-autoTable - map from `reportData.
   // value`
@@ -3593,7 +3664,6 @@ export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
   }))
 
   const columnStyles = {
-
     indice: { cellWidth: 15, halign: 'center' },
     codigo: { cellWidth: 25, halign: 'center' },
     producto: { cellWidth: 25, halign: 'center' },
@@ -3604,7 +3674,7 @@ export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
   }
   const headerColumnStyles = {
     indice: { halign: 'center' },
-    codigo: { halign: 'center'},
+    codigo: { halign: 'center' },
     producto: { halign: 'center' },
     descripcion: { halign: 'center' },
     cantidad: { halign: 'center' },
@@ -3618,17 +3688,13 @@ export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
       { label: 'Almacén solicitante', valor: cliente || '' },
       { label: 'Almacén origen', valor: almacen_origen || '' },
       { label: 'Fecha de Orden', valor: cambiarFormatoFecha(detallePlano[0].fecha) || '' },
-       { label: 'Tipo', valor: tipo[detallePlano[0].tipopedido] || '' },
+      { label: 'Tipo', valor: tipo[detallePlano[0].tipopedido] || '' },
     ],
   }
   const usuarioData = detallePlano[0].usuarios?.[0]?.[0] || {}
 
-const autorizacion = Number(detallePlano[0].autorizacion) == 1 
-  ? 'Autorizado' 
-  : 'No Autorizado'
-const estadoCompraEnvio = Number(detallePlano[0].estado) == 1 
-  ? 'Procesado' 
-  : 'Pendiente'
+  const autorizacion = Number(detallePlano[0].autorizacion) == 1 ? 'Autorizado' : 'No Autorizado'
+  const estadoCompraEnvio = Number(detallePlano[0].estado) == 1 ? 'Procesado' : 'Pendiente'
   const derecho = {
     titulo: 'USUARIO SOLICITANTE',
     campos: [
@@ -3636,7 +3702,6 @@ const estadoCompraEnvio = Number(detallePlano[0].estado) == 1
       { label: 'Cargo', valor: usuarioData.cargo || '' },
       { label: 'Estado Autotrización', valor: autorizacion || '' },
       { label: 'Estado Compra/Envío', valor: estadoCompraEnvio || '' },
-     
     ],
   }
 
@@ -4232,7 +4297,7 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
 }
 
 export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
-  console.log('esto son las divisas', divisaActiva)
+  console.log('esto son las divisas', detalleCompra)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
   // Extraer el primer elemento del array (según la estructura de la API)
@@ -4275,11 +4340,42 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   )
 
   // Agregar fila de total
-  datos.push({
-    cantidad: 'TOTAL GENERAL (' + divisaActiva + ')',
-    precio: decimas(precioUnitario),
-    subTotal: decimas(totalGeneral),
-  })
+  // datos.push([
+  //   {
+  //     content: `TOTAL GENERAL (${divisaActiva})`,
+  //     colSpan: 6,
+  //     styles: {
+  //       halign: 'right',
+  //       fontStyle: 'bold',
+  //       fillColor: [240, 240, 240],
+  //     },
+  //   },
+
+  //   {
+  //     content: decimas(precioUnitario),
+  //     styles: {
+  //       halign: 'center',
+  //       fontStyle: 'bold',
+  //     },
+  //   },
+  //   {
+  //     content: decimas(totalGeneral),
+  //     styles: {
+  //       halign: 'center',
+  //       fontStyle: 'bold',
+  //     },
+  //   },
+  // ])
+  datos.push(
+    crearFilaTotalGeneral(
+      `TOTAL GENERAL (${divisaActiva})`,
+      [
+        { valor: precioUnitario, halign: 'center' },
+        { valor: totalGeneral, halign: 'center' },
+      ],
+      6,
+    ),
+  )
 
   // Estilos de columnas
   const columnStyles = {
@@ -4289,8 +4385,8 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     descripcion: { cellWidth: 40, halign: 'left' },
     unidad: { cellWidth: 20, halign: 'center' },
     cantidad: { cellWidth: 20, halign: 'center' },
-    precio: { cellWidth: 30, halign: 'right' },
-    subTotal: { cellWidth: 25, halign: 'right' },
+    precio: { cellWidth: 30, halign: 'center' },
+    subTotal: { cellWidth: 25, halign: 'center' },
   }
 
   const headerColumnStyles = {
@@ -4300,8 +4396,8 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     descripcion: { halign: 'left' },
     unidad: { halign: 'center' },
     cantidad: { halign: 'center' },
-    precio: { halign: 'right' },
-    subTotal: { halign: 'right' },
+    precio: { halign: 'center' },
+    subTotal: { halign: 'center' },
   }
 
   // Información izquierda - Datos de la compra
@@ -4365,8 +4461,8 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
     { header: 'Proveedor', dataKey: 'proveedor' },
     { header: 'Factura', dataKey: 'nFactura' },
     { header: 'Almacen', dataKey: 'nombreAlmacen' },
-    { header: `Total (${divisaActiva})`, dataKey: 'totalIngreso' },
     { header: 'Estado', dataKey: 'estado' },
+    { header: `Total (${divisaActiva})`, dataKey: 'totalIngreso' },
   ]
 
   const datos = compras.map((item, index) => ({
@@ -4375,16 +4471,23 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
     proveedor: item.proveedor || '-',
     nFactura: item.nFactura || '-',
     nombreAlmacen: item.nombreAlmacen || '-',
-    totalIngreso: decimas(item.totalIngreso || 0),
     estado: item.estado,
+    totalIngreso: decimas(item.totalIngreso || 0),
   }))
 
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
 
-  datos.push({
-    nombreAlmacen: 'TOTAL GENERAL (' + divisaActiva + ')',
-    totalIngreso: decimas(totalGeneral),
-  })
+  // datos.push({
+  //   nombreAlmacen: 'TOTAL GENERAL (' + divisaActiva + ')',
+  //   totalIngreso: decimas(totalGeneral),
+  // })
+  datos.push(
+    crearFilaTotalGeneral(
+      `TOTAL GENERAL (${divisaActiva})`,
+      [{ valor: totalGeneral, halign: 'right' }],
+      6,
+    )
+  )
 
   const columnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
@@ -4473,12 +4576,22 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
   )
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.total || 0), 0)
 
-  datos.push({
-    cantidad: 'TOTAL GENERAL' + ` (${divisaActiva})`,
+  // datos.push({
+  //   cantidad: 'TOTAL GENERAL' + ` (${divisaActiva})`,
 
-    precioUnitario: decimas(totalPrecioUnitario),
-    total: decimas(totalGeneral),
-  })
+  //   precioUnitario: decimas(totalPrecioUnitario),
+  //   total: decimas(totalGeneral),
+  // })
+  datos.push(
+    crearFilaTotalGeneral(
+      `TOTAL GENERAL (${divisaActiva})`,
+      [
+        { valor: totalPrecioUnitario, halign: 'right' },
+        { valor: totalGeneral, halign: 'right' },
+      ],
+      11,
+    )
+  )
 
   const columnStyles = {
     indice: { cellWidth: 10, halign: 'center' },
