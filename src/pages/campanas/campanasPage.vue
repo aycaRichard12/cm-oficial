@@ -2,10 +2,10 @@
   <q-page padding>
     <div class="titulo">Campañas</div>
     <!-- Formulario principal de campañas -->
-    <q-dialog v-model="formularioActivo">
+    <q-dialog v-model="formularioActivo" @keydown.esc="formularioActivo = false">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Nueva Campaña</div>
+          <div>{{ formData.id ? 'Editar Campaña' : 'Registrar Nueva Campaña' }}</div>
           <q-btn icon="close" flat dense round @click="formularioActivo = false" />
         </q-card-section>
         <q-card-section>
@@ -156,9 +156,16 @@
             icon="add_shopping_cart"
             @click="cargarPrecios(props.row.id)"
             class="q-ml-sm"
+            :disable="!tieneCategorias(props.row.id)"
             dense
           >
-            <q-tooltip>Agregar Productos a la Campaña</q-tooltip>
+            <q-tooltip>
+              {{
+                tieneCategorias(props.row.id)
+                  ? 'Agregar Productos a la Campaña'
+                  : 'Primero agregue categorías a la campaña'
+              }}
+            </q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -183,7 +190,7 @@
     </q-table>
 
     <!-- Diálogo para categorías de precios -->
-    <q-dialog v-model="dialogoCategorias" persistent>
+    <q-dialog v-model="dialogoCategorias" persistent @keydown.esc="dialogoCategorias = false">
       <q-card style="min-width: 400px">
         <q-card-section>
           <div class="text-h6">Categorías de precio</div>
@@ -235,7 +242,7 @@
     </q-dialog>
 
     <!-- Diálogo para precios de campaña -->
-    <q-dialog v-model="dialogoPrecios" persistent>
+    <q-dialog v-model="dialogoPrecios" persistent @keydown.esc="dialogoPrecios = false">
       <q-card style="min-width: 600px">
         <q-card-section>
           <div class="text-h6">Lista de precios</div>
@@ -246,7 +253,7 @@
             <input type="hidden" v-model="precioForm.ver" value="registrocategoriacampaña" />
             <input type="hidden" v-model="precioForm.idcampaña" />
 
-            <q-input v-model="precioForm.producto" label="Producto*" disable />
+            <q-input v-model="precioForm.producto" label="Producto*" />
 
             <q-input
               v-model="precioForm.precio"
@@ -302,7 +309,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET, peticionPOST } from 'src/composables/peticionesFetch.js'
 import { URL_APICM } from 'src/composables/services'
@@ -335,7 +342,7 @@ const formData = ref({
 const categoriaForm = ref({
   ver: 'registrocategoriacampaña',
   idcampaña: '',
-  almacen: '',
+  // almacen: '',
   idempresa: idempresa,
   idcategoriaprecio: null,
 })
@@ -551,9 +558,20 @@ const editarCampana = async (campana) => {
         campana: resultado.datos.nombre,
         porcentaje: resultado.datos.porcentaje,
       }
+      // Open the form dialog
+      formularioActivo.value = true
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resultado.mensaje || 'Error al cargar la campaña',
+      })
     }
   } catch (error) {
     console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar la campaña',
+    })
   }
 }
 
@@ -646,6 +664,13 @@ const cargarcategoria = async (idCampana, idAlmacen) => {
       ...item,
       numero: index + 1,
     }))
+
+    // Update tracking set
+    if (resultado2 && resultado2.length > 0) {
+      campanasConCategorias.value.add(idCampana)
+    } else {
+      campanasConCategorias.value.delete(idCampana)
+    }
 
     dialogoCategorias.value = true
   } catch (error) {
@@ -776,7 +801,7 @@ const eliminarPrecioCampana = async (id) => {
     persistent: true,
   }).onOk(async () => {
     try {
-      const endpoint = `${URL_APICM}api/eliminarpreciocampaña/${id}`
+      const endpoint = `${URL_APICM}api/eliminarpreciocampana/${id}`
       const resultado = await peticionGET(endpoint)
 
       if (resultado.estado === 'exito') {
@@ -804,18 +829,33 @@ const eliminarPrecioCampana = async (id) => {
 const filtrarPrecios = () => {
   // La lógica de filtrado ya está en la propiedad computada preciosCampanaFiltrados
 }
-function handleKeydown(e) {
-  if (e.key === 'Escape') {
-    formularioActivo.value = false
+
+// Check if a campaign has categories
+const tieneCategorias = (idCampana) => {
+  // This will be checked when the button is rendered
+  // We'll need to track which campaigns have categories
+  return campanasConCategorias.value.has(idCampana)
+}
+
+// Track campaigns that have categories
+const campanasConCategorias = ref(new Set())
+
+// Update the set when categories are loaded or added
+const actualizarCampanasConCategorias = async () => {
+  try {
+    const promises = campanas.value.map(async (campana) => {
+      const endpoint = `${URL_APICM}api/listacategoriapreciocampaña/${campana.id}`
+      const resultado = await peticionGET(endpoint)
+      if (resultado && resultado.length > 0) {
+        campanasConCategorias.value.add(campana.id)
+      }
+    })
+    await Promise.all(promises)
+  } catch (error) {
+    console.error('Error al verificar categorías:', error)
   }
 }
 
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
 // Inicialización
 onMounted(async () => {
   formData.value.fechai = obtenerFechaActual()
@@ -823,6 +863,7 @@ onMounted(async () => {
   await listarAlmacenes()
   await listarCampanas()
   await listarCategoriasPrecio()
+  await actualizarCampanasConCategorias()
 })
 </script>
 
