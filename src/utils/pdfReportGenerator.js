@@ -43,6 +43,11 @@ let cellPadding = 1
 console.log(fontSizeCabezal)
 const tipo = { 1: 'Pedido Compra', 2: 'Pedido Movimiento' }
 
+function parseFechaStringADate(fecha) {
+  const [dia, mes, anio] = fecha.split('/')
+  return new Date(anio, mes - 1, dia)
+}
+
 async function initPdfReportGenerator() {
   contenidousuario = validarUsuario()
   datosUsuario = contenidousuario[0]
@@ -82,12 +87,12 @@ function getEstadoText(estado) {
 
 /**
  * Crea una fila de total general con formato de colSpan para jsPDF-autoTable
- * 
+ *
  * @param {string} label - Texto del label (ej: "TOTAL GENERAL")
  * @param {Array<{valor: number, halign?: string}>} columnasTotales - Array de objetos con los valores de totales
  * @param {number} colSpan - Número de columnas que ocupará el label (default: 6)
  * @returns {Array} Fila formateada para jsPDF-autoTable con colSpan
- * 
+ *
  * @example
  * // Ejemplo básico con 2 columnas de totales
  * const filaTota = crearFilaTotalGeneral(
@@ -110,7 +115,7 @@ export function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
         fontStyle: 'bold',
         // fillColor: [240, 230, 240],
         lineWidth: { top: 0.3, bottom: 0.3 },
-        lineColor: [0, 0, 0], 
+        lineColor: [0, 0, 0],
       },
     },
   ]
@@ -123,8 +128,8 @@ export function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
         halign: columna.halign || 'center',
         fontStyle: 'bold',
         // pintar bordes una sola vez
-        lineWidth: { top: 0.3, bottom: 0.3,  left: 0.3},
-        lineColor: [0, 0, 0], 
+        lineWidth: { top: 0.3, bottom: 0.3 }, // left: 0.3  top: 0.3,
+        lineColor: [0, 0, 0],
       },
     })
   })
@@ -133,16 +138,19 @@ export function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
 }
 
 export function PDF_DETALLE_PEDIDO(detalle_pedido) {
-  console.log(detalle_pedido)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   const detallePlano = JSON.parse(JSON.stringify(detalle_pedido))
-  const datos = detallePlano[0].detalle.map((item, indice) => ({
-    indice: indice + 1,
-    codigo: item.codigo,
-    descripcion: item.descripcion,
-    unidad: item.unidad,
-    cantidad: decimas(item.cantidad),
-  }))
+  const datos = (detallePlano?.[0]?.detalle ?? [])
+    .slice()
+    .sort((a, b) => parseFechaStringADate(a.fecha) - parseFechaStringADate(b.fecha))
+    .map((item, indice) => ({
+      indice: indice + 1,
+      codigo: item.codigo || '-',
+      descripcion: item.descripcion || '-',
+      unidad: item.unidad || '-',
+      cantidad: decimas(item.cantidad || 0),
+    }))
+
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
@@ -949,8 +957,8 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
       [{ valor: costoTotal, halign: 'right' }],
-      9,   
-    )
+      9,
+    ),
   )
 
   /* =========================
@@ -1539,12 +1547,15 @@ export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
     { header: 'Monto', dataKey: 'ventatotal' },
   ]
   // filteredCompra.value.reduce((sum, row) => sum + Number(row.total), 0)
-  const datos = filteredCompra.value.map((item, indice) => ({
+  const datos = [...filteredCompra.value]
+    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+    .map((item, indice) => ({
     indice: indice + 1,
-    fecha: item.fecha,
+    fecha: cambiarFormatoFecha(item.fecha),
     cliente: item.cliente,
     sucursal: item.sucursal,
-    tipoventa: item.tipoventa,
+    //si tipo venta es 1 tonces Factura Compra-Venta si es 0 es Comprobante Venta
+    tipoventa: Number(item.tipoventa) === 1 ? 'Factura Compra-Venta' : 'Comprobante Venta',
     tipopago: item.tipopago,
     nfactura: item.nfactura,
     canal: item.canal,
@@ -1580,7 +1591,7 @@ export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
         { valor: total + descuento, halign: 'right' },
       ],
       8,
-    )
+    ),
   )
 
   const columnStyles = {
@@ -1975,23 +1986,22 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
+const datos = [...cotizaciones.value]
+  .map(item => ({
+    ...item,
+    _fechaOrden: parseFechaStringADate(item.fecha), // Date real
+  }))
+  .sort((a, b) => a._fechaOrden - b._fechaOrden)
+  .map((item, index) => ({
+    nro: index + 1,
+    fecha: item.fecha,
+    cliente: item.cliente,
+    sucursal: item.sucursal,
+    monto: decimas(parseFloat(item.monto)),
+    descuento: decimas(parseFloat(item.descuento)),
+    total_sumatorias: decimas(parseFloat(item.total_sumatorias)),
+  }))
 
-  function parseFecha(fecha) {
-    const [dia, mes, anio] = fecha.split('/')
-    return new Date(anio, mes - 1, dia)
-  }
-
-  const datos = [...cotizaciones.value]
-    .sort((a, b) => parseFecha(a.fecha) - parseFecha(b.fecha))
-    .map((key) => ({
-      nro: key.nro,
-      fecha: key.fecha,
-      cliente: key.cliente,
-      sucursal: key.sucursal,
-      monto: decimas(parseFloat(key.monto)),
-      descuento: decimas(parseFloat(key.descuento)),
-      total_sumatorias: decimas(parseFloat(key.total_sumatorias)),
-    }))
 
   // Data for jsPDF-autoTable - map from `reportData.
   // value`
@@ -2007,15 +2017,26 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
     return decimas(parseFloat(sum) + parseFloat(u.total_sumatorias))
   }, 0)
 
-  console.log(total)
-  const pieTable = {
-    sucursal: 'Total:',
-    monto: cotizaciontotal,
-    descuento: descuento,
-    total_sumatorias: total,
-  }
-  datos.push(pieTable)
-  console.log(datos)
+  // console.log(total)
+  // const pieTable = {
+  //   sucursal: 'Total:',
+  //   monto: cotizaciontotal,
+  //   descuento: descuento,
+  //   total_sumatorias: total,
+  // }
+  // datos.push(pieTable)
+  // console.log(datos)
+  datos.push(
+    crearFilaTotalGeneral(
+      `TOTAL GENERAL (${divisaActiva})`,
+      [{ valor: cotizaciontotal, halign: 'right' },
+        { valor: descuento, halign: 'right' },
+        { valor: total, halign: 'right' }
+      ],
+
+      4,
+    ),
+  )
 
   const columnStyles = {
     nro: { cellWidth: 15, halign: 'center' }, // Adjusted width
@@ -2071,7 +2092,7 @@ export function PDFConprovanteCotizacion(cotizacion) {
 
 export function PDFextrabiosRobos(extravios, almacen) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-
+console.log('extravios',extravios)
   // Columns for jsPDF-autoTable
   const columns = [
     { header: 'N', dataKey: 'nro' },
@@ -2082,13 +2103,16 @@ export function PDFextrabiosRobos(extravios, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-  const datos = extravios.value.map((key, index) => ({
-    nro: index + 1,
+const datos = [...extravios.value]
+  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha)) // 👈 orden real por fecha
+  .map((key, index) => ({
+    nro: index + 1, // 👈 numeración DESPUÉS de ordenar
     fecha: cambiarFormatoFecha(key.fecha),
     almacen: key.almacen,
     descripcion: key.descripcion,
     autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
   }))
+
 
   const columnStyles = {
     nro: { cellWidth: 15, halign: 'center' }, // Adjusted width
@@ -2204,13 +2228,17 @@ export function PDFreporteMermas(mermas, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-  const datos = mermas.value.map((key, index) => ({
+  const datos = [...mermas.value] 
+  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+.map((key, index) => ({
     nro: index + 1,
     fecha: cambiarFormatoFecha(key.fecha),
     almacen: key.almacen,
     descripcion: key.descripcion,
     autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
   }))
+
+
 
   const columnStyles = {
     nro: { cellWidth: 15, halign: 'center' }, // Adjusted width
@@ -3205,8 +3233,8 @@ export function PDF_REPORTE_PEDIDOS(reporte, datosFormulario) {
     { header: 'Estado', dataKey: 'estado' },
   ]
 
-  const datos = reporte.map((item) => ({
-    n: item.n,
+  const datos = reporte.map((item, index) => ({
+    n: index + 1,
     fecha: item.fecha,
     codigo: item.codigo,
     nropedido: item.nropedido,
@@ -3426,7 +3454,7 @@ export function PDF_REPORTE_EXTRAVIO(reporte, datosFormulario) {
     { header: 'Autorizacion', dataKey: 'autorizacion' },
   ]
 
-  const datos = reporte.map((item) => ({
+  const datos = reporte.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map((item) => ({
     index: item.index,
     fecha: item.fecha,
     almacen: item.almacen,
@@ -4486,7 +4514,7 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
       `TOTAL GENERAL (${divisaActiva})`,
       [{ valor: totalGeneral, halign: 'right' }],
       6,
-    )
+    ),
   )
 
   const columnStyles = {
@@ -4536,7 +4564,7 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
 
 export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' })
-
+  console.log('compras', compras)
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Fecha', dataKey: 'fechaIngreso' },
@@ -4554,8 +4582,14 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
     { header: `Total (${divisaActiva})`, dataKey: 'total' },
   ]
 
-  const datos = compras.map((item) => ({
-    indice: item.indice || '-',
+const datos = [...compras]
+  .map(item => ({
+    ...item,
+    _fechaOrden: new Date(item.fechaIngreso), // 👈 perfecto para YYYY-MM-DD
+  }))
+  .sort((a, b) => a._fechaOrden - b._fechaOrden)
+  .map((item, index) => ({
+    indice: index + 1,
     fechaIngreso: cambiarFormatoFecha(item.fechaIngreso) || '-',
     codigoProveedor: item.codigoProveedor || '-',
     proveedor: item.proveedor || '-',
@@ -4569,6 +4603,7 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
     autorizacion: item.autorizacion == '1' ? 'Sí' : 'No',
     estado: item.estadoIngreso == 1 ? 'Activo' : 'Inactivo',
   }))
+
 
   const totalPrecioUnitario = compras.reduce(
     (sum, item) => sum + parseFloat(item.precioUnitario || 0),
@@ -4590,7 +4625,7 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
         { valor: totalGeneral, halign: 'right' },
       ],
       11,
-    )
+    ),
   )
 
   const columnStyles = {
