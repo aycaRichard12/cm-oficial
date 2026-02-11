@@ -408,7 +408,7 @@ const generarExcel = () => {
 const verDetallePDF = async (idIngreso) => {
   selectedIdIngreso.value = idIngreso
   const detalle = await fetchDetalleCompra(idIngreso)
-
+  console.log('detalle', detalle)
   if (detalle) {
     // Generar PDF
     const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value)

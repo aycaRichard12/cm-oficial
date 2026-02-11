@@ -2,10 +2,10 @@
   <q-page padding>
     <div class="titulo">Campañas</div>
     <!-- Formulario principal de campañas -->
-    <q-dialog v-model="formularioActivo">
+    <q-dialog v-model="formularioActivo" @keydown.esc="formularioActivo = false">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Nueva Campaña</div>
+          <div>{{ formData.id ? 'Editar Campaña' : 'Registrar Nueva Campaña' }}</div>
           <q-btn icon="close" flat dense round @click="formularioActivo = false" />
         </q-card-section>
         <q-card-section>
@@ -78,8 +78,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-
-    <q-btn color="primary" class="btn-res" @click="formularioActivo = true">
+    <q-btn color="primary" class="btn-res q-mb-md" @click="formularioActivo = true">
       <q-icon name="add" class="icono" />
       <span class="texto">Registrar</span>
     </q-btn>
@@ -156,9 +155,16 @@
             icon="add_shopping_cart"
             @click="cargarPrecios(props.row.id)"
             class="q-ml-sm"
+            :disable="!tieneCategorias(props.row.id)"
             dense
           >
-            <q-tooltip>Agregar Productos a la Campaña</q-tooltip>
+            <q-tooltip>
+              {{
+                tieneCategorias(props.row.id)
+                  ? 'Agregar Productos a la Campaña'
+                  : 'Primero agregue categorías a la campaña'
+              }}
+            </q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -183,7 +189,7 @@
     </q-table>
 
     <!-- Diálogo para categorías de precios -->
-    <q-dialog v-model="dialogoCategorias" persistent>
+    <q-dialog v-model="dialogoCategorias" persistent @keydown.esc="dialogoCategorias = false">
       <q-card style="min-width: 400px">
         <q-card-section>
           <div class="text-h6">Categorías de precio</div>
@@ -235,28 +241,40 @@
     </q-dialog>
 
     <!-- Diálogo para precios de campaña -->
-    <q-dialog v-model="dialogoPrecios" persistent>
+    <q-dialog v-model="dialogoPrecios" persistent @keydown.esc="dialogoPrecios = false">
       <q-card style="min-width: 600px">
         <q-card-section>
-          <div class="text-h6">Lista de precios</div>
+          <div class="text-h6">
+            {{ precioForm.id_detalle_campanas ? 'Editar Precio' : 'Lista de precios' }}
+          </div>
         </q-card-section>
 
         <q-card-section>
-          <q-form @submit="registrarPrecioCampaña" id="preciocampañaform">
-            <input type="hidden" v-model="precioForm.ver" value="registrocategoriacampaña" />
-            <input type="hidden" v-model="precioForm.idcampaña" />
-
-            <q-input v-model="precioForm.producto" label="Producto*" disable />
+          <q-form @submit="registrarPrecioCampaña">
+            <q-input v-model="precioForm.producto" label="Producto*" required />
 
             <q-input
               v-model="precioForm.precio"
               label="Nuevo precio del producto*"
               type="number"
+              step="0.01"
               required
             />
 
             <div class="q-mt-md">
-              <q-btn type="submit" color="info" label="Agregar" />
+              <q-btn
+                type="submit"
+                color="info"
+                :label="precioForm.id_detalle_campanas ? 'Actualizar' : 'Agregar'"
+              />
+              <q-btn
+                v-if="precioForm.id_detalle_campanas"
+                flat
+                label="Cancelar Edición"
+                color="negative"
+                @click="cancelarEdicionPrecio"
+                class="q-ml-sm"
+              />
             </div>
           </q-form>
 
@@ -282,12 +300,24 @@
             <template v-slot:body-cell-opciones="props">
               <q-td :props="props">
                 <q-btn
+                  color="primary"
+                  size="sm"
+                  icon="edit"
+                  @click="editarPrecioCampana(props.row)"
+                  dense
+                  class="q-mr-sm"
+                >
+                  <q-tooltip>Editar precio</q-tooltip>
+                </q-btn>
+                <q-btn
                   color="negative"
                   size="sm"
                   icon="delete"
                   @click="eliminarPrecioCampana(props.row.id)"
                   dense
-                />
+                >
+                  <q-tooltip>Eliminar precio</q-tooltip>
+                </q-btn>
               </q-td>
             </template>
           </q-table>
@@ -302,9 +332,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { peticionGET, peticionPOST } from 'src/composables/peticionesFetch.js'
+import { peticionGET } from 'src/composables/peticionesFetch.js'
 import { URL_APICM } from 'src/composables/services'
 import { api } from 'src/boot/axios'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
@@ -320,6 +350,9 @@ const busqueda = ref('')
 const filtroPrecioCampania = ref(0)
 const dialogoCategorias = ref(false)
 const dialogoPrecios = ref(false)
+const pagination = ref({
+  rowsPerPage: 10,
+})
 
 // Datos del formulario
 const formData = ref({
@@ -335,16 +368,19 @@ const formData = ref({
 const categoriaForm = ref({
   ver: 'registrocategoriacampaña',
   idcampaña: '',
-  almacen: '',
+  // almacen: '',
   idempresa: idempresa,
   idcategoriaprecio: null,
 })
 
 const precioForm = ref({
-  ver: 'registrocategoriacampaña',
   idcampaña: '',
   producto: '',
   precio: '',
+  id_detalle_campanas: null,
+  idproducto: null,
+  idproductoalmacen: null,
+  idcategoriacampaña: null,
 })
 
 // Datos de la API
@@ -507,30 +543,36 @@ const listarCategoriasPrecio = async () => {
 const registrarCampana = async () => {
   try {
     const form = objectToFormData(formData.value)
-    form.append('ver', 'registrarcampana')
+    // Determine if we're editing or creating based on formData.id
+    const ver = formData.value.id ? 'editarcampaña' : 'registrarcampana'
+    form.append('ver', ver)
     form.append('idusuario', idusuario)
     form.append('idempresa', idempresa)
+
     const response = await api.post('', form)
     console.log(response)
     const data = response.data
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: data.mensaje || 'Campaña registrada con éxito',
+        message:
+          data.mensaje ||
+          (formData.value.id ? 'Campaña actualizada con éxito' : 'Campaña registrada con éxito'),
       })
       await listarCampanas()
+      formularioActivo.value = false
       resetearFormulario()
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al registrar campaña',
+        message: data.mensaje || 'Error al procesar campaña',
       })
     }
   } catch (error) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Error al registrar campaña',
+      message: 'Error al procesar campaña',
     })
   }
 }
@@ -551,9 +593,20 @@ const editarCampana = async (campana) => {
         campana: resultado.datos.nombre,
         porcentaje: resultado.datos.porcentaje,
       }
+      // Open the form dialog
+      formularioActivo.value = true
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resultado.mensaje || 'Error al cargar la campaña',
+      })
     }
   } catch (error) {
     console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar la campaña',
+    })
   }
 }
 
@@ -621,8 +674,8 @@ const resetearFormulario = () => {
     ver: 'registrarcampana',
     idusuario: idusuario,
     idalmacen: null,
-    fechai: '',
-    fechaf: '',
+    fechai: obtenerFechaActual(),
+    fechaf: obtenerFechaActual(),
     campana: '',
     porcentaje: '',
   }
@@ -646,6 +699,13 @@ const cargarcategoria = async (idCampana, idAlmacen) => {
       ...item,
       numero: index + 1,
     }))
+
+    // Update tracking set
+    if (resultado2 && resultado2.length > 0) {
+      campanasConCategorias.value.add(idCampana)
+    } else {
+      campanasConCategorias.value.delete(idCampana)
+    }
 
     dialogoCategorias.value = true
   } catch (error) {
@@ -734,7 +794,9 @@ const cargarPrecios = async (idCampana) => {
     ])
 
     categoriasCampana.value = resultado1
+    console.log('categoriasCampana', categoriasCampana.value)
     preciosCampana.value = resultado2
+    console.log('preciosCampana', preciosCampana.value)
 
     dialogoPrecios.value = true
   } catch (error) {
@@ -744,19 +806,42 @@ const cargarPrecios = async (idCampana) => {
 
 const registrarPrecioCampaña = async () => {
   try {
-    const form = document.getElementById('preciocampañaform')
-    const data = await peticionPOST(form)
+    // Backend PHP expects exactly these 4 POST fields:
+    // $_POST['id_detalle_campanas'], $_POST['idproducto'], $_POST['precio'], $_POST['idcategoriacampaña']
+
+    const payload = {
+      ver: 'editarPreciocampana',
+      id_detalle_campanas: precioForm.value.id_detalle_campanas,
+      idproducto: precioForm.value.idproductoalmacen || precioForm.value.idproducto,
+      precio: precioForm.value.precio,
+      idcategoriacampaña: precioForm.value.idcategoriacampaña,
+    }
+    console.log('registro de datos de campaña - payload object:', precioForm.value)
+    console.log('registro de datos de campaña - JSON payload:', payload)
+    const response = await api.post('', payload)
+    console.log(response.data)
+    const data = response.data
 
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: data.mensaje || 'Precio registrado con éxito',
+        message:
+          data.mensaje ||
+          (precioForm.value.id_detalle_campanas
+            ? 'Precio actualizado con éxito'
+            : 'Precio registrado con éxito'),
       })
-      await cargarPrecios(precioForm.value.idcampaña)
+      // Save idcampaña before resetting form
+      const idCampanaActual = precioForm.value.idcampaña
+      // Reset form
+      cancelarEdicionPrecio()
+      // Restore idcampaña and reload prices
+      precioForm.value.idcampaña = idCampanaActual
+      await cargarPrecios(idCampanaActual)
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al registrar precio',
+        message: data.mensaje || 'Error al procesar precio',
       })
     }
   } catch (error) {
@@ -776,7 +861,7 @@ const eliminarPrecioCampana = async (id) => {
     persistent: true,
   }).onOk(async () => {
     try {
-      const endpoint = `${URL_APICM}api/eliminarpreciocampaña/${id}`
+      const endpoint = `${URL_APICM}api/eliminarpreciocampana/${id}`
       const resultado = await peticionGET(endpoint)
 
       if (resultado.estado === 'exito') {
@@ -801,21 +886,56 @@ const eliminarPrecioCampana = async (id) => {
   })
 }
 
+const editarPrecioCampana = (precio) => {
+  // Load the price data into the form for editing
+  precioForm.value.id_detalle_campanas = precio.id
+  precioForm.value.idproducto = precio.idproducto
+  precioForm.value.idproductoalmacen = precio.idproductoalmacen
+  precioForm.value.producto = precio.descripcion || precio.producto
+  precioForm.value.precio = precio.precio
+  precioForm.value.idcategoriacampaña = precio.idcategoriacampaña
+}
+
+const cancelarEdicionPrecio = () => {
+  // Reset the form to add mode
+  precioForm.value.id_detalle_campanas = null
+  precioForm.value.idproducto = null
+  precioForm.value.idproductoalmacen = null
+  precioForm.value.producto = ''
+  precioForm.value.precio = ''
+  precioForm.value.idcategoriacampaña = null
+}
+
 const filtrarPrecios = () => {
   // La lógica de filtrado ya está en la propiedad computada preciosCampanaFiltrados
 }
-function handleKeydown(e) {
-  if (e.key === 'Escape') {
-    formularioActivo.value = false
+
+// Check if a campaign has categories
+const tieneCategorias = (idCampana) => {
+  // This will be checked when the button is rendered
+  // We'll need to track which campaigns have categories
+  return campanasConCategorias.value.has(idCampana)
+}
+
+// Track campaigns that have categories
+const campanasConCategorias = ref(new Set())
+
+// Update the set when categories are loaded or added
+const actualizarCampanasConCategorias = async () => {
+  try {
+    const promises = campanas.value.map(async (campana) => {
+      const endpoint = `${URL_APICM}api/listacategoriapreciocampaña/${campana.id}`
+      const resultado = await peticionGET(endpoint)
+      if (resultado && resultado.length > 0) {
+        campanasConCategorias.value.add(campana.id)
+      }
+    })
+    await Promise.all(promises)
+  } catch (error) {
+    console.error('Error al verificar categorías:', error)
   }
 }
 
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
 // Inicialización
 onMounted(async () => {
   formData.value.fechai = obtenerFechaActual()
@@ -823,6 +943,7 @@ onMounted(async () => {
   await listarAlmacenes()
   await listarCampanas()
   await listarCategoriasPrecio()
+  await actualizarCampanasConCategorias()
 })
 </script>
 
