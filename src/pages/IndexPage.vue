@@ -48,18 +48,14 @@
     </div>
 
     <div class="row q-col-gutter-x-md">
-      <div 
-        :class="componenteActivo === VentaComponent ? 'col-xs-12 col-md-8' : 'col-12'" 
-        ref="componentContainer" 
+      <div
+        :class="componenteActivo === VentaComponent ? 'col-xs-12 col-md-8' : 'col-12'"
+        ref="componentContainer"
         id="carrito"
       >
         <component :is="componenteActivo" />
       </div>
-      <div 
-        v-if="componenteActivo === VentaComponent" 
-        class="col-xs-12 col-md-4" 
-        id="reportes-hoy"
-      >
+      <div v-if="componenteActivo === VentaComponent" class="col-xs-12 col-md-4" id="reportes-hoy">
         <div class="full-height"><ReporteVentaInicio /></div>
       </div>
     </div>
@@ -145,21 +141,21 @@ onMounted(() => {
     try {
       const parsedData = JSON.parse(contenidoUsuario)
       nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
+      dashboard.value = verificarexistenciapagina('dashboard')
 
       venta.value = verificarexistenciapagina('registrarventaoculto')
       compra.value = verificarexistenciapagina('registrarcompra')
-      dashboard.value = verificarexistenciapagina('dashboard')
       producto.value = verificarexistenciapagina('registrarproductos')
 
-      // Set initial component based on permissions
-      if (venta.value) {
+      // Set initial component based on permissions - Dashboard first
+      if (dashboard.value) {
+        cambiarComponente('dashboard')
+      } else if (venta.value) {
         cambiarComponente('venta')
       } else if (compra.value) {
         cambiarComponente('compra')
       } else if (producto.value) {
         cambiarComponente('producto')
-      } else if (dashboard.value) {
-        cambiarComponente('dashboard')
       }
     } catch (error) {
       console.error('Error al parsear los datos de localStorage:', error)
@@ -172,6 +168,16 @@ onMounted(() => {
 
 const orderedTopBoxes = computed(() => {
   const boxes = []
+  if (dashboard.value)
+    boxes.push({
+      id: 'dashboard',
+      component: ReporteComponent,
+      data: dashboard.value,
+      iconComponent: IconReportes,
+      title: 'ESTADÍSTICAS',
+      subtitle: '',
+      cardId: 'reportes-card',
+    })
   if (venta.value)
     boxes.push({
       id: 'venta',
@@ -179,7 +185,7 @@ const orderedTopBoxes = computed(() => {
       data: venta.value,
       iconComponent: IconVentas,
       title: 'VENTAS',
-      subtitle: '',
+      subtitle: ' ',
       cardId: 'venta-card',
     })
   if (compra.value)
@@ -188,7 +194,7 @@ const orderedTopBoxes = computed(() => {
       component: PedidoComponent,
       data: compra.value,
       iconComponent: IconPedidos,
-      title: 'COMPRAS',
+      title: '',
       subtitle: '',
       cardId: 'compra-card',
     })
@@ -202,16 +208,7 @@ const orderedTopBoxes = computed(() => {
       subtitle: '',
       cardId: 'producto-card',
     })
-  if (dashboard.value)
-    boxes.push({
-      id: 'dashboard',
-      component: ReporteComponent,
-      data: dashboard.value,
-      iconComponent: IconReportes,
-      title: 'ESTADÍSTICAS',
-      subtitle: '',
-      cardId: 'reportes-card',
-    })
+
   return boxes
 })
 </script>
