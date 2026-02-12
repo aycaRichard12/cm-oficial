@@ -1,238 +1,329 @@
 <template>
   <q-page padding>
-    <div class="titulo">Campañas</div>
-    <!-- Formulario principal de campañas -->
+    <!-- Header con título y botón de acción -->
+    <q-card flat bordered class="q-mb-md">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="col">
+          <div class="text-h5 text-weight-bold text-primary">
+            <q-icon name="campaign" size="sm" class="q-mr-sm" />
+            Gestión de Campañas
+          </div>
+          <div class="text-caption text-grey-7">Administre campañas promocionales y descuentos</div>
+        </div>
+        <div class="col-auto">
+          <q-btn
+            unelevated
+            color="primary"
+            icon="add"
+            label="Nueva Campaña"
+            @click="formularioActivo = true"
+            size="md"
+          />
+        </div>
+      </q-card-section>
+
+      <!-- Filtros -->
+      <q-card-section>
+        <div class="row q-col-gutter-md">
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="idalmacenfiltro"
+              :options="almacenesOptions"
+              option-value="idalmacen"
+              option-label="almacen"
+              label="Filtrar por almacén"
+              outlined
+              dense
+              emit-value
+              map-options
+              clearable
+            >
+              <template v-slot:prepend>
+                <q-icon name="store" />
+              </template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-4">
+            <q-input v-model="busqueda" label="Buscar campaña..." outlined dense clearable>
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+
+    <!-- Tabla de campañas -->
+    <q-card flat bordered>
+      <q-table
+        :rows="campanasFiltradas"
+        :columns="columns"
+        row-key="id"
+        :filter="busqueda"
+        v-model:pagination="pagination"
+        flat
+        :rows-per-page-options="[10, 20, 50]"
+      >
+        <template v-slot:body-cell-nombre="props">
+          <q-td :props="props">
+            <div class="text-weight-medium">{{ props.row.nombre }}</div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-porcentaje="props">
+          <q-td :props="props">
+            <q-badge color="orange" :label="`${props.row.porcentaje}% OFF`" />
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props">
+            <q-chip
+              :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
+              text-color="white"
+              :icon="Number(props.row.estado) === 1 ? 'check_circle' : 'cancel'"
+              clickable
+              @click="cambiarEstado(props.row.id, Number(props.row.estado) === 1 ? 2 : 1)"
+            >
+              {{ Number(props.row.estado) === 1 ? 'Activa' : 'Inactiva' }}
+            </q-chip>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-detalles="props">
+          <q-td :props="props">
+            <q-btn-group flat>
+              <q-btn
+                flat
+                dense
+                color="primary"
+                icon="category"
+                @click="cargarcategoria(props.row.id, props.row.idalmacen)"
+              >
+                <q-tooltip>Gestionar Categorías</q-tooltip>
+              </q-btn>
+              <q-btn
+                flat
+                dense
+                color="primary"
+                icon="shopping_cart"
+                @click="cargarPrecios(props.row.id)"
+                :disable="!tieneCategorias(props.row.id)"
+              >
+                <q-tooltip>
+                  {{ tieneCategorias(props.row.id) ? 'Gestionar Productos' : 'Agregue categorías primero' }}
+                </q-tooltip>
+                <q-badge v-if="tieneCategorias(props.row.id)" color="green" floating rounded />
+              </q-btn>
+            </q-btn-group>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-acciones="props">
+          <q-td :props="props">
+            <q-btn
+              flat
+              dense
+              round
+              color="primary"
+              icon="edit"
+              @click="editarCampana(props.row)"
+            >
+              <q-tooltip>Editar</q-tooltip>
+            </q-btn>
+            <q-btn
+              flat
+              dense
+              round
+              color="negative"
+              icon="delete"
+              @click="eliminar(props.row.id)"
+            >
+              <q-tooltip>Eliminar</q-tooltip>
+            </q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </q-card>
+
+    <!-- Diálogo de formulario -->
     <q-dialog v-model="formularioActivo" @keydown.esc="formularioActivo = false">
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>{{ formData.id ? 'Editar Campaña' : 'Registrar Nueva Campaña' }}</div>
-          <q-btn icon="close" flat dense round @click="formularioActivo = false" />
+      <q-card style="min-width: 600px">
+        <q-card-section class="bg-primary text-white">
+          <div class="text-h6">
+            <q-icon name="campaign" class="q-mr-sm" />
+            {{ formData.id ? 'Editar Campaña' : 'Nueva Campaña' }}
+          </div>
         </q-card-section>
+
         <q-card-section>
           <q-form @submit="registrarCampana">
-            <div class="row q-col-gutter-x-md q-mb-md">
-              <div class="col-12 col-md-3">
-                <label for="nombre">Nombre</label>
-                <q-input v-model="formData.campana" id="nombre" dense outlined required />
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input
+                  v-model="formData.campana"
+                  label="Nombre de la campaña *"
+                  outlined
+                  dense
+                  required
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="label" />
+                  </template>
+                </q-input>
               </div>
 
-              <div class="col-12 col-md-2">
-                <label for="fechaini">Fecha Inicio</label>
+              <div class="col-6">
                 <q-input
                   v-model="formData.fechai"
-                  id="fechaini"
+                  label="Fecha de inicio *"
                   type="date"
-                  required
-                  dense
                   outlined
-                />
+                  dense
+                  required
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event" />
+                  </template>
+                </q-input>
               </div>
 
-              <div class="col-12 col-md-2">
-                <label for="fechafin">Fecha Final</label>
+              <div class="col-6">
                 <q-input
                   v-model="formData.fechaf"
-                  id="fechafin"
+                  label="Fecha final *"
                   type="date"
-                  required
-                  dense
                   outlined
-                />
+                  dense
+                  required
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event" />
+                  </template>
+                </q-input>
               </div>
 
-              <div class="col-12 col-md-2">
-                <label for="porcentaje">Porcentaje</label>
+              <div class="col-6">
                 <q-input
                   v-model="formData.porcentaje"
-                  id="porcentaje"
+                  label="Porcentaje de descuento *"
                   type="number"
-                  required
-                  dense
+                  suffix="%"
                   outlined
-                />
+                  dense
+                  required
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="percent" />
+                  </template>
+                </q-input>
               </div>
-              <div class="col-12 col-md-3">
-                <label for="almacenwe">Elija un Almacén</label>
+
+              <div class="col-6">
                 <q-select
                   v-model="formData.idalmacen"
                   :options="almacenesOptions"
-                  id="almacenwe"
-                  dense
-                  outlined=""
                   option-value="idalmacen"
                   option-label="almacen"
+                  label="Almacén *"
+                  outlined
+                  dense
                   emit-value
                   map-options
                   required
-                />
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="store" />
+                  </template>
+                </q-select>
               </div>
             </div>
-            <div class="row flex justify-start">
-              <q-btn type="submit" color="primary" class="btn-res">
-                <q-icon name="save" class="icono" />
-                <span class="texto">Registrar</span>
-              </q-btn>
-              <q-btn label="Cancelar" flat color="negative" @click="formularioActivo = false" />
+
+            <div class="row q-mt-md q-gutter-sm justify-end">
+              <q-btn label="Cancelar" flat color="grey-7" v-close-popup />
+              <q-btn type="submit" unelevated color="primary" icon="save" label="Guardar" />
             </div>
           </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
-    <q-btn color="primary" class="btn-res q-mb-md" @click="formularioActivo = true">
-      <q-icon name="add" class="icono" />
-      <span class="texto">Registrar</span>
-    </q-btn>
-    <!-- Filtros y acciones -->
-
-    <div class="row q-col-gutter-x-md flex justify-between">
-      <div class="col-12 col-md-2">
-        <label for="almacen">Filtrar por almacén</label>
-        <q-select
-          v-model="idalmacenfiltro"
-          :options="almacenesOptions"
-          id="almacen"
-          option-value="idalmacen"
-          option-label="almacen"
-          dense
-          outlined=""
-          emit-value
-          map-options
-          clearable
-        />
-      </div>
-
-      <div class="col-12 col-md-2">
-        <div>
-          <label for="buscar">Buscar...</label>
-          <q-input v-model="busqueda" outlined dense debounce="300">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla de campañas -->
-    <q-table
-      class="q-mt-md"
-      :rows="campanasFiltradas"
-      :columns="columns"
-      row-key="id"
-      :filter="busqueda"
-      v-model:pagination="pagination"
-    >
-      <template v-slot:body-cell-estado="props">
-        <q-td :props="props">
-          <q-btn
-            :color="Number(props.row.estado) === 1 ? 'blue' : 'negative'"
-            size="sm"
-            :icon="Number(props.row.estado) === 1 ? 'thumb_up' : 'thumb_down'"
-            @click="cambiarEstado(props.row.id, Number(props.row.estado) === 1 ? 2 : 1)"
-            dense
-          >
-            <q-tooltip>
-              {{ props.row.estado === 1 ? 'Desactivar esta Campaña' : 'Activar esta Campaña' }}
-            </q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-detalles="props">
-        <q-td :props="props">
-          <q-btn
-            color="primary"
-            size="sm"
-            icon="add_circle"
-            @click="cargarcategoria(props.row.id, props.row.idalmacen)"
-            dense
-          >
-            <q-tooltip>Agregar Categorias a la Campaña</q-tooltip>
-          </q-btn>
-          <q-btn
-            color="primary"
-            size="sm"
-            icon="add_shopping_cart"
-            @click="cargarPrecios(props.row.id)"
-            class="q-ml-sm"
-            :disable="!tieneCategorias(props.row.id)"
-            dense
-          >
-            <q-tooltip>
-              {{
-                tieneCategorias(props.row.id)
-                  ? 'Agregar Productos a la Campaña'
-                  : 'Primero agregue categorías a la campaña'
-              }}
-            </q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-acciones="props">
-        <q-td :props="props">
-          <q-btn color="primary" size="sm" icon="edit" @click="editarCampana(props.row)" dense>
-            <q-tooltip>Modificar</q-tooltip>
-          </q-btn>
-          <q-btn
-            color="negative"
-            size="sm"
-            icon="delete"
-            @click="eliminar(props.row.id)"
-            class="q-ml-sm"
-            dense
-          >
-            <q-tooltip>Eliminar</q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
-    </q-table>
 
     <!-- Diálogo para categorías de precios -->
     <q-dialog v-model="dialogoCategorias" persistent @keydown.esc="dialogoCategorias = false">
-      <q-card style="min-width: 400px">
-        <q-card-section>
-          <div class="text-h6">Categorías de precio</div>
+      <q-card style="min-width: 700px">
+        <q-card-section class="bg-primary text-white">
+          <div class="text-h6">
+            <q-icon name="category" class="q-mr-sm" />
+            Categorías de Precio
+          </div>
         </q-card-section>
 
+        <q-separator />
+
         <q-card-section>
-          <q-form @submit="registrarCategoria" id="categoriacampañaform">
+          <q-form @submit="registrarCategoria">
             <q-select
               v-model="categoriaForm.idcategoriaprecio"
               :options="categoriasPrecioOptions"
-              label="Categorias de precios:"
+              label="Seleccione categoría de precio"
               option-value="id"
               option-label="nombre"
               emit-value
               map-options
+              outlined
+              dense
               required
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="label" />
+              </template>
+            </q-select>
 
             <div class="q-mt-md">
-              <q-btn type="submit" color="info" label="Agregar" />
+              <q-btn type="submit" unelevated color="primary" icon="add" label="Agregar Categoría" />
             </div>
           </q-form>
+        </q-card-section>
 
+        <q-separator />
+
+        <q-card-section>
+          <div class="text-subtitle2 text-grey-8 q-mb-md">Categorías Asignadas</div>
           <q-table
-            class="q-mt-md"
             :rows="categoriasCampana"
             :columns="columnsCategorias"
             row-key="id"
-            :pagination="{ rowsPerPage: 5 }"
+            flat
+            bordered
+            :rows-per-page-options="[5, 10]"
           >
+            <template v-slot:body-cell-tipo="props">
+              <q-td :props="props">
+                <q-chip color="primary" text-color="white" icon="label">
+                  {{ props.row.tipo }}
+                </q-chip>
+              </q-td>
+            </template>
+
             <template v-slot:body-cell-opciones="props">
               <q-td :props="props">
                 <q-btn
+                  flat
+                  dense
+                  round
                   color="negative"
-                  size="sm"
                   icon="delete"
                   @click="eliminarCategoriaCampana(props.row.id)"
-                  dense
-                />
+                >
+                  <q-tooltip>Eliminar</q-tooltip>
+                </q-btn>
               </q-td>
             </template>
           </q-table>
         </q-card-section>
+
+        <q-separator />
 
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" v-close-popup />
@@ -242,86 +333,155 @@
 
     <!-- Diálogo para precios de campaña -->
     <q-dialog v-model="dialogoPrecios" persistent @keydown.esc="dialogoPrecios = false">
-      <q-card style="min-width: 600px">
-        <q-card-section>
+      <q-card style="min-width: 800px; max-width: 90vw">
+        <q-card-section class="bg-primary text-white">
           <div class="text-h6">
-            {{ precioForm.id_detalle_campanas ? 'Editar Precio' : 'Lista de precios' }}
+            <q-icon name="shopping_cart" class="q-mr-sm" />
+            {{ precioForm.id_detalle_campanas ? 'Editar Precio de Producto' : 'Productos en Campaña' }}
           </div>
         </q-card-section>
 
+        <q-separator />
+
         <q-card-section>
+          <q-banner v-if="precioForm.id_detalle_campanas" class="bg-info text-white q-mb-md" rounded>
+            <template v-slot:avatar>
+              <q-icon name="edit" />
+            </template>
+            Editando precio del producto
+          </q-banner>
+
           <q-form @submit="registrarPrecioCampaña">
-            <q-input v-model="precioForm.producto" label="Producto*" required />
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-6">
+                <q-input
+                  v-model="precioForm.producto"
+                  label="Producto *"
+                  outlined
+                  dense
+                  required
+                  readonly
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="inventory_2" />
+                  </template>
+                </q-input>
+              </div>
 
-            <q-input
-              v-model="precioForm.precio"
-              label="Nuevo precio del producto*"
-              type="number"
-              step="0.01"
-              required
-            />
+              <div class="col-12 col-md-6">
+                <q-input
+                  v-model="precioForm.precio"
+                  label="Precio de campaña *"
+                  type="number"
+                  step="0.01"
+                  outlined
+                  dense
+                  required
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_money" />
+                  </template>
+                </q-input>
+              </div>
+            </div>
 
-            <div class="q-mt-md">
+            <div class="row q-mt-md q-gutter-sm">
               <q-btn
                 type="submit"
-                color="info"
+                unelevated
+                color="primary"
+                :icon="precioForm.id_detalle_campanas ? 'save' : 'add'"
                 :label="precioForm.id_detalle_campanas ? 'Actualizar' : 'Agregar'"
               />
               <q-btn
                 v-if="precioForm.id_detalle_campanas"
                 flat
                 label="Cancelar Edición"
-                color="negative"
+                color="grey-7"
                 @click="cancelarEdicionPrecio"
-                class="q-ml-sm"
               />
             </div>
           </q-form>
+        </q-card-section>
 
-          <q-select
-            v-model="filtroPrecioCampania"
-            :options="categoriasCampanaPrecioOptions"
-            label="Filtrar por categoría"
-            option-value="idcategoriaprecio"
-            option-label="tipo"
-            emit-value
-            map-options
-            class="q-mt-md"
-            @update:model-value="filtrarPrecios"
-          />
+        <q-separator />
+
+        <q-card-section>
+          <div class="row items-center q-mb-md">
+            <div class="col">
+              <div class="text-subtitle2 text-grey-8">Productos con Precio de Campaña</div>
+            </div>
+            <div class="col-auto">
+              <q-select
+                v-model="filtroPrecioCampania"
+                :options="categoriasCampanaPrecioOptions"
+                label="Filtrar por categoría"
+                option-value="idcategoriaprecio"
+                option-label="tipo"
+                emit-value
+                map-options
+                outlined
+                dense
+                clearable
+                style="min-width: 200px"
+                @update:model-value="filtrarPrecios"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="filter_list" />
+                </template>
+              </q-select>
+            </div>
+          </div>
 
           <q-table
-            class="q-mt-md"
             :rows="preciosCampanaFiltrados"
             :columns="columnsPrecios"
             row-key="id"
-            :pagination="{ rowsPerPage: 5 }"
+            flat
+            bordered
+            :rows-per-page-options="[5, 10, 20]"
           >
+            <template v-slot:body-cell-codigo="props">
+              <q-td :props="props">
+                <div class="text-weight-medium">{{ props.row.codigo }}</div>
+              </q-td>
+            </template>
+
+            <template v-slot:body-cell-precio="props">
+              <q-td :props="props">
+                <q-badge color="green" :label="`Bs ${props.row.precio}`" />
+              </q-td>
+            </template>
+
             <template v-slot:body-cell-opciones="props">
               <q-td :props="props">
                 <q-btn
+                  flat
+                  dense
+                  round
                   color="primary"
-                  size="sm"
                   icon="edit"
                   @click="editarPrecioCampana(props.row)"
-                  dense
                   class="q-mr-sm"
                 >
-                  <q-tooltip>Editar precio</q-tooltip>
+                  <q-tooltip>Editar</q-tooltip>
                 </q-btn>
                 <q-btn
+                  flat
+                  dense
+                  round
                   color="negative"
-                  size="sm"
                   icon="delete"
                   @click="eliminarPrecioCampana(props.row.id)"
-                  dense
                 >
-                  <q-tooltip>Eliminar precio</q-tooltip>
+                  <q-tooltip>Eliminar</q-tooltip>
                 </q-btn>
               </q-td>
             </template>
           </q-table>
         </q-card-section>
+
+        <q-separator />
 
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" v-close-popup />
@@ -347,7 +507,7 @@ const idusuario = contenidousuario[0]?.idusuario
 const formularioActivo = ref(false)
 const idalmacenfiltro = ref(null)
 const busqueda = ref('')
-const filtroPrecioCampania = ref(0)
+const filtroPrecioCampania = ref(null)
 const dialogoCategorias = ref(false)
 const dialogoPrecios = ref(false)
 const pagination = ref({
@@ -438,7 +598,8 @@ const categoriasCampanaPrecioOptions = computed(() => {
 })
 
 const preciosCampanaFiltrados = computed(() => {
-  if (filtroPrecioCampania.value === 0) {
+ if (filtroPrecioCampania.value === null) {
+
     return preciosCampana.value.map((item, index) => ({
       ...item,
       numero: index + 1,
