@@ -70,7 +70,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3" v-if="mostrarCategoriasCampania">
+            <div class="col-12 col-md-3">
               <label for="campana">Categorías con Campaña</label>
               <q-select
                 v-model="categoriaCampaniaSeleccionada"
@@ -78,12 +78,24 @@
                 id="campana"
                 emit-value
                 map-options
-                :disable="!categoriaPrecioSeleccionada"
+                :disable="!mostrarCategoriasCampania || !categoriaPrecioSeleccionada"
+                :loading="cargandoCampanias"
                 outlined
                 dense
               >
                 <template v-slot:prepend>
                   <q-icon name="campaign" color="accent" />
+                </template>
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      {{
+                        mostrarCategoriasCampania
+                          ? 'No hay campañas disponibles'
+                          : 'Active la opción para ver campañas'
+                      }}
+                    </q-item-section>
+                  </q-item>
                 </template>
               </q-select>
             </div>
@@ -93,7 +105,7 @@
                 <template v-slot:default>
                   <div class="flex items-center text-grey-8">
                     <q-icon name="campaign" color="accent" class="q-mr-sm" />
-                    <span>Mostrar Categorías con Campaña</span>
+                    <span>Activar Categorías con Campaña</span>
                   </div>
                 </template>
               </q-checkbox>
@@ -387,6 +399,9 @@ import { imagen } from 'src/boot/url'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
 import SolicitudesDialog from './SolicitudesDialog.vue'
+import { URL_APICM } from 'src/composables/services'
+import { peticionGET } from 'src/composables/peticionesFetch.js'
+// import { showDialog } from 'src/utils/dialogs'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
@@ -465,11 +480,13 @@ const showPermisosDialog = ref(false)
 const cargandoAlmacenes = ref(false)
 const cargandoCategorias = ref(false)
 const cargandoProductos = ref(false)
+const cargandoCampanias = ref(false)
 
 // Datos ficticios
 const almacenes = ref([])
 const categoriasPrecio = ref([])
 const categoriasCampania = ref([])
+const preciosCampana = ref(new Map()) // Map de idproductoalmacen -> precio de campaña
 const productos = ref([])
 const productosFiltrados = ref([])
 const showWarningDialog = ref(false)
@@ -712,6 +729,129 @@ async function cargarCategoriasPrecio() {
     console.error('Almacén seleccionado es nulo, no se pueden cargar categorías.')
   }
 }
+
+// Cargar campañas disponibles para el almacén seleccionado
+async function cargarCampanasDisponibles() {
+  try {
+    cargandoCampanias.value = true
+    if (!almacenSeleccionado.value) return
+
+    const idalm = almacenSeleccionado.value?.value || almacenSeleccionado.value
+    const endpoint = `campanas/${usuario.value.empresa.idempresa}`
+    console.log('Cargando campañas para almacén:', idalm)
+
+    const { data } = await api.get(endpoint)
+    console.log('Respuesta de campañas:', data)
+
+    // Verificar si hay error en la respuesta
+    if (data[0] === 'error') {
+      throw new Error(data.error || 'Error al cargar campañas')
+    }
+
+    // Filtrar campañas por almacén seleccionado y estado activo
+    const campanasActivas = Array.isArray(data)
+      ? data.filter((c) => c.idalmacen == idalm && Number(c.estado) === 1)
+      : []
+
+    categoriasCampania.value = campanasActivas.map((c) => ({
+      label: c.nombre,
+      value: c.id,
+    }))
+
+    console.log('Campañas cargadas:', categoriasCampania.value)
+
+    // Preseleccionar la primera opción si existe
+    if (categoriasCampania.value.length > 0 && !categoriaCampaniaSeleccionada.value) {
+      categoriaCampaniaSeleccionada.value = categoriasCampania.value[0].value
+    }
+
+    if (categoriasCampania.value.length === 0) {
+      $q.notify({
+        type: 'info',
+        message: 'No hay campañas activas disponibles para este almacén',
+        position: 'top',
+      })
+    }
+  } catch (error) {
+    console.error('Error al cargar campañas disponibles:', error)
+    categoriasCampania.value = []
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar las campañas disponibles',
+    })
+  } finally {
+    cargandoCampanias.value = false
+  }
+}
+
+// Cargar precios de campaña para la campaña seleccionada
+async function cargarPreciosCampana() {
+  try {
+    if (!categoriaCampaniaSeleccionada.value || !categoriaPrecioSeleccionada.value) {
+      preciosCampana.value.clear()
+      return
+    }
+
+    console.log('=== Cargando precios de campaña ===')
+    console.log('Campaña seleccionada:', categoriaCampaniaSeleccionada.value)
+    console.log('Categoría de precio seleccionada:', categoriaPrecioSeleccionada.value)
+
+    // 1. Cargar categorías de la campaña
+    const endpointCategorias = `${URL_APICM}api/listacategoriapreciocampaña/${categoriaCampaniaSeleccionada.value}`
+    const categorias = await peticionGET(endpointCategorias)
+    console.log('Categorías de campaña:', categorias)
+
+    // 2. Encontrar la categoría de campaña que corresponde a la categoría de precio seleccionada
+    const categoriaCorrespondiente = categorias.find(
+      (cat) => cat.idcategoriaprecio == categoriaPrecioSeleccionada.value,
+    )
+
+    if (!categoriaCorrespondiente) {
+      console.warn(
+        'No hay categoría de campaña para la categoría de precio seleccionada',
+        categoriaPrecioSeleccionada.value,
+      )
+      preciosCampana.value.clear()
+      $q.notify({
+        type: 'warning',
+        message: 'Esta campaña no tiene precios para la categoría seleccionada',
+        position: 'top',
+      })
+      return
+    }
+
+    console.log('Categoría de campaña correspondiente:', categoriaCorrespondiente)
+
+    // 3. Cargar precios de campaña
+    const endpointPrecios = `${URL_APICM}api/listapreciocampaña/${categoriaCampaniaSeleccionada.value}`
+    const todosLosPrecios = await peticionGET(endpointPrecios)
+    console.log('Todos los precios de campaña:', todosLosPrecios)
+
+    // 4. Filtrar precios por la categoría de campaña correspondiente
+    const preciosFiltrados = todosLosPrecios.filter(
+      (precio) => precio.idcategoriacampaña == categoriaCorrespondiente.id,
+    )
+    console.log('Precios filtrados por categoría:', preciosFiltrados)
+
+    // 5. Crear Map de idproductoalmacen -> precio
+    const mapaPrecios = new Map()
+    preciosFiltrados.forEach((item) => {
+      mapaPrecios.set(item.idproductoalmacen, parseFloat(item.precio))
+    })
+
+    preciosCampana.value = mapaPrecios
+    console.log('Mapa de precios de campaña:', preciosCampana.value)
+    console.log(`Total de productos con precio de campaña: ${mapaPrecios.size}`)
+  } catch (error) {
+    console.error('Error al cargar precios de campaña:', error)
+    preciosCampana.value.clear()
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar precios de campaña',
+    })
+  }
+}
+
 watch(
   () => almacenes.value,
   async (almacenes) => {
@@ -739,6 +879,43 @@ watch(
     }
   },
   { immediate: true },
+)
+
+// Cuando el usuario active/desactive mostrarCategoriasCampania o cambie de almacén
+watch(
+  () => mostrarCategoriasCampania.value,
+  async (val) => {
+    if (val) {
+      await cargarCampanasDisponibles()
+    } else {
+      // Si se desactiva, limpiar precios de campaña y recargar productos
+      preciosCampana.value.clear()
+      categoriaCampaniaSeleccionada.value = null
+      if (categoriaPrecioSeleccionada.value) {
+        await cargarProductosDisponibles()
+      }
+    }
+  },
+)
+
+watch(
+  () => almacenSeleccionado.value,
+  async () => {
+    if (mostrarCategoriasCampania.value) {
+      await cargarCampanasDisponibles()
+    }
+  },
+)
+
+// Cuando cambie la campaña seleccionada, recargar productos con nuevos precios
+watch(
+  () => categoriaCampaniaSeleccionada.value,
+  async (nuevaCampana) => {
+    if (nuevaCampana && categoriaPrecioSeleccionada.value) {
+      console.log('Campaña cambiada, recargando productos con nuevos precios...')
+      await cargarProductosDisponibles()
+    }
+  },
 )
 
 // Los otros dos `watch` ya no son necesarios.)
@@ -796,6 +973,13 @@ async function cargarProductosDisponibles() {
     productos.value = []
     productoSeleccionado.value = null
 
+    // Si hay campaña seleccionada y está activada, cargar precios de campaña primero
+    if (mostrarCategoriasCampania.value && categoriaCampaniaSeleccionada.value) {
+      await cargarPreciosCampana()
+    } else {
+      preciosCampana.value.clear()
+    }
+
     // Simular datos del carritoPrueba en localStorage
     const datos = JSON.parse(localStorage.getItem('carrito'))
     console.log(datos.listaProductos)
@@ -821,15 +1005,31 @@ async function cargarProductosDisponibles() {
       )
     }
     console.log(productosDisponibles)
-    // Mapear para el selector
-    productos.value = productosDisponibles.map((producto) => ({
-      label: `${producto.codigo} - ${producto.descripcion}`,
-      value: producto.id,
-      originalData: {
-        ...producto,
-        datosAdicionales: `${producto.codigosin}-${producto.actividadsin}-${producto.unidadsin}-${producto.codigonandina}`,
-      },
-    }))
+
+    // Mapear para el selector y aplicar precios de campaña si existen
+    productos.value = productosDisponibles.map((producto) => {
+      // Verificar si este producto tiene precio de campaña
+      const precioCampana = preciosCampana.value.get(producto.id)
+      const precioFinal = precioCampana !== undefined ? precioCampana : producto.precio
+
+      if (precioCampana !== undefined) {
+        console.log(
+          `Producto ${producto.codigo}: Precio normal ${producto.precio} -> Precio campaña ${precioCampana}`,
+        )
+      }
+
+      return {
+        label: `${producto.codigo} - ${producto.descripcion}`,
+        value: producto.id,
+        originalData: {
+          ...producto,
+          precio: precioFinal, // Usar precio de campaña si existe, sino precio normal
+          precioOriginal: producto.precio, // Guardar precio original por si acaso
+          tienePrecioCampana: precioCampana !== undefined,
+          datosAdicionales: `${producto.codigosin}-${producto.actividadsin}-${producto.unidadsin}-${producto.codigonandina}`,
+        },
+      }
+    })
 
     productosFiltrados.value = [...productos.value]
   } catch (error) {
