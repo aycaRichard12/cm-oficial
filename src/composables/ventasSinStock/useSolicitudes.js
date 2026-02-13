@@ -140,6 +140,7 @@ export function useSolicitudes() {
    */
   const aprobarRechazarSolicitud = async (payload) => {
     loading.value = true
+    console.log('Procesando solicitud con payload:', payload)
     try {
       const response = await api.post('', payload)
       const data = response.data
@@ -163,8 +164,11 @@ export function useSolicitudes() {
     try {
       const response = await api.post('', payload)
       const data = response.data
-      console.log('Permiso consumido:', response)
-      notifySuccess('Permiso consumido correctamente')
+      if (data.estado === 'error') {
+        notifyError(data.mensaje || 'No se pudo consumir el permiso')
+      } else {
+        notifySuccess('Permiso consumido correctamente')
+      }
       return data
     } catch (error) {
       notifyError(error)
@@ -178,13 +182,24 @@ export function useSolicitudes() {
    * Obtiene el listado de permisos activos de una empresa.
    * @param {Number|String} idempresa
    */
-  const listarPermisosActivos = async () => {
+  const listarPermisosActivos = async (idusuario = null) => {
     if (!idempresa) return []
     loading.value = true
+
     try {
-      const response = await api.get(`/listarPermisosActivos/${idempresa}`)
+      const point = idusuario
+        ? `/listarPermisosActivos/${idempresa}/${idusuario}`
+        : `/listarPermisosActivos/${idempresa}`
+
+      console.log('Punto de API para permisos activos:', point)
+      const response = await api.get(point)
       console.log('Permisos activos:', response)
-      return response.data
+      const data = response.data.permisos_activos || []
+
+      return data.map((permiso, index) => ({
+        ...permiso,
+        index: index + 1,
+      }))
     } catch (error) {
       notifyError(error)
       return []
@@ -201,8 +216,12 @@ export function useSolicitudes() {
     if (!idempresa) return []
     loading.value = true
     try {
-      const { data } = await api.get(`/listarPermisosUsados/${idempresa}`)
-      return data
+      const response = await api.get(`/listarPermisosUsados/${idempresa}`)
+      const data = response.data.permisos_usados || []
+      return data.map((permiso, index) => ({
+        ...permiso,
+        index: index + 1, // Añadir un índice para identificar cada permiso en la tabla
+      }))
     } catch (error) {
       notifyError(error)
       return []
@@ -219,8 +238,12 @@ export function useSolicitudes() {
     if (!idempresa) return []
     loading.value = true
     try {
-      const { data } = await api.get(`/listarPermisosVencidos/${idempresa}`)
-      return data
+      const response = await api.get(`/listarPermisosVencidos/${idempresa}`)
+      const data = response.data.permisos_vencidos || []
+      return data.map((permiso, index) => ({
+        ...permiso,
+        index: index + 1, // Añadir un índice para identificar cada permiso en la tabla
+      }))
     } catch (error) {
       notifyError(error)
       return []
@@ -237,8 +260,17 @@ export function useSolicitudes() {
     if (!idempresa) return []
     loading.value = true
     try {
-      const { data } = await api.get(`/listarSolicitudes/${idempresa}`)
-      return data
+      const response = await api.get(`/listarSolicitudes/${idempresa}`)
+      console.log('Respuesta cruda de solicitudes:', response.data)
+      const data = response.data.solicitudes.map((solicitud, index) => {
+        return {
+          ...solicitud,
+          index: index + 1, // Añadir un índice para identificar cada solicitud en la tabla
+        }
+      })
+      console.log('Solicitudes listadas:', data)
+
+      return data || []
     } catch (error) {
       notifyError(error)
       return []
