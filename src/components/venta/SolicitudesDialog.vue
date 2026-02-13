@@ -127,8 +127,9 @@ import BaseDialog from '../general/BaseDialog.vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
+import { getUsuario } from 'src/composables/FuncionesGenerales'
 const idusuario = idusuario_md5()
-
+const nombreUsuario = getUsuario()
 const props = defineProps({
   modelValue: {
     type: Boolean,
@@ -205,6 +206,8 @@ async function handleEnviar() {
       mensaje: formData.value.mensaje,
       datos_adicionales: {
         url_de_envio: 'autorizarventassinstock',
+
+        nombre_usuario_notificacion: nombreUsuario,
       },
     })
 
