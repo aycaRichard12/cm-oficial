@@ -1,5 +1,5 @@
 {
-    '$id': 'almacen',
+
     almacenesResponsable: Array(6) [
       {
         id: 256,
@@ -124,3 +124,107 @@
         sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
       }
     ],
+
+
+
+
+
+    1. Endpoint Principal: Reporte de Ventas por Campaña
+GET /api/reporteVentasCampanaDetallado/{idUsuario}/{fechaInicio}/{fechaFinal}/{idCampana?}
+Respuesta esperada:
+
+javascript
+[
+  {
+    // Información de la venta
+    idventa: number,
+    nfactura: string,
+    fechaventa: string,
+    
+    // Información de la campaña
+    idcampana: number,
+    nombrecampana: string,
+    porcentajedescuento: number,
+    
+    // Información del almacén
+    idalmacen: number,
+    almacen: string,
+    
+    // Información del producto
+    idproducto: number,
+    codigo: string,
+    descripcion: string,
+    
+    // Cantidades y precios
+    cantidad: number,
+    preciooriginal: number,        // Precio sin campaña
+    preciocampana: number,          // Precio con campaña
+    subtotaloriginal: number,       // cantidad * preciooriginal
+    subtotalcampana: number,        // cantidad * preciocampana
+    descuentocampana: number,       // subtotaloriginal - subtotalcampana
+    
+    // Categoría de precio
+    idcategoriaprecio: number,
+    nombrecategoria: string         // "Por Mayor", "Por Menor", etc.
+  }
+]
+2. Endpoint: Resumen de Productos por Campaña
+GET /api/reporteProductosCampana/{idCampana}/{fechaInicio}/{fechaFinal}
+Respuesta esperada:
+
+javascript
+[
+  {
+    idproducto: number,
+    codigo: string,
+    descripcion: string,
+    totalvendido: number,           // Cantidad total vendida
+    totalventas: number,             // Número de ventas
+    montooriginal: number,           // Monto sin descuento
+    montocampana: number,            // Monto con descuento
+    descuentototal: number,          // Pérdida por campaña
+    porcentajeahorro: number         // % de descuento promedio
+  }
+]
+3. Endpoint: Resumen General de Campaña
+GET /api/resumenCampana/{idCampana}/{fechaInicio}/{fechaFinal}
+Respuesta esperada:
+
+javascript
+{
+  idcampana: number,
+  nombre: string,
+  fechainicio: string,
+  fechafinal: string,
+  
+  // Totales
+  totalventas: number,              // Número de ventas
+  totalproductos: number,           // Productos diferentes vendidos
+  cantidadtotal: number,            // Unidades vendidas
+  
+  // Montos
+  montototaloriginal: number,       // Sin descuento
+  montototalcampana: number,        // Con descuento
+  descuentototalaplicado: number,   // Pérdida total
+  
+  // Por categoría
+  ventasporcategoria: [
+    {
+      idcategoriaprecio: number,
+      nombrecategoria: string,
+      totalventas: number,
+      montototal: number,
+      descuentototal: number
+    }
+  ],
+  
+  // Top productos
+  topproductos: [
+    {
+      codigo: string,
+      descripcion: string,
+      cantidadvendida: number,
+      montototal: number
+    }
+  ]
+}

@@ -69,6 +69,16 @@
             :columns="colsPermisos"
             :loading="loading"
           >
+            <template v-slot:body-cell-acciones="props">
+              <q-td :props="props">
+                <q-btn
+                  label="Consumir"
+                  color="deep-orange"
+                  size="sm"
+                  @click="procesarConsumo(props.row)"
+                />
+              </q-td>
+            </template>
           </q-table>
         </q-tab-panel>
 
@@ -145,86 +155,24 @@
     </q-dialog>
 
     <q-dialog v-model="dialogoGestion" persistent>
-      <q-card style="min-width: 400px">
-        <q-card-section class="bg-secondary text-white">
+      <q-card style="min-width: 350px">
+        <q-card-section>
           <div class="text-h6">Gestionar Solicitud #{{ selectedItem?.id }}</div>
         </q-card-section>
 
-        <q-card-section class="q-gutter-sm q-pt-md">
-          <p class="text-subtitle2">Defina la vigencia del permiso:</p>
-          <div>
-            <label for="fI">Fecha y Hora de Inicio</label>
-            <q-input v-model="fechaInicio" id="fI" outlined dense readonly>
-              <template v-slot:prepend>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date
-                      v-model="fechaInicio"
-                      outlined
-                      dense
-                      fill-mask
-                      mask="YYYY-MM-DD HH:mm:ss"
-                    >
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-              <template v-slot:append>
-                <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="fechaInicio" mask="YYYY-MM-DD HH:mm:ss" format24h>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                      </div>
-                    </q-time>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-          </div>
-          <div>
-            <label for="fF" class="q-mt-md">Fecha y Hora de Fin</label>
-            <q-input v-model="fechaFin" id="fF" outlined dense readonly>
-              <template v-slot:prepend>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="fechaFin" mask="YYYY-MM-DD HH:mm:ss">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-              <template v-slot:append>
-                <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="fechaFin" mask="YYYY-MM-DD HH:mm:ss" format24h>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                      </div>
-                    </q-time>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-          </div>
-
+        <q-card-section class="q-pt-none">
+          ¿Desea aprobar o rechazar esta solicitud de stock?
           <q-input
             v-model="observacionGestion"
-            label="Observaciones del Administrador"
+            label="Observaciones (Opcional)"
             outlined
-            type="textarea"
-            rows="2"
-            class="q-mt-md"
+            dense
+            class="q-mt-sm"
           />
         </q-card-section>
 
-        <q-card-actions align="right" class="q-pb-md q-pr-md">
-          <q-btn label="Cancelar" flat v-close-popup />
+        <q-card-actions align="right">
+          <q-btn label="Cerrar" flat v-close-popup />
           <q-btn
             label="Rechazar"
             color="negative"
@@ -245,13 +193,8 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
-import { date } from 'quasar' // Helper de Quasar para formatear fechas
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { useSolicitudes } from 'src/composables/useSolicitudes'
 
-const idusuario = idusuario_md5()
-const fechaInicio = ref('')
-const fechaFin = ref('')
 // Composables y State
 const {
   loading,
@@ -261,6 +204,7 @@ const {
   loadAAlmacenes,
   crearSolicitudPermiso,
   aprobarRechazarSolicitud,
+  consumirPermiso,
   listarPermisosActivos,
   listarPermisosUsados,
   listarPermisosVencidos,
@@ -287,24 +231,12 @@ const formSolicitud = reactive({
 
 // Columnas Tablas
 const colsSolicitudes = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha_solicitud', align: 'left' },
+  { name: 'id', label: 'ID', field: 'id', align: 'left' },
+  { name: 'fecha', label: 'Fecha', field: 'fecha_creacion', align: 'left' },
   {
     name: 'usuario',
     label: 'Solicitante',
-    field: (row) => row.usuario?.usuario || 'N/A',
-    align: 'left',
-  },
-  {
-    name: 'almacen',
-    label: 'Almacén',
-    field: 'almacen',
-    align: 'left',
-  },
-  {
-    name: 'motivo',
-    label: 'Motivo',
-    field: 'motivo',
+    field: (row) => row.usuario?.nombre || 'N/A',
     align: 'left',
   },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
@@ -312,32 +244,9 @@ const colsSolicitudes = [
 ]
 
 const colsPermisos = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left' },
+  { name: 'id', label: 'Cód. Permiso', field: 'idpermiso', align: 'left' },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  {
-    name: 'usuario',
-    label: 'Solicitante',
-    field: (row) => row.usuario?.usuario || 'N/A',
-    align: 'left',
-  },
-  {
-    name: 'fecha_inicio',
-    label: 'Inicio',
-    field: 'fecha_inicio',
-    align: 'left',
-  },
-  {
-    name: 'fecha_fin',
-    label: 'Fin',
-    field: 'fecha_fin',
-    align: 'left',
-  },
-  {
-    name: 'motivo',
-    label: 'Motivo',
-    field: 'motivo',
-    align: 'left',
-  },
+  { name: 'acciones', label: 'Acciones', align: 'right' },
 ]
 
 // Ciclo de Vida
@@ -349,22 +258,10 @@ onMounted(async () => {
 
 // Métodos de Carga
 async function refreshAll() {
-  try {
-    // Usamos Promise.all para que carguen en paralelo y no bloqueen la UI
-    const [solicitudes, activos, usados, vencidos] = await Promise.all([
-      listarSolicitudes(),
-      listarPermisosActivos(),
-      listarPermisosUsados(),
-      listarPermisosVencidos(),
-    ])
-    console.log('Datos cargados:', { solicitudes, activos, usados, vencidos })
-    listaSolicitudesData.value = solicitudes || []
-    listaActivosData.value = activos || []
-    listaUsadosData.value = usados || []
-    listaVencidosData.value = vencidos || []
-  } catch (error) {
-    console.error('Error cargando pestañas:', error)
-  }
+  listaSolicitudesData.value = await listarSolicitudes()
+  listaActivosData.value = await listarPermisosActivos()
+  listaUsadosData.value = await listarPermisosUsados()
+  listaVencidosData.value = await listarPermisosVencidos()
 }
 
 // Lógica Formulario Solicitud
@@ -383,49 +280,32 @@ const onSubmitSolicitud = async () => {
 
 // Lógica Gestión (Aprobar/Rechazar)
 const gestionarSolicitud = (row) => {
-  console.log('Gestionando solicitud:', row)
-  selectedItem.value = row.id_solicitud
+  selectedItem.value = row
   observacionGestion.value = ''
-
-  const now = new Date()
-  const format = 'YYYY-MM-DD HH:mm:ss'
-
-  fechaInicio.value = date.formatDate(now, format)
-  fechaFin.value = date.formatDate(date.addToDate(now, { days: 1 }), format)
-
   dialogoGestion.value = true
 }
 
-const handleGestion = async (tipoAccion) => {
-  // El backend espera "APROBADO" o "RECHAZADO" en el campo 'accion'
-  const estadoAccion = tipoAccion === 'aprobar' ? 'APROBADO' : 'RECHAZADO'
-
-  // Construcción del payload según el requerimiento del backend
+const handleGestion = async (accion) => {
   const payload = {
-    ver: 'aprobarRechazarSolicitud', // Requerido por useSolicitudes.js para identificar el proceso
-    id_solicitud: selectedItem.value, // ID de la solicitud de la tabla
-    id_admin_md5: idusuario, // idempresa ya está disponible en el scope del composable
-    accion: estadoAccion, //
-    observacion_admin: observacionGestion.value, //
-    fecha_inicio: fechaInicio.value, //
-    fecha_fin: fechaFin.value, //
+    id: selectedItem.value.id,
+    ver: accion,
+    observacion: observacionGestion.value,
   }
-
   const res = await aprobarRechazarSolicitud(payload)
   if (res) {
     dialogoGestion.value = false
-    await refreshAll()
+    refreshAll()
   }
 }
 
 // Consumo de Permiso
-// const procesarConsumo = async (permiso) => {
-//   const res = await consumirPermiso({
-//     idpermiso: permiso.idpermiso,
-//     ver: 'consumir',
-//   })
-//   if (res) refreshAll()
-// }
+const procesarConsumo = async (permiso) => {
+  const res = await consumirPermiso({
+    idpermiso: permiso.idpermiso,
+    ver: 'consumir',
+  })
+  if (res) refreshAll()
+}
 
 // Helper UI
 const getColorEstado = (estado) => {

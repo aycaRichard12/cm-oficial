@@ -196,7 +196,7 @@ async function handleEnviar() {
     await crearSolicitudPermiso({
       idusuario_md5: idusuario,
       id_almacen: formData.value.almacenSeleccionado,
-      id_admin: formData.value.usuarioSeleccionado,
+      id_admin_md5: formData.value.usuarioSeleccionado,
       motivo: formData.value.asunto + ', ' + formData.value.mensaje,
       datos_adicionales: {
         url_de_envio: rutaActual,
