@@ -94,7 +94,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import BaseDialog from '../general/BaseDialog.vue'
 import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
 import { getUsuario } from 'src/composables/FuncionesGenerales'
@@ -113,7 +112,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'notificacion-enviada'])
 
-const route = useRoute()
 const { responsables, loading, loadUsuarios, enviarNotificacion } = useNotificaciones()
 
 const formRef = ref(null)
@@ -145,15 +143,12 @@ async function handleEnviar() {
   }
 
   try {
-    // Capturar automáticamente la ruta actual
-    const rutaActual = route.path.replace('/', '') || 'dashboard'
-
     await enviarNotificacion({
       id_usuario: formData.value.usuarioSeleccionado,
       asunto: formData.value.asunto,
       mensaje: formData.value.mensaje,
       datos_adicionales: {
-        url_de_envio: rutaActual,
+        url_de_envio: 'gestionPedido',
         nombre_usuario_notificacion: usuario,
       },
     })
