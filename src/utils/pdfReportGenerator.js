@@ -1550,19 +1550,19 @@ export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
   const datos = [...filteredCompra.value]
     .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
     .map((item, indice) => ({
-    indice: indice + 1,
-    fecha: cambiarFormatoFecha(item.fecha),
-    cliente: item.cliente,
-    sucursal: item.sucursal,
-    //si tipo venta es 1 tonces Factura Compra-Venta si es 0 es Comprobante Venta
-    tipoventa: Number(item.tipoventa) === 1 ? 'Factura Compra-Venta' : 'Comprobante Venta',
-    tipopago: item.tipopago,
-    nfactura: item.nfactura,
-    canal: item.canal,
-    total: decimas(item.total),
-    descuento: decimas(item.descuento),
-    ventatotal: decimas(item.ventatotal),
-  }))
+      indice: indice + 1,
+      fecha: item.fecha,
+      cliente: item.cliente,
+      sucursal: item.sucursal,
+      //si tipo venta es 1 tonces Factura Compra-Venta si es 0 es Comprobante Venta
+      tipoventa: Number(item.tipoventa) === 1 ? 'Factura Compra-Venta' : 'Comprobante Venta',
+      tipopago: item.tipopago,
+      nfactura: item.nfactura,
+      canal: item.canal,
+      total: decimas(item.total),
+      descuento: decimas(item.descuento),
+      ventatotal: decimas(item.ventatotal),
+    }))
 
   const descuento = filteredCompra.value.reduce(
     (sum, row) => sum + redondear(parseFloat(row.descuento)),
@@ -1986,22 +1986,21 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-const datos = [...cotizaciones.value]
-  .map(item => ({
-    ...item,
-    _fechaOrden: parseFechaStringADate(item.fecha), // Date real
-  }))
-  .sort((a, b) => a._fechaOrden - b._fechaOrden)
-  .map((item, index) => ({
-    nro: index + 1,
-    fecha: item.fecha,
-    cliente: item.cliente,
-    sucursal: item.sucursal,
-    monto: decimas(parseFloat(item.monto)),
-    descuento: decimas(parseFloat(item.descuento)),
-    total_sumatorias: decimas(parseFloat(item.total_sumatorias)),
-  }))
-
+  const datos = [...cotizaciones.value]
+    .map((item) => ({
+      ...item,
+      _fechaOrden: parseFechaStringADate(item.fecha), // Date real
+    }))
+    .sort((a, b) => a._fechaOrden - b._fechaOrden)
+    .map((item, index) => ({
+      nro: index + 1,
+      fecha: item.fecha,
+      cliente: item.cliente,
+      sucursal: item.sucursal,
+      monto: decimas(parseFloat(item.monto)),
+      descuento: decimas(parseFloat(item.descuento)),
+      total_sumatorias: decimas(parseFloat(item.total_sumatorias)),
+    }))
 
   // Data for jsPDF-autoTable - map from `reportData.
   // value`
@@ -2029,9 +2028,10 @@ const datos = [...cotizaciones.value]
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
-      [{ valor: cotizaciontotal, halign: 'right' },
+      [
+        { valor: cotizaciontotal, halign: 'right' },
         { valor: descuento, halign: 'right' },
-        { valor: total, halign: 'right' }
+        { valor: total, halign: 'right' },
       ],
 
       4,
@@ -2092,7 +2092,7 @@ export function PDFConprovanteCotizacion(cotizacion) {
 
 export function PDFextrabiosRobos(extravios, almacen) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-console.log('extravios',extravios)
+  console.log('extravios', extravios)
   // Columns for jsPDF-autoTable
   const columns = [
     { header: 'N', dataKey: 'nro' },
@@ -2103,16 +2103,15 @@ console.log('extravios',extravios)
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-const datos = [...extravios.value]
-  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha)) // 👈 orden real por fecha
-  .map((key, index) => ({
-    nro: index + 1, // 👈 numeración DESPUÉS de ordenar
-    fecha: cambiarFormatoFecha(key.fecha),
-    almacen: key.almacen,
-    descripcion: key.descripcion,
-    autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
-  }))
-
+  const datos = [...extravios.value]
+    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha)) // 👈 orden real por fecha
+    .map((key, index) => ({
+      nro: index + 1, // 👈 numeración DESPUÉS de ordenar
+      fecha: cambiarFormatoFecha(key.fecha),
+      almacen: key.almacen,
+      descripcion: key.descripcion,
+      autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
+    }))
 
   const columnStyles = {
     nro: { cellWidth: 15, halign: 'center' }, // Adjusted width
@@ -2228,17 +2227,15 @@ export function PDFreporteMermas(mermas, almacen) {
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
-  const datos = [...mermas.value] 
-  .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-.map((key, index) => ({
-    nro: index + 1,
-    fecha: cambiarFormatoFecha(key.fecha),
-    almacen: key.almacen,
-    descripcion: key.descripcion,
-    autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
-  }))
-
-
+  const datos = [...mermas.value]
+    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+    .map((key, index) => ({
+      nro: index + 1,
+      fecha: cambiarFormatoFecha(key.fecha),
+      almacen: key.almacen,
+      descripcion: key.descripcion,
+      autorizacion: Number(key.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
+    }))
 
   const columnStyles = {
     nro: { cellWidth: 15, halign: 'center' }, // Adjusted width
@@ -3454,13 +3451,15 @@ export function PDF_REPORTE_EXTRAVIO(reporte, datosFormulario) {
     { header: 'Autorizacion', dataKey: 'autorizacion' },
   ]
 
-  const datos = reporte.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map((item) => ({
-    index: item.index,
-    fecha: item.fecha,
-    almacen: item.almacen,
-    descripcion: item.descripcion,
-    autorizacion: item.autorizacion,
-  }))
+  const datos = reporte
+    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+    .map((item) => ({
+      index: item.index,
+      fecha: item.fecha,
+      almacen: item.almacen,
+      descripcion: item.descripcion,
+      autorizacion: item.autorizacion,
+    }))
   const columnStyles = {
     index: { cellWidth: 10, halign: 'center' },
     fecha: { cellWidth: 20, halign: 'left' },
@@ -4582,28 +4581,27 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
     { header: `Total (${divisaActiva})`, dataKey: 'total' },
   ]
 
-const datos = [...compras]
-  .map(item => ({
-    ...item,
-    _fechaOrden: new Date(item.fechaIngreso), // 👈 perfecto para YYYY-MM-DD
-  }))
-  .sort((a, b) => a._fechaOrden - b._fechaOrden)
-  .map((item, index) => ({
-    indice: index + 1,
-    fechaIngreso: cambiarFormatoFecha(item.fechaIngreso) || '-',
-    codigoProveedor: item.codigoProveedor || '-',
-    proveedor: item.proveedor || '-',
-    nombreIngreso: item.nombreIngreso || '-',
-    nFactura: item.nFactura || '-',
-    tipoCompra: item.tipoCompra == 1 ? 'P. Compra' : 'P. Mov.',
-    almacen: item.almacen || '-',
-    cantidad: decimas(item.cantidad || 0),
-    precioUnitario: decimas(item.precioUnitario || 0),
-    total: decimas(item.total || 0),
-    autorizacion: item.autorizacion == '1' ? 'Sí' : 'No',
-    estado: item.estadoIngreso == 1 ? 'Activo' : 'Inactivo',
-  }))
-
+  const datos = [...compras]
+    .map((item) => ({
+      ...item,
+      _fechaOrden: new Date(item.fechaIngreso), // 👈 perfecto para YYYY-MM-DD
+    }))
+    .sort((a, b) => a._fechaOrden - b._fechaOrden)
+    .map((item, index) => ({
+      indice: index + 1,
+      fechaIngreso: cambiarFormatoFecha(item.fechaIngreso) || '-',
+      codigoProveedor: item.codigoProveedor || '-',
+      proveedor: item.proveedor || '-',
+      nombreIngreso: item.nombreIngreso || '-',
+      nFactura: item.nFactura || '-',
+      tipoCompra: item.tipoCompra == 1 ? 'P. Compra' : 'P. Mov.',
+      almacen: item.almacen || '-',
+      cantidad: decimas(item.cantidad || 0),
+      precioUnitario: decimas(item.precioUnitario || 0),
+      total: decimas(item.total || 0),
+      autorizacion: item.autorizacion == '1' ? 'Sí' : 'No',
+      estado: item.estadoIngreso == 1 ? 'Activo' : 'Inactivo',
+    }))
 
   const totalPrecioUnitario = compras.reduce(
     (sum, item) => sum + parseFloat(item.precioUnitario || 0),

@@ -21,12 +21,14 @@ export function getNombreEmpresa() {
   }
 }
 export function getUsuario() {
-  if (contenidousuario) {
-    return contenidousuario?.[0]?.nombre
+  const contenidousuarioLocal = JSON.parse(localStorage.getItem('yofinanciero'))
+  if (contenidousuarioLocal) {
+    return contenidousuarioLocal?.[0]?.nombre
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
+    // alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
     console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    // window.location.href = '/app/dashboard'
+    return 'Usuario Desconocido'
   }
 }
 export function idusuario_md5() {

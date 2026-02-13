@@ -194,7 +194,7 @@ const orderedTopBoxes = computed(() => {
       component: PedidoComponent,
       data: compra.value,
       iconComponent: IconPedidos,
-      title: '',
+      title: 'COMPRAS',
       subtitle: '',
       cardId: 'compra-card',
     })
