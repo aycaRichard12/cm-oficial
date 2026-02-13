@@ -6,11 +6,12 @@
         v-model="visibleChart"
         toggle-color="primary"
         :options="[
-          { label: 'Todos', value: 'todos' },
           { label: 'Categorías', value: 'categoria' },
           { label: 'Preferidos', value: 'preferido' },
           { label: 'Monetario', value: 'monetario' },
           { label: 'Almacen', value: 'almacen' },
+          { label: 'Clientes', value: 'clientes' },
+          { label: 'Todos', value: 'todos' },
         ]"
         class="q-mb-md"
       />
@@ -21,6 +22,7 @@
     <GpPreferido v-if="showChart('preferido')" class="q-my-md" />
     <GpMonetario v-if="showChart('monetario')" />
     <GpAlmacen v-if="showChart('almacen')" />
+    <GpClientes v-if="showChart('clientes')" class="q-my-md" />
   </q-page>
 </template>
 
@@ -30,8 +32,9 @@ import GCategoria from './por_Categoria.vue'
 import GpPreferido from './producto_preferido.vue'
 import GpMonetario from './producto_monetario.vue'
 import GpAlmacen from './StockAlmacen.vue'
+import GpClientes from './fecha_venta_cliente.vue'
 // Controlador del gráfico visible
-const visibleChart = ref('todos') // Por defecto muestra todos
+const visibleChart = ref('categoria') // Por defecto muestra todos
 
 // Función para determinar qué gráficos mostrar
 const showChart = (chartName) => {

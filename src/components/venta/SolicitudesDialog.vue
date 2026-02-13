@@ -123,7 +123,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import BaseDialog from '../general/BaseDialog.vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -143,7 +142,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'notificacion-enviada'])
 
-const route = useRoute()
 const {
   almacenesResponsable,
   responsables,
@@ -191,15 +189,14 @@ async function handleEnviar() {
 
   try {
     // Capturar automáticamente la ruta actual
-    const rutaActual = route.path.replace('/', '') || 'dashboard'
 
     await crearSolicitudPermiso({
       idusuario_md5: idusuario,
       id_almacen: formData.value.almacenSeleccionado,
-      id_admin: formData.value.usuarioSeleccionado,
+      id_admin_md5: formData.value.usuarioSeleccionado,
       motivo: formData.value.asunto + ', ' + formData.value.mensaje,
       datos_adicionales: {
-        url_de_envio: rutaActual,
+        url_de_envio: 'autorizarventassinstock',
       },
     })
     await enviarNotificacion({
@@ -207,7 +204,7 @@ async function handleEnviar() {
       asunto: formData.value.asunto,
       mensaje: formData.value.mensaje,
       datos_adicionales: {
-        url_de_envio: rutaActual,
+        url_de_envio: 'autorizarventassinstock',
       },
     })
 
