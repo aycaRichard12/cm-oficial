@@ -8,8 +8,11 @@
         </q-avatar>
         <div class="q-ml-md">
           <div class="text-h6 text-white">Nueva Notificación</div>
+          <div class="text-subtitle2 text-white" v-if="datosNotificacion?.nombre_usuario_notificacion">
+            De: {{ datosNotificacion.nombre_usuario_notificacion }}
+          </div>
           <div class="text-caption text-white">
-            {{ formatearFecha(datosNotificacion?.fecha) }}
+            {{ (datosNotificacion?.fecha) }}
           </div>
         </div>
         <q-space />
@@ -140,66 +143,66 @@ function irAPagina() {
 //   cerrarNotificacion()
 // }
 
-function formatearFecha(fecha) {
-  if (!fecha) return 'Ahora'
+// function formatearFecha(fecha) {
+//   if (!fecha) return 'Ahora'
 
-  try {
-    // Manejar formato "2026-02-03 21:34:09" o "2026-02-03 17:20"
-    let date
+//   try {
+//     // Manejar formato "2026-02-03 21:34:09" o "2026-02-03 17:20"
+//     let date
     
-    // Si la fecha ya es un objeto Date
-    if (fecha instanceof Date) {
-      date = fecha
-    } 
-    // Si es string en formato "YYYY-MM-DD HH:mm:ss" o "YYYY-MM-DD HH:mm"
-    else if (typeof fecha === 'string') {
-      // Reemplazar espacio por 'T' para que sea compatible con ISO
-      const fechaISO = fecha.replace(' ', 'T')
-      date = new Date(fechaISO)
-    } 
-    else {
-      date = new Date(fecha)
-    }
+//     // Si la fecha ya es un objeto Date
+//     if (fecha instanceof Date) {
+//       date = fecha
+//     } 
+//     // Si es string en formato "YYYY-MM-DD HH:mm:ss" o "YYYY-MM-DD HH:mm"
+//     else if (typeof fecha === 'string') {
+//       // Reemplazar espacio por 'T' para que sea compatible con ISO
+//       const fechaISO = fecha.replace(' ', 'T')
+//       date = new Date(fechaISO)
+//     } 
+//     else {
+//       date = new Date(fecha)
+//     }
 
-    // Verificar si la fecha es válida
-    if (isNaN(date.getTime())) {
-      console.error('Fecha inválida:', fecha)
-      return 'Fecha inválida'
-    }
+//     // Verificar si la fecha es válida
+//     if (isNaN(date.getTime())) {
+//       console.error('Fecha inválida:', fecha)
+//       return 'Fecha inválida'
+//     }
 
-    const ahora = new Date()
-    const diferencia = ahora - date
+//     const ahora = new Date()
+//     const diferencia = ahora - date
 
-    // Menos de 1 minuto
-    if (diferencia < 60000) {
-      return 'Hace un momento'
-    }
+//     // Menos de 1 minuto
+//     if (diferencia < 60000) {
+//       return 'Hace un momento'
+//     }
 
-    // Menos de 1 hora
-    if (diferencia < 3600000) {
-      const minutos = Math.floor(diferencia / 60000)
-      return `Hace ${minutos} minuto${minutos > 1 ? 's' : ''}`
-    }
+//     // Menos de 1 hora
+//     if (diferencia < 3600000) {
+//       const minutos = Math.floor(diferencia / 60000)
+//       return `Hace ${minutos} minuto${minutos > 1 ? 's' : ''}`
+//     }
 
-    // Menos de 24 horas
-    if (diferencia < 86400000) {
-      const horas = Math.floor(diferencia / 3600000)
-      return `Hace ${horas} hora${horas > 1 ? 's' : ''}`
-    }
+//     // Menos de 24 horas
+//     if (diferencia < 86400000) {
+//       const horas = Math.floor(diferencia / 3600000)
+//       return `Hace ${horas} hora${horas > 1 ? 's' : ''}`
+//     }
 
-    // Formato completo
-    return date.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  } catch (error) {
-    console.error('Error al formatear fecha:', error)
-    return 'Fecha no disponible'
-  }
-}
+//     // Formato completo
+//     return date.toLocaleString('es-ES', {
+//       day: '2-digit',
+//       month: '2-digit',
+//       year: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit',
+//     })
+//   } catch (error) {
+//     console.error('Error al formatear fecha:', error)
+//     return 'Fecha no disponible'
+//   }
+// }
 
 function reproducirSonido() {
   try {
