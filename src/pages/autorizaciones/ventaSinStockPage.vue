@@ -3,13 +3,13 @@
     <q-card flat bordered class="q-pa-md">
       <q-toolbar class="bg-primary text-white shadow-2 rounded-borders">
         <q-toolbar-title>Gestión de Permisos de Stock</q-toolbar-title>
-        <q-btn
+        <!-- <q-btn
           icon="add"
           label="Nueva Solicitud"
           color="white"
           flat
           @click="abrirDialogoSolicitud"
-        />
+        /> -->
       </q-toolbar>
 
       <q-tabs
@@ -248,11 +248,13 @@ import { ref, onMounted, reactive } from 'vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { date } from 'quasar' // Helper de Quasar para formatear fechas
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-
+import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
 const idusuario = idusuario_md5()
 const fechaInicio = ref('')
 const fechaFin = ref('')
 // Composables y State
+const { enviarNotificacion } = useNotificaciones()
+
 const {
   loading,
   responsables,
@@ -266,7 +268,7 @@ const {
   listarPermisosVencidos,
   listarSolicitudes,
 } = useSolicitudes()
-
+const SolicitudSeleccionada = ref(null)
 const tab = ref('solicitudes')
 const dialogoSolicitud = ref(false)
 const dialogoGestion = ref(false)
@@ -368,10 +370,10 @@ async function refreshAll() {
 }
 
 // Lógica Formulario Solicitud
-const abrirDialogoSolicitud = () => {
-  formSolicitud.motivo = ''
-  dialogoSolicitud.value = true
-}
+// const abrirDialogoSolicitud = () => {
+//   formSolicitud.motivo = ''
+//   dialogoSolicitud.value = true
+// }
 
 const onSubmitSolicitud = async () => {
   const res = await crearSolicitudPermiso({ ...formSolicitud })
@@ -385,6 +387,8 @@ const onSubmitSolicitud = async () => {
 const gestionarSolicitud = (row) => {
   console.log('Gestionando solicitud:', row)
   selectedItem.value = row.id_solicitud
+  SolicitudSeleccionada.value = row
+  console.log('Solicitud seleccionada para gestión:', SolicitudSeleccionada.value)
   observacionGestion.value = ''
 
   const now = new Date()
@@ -409,6 +413,18 @@ const handleGestion = async (tipoAccion) => {
     observacion_admin: observacionGestion.value, //
     fecha_inicio: fechaInicio.value, //
     fecha_fin: fechaFin.value, //
+  }
+  if (estadoAccion === 'APROBADO') {
+    // Capturar automáticamente la ruta actual para redirigir al usuario después de la aprobación
+    await enviarNotificacion({
+      id_usuario: SolicitudSeleccionada.value.idusuario_md5,
+      asunto: 'Permiso de Venta Sin Stock Aprobado',
+      mensaje:
+        'Su solicitud para activar la función de venta sin stock ha sido aprobada. Podrá agregar productos al carrito incluso si no hay stock disponible durante el período definido. Recuerde que esta acción puede afectar la gestión de inventarios y debe ser utilizada con precaución.',
+      datos_adicionales: {
+        url_de_envio: 'registrarventaoculto',
+      },
+    })
   }
 
   const res = await aprobarRechazarSolicitud(payload)
