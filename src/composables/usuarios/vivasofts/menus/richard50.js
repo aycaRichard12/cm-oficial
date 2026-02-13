@@ -118,16 +118,16 @@ export const menurichard50 = [
             codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Adm-Campana-Rep. Campañas',
-            codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Adm-Campana-Rep. Ventas',
-            codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Adm-Campana-Rep. Campañas',
+          //   codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'Adm-Campana-Rep. Ventas',
+          //   codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
         ],
       },
       {
@@ -256,6 +256,18 @@ export const menurichard50 = [
           {
             titulo: 'V-Inventario Externo-Rep. Inventario Externo',
             codigo: 'reporteinventarioexterior-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+        ],
+      },
+      {
+        usuario: '03afdbd66e7929b125f8597834fa83a4',
+        titulo: 'Campañas-Atributos',
+        codigo: 'opcionesocultas',
+        submenu: [
+          {
+            titulo: 'V-Campañas-Crear Campañas',
+            codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
         ],
@@ -608,6 +620,16 @@ export const menurichard50 = [
           {
             titulo: 'Estadísticas',
             codigo: 'dashboard-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Campañas-Rep. Campañas',
+            codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'V-Campañas-Rep. Ventas por Campañas',
+            codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
         ],

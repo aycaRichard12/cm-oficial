@@ -113,6 +113,7 @@ export function useNotificaciones() {
           descripcion: mensaje,
           fecha: fechaFormateada,
           url_de_envio: datos_adicionales.url_de_envio || '',
+          nombre_usuario_notificacion: datos_adicionales.nombre_usuario_notificacion || '',
         },
       }
 
