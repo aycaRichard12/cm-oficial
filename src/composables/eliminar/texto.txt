@@ -1,0 +1,100 @@
+{
+    "status": "success",
+    "data": {
+        "estado": "INVOICE_STATE_SIN_VALID",
+        "codigoRecepcion": null,
+        "codigoEstado": {
+            "codigo": 690,
+            "decripcion": "VALIDA"
+        },
+        "tipoEmision": {
+            "codigo": 2,
+            "descripcion": "FUERA DE LINEA",
+            "isActive": 1
+        },
+        "nitEmisor": 123189023,
+        "numeroFactura": 1451,
+        "cuf": "86DCEAF56778586AB9AD88BF4216217F8A38E8CFF96D0D8147742F74",
+        "ack_ticket": "691536797a0ec",
+        "cufd": "BQWVDX2ZNQUE=NzUFERUU2QUVFNEY=QzkvbklGTkxaVURFEODRFRDNCRjNEM",
+        "sucursal": {
+            "codigoSucursal": "0",
+            "municipio": "Cochabamba",
+            "pais": "Bolivia",
+            "zona": "M-098 D-3, ENTRE CALLES BENJO CRUZ Y J. RODRIGO, ACERA ESTE CASA PB MRUO LADRILLO VISTO GARAJE COLOR VERDE, N-587719 C-0226933210 NICETO RODRIGUEZ Nro.: S/N Zona/Barrio.: SARCOBAMBA",
+            "ciudad": "Cochabamba",
+            "telefono": "(4) 458-8736",
+            "is_active": 1
+        },
+        "direccion": "M-098 D-3, ENTRE CALLES BENJO CRUZ Y J. RODRIGO, ACERA ESTE CASA PB MRUO LADRILLO VISTO GARAJE COLOR VERDE, N-587719 C-0226933210 NICETO RODRIGUEZ Nro.: S/N Zona/Barrio.: SARCOBAMBA",
+        "codigoPuntoVenta": "3",
+        "fechaEmision": "2025-11-12 21:38:01",
+        "nombreRazonSocial": "Chavez",
+        "documentoIdentidad": {
+            "codigo": 1,
+            "descripcion": "CI - CÉDULA DE IDENTIDAD",
+            "isActive": 1
+        },
+        "numeroDocumento": "3012490",
+        "complemento": null,
+        "codigoCliente": "CZ-740692",
+        "clientEmail": "factura@yofinanciero.com",
+        "metodoPago": {
+            "codigo": 1,
+            "descripcion": "EFECTIVO",
+            "isActive": 1
+        },
+        "numeroTarjeta": null,
+        "montoTotal": "51.50",
+        "moneda": {
+            "codigo": 1,
+            "descripcion": "BOLIVIANO",
+            "isActive": 1
+        },
+        "montoTotalMoneda": "51.50",
+        "cafc": null,
+        "descuentoAdicional": "0.00",
+        "codigoExcepcion": null,
+        "leyenda": "Ley N° 453: El proveedor debe brindar atención sin discriminación, con respeto, calidez y cordialidad a los usuarios y consumidores.",
+        "usuario": "ventas-cb74",
+        "documentoSector": {
+            "codigo": 1,
+            "descripcion": "FACTURA COMPRA-VENTA",
+            "isActive": 1,
+            "codigoTipoFactura": 1
+        },
+        "extras": {
+            "facturaTicket": "00227820251113002035"
+        },
+        "pdf_url": "https://emizor-web-prod.s3.amazonaws.com/company/100317/branch/451/86DCEAF56778586AB9AD88BF4216217F8A38E8CFF96D0D8147742F74.pdf",
+        "xml_url": "https://emizor-web-prod.s3.amazonaws.com/company/100317/branch/451/86DCEAF56778586AB9AD88BF4216217F8A38E8CFF96D0D8147742F74.xml",
+        "errores": null,
+        "urlSin": "https://siat.impuestos.gob.bo/consulta/QR?nit=123189023&cuf=86DCEAF56778586AB9AD88BF4216217F8A38E8CFF96D0D8147742F74&numero=1451&t=2",
+        "package_id": 562332,
+        "index_package": 0,
+        "uuid_package": "691536798dac0",
+        "montoTotalSujetoIva": "51.50",
+        "tipoCambio": "1.00",
+        "montoGiftCard": "0.00",
+        "detalle": [
+            {
+                "actividadEconomica": "107900",
+                "codigoProductoSin": 23911,
+                "codigoProducto": "CNEM-02",
+                "descripcion": "Café Nueva Esperanza, Molido, 250g",
+                "unidadMedida": {
+                    "codigo": 4,
+                    "descripcion": "BOLSA",
+                    "isActive": 1
+                },
+                "precioUnitario": "51.50",
+                "cantidad": "1.00",
+                "subTotal": "51.50",
+                "custom_field_detail": null,
+                "montoDescuento": "0.00",
+                "numeroSerie": null,
+                "numeroImei": null
+            }
+        ]
+    }
+}v 

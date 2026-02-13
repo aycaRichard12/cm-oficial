@@ -256,7 +256,7 @@
         </div>
       </div>
 
-      <div class="row items-center q-gutter-sm">
+      <div class="row items-center q-gutter-sm q-mb-md">
         <q-label class="text-subtitle2">Venta sin stock</q-label>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
@@ -265,6 +265,14 @@
           :color="permitirStock ? 'green' : 'grey'"
           :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
           @click="permitirStockvacio()"
+        />
+        <q-btn
+          icon="key"
+          label="Ver mis permisos"
+          color="primary"
+          @click="showPermisos = true"
+          outline
+          dense
         />
       </div>
       <q-table
@@ -377,6 +385,9 @@
     :title="tituloNotificacion"
     @solicitud-enviada="onSolicitudEnviada"
   />
+  <div>
+    <dialogPermisosUsuario v-model="showPermisos" @permiso-consumido="onPermisoUsado" />
+  </div>
 </template>
 <script setup>
 import { ref, computed, onMounted, defineExpose, watch } from 'vue'
@@ -388,8 +399,6 @@ import { imagen } from 'src/boot/url'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
 import SolicitudesDialog from './SolicitudesDialog.vue'
-import { URL_APICM } from 'src/composables/services'
-import { peticionGET } from 'src/composables/peticionesFetch.js'
 // import { showDialog } from 'src/utils/dialogs'
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
@@ -397,7 +406,20 @@ const leyendaActiva = useCurrencyLeyenda()
 leyendaActiva.cargarLeyendaActivo()
 const showSolicitudesDialog = ref(false)
 const tituloNotificacion = ref('Solicitud de permiso para venta sin stock')
+const showPermisos = ref(false)
 
+const onPermisoUsado = (permiso) => {
+  console.log('Se consumió el permiso:', permiso.id_almacen)
+  const almacen = almacenes.value.find((a) => Number(a.value) === Number(permiso.id_almacen))
+  if (almacen) {
+    almacenSeleccionado.value = almacen
+    showPermisos.value = false
+    console.log('Almacén seleccionado automáticamente:', almacen)
+    activarVentaSinStock()
+  }
+  // Aquí puedes cerrar el diálogo si quieres, o mostrar una notificación
+  // showPermisos.value = false
+}
 console.log(divisaActiva)
 console.log(leyendaActiva)
 const permitirStock = ref(false)
@@ -447,6 +469,7 @@ const precioUnitario = ref(0)
 const descuento = ref(0)
 const carritoPrueba = ref([])
 
+const showPermisosDialog = ref(false)
 // Estados de carga
 const cargandoAlmacenes = ref(false)
 const cargandoCategorias = ref(false)
@@ -537,34 +560,69 @@ const puedeAgregarProducto = computed(() => {
   // Solo permitir si la cantidad es menor o igual al stock
   return cantidad.value <= producto.originalData.stock
 })
+const activarVentaSinStock = async () => {
+  if (!permitirStock.value) {
+    await showDialog(
+      $q,
+      'I',
+      'La función de venta sin stock se encuentra activa. Puede continuar agregando productos al carrito independientemente de su disponibilidad. <br/> Recuerde que esta operación influye directamente en el control de inventario y debe utilizarse con precaución. <br/> Si desactiva esta modalidad, el permiso será revocado y el carrito actual se reiniciará. ',
+    )
+  }
 
-const permitirStockvacio = () => {
-  if (verificarPermisoVentaSinStock()) {
-    permitirStock.value = !permitirStock.value
-    if (!permitirStock.value) {
-      const datos = JSON.parse(localStorage.getItem('carrito')) || {}
+  permitirStock.value = !permitirStock.value
+  if (!permitirStock.value) {
+    const datos = JSON.parse(localStorage.getItem('carrito')) || {}
 
-      const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
+    const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
 
-      const facturados =
-        Array.isArray(datos.listaProductosFactura) && datos.listaProductosFactura.length > 0
+    const facturados =
+      Array.isArray(datos.listaProductosFactura) && datos.listaProductosFactura.length > 0
 
-      const carrito = Array.isArray(carritoPrueba.value) && carritoPrueba.value.length > 0
+    const carrito = Array.isArray(carritoPrueba.value) && carritoPrueba.value.length > 0
 
-      if (carrito || facturados || productos) {
-        emit('reiniciar')
-      }
+    if (carrito || facturados || productos) {
+      emit('reiniciar')
     }
-  } else {
-    solicitarPermisoVentaSinStock()
   }
 }
-const verificarPermisoVentaSinStock = () => {
-  // Aquí puedes implementar la lógica para verificar si el usuario tiene permiso para venta sin stock
-  // Por ejemplo, podrías hacer una llamada a la API o revisar un estado global de permisos
-  // Para este ejemplo, vamos a simular que el usuario no tiene permiso y mostrar el diálogo de solicitud
 
-  return false
+const permitirStockvacio = async () => {
+  permitirStock.value
+  if (permitirStock.value) {
+    activarVentaSinStock()
+    return
+  }
+  showPermisosDialog.value = true
+  const permiso = await verificarPermisoVentaSinStock()
+  console.log('Verificando permiso para venta sin stock...', permiso)
+  if (permiso) {
+    activarVentaSinStock()
+  } else {
+    const resultado = await showDialog(
+      $q,
+      'Q',
+      'No tiene permiso habilitado para realizar ventas sin stock. Puede solicitar la aprobación al administrador para continuar. ¿Desea enviar la solicitud ahora?',
+    )
+    if (resultado) {
+      solicitarPermisoVentaSinStock()
+    }
+  }
+}
+const verificarPermisoVentaSinStock = async () => {
+  const almacen = almacenSeleccionado.value
+  await showDialog(
+    $q,
+    'I',
+    `Se está verificando la autorización para realizar ventas sin stock en el almacén <b>${almacen.label}</b>. Por favor, aguarde unos instantes... `,
+  )
+
+  const data = await consumirPermisoVentaSinStock(almacen.value)
+  console.log('Permiso para venta sin stock:', data)
+
+  if (data && data.estado === 'error') {
+    return false
+  }
+  return true
 }
 const solicitarPermisoVentaSinStock = () => {
   // Aquí puedes implementar la lógica para mostrar el diálogo de solicitud de permiso
@@ -671,21 +729,21 @@ async function cargarCampanasDisponibles() {
   try {
     cargandoCampanias.value = true
     if (!almacenSeleccionado.value) return
-    
+
     const idalm = almacenSeleccionado.value?.value || almacenSeleccionado.value
     const endpoint = `campanas/${usuario.value.empresa.idempresa}`
     console.log('Cargando campañas para almacén:', idalm)
-    
+
     const { data } = await api.get(endpoint)
     console.log('Respuesta de campañas:', data)
-    
+
     // Verificar si hay error en la respuesta
     if (data[0] === 'error') {
       throw new Error(data.error || 'Error al cargar campañas')
     }
-    
+
     // Filtrar campañas por almacén seleccionado y estado activo
-    const campanasActivas = Array.isArray(data) 
+    const campanasActivas = Array.isArray(data)
       ? data.filter((c) => c.idalmacen == idalm && Number(c.estado) === 1)
       : []
 
@@ -693,14 +751,14 @@ async function cargarCampanasDisponibles() {
       label: c.nombre,
       value: c.id,
     }))
-    
+
     console.log('Campañas cargadas:', categoriasCampania.value)
-    
+
     // Preseleccionar la primera opción si existe
     if (categoriasCampania.value.length > 0 && !categoriaCampaniaSeleccionada.value) {
       categoriaCampaniaSeleccionada.value = categoriasCampania.value[0].value
     }
-    
+
     if (categoriasCampania.value.length === 0) {
       $q.notify({
         type: 'info',
@@ -941,17 +999,19 @@ async function cargarProductosDisponibles() {
       )
     }
     console.log(productosDisponibles)
-    
+
     // Mapear para el selector y aplicar precios de campaña si existen
     productos.value = productosDisponibles.map((producto) => {
       // Verificar si este producto tiene precio de campaña
       const precioCampana = preciosCampana.value.get(producto.id)
       const precioFinal = precioCampana !== undefined ? precioCampana : producto.precio
-      
+
       if (precioCampana !== undefined) {
-        console.log(`Producto ${producto.codigo}: Precio normal ${producto.precio} -> Precio campaña ${precioCampana}`)
+        console.log(
+          `Producto ${producto.codigo}: Precio normal ${producto.precio} -> Precio campaña ${precioCampana}`,
+        )
       }
-      
+
       return {
         label: `${producto.codigo} - ${producto.descripcion}`,
         value: producto.id,
@@ -1194,6 +1254,15 @@ function eliminarCarrito() {
     type: 'positive',
     message: 'Listo para añadir al carrito ',
   })
+}
+async function consumirPermisoVentaSinStock(idalmacen) {
+  const response = await consumirPermiso({
+    idusuario_md5: idusuario,
+    ver: 'consumirPermiso',
+    id_almacen: idalmacen,
+  })
+  console.log('Respuesta del permiso para venta sin stock:', response)
+  return response
 }
 
 // Inicialización $ currencyStore codigoActividadSin despachado
