@@ -180,7 +180,6 @@ const usuariosOptions = computed(() => {
   return responsables.value.map((user) => ({
     label: user.label || user.nombre || user.usuario,
     value: user.value || user.id_usuario || user.id,
-    
   }))
 })
 
@@ -209,7 +208,9 @@ async function handleEnviar() {
       asunto: formData.value.asunto,
       mensaje: formData.value.mensaje,
       datos_adicionales: {
-        url_de_envio: rutaActual,
+        nombre_usuario_notificacion: nombreUsuario,
+        url_de_envio: 'autorizarventassinstock',
+
         nombre_usuario_notificacion: nombreUsuario,
       },
     })
