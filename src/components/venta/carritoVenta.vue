@@ -399,7 +399,13 @@ import { imagen } from 'src/boot/url'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
 import SolicitudesDialog from './SolicitudesDialog.vue'
+import { URL_APICM } from 'src/composables/services'
+import { peticionGET } from 'src/composables/peticionesFetch.js'
 // import { showDialog } from 'src/utils/dialogs'
+import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
+import { showDialog } from 'src/utils/dialogs'
+import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
+const { consumirPermiso } = useSolicitudes()
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
