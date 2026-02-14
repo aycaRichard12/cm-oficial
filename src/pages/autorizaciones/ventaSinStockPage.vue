@@ -416,10 +416,8 @@ const handleGestion = async (tipoAccion) => {
   }
   if (estadoAccion === 'APROBADO') {
     // Capturar automáticamente la ruta actual para redirigir al usuario después de la aprobación
-    const solicitud = SolicitudSeleccionada.value
-    console.log('Solicitud para notificación:', solicitud.id_solicitud, solicitud.motivo)
     await enviarNotificacion({
-      id_usuario: solicitud.id_usuario_md5,
+      id_usuario: SolicitudSeleccionada.value.idusuario_md5,
       asunto: 'Permiso de Venta Sin Stock Aprobado',
       mensaje:
         'Su solicitud para activar la función de venta sin stock ha sido aprobada. Podrá agregar productos al carrito incluso si no hay stock disponible durante el período definido. Recuerde que esta acción puede afectar la gestión de inventarios y debe ser utilizada con precaución.',

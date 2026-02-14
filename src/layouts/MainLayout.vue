@@ -203,7 +203,7 @@ import NotificacionRecibidaDialog from 'src/components/pusher-notificaciones/Not
 import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import ComandoVoz from './ComandoVoz.vue'
-import { idempresa_md5, idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { usePusherStore } from 'src/stores/pusher-store'
 //import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
@@ -214,8 +214,6 @@ const pusherStore = usePusherStore()
 const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
-const usuario = getUsuario()
-console.log('Usuario en MainLayout.vue:', usuario)
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)
@@ -388,6 +386,7 @@ const navigateToTab = (tab) => {
 }
 
 const cargarPaginasSubMenu = (submenuCodigo) => {
+  console.log(submenuCodigo)
   const paginasSubmenu = PAGINAS[submenuCodigo] || []
   const usuario = menuStore.obtenerUsuario
   return paginasSubmenu.map((paginaCodigo) => {
@@ -459,6 +458,7 @@ onMounted(async () => {
 
   pusherStore.escucharEvento('notificacion-interna', (data) => {
     console.log('Notificación recibida desde Pusher:', data)
+    
     // Mostrar el dialog automáticamente
     if (notificacionDialogRef.value) {
       notificacionDialogRef.value.mostrarNotificacion(data)
