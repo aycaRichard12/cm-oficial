@@ -400,10 +400,6 @@ const routes = [
         path: '/autorizarventassinstock',
         component: () => import('src/pages/autorizaciones/ventaSinStockPage.vue'),
       },
-      {
-        path: '/autorizarventassinstock',
-        component: () => import('src/components/venta/SolicitudesPermiso.vue'),
-      },
     ],
   },
   {
