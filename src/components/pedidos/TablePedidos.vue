@@ -3,20 +3,20 @@
     <!-- Cabecera -->
     <div class="row q-col-gutter-x-md">
       <div class="col-6 flex justify-start">
-        <q-btn color="primary" @click="$emit('add')" class="btn-res">
+        <q-btn color="primary" @click="$emit('add')" class="btn-res" id="btnAgregar">
           <q-icon name="add" class="icono" />
           <span class="texto">Nuevo</span>
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">
-        <q-btn color="info" @click="imprimir" outline class="btn-res">
+        <q-btn color="info" @click="imprimir" outline class="btn-res" id="btnImprimir">
           <q-icon name="picture_as_pdf" class="icono" />
           <span class="texto">Vista Previa PDF</span>
         </q-btn>
       </div>
     </div>
     <div class="row q-col-gutter-x-md">
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="almacenPedidos">
         <label for="almacen">Almacén</label>
         <q-select
           v-model="filtroAlmacen"
@@ -29,7 +29,7 @@
         />
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="tipoPedidos">
         <label for="tipo">Tipo</label>
         <q-select
           v-model="filtroTipo"
@@ -42,7 +42,7 @@
           outlined
         />
       </div>
-      <div class="col-12 col-md-6 flex justify-end">
+      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
         <div>
           <label for="buscar">Buscar...</label>
           <q-input dense debounce="300" v-model="search" id="buscar" outlined>
@@ -56,6 +56,7 @@
 
     <!-- Tabla -->
     <q-table
+      id="tablePedidos"
       title="Pedidos"
       :rows="ordenados"
       :columns="columnas"
@@ -92,6 +93,7 @@
         <q-td :props="props">
           <template v-if="/\.pdf$/i.test(props.row.ruta)">
             <q-btn
+            id="btnVerPDF"
               color="primary"
               icon="picture_as_pdf"
               label="Ver PDF"
@@ -101,6 +103,7 @@
 
           <template v-else>
             <q-img
+              id="btnVerImagen"
               :src="props.row.ruta"
               class="cursor-pointer"
               style="max-height: 100px"
@@ -117,6 +120,7 @@
       <template v-slot:body-cell-detalle="props">
         <q-td>
           <q-btn
+          id="btnVerDetalle"
             color="primary"
             label=""
             icon="shopping_cart"
@@ -130,9 +134,10 @@
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-nowrap">
           <div v-if="Number(props.row.autorizacion) === 2">
-            <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" />
-            <q-btn icon="delete" color="negative" dense flat @click="$emit('delete', props.row)" />
+            <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" id="btnEditar"/>
+            <q-btn icon="delete" color="negative" dense flat @click="$emit('delete', props.row)" id="btnEliminar"/>
             <q-btn
+              id="autorizar"
               v-if="permisosStore.tienePermiso('generarpedido')"
               icon="toggle_off"
               dense
@@ -143,6 +148,7 @@
               <q-tooltip>Autorizar Pedido</q-tooltip>
             </q-btn>
             <q-btn
+              id="notificaciones"
               icon="notifications"
               color="warning"
               dense
@@ -158,7 +164,8 @@
                 dense
                 flat
                 @click="subirBaucher(props.row)"
-              />
+                id="btnSubirBaucher"
+                    />
             </template>
           </div>
           <div v-else>
@@ -169,7 +176,8 @@
                 dense
                 flat
                 @click="subirBaucher(props.row)"
-              />
+                id="btnSubirBaucher"
+                        />
             </div>
           </div>
         </q-td>

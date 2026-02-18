@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="titulo">Reporte Pedidos</div>
     <q-form @submit.prevent="handleGenerarReporte">
-      <div class="row justify-center q-col-gutter-x-md">
+      <div class="row justify-center q-col-gutter-x-md" id="pedidos">
         <div class="col-12 col-md-4">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input
@@ -32,20 +32,22 @@
           color="primary"
           @click="handleGenerarReporte"
           class="q-mx-sm"
+          id="generarreporte"
         />
         <q-btn
           label="Vista previa del Reporte"
           color="primary"
           @click="descargarPDF"
           class="q-mx-sm"
-        />
+          id="vistaprevia"
+            />
       </div>
     </q-form>
 
     <div class="q-mt-lg">
       <q-form>
         <div class="row justify-center q-col-gutter-x-md">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="almacen">
             <label for="almacen">Almacén*</label>
             <q-select
               v-model="almacenSeleccionado"
@@ -62,6 +64,7 @@
         </div>
       </q-form>
       <q-table
+        id="tablaPedidos"
         :rows="datosFiltrados"
         :columns="columnasTabla"
         row-key="id"
@@ -78,15 +81,16 @@
           <q-td :props="props" class="text-nowrap">
             <div class="q-pa-none">
               <template v-if="Number(props.row.autorizacion) === 2">
-                <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
+                <q-btn id="verpedido" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
                   <q-tooltip>Ver Pedido</q-tooltip>
                 </q-btn>
               </template>
               <template v-else>
-                <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
+                <q-btn id="verpedido" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
                   <q-tooltip>Ver Pedido</q-tooltip>
                 </q-btn>
                 <q-btn
+                  id="enviarpdf"
                   size="sm"
                   icon="mdi-whatsapp"
                   color="green"
