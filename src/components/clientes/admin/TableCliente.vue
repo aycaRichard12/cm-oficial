@@ -2,26 +2,26 @@
   <div>
     <!-- Cabecera con filtros y botones -->
     <div class="row q-col-gutter-x-md q-mb-md">
-      <div>
-        <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
+      <div >
+        <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="registrarCliente">
           <q-icon name="add" class="icono" />
           <span class="texto">Agregar</span>
         </q-btn>
       </div>
       <div>
-        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res q-mt-lg" outline>
+        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res q-mt-lg" outline id="importarExcel">
           <q-icon name="import_export" class="icono" />
           <span class="texto">Importar de Excel</span>
         </q-btn>
       </div>
       <div>
-        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res q-mt-lg" outline="">
+        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res q-mt-lg" outline="" id="exportarExcel">
           <q-icon name="file_upload" class="icono" />
           <span class="texto">Exportar a Excel</span>
         </q-btn>
       </div>
     </div>
-    <div class="row q-col-gutter-x-md q-mb-md">
+    <div class="row q-col-gutter-x-md q-mb-md" id="filtrosClientes">
       <!-- Botones izquierda -->
 
       <div class="col-12 col-md-2">
@@ -81,6 +81,7 @@
       :loading="loading"
       :filter="search"
       class="sticky-header-table"
+      id="tablaClientes"
     >
       <template v-slot:top-right> </template>
       <!-- Personalización de celdas para truncar texto -->
@@ -95,9 +96,9 @@
       <!-- Columna de opciones -->
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-nowrap">
-          <q-btn icon="edit" color="primary" dense flat @click="editClient(props.row)" />
-          <q-btn icon="delete" color="negative" dense flat @click="deleteClient(props.row)" />
-          <q-btn icon="add" color="primary" dense flat @click="addToList(props.row)" />
+          <q-btn icon="edit" color="primary" dense flat @click="editClient(props.row)" id="editarCliente"/>
+          <q-btn icon="delete" color="negative" dense flat @click="deleteClient(props.row)" id="eliminarCliente"/>
+          <q-btn icon="add" color="primary" dense flat @click="addToList(props.row)" id="agregarCliente"/>
         </q-td>
       </template>
     </q-table>
