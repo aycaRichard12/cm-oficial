@@ -2,26 +2,26 @@
   <div class="q-pa-md">
     <div class="row q-col-gutter-x-md q-mb-md">
       <div>
-        <q-btn color="primary" @click="$emit('add')" class="btn-res">
+        <q-btn color="primary" @click="$emit('add')" class="btn-res" id="agregarProveedor">
           <q-icon name="add" class="icono" />
           <span class="texto">Nuevo</span>
         </q-btn>
       </div>
 
       <div>
-        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res" outline>
+        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res" outline id="importarExcel">
           <q-icon name="upload" class="icono" />
           <span class="texto">Importar Excel</span>
         </q-btn>
       </div>
       <div>
-        <q-btn color="red" outline @click="exportarProveedoresPDF" class="btn-res">
+        <q-btn color="red" outline @click="exportarProveedoresPDF" class="btn-res" id="exportarPdf">
           <q-icon name="picture_as_pdf" class="icono" />
           <span class="texto">Vista Previa PDF</span>
         </q-btn>
       </div>
       <div>
-        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res" outline>
+        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res" outline id="exportarExcel">
           <q-icon name="file_download" class="icono" />
           <span class="texto">Exportar Excel</span>
         </q-btn>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="row q-col-gutter-x-md flex justify-end q-mb-md">
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="buscador">
         <label for="buscar">Buscar...</label>
         <q-input dense debounce="300" v-model="filtro" id="buscar">
           <template v-slot:append> <q-icon name="search" /> </template>
@@ -37,6 +37,7 @@
       </div>
     </div>
     <q-table
+    id="tablaProveedores"
       flat
       bordered
       title="Proveedores"
@@ -58,8 +59,8 @@
       </template>
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-center">
-          <q-btn flat dense icon="edit" color="primary" @click="editarProveedor(props.row)" />
-          <q-btn flat dense icon="delete" color="negative" @click="eliminarProveedor(props.row)" />
+          <q-btn flat dense icon="edit" color="primary" @click="editarProveedor(props.row)" id='editarProveedor'/>
+          <q-btn flat dense icon="delete" color="negative" @click="eliminarProveedor(props.row)" id='eliminarProveedor'/>
         </q-td>
       </template>
     </q-table>

@@ -1,11 +1,11 @@
 <template>
   <q-page padding="">
-    <div class="titulo">Registrar Cliente</div>
+    <div class="titulo" >Registrar Cliente</div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
           <div>Registrar Cliente</div>
-          <q-btn color="" icon="close" @click="showForm = false" flat dense round />
+          <q-btn color="" icon="close" @click="showForm = false" flat dense round  />
         </q-card-section>
         <q-card-section class="q-pa-none">
           <registro-cliente
