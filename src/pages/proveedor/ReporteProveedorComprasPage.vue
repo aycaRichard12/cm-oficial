@@ -11,7 +11,7 @@
 
       <!-- Filters Section -->
       <q-card-section>
-        <div class="row q-col-gutter-md items-start">
+        <div class="row q-col-gutter-md items-start" id="filtroFechas">
           <div class="col-12 col-md-3">
             <q-input
               v-model="fechaInicio"
@@ -59,7 +59,7 @@
 
       <q-card-section>
         <div class="row q-col-gutter-md items-center">
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-6" id="generarReporte">
             <q-btn
               color="primary"
               label="Generar Reporte"
@@ -79,6 +79,7 @@
                 label="PDF"
                 @click="generarPDF"
                 :disable="!filteredCompras.length"
+                id="exportarPDF"
               />
               <q-btn
                 color="positive"
@@ -86,6 +87,7 @@
                 label="Excel"
                 @click="generarExcel"
                 :disable="!filteredCompras.length"
+                id="exportarExcel"
               />
             </q-btn-group>
           </div>
@@ -95,6 +97,7 @@
       <!-- Table Section -->
       <q-card-section>
         <BaseFilterableTable
+          id="reporteCompras"
           title="Listado de Compras"
           :rows="filteredCompras"
           :columns="columnas"
@@ -130,6 +133,7 @@
           <template v-slot:body-cell-acciones="props">
             <q-td :props="props">
               <q-btn
+              id="verDetallePDF"
                 flat
                 round
                 dense
