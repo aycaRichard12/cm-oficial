@@ -5,7 +5,7 @@
       <div class="col-6 flex justify-start">
         <q-btn color="primary" @click="$emit('add')" class="btn-res">
           <q-icon name="add" class="icono" />
-          <span class="texto">Agregar</span>
+          <span class="texto">Nuevo</span>
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">

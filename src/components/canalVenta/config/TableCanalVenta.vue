@@ -3,7 +3,7 @@
     <div class="flex justify-between">
       <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="agregarCanalDeVenta">
         <q-icon name="add" class="icono" />
-        <span class="texto">Agregar</span>
+        <span class="texto">Nuevo</span>
       </q-btn>
 
       <!-- <div class="col flex items-center justify-end">

@@ -7,7 +7,7 @@
         <div class="row">
           <q-btn
             color="primary"
-            :label="collapseVisible ? 'Cancelar Registro' : 'Nuevo Registro'"
+            :label="collapseVisible ? 'Cancelar Registro' : 'Nuevo'"
             @click="toggleCollapse"
           />
         </div>

@@ -7,7 +7,7 @@
           <div class="col-12 flex justify-start">
             <q-btn
               color="primary"
-              :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo Registro'"
+              :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo'"
               @click="toggleFormulario"
             />
           </div>

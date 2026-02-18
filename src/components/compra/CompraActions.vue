@@ -8,10 +8,9 @@
         id="btnNuevaCompra"
         @click="$emit('add')"
         icon="add"
-        label="Nueva Compra"
+        label="Nuevo"
         no-caps
       />
-      
     </div>
 
     <div class="col-2 q-mt-lg flex justify-end">
@@ -26,5 +25,3 @@
 <script setup>
 defineEmits(['add', 'imprimirReporte'])
 </script>
-
-

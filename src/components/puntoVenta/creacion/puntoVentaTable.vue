@@ -3,7 +3,7 @@
     <div class="col-12 col-md-3" id="agregarPuntoVenta">
       <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
         <q-icon name="add" class="icono" />
-        <span class="texto"> Agregar</span>
+        <span class="texto">Nuevo</span>
       </q-btn>
     </div>
 
@@ -71,9 +71,16 @@
           class="q-mr-sm"
           @click="$emit('edit-item', props.row)"
           flat
-            id="editarPuntoVenta"
+          id="editarPuntoVenta"
         />
-        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat id="eliminarPuntoVenta" />
+        <q-btn
+          icon="delete"
+          color="negative"
+          dense
+          @click="$emit('delete-item', props.row)"
+          flat
+          id="eliminarPuntoVenta"
+        />
       </q-td>
     </template>
   </BaseFilterableTable>

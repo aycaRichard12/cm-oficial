@@ -92,6 +92,16 @@
                   {{ props.row.r }}
                 </q-td>
               </template>
+              <template v-slot:header-cell-rotacion="props">
+                <q-th :props="props">
+                  {{ props.col.label }}
+                  <q-icon name="help" size="xs" class="q-ml-xs">
+                    <q-tooltip anchor="top middle" self="bottom middle">
+                      {{ explicacionRotacion }}
+                    </q-tooltip>
+                  </q-icon>
+                </q-th>
+              </template>
             </q-table>
           </q-card>
         </q-tab-panel>
@@ -146,6 +156,16 @@
                 <q-td :props="props">
                   {{ props.row.r }}
                 </q-td>
+              </template>
+              <template v-slot:header-cell-rotacion="props">
+                <q-th :props="props">
+                  {{ props.col.label }}
+                  <q-icon name="help" size="xs" class="q-ml-xs">
+                    <q-tooltip anchor="top middle" self="bottom middle">
+                      {{ explicacionRotacion }}
+                    </q-tooltip>
+                  </q-icon>
+                </q-th>
               </template>
             </q-table>
           </q-card>
@@ -237,6 +257,16 @@
                   {{ props.row.r }}
                 </q-td>
               </template>
+              <template v-slot:header-cell-rotacion="props">
+                <q-th :props="props">
+                  {{ props.col.label }}
+                  <q-icon name="help" size="xs" class="q-ml-xs">
+                    <q-tooltip anchor="top middle" self="bottom middle">
+                      {{ explicacionRotacion }}
+                    </q-tooltip>
+                  </q-icon>
+                </q-th>
+              </template>
             </q-table>
           </q-card>
         </q-tab-panel>
@@ -323,7 +353,8 @@ const cliente = ref({
   datos: [],
   cargando: false,
 })
-
+const explicacionRotacion =
+  'Promedio de unidades netas vendidas por día en el periodo seleccionado.'
 // Columnas de tablas
 const columnasAlmacen = [
   { name: 'numero', label: 'N°', field: (row) => row.index, align: 'left' },
@@ -334,7 +365,14 @@ const columnasAlmacen = [
   { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
   { name: 'cantidadventas', label: 'Cant. ventas', field: 'cantidadventas', align: 'right' },
   { name: 'cantidadIE', label: 'Inv. externo', field: 'cantidadIE', align: 'right' },
-  { name: 'rotacion', label: 'Rotación', field: 'rotacion', align: 'right' },
+  {
+    name: 'rotacion',
+    label: 'Rotación Diaria',
+    field: 'rotacion',
+    align: 'right',
+    classes: 'text-bold',
+    headerTooltip: explicacionRotacion,
+  },
 ]
 
 const columnasGlobal = [
@@ -346,7 +384,14 @@ const columnasGlobal = [
   { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
   { name: 'cantidadventas', label: 'Cant. ventas', field: 'cantidadventas', align: 'right' },
   { name: 'cantidadIE', label: 'Inv.externo', field: 'cantidadIE', align: 'right' },
-  { name: 'rotacion', label: 'Rotación', field: 'rotacion', align: 'right' },
+  {
+    name: 'rotacion',
+    label: 'Rotación',
+    field: 'rotacion',
+    align: 'right',
+    classes: 'text-bold',
+    headerTooltip: explicacionRotacion,
+  },
 ]
 
 const columnasCliente = [
@@ -368,11 +413,14 @@ const columnasCliente = [
     label: 'Rotación',
     field: (row) => calcularRotacion(row, cliente.value.fechaInicio, cliente.value.fechaFin),
     align: 'right',
+    classes: 'text-bold',
+    headerTooltip:
+      'Promedio de unidades netas vendidas por día en el periodo seleccionado para el cliente y sucursal elegidos.',
   },
 ]
 
 const pagination = {
-  rowsPerPage: 10,
+  rowsPerPage: 5,
 }
 
 // Computed

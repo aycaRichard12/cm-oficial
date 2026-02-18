@@ -3,11 +3,10 @@
     <div class="titulo">Categorías de Precio</div>
     <div class="q-pa-md">
       <div flat bordered>
-        <div class="q-ma-md">
+        <div class="q-mb-md">
           <q-btn
             color="primary"
-            icon="add"
-            label="Nueva Categoría"
+            label="Nuevo"
             @click="openFormDialog('crear')"
             :loading="loading"
           />

@@ -112,7 +112,11 @@
                 :disable="!tieneCategorias(props.row.id)"
               >
                 <q-tooltip>
-                  {{ tieneCategorias(props.row.id) ? 'Gestionar Productos' : 'Agregue categorías primero' }}
+                  {{
+                    tieneCategorias(props.row.id)
+                      ? 'Gestionar Productos'
+                      : 'Agregue categorías primero'
+                  }}
                 </q-tooltip>
                 <q-badge v-if="tieneCategorias(props.row.id)" color="green" floating rounded />
               </q-btn>
@@ -122,24 +126,10 @@
 
         <template v-slot:body-cell-acciones="props">
           <q-td :props="props">
-            <q-btn
-              flat
-              dense
-              round
-              color="primary"
-              icon="edit"
-              @click="editarCampana(props.row)"
-            >
+            <q-btn flat dense round color="primary" icon="edit" @click="editarCampana(props.row)">
               <q-tooltip>Editar</q-tooltip>
             </q-btn>
-            <q-btn
-              flat
-              dense
-              round
-              color="negative"
-              icon="delete"
-              @click="eliminar(props.row.id)"
-            >
+            <q-btn flat dense round color="negative" icon="delete" @click="eliminar(props.row.id)">
               <q-tooltip>Eliminar</q-tooltip>
             </q-btn>
           </q-td>
@@ -153,7 +143,7 @@
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
             <q-icon name="campaign" class="q-mr-sm" />
-            {{ formData.id ? 'Editar Campaña' : 'Nueva Campaña' }}
+            {{ formData.id ? 'Editar Campaña' : 'Registrar Nueva Campaña' }}
           </div>
         </q-card-section>
 
@@ -281,7 +271,13 @@
             </q-select>
 
             <div class="q-mt-md">
-              <q-btn type="submit" unelevated color="primary" icon="add" label="Agregar Categoría" />
+              <q-btn
+                type="submit"
+                unelevated
+                color="primary"
+                icon="add"
+                label="Agregar Categoría"
+              />
             </div>
           </q-form>
         </q-card-section>
@@ -337,14 +333,20 @@
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
             <q-icon name="shopping_cart" class="q-mr-sm" />
-            {{ precioForm.id_detalle_campanas ? 'Editar Precio de Producto' : 'Productos en Campaña' }}
+            {{
+              precioForm.id_detalle_campanas ? 'Editar Precio de Producto' : 'Productos en Campaña'
+            }}
           </div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section>
-          <q-banner v-if="precioForm.id_detalle_campanas" class="bg-info text-white q-mb-md" rounded>
+          <q-banner
+            v-if="precioForm.id_detalle_campanas"
+            class="bg-info text-white q-mb-md"
+            rounded
+          >
             <template v-slot:avatar>
               <q-icon name="edit" />
             </template>
@@ -598,8 +600,7 @@ const categoriasCampanaPrecioOptions = computed(() => {
 })
 
 const preciosCampanaFiltrados = computed(() => {
- if (filtroPrecioCampania.value === null) {
-
+  if (filtroPrecioCampania.value === null) {
     return preciosCampana.value.map((item, index) => ({
       ...item,
       numero: index + 1,
@@ -742,13 +743,15 @@ const editarCampana = async (campana) => {
   try {
     const endpoint = `${URL_APICM}api/verificarExistenciacampana/${campana.id}`
     const resultado = await peticionGET(endpoint)
-
+    const almacenRelacionado = almacenes.value.find(
+      (a) => Number(a.idalmacen) === Number(resultado.datos.idalmacen),
+    )
     if (resultado.estado === 'exito') {
       formData.value = {
         ...formData.value,
         id: resultado.datos.id,
         ver: 'editarcampaña',
-        idalmacen: resultado.datos.idalmacen,
+        idalmacen: almacenRelacionado,
         fechai: resultado.datos.fechai,
         fechaf: resultado.datos.fechaf,
         campana: resultado.datos.nombre,
