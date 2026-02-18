@@ -90,4 +90,59 @@ export const Tour_registrodecliente = [
             align: 'start',
         },
     },
+    {
+        element: '#registrarCierre',
+        popover: {
+            title: 'Registrar Cierre',
+            description: 'Clic para registrar un cierre de caja.',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element: '#fechaInicio',
+        popover: {
+            title: 'Fecha de Inicio',
+            description: 'Clic para seleccionar la fecha de inicio.',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element: '#fechaFin',
+        popover: {
+            title: 'Fecha de Fin',
+            description: 'Clic para seleccionar la fecha de fin.',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element: '#autorizacion',
+        popover: {
+            title: 'Autorización',
+            description: 'Clic para seleccionar la autorización.',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element: '#fechaCreacion',
+        popover: {
+            title: 'Fecha de Creación',
+            description: 'Clic para seleccionar la fecha de creación.',
+            side: 'bottom',
+            align: 'start',
+        },
+    },
+    {
+        element: '#buscar',
+        popover: {
+            title: 'Buscar',
+            description: 'Clic para buscar.',
+            side: 'bottom',
+            align: 'start',
+        },
+    }
+    
 ]
