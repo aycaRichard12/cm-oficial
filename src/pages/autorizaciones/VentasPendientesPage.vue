@@ -3,7 +3,7 @@
     <div class="titulo">Ventas pendientes</div>
     <!-- Filtros -->
     <q-card-section class="row q-col-gutter-md">
-      <div class="col-xs-12 col-sm-4">
+      <div class="col-xs-12 col-sm-4" id="filtrosAlmacen">
         <label for="almacen">Selecciona un almacén</label>
         <q-select
           v-model="almacenSeleccionado"
@@ -18,7 +18,7 @@
         />
       </div>
 
-      <div class="col-xs-12 col-sm-4">
+      <div class="col-xs-12 col-sm-4" id="filtrosProducto">
         <label for="producto">Producto *</label>
         <q-select
           v-if="!loading && !error"
@@ -36,7 +36,7 @@
           bg-color="white"
         />
       </div>
-      <div class="col-xs-12 col-sm-4">
+      <div class="col-xs-12 col-sm-4" id="filtrosEstado">
         <label for="estado">Filtrar por Estado</label>
         <q-select
           v-model="filterStatus"
@@ -60,6 +60,7 @@
     <!-- Tabla de ventas -->
     <q-card-section v-else>
       <q-table
+        id="tablaVentasPendientes"    
         :rows="filteredSales"
         :columns="columns"
         row-key="id_ventas_no_despachadas"
@@ -81,6 +82,7 @@
         <template v-slot:body-cell-accion="props">
           <q-td :props="props">
             <q-btn
+              id="procesarVenta"
               v-if="props.row.estado === 2"
               label="Procesar"
               color="primary"

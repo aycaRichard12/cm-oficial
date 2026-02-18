@@ -21,9 +21,9 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab name="solicitudes" icon="assignment" label="Solicitudes" />
-        <q-tab name="activos" icon="check_circle" label="P. Activos" />
-        <q-tab name="historial" icon="history" label="Historial" />
+        <q-tab name="solicitudes" icon="assignment" label="Solicitudes" id="solicitudes" />
+        <q-tab name="activos" icon="check_circle" label="P. Activos" id="activos" />
+        <q-tab name="historial" icon="history" label="Historial" id="historial" />
       </q-tabs>
 
       <q-separator />
@@ -31,6 +31,7 @@
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="solicitudes">
           <q-table
+            id="solicitudes"
             title="Solicitudes de Permiso"
             :rows="listaSolicitudesData"
             :columns="colsSolicitudes"
@@ -54,6 +55,7 @@
                   color="secondary"
                   round
                   @click="gestionarSolicitud(props.row)"
+                  id="gestionar"
                 >
                   <q-tooltip>Aprobar o Rechazar</q-tooltip>
                 </q-btn>
@@ -62,7 +64,7 @@
           </q-table>
         </q-tab-panel>
 
-        <q-tab-panel name="activos">
+        <q-tab-panel name="activos" id="tablaActivos">
           <q-table
             title="Permisos Disponibles"
             :rows="listaActivosData"
@@ -76,6 +78,7 @@
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-6">
               <q-table
+                id="historial"
                 title="Usados"
                 :rows="listaUsadosData"
                 :columns="colsPermisos"
@@ -86,6 +89,7 @@
             </div>
             <div class="col-12 col-md-6">
               <q-table
+                id="vencidos"
                 title="Vencidos"
                 :rows="listaVencidosData"
                 :columns="colsPermisos"

@@ -2,7 +2,7 @@
   <q-page>
     <div>
       <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id='filtrosAlmacen'>
           <label for="almacen">Seleccione un Almacén</label>
           <q-select
             v-model="filtroAlmacen"
@@ -13,7 +13,7 @@
             outlined
           />
         </div>
-        <div class="col-12 col-md-2">
+        <div class="col-12 col-md-2" id='filtrosProducto'>
           <label for="buscar">Buscar...</label>
           <q-input dense debounce="300" v-model="busqueda" id="buscar" outlined>
             <template v-slot:append>
@@ -25,6 +25,7 @@
 
       <!-- Tabla -->
       <q-table
+        id='tablaCompras'
         title="Compras"
         :rows="processedRows"
         :columns="columnas"
@@ -53,6 +54,7 @@
         <template v-slot:body-cell-detalle="props">
           <q-td :props="props">
             <q-btn
+              id='anadirCarrito'
               title="Añadir Carrito "
               icon="shopping_cart"
               color="primary"
@@ -61,6 +63,7 @@
               @click="$emit('detalleCompra', props.row)"
             />
             <q-btn
+            id='detalleCredito'
               v-if="Number(props.row.tipocompra) === 1"
               title="Detelle Credito"
               icon="payment"
@@ -76,6 +79,7 @@
           <q-td :props="props">
             <div v-if="Number(props.row.autorizacion) === 2">
               <q-btn
+                id='autorizar'
                 icon="toggle_off"
                 dense
                 flat
