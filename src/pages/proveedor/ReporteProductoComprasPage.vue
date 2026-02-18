@@ -31,6 +31,7 @@
       <!-- Table Section -->
       <q-card-section>
         <BaseFilterableTable
+          id='reporteTabla'
           title="Listado de Compras del Producto"
           :rows="compras"
           :columns="columnas"
@@ -88,6 +89,7 @@
           <template v-slot:body-cell-acciones="props">
             <q-td :props="props">
               <q-btn
+                id='previsualizarPdf'
                 flat
                 round
                 dense

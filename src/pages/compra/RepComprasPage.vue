@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="titulo">Reporte Compras</div>
     <q-form>
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center">
+      <div class="row q-col-gutter-md" style="display: flex; justify-content: center" id="filtroFechas">
         <div class="col-12 col-md-4">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
@@ -13,12 +13,13 @@
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" />
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" />
+        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="generarReporte"/>
+        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" id="exportarExcel"/>
       </div>
     </q-form>
 
     <q-table
+      id="reporteCompras"
       title="Reporte de Compras"
       :rows="datosFiltrados"
       :columns="columnas"
@@ -28,6 +29,7 @@
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props">
           <q-btn
+          id="verDetallePDF"
             flat
             round
             dense

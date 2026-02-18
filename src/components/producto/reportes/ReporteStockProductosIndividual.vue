@@ -2,7 +2,7 @@
   <q-card-section>
     <q-form @submit.prevent>
       <div class="q-gutter-md">
-        <div class="row q-col-gutter-md justify-center">
+        <div class="row q-col-gutter-md justify-center" id="filtroFechas">
           <div class="col-md-4">
             <label for="fechafin">Fecha Final*</label>
             <q-input
@@ -37,14 +37,14 @@
       </div>
 
       <div class="row q-gutter-sm justify-center q-mt-lg">
-        <q-btn color="primary" label="Vista previa del Reporte" @click="vistaPrevia" />
-        <q-btn color="primary" label="Reporte Con imagen" @click="reporteImage" />
-        <q-btn color="primary" label="Catalogo" @click="vistaCatalogo" />
+        <q-btn color="primary" label="Vista previa del Reporte" @click="vistaPrevia" id="vistaPrevia" />
+        <q-btn color="primary" label="Reporte Con imagen" @click="reporteImage" id="reporteImage" />
+        <q-btn color="primary" label="Catalogo" @click="vistaCatalogo" id="vistaCatalogo" />
       </div>
     </q-form>
 
     <q-form class="q-my-md">
-      <div class="row q-col-gutter-md">
+      <div class="row q-col-gutter-md" id="filtrosStock">
         <div class="col-12 col-md-6">
           <label for="filtrarporestado">Filtrar por estado del producto</label>
           <q-select
@@ -62,7 +62,7 @@
       </div>
     </q-form>
     <div class="row q-col-gutter-x-md flex justify-end">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="buscador">
         <label for="buscar">Buscar...</label>
         <q-input
           v-model="search"
@@ -80,6 +80,7 @@
       </div>
     </div>
     <BaseFilterableTable
+      id="tablaStock"
       ref="miTabla"
       title="Productos"
       :rows="processedRows"
