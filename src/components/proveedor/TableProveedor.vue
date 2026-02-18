@@ -4,7 +4,7 @@
       <div>
         <q-btn color="primary" @click="$emit('add')" class="btn-res">
           <q-icon name="add" class="icono" />
-          <span class="texto">Agregar</span>
+          <span class="texto">Nuevo</span>
         </q-btn>
       </div>
 

@@ -83,41 +83,42 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <div class="row">
+      <q-btn
+        :label="showForm ? 'Cancelar Registro' : 'Nuevo'"
+        color="primary"
+        class="q-ma-lg"
+        @click="toggleForm"
+      />
+    </div>
 
-    <q-btn
-      :label="showForm ? 'Cancelar Registro' : 'Nuevo Registro'"
-      color="primary"
-      class="q-ma-lg"
-      @click="toggleForm"
-    />
-    <q-card-section>
-      <q-table
-        class=""
-        title="Metodos de Pagos"
-        :rows="filteredMetodosPago"
-        :columns="columns"
-        row-key="id"
-        flat
-        dense
-        bordered
-        :filter="searchTerm"
-      >
-        <template v-slot:top-right>
-          <q-input
-            v-model="searchTerm"
-            placeholder="Buscar..."
-            dense
-            outlined
-            debounce="300"
-            class="q-mb-md"
-            style="background-color: white"
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-        <!-- <template v-slot:body-cell-estado="props">
+    <q-table
+      class=""
+      title="Metodos de Pagos"
+      :rows="filteredMetodosPago"
+      :columns="columns"
+      row-key="id"
+      flat
+      dense
+      bordered
+      :filter="searchTerm"
+    >
+      <template v-slot:top-right>
+        <q-input
+          v-model="searchTerm"
+          placeholder="Buscar..."
+          dense
+          outlined
+          debounce="300"
+          class="q-mb-md"
+          style="background-color: white"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+      <!-- <template v-slot:body-cell-estado="props">
             <q-td :props="props">
               <q-btn
                 v-if="privileges[2] === 1"
@@ -128,42 +129,41 @@
               />
             </q-td>
           </template> -->
-        <template v-slot:body-cell-estado="props">
-          <q-td align="center">
-            <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-            <q-badge color="red" v-else label="Inactivo" outline />
-          </q-td>
-        </template>
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props">
-            <q-btn
-              v-if="privileges[2] === 1"
-              icon="edit"
-              color="primary"
-              dense
-              flat
-              @click="editMetodoPago(props.row)"
-            />
-            <q-btn
-              v-if="privileges[3] === 1"
-              icon="delete"
-              dense
-              flat
-              color="negative"
-              @click="confirmDelete(props.row.id)"
-            />
-            <q-btn
-              v-if="privileges[2] === 1"
-              :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
-              dense
-              flat
-              :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
-              @click="changeStatus(props.row.id, Number(props.row.estado) === 1 ? 2 : 1)"
-            />
-          </q-td>
-        </template>
-      </q-table>
-    </q-card-section>
+      <template v-slot:body-cell-estado="props">
+        <q-td align="center">
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
+          <q-badge color="red" v-else label="Inactivo" outline />
+        </q-td>
+      </template>
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn
+            v-if="privileges[2] === 1"
+            icon="edit"
+            color="primary"
+            dense
+            flat
+            @click="editMetodoPago(props.row)"
+          />
+          <q-btn
+            v-if="privileges[3] === 1"
+            icon="delete"
+            dense
+            flat
+            color="negative"
+            @click="confirmDelete(props.row.id)"
+          />
+          <q-btn
+            v-if="privileges[2] === 1"
+            :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
+            dense
+            flat
+            :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
+            @click="changeStatus(props.row.id, Number(props.row.estado) === 1 ? 2 : 1)"
+          />
+        </q-td>
+      </template>
+    </q-table>
   </q-page>
 </template>
 

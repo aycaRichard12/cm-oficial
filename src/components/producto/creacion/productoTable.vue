@@ -4,7 +4,7 @@
       <div class="col-12 col-md-6">
         <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
           <q-icon name="add" class="icono" />
-          <span class="texto">Agregar</span>
+          <span class="texto">Nuevo</span>
         </q-btn>
       </div>
     </div>
@@ -27,8 +27,7 @@
     </div>
   </div>
   <BaseFilterableTable
-      id="tablaProductos"
-
+    id="tablaProductos"
     ref="reHijo"
     title="Listado de Productos"
     :rows="props.rows"
@@ -60,7 +59,7 @@
         </q-img>
       </q-td>
     </template>
-    <template v-slot:body-cell-productosin="props" >
+    <template v-slot:body-cell-productosin="props">
       <q-td :props="props">
         <div class="text-truncate" @click.stop>
           {{ props.row.productosin.descripcion }}
@@ -85,7 +84,14 @@
           flat
           id="editarproducto"
         />
-        <q-btn icon="delete" color="negative" dense @click="$emit('delete-item', props.row)" flat id="eliminarproducto" />
+        <q-btn
+          icon="delete"
+          color="negative"
+          dense
+          @click="$emit('delete-item', props.row)"
+          flat
+          id="eliminarproducto"
+        />
         <!-- <q-btn color="blue" text-color="black" label="" dense="" /> -->
       </q-td>
     </template>
@@ -114,8 +120,6 @@ import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
-
-
 const tipoFactura = getTipoFactura(true)
 
 const mostrarImagen = ref(false)
@@ -141,16 +145,58 @@ if (tipoFactura) {
     { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', dataType: 'date' },
     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
-    { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', dataType: 'text' },
+    {
+      name: 'descripcion',
+      label: 'Descripción',
+      field: 'descripcion',
+      align: 'left',
+      dataType: 'text',
+    },
     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
-    { name: 'subcategoria', label: 'Sub Categorías', field: 'subcategoria', align: 'left', dataType: 'text' },
-    { name: 'codigobarras', label: 'Cod.Barra', field: 'codigobarras', align: 'right', dataType: 'text' },
+    {
+      name: 'subcategoria',
+      label: 'Sub Categorías',
+      field: 'subcategoria',
+      align: 'left',
+      dataType: 'text',
+    },
+    {
+      name: 'codigobarras',
+      label: 'Cod.Barra',
+      field: 'codigobarras',
+      align: 'right',
+      dataType: 'text',
+    },
     { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text' },
-    { name: 'estadoproducto', label: 'Estado', field: 'estadoproducto', align: 'left', dataType: 'text' },
+    {
+      name: 'estadoproducto',
+      label: 'Estado',
+      field: 'estadoproducto',
+      align: 'left',
+      dataType: 'text',
+    },
     { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
-    { name: 'caracteristica', label: 'Otras caract.', field: 'caracteristica', align: 'left', dataType: 'text' },
-    { name: 'productosin', label: 'Producto SIN', field: 'productosin', align: 'left', dataType: 'text' },
-    { name: 'codigonandina', label: 'CodigoNandina', field: 'codigonandina', align: 'left', dataType: 'text' },
+    {
+      name: 'caracteristica',
+      label: 'Otras caract.',
+      field: 'caracteristica',
+      align: 'left',
+      dataType: 'text',
+    },
+    {
+      name: 'productosin',
+      label: 'Producto SIN',
+      field: 'productosin',
+      align: 'left',
+      dataType: 'text',
+    },
+    {
+      name: 'codigonandina',
+      label: 'CodigoNandina',
+      field: 'codigonandina',
+      align: 'left',
+      dataType: 'text',
+    },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
@@ -161,14 +207,44 @@ if (tipoFactura) {
     { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', dataType: 'date' },
     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
-    { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', dataType: 'text' },
+    {
+      name: 'descripcion',
+      label: 'Descripción',
+      field: 'descripcion',
+      align: 'left',
+      dataType: 'text',
+    },
     { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
-    { name: 'subcategoria', label: 'Sub Categorías', field: 'subcategoria', align: 'left', dataType: 'text' },
-    { name: 'codigobarras', label: 'Cod.Barra', field: 'codigobarras', align: 'right', dataType: 'text' },
+    {
+      name: 'subcategoria',
+      label: 'Sub Categorías',
+      field: 'subcategoria',
+      align: 'left',
+      dataType: 'text',
+    },
+    {
+      name: 'codigobarras',
+      label: 'Cod.Barra',
+      field: 'codigobarras',
+      align: 'right',
+      dataType: 'text',
+    },
     { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text' },
-    { name: 'estadoproducto', label: 'Estado', field: 'estadoproducto', align: 'left', dataType: 'text' },
+    {
+      name: 'estadoproducto',
+      label: 'Estado',
+      field: 'estadoproducto',
+      align: 'left',
+      dataType: 'text',
+    },
     { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
-    { name: 'caracteristica', label: 'Otras caract.', field: 'caracteristica', align: 'left', dataType: 'text' },
+    {
+      name: 'caracteristica',
+      label: 'Otras caract.',
+      field: 'caracteristica',
+      align: 'left',
+      dataType: 'text',
+    },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
@@ -191,8 +267,6 @@ const arrayHeaders = [
   'productosin',
   'codigonandina',
 ]
-
-
 
 const search = ref('')
 </script>
