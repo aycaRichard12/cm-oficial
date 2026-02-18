@@ -10,7 +10,7 @@
           </div>
           <div class="text-caption text-grey-7">Administre campañas promocionales y descuentos</div>
         </div>
-        <div class="col-auto">
+        <div class="col-auto" id="nuevaCampana">
           <q-btn
             unelevated
             color="primary"
@@ -25,7 +25,7 @@
       <!-- Filtros -->
       <q-card-section>
         <div class="row q-col-gutter-md">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="filtroAlmacen">
             <q-select
               v-model="idalmacenfiltro"
               :options="almacenesOptions"
@@ -43,7 +43,7 @@
               </template>
             </q-select>
           </div>
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="filtroBusqueda">
             <q-input v-model="busqueda" label="Buscar campaña..." outlined dense clearable>
               <template v-slot:prepend>
                 <q-icon name="search" />
@@ -78,7 +78,7 @@
         </template>
 
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
+          <q-td :props="props" id="estadoCampana">
             <q-chip
               :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
               text-color="white"
@@ -95,6 +95,7 @@
           <q-td :props="props">
             <q-btn-group flat>
               <q-btn
+                id="btnCategoria"
                 flat
                 dense
                 color="primary"
@@ -104,6 +105,7 @@
                 <q-tooltip>Gestionar Categorías</q-tooltip>
               </q-btn>
               <q-btn
+                id="btnProductos"
                 flat
                 dense
                 color="primary"
@@ -123,16 +125,18 @@
         <template v-slot:body-cell-acciones="props">
           <q-td :props="props">
             <q-btn
-              flat
-              dense
-              round
-              color="primary"
-              icon="edit"
-              @click="editarCampana(props.row)"
+                id="btnEditar"
+                flat
+                dense
+                round
+                color="primary"
+                icon="edit"
+                @click="editarCampana(props.row)"
             >
               <q-tooltip>Editar</q-tooltip>
             </q-btn>
             <q-btn
+                id="btnEliminar"
               flat
               dense
               round
