@@ -207,6 +207,8 @@ async function handleEnviar() {
       datos_adicionales: {
         nombre_usuario_notificacion: nombreUsuario,
         url_de_envio: 'autorizarventassinstock',
+
+        nombre_usuario_notificacion: nombreUsuario,
       },
     })
 
