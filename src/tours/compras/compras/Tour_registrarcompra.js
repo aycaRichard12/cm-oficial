@@ -111,41 +111,49 @@ export const Tour_registrarcompra =
         }
        },
        ///ingresocredito cuentas por pagar
-       {
-        element: '#filtroFechas',
-        popover: {
-            title: 'Filtros de fechas',
-            description: 'Aqui puedes filtrar los pagos por fecha',
-        }
-    },
+
         {
-        element: '#filtroFechas',
+        element: '#filtroFechasPagar',
         popover: {
             title: 'Filtros de fechas',
             description: 'Aqui puedes filtrar los pagos por fecha',
         }
     },
      {
-        element: '#filtroFechaIni',
+        element: '#filtroFechaIniPagar',
         popover: {
             title: 'Filtro de fecha inicial',
             description: 'Aqui puedes filtrar los pagos por fecha inicial',
         }
      },
      {
-        element: '#filtroFechaFin',
+        element: '#filtroFechaFinPagar',
         popover: {
             title: 'Filtro de fecha final',
             description: 'Aqui puedes filtrar los pagos por fecha final',
         }
      },
-    //  {
-    //     element: '#filtroAlmacen',
-    //     popover: {
-    //         title: 'Filtro de almacen',
-    //         description: 'Aqui puedes filtrar los pagos por almacen',
-    //     }
-    //  },
+          {
+        element: '#reporteGenerar',
+        popover: {
+            title: 'Generar reporte',
+            description: 'Aqui puedes generar un reporte de los pagos',
+        }
+     },
+     {
+        element: '#reporteExportar',
+        popover: {
+            title: 'Exportar reporte',
+            description: 'Aqui puedes exportar un reporte de los pagos',
+        }
+     },
+     {
+        element: '#filtroAlmacenCuentas',
+        popover: {
+            title: 'Filtro de almacen',
+            description: 'Aqui puedes filtrar los pagos por almacen',
+        }
+     },
      {
         element: '#filtroProveedor',
         popover: {
@@ -160,20 +168,7 @@ export const Tour_registrarcompra =
             description: 'Aqui puedes filtrar los pagos por estado',
         }
      },
-     {
-        element: '#reporteGenerar',
-        popover: {
-            title: 'Generar reporte',
-            description: 'Aqui puedes generar un reporte de los pagos',
-        }
-     },
-     {
-        element: '#reporteExportar',
-        popover: {
-            title: 'Exportar reporte',
-            description: 'Aqui puedes exportar un reporte de los pagos',
-        }
-     },
+
      {
         element: '#tablaDatos',
         popover: {
