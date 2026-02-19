@@ -71,5 +71,5 @@ export const Tour_reportestockdeproductosindividual = [
             side: 'bottom',
             align: 'start', 
         }
-    }
+    },
 ]

@@ -109,6 +109,91 @@ export const Tour_registrarcompra =
             side: 'bottom',
             align: 'start', 
         }
-       }
-
+       },
+       ///ingresocredito cuentas por pagar
+       {
+        element: '#filtroFechas',
+        popover: {
+            title: 'Filtros de fechas',
+            description: 'Aqui puedes filtrar los pagos por fecha',
+        }
+    },
+        {
+        element: '#filtroFechas',
+        popover: {
+            title: 'Filtros de fechas',
+            description: 'Aqui puedes filtrar los pagos por fecha',
+        }
+    },
+     {
+        element: '#filtroFechaIni',
+        popover: {
+            title: 'Filtro de fecha inicial',
+            description: 'Aqui puedes filtrar los pagos por fecha inicial',
+        }
+     },
+     {
+        element: '#filtroFechaFin',
+        popover: {
+            title: 'Filtro de fecha final',
+            description: 'Aqui puedes filtrar los pagos por fecha final',
+        }
+     },
+    //  {
+    //     element: '#filtroAlmacen',
+    //     popover: {
+    //         title: 'Filtro de almacen',
+    //         description: 'Aqui puedes filtrar los pagos por almacen',
+    //     }
+    //  },
+     {
+        element: '#filtroProveedor',
+        popover: {
+            title: 'Filtro de proveedor',
+            description: 'Aqui puedes filtrar los pagos por proveedor',
+        }
+     },
+     {
+        element: '#filtroEstado',
+        popover: {
+            title: 'Filtro de estado',
+            description: 'Aqui puedes filtrar los pagos por estado',
+        }
+     },
+     {
+        element: '#reporteGenerar',
+        popover: {
+            title: 'Generar reporte',
+            description: 'Aqui puedes generar un reporte de los pagos',
+        }
+     },
+     {
+        element: '#reporteExportar',
+        popover: {
+            title: 'Exportar reporte',
+            description: 'Aqui puedes exportar un reporte de los pagos',
+        }
+     },
+     {
+        element: '#tablaDatos',
+        popover: {
+            title: 'Tabla de datos',
+            description: 'Aqui puedes ver los pagos',
+        }
+     },
+     {
+        element: '#agregarPago',
+        popover: {
+            title: 'Agregar pago',
+            description: 'Aqui puedes agregar o registrar un pago',
+        }
+     },
+     {
+        element: '#verDetallePago',
+        popover: {
+            title: 'Ver detalle de pago',
+            description: 'Aqui puedes ver el detalle de un pago',
+        }
+     }
+       
     ]

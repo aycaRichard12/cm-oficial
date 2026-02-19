@@ -6,20 +6,72 @@
       Almacén: {{ nombreAlmacenSeleccionado }}
     </div>
 
-    <StockGlobalParams
-      v-model:modelValueFecha="fechaFin"
-      v-model:modelValueAlmacen="almacenSeleccionado"
-      :opcionesAlmacenes="opcionesAlmacenes"
-      @generar="generarReporte"
-      @vistaPrevia="mostrarVistaPrevia"
-    />
+    <!-- Filtros unificados -->
+    <q-card class="q-mb-md" flat bordered>
+      <q-card-section>
+        <div class="row q-col-gutter-md items-center">
+          <div class="col-12 col-md-3">
+            <q-input
+              v-model="fechaFin"
+              label="Fecha Final*"
+              type="date"
+              stack-label
+              outlined
+              dense
+              @update:model-value="generarReporte"
+            />
+          </div>
+          <div class="col-12 col-md-3">
+            <q-select
+              v-model="almacenSeleccionado"
+              :options="opcionesAlmacenes"
+              option-label="nombre"
+              option-value="id"
+              emit-value
+              map-options
+              label="Almacén*"
+              dense
+              outlined
+              @update:model-value="generarReporte"
+            />
+          </div>
+           <div class="col-12 col-md-3">
+              <q-select
+                v-model="filtroEstado"
+                :options="opcionesEstado"
+                label="Estado"
+                dense
+                outlined
+                emit-value
+                map-options
+                @update:model-value="filtrarYOrdenarDatos"
+              />
+            </div>
+            <div class="col-12 col-md-3">
+              <q-select
+                v-model="ordenStock"
+                :options="opcionesOrden"
+                label="Ordenar Stock"
+                dense
+                outlined
+                emit-value
+                map-options
+                @update:model-value="filtrarYOrdenarDatos"
+              />
+            </div>
+          </div>
+          <div class="row justify-end q-mt-md">
+             <q-btn color="primary" label="Vista previa del Reporte" icon="picture_as_pdf" @click="mostrarVistaPrevia" />
+          </div>
+      </q-card-section>
+    </q-card>
 
     <!-- Filtros -->
-    <StockGlobalFilters
+    <!-- <StockGlobalFilters
       v-model:filtroEstado="filtroEstado"
       v-model:ordenStock="ordenStock"
       @generar="generarReporte"
-    />
+    /> -->
 
     <!-- Tabla de resultados -->
     <StockGlobalTable
@@ -43,8 +95,8 @@ import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
 
 // Importar componentes refactorizados
-import StockGlobalParams from 'src/components/reporte/stockGlobal/StockGlobalParams.vue'
-import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
+// import StockGlobalParams from 'src/components/reporte/stockGlobal/StockGlobalParams.vue'
+// import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
 import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
 import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -63,6 +115,17 @@ const filtroEstado = ref(0)
 const ordenStock = ref(1)
 const nombreAlmacenSeleccionado = ref('')
 const idempresa = idempresa_md5()
+
+const opcionesEstado = [
+  { label: 'Todos', value: 0 },
+  { label: 'Activos', value: 1 },
+  { label: 'Inactivos', value: 2 },
+]
+
+const opcionesOrden = [
+  { label: 'Descendente', value: 1 },
+  { label: 'Ascendente', value: 2 },
+]
 
 const columnas = [
   { name: 'numero', label: 'N°', align: 'right', field: 'numero', datatype: 'text' },
@@ -173,7 +236,7 @@ async function generarReporte() {
   try {
     const point = `reporteproductoalmacen/${almacenSeleccionado.value}/${idempresa}/${fechaFin.value}`
     const response = await api.get(`${point}`)
-    console.log(response.data)
+    console.log('reporteStockDeProductosGlobal', response.data)
 
     if (!Array.isArray(response.data)) {
       datosOriginales.value = []
@@ -207,25 +270,20 @@ function filtrarYOrdenarDatos() {
   let datos = [...datosOriginales.value]
 
   if (filtroEstado.value !== 0) {
-    datos = datos.filter((item) => Number(item.estado) === Number(filtroEstado.value))
+    if (Number(filtroEstado.value) === 1) {
+      datos = datos.filter((item) => Number(item.estadoOriginal) === 1)
+    } else {
+      datos = datos.filter((item) => Number(item.estadoOriginal) !== 1)
+    }
   }
 
-  // Aplicar orden
-  // Requisito: Ordenar p/código
-  datos.sort((a, b) => {
-    const codA = a.codigo || ''
-    const codB = b.codigo || ''
-    return codA.localeCompare(codB, undefined, { numeric: true, sensitivity: 'base' })
-  })
-
-  // Orden anterior por stock (deshabilitado para cumplir requisito de imagen)
-  /*
-  if (ordenStock.value === 2) {
-    datos.sort((a, b) => parseFloat(a.stock) - parseFloat(b.stock))
+  // Aplicar orden por stock
+  // 1: Descendente, 2: Ascendente
+  if (Number(ordenStock.value) === 2) {
+    datos.sort((a, b) => parseFloat(a.stock || 0) - parseFloat(b.stock || 0))
   } else {
-    datos.sort((a, b) => parseFloat(b.stock) - parseFloat(a.stock))
+    datos.sort((a, b) => parseFloat(b.stock || 0) - parseFloat(a.stock || 0))
   }
-  */
 
   datosFiltrados.value = datos
 }
