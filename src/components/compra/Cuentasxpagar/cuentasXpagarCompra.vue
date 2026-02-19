@@ -15,19 +15,34 @@
   <div v-else>
     <div class="titulo">Reporte de Pagos</div>
     <q-form>
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center" id="filtroFechas">
-        <div class="col-12 col-md-4" id="filtroFechaIni">
+      <div
+        class="row q-col-gutter-md"
+        style="display: flex; justify-content: center"
+        id="filtroFechasPagar"
+      >
+        <div class="col-12 col-md-4" id="filtroFechaIniPagar">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="fechaIni" type="date" class="col-md-4" dense outlined />
         </div>
-        <div class="col-12 col-md-4" id="filtroFechaFin">
+        <div class="col-12 col-md-4" id="filtroFechaFinPagar">
           <label for="fechafin">Fecha Final*</label>
           <q-input v-model="fechafin" type="date" dense outlined="" class="col-md-4" />
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="reporteGenerar" />
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" id="reporteExportar" />
+        <q-btn
+          color="primary"
+          label="Generar reporte"
+          @click="generarReporte"
+          class="q-mr-sm"
+          id="reporteGenerar"
+        />
+        <q-btn
+          color="secondary"
+          label="Exportar a Excel"
+          @click="exportarExcel"
+          id="reporteExportar"
+        />
       </div>
     </q-form>
     <!-- Sección de Filtros -->
@@ -41,7 +56,6 @@
           dense
           v-model="filterAlmacen"
           :options="almacenOptions"
-          
           clearable
           emit-value
           map-options
@@ -105,7 +119,14 @@
       <!-- Slot para personalizar la celda de Acción -->
       <template v-slot:body-cell-accion="props">
         <q-td :props="props">
-          <q-btn color="primary" icon="add" dense round @click="realizarPago(props.row)" id="agregarPago"/>
+          <q-btn
+            color="primary"
+            icon="add"
+            dense
+            round
+            @click="realizarPago(props.row)"
+            id="agregarPago"
+          />
           <q-btn
             color="blue"
             icon="list_alt"
