@@ -6,6 +6,7 @@
         <div class="row q-col-gutter-x-md q-mb-md">
           <div class="col-12 flex justify-start">
             <q-btn
+              id="btnnuevoextravio"
               color="primary"
               :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo'"
               @click="toggleFormulario"
@@ -15,7 +16,7 @@
 
         <!-- Filtros -->
         <div class="row q-col-gutter-x-md">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="filtroalmacenextravio">
             <label for="almacen">Seleccione un Almacén</label>
             <q-select
               v-model="idAlmacenFiltro"
@@ -30,6 +31,7 @@
           </div>
           <div class="col-12 col-md-4">
             <q-btn
+              id="btnpdfextravio"
               color="info"
               @click="generarPDF"
               :disable="datosTabla.length === 0"
@@ -51,11 +53,11 @@
 
             <q-card-section>
               <q-form @submit="registrarRobo" class="row q-col-gutter-x-md">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="fechaformextravio">
                   <label for="fecha">Fecha</label>
                   <q-input v-model="formulario.fecha" id="fecha" type="date" dense outlined />
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="almacenformextravio">
                   <label for="almacen">Almacén</label>
                   <q-select
                     v-model="formulario.almacen"
@@ -67,7 +69,7 @@
                     outlined
                   />
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="descripcionformextravio">
                   <label for="description">Descripción</label>
                   <q-input
                     v-model="formulario.descripcion"
@@ -79,7 +81,7 @@
                 </div>
 
                 <div class="col-12 flex justify-start q-mt-md">
-                  <q-btn type="submit" label="Registrar" color="primary" />
+                  <q-btn id="btnregistrarformextravio" type="submit" label="Registrar" color="primary" />
                   <q-btn flat label="Cancelar" color="negative" @click="cancelarRegistro" />
                 </div>
               </q-form>
@@ -87,7 +89,7 @@
           </q-card>
         </q-dialog>
         <div class="row flex justify-end">
-          <div>
+          <div id="buscarfiltroextravio">
             <label for="buscaar">Buscar...</label>
             <q-input v-model="filtroTabla" dense debounce="300" placeholder="Buscar">
               <template v-slot:append>
@@ -101,6 +103,7 @@
       <!-- Tabla de robos -->
       <q-card-section>
         <q-table
+          id="tablaextravios"
           title="Extraviados"
           :rows="datosTabla"
           :columns="columnasTabla"
@@ -113,6 +116,7 @@
           <template v-slot:body-cell-estado="props">
             <q-td :props="props">
               <q-btn
+                id="btncambiarestadoextravio"
                 v-if="Number(props.row.autorizacion) === 2 && editar"
                 :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
                 dense
@@ -127,6 +131,7 @@
             <q-td :props="props">
               <div class="q-gutter-sm">
                 <q-btn
+                  id="btnmostrardetalleextravio"
                   icon="shopping_cart"
                   color="primary"
                   dense
@@ -141,6 +146,7 @@
                   "
                 />
                 <q-btn
+                  id="btneditarextravio"
                   v-if="editar"
                   icon="edit"
                   color="primary"
@@ -150,6 +156,7 @@
                 />
 
                 <q-btn
+                  id="btneliminarextravio"
                   v-if="eliminar"
                   icon="delete"
                   color="negative"
@@ -158,6 +165,7 @@
                   @click="eliminarRobo(props.row.id)"
                 />
                 <q-btn
+                  id="btngenerarcomprobanteextravio"
                   v-if="Number(props.row.autorizacion) === 1 && lectura"
                   icon="picture_as_pdf"
                   color="red"
@@ -183,7 +191,7 @@
         <q-card-section>
           <q-form @submit="registrarDetalle" v-if="autorizadoRobo">
             <div class="row q-col-gutter-x-md">
-              <div class="col-12 col-md-8">
+              <div class="col-12 col-md-8" id="productodetalleextravio">
                 <label for="producto">Producto</label>
 
                 <q-select
@@ -209,7 +217,7 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-12 col-md-2">
+              <div class="col-12 col-md-2" id="stockdetalleextravio">
                 <label for="stock">Stock</label>
                 <q-input
                   v-model.number="formularioDetalle.stock"
@@ -220,7 +228,7 @@
                   readonly
                 />
               </div>
-              <div class="col-12 col-md-2">
+              <div class="col-12 col-md-2" id="cantidaddetalleextravio">
                 <label for="cantidad">Cantidad</label>
                 <q-input
                   v-model.number="formularioDetalle.cantidad"
@@ -231,7 +239,7 @@
                   :rules="[(val) => val <= formularioDetalle.stock || 'Cantidad excede stock']"
                 />
               </div>
-              <div class="col-12">
+              <div class="col-12" id="btntogglelotedetalleextravio">
                 <q-btn
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
                   dense
@@ -242,7 +250,7 @@
                   title="CAMBIAR TIPO REPORTE"
                 />
               </div>
-              <div class="col-12 col-md-3" v-if="lote">
+              <div class="col-12 col-md-3" v-if="lote" id="proveedordetalleextravio">
                 <label for="provedor">Filtrar por proveedor:</label>
                 <q-select
                   v-model="formularioDetalle.proveedor"
@@ -262,7 +270,7 @@
                   @update:model-value="filtrarComprasxProveedor"
                 />
               </div>
-              <div class="col-12 col-md-9" v-if="lote">
+              <div class="col-12 col-md-9" v-if="lote" id="compradetalleextravio">
                 <label for="compras">Seleccionar Lote de Compra/Producción:</label>
                 <q-select
                   v-model="formularioDetalle.compra"
@@ -284,6 +292,7 @@
 
             <div class="col-12 flex justify-end q-ma-md">
               <q-btn
+                id="btnanadirdetalleextravio"
                 type="submit"
                 label="Añadir"
                 color="primary"
@@ -299,11 +308,12 @@
             </div>
           </q-form>
 
-          <q-table :rows="detalleRobo" :columns="columnasDetalle" row-key="id" flat bordered>
+          <q-table id="tabladetalleextravioproductos" :rows="detalleRobo" :columns="columnasDetalle" row-key="id" flat bordered>
             <template v-slot:body-cell-acciones="props">
               <q-td :props="props">
                 <div class="q-gutter-sm">
                   <q-btn
+                    id="btneditardetalleextravio"
                     v-if="editar"
                     icon="edit"
                     color="primary"
@@ -313,6 +323,7 @@
                   />
 
                   <q-btn
+                    id="btneliminardetalleextravio"
                     v-if="eliminar"
                     icon="delete"
                     color="negative"
