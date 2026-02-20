@@ -11,6 +11,7 @@
     />
 
     <BaseFilterableTable
+      id="tablaventasvalidas"
       title="Ventas Validas"
       :rows="filteredRows"
       :columns="columnas"

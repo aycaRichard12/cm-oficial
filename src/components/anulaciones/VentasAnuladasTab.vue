@@ -11,6 +11,7 @@
     />
 
     <BaseFilterableTable
+      id="tablaventasanuladas"
       title="Ventas Anuladas"
       :rows="filteredRows"
       :columns="columnas"
