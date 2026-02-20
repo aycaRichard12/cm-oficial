@@ -6,13 +6,14 @@
         <!-- Filtros -->
         <div class="row">
           <q-btn
+            id="btnnuevamerma"
             color="primary"
             :label="collapseVisible ? 'Cancelar Registro' : 'Nuevo Registro'"
             @click="toggleCollapse"
           />
         </div>
         <div class="row q-col-gutter-x-md q-mb-md">
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" id="filtroalmacenmerma">
             <label for="almacen">Seleccione un Almacén</label>
             <q-select
               v-model="selectedWarehouse"
@@ -26,6 +27,7 @@
           </div>
           <div class="col-6 col-md-4 flex justify-start">
             <q-btn
+              id="btnpdfmerma"
               color="info"
               @click="generatePDF"
               :disable="!tableData.length"
@@ -36,7 +38,7 @@
             </q-btn>
           </div>
           <div class="col-6 col-md-5 flex justify-end">
-            <div>
+            <div id="buscarfiltromerma">
               <label for="buscar">Buscar...</label>
               <q-input v-model="filter" dense debounce="300" placeholder="Buscar" class="q-mr-sm">
                 <template v-slot:append>
@@ -49,6 +51,7 @@
 
         <!-- Tabla de Mermas -->
         <q-table
+          id="tablamermas"
           title="Registro de Mermas"
           :rows="filteredTableData"
           :columns="columns"
@@ -73,6 +76,7 @@
           <template v-slot:body-cell-detalle="props">
             <q-td :props="props">
               <q-btn
+                id="btnverdetallemerma"
                 dense
                 color="primary"
                 icon="shopping_cart"
@@ -85,6 +89,7 @@
           <template v-slot:body-cell-actions="props">
             <q-td :props="props">
               <q-btn
+                id="btneditarmerma"
                 v-if="Number(props.row.autorizacion) === 2 && editar"
                 dense
                 color="primary"
@@ -94,6 +99,7 @@
                 @click="editItem(props.row.id)"
               />
               <q-btn
+                id="btneliminarmerma"
                 v-if="Number(props.row.autorizacion) === 2 && eliminar"
                 dense
                 color="negative"
@@ -104,6 +110,7 @@
               />
 
               <q-btn
+                id="btncomprobantemerma"
                 v-if="Number(props.row.autorizacion) === 1"
                 dense
                 color="red"
@@ -112,6 +119,7 @@
                 @click="showComprobante(props.row)"
               />
               <q-btn
+                id="btncambiarestadomerma"
                 v-if="Number(props.row.autorizacion) === 2 && editar"
                 :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
                 dense
@@ -136,7 +144,7 @@
                   name="ver"
                   :value="editMode ? 'editarmerma' : 'registrarmerma'"
                 />
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="fechaformmerma">
                   <label for="fecha">Fecha</label>
                   <q-input
                     v-model="formData.fecha"
@@ -148,7 +156,7 @@
                   />
                 </div>
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="almacenformmerma">
                   <label for="almacen">Almacén</label>
 
                   <q-select
@@ -161,13 +169,14 @@
                     map-options
                   />
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-4" id="descripcionformmerma">
                   <label for="descripcion">Descripción</label>
                   <q-input v-model="formData.descripcion" dense outlined id="descripcion" />
                 </div>
 
                 <div class="q-mt-md">
                   <q-btn
+                    id="btnguardarformmerma"
                     type="submit"
                     color="primary"
                     :label="editMode ? 'Actualizar' : 'Guardar'"
@@ -203,7 +212,7 @@
         <q-card-section>
           <q-form @submit="submitDetailForm" v-if="Number(currentDetailStatus) === 2 && escritura">
             <div class="row q-col-gutter-x-md">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-6" id="productodetallemerma">
                 <label for="producto">Producto</label>
 
                 <q-select
@@ -230,7 +239,7 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-6 col-md-3">
+              <div class="col-6 col-md-3" id="stockdetallemerma">
                 <label for="stock">Stock</label>
                 <q-input
                   v-model.number="detailForm.stock"
@@ -241,7 +250,7 @@
                   readonly
                 />
               </div>
-              <div class="col-6 col-md-3">
+              <div class="col-6 col-md-3" id="cantidaddetallemerma">
                 <label for="cantidad">Cantidad</label>
                 <q-input
                   v-model.number="detailForm.cantidad"
@@ -254,7 +263,7 @@
                   @update:model-value="validateQuantity"
                 />
               </div>
-              <div class="col-12">
+              <div class="col-12" id="btntogglelotedetallemerma">
                 <q-btn
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
                   dense
@@ -265,7 +274,7 @@
                   title="CAMBIAR TIPO REPORTE"
                 />
               </div>
-              <div class="col-12 col-md-3" v-if="lote">
+              <div class="col-12 col-md-3" v-if="lote" id="proveedordetallemerma">
                 <label for="provedor">Filtrar por proveedor:</label>
                 <q-select
                   v-model="detailForm.proveedor"
@@ -285,7 +294,7 @@
                   @update:model-value="filtrarComprasxProveedor"
                 />
               </div>
-              <div class="col-12 col-md-9" v-if="lote">
+              <div class="col-12 col-md-9" v-if="lote" id="compradetallemerma">
                 <label for="compras">Seleccionar Lote de Compra/Producción:</label>
                 <q-select
                   v-model="detailForm.compra"
@@ -304,7 +313,7 @@
                 />
               </div>
               <div class="col-md-2">
-                <q-btn type="submit" color="primary" class="btn-res q-mt-lg">
+                <q-btn id="btnanadirdetallemerma" type="submit" color="primary" class="btn-res q-mt-lg">
                   <q-icon name="save" class="icono" />
                   <span class="texto">{{ detailEditMode ? 'Actualizar' : 'Cargar' }}</span>
                 </q-btn>
@@ -312,6 +321,7 @@
             </div>
           </q-form>
           <q-table
+            id="tabladetallemermaproductos"
             :rows="detailData"
             :columns="detailColumns"
             row-key="id"
@@ -321,6 +331,7 @@
             <template v-slot:body-cell-actions="props">
               <q-td :props="props">
                 <q-btn
+                  id="btneditardetallemerma"
                   v-if="Number(currentDetailStatus) === 2 && editar"
                   dense
                   color="primary"
@@ -329,6 +340,7 @@
                   @click="editDetailItem(props.row.id)"
                 />
                 <q-btn
+                  id="btneliminardetallemerma"
                   v-if="Number(currentDetailStatus) === 2 && eliminar"
                   dense
                   color="negative"

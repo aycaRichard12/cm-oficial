@@ -1,10 +1,10 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo">Reporte Merma</div>
+    <div class="titulo" id="tituloreportemerma">Reporte Merma</div>
 
     <q-form @submit.prevent="generarReporte">
       <div class="row q-col-gutter-md flex justify-center">
-        <div class="col-md-4">
+        <div class="col-md-4" id="fechainicioreportemerma">
           <q-input
             v-model="fechaInicio"
             label="Fecha Inicial*"
@@ -14,7 +14,7 @@
             :rules="[(val) => !!val || 'Campo obligatorio']"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" id="fechafinreportemerma">
           <q-input
             v-model="fechaFin"
             label="Fecha Final*"
@@ -30,8 +30,9 @@
       </div>
 
       <div class="row justify-center q-mt-md">
-        <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+        <q-btn id="btngenerarreportemerma" label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
         <q-btn
+          id="btnvistapreviareportemerma"
           label="Vista Previa"
           color="secondary"
           @click="mostrarVistaPrevia"
@@ -39,7 +40,7 @@
         />
       </div>
       <div class="row justify-center q-mt-md">
-        <div class="col-md-4">
+        <div class="col-md-4" id="almacenreportemerma">
           <q-select
             v-model="almacenSeleccionado"
             :options="almacenesOptions"
@@ -60,6 +61,7 @@
     <q-card>
       <div class="table-responsive">
         <BaseFilterableTable
+          id="tablareportemerma"
           title="Reporte de Merma"
           ref="tableRef"
           :rows="datosFiltrados"
@@ -75,6 +77,7 @@
           <template v-slot:body-cell-actions="props">
             <q-td :props="props">
               <q-btn
+                id="btnverdetallereportemerma"
                 dense
                 icon="visibility"
                 color="blue"
