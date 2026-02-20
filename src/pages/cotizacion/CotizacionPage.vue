@@ -3,7 +3,7 @@
     <!-- Sección: Datos del cliente -->
     <q-form ref="formClientes">
       <div class="row q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
           <label for="tipooperacion">Tipo de Operación*</label>
           <q-select
             v-model="tipoOperacion"
@@ -16,7 +16,7 @@
             dense
           />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechaCotizacion">
           <label for="fecha">Fecha:</label>
           <q-input
             v-model="fecha"
@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="row q-col-gutter-x-md">
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-md-5" id="clienteCotizacion">
           <label for="cliente">Cliente*</label>
           <q-select
             v-model="selectedClient"
@@ -59,7 +59,7 @@
           <input type="hidden" v-model="idclienteCO" name="idcliente" />
         </div>
 
-        <div class="col-9 col-md-5">
+        <div class="col-9 col-md-5" id="sucursalCotizacion">
           <label for="sucursal">Sucursal*</label>
           <q-select
             v-model="selectedSucursal"
@@ -86,7 +86,7 @@
           </q-select>
           <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
         </div>
-        <div class="">
+        <div class="col-12 col-md-2" id="botonRegistrarCliente">
           <q-btn color="blue q-mt-lg" icon="person_add" @click="RegistrarCliente" />
         </div>
       </div>
@@ -95,7 +95,7 @@
     <!-- Sección: Configuración inicial -->
     <q-form ref="cotizacionFormRef" class="q-gutter-y-md">
       <div class="row q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="almacenCotizacion">
           <label for="almacen">Almacén origen *</label>
           <q-select
             v-model="filtroAlmacenCO"
@@ -112,7 +112,7 @@
           />
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="categoriaCotizacion">
           <label for="categoria">Categoría de precio *</label>
           <q-select
             v-model="filtroCategoriaCO"
@@ -127,7 +127,7 @@
             dense
           />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="puntoVentaCotizacion">
           <label for="categoria">Punto Venta*</label>
           <q-select
             v-model="puntoVenta"
@@ -148,7 +148,7 @@
     <!-- Sección: Selección de productos -->
 
     <div class="row q-col-gutter-x-md">
-      <div class="col-12 col-md-5">
+      <div class="col-12 col-md-5" id="productoCotizacion">
         <label for="producto">Producto o Servicio*</label>
         <q-select
           v-model="selectedProduct"
@@ -174,12 +174,12 @@
         </q-select>
       </div>
 
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="stockDisponibleCotizacion">
         <label for="stockdisponible">Stock disponible</label>
         <q-input v-model="cantidaddisponibleCO" id="stockdisponible" disable outlined dense />
       </div>
 
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="cantidadCotizacion">
         <label for="cantidad">Canidad *</label>
         <q-input
           v-model.number="cantidadCO"
@@ -192,7 +192,7 @@
         />
       </div>
 
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="precioCotizacion">
         <label for="precio">Precio unitario *</label>
         <q-input
           v-model.number="precioCO"
@@ -209,7 +209,7 @@
         </q-input>
       </div>
 
-      <div class="col-12 col-md-1 q-mt-lg">
+      <div class="col-12 col-md-1 q-mt-lg" id="botonAnadirProductoCotizacion">
         <q-btn
           icon="add"
           color="primary"
@@ -221,7 +221,7 @@
         />
       </div>
     </div>
-    <div class="row items-center q-gutter-sm">
+    <div class="row items-center q-gutter-sm" id="ventaSinStockCotizacion">
       <q-label class="text-subtitle2">Venta sin stock</q-label>
       <q-btn
         :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
@@ -235,6 +235,7 @@
     <!-- Sección: Resumen de cotización -->
     <q-card flat bordered>
       <q-table
+        id="tablaResumenCotizacion"
         :rows="carritoCO.listaProductos"
         :columns="carritoColumns"
         row-key="idproductoalmacen"
@@ -317,7 +318,7 @@
             >
             <q-td></q-td>
           </q-tr>
-          <q-tr>
+          <q-tr id="descuentoCotizacion">
             <q-td colspan="5" class="text-right text-weight-bold">Descuento:</q-td>
             <q-td class="text-right">
               <q-input

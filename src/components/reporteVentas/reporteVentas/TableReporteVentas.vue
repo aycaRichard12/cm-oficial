@@ -14,7 +14,7 @@
   >
     <template #body-cell-acciones="props">
       <q-td align="center">
-        <q-btn size="sm" icon="visibility" flat @click="$emit('verDetalle', props.row)" />
+        <q-btn id="btnverdetalle" size="sm" icon="visibility" flat @click="$emit('verDetalle', props.row)" />
         <q-btn
           size="sm"
           icon="email"
@@ -22,6 +22,7 @@
           color="primary"
           @click="$emit('crearMensaje', props.row)"
           class="q-ml-sm"
+          id="btncrearmensaje"
         />
         <q-btn
           v-if="props.row.tv >= 1"
@@ -32,6 +33,7 @@
           color="blue"
           @click="$emit('irAFactura', props.row)"
           title="Ver Factura (Shortlink)"
+          id="btnverfactura"
         />
         <q-btn
           v-if="props.row.tv >= 1"
@@ -42,6 +44,7 @@
           color="warning"
           @click="$emit('irAImpuestos', props.row)"
           title="Ver URL SIN"
+          id="btnverurlsin"
         />
         <q-btn
           v-if="props.row.tv >= 1"
@@ -50,6 +53,7 @@
           color="orange"
           @click="$emit('abrirModalNota', props.row)"
           title="Abrir Nota Crédito/Débito"
+          id="btnabrirmodalnota"
         />
       </q-td>
     </template>
