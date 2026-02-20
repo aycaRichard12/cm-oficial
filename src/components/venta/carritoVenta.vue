@@ -12,7 +12,7 @@
               <span class="texto">Procesar Venta</span>
             </div>
           </div>
-          <div class="col-auto">
+          <div class="col-auto" id="btnContinuar">
             <q-btn
               color="accent"
               @click="handleBack"
@@ -32,7 +32,7 @@
       <div class="my-card q-mb-md">
         <div>
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3" id="origenVenta">
               <label for="almacen">Origen de venta</label>
               <q-select
                 v-model="almacenSeleccionado"
@@ -50,7 +50,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3" id="categoriaPrecio">
               <label for="categoria">Categoría de precio</label>
               <q-select
                 v-model="categoriaPrecioSeleccionada"
@@ -70,7 +70,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3" id="categoriaCampania">
               <label for="campana">Categorías con Campaña</label>
               <q-select
                 v-model="categoriaCampaniaSeleccionada"
@@ -100,7 +100,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3 flex items-center">
+            <div class="col-12 col-md-3 flex items-center" id="activarCampania">
               <q-checkbox v-model="mostrarCategoriasCampania" color="accent">
                 <template v-slot:default>
                   <div class="flex items-center text-grey-8">
@@ -117,7 +117,7 @@
       <div class="my-card q-mb-md">
         <div>
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-10">
+            <div class="col-12 col-md-10" id="buscarProductoVenta">
               <label for="producto">Buscar producto (código o descripción)</label>
               <q-select
                 v-model="productoSeleccionado"
@@ -198,7 +198,7 @@
           </div>
 
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-md">
-            <div class="col-12 col-sm-3">
+            <div class="col-12 col-sm-3" id="stockVenta">
               <label for="stockdisponible">Stock disponible</label>
               <q-input
                 v-model="productoSeleccionado.originalData.stock"
@@ -211,7 +211,7 @@
               </q-input>
             </div>
 
-            <div class="col-12 col-sm-3">
+            <div class="col-12 col-sm-3" id="cantidadVenta">
               <label for="cantidad">Cantidad</label>
               <q-input
                 v-model.number="cantidad"
@@ -227,7 +227,7 @@
               </q-input>
             </div>
 
-            <div class="col-12 col-sm-3">
+            <div class="col-12 col-sm-3" id="precioVenta">
               <label for="precio">Precio unitario</label>
               <q-input
                 v-model="precioUnitario"
@@ -243,6 +243,7 @@
 
             <div class="col-12 col-md-3 flex justify-end q-mt-lg">
               <q-btn
+                id="agregarProductoVenta"
                 color="primary"
                 @click="agregarAlCarrito"
                 class="btn-res"
@@ -256,7 +257,7 @@
         </div>
       </div>
 
-      <div class="row items-center q-gutter-sm">
+      <div class="row items-center q-gutter-sm q-mb-md">
         <q-label class="text-subtitle2">Venta sin stock</q-label>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
@@ -265,6 +266,16 @@
           :color="permitirStock ? 'green' : 'grey'"
           :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
           @click="permitirStockvacio()"
+          id="ventaSinStock"
+        />
+        <q-btn
+          icon="key"
+          label="Ver mis permisos"
+          color="primary"
+          @click="showPermisos = true"
+          outline
+          dense
+          id="verPermisos"
         />
       </div>
       <q-table
@@ -283,6 +294,7 @@
               flat
               round
               @click="eliminarDelCarrito(props.row)"
+              id="eliminarProductoVenta"
             />
           </q-td>
         </template>
@@ -293,6 +305,7 @@
 
             <!-- Descripción adicional editable debajo -->
             <div
+              id="descripcionAdicional"
               style="
                 margin-top: 4px;
                 font-size: 0.9em;
@@ -334,7 +347,7 @@
               >{{ currencyStore.simbolo }}{{ subTotal }}</q-td
             >
           </q-tr>
-          <q-tr>
+          <q-tr id="descuento">
             <q-td colspan="5" class="text-right text-weight-bold text-grey-8">
               <q-icon name="discount" color="accent" class="q-mr-sm" />
               Descuento:
@@ -675,21 +688,21 @@ async function cargarCampanasDisponibles() {
   try {
     cargandoCampanias.value = true
     if (!almacenSeleccionado.value) return
-    
+
     const idalm = almacenSeleccionado.value?.value || almacenSeleccionado.value
     const endpoint = `campanas/${usuario.value.empresa.idempresa}`
     console.log('Cargando campañas para almacén:', idalm)
-    
+
     const { data } = await api.get(endpoint)
     console.log('Respuesta de campañas:', data)
-    
+
     // Verificar si hay error en la respuesta
     if (data[0] === 'error') {
       throw new Error(data.error || 'Error al cargar campañas')
     }
-    
+
     // Filtrar campañas por almacén seleccionado y estado activo
-    const campanasActivas = Array.isArray(data) 
+    const campanasActivas = Array.isArray(data)
       ? data.filter((c) => c.idalmacen == idalm && Number(c.estado) === 1)
       : []
 
@@ -697,14 +710,14 @@ async function cargarCampanasDisponibles() {
       label: c.nombre,
       value: c.id,
     }))
-    
+
     console.log('Campañas cargadas:', categoriasCampania.value)
-    
+
     // Preseleccionar la primera opción si existe
     if (categoriasCampania.value.length > 0 && !categoriaCampaniaSeleccionada.value) {
       categoriaCampaniaSeleccionada.value = categoriasCampania.value[0].value
     }
-    
+
     if (categoriasCampania.value.length === 0) {
       $q.notify({
         type: 'info',
@@ -945,17 +958,19 @@ async function cargarProductosDisponibles() {
       )
     }
     console.log(productosDisponibles)
-    
+
     // Mapear para el selector y aplicar precios de campaña si existen
     productos.value = productosDisponibles.map((producto) => {
       // Verificar si este producto tiene precio de campaña
       const precioCampana = preciosCampana.value.get(producto.id)
       const precioFinal = precioCampana !== undefined ? precioCampana : producto.precio
-      
+
       if (precioCampana !== undefined) {
-        console.log(`Producto ${producto.codigo}: Precio normal ${producto.precio} -> Precio campaña ${precioCampana}`)
+        console.log(
+          `Producto ${producto.codigo}: Precio normal ${producto.precio} -> Precio campaña ${precioCampana}`,
+        )
       }
-      
+
       return {
         label: `${producto.codigo} - ${producto.descripcion}`,
         value: producto.id,
