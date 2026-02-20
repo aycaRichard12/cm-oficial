@@ -11,6 +11,7 @@
     />
 
     <BaseFilterableTable
+      id="tablaventasdevueltas"
       title="Devoluciones"
       :rows="filteredRows"
       :columns="columnas"
