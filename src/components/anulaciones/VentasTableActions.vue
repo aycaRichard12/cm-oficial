@@ -1,5 +1,6 @@
 <template>
   <q-select
+    id="acciontablaanulacion"
     v-model="accionSeleccionada"
     :options="opciones"
     label="Acción"

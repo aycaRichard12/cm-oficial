@@ -1,11 +1,11 @@
 <template>
   <q-page class="q-pa-md">
     <!-- Contenedor principal con tabs -->
-    <q-tabs v-model="tab" align="left" class="text-primary">
-      <q-tab name="validas" label="Válidas" />
-      <q-tab name="anuladas" label="Anuladas" />
-      <q-tab name="devueltas" label="Devueltas" />
-      <q-tab v-if="showDevolucionDetail" name="detalleDevolucion" label="Detalle Devolución" />
+    <q-tabs v-model="tab" align="left" class="text-primary" id="anulacionpagetabs">
+      <q-tab id="tabvalidas" name="validas" label="Válidas" />
+      <q-tab id="tabanuladas" name="anuladas" label="Anuladas" />
+      <q-tab id="tabdevueltas" name="devueltas" label="Devueltas" />
+      <q-tab id="tabdetalledevolucion" v-if="showDevolucionDetail" name="detalleDevolucion" label="Detalle Devolución" />
     </q-tabs>
 
     <q-separator />
