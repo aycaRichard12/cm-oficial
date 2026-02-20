@@ -120,6 +120,7 @@
       <q-td :props="props" auto-width>
         <div class="row items-center justify-center no-wrap q-gutter-x-sm">
           <q-btn
+            id="btnvercomprobantecotizacion"
             icon="picture_as_pdf"
             color="red-7"
             flat
@@ -130,6 +131,7 @@
              <q-tooltip>Ver Comprobante</q-tooltip>
           </q-btn>
           <q-btn
+            id="btnfacturarcotizacion"
             v-if="
               (Number(tipoFactura) === 2 || Number(tipoFactura) === 1) &&
               Number(props.row.condicion) === 1 &&
