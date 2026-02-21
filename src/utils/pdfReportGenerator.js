@@ -416,6 +416,77 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
   return doc
 }
 
+export function PDF_REPORTE_CLIENTES(filtrarClientes) {
+  const doc = new jsPDF({ orientation: 'landscape' })
+
+  // Ruta relativa o base64
+  const columns = [
+    { header: 'N°', dataKey: 'indice' },
+    { header: 'Cod.', dataKey: 'codigo' },
+    { header: 'R. Social', dataKey: 'nombre' },
+    { header: 'N. Comercial', dataKey: 'nombrecomercial' },
+    { header: 'Tipo', dataKey: 'tipo' },
+    { header: 'Canal', dataKey: 'canal' },
+    { header: 'T. Doc', dataKey: 'textotipodocumento' },
+    { header: 'N. Doc', dataKey: 'nit' },
+    { header: 'Detalle', dataKey: 'detalle' },
+    { header: 'Dir.', dataKey: 'direccion' },
+    { header: 'Telf.', dataKey: 'telefono' },
+    { header: 'Mov.', dataKey: 'movil' },
+    { header: 'Email', dataKey: 'email' },
+    { header: 'Zona', dataKey: 'zona' },
+  ]
+  const datos = filtrarClientes.map((item, index) => ({
+    indice: index + 1,
+    codigo: item.codigo,
+    nombre: item.nombre,
+    nombrecomercial: item.nombrecomercial,
+    tipo: item.tipo,
+    canal: item.canal,
+    textotipodocumento: item.textotipodocumento,
+    nit: item.nit,
+    detalle: item.detalle,
+    direccion: item.direccion,
+    telefono: item.telefono,
+    movil: item.movil,
+    email: item.email,
+    zona: item.zona,
+  }))
+
+  const columnStyles = {
+    indice: { cellWidth: 8, halign: 'center' },
+    codigo: { cellWidth: 15, halign: 'left' },
+    nombre: { cellWidth: 25, halign: 'left' },
+    nombrecomercial: { cellWidth: 25, halign: 'left' },
+    tipo: { cellWidth: 15, halign: 'left' },
+    canal: { cellWidth: 15, halign: 'left' },
+    textotipodocumento: { cellWidth: 12, halign: 'center' },
+    nit: { cellWidth: 15, halign: 'right' },
+    detalle: { cellWidth: 30, halign: 'left' },
+    direccion: { cellWidth: 30, halign: 'left' },
+    telefono: { cellWidth: 18, halign: 'center' },
+    movil: { cellWidth: 18, halign: 'center' },
+    email: { cellWidth: 30, halign: 'left' },
+    zona: { cellWidth: 20, halign: 'left' },
+  }
+  const headerColumnStyles = { ...columnStyles }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    datos,
+    'CATÁLOGO DE CLIENTES',
+    columnStyles,
+    headerColumnStyles,
+    null,
+    null,
+    true,
+    null,
+    null,
+  )
+  return doc
+}
+
 //a esta funcion tienes que enviarle si es mayor menor o de fabrica lo que selecciono en el select de categoria
 export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen, filtroCategoria) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })

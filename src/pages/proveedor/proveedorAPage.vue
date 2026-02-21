@@ -1,12 +1,25 @@
 <template>
-  <q-page padding="">
-    <div class="titulo">Registrar Proveedor</div>
+  <q-page padding>
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="local_shipping" size="md" class="q-mr-sm" />
+          Gestión de Proveedores
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Directorio y administración de proveedores de la empresa
+        </div>
+      </div>
+    </div>
 
     <q-dialog v-model="showForm" persistent>
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Registrar Proveedor</div>
-          <q-btn color="" icon="close" @click="showForm = false" flat dense round />
+      <q-card style="min-width: 800px; max-width: 90vw">
+        <q-card-section class="bg-primary text-h6 text-white row items-center justify-between">
+          <div>
+            <q-icon name="local_shipping" class="q-mr-sm" />
+            {{ isEditing ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+          </div>
+          <q-btn icon="close" @click="toggleForm" flat dense round />
         </q-card-section>
         <q-card-actions class="q-pa-none">
           <form-proveedor
