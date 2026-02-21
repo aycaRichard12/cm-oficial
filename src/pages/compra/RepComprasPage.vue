@@ -89,6 +89,12 @@ const columnas = [
     align: 'center',
   },
   {
+    name: 'almacen',
+    label: 'Almacén',
+    field: 'almacen',
+    align: 'left',
+  },
+  {
     name: 'codigo',
     label: 'Codigo',
     field: 'codigo',
