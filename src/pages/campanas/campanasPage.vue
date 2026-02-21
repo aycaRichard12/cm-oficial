@@ -16,7 +16,7 @@
             color="primary"
             icon="add"
             label="Nueva Campaña"
-            @click="formularioActivo = true"
+            @click="abrirNuevaCampana"
             size="md"
           />
         </div>
@@ -156,7 +156,11 @@
     </q-card>
 
     <!-- Diálogo de formulario -->
-    <q-dialog v-model="formularioActivo" @keydown.esc="formularioActivo = false">
+    <q-dialog
+      v-model="formularioActivo"
+      @hide="resetearFormulario"
+      @keydown.esc="formularioActivo = false"
+    >
       <q-card style="min-width: 600px">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
@@ -168,18 +172,23 @@
         <q-card-section>
           <q-form @submit="registrarCampana">
             <div class="row q-col-gutter-md">
-              <div class="col-12">
-                <q-input
-                  v-model="formData.campana"
-                  label="Nombre de la campaña *"
-                  outlined
-                  dense
-                  required
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="label" />
-                  </template>
-                </q-input>
+              <div class="col-12 row items-center">
+                <div class="col">
+                  <q-input
+                    v-model="formData.campana"
+                    label="Nombre de la campaña *"
+                    outlined
+                    dense
+                    required
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="label" />
+                    </template>
+                  </q-input>
+                </div>
+                <div class="col-auto q-ml-sm">
+                  <q-checkbox v-model="formData.estadoActivo" label="Activar" color="primary" />
+                </div>
               </div>
 
               <div class="col-6">
@@ -258,7 +267,12 @@
     </q-dialog>
 
     <!-- Diálogo para categorías de precios -->
-    <q-dialog v-model="dialogoCategorias" persistent @keydown.esc="dialogoCategorias = false">
+    <q-dialog
+      v-model="dialogoCategorias"
+      persistent
+      @hide="resetearCategoriaForm"
+      @keydown.esc="dialogoCategorias = false"
+    >
       <q-card style="min-width: 700px">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
@@ -346,7 +360,12 @@
     </q-dialog>
 
     <!-- Diálogo para precios de campaña -->
-    <q-dialog v-model="dialogoPrecios" persistent @keydown.esc="dialogoPrecios = false">
+    <q-dialog
+      v-model="dialogoPrecios"
+      persistent
+      @hide="cancelarEdicionPrecio"
+      @keydown.esc="dialogoPrecios = false"
+    >
       <q-card style="min-width: 800px; max-width: 90vw">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
@@ -373,8 +392,66 @@
 
           <q-form @submit="registrarPrecioCampaña">
             <div class="row q-col-gutter-md">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-4">
+                <q-select
+                  v-model="precioForm.idcategoriacampaña"
+                  :options="categoriasCampana"
+                  option-value="id"
+                  option-label="tipo"
+                  emit-value
+                  map-options
+                  label="Categoría *"
+                  outlined
+                  dense
+                  required
+                  :readonly="!!precioForm.id_detalle_campanas"
+                  @update:model-value="onCategoriaCampañaSeleccionada"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="category" />
+                  </template>
+                </q-select>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <!-- Select for new products -->
+                <q-select
+                  v-if="!precioForm.id_detalle_campanas"
+                  v-model="productoSeleccionado"
+                  :options="productosNoAsignadosOptions"
+                  option-value="id"
+                  option-label="descripcion"
+                  label="Producto *"
+                  use-input
+                  input-debounce="300"
+                  @filter="filtrarProductos"
+                  @update:model-value="alSeleccionarProducto"
+                  outlined
+                  dense
+                  :rules="[(val) => !!val || 'Requerido']"
+                  :disable="!precioForm.idcategoriacampaña"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="inventory_2" />
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{
+                          scope.opt.descripcion || scope.opt.producto
+                        }}</q-item-label>
+                        <q-item-label caption>Código: {{ scope.opt.codigo }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected-item="scope">
+                    {{ scope.opt.descripcion || scope.opt.producto }}
+                  </template>
+                </q-select>
+
+                <!-- Input when editing -->
                 <q-input
+                  v-else
                   v-model="precioForm.producto"
                   label="Producto *"
                   outlined
@@ -388,7 +465,7 @@
                 </q-input>
               </div>
 
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-4">
                 <q-input
                   v-model="precioForm.precio"
                   label="Precio de campaña *"
@@ -436,7 +513,7 @@
                 v-model="filtroPrecioCampania"
                 :options="categoriasCampanaPrecioOptions"
                 label="Filtrar por categoría"
-                option-value="idcategoriaprecio"
+                option-value="id"
                 option-label="tipo"
                 emit-value
                 map-options
@@ -523,7 +600,12 @@ const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero')) || []
 const idempresa = contenidousuario[0]?.empresa?.idempresa
 const idusuario = contenidousuario[0]?.idusuario
 
-// Estados reactivos
+// Estados reactivos UI Globales y Formularios
+// const cargandoPrincipal = ref(false)
+// const cargandoGuardar = ref(false)
+// const cargandoGuardarCategoria = ref(false)
+const cargandoGuardarPrecio = ref(false)
+
 const formularioActivo = ref(false)
 const idalmacenfiltro = ref(null)
 const busqueda = ref('')
@@ -543,7 +625,13 @@ const formData = ref({
   fechaf: '',
   campana: '',
   porcentaje: '',
+  estadoActivo: true,
 })
+
+const productoSeleccionado = ref(null)
+const productosAlmacen = ref([])
+const productosNoAsignados = ref([])
+const productosNoAsignadosOptions = ref([])
 
 const categoriaForm = ref({
   ver: 'registrocategoriacampaña',
@@ -618,14 +706,18 @@ const categoriasCampanaPrecioOptions = computed(() => {
 })
 
 const preciosCampanaFiltrados = computed(() => {
-  if (filtroPrecioCampania.value === null) {
+  if (filtroPrecioCampania.value === null || filtroPrecioCampania.value === '') {
     return preciosCampana.value.map((item, index) => ({
       ...item,
       numero: index + 1,
     }))
   }
   return preciosCampana.value
-    .filter((item) => item.idcategoriaprecio == filtroPrecioCampania.value)
+    .filter(
+      (item) =>
+        String(item.idcategoriaprecio) === String(filtroPrecioCampania.value) ||
+        String(item.idcategoriacampaña) === String(filtroPrecioCampania.value),
+    )
     .map((item, index) => ({
       ...item,
       numero: index + 1,
@@ -638,9 +730,9 @@ const campanasFiltradas = computed(() => {
   const almacen = idalmacenfiltro.value
   if (almacen) {
     if (almacen.idalmacen) {
-      filtered = filtered.filter((camp) => camp.idalmacen == almacen.idalmacen)
+      filtered = filtered.filter((camp) => String(camp.idalmacen) === String(almacen.idalmacen))
     } else {
-      filtered = filtered.filter((camp) => camp.idalmacen == almacen)
+      filtered = filtered.filter((camp) => String(camp.idalmacen) === String(almacen))
     }
   }
 
@@ -651,6 +743,11 @@ const campanasFiltradas = computed(() => {
 })
 
 // Métodos
+const abrirNuevaCampana = () => {
+  resetearFormulario()
+  formularioActivo.value = true
+}
+
 const obtenerFechaActual = () => {
   const today = new Date()
   const yyyy = today.getFullYear()
@@ -720,6 +817,17 @@ const listarCategoriasPrecio = async () => {
   }
 }
 
+const listarProductosAlmacen = async () => {
+  try {
+    const response = await api.get(`listaProductoAlmacen/${idempresa}`)
+    if (response.data && Array.isArray(response.data)) {
+      productosAlmacen.value = response.data
+    }
+  } catch (error) {
+    console.error('Error al cargar productos:', error)
+  }
+}
+
 const registrarCampana = async () => {
   try {
     const form = objectToFormData(formData.value)
@@ -728,6 +836,7 @@ const registrarCampana = async () => {
     form.append('ver', ver)
     form.append('idusuario', idusuario)
     form.append('idempresa', idempresa)
+    form.append('estado', formData.value.estadoActivo ? '1' : '2')
 
     const response = await api.post('', form)
     console.log(response)
@@ -774,6 +883,7 @@ const editarCampana = async (campana) => {
         fechaf: resultado.datos.fechaf,
         campana: resultado.datos.nombre,
         porcentaje: resultado.datos.porcentaje,
+        estadoActivo: Number(resultado.datos.estado) === 1,
       }
       // Open the form dialog
       formularioActivo.value = true
@@ -852,15 +962,18 @@ const cambiarEstado = async (id, estado) => {
 }
 
 const resetearFormulario = () => {
-  formData.value = {
-    ver: 'registrarcampana',
-    idusuario: idusuario,
-    idalmacen: null,
-    fechai: obtenerFechaActual(),
-    fechaf: obtenerFechaActual(),
-    campana: '',
-    porcentaje: '',
-  }
+  formData.value.id = null
+  formData.value.ver = 'registrarcampana'
+  formData.value.idalmacen = null
+  formData.value.fechai = obtenerFechaActual()
+  formData.value.fechaf = obtenerFechaActual()
+  formData.value.campana = ''
+  formData.value.porcentaje = ''
+  formData.value.estadoActivo = true
+}
+
+const resetearCategoriaForm = () => {
+  categoriaForm.value.idcategoriaprecio = null
 }
 
 const cargarcategoria = async (idCampana, idAlmacen) => {
@@ -966,6 +1079,10 @@ const eliminarCategoriaCampana = async (id) => {
 const cargarPrecios = async (idCampana) => {
   try {
     precioForm.value.idcampaña = idCampana
+    productoSeleccionado.value = null
+    precioForm.value.idcategoriacampaña = null
+    productosNoAsignados.value = []
+    productosNoAsignadosOptions.value = []
 
     const endpoint1 = `${URL_APICM}api/listacategoriapreciocampaña/${idCampana}`
     const endpoint2 = `${URL_APICM}api/listapreciocampaña/${idCampana}`
@@ -986,22 +1103,55 @@ const cargarPrecios = async (idCampana) => {
   }
 }
 
+const onCategoriaCampañaSeleccionada = (idCatCampaña) => {
+  productoSeleccionado.value = null
+  precioForm.value.idproductoalmacen = null
+  precioForm.value.idproducto = null
+  precioForm.value.producto = ''
+
+  if (!idCatCampaña) {
+    productosNoAsignados.value = []
+    productosNoAsignadosOptions.value = []
+    return
+  }
+
+  const campanaActual = campanas.value.find(
+    (c) => String(c.id) === String(precioForm.value.idcampaña),
+  )
+  const idAlmacenCampana =
+    campanaActual?.idalmacen || idalmacenfiltro.value?.idalmacen || idalmacenfiltro.value
+
+  const productosDeEsteAlmacen = productosAlmacen.value.filter(
+    (p) => String(p.idalmacen) === String(idAlmacenCampana),
+  )
+
+  const asignados = preciosCampana.value.filter(
+    (p) => String(p.idcategoriacampaña) === String(idCatCampaña),
+  )
+  const idsAsignados = asignados.map((p) => String(p.idproductoalmacen || p.idproducto))
+
+  productosNoAsignados.value = productosDeEsteAlmacen.filter(
+    (p) => !idsAsignados.includes(String(p.id)),
+  )
+  productosNoAsignadosOptions.value = productosNoAsignados.value
+}
+
 const registrarPrecioCampaña = async () => {
   try {
-    // Backend PHP expects exactly these 4 POST fields:
-    // $_POST['id_detalle_campanas'], $_POST['idproducto'], $_POST['precio'], $_POST['idcategoriacampaña']
-
+    cargandoGuardarPrecio.value = true
     const payload = {
       ver: 'editarPreciocampana',
-      id_detalle_campanas: precioForm.value.id_detalle_campanas,
-      idproducto: precioForm.value.idproductoalmacen || precioForm.value.idproducto,
+      idproducto: precioForm.value.idproducto,
+      idproductoalmacen: precioForm.value.idproductoalmacen,
       precio: precioForm.value.precio,
       idcategoriacampaña: precioForm.value.idcategoriacampaña,
     }
-    console.log('registro de datos de campaña - payload object:', precioForm.value)
-    console.log('registro de datos de campaña - JSON payload:', payload)
+
+    if (precioForm.value.id_detalle_campanas) {
+      payload.id_detalle_campanas = precioForm.value.id_detalle_campanas
+    }
+
     const response = await api.post('', payload)
-    console.log(response.data)
     const data = response.data
 
     if (data.estado === 'exito') {
@@ -1013,11 +1163,8 @@ const registrarPrecioCampaña = async () => {
             ? 'Precio actualizado con éxito'
             : 'Precio registrado con éxito'),
       })
-      // Save idcampaña before resetting form
       const idCampanaActual = precioForm.value.idcampaña
-      // Reset form
       cancelarEdicionPrecio()
-      // Restore idcampaña and reload prices
       precioForm.value.idcampaña = idCampanaActual
       await cargarPrecios(idCampanaActual)
     } else {
@@ -1032,6 +1179,8 @@ const registrarPrecioCampaña = async () => {
       type: 'negative',
       message: 'Error al registrar precio',
     })
+  } finally {
+    cargandoGuardarPrecio.value = false
   }
 }
 
@@ -1080,12 +1229,44 @@ const editarPrecioCampana = (precio) => {
 
 const cancelarEdicionPrecio = () => {
   // Reset the form to add mode
+  productoSeleccionado.value = null
   precioForm.value.id_detalle_campanas = null
   precioForm.value.idproducto = null
   precioForm.value.idproductoalmacen = null
   precioForm.value.producto = ''
   precioForm.value.precio = ''
   precioForm.value.idcategoriacampaña = null
+  productosNoAsignados.value = []
+  productosNoAsignadosOptions.value = []
+}
+
+const filtrarProductos = (val, update) => {
+  if (val === '') {
+    update(() => {
+      productosNoAsignadosOptions.value = productosNoAsignados.value
+    })
+    return
+  }
+  update(() => {
+    const needle = val.toLowerCase()
+    productosNoAsignadosOptions.value = productosNoAsignados.value.filter((v) => {
+      const desc = v.descripcion || v.producto || ''
+      const cod = v.codigo || ''
+      return desc.toLowerCase().indexOf(needle) > -1 || cod.toLowerCase().indexOf(needle) > -1
+    })
+  })
+}
+
+const alSeleccionarProducto = (val) => {
+  if (val) {
+    precioForm.value.idproductoalmacen = val.id || null
+    precioForm.value.idproducto = val.idproducto || null
+    precioForm.value.producto = val.descripcion || val.producto || ''
+  } else {
+    precioForm.value.idproductoalmacen = null
+    precioForm.value.idproducto = null
+    precioForm.value.producto = ''
+  }
 }
 
 const filtrarPrecios = () => {
@@ -1124,6 +1305,7 @@ onMounted(async () => {
   formData.value.fechaf = obtenerFechaActual()
   await listarAlmacenes()
   await listarCampanas()
+  await listarProductosAlmacen()
   await listarCategoriasPrecio()
   await actualizarCampanasConCategorias()
 })
