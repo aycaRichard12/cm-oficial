@@ -9,14 +9,14 @@
         id="agregarAlmacen"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto" >Agregar</span>
+        <span class="texto">Nuevo</span>
       </q-btn>
       <q-btn color="info" outline @click="mostrarReporte" class="btn-res q-mt-lg">
         <q-icon name="picture_as_pdf" class="icono" />
         <span class="texto" id="vistaPreviaPDF">Vista previa PDF</span>
       </q-btn>
       <div id="buscarAlmacen">
-        <label for="buscar" >Buscar...</label>
+        <label for="buscar">Buscar...</label>
         <q-input
           v-model="search"
           id="buscar"
@@ -71,7 +71,6 @@
             title="Editar"
             flat
             id="editarAlmacen"
-
           />
           <q-btn
             icon="delete"

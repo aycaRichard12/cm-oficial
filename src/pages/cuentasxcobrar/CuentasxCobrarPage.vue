@@ -4,7 +4,7 @@
     <div v-if="vistaActiva === 'principal'">
       <!-- Filtros y botones superiores -->
       <div class="row q-col-gutter-x-md q-mb-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtroalmacencuentasporcobrar">
           <label for="almacen">Almacén</label>
           <q-select
             v-model="filtroAlmacen"
@@ -19,7 +19,7 @@
             clearable
           />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtroestadocuentasporcobrar">
           <label for="estado">Tipo</label>
           <q-select
             v-model="filtroEstado"
@@ -63,7 +63,7 @@
                 <label for="fecha">Fecha</label>
                 <q-input
                   v-model="formulario.fecha"
-                  id="fecha"
+                  id="fecharegistrocobro"
                   dense
                   outlined
                   type="date"
@@ -84,7 +84,7 @@
                 <label for="nroCobros">N° Cobros</label>
                 <q-input
                   v-model="formulario.numeroCobros"
-                  id="nroCobros"
+                  id="nrocobrosregistrocobro"
                   dense
                   outlined
                   :rules="[
@@ -109,7 +109,7 @@
                 <label for="totalacobrar">Total a Cobrar</label>
                 <q-input
                   v-model="formulario.totalCobro"
-                  id="totalacobrar"
+                  id="totalacobrarregistrocobro"
                   dense
                   outlined
                   :rules="[
@@ -162,7 +162,7 @@
                 <label for="comprobante">Comprobante</label>
                 <q-file
                   v-model="formulario.comprobante"
-                  id="comprobante"
+                  id="comprobanteregistrocobro"
                   dense
                   outlined
                   accept=".jpg,.jpeg,.png"
@@ -183,7 +183,7 @@
             </div>
 
             <div class="q-mt-md text-center">
-              <q-btn label="Registrar" type="submit" color="primary" />
+              <q-btn id="btnregistrarcobroformulario" label="Registrar" type="submit" color="primary" />
               <q-btn
                 label="Cancelar"
                 color="negative"
@@ -202,6 +202,7 @@
       <div class="row items-center q-mb-md">
         <div class="col">
           <q-btn
+            id="btnvolverdetallescobro"
             label="Volver"
             icon="arrow_back"
             color="primary"
@@ -215,6 +216,7 @@
       </div>
 
       <q-table
+        id="tabladetallescobro"
         :rows="detallesCobros"
         :columns="columnasDetalles"
         row-key="id"

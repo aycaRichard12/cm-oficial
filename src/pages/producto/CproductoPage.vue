@@ -27,11 +27,12 @@
 
     <producto-tabla
       :rows="productos"
+      :loading="cargando"
       @add="toggleForm"
       @mostrarReporte="mostrarReporte"
       @edit-item="editUnit"
       @delete-item="confirmDelete"
-      @toggle-status="toggleStatus"
+      @toggleStatus="toggleStatus"
     />
   </q-page>
 </template>
@@ -65,6 +66,7 @@ const medidas = ref([])
 const $q = useQuasar()
 const isEditing = ref(false)
 const showForm = ref(false)
+const cargando = ref(false)
 const formData = ref({
   ver: 'registrarProducto',
   idempresa: idempresa,
@@ -73,21 +75,22 @@ const ProductoSin = ref([])
 const UnidadSin = ref([])
 async function loadRows() {
   try {
+    cargando.value = true
     const tipo = getTipoFactura()
-    let response
-    const point = `listaProducto/${idempresa}/${token}/${tipo}` // Ruta con factura
+    const point = `listaProducto/${idempresa}/${token}/${tipo}`
 
     console.log('Endpoint:', point)
-    response = await api.get(`${point}`) // Cambia a tu ruta con factura
-    console.log('estos son los datos',response.data)
+    const response = await api.get(point)
+    console.log('estos son los datos', response.data)
     productos.value = response.data.map((obj, index) => ({ ...obj, numero: index + 1 }))
-    // Asume que la API devuelve un array
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: 'No se pudieron cargar los datos del catálogo',
     })
+  } finally {
+    cargando.value = false
   }
 }
 

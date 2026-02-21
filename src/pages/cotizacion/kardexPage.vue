@@ -5,7 +5,7 @@
       <q-card-section>
         <q-form @submit="generarReporte">
           <div class="row q-col-gutter-x-lg flex justify-center">
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" id="fechainikardex">
               <label for="fechaINi">Fecha Inicial *</label>
               <q-input
                 v-model="fechaiR"
@@ -17,7 +17,7 @@
                 :rules="[(val) => !!val || 'Campo requerido']"
               />
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12" id="fechafinkardex">
               <label for="fechafin">Fecha Final *</label>
               <q-input
                 dense
@@ -29,7 +29,7 @@
                 :rules="[(val) => !!val || 'Campo requerido']"
               />
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-4 col-sm-6 col-xs-12" id="almacenkardex">
               <label for="almacen">Almacén *</label>
               <q-select
                 dense
@@ -48,7 +48,7 @@
           </div>
 
           <div class="row q-col-gutter-x-md flex justify-start">
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-4 col-sm-6 col-xs-12" id="productokardex">
               <label for="producto">Producto *</label>
               <q-select
                 dense
@@ -74,8 +74,9 @@
             </div>
           </div>
           <div class="row q-mt-md justify-center">
-            <q-btn type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
+            <q-btn id="btngenerarreportekardex" type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
             <q-btn
+              id="btnvistapreviakardex"
               v-if="datosFiltrados.length > 0"
               label="Vista previa del Reporte"
               color="secondary"
@@ -92,6 +93,7 @@
       </q-card-section>
 
       <q-table
+        id="tablakardex"
         :title="title"
         :rows="datosFiltrados"
         :columns="columns"

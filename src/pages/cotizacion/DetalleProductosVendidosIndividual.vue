@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <q-form @submit="generarReporte">
       <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechainidetalleproductos">
           <label for="fechaini">Fecha Inicial *</label>
           <q-input
             v-model="fechai"
@@ -14,7 +14,7 @@
             @change="validarFechas"
           />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechafindetalleproductos">
           <label for="fechafin">Fecha Final*</label>
           <q-input
             v-model="fechaf"
@@ -29,6 +29,7 @@
       </div>
       <div class="row justify-center q-ma-md">
         <q-btn
+          id="btngenerarreporte"
           label="Generar Reporte"
           type="submit"
           color="primary"
@@ -36,6 +37,7 @@
           :disable="!fechai || !fechaf"
         />
         <q-btn
+          id="btnexportarexcel"
           label="Exportar a Excel"
           color="positive"
           @click="exportarTablaAExcel"
@@ -46,7 +48,7 @@
 
     <q-form>
       <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtraralmacendetalle">
           <label for="almacen">Filtrar por almacén</label>
           <q-select
             v-model="almacenSeleccionado"
@@ -63,7 +65,7 @@
           />
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtrarraizonsozialdetalle">
           <label for="razonsocial">Filtrar por razón social</label>
           <q-input
             v-model="clienteSearchTerm"
@@ -100,7 +102,7 @@
           </q-card>
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="filtrarsucursaldetalle">
           <label for="sucursal">Filtrar por sucursal</label>
           <q-input
             v-model="sucursalSearchTerm"
@@ -140,6 +142,7 @@
     </q-form>
 
     <q-table
+      id="tabladetalleproductos"
       :rows="datosFiltrados"
       :columns="columns"
       row-key="index"
