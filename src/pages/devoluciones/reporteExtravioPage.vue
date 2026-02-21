@@ -1,10 +1,10 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo">Reporte Extravio</div>
+    <div class="titulo" id="tituloreporteextravio">Reporte Extravio</div>
 
     <q-form @submit.prevent="generarReporte">
       <div class="row q-col-gutter-md flex justify-center">
-        <div class="col-md-4">
+        <div class="col-md-4" id="fechainicioreporteextravio">
           <q-input
             v-model="fechaInicio"
             label="Fecha Inicial*"
@@ -14,7 +14,7 @@
             :rules="[(val) => !!val || 'Campo obligatorio']"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" id="fechafinreporteextravio">
           <q-input
             v-model="fechaFin"
             label="Fecha Final*"
@@ -30,8 +30,9 @@
       </div>
 
       <div class="row justify-center q-mt-md">
-        <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+        <q-btn id="btngenerarreporteextravio" label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
         <q-btn
+          id="btnvistapreviareporteextravio"
           label="Vista Previa"
           color="secondary"
           @click="mostrarVistaPrevia"
@@ -39,7 +40,7 @@
         />
       </div>
       <div class="row justify-center q-mt-md">
-        <div class="col-md-4">
+        <div class="col-md-4" id="almacenreporteextravio">
           <q-select
             v-model="almacenSeleccionado"
             :options="almacenesOptions"
@@ -60,6 +61,7 @@
     <q-card>
       <div class="table-responsive">
         <BaseFilterableTable
+          id="tablareporteextravio"
           title="Reporte de Extravio"
           ref="tableRef"
           :rows="datosFiltrados"
@@ -76,6 +78,7 @@
             <q-td :props="props">
               <div class="q-gutter-sm">
                 <q-btn
+                  id="btnverdetallereporteextravio"
                   icon="visibility"
                   color="blue"
                   dense

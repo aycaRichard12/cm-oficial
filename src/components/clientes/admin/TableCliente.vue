@@ -1,74 +1,107 @@
 <template>
   <div>
     <!-- Cabecera con filtros y botones -->
-    <div class="row q-col-gutter-x-md q-mb-md">
-      <div>
-        <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
-          <q-icon name="add" class="icono" />
-          <span class="texto">Agregar</span>
-        </q-btn>
-      </div>
-      <div>
-        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res q-mt-lg" outline>
-          <q-icon name="import_export" class="icono" />
-          <span class="texto">Importar de Excel</span>
-        </q-btn>
-      </div>
-      <div>
-        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res q-mt-lg" outline="">
-          <q-icon name="file_upload" class="icono" />
-          <span class="texto">Exportar a Excel</span>
-        </q-btn>
-      </div>
-    </div>
-    <div class="row q-col-gutter-x-md q-mb-md">
-      <!-- Botones izquierda -->
-
-      <div class="col-12 col-md-2">
-        <label for="tipocliente">Tipo Cliente</label>
-        <q-select
-          v-model="filtroTipoCliente"
-          :options="tipoClienteFilterOptions"
-          id="tipocliente"
-          dense
-          outlined
-        />
-      </div>
-
-      <!-- Filtros centrales -->
-      <div class="col-12 col-md-2">
-        <label for="canalventa">Canal Venta</label>
-        <q-select
-          v-model="filtroCanalVenta"
-          :options="canalVentaFilterOptions"
-          id="canalventa"
-          dense
-          outlined
-        />
-      </div>
-
-      <div class="col-12 col-md-2">
-        <label for="tipodoc">Tipo Doc</label>
-        <q-select
-          v-model="filtroTipoDocumento"
-          :options="tipoDocumentoFilterOptions"
-          id="tipodoc"
-          dense
-          outlined
-        />
-      </div>
-      <div class="col-12 col-md-6 flex justify-end">
-        <div>
-          <label for="buscar">Buscar...</label>
-          <q-input dense debounce="300" v-model="search" id="buscar" outlined="" />
+    <q-card flat class="q-mb-md" id="filtrosClientes">
+      <q-card-section class="q-pa-md">
+        <div class="row q-col-gutter-sm items-center justify-between q-mb-sm">
+          <div class="col-12 col-md-auto row q-gutter-sm">
+            <q-btn
+              unelevated
+              color="primary"
+              @click="$emit('add')"
+              icon="add"
+              label="Agregar"
+              id="registrarCliente"
+            />
+            <q-btn
+              outline
+              color="green"
+              @click="$emit('importFromExcel')"
+              icon="upload"
+              label="Importar Excel"
+              id="importarExcel"
+            />
+            <q-btn
+              outline
+              color="info"
+              @click="exportarClientesFiltrados"
+              icon="file_download"
+              label="Exportar Excel"
+              id="exportarExcel"
+            />
+            <q-btn
+              outline
+              color="red"
+              @click="exportarClientesPDF"
+              icon="picture_as_pdf"
+              label="Reporte PDF"
+              id="exportarPdf"
+            />
+          </div>
+          <div class="col-12 col-md-auto text-right">
+            <q-input
+              dense
+              outlined
+              bg-color="white"
+              clearable
+              debounce="300"
+              v-model="search"
+              id="buscar"
+              placeholder="Buscar rápido..."
+              style="min-width: 250px"
+            >
+              <template v-slot:prepend><q-icon name="search" /></template>
+            </q-input>
+          </div>
         </div>
-      </div>
 
-      <!-- Busqueda derecha -->
-    </div>
+        <div class="row q-col-gutter-sm">
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="filtroTipoCliente"
+              :options="tipoClienteFilterOptions"
+              id="tipocliente"
+              label="Filtrar por Tipo Cliente"
+              dense
+              outlined
+              clearable
+            >
+              <template v-slot:prepend><q-icon name="category" /></template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="filtroCanalVenta"
+              :options="canalVentaFilterOptions"
+              id="canalventa"
+              label="Filtrar por Canal Venta"
+              dense
+              outlined
+              clearable
+            >
+              <template v-slot:prepend><q-icon name="storefront" /></template>
+            </q-select>
+          </div>
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="filtroTipoDocumento"
+              :options="tipoDocumentoFilterOptions"
+              id="tipodoc"
+              label="Filtrar por Tipo Doc."
+              dense
+              outlined
+              clearable
+            >
+              <template v-slot:prepend><q-icon name="badge" /></template>
+            </q-select>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
 
     <!-- Alerta/Notificación -->
-    <q-banner v-if="alertMessage" :class="alertClass">
+    <q-banner v-if="alertMessage" :class="alertClass" class="q-mb-md rounded-borders">
+      <q-icon name="info" size="sm" class="q-mr-sm" />
       {{ alertMessage }}
     </q-banner>
 
@@ -81,6 +114,7 @@
       :loading="loading"
       :filter="search"
       class="sticky-header-table"
+      id="tablaClientes"
     >
       <template v-slot:top-right> </template>
       <!-- Personalización de celdas para truncar texto -->
@@ -95,9 +129,30 @@
       <!-- Columna de opciones -->
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-nowrap">
-          <q-btn icon="edit" color="primary" dense flat @click="editClient(props.row)" />
-          <q-btn icon="delete" color="negative" dense flat @click="deleteClient(props.row)" />
-          <q-btn icon="add" color="primary" dense flat @click="addToList(props.row)" />
+          <q-btn
+            icon="edit"
+            color="primary"
+            dense
+            flat
+            @click="editClient(props.row)"
+            id="editarCliente"
+          />
+          <q-btn
+            icon="delete"
+            color="negative"
+            dense
+            flat
+            @click="deleteClient(props.row)"
+            id="eliminarCliente"
+          />
+          <q-btn
+            icon="add"
+            color="primary"
+            dense
+            flat
+            @click="addToList(props.row)"
+            id="agregarCliente"
+          />
         </q-td>
       </template>
     </q-table>
@@ -119,11 +174,32 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="mostrarModal" full-width full-height>
+      <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Vista previa de PDF</div>
+          <q-space />
+          <q-btn flat round icon="close" @click="mostrarModal = false" />
+        </q-card-section>
+        <q-separator />
+        <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
+          <iframe
+            v-if="pdfData"
+            :src="pdfData"
+            style="width: 100%; height: 100%; border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx-js-style'
+import { PDF_REPORTE_CLIENTES } from 'src/utils/pdfReportGenerator'
+
+const mostrarModal = ref(false)
+const pdfData = ref(null)
 
 // Props desde el componente padre
 const props = defineProps({
@@ -167,6 +243,7 @@ const search = ref('')
 
 const columns = [
   { name: 'id', label: 'N°', field: (row) => row.numero, align: 'center' },
+  { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left' },
   { name: 'nombre', label: 'Razón Social', field: 'nombre', align: 'left' },
   {
     name: 'nombrecomercial',
@@ -174,7 +251,6 @@ const columns = [
     field: 'nombrecomercial',
     align: 'left',
   },
-  { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left' },
   {
     name: 'tipo',
     label: 'Tipo',
@@ -339,6 +415,12 @@ function exportarClientesFiltrados() {
 // Añadir a una lista personalizada
 function addToList(client) {
   emit('addToList', client)
+}
+
+function exportarClientesPDF() {
+  const doc = PDF_REPORTE_CLIENTES(filteredClients.value)
+  pdfData.value = doc.output('dataurlstring')
+  mostrarModal.value = true
 }
 </script>
 

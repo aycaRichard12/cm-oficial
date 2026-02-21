@@ -2,6 +2,7 @@
   <div class="q-gutter-xs">
     <template v-if="Number(row.tipoventa) <= 0">
       <q-btn
+        id="btnvercomprobanteanulacion"
         icon="picture_as_pdf"
         color="negative"
         dense
@@ -14,6 +15,7 @@
 
     <template v-else>
       <q-btn
+        id="btnvercomprobanteanulacion2"
         icon="picture_as_pdf"
         color="negative"
         dense
@@ -23,6 +25,7 @@
         @click="$emit('pdf', row)"
       />
       <q-btn
+        id="btnverfacturaanulacion"
         icon="receipt_long"
         dense
         rounded
@@ -32,6 +35,7 @@
         @click="$emit('ver-factura', row.shortlink)"
       />
       <q-btn
+        id="btnversiatanulacion"
         icon="policy"
         dense
         rounded

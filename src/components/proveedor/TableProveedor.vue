@@ -1,42 +1,61 @@
 <template>
-  <div class="q-pa-md">
-    <div class="row q-col-gutter-x-md q-mb-md">
-      <div>
-        <q-btn color="primary" @click="$emit('add')" class="btn-res">
-          <q-icon name="add" class="icono" />
-          <span class="texto">Agregar</span>
-        </q-btn>
-      </div>
+  <div>
+    <q-card flat class="q-mb-md" id="filtrosProveedores">
+      <q-card-section class="q-pa-md row q-col-gutter-sm items-center justify-between">
+        <div class="col-12 col-md-auto row q-gutter-sm">
+          <q-btn
+            unelevated
+            color="primary"
+            @click="$emit('add')"
+            icon="add"
+            label="Agregar"
+            id="agregarProveedor"
+          />
+          <q-btn
+            outline
+            color="green"
+            @click="$emit('importFromExcel')"
+            icon="upload"
+            label="Importar Excel"
+            id="importarExcel"
+          />
+          <q-btn
+            outline
+            color="info"
+            @click="exportarClientesFiltrados"
+            icon="file_download"
+            label="Exportar Excel"
+            id="exportarExcel"
+          />
+          <q-btn
+            outline
+            color="red"
+            @click="exportarProveedoresPDF"
+            icon="picture_as_pdf"
+            label="Reporte PDF"
+            id="exportarPdf"
+          />
+        </div>
 
-      <div>
-        <q-btn color="green" @click="$emit('importFromExcel')" class="btn-res" outline>
-          <q-icon name="upload" class="icono" />
-          <span class="texto">Importar Excel</span>
-        </q-btn>
-      </div>
-      <div>
-        <q-btn color="red" outline @click="exportarProveedoresPDF" class="btn-res">
-          <q-icon name="picture_as_pdf" class="icono" />
-          <span class="texto">Vista Previa PDF</span>
-        </q-btn>
-      </div>
-      <div>
-        <q-btn color="info" @click="exportarClientesFiltrados" class="btn-res" outline>
-          <q-icon name="file_download" class="icono" />
-          <span class="texto">Exportar Excel</span>
-        </q-btn>
-      </div>
-    </div>
-
-    <div class="row q-col-gutter-x-md flex justify-end q-mb-md">
-      <div class="col-12 col-md-3">
-        <label for="buscar">Buscar...</label>
-        <q-input dense debounce="300" v-model="filtro" id="buscar">
-          <template v-slot:append> <q-icon name="search" /> </template>
-        </q-input>
-      </div>
-    </div>
+        <div class="col-12 col-md-auto text-right">
+          <q-input
+            dense
+            outlined
+            bg-color="white"
+            clearable
+            debounce="300"
+            v-model="filtro"
+            id="buscar"
+            placeholder="Buscar rápido..."
+            style="min-width: 250px"
+          >
+            <template v-slot:prepend><q-icon name="search" /></template>
+          </q-input>
+        </div>
+      </q-card-section>
+    </q-card>
     <q-table
+      id="tablaProveedores"
       flat
       bordered
       title="Proveedores"
@@ -58,8 +77,22 @@
       </template>
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-center">
-          <q-btn flat dense icon="edit" color="primary" @click="editarProveedor(props.row)" />
-          <q-btn flat dense icon="delete" color="negative" @click="eliminarProveedor(props.row)" />
+          <q-btn
+            flat
+            dense
+            icon="edit"
+            color="primary"
+            @click="editarProveedor(props.row)"
+            id="editarProveedor"
+          />
+          <q-btn
+            flat
+            dense
+            icon="delete"
+            color="negative"
+            @click="eliminarProveedor(props.row)"
+            id="eliminarProveedor"
+          />
         </q-td>
       </template>
     </q-table>
@@ -107,6 +140,7 @@ const props = defineProps({
 })
 
 const columnas = [
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
   {
     name: 'nombre',
     label: 'Nombre',
@@ -114,7 +148,6 @@ const columnas = [
     align: 'left',
     sortable: true,
   },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
   { name: 'nit', label: 'NIT', field: 'nit', align: 'right' },
   { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'left' },
   { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left' },

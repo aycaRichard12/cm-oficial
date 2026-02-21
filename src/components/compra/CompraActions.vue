@@ -5,17 +5,16 @@
       <q-btn
         color="primary"
         class="btn-res"
-        id="btnNuevaCompra"
         @click="$emit('add')"
         icon="add"
-        label="Nueva Compra"
+        label="Nuevo"
         no-caps
+        id="btnNuevaCompra"
       />
-      
     </div>
 
-    <div class="col-2 q-mt-lg flex justify-end">
-      <q-btn color="info" @click="$emit('imprimirReporte')" class="btn-res" outline>
+    <div class="col-2 q-mt-lg flex justify-end" >
+      <q-btn color="info" @click="$emit('imprimirReporte')" class="btn-res" outline id="btnImprimir">
         <q-icon name="picture_as_pdf" class="icono" />
         <span class="texto">Vista Previa PDF</span>
       </q-btn>
@@ -26,5 +25,3 @@
 <script setup>
 defineEmits(['add', 'imprimirReporte'])
 </script>
-
-

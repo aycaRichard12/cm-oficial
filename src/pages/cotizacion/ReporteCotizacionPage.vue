@@ -1,9 +1,9 @@
 <template>
   <q-page class="q-pa-md">
     <q-form @submit="generarReporte">
-      <div class="titulo">Reporte Cotizaciones</div>
+      <div class="titulo" id="reportecotizaciones">Reporte Cotizaciones</div>
       <div class="row flex justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechainicotizacion">
           <label for="fechaini">Fecha Inicial * {{ tipoFactura }}</label>
 
           <q-input
@@ -15,7 +15,7 @@
             @change="validarFechas"
           />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechafincotizacion">
           <label for="fechafin">Fecha Final *</label>
           <q-input
             v-model="fechaf"
@@ -30,6 +30,7 @@
       </div>
       <div class="row justify-center q-mt-md">
         <q-btn
+          id="btngenerarreportecotizacion"
           label="Generar Reporte"
           type="submit"
           color="primary"
@@ -37,6 +38,7 @@
           :disable="!fechai || !fechaf"
         />
         <q-btn
+          id="btnvistapreviacotizacion"
           label="Vista Previa PDF"
           color="info"
           outline
@@ -110,6 +112,7 @@
     </q-form> -->
 
     <TableReporteCotizacion
+      id="tablareportecotizacion"
       ref="refHijo"
       :rows="datosFiltrados"
       @generarComprobantePDF="generarComprobantePDF"

@@ -15,40 +15,54 @@
   <div v-else>
     <div class="titulo">Reporte de Pagos</div>
     <q-form>
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center">
-        <div class="col-12 col-md-4">
+      <div
+        class="row q-col-gutter-md"
+        style="display: flex; justify-content: center"
+        id="filtroFechasPagar"
+      >
+        <div class="col-12 col-md-4" id="filtroFechaIniPagar">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="fechaIni" type="date" class="col-md-4" dense outlined />
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="filtroFechaFinPagar">
           <label for="fechafin">Fecha Final*</label>
           <q-input v-model="fechafin" type="date" dense outlined="" class="col-md-4" />
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" />
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" />
+        <q-btn
+          color="primary"
+          label="Generar reporte"
+          @click="generarReporte"
+          class="q-mr-sm"
+          id="reporteGenerar"
+        />
+        <q-btn
+          color="secondary"
+          label="Exportar a Excel"
+          @click="exportarExcel"
+          id="reporteExportar"
+        />
       </div>
     </q-form>
     <!-- Sección de Filtros -->
 
     <div class="row q-col-gutter-md q-mb-md">
       <!-- Filtro por Almacén -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="filtroAlmacenCuentas">
         <label for="almacen">Almacén</label>
         <q-select
           outlined
           dense
           v-model="filterAlmacen"
           :options="almacenOptions"
-          id="almacen"
           clearable
           emit-value
           map-options
         />
       </div>
       <!-- Filtro por Proveedor -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="filtroProveedor">
         <label for="pro">Proveedor</label>
         <q-select
           outlined
@@ -62,7 +76,7 @@
         />
       </div>
       <!-- Filtro por Estado -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="filtroEstado">
         <label for="estado">Estado</label>
         <q-select
           outlined
@@ -79,6 +93,7 @@
 
     <!-- Tabla de Datos -->
     <q-table
+      id="tablaDatos"
       :rows="filteredRows"
       :columns="columns"
       row-key="id_pago"
@@ -104,13 +119,21 @@
       <!-- Slot para personalizar la celda de Acción -->
       <template v-slot:body-cell-accion="props">
         <q-td :props="props">
-          <q-btn color="primary" icon="add" dense round @click="realizarPago(props.row)" />
+          <q-btn
+            color="primary"
+            icon="add"
+            dense
+            round
+            @click="realizarPago(props.row)"
+            id="agregarPago"
+          />
           <q-btn
             color="blue"
             icon="list_alt"
             dense
             round=""
             @click="mostrardetalleCredito(props.row)"
+            id="verDetallePago"
           />
         </q-td>
       </template>

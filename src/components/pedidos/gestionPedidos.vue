@@ -4,7 +4,7 @@
       <div class="titulo">Autorizando Pedidos</div>
       <!-- Formulario principal -->
       <q-form @submit.prevent="onSubmit">
-        <div class="row justify-center q-col-gutter-x-md">
+        <div class="row justify-center q-col-gutter-x-md" id='filtrosFechas'>
           <div class="col-12 col-md-4">
             <label for="fechaini">Fecha Inicial*</label>
             <q-input type="date" v-model="fechai" id="fechaini" dense outlined />
@@ -17,18 +17,19 @@
 
         <div class="row justify-center q-mt-md">
           <div class="col-auto">
-            <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
-            <q-btn label="Vista previa del Reporte" color="primary" outline @click="vistaPrevia" />
+            <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" id="datosPedido" />
+            <q-btn label="Vista previa del Reporte" color="primary" outline @click="vistaPrevia" id="pdfPedido"/>
           </div>
         </div>
       </q-form>
-      <div class="row q-col-gutter-x-md flex justify-start">
+      <div class="row q-col-gutter-x-md flex justify-start" id="filtrosAlmacen">
         <div class="col-12 col-md-3">
           <label for="almacen">Filtrar por Almacén</label>
           <q-select id="almacen" v-model="almacen" :options="almacenes" clearable dense outlined />
         </div>
       </div>
       <q-table
+      id="tablaPedidos"
         title="Pedidos"
         :rows="filterPedido"
         :columns="columnas"
@@ -65,20 +66,21 @@
             <!-- Enviar por WhatsApp -->
 
             <template v-if="Number(props.row.autorizacion) === 2">
-              <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
+              <q-btn id="verDetalle" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
                 ><q-tooltip>Ver Pedido</q-tooltip>
               </q-btn>
-              <q-btn icon="delete" color="negative" dense flat @click="confirmDelete(props.row)" />
+              <q-btn id="eliminarPedido" icon="delete" color="negative" dense flat @click="confirmDelete(props.row)" />
 
-              <q-btn icon="toggle_off" dense flat color="grey" @click="toggleStatus(props.row)">
+              <q-btn id="autorizarPedido" icon="toggle_off" dense flat color="grey" @click="toggleStatus(props.row)">
                 <q-tooltip>Autorizar Pedido</q-tooltip>
               </q-btn>
             </template>
             <template v-else>
-              <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
+              <q-btn id="verDetallePedido"  size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
                 ><q-tooltip>Ver Pedido</q-tooltip>
               </q-btn>
               <q-btn
+                id="enviarPedido"
                 size="sm"
                 icon="mdi-whatsapp"
                 color="green"

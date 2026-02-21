@@ -13,6 +13,7 @@
 
       <!-- Tabla -->
       <BaseFilterableTable
+      id="tabla"
         ref="tableRef"
         title="Compras"
         :rows="processedRows"
@@ -46,6 +47,7 @@
         <template v-slot:body-cell-detalle="props">
           <q-td :props="props">
             <q-btn
+              id="detalleCompra"
               title="Añadir Carrito "
               icon="shopping_cart"
               color="primary"
@@ -54,6 +56,7 @@
               @click="$emit('detalleCompra', props.row)"
             />
             <q-btn
+              id="planPago"
               v-if="Number(props.row.tipocompra) === 1 && Number(props.row.estado) === 1"
               title="Generar Plan de Pagos"
               icon="payment"
@@ -68,8 +71,11 @@
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <div v-if="Number(props.row.autorizacion) === 2">
-              <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" />
               <q-btn
+              id="editar"
+              icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" />
+              <q-btn
+              id="eliminar"
                 icon="delete"
                 color="negative"
                 dense
@@ -77,6 +83,7 @@
                 @click="$emit('delete', props.row)"
               />
               <q-btn
+              id="autorizar"
                 v-if="permisosStore.tienePermiso('registrarcompra')"
                 icon="toggle_off"
                 dense
@@ -85,6 +92,7 @@
                 @click="$emit('toggle-status', props.row)"
               />
               <q-btn
+              id="notificar"
                 icon="notifications"
                 color="warning"
                 dense

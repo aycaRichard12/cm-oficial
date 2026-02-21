@@ -8,6 +8,7 @@
           icon="file_download"
           @click="$emit('exportar-excel')"
           flat
+          id="botonExcel"
         />
       </div>
       <div class="col-auto">
@@ -17,6 +18,7 @@
           icon="picture_as_pdf"
           @click="$emit('exportar-pdf')"
           flat
+          id="botonPdf"
         />
       </div>
     </div>

@@ -1,5 +1,6 @@
 <template>
   <BaseFilterableTable
+    id="tablalistadocuentasporcobrar"
     ref="refHijo"
     title="Cuentas por Cobrar"
     nombreColumnaTotales="cuotasProcesadas"
@@ -16,15 +17,18 @@
     <template #body-cell-opciones="props">
       <q-td :props="props">
         <div class="row justify-center items-center q-gutter-sm">
+          <span id="btnregistrarcobrocuentasporcobrar">
+            <q-btn
+              v-if="privilegios[1] && [1, 3].includes(Number(props.row.estado))"
+              icon="add_circle"
+              color="primary"
+              :id="'btn-' + props.row.id"
+              @click="$emit('cargarFormulario', props.row)"
+              title="Registrar cobro"
+            />
+          </span>
           <q-btn
-            v-if="privilegios[1] && [1, 3].includes(Number(props.row.estado))"
-            icon="add_circle"
-            color="primary"
-            :id="'btn-' + props.row.id"
-            @click="$emit('cargarFormulario', props.row)"
-            title="Registrar cobro"
-          />
-          <q-btn
+            id="btnverdetallescobro"
             icon="list_alt"
             color="info"
             @click="$emit('mostrarDetalles', props.row)"

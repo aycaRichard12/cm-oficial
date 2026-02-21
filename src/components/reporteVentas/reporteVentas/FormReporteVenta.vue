@@ -1,13 +1,13 @@
 <template>
   <q-page>
-    <div class="titulo">Reporte Ventas</div>
+    <div class="titulo" id="tituloreporteventas">Reporte Ventas</div>
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechaini">
           <label for="fechaini">Fecha Inicial*</label>
           <q-input type="date" v-model="fechai" id="fechaini" dense outlined />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechafin">
           <label for="fechafin">Fecha Final*</label>
           <q-input type="date" v-model="fechaf" id="fechafin" dense outlined />
         </div>
@@ -15,13 +15,14 @@
 
       <div class="row justify-center q-mt-md">
         <div class="">
-          <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
+          <q-btn id="btngenerarreporte" label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
         </div>
       </div>
     </q-form>
     <div class="row flex justify-between q-ma-md">
-      <q-btn icon="picture_as_pdf" label="Vista previa" color="red" outline @click="vistaPrevia" />
+      <q-btn id="btnvistaprevia" icon="picture_as_pdf" label="Vista previa" color="red" outline @click="vistaPrevia" />
       <q-btn
+        id="btnexportarexcel"
         icon="mdi-microsoft-excel"
         label="Exportar Excel"
         color="green"
@@ -172,6 +173,7 @@
       </div> -->
     </div>
     <TableReporteVentas
+      id="tablareporteventas"
       ref="refHijo"
       :rows="rows"
       @ver-detalle="verDetalle"

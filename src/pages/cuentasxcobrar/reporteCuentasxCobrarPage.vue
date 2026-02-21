@@ -3,10 +3,11 @@
     <!-- <q-btn label="Ir a Créditos" @click="scrollToCreditos" /> -->
 
     <div class="row flex justify-between q-ml-md">
-      <div class="text-h6 text-primary">
+      <div class="text-h6 text-primary" id="tituloreportecredito">
         {{ tipoReporte ? 'Reporte de Crédito al Corte' : 'Reporte de Crédito en Periodo' }}
       </div>
       <q-btn
+        id="btntoggleventareportecredito"
         :icon="tipoReporte ? 'toggle_on' : 'toggle_off'"
         dense
         flat
@@ -20,7 +21,7 @@
 
     <q-form>
       <div class="row q-col-gutter-x-md flex justify-center">
-        <div v-if="!tipoReporte" class="col-12 col-md-4">
+        <div v-if="!tipoReporte" class="col-12 col-md-4" id="fechainicioreportecredito">
           <label for="fechaini">Fecha Inicio</label>
           <q-input
             type="date"
@@ -33,7 +34,7 @@
           </q-input>
         </div>
 
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="fechafinreportecredito">
           <label for="fechafin">Fecha Fin</label>
           <q-input
             type="date"
@@ -49,6 +50,7 @@
       <div class="row q-col-gutter-x-md flex justify-center">
         <div class="col-12 col-md-4 flex justify-center">
           <q-btn
+            id="btngenerarreportecredito"
             label="Generar Reporte"
             color="primary"
             @click="generateReport"
@@ -61,12 +63,12 @@
 
     <!-- Sección de filtros -->
     <div>
-      <q-expansion-item label="Filtros" icon="filter_list">
+      <q-expansion-item label="Filtros" icon="filter_list" id="expansionfiltrosreportecredito">
         <!-- Indicador de filtros activos -->
 
         <div class="row q-col-gutter-x-md">
           <!-- Filtro por almacén -->
-          <div class="col-12 col-md-2">
+          <div class="col-12 col-md-2" id="filtroalmacenreportecredito">
             <label for="almacen">Filtrar por Almacén</label>
             <q-select
               v-model="selectedAlmacen"
@@ -81,7 +83,7 @@
           </div>
 
           <!-- Filtro por cliente -->
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" id="filtroclientereportecredito">
             <label for="cliente">Razon social</label>
             <q-select
               v-model="clienteStore.clienteSeleccionado"
@@ -127,7 +129,7 @@
           </div>
 
           <!-- Filtro por sucursal -->
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" id="filtrosucursalreportecredito">
             <label for="sucursal">Seleccionar sucursal</label>
             <q-select
               v-if="clienteStore.clienteSeleccionado"
@@ -155,7 +157,7 @@
             </q-select>
           </div>
           <!-- Filtro por estado (nuevo) -->
-          <div class="col-12 col-md-2">
+          <div class="col-12 col-md-2" id="filtroestadoreportecredito">
             <label for="estado">Estado crédito</label>
             <q-select
               v-model="selectedEstado"
@@ -171,6 +173,7 @@
           </div>
           <div class="col-12 col-md-1">
             <q-btn
+              id="btnlimpiarfiltrosreportecredito"
               color="primary"
               text-color="white"
               label="Limpiar"
@@ -213,12 +216,14 @@
       <div class="row justify-between items-center">
         <div class="text-subtitle1">Mostrando {{ filteredReportData.length - 1 }} registros</div>
         <q-btn
+          id="btnexportarexcelreportecredito"
           icon="mdi-microsoft-excel"
           label="Exportar"
           color="secondary"
           @click="exportToXLSX"
         />
         <q-btn
+          id="btnpdfreportecredito"
           label="Reporte"
           color="info"
           icon="print"
@@ -228,7 +233,7 @@
         />
       </div>
     </q-card-section>
-    <div ref="hijoRef">
+    <div ref="hijoRef" id="tablareportecreditos">
       <ReporteCreditosTable :rows="filteredReportData" :loading="loading" />
     </div>
 

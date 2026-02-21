@@ -9,7 +9,7 @@
       id="agregarUnidadMedidaProducto"
     >
       <q-icon name="add" class="icono" />
-      <span class="texto">Agregar</span>
+      <span class="texto">Nuevo</span>
     </q-btn>
     <!-- <div class="col flex items-center justify-end">
       <q-input v-model="search" placeholder="Buscar" dense outlined class="q-ml-md">
@@ -36,7 +36,14 @@
     </div>
   </div>
 
-  <q-table title="Unidades" :rows="ordenados" :columns="columns" row-key="id" :filter="search" id="tablaUnidadMedidaProducto">
+  <q-table
+    title="Unidades"
+    :rows="ordenados"
+    :columns="columns"
+    row-key="id"
+    :filter="search"
+    id="tablaUnidadMedidaProducto"
+  >
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
@@ -93,11 +100,41 @@ const props = defineProps({
 defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 
 const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' , id: 'numeroUnidadMedidaProducto'},
-  { name: 'nombre', label: 'Unidad', field: 'nombre', align: 'left' , id: 'nombreUnidadMedidaProducto'},
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' , id: 'descripcionUnidadMedidaProducto'},
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' , id: 'estadoUnidadMedidaProducto'},
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' , id: 'opcionesUnidadMedidaProducto'},
+  {
+    name: 'numero',
+    label: 'N°',
+    field: 'numero',
+    align: 'center',
+    id: 'numeroUnidadMedidaProducto',
+  },
+  {
+    name: 'nombre',
+    label: 'Unidad',
+    field: 'nombre',
+    align: 'left',
+    id: 'nombreUnidadMedidaProducto',
+  },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    id: 'descripcionUnidadMedidaProducto',
+  },
+  {
+    name: 'estado',
+    label: 'Estado',
+    field: 'estado',
+    align: 'center',
+    id: 'estadoUnidadMedidaProducto',
+  },
+  {
+    name: 'opciones',
+    label: 'Opciones',
+    field: 'opciones',
+    align: 'center',
+    id: 'opcionesUnidadMedidaProducto',
+  },
 ]
 const ordenados = computed(() =>
   props.rows.map((row, index) => ({

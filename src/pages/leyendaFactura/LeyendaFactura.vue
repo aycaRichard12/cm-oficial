@@ -73,13 +73,16 @@
       </q-card>
     </q-dialog>
 
-    <q-btn
-      v-if="privilegios[1] === 1"
-      :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo Registro'"
-      color="primary"
-      @click="toggleFormulario"
-      class="q-ma-lg"
-    />
+    <div class="row">
+      <q-btn
+        v-if="privilegios[1] === 1"
+        :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo'"
+        color="primary"
+        @click="toggleFormulario"
+        class="q-ma-lg"
+      />
+    </div>
+
     <q-card>
       <!-- <q-input filled v-model="searchText" label="Buscar Leyenda" class="q-mb-md" clearable>
           <template v-slot:append>

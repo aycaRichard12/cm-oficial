@@ -24,7 +24,7 @@
         id="add"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">Agregar</span>
+        <span class="texto">Nuevo</span>
       </q-btn>
 
       <div>

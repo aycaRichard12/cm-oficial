@@ -1,8 +1,8 @@
 <template>
   <q-card-section class="q-pb-sm">
-    <div class="row q-col-gutter-md items-start">
+    <div class="row q-col-gutter-md items-start" id="filtroFechas">
       <!-- Producto -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4"  id="filtroSelect">
         <q-select
           :model-value="productoSeleccionado"
           @update:model-value="updateProducto"
@@ -34,7 +34,7 @@
       </div>
 
       <!-- Fecha inicial -->
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="filtroFechaInicio">
         <q-input
           :model-value="fechaInicio"
           @update:model-value="updateFechaInicio"
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Fecha final -->
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="filtroFechaFin">
         <q-input
           :model-value="fechaFin"
           @update:model-value="updateFechaFin"
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Botón -->
-      <div class="col-12 col-md-2 flex items-end">
+      <div class="col-12 col-md-2 flex items-end" id="filtroBoton">
         <q-btn
           color="primary"
           label="Generar"

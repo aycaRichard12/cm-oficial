@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="titulo">Cierres de caja</div>
-    <div class="row">
+    <div class="row" id="registrarCierre">
       <q-btn
         color="primary"
         text-color="white"
@@ -12,7 +12,7 @@
     <div class="row q-col-gutter-md q-mb-md">
       <!-- Filtros avanzados -->
       <div class="row q-col-gutter-x-md"></div>
-      <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="col-xs-12 col-sm-6 col-md-3" id="fechaInicio">
         <label for="fechaini">Fecha de Inicio</label>
         <q-input
           v-model="filter.dateRange.from"
@@ -32,7 +32,7 @@
           </template>
         </q-input>
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="col-xs-12 col-sm-6 col-md-3" id="fechaFin">
         <label for="Fechafin">Fecha de Fin</label>
         <q-input
           v-model="filter.dateRange.to"
@@ -52,7 +52,7 @@
           </template>
         </q-input>
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="col-xs-12 col-sm-6 col-md-3" id="autorizacion">
         <label for="autorizacion ">Autorización</label>
         <q-select
           v-model="filter.authorized"
@@ -66,7 +66,7 @@
           @update:model-value="applyFilters"
         />
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-3">
+      <div class="col-xs-12 col-sm-6 col-md-3" id="fechaCreacion">
         <label for="fechac">Fecha de Creación</label>
         <q-input
           v-model="filter.creationDate"
@@ -95,7 +95,7 @@
 
     <!-- Tabla de resultados -->
     <div class="row flex justify-end">
-      <div>
+      <div id="buscar">
         <label for="buscar">Buscar...</label>
         <q-input borderless dense outlined v-model="tableFilter" placeholder="Buscar">
           <template v-slot:append>

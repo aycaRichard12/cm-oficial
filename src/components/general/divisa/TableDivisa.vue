@@ -2,7 +2,7 @@
   <div>
     <div class="row items-center justify-between q-mb-md">
       <div>
-        <q-btn icon="add" label="Agregar" color="primary" @click="$emit('add')" id="add" />
+        <q-btn label="Nuevo" color="primary" @click="$emit('add')" id="add" />
       </div>
     </div>
 

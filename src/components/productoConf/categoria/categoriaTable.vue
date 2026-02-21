@@ -10,7 +10,7 @@
       >
         <q-icon name="add" class="icono" />
 
-        <span class="texto">Agregar</span>
+        <span class="texto">Nuevo</span>
       </q-btn>
       <!-- <div class="col flex items-center justify-end">
         <q-input v-model="search" placeholder="Buscar" dense outlined class="q-ml-md">
