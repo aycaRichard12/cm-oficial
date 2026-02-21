@@ -25,27 +25,24 @@ export function useReporteProveedorCompras() {
     try {
       const idEmpresa = getIdEmpresa()
       const endpoint = `reporteProveedorCompras/${idEmpresa}/${fechaInicio}/${fechaFin}`
-      
-      console.log('Fetching compras:', endpoint)
-      
       const response = await api.get(endpoint)
       const data = response.data
-      
+      console.log('Respuesta API compras:', data)
       // Agregar número de fila a cada compra
       compras.value = data.map((item, index) => ({
         ...item,
-        num: index + 1
+        num: index + 1,
       }))
-      
+
       console.log('Compras obtenidas:', compras.value)
-      
+
       Notify.create({
         type: 'positive',
         message: `Se encontraron ${compras.value.length} compras`,
         position: 'top-right',
-        timeout: 2000
+        timeout: 2000,
       })
-      
+
       return compras.value
     } catch (error) {
       console.error('Error al obtener compras:', error)
@@ -53,7 +50,7 @@ export function useReporteProveedorCompras() {
         type: 'negative',
         message: 'Error al obtener el reporte de compras',
         position: 'top-right',
-        timeout: 3000
+        timeout: 3000,
       })
       compras.value = []
       return []
@@ -71,17 +68,17 @@ export function useReporteProveedorCompras() {
     try {
       const idEmpresa = getIdEmpresa()
       const endpoint = `detalleCompra/${idCompra}/${idEmpresa}`
-      
+
       console.log('Fetching detalle compra:', endpoint)
-      
+
       const response = await api.get(endpoint)
       const data = response.data
-      
+
       // La API devuelve un array, tomamos el primer elemento
       detalleCompra.value = data[0] || null
-      
+
       console.log('Detalle compra obtenido:', detalleCompra.value)
-      
+
       return detalleCompra.value
     } catch (error) {
       console.error('Error al obtener detalle de compra:', error)
@@ -89,7 +86,7 @@ export function useReporteProveedorCompras() {
         type: 'negative',
         message: 'Error al obtener el detalle de la compra',
         position: 'top-right',
-        timeout: 3000
+        timeout: 3000,
       })
       detalleCompra.value = null
       return null
@@ -112,11 +109,10 @@ export function useReporteProveedorCompras() {
     detalleCompra,
     loading,
     loadingDetalle,
-    
+
     // Methods
     fetchCompras,
     fetchDetalleCompra,
-    clearData
+    clearData,
   }
 }
-

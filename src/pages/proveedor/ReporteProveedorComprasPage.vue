@@ -446,7 +446,13 @@ async function loadRows() {
     if (Array.isArray(data)) {
       // If elements are objects, try to find a name property
       if (data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
-        proveedoresList.value = data.map((p) => p.nombre || p.proveedor || JSON.stringify(p)).sort()
+        proveedoresList.value = data
+          .map((p) => {
+            const nombre = p.nombre || p.proveedor || JSON.stringify(p)
+            const nit = p.nit ? ` ${p.nit}` : ''
+            return `${nit}-${nombre}`
+          })
+          .sort()
       } else {
         proveedoresList.value = data.sort()
       }
