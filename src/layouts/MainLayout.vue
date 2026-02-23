@@ -224,8 +224,8 @@ const ocultarTabs = () => {
   tabsVisible.value = false
 }
 const irdashboard = () => {
-  localStorage.removeItem('yofinanciero')
-  localStorage.removeItem('yofinancieromenu')
+  localStorage.removeItem('cm-usuario')
+  localStorage.removeItem('cm-usuariomenu')
   localStorage.removeItem('puedeIniciarsesion')
   window.location.replace('/#/login')
 }
@@ -430,7 +430,7 @@ onMounted(async () => {
     }
   }
 
-  const userData = loadData('yofinanciero')
+  const userData = loadData('cm-usuario')
   if (userData[0]) {
     nombreUsuario.value = userData[0].nombre || 'Usuario'
     cargo.value = userData[0].cargo || 'Sin cargo'

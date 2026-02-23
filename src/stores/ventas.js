@@ -106,7 +106,7 @@ export const useVentasStore = defineStore('ventas', () => {
   function validarUsuario() {
     // Implementar lógica para validar usuario
     // Esto debería venir de tu store de autenticación
-    const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
+    const contenidousuario = JSON.parse(localStorage.getItem('cm-usuario'))
     if (contenidousuario) {
       return contenidousuario
     } else {

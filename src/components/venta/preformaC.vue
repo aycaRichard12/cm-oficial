@@ -531,7 +531,7 @@ const remainingAmount = computed(() => {
 // ====================== FUNCIONES ======================
 
 const validarUsuario = () => {
-  const user = JSON.parse(localStorage.getItem('yofinanciero'))
+  const user = JSON.parse(localStorage.getItem('cm-usuario'))
   return user || (window.location.href = '/login')
 }
 

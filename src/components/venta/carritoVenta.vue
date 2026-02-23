@@ -1192,7 +1192,7 @@ function continuarVenta() {
 }
 
 function validarUsuario() {
-  const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
+  const contenidousuario = JSON.parse(localStorage.getItem('cm-usuario'))
   if (contenidousuario) {
     return contenidousuario
   } else {

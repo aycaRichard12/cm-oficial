@@ -1,8 +1,7 @@
-import { useFetchList } from 'src/composables/useFetchList'
+import { useFetchList } from 'src/composables/useFetchList';
 
-// Lee siempre fresco para no usar un valor cacheado del momento de importación
 function getUsuarioData() {
-  return JSON.parse(localStorage.getItem('yofinanciero'))
+  return JSON.parse(localStorage.getItem('cm-usuario'))
 }
 
 export function idempresa_md5() {

@@ -28,6 +28,7 @@
                   bg-color="grey-1"
                   color="primary"
                   dense
+                  placeholder="Usuario"
                 >
                   <template v-slot:prepend>
                     <q-icon name="person" color="grey-7" />
@@ -56,6 +57,7 @@
                   bg-color="grey-1"
                   color="primary"
                   dense
+                  placeholder="Contraseña"
                 >
                   <template v-slot:prepend>
                     <q-icon name="lock" color="grey-7" />
@@ -214,7 +216,7 @@ const login = async () => {
       const rawMenu = res.data[0].menu || []
       const modulo = res.data[0].modulo || ''
       const idusuario = res.data[0].idusuario || ''
-      
+
       // Transformar menu: solo añadir "usuario" a cada item del menú
       // (los codigo del submenu ya vienen con el ID desde la API)
       const menuTransformado = rawMenu.map((item) => ({
@@ -223,14 +225,14 @@ const login = async () => {
         codigo: item.codigo,
         submenu: item.submenu || [],
       }))
-      
+
       const userMenu = [{ modulo, menu: menuTransformado }]
-      
+
       // Limpiar el menu del objeto de usuario
       delete userData[0].menu
       console.log('datos el login',res.data)
-      localStorage.setItem('yofinanciero', JSON.stringify(userData))
-      localStorage.setItem('yofinancieromenu', JSON.stringify(userMenu))
+      localStorage.setItem('cm-usuario', JSON.stringify(userData))
+      localStorage.setItem('cm-usuariomenu', JSON.stringify(userMenu))
       localStorage.setItem('puedeIniciarsesion', 'true')
       console.log('userData',userData)
       console.log('userMenu',userMenu)
