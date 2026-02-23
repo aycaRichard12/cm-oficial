@@ -95,16 +95,19 @@ export function usePreciosCampana(q, campanas, idalmacenfiltro) {
   const registrarPrecioCampaña = async () => {
     try {
       cargandoGuardarPrecio.value = true
-      const payload = {
-        ver: 'editarPreciocampana',
-        idproducto: precioForm.value.idproducto,
-        idproductoalmacen: precioForm.value.idproductoalmacen,
-        precio: precioForm.value.precio,
-        idcategoriacampaña: precioForm.value.idcategoriacampaña,
-      }
-      if (precioForm.value.id_detalle_campanas) payload.id_detalle_campanas = precioForm.value.id_detalle_campanas
       
-      const res = await api.post('', payload)
+      const formData = new FormData()
+      formData.append('ver', 'editarPreciocampana')
+      formData.append('idproducto', precioForm.value.idproducto || '')
+      formData.append('idproductoalmacen', precioForm.value.idproductoalmacen || '')
+      formData.append('precio', precioForm.value.precio || '')
+      formData.append('idcategoriacampaña', precioForm.value.idcategoriacampaña || '')
+      
+      if (precioForm.value.id_detalle_campanas) {
+        formData.append('id_detalle_campanas', precioForm.value.id_detalle_campanas)
+      }
+      
+      const res = await api.post('', formData)
       if (res.data.estado === 'exito') {
         q.notify({ type: 'positive', message: res.data.mensaje || 'Éxito' })
         const currId = precioForm.value.idcampaña

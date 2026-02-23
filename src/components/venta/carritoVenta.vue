@@ -277,14 +277,6 @@
           dense
           id="verPermisos"
         />
-        <q-btn
-          icon="key"
-          label="Ver mis permisos"
-          color="primary"
-          @click="showPermisos = true"
-          outline
-          dense
-        />
       </div>
       <q-table
         :rows="carritoPrueba"
