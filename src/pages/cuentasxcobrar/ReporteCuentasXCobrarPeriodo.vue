@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
-    <div class="titulo">Reporte de Cobros Diarios</div>
+    <div class="titulo" id="tituloreportecobrosdiarios">Reporte de Cobros Diarios</div>
 
     <q-card-section class="q-pt-none">
       <div class="row q-col-gutter-md">
-        <div class="col-xs-12 col-sm-6">
+        <div class="col-xs-12 col-sm-6" id="FIcuentasXcobrar">
           <label for="fechainicio">Fecha Inicio</label>
 
           <q-input
@@ -18,7 +18,7 @@
           </q-input>
         </div>
 
-        <div class="col-xs-12 col-sm-6">
+        <div class="col-xs-12 col-sm-6" id="FFcuentasXcobrar">
           <label for="fechafin">Fecha Fin</label>
 
           <q-input
@@ -35,6 +35,7 @@
 
       <div class="q-mt-md">
         <q-btn
+          id="btngenerarreportecobros"
           label="Generar Reporte"
           color="primary"
           @click="fetchReport"
@@ -44,6 +45,7 @@
         />
 
         <q-btn
+          id="btnpdfreportecobros"
           label="Imprimir Reporte"
           color="info"
           icon="print"
@@ -52,6 +54,7 @@
           class="q-ma-lg"
         />
         <q-btn
+          id="btnexportarexcelreportecobros"
           label="Exportar a Excel"
           color="green"
           icon="file_download"
@@ -61,12 +64,12 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <q-expansion-item label="Filtros avanzados" icon="filter_list" default-opened class="q-mb-md">
+      <q-expansion-item id="expansionfiltrosreportecobros" label="Filtros avanzados" icon="filter_list" default-opened class="q-mb-md">
         <!-- Indicador de filtros activos -->
 
         <div class="row q-col-gutter-md q-pt-md">
           <!-- Filtro por almacén -->
-          <div class="col-xs-12 col-sm-6 col-md-3">
+          <div class="col-xs-12 col-sm-6 col-md-3" id="Fialmacen">
             <label for="filtrarporalmacen">Filtrar por Almacén</label>
             <q-select
               v-model="selectedAlmacen"
@@ -81,7 +84,7 @@
           </div>
 
           <!-- Filtro por cliente -->
-          <div class="col-xs-12 col-sm-6 col-md-4">
+          <div class="col-xs-12 col-sm-6 col-md-4" id="Fcliente">
             <label for="cliente">Buscar cliente</label>
             <q-select
               v-model="clienteStore.clienteSeleccionado"
@@ -127,7 +130,7 @@
           </div>
 
           <!-- Filtro por sucursal -->
-          <div class="col-xs-12 col-sm-6 col-md-3">
+          <div class="col-xs-12 col-sm-6 col-md-3" id="Fsucursal">
             <label for="seleccionarsucursal">Seleccionar sucursal</label>
             <q-select
               v-if="clienteStore.clienteSeleccionado"
@@ -156,7 +159,7 @@
           </div>
 
           <!-- Filtro por estado (nuevo) -->
-          <div class="col-xs-12 col-sm-6 col-md-2">
+          <div class="col-xs-12 col-sm-6 col-md-2" id="Festadocredito">
             <label for="estadocredito">Estado crédito</label>
             <q-select
               v-model="selectedEstado"
@@ -173,8 +176,8 @@
 
           <!-- Botones de acción -->
           <div class="col-12 row justify-end q-mt-sm">
-            <q-btn label="Aplicar Filtros" color="primary" @click="applyFilters" class="q-mr-sm" />
-            <q-btn label="Limpiar Todo" color="negative" outline @click="resetAllFilters" />
+            <q-btn id="btnaplicarfiltroscobros" label="Aplicar Filtros" color="primary" @click="applyFilters" class="q-mr-sm" />
+            <q-btn id="btnlimpiarfiltroscobros" label="Limpiar Todo" color="negative" outline @click="resetAllFilters" />
           </div>
         </div>
       </q-expansion-item>
@@ -183,6 +186,7 @@
 
     <q-card-section v-if="reportData.length > 0">
       <q-table
+        id="tablareportecobros"
         title="Resultados del Reporte"
         :rows="filteredReportData"
         :columns="columns"
