@@ -5,7 +5,7 @@ export const useMenuStore = defineStore('menu', {
   state: () => {
     try {
       // 1. Obtener datos del localStorage de forma segura
-      const storedData = localStorage.getItem('yofinancieromenu')
+      const storedData = localStorage.getItem('cm-usuariomenu')
       if (!storedData) {
         return {
           permitidos: [],

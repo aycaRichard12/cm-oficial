@@ -133,8 +133,8 @@ const compra = ref(null)
 const dashboard = ref(null)
 const producto = ref(null)
 
-const contenidoUsuario = localStorage.getItem('yofinanciero')
-const contenidoMenus = JSON.parse(localStorage.getItem('yofinancieromenu'))
+const contenidoUsuario = localStorage.getItem('cm-usuario')
+const contenidoMenus = JSON.parse(localStorage.getItem('cm-usuariomenu'))
 
 onMounted(() => {
   if (contenidoUsuario && contenidoMenus) {
@@ -161,7 +161,7 @@ onMounted(() => {
       console.error('Error al parsear los datos de localStorage:', error)
     }
   } else {
-    console.warn('No hay datos en localStorage para "yofinanciero"')
+    console.warn('No hay datos en localStorage para "cm-usuario" o "cm-usuariomenu"')
   }
 })
 //reportes-hoy
