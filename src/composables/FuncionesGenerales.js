@@ -1,86 +1,82 @@
 import { useFetchList } from 'src/composables/useFetchList'
 
-//vapp
-const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
+// Lee siempre fresco para no usar un valor cacheado del momento de importación
+function getUsuarioData() {
+  return JSON.parse(localStorage.getItem('yofinanciero'))
+}
+
 export function idempresa_md5() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario) {
     return contenidousuario?.[0]?.empresa?.idempresa
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    console.warn('Sin sesión: idempresa_md5')
+    window.location.replace('/#/login')
   }
 }
 export function getNombreEmpresa() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario) {
     return contenidousuario?.[0]?.empresa?.nombre
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    return 'Sistema'
   }
 }
 export function getUsuario() {
-  const contenidousuarioLocal = JSON.parse(localStorage.getItem('yofinanciero'))
-  if (contenidousuarioLocal) {
-    return contenidousuarioLocal?.[0]?.nombre
+  const contenidousuario = getUsuarioData()
+  if (contenidousuario) {
+    return contenidousuario?.[0]?.nombre
   } else {
-    // alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    // window.location.href = '/app/dashboard'
     return 'Usuario Desconocido'
   }
 }
 export function idusuario_md5() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario) {
     return contenidousuario?.[0]?.idusuario
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    console.warn('Sin sesión: idusuario_md5')
+    window.location.replace('/#/login')
   }
 }
 export function TipoFactura() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario && contenidousuario[0]?.factura) {
     const tipo = contenidousuario[0].factura.tipo
-
-    // Verificar si está vacío, null o undefined
     if (tipo === null || tipo === '' || tipo === undefined || tipo === '0' || tipo === 0) {
-      return false // está vacío
+      return false
     } else {
-      return true // tiene valor
+      return true
     }
   } else {
-    alert('Hubo un problema con la sesión, por favor vuelva a iniciar sesión.')
-    console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    console.warn('Sin sesión: TipoFactura')
+    window.location.replace('/#/login')
   }
 }
-
 export function expires_in() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario && contenidousuario[0]) {
     return contenidousuario?.[0]?.empresa?.fex
   } else {
-    alert('Hubo un problema con la sesión, por favor vuelva a iniciar sesión.')
-    console.log('Los elementos no existen en localStorage')
-    window.location.href = '/app/dashboard'
+    console.warn('Sin sesión: expires_in')
+    window.location.replace('/#/login')
   }
 }
 export function obtenerEstadoFactura() {
-  const objetoDesdeLocalStorage = JSON.parse(localStorage.getItem('yofinanciero'))
-  console.log(objetoDesdeLocalStorage)
+  const objetoDesdeLocalStorage = getUsuarioData()
   return Object.values(objetoDesdeLocalStorage[0].factura).every((valor) => valor !== '')
 }
 export function validarUsuario() {
+  const contenidousuario = getUsuarioData()
   if (contenidousuario) {
     return contenidousuario
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    localStorage.clear()
-    window.location.href = '/app/dashboard'
+    console.warn('Sin sesión: validarUsuario')
+    window.location.replace('/#/login')
   }
 }
+
+
 
 export async function divisaEmonedaActiva() {
   try {
