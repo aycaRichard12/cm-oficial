@@ -1,6 +1,6 @@
 <template>
   <q-dialog :model-value="modelValue" persistent @update:model-value="$emit('update:modelValue', $event)" @hide="cancelarEdicion" @keydown.esc="$emit('update:modelValue', false)">
-    <q-card style="min-width: 800px; max-width: 90vw">
+    <q-card style="width: 100%; max-width: 900px">
       <q-card-section class="bg-primary text-white text-h6"><q-icon name="shopping_cart" class="q-mr-sm" />{{ precioForm.id_detalle_campanas ? 'Editar Precio' : 'Productos' }}</q-card-section>
       <q-separator />
       <q-card-section>
@@ -21,11 +21,11 @@
       </q-card-section>
       <q-separator />
       <q-card-section>
-        <div class="row items-center q-mb-md">
-          <div class="col"><div class="text-subtitle2 text-grey-8">Productos Asignados</div></div>
-          <div class="col-auto"><q-select :model-value="filtroPrecio" @update:model-value="$emit('update:filtroPrecio', $event)" :options="categoriasOpciones" label="Filtrar categoría" option-value="id" option-label="tipo" emit-value map-options outlined dense clearable style="min-width: 200px" /></div>
+        <div class="row items-center q-mb-md q-col-gutter-sm">
+          <div class="col-12 col-sm"><div class="text-subtitle2 text-grey-8">Productos Asignados</div></div>
+          <div class="col-12 col-sm-auto"><q-select :model-value="filtroPrecio" @update:model-value="$emit('update:filtroPrecio', $event)" :options="categoriasOpciones" label="Filtrar categoría" option-value="id" option-label="tipo" emit-value map-options outlined dense clearable style="min-width: 200px" /></div>
         </div>
-        <q-table :rows="preciosFiltrados" :columns="cols" row-key="id" flat bordered :rows-per-page-options="[5, 10, 20]">
+        <q-table :rows="preciosFiltrados" :columns="cols" row-key="id" flat bordered :rows-per-page-options="[5, 10, 20]" :grid="$q.screen.lt.md">
           <template v-slot:body-cell-precio="props"><q-td :props="props"><q-badge color="green" :label="`Bs ${props.row.precio}`" /></q-td></template>
           <template v-slot:body-cell-opciones="props"><q-td :props="props"><q-btn flat dense round color="primary" icon="edit" @click="editarPrecio(props.row)" /><q-btn flat dense round color="negative" icon="delete" @click="eliminarPrecio(props.row.id)" /></q-td></template>
         </q-table>
@@ -35,6 +35,7 @@
   </q-dialog>
 </template>
 <script setup>
+import { useQuasar } from 'quasar'
 defineProps({
   modelValue: Boolean, precioForm: Object, categoriasCampana: Array, productosNoAsignadosOptions: Array,
   preciosFiltrados: Array, productoSeleccionado: Object, categoriasOpciones: Array, filtroPrecio: [String, Number],
@@ -42,6 +43,7 @@ defineProps({
   editarPrecio: Function, eliminarPrecio: Function
 })
 defineEmits(['update:modelValue', 'update:filtroPrecio', 'update:productoSeleccionado', 'update-form'])
+const $q = useQuasar()
 const cols = [
   { name: 'num', label: 'N°', field: 'numero', align: 'right' }, { name: 'cod', label: 'Código', field: 'codigo', align: 'left' },
   { name: 'desc', label: 'Descripción', field: 'descripcion', align: 'left' }, { name: 'precio', label: 'Precio', field: 'precio', align: 'right' },

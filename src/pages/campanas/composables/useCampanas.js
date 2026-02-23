@@ -6,7 +6,7 @@ import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { useCampanaCore } from './useCampanaCore'
 
 export function useCampanas(q) {
-  const { idempresa, idusuario, almacenes, obtenerFechaActual } = useCampanaCore()
+  const { idempresa, idusuario, almacenes, almacenesOptions, obtenerFechaActual } = useCampanaCore()
   const campanas = ref([])
   const idalmacenfiltro = ref(null)
   const busqueda = ref('')
@@ -40,7 +40,7 @@ export function useCampanas(q) {
       const res = await api.get(`listaResponsableAlmacen/${idempresa}`)
       if (res.data[0] === 'error') throw new Error(res.data.error)
       almacenes.value = res.data.filter((u) => u.idusuario == idusuario)
-      if(almacenes.value.length) idalmacenfiltro.value = almacenes.value[0]
+      if(almacenes.value.length) idalmacenfiltro.value = almacenes.value[0].idalmacen
     } catch {
       q.notify({ type: 'negative', message: 'Error al cargar almacenes' })
     }
@@ -126,6 +126,6 @@ export function useCampanas(q) {
   return {
     campanas, idalmacenfiltro, busqueda, formularioActivo, formData, campanasFiltradas,
     listarAlmacenes, listarCampanas, resetearFormulario, registrarCampana, cargarEditarCampana,
-    eliminar, cambiarEstado, almacenes
+    eliminar, cambiarEstado, almacenes, almacenesOptions
   }
 }
