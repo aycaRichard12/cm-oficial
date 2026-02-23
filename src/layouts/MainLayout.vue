@@ -224,7 +224,10 @@ const ocultarTabs = () => {
   tabsVisible.value = false
 }
 const irdashboard = () => {
-  window.location.href = '/app/dashboard'
+  localStorage.removeItem('yofinanciero')
+  localStorage.removeItem('yofinancieromenu')
+  localStorage.removeItem('puedeIniciarsesion')
+  window.location.replace('/#/login')
 }
 const router = useRouter()
 const menuStore = useMenuStore()

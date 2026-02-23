@@ -26,13 +26,13 @@ const routes = [
   {
     path: '/',
     beforeEnter: async (to, from, next) => {
-      // 1. Verificar Autenticación (Simulada)
-      // const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+      // 1. Verificar Autenticación
+      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
-      // if (!isAuthenticated) {
-      //   next('/login')
-      //   return
-      // }
+      if (!isAuthenticated) {
+        next('/login')
+        return
+      }
 
       // 2. Verificar Configuración (Lógica Existente)
       const estaConfigurado = await checkConfiguracion()
@@ -412,6 +412,14 @@ const routes = [
   },
   {
     path: '/login',
+    beforeEnter: (to, from, next) => {
+      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+      if (isAuthenticated) {
+        next('/')
+      } else {
+        next()
+      }
+    },
     component: () => import('pages/auth/LoginPage.vue'),
   },
   // Always leave this as last one,
