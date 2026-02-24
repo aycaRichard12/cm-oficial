@@ -100,7 +100,6 @@ export function useCampanas(q) {
         const existeAlmacen = almacenesOptions.value.find(
           (obj) => Number(obj.idalmacen) === Number(res.datos.idalmacen),
         )
-
         // 3. Asignación atómica de datos
         Object.assign(formData.value, {
           id: res.datos.id,
