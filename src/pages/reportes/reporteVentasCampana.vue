@@ -1,103 +1,144 @@
 <template>
-  <q-page padding>
-    <div class="titulo">Reporte Campañas Ventas</div>
-    <q-form @submit.prevent="handleGenerarReporte">
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-4">
-          <label for="fechaIni">Fecha Inicial*</label>
-          <q-input
-            v-model="fechaInicio"
-            id="fechaIni"
-            type="date"
-            outlined
-            dense
-            @update:model-value="validarFechas"
-          />
-        </div>
-        <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
-          <q-input
-            v-model="fechaFin"
-            id="fechafin"
-            type="date"
-            outlined
-            dense
-            @update:model-value="validarFechas"
-          />
-        </div>
-      </div>
-      <div class="row justify-center q-pt-md">
-        <q-btn
-          label="Generar reporte"
-          color="primary"
-          @click="handleGenerarReporte"
-          class="q-mx-sm"
-        />
-        <q-btn
-          label="Vista previa del Reporte"
-          color="primary"
-          @click="handleVerReporte"
-          class="q-mx-sm"
-        />
-      </div>
-    </q-form>
+  <q-page padding >
+    <!-- Header -->
+    <div class="row items-center q-mb-md">
+      <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
+      <div class="text-h5 text-primary text-weight-bold">Reporte Campañas Ventas</div>
+    </div>
 
-    <div class="q-mt-lg">
-      <q-form>
-        <div class="row justify-center q-col-gutter-x-md">
-          <div class="col-12 col-md-4">
-            <label for="almacen">Almacén*</label>
+    <!-- Filtros y Opciones -->
+    <q-card class="q-mb-lg shadow-2 rounded-borders">
+      <q-card-section class="bg-primary text-white row items-center q-pb-sm">
+        <q-icon name="tune" size="sm" class="q-mr-sm" />
+        <div class="text-subtitle1 text-weight-bold">Configuración del Reporte</div>
+      </q-card-section>
+
+      <q-card-section>
+        <q-form @submit.prevent="handleGenerarReporte">
+          <div class="row q-col-gutter-md">
+            <!-- Fecha Inicial -->
+            <div class="col-12 col-md-4">
+              <q-input
+                v-model="fechaInicio"
+                id="fechaIni"
+                type="date"
+                label="Fecha Inicial *"
+                outlined
+                dense
+                color="primary"
+                @update:model-value="validarFechas"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="event" />
+                </template>
+              </q-input>
+            </div>
+
+            <!-- Fecha Final -->
+            <div class="col-12 col-md-4">
+              <q-input
+                v-model="fechaFin"
+                id="fechafin"
+                type="date"
+                label="Fecha Final *"
+                outlined
+                dense
+                color="primary"
+                @update:model-value="validarFechas"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="event" />
+                </template>
+              </q-input>
+            </div>
+          </div>
+          <div class="row justify-end q-pt-md q-gutter-sm">
+            <q-btn
+              label="Generar Reporte"
+              icon="search"
+              color="primary"
+              unelevated
+              @click="handleGenerarReporte"
+              :loading="cargandoData"
+            />
+            <q-btn
+              label="Exportar PDF"
+              icon="picture_as_pdf"
+              color="negative"
+              unelevated
+              @click="handleVerReporte"
+              :disable="!reporteGenerado || cargandoData"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+
+    <!-- Resultados -->
+    <q-card v-if="reporteGenerado" class="shadow-2 rounded-borders">
+      <q-card-section class="q-pb-none">
+        <div class="row items-center justify-between">
+          <div class="text-h6 text-primary text-weight-bold row items-center q-mb-sm">
+            <q-icon name="list_alt" size="sm" class="q-mr-sm" /> Resultados
+          </div>
+          <!-- Filtro de almacén integrado en la cabecera -->
+          <div style="min-width: 250px" class="q-mb-sm">
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
-              id="almacen"
+              label="Filtrar por Almacén"
               emit-value
               map-options
-              class="col-md-4"
               outlined
               dense
-              :disable="!reporteGenerado"
-            />
+              color="primary"
+            >
+              <template v-slot:prepend>
+                <q-icon name="storefront" />
+              </template>
+            </q-select>
           </div>
         </div>
-      </q-form>
-      <q-table
-        :rows="datosFiltrados"
-        :columns="columnasTabla"
-        row-key="id"
-        flat
-        bordered
-        separator="cell"
-        class="q-mt-md"
-      >
-        <template v-slot:no-data>
-          <div class="full-width row flex-center q-gutter-sm">
-            <span> No hay datos para mostrar. Genere un reporte primero. </span>
-          </div>
-        </template>
-      </q-table>
-    </div>
-    <q-card-section>
-      <q-dialog v-model="mostrarModal" persistent full-width full-height>
-        <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
-            <q-space />
-            <q-btn flat round icon="close" @click="mostrarModal = false" />
-          </q-card-section>
+      </q-card-section>
 
-          <q-separator />
+      <q-card-section>
+        <q-table
+          :rows="datosFiltrados"
+          :columns="columnasTabla"
+          row-key="id"
+          flat
+          bordered
+          separator="cell"
+          table-header-class="bg-blue-grey-1 text-primary text-weight-bold"
+          :pagination="{ rowsPerPage: 15 }"
+        >
+          <template v-slot:no-data>
+            <div class="full-width row flex-center q-gutter-sm q-pa-xl text-grey-7">
+              <q-icon name="search_off" size="xl" />
+              <div class="text-h6">No hay datos para mostrar.</div>
+            </div>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
 
-          <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
-            <iframe
-              v-if="pdfData"
-              :src="pdfData"
-              style="width: 100%; height: 100%; border: none"
-            ></iframe>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-    </q-card-section>
+    <!-- Modal PDF -->
+    <q-dialog v-model="mostrarModal" full-width full-height maximized>
+      <q-card class="column">
+        <q-card-section class="row items-center q-pb-none bg-primary text-white">
+          <div class="text-h6">Vista previa de PDF</div>
+          <q-space />
+          <q-btn flat round dense icon="close" @click="mostrarModal = false" />
+        </q-card-section>
+        <q-card-section class="col q-pa-none">
+          <iframe
+            v-if="pdfData"
+            :src="pdfData"
+            style="width: 100%; height: 100%; border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -107,7 +148,7 @@ import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG.js'
 import { validarUsuario } from 'src/composables/FuncionesG.js'
-import { PDF_REPORTE_CAMPANAS_VENTAS } from 'src/utils/pdfReportGenerator'
+import { PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS } from 'src/utils/pdfReportGenerator'
 
 //pedf
 const pdfData = ref(null)
@@ -124,6 +165,7 @@ const datosOriginales = ref([])
 const datosFiltrados = ref([])
 const datosUsuario = reactive({})
 const reporteGenerado = ref(false)
+const cargandoData = ref(false)
 
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
@@ -132,7 +174,7 @@ const almacenSeleccionadoTexto = computed(() => {
 })
 
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'left', format: (val, row, index) => index + 1 },
+  { name: 'n', label: 'N°', field: 'n', align: 'left' },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
   { name: 'nombre', label: 'Campaña', field: 'nombre', align: 'left' },
   {
@@ -236,6 +278,7 @@ async function generarReporte() {
   $q.loading.show({
     message: 'Generando reporte...',
   })
+  cargandoData.value = true
 
   try {
     const idusuario = datosUsuario.idusuario
@@ -273,6 +316,7 @@ async function generarReporte() {
     })
   } finally {
     $q.loading.hide()
+    cargandoData.value = false
   }
 }
 
@@ -309,7 +353,7 @@ function handleVerReporte() {
       position: 'top',
     })
   } else {
-    const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFiltrados.value, {
+    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFiltrados.value, {
       fechaInicio: fechaInicio.value,
       fechaFin: fechaFin.value,
       almacen: almacenSeleccionadoTexto.value,
