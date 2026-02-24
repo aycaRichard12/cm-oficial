@@ -1,6 +1,6 @@
 <template>
   <q-dialog :model-value="modelValue" persistent @update:model-value="$emit('update:modelValue', $event)" @hide="resetearForm" @keydown.esc="$emit('update:modelValue', false)">
-    <q-card style="min-width: 700px">
+    <q-card style="width: 100%; max-width: 700px">
       <q-card-section class="bg-primary text-white text-h6"><q-icon name="category" class="q-mr-sm" />Categorías de Precio</q-card-section>
       <q-separator />
       <q-card-section>
@@ -12,7 +12,7 @@
       <q-separator />
       <q-card-section>
         <div class="text-subtitle2 text-grey-8 q-mb-md">Categorías Asignadas</div>
-        <q-table :rows="categoriasCampana" :columns="columns" row-key="id" flat bordered :rows-per-page-options="[5, 10]">
+        <q-table :rows="categoriasCampana" :columns="columns" row-key="id" flat bordered :rows-per-page-options="[5, 10]" :grid="$q.screen.lt.md">
           <template v-slot:body-cell-tipo="props"><q-td :props="props"><q-chip color="primary" text-color="white" icon="label">{{ props.row.tipo }}</q-chip></q-td></template>
           <template v-slot:body-cell-opciones="props"><q-td :props="props"><q-btn flat dense round color="negative" icon="delete" @click="eliminarCategoriaCampana(props.row.id)" /></q-td></template>
         </q-table>
@@ -23,11 +23,13 @@
   </q-dialog>
 </template>
 <script setup>
+import { useQuasar } from 'quasar'
 defineProps({
   modelValue: Boolean, categoriaForm: Object, categoriasPrecioOptions: Array,
   categoriasCampana: Array, registrarCategoria: Function, eliminarCategoriaCampana: Function, resetearForm: Function
 })
 defineEmits(['update:modelValue', 'update-form'])
+const $q = useQuasar()
 const columns = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
   { name: 'tipo', label: 'Categoria', field: 'tipo', align: 'left' },
