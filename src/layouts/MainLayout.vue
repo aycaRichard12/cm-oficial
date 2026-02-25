@@ -194,7 +194,7 @@
 <script setup>
 import emitter from 'src/event-bus'
 import { ref, onMounted, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
 import logo from 'src/assets/IMAGOTIPO-02.png'
@@ -230,6 +230,7 @@ const irdashboard = () => {
   window.location.replace('/#/login')
 }
 const router = useRouter()
+const route = useRoute()
 const menuStore = useMenuStore()
 
 const leftDrawerOpen = ref(false)
@@ -279,7 +280,10 @@ const clearTabsTimeout = () => {
 }
 
 const IniciarGuia = () => {
-  guiarInicio(currentTab.value, currentTab.value)
+  // Usar la ruta actual del router para que siempre cargue el tour correcto,
+  // independientemente de por qué tab o menú se haya navegado.
+  const rutaActual = route.path.replace('/', '')
+  guiarInicio(rutaActual, rutaActual)
 }
 // --- End of auto-open/close logic for both drawer and tabs ---  crearcampanas
 

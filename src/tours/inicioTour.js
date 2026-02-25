@@ -1,6 +1,6 @@
 export async function getGuia(ruta, nombreExport) {
   // Busca todos los archivos que coincidan con el patrón en la carpeta actual y subcarpetas
-  const modules = import.meta.glob(['./Tour_*.js', './*/Tour_*.js','./*/*/Tour_*.js'])
+  const modules = import.meta.glob(['./**/*.js', './Tour_*.js'])
 
   // Normalizamos el nombre del archivo buscado
   const archivoBuscado = `Tour_${ruta}.js`.toLowerCase()

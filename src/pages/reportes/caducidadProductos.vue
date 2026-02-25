@@ -3,7 +3,7 @@
     <div class="titulo">Caducidad Producto</div>
     <q-card-section>
       <div class="row justify-center q-mb-md">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="fechaFinalR">
           <label for="fechafinal">Fecha Final*</label>
           <q-input
             label="Fecha Final*"
@@ -17,15 +17,15 @@
       </div>
 
       <div class="row justify-center q-mb-md">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" />
-        <q-btn color="primary" @click="exportarTablaAExcel" class="btn-res">
+        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="btnGenerarReporte" />
+        <q-btn color="primary" @click="exportarTablaAExcel" class="btn-res" id="btnExportarExcel">
           <q-icon name="mdi-file-excel" class="icono" />
           <span class="texto">Exportar a Excel</span>
         </q-btn>
       </div>
 
       <div class="row q-col-gutter-x-md">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="almacenR">
           <label for="almacen">Almacén</label>
           <q-select
             dense
@@ -38,7 +38,7 @@
             @update:model-value="filtrarYOrdenarDatos"
           />
         </div>
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-8" id="clienteR">
           <label for="razonSocial">Razón Social*</label>
           <q-select
             dense
@@ -66,7 +66,7 @@
       </div>
 
       <div class="row q-col-gutter-x-md q-mt-md">
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-8" id="tablaR">
           <div style="max-height: 60vh; overflow-y: auto">
             <q-table
               title="Inventario Externo"
@@ -85,7 +85,7 @@
             </q-table>
           </div>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" id="tablaResumenR">
           <div style="max-height: 60vh; overflow-y: auto">
             <q-table
               title="Resumen"

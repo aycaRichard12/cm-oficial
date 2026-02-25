@@ -12,6 +12,7 @@
         <!-- Top toolbar with Nuevo button -->
         <template v-slot:top-right>
           <q-btn
+            id="btnNuevaCredencial"
             color="primary"
             icon="add"
             label="Nuevo"
@@ -21,7 +22,7 @@
         </template>
         <!-- Slot para Credenciales -->
         <template v-slot:body-cell-credenciales="props">
-          <q-td :props="props" style="min-width: 350px">
+          <q-td :props="props" style="min-width: 350px" id="verCredencialesJson">
             <q-expansion-item
               icon="lock"
               label="Ver Credenciales"
@@ -90,7 +91,7 @@
 
         <!-- Slot para Estado -->
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props" align="center">
+          <q-td :props="props" align="center" id="estadoCredencial">
             <q-badge
               clickable
               @click="handleToggleStatus(props.row)"
@@ -105,7 +106,7 @@
 
         <!-- Slot para Acciones -->
         <template v-slot:body-cell-acciones="props">
-          <q-td :props="props">
+          <q-td :props="props" id="accionesCredencial">
             <q-btn
               flat
               round

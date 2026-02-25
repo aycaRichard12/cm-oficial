@@ -40,7 +40,7 @@ export function useCampanas(q) {
       const res = await api.get(`listaResponsableAlmacen/${idempresa}`)
       if (res.data[0] === 'error') throw new Error(res.data.error)
       almacenes.value = res.data.filter((u) => u.idusuario == idusuario)
-      if(almacenes.value.length) idalmacenfiltro.value = almacenes.value[0].idalmacen
+      if (almacenes.value.length) idalmacenfiltro.value = almacenes.value[0].idalmacen
     } catch {
       q.notify({ type: 'negative', message: 'Error al cargar almacenes' })
     }
@@ -58,9 +58,15 @@ export function useCampanas(q) {
 
   const resetearFormulario = () => {
     formData.value = {
-      id: null, ver: 'registrarcampana', idusuario, idalmacen: null,
-      fechai: obtenerFechaActual(), fechaf: obtenerFechaActual(),
-      campana: '', porcentaje: '', estadoActivo: true
+      id: null,
+      ver: 'registrarcampana',
+      idusuario,
+      idalmacen: null,
+      fechai: obtenerFechaActual(),
+      fechaf: obtenerFechaActual(),
+      campana: '',
+      porcentaje: '',
+      estadoActivo: true,
     }
   }
 
@@ -86,31 +92,56 @@ export function useCampanas(q) {
   const cargarEditarCampana = async (campana) => {
     try {
       const res = await peticionGET(`${URL_APICM}api/verificarExistenciacampana/${campana.id}`)
+
+      // 1. Validamos que la respuesta sea exitosa
       if (res.estado === 'exito') {
+        // 2. CORRECCIÓN LÓGICA:
+        // Verificamos si el almacén devuelto por la API existe en nuestras opciones actuales
+        const existeAlmacen = almacenesOptions.value.find(
+          (obj) => Number(obj.idalmacen) === Number(res.datos.idalmacen),
+        )
+        // 3. Asignación atómica de datos
         Object.assign(formData.value, {
-          id: res.datos.id, ver: 'editarcampaña', idalmacen: res.datos.idalmacen,
-          fechai: res.datos.fechai, fechaf: res.datos.fechaf,
-          campana: res.datos.nombre, porcentaje: res.datos.porcentaje,
+          id: res.datos.id,
+          ver: 'editarcampaña',
+          // Si existe, asignamos el ID (res.datos.idalmacen), si no, null o undefined
+          idalmacen: existeAlmacen ? existeAlmacen : null,
+          fechai: res.datos.fechai,
+          fechaf: res.datos.fechaf,
+          campana: res.datos.nombre,
+          porcentaje: res.datos.porcentaje,
           estadoActivo: Number(res.datos.estado) === 1,
         })
+
         formularioActivo.value = true
-      } else throw new Error(res.mensaje)
+      } else {
+        // Cumple con @typescript-eslint/prefer-promise-reject-errors
+        throw new Error(res.mensaje || 'La campaña no pudo ser verificada')
+      }
     } catch (e) {
-      q.notify({ type: 'negative', message: e.message || 'Error al cargar' })
+      // Manejo de error compatible con ESLint y tipado
+      const mensajeError = e instanceof Error ? e.message : 'Error al cargar los datos'
+
+      q.notify({
+        type: 'negative',
+        message: mensajeError,
+        position: 'top',
+      })
     }
   }
 
   const eliminar = async (id) => {
-    q.dialog({ title: 'Confirmar', message: '¿Eliminar campaña?', cancel: true })
-      .onOk(async () => {
-        try {
-          const res = await peticionGET(`${URL_APICM}api/eliminarcampana/${id}`)
-          if (res.estado === 'exito') {
-            q.notify({ type: 'positive', message: res.mensaje })
-            await listarCampanas()
-          } else throw new Error(res.mensaje)
-        } catch(e) { q.notify({ type: 'negative', message: e.message || 'Error al eliminar' }) }
-      })
+    q.dialog({ title: 'Confirmar', message: '¿Eliminar campaña?', cancel: true }).onOk(async () => {
+      try {
+        const res = await peticionGET(`${URL_APICM}api/eliminarcampana/${id}`)
+        if (res.estado === 'exito') {
+          q.notify({ type: 'positive', message: res.mensaje })
+          await listarCampanas()
+        } else throw new Error(res.mensaje)
+      } catch (e) {
+        q.notify({ type: 'negative', message: e.message || 'Error al eliminar' })
+      }
+    })
   }
 
   const cambiarEstado = async (id, estado) => {
@@ -120,12 +151,26 @@ export function useCampanas(q) {
         q.notify({ type: 'positive', message: res.mensaje })
         await listarCampanas()
       } else throw new Error(res.mensaje)
-    } catch(e) { q.notify({ type: 'negative', message: e.message || 'Error al cambiar estado' }) }
+    } catch (e) {
+      q.notify({ type: 'negative', message: e.message || 'Error al cambiar estado' })
+    }
   }
 
   return {
-    campanas, idalmacenfiltro, busqueda, formularioActivo, formData, campanasFiltradas,
-    listarAlmacenes, listarCampanas, resetearFormulario, registrarCampana, cargarEditarCampana,
-    eliminar, cambiarEstado, almacenes, almacenesOptions
+    campanas,
+    idalmacenfiltro,
+    busqueda,
+    formularioActivo,
+    formData,
+    campanasFiltradas,
+    listarAlmacenes,
+    listarCampanas,
+    resetearFormulario,
+    registrarCampana,
+    cargarEditarCampana,
+    eliminar,
+    cambiarEstado,
+    almacenes,
+    almacenesOptions,
   }
 }

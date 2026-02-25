@@ -264,6 +264,10 @@ const routes = [
         component: () => import('src/pages/reportes/reporteVentasCampana.vue'),
       },
       {
+        path: '/reporteVentasCampana',
+        component: () => import('src/pages/reportes/reporteVentasCampanapage.vue'),
+      },  
+      {
         path: '/inventarioexterno',
         component: () => import('src/pages/inventarioExterior/inventarioExteriorPage.vue'),
       },
