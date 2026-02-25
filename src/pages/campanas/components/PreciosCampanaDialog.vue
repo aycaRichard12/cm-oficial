@@ -6,7 +6,7 @@
       <q-card-section>
         <q-banner v-if="precioForm.id_detalle_campanas" class="bg-info text-white q-mb-md" rounded><q-icon name="edit" />Editando precio</q-banner>
         <q-form @submit="registrarPrecio"><div class="row q-col-gutter-md">
-            <div class="col-12 col-md-4"><q-select :model-value="precioForm.idcategoriacampaña" @update:model-value="val => { $emit('update-form', 'idcategoriacampaña', val); onCategoria(val) }" :options="categoriasCampana" option-value="id" option-label="tipo" emit-value map-options label="Categoría *" outlined dense required :readonly="!!precioForm.id_detalle_campanas"><template v-slot:prepend><q-icon name="category" /></template></q-select></div>
+            <div class="col-12 col-md-4"><q-select :model-value="precioForm.idcategoriacampaña" @update:model-value="val => { $emit('update-form', 'idcategoriacampaña', val); onCategoria(val) }" :options="categoriasOpciones" option-value="id" option-label="tipo" emit-value map-options label="Categoría *" outlined dense required :readonly="!!precioForm.id_detalle_campanas"><template v-slot:prepend><q-icon name="category" /></template></q-select></div>
             <div class="col-12 col-md-4">
               <q-select v-if="!precioForm.id_detalle_campanas" :model-value="productoSeleccionado" @update:model-value="$emit('update:productoSeleccionado', $event)" :options="productosNoAsignadosOptions" option-value="id" option-label="descripcion" label="Producto *" use-input input-debounce="300" @filter="filtrarProductos" outlined dense :rules="[val => !!val || 'Requerido']" :disable="!precioForm.idcategoriacampaña"><template v-slot:prepend><q-icon name="inventory_2" /></template><template v-slot:option="scope"><q-item v-bind="scope.itemProps"><q-item-section><q-item-label>{{ scope.opt.descripcion || scope.opt.producto }}</q-item-label><q-item-label caption>Cod: {{ scope.opt.codigo }}</q-item-label></q-item-section></q-item></template><template v-slot:selected-item="scope">{{ scope.opt.descripcion || scope.opt.producto }}</template></q-select>
               <q-input v-else :model-value="precioForm.producto" label="Producto *" outlined dense required readonly><template v-slot:prepend><q-icon name="inventory_2" /></template></q-input>
@@ -28,6 +28,24 @@
         <q-table :rows="preciosFiltrados" :columns="cols" row-key="id" flat bordered :rows-per-page-options="[5, 10, 20]" :grid="$q.screen.lt.md">
           <template v-slot:body-cell-precio="props"><q-td :props="props"><q-badge color="green" :label="`Bs ${props.row.precio}`" /></q-td></template>
           <template v-slot:body-cell-opciones="props"><q-td :props="props"><q-btn flat dense round color="primary" icon="edit" @click="editarPrecio(props.row)" /><q-btn flat dense round color="negative" icon="delete" @click="eliminarPrecio(props.row.id)" /></q-td></template>
+          <!-- Grid Mode Customization -->
+          <template v-slot:item="props">
+            <div class="q-pa-xs col-12 col-sm-6 col-md-4">
+              <q-card bordered flat class="full-height flex column">
+                <q-card-section class="q-pb-none col-grow">
+                  <div class="text-subtitle2 text-primary">{{ props.row.descripcion || props.row.producto }}</div>
+                  <div class="text-caption text-grey-8">Cód: {{ props.row.codigo }}</div>
+                </q-card-section>
+                <q-card-section class="row items-center justify-between q-pt-sm">
+                  <q-badge color="green" :label="`Bs ${props.row.precio}`" />
+                  <div>
+                    <q-btn flat dense round color="primary" icon="edit" @click="editarPrecio(props.row)" />
+                    <q-btn flat dense round color="negative" icon="delete" @click="eliminarPrecio(props.row.id)" />
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </template>
         </q-table>
       </q-card-section>
       <q-separator /><q-card-actions align="right"><q-btn flat label="Cerrar" color="primary" v-close-popup /></q-card-actions>
