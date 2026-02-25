@@ -632,6 +632,11 @@ export const menurichard50 = [
             codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'V-Campañas-Rep. Campañas y Ventas',
+            codigo: 'reporteVentasCampana-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
         ],
       },
       // {
