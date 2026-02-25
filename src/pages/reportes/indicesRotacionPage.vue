@@ -4,6 +4,7 @@
 
     <q-card flat bordered>
       <q-tabs
+        id="tabs"
         v-model="tab"
         dense
         class="text-grey"
@@ -12,9 +13,9 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab name="almacen" label="Por Almacén" icon="store" />
-        <q-tab name="global" label="Global" icon="public" />
-        <q-tab name="cliente" label="Por Cliente" icon="person_search" />
+        <q-tab name="almacen" label="Por Almacén" icon="store" id="tabAlmacen"/>
+        <q-tab name="global" label="Global" icon="public" id="tabGlobal"/>
+        <q-tab name="cliente" label="Por Cliente" icon="person_search" id="tabCliente"/>
       </q-tabs>
 
       <q-separator />
@@ -24,7 +25,7 @@
         <q-tab-panel name="almacen">
           <q-form @submit.prevent="generarReporteAlmacen">
             <div class="row q-col-gutter-md">
-              <div class="col-md-4">
+              <div class="col-md-4" id='fechaInicio'>
                 <q-input
                   v-model="almacen.fechaInicio"
                   label="Fecha Inicial*"
@@ -34,7 +35,7 @@
                   :rules="[(val) => !!val || 'Campo obligatorio']"
                 />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4" id='fechaFinal'>
                 <q-input
                   v-model="almacen.fechaFin"
                   label="Fecha Final*"
@@ -49,7 +50,7 @@
                   ]"
                 />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4" id='almacenIndice'>
                 <q-select
                   v-model="almacen.seleccionado"
                   :options="almacen.options"
@@ -66,12 +67,12 @@
             </div>
 
             <div class="row justify-center q-mt-md">
-              <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+              <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" id='btnGenerarReporteAlmacen'  />
               <q-btn
                 label="Vista Previa"
                 color="secondary"
                 @click="mostrarVistaPreviaAlmacen"
-                :disable="!almacen.datos || almacen.datos.length === 0"
+                :disable="!almacen.datos || almacen.datos.length === 0" id='btnVistaPreviaAlmacen'
               />
             </div>
           </q-form>
@@ -79,6 +80,7 @@
           <!-- Tabla de resultados -->
           <q-card class="q-mt-md">
             <q-table
+              id="tableAlmacen"
               :rows="almacen.datos"
               :columns="columnasAlmacen"
               row-key="codigo"
@@ -110,7 +112,7 @@
         <q-tab-panel name="global">
           <q-form @submit.prevent="generarReporteGlobal">
             <div class="row justify-center q-col-gutter-md">
-              <div class="col-md-4">
+              <div class="col-md-4" id="fechaInicioGlobal">
                 <q-input
                   v-model="global.fechaInicio"
                   label="Fecha Inicial*"
@@ -119,7 +121,7 @@
                   dense
                 />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4" id="fechaFinalGlobal">
                 <q-input
                   v-model="global.fechaFin"
                   label="Fecha Final*"
@@ -131,12 +133,13 @@
             </div>
 
             <div class="row justify-center q-mt-md">
-              <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+              <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" id="btnGenerarReporteGlobal" />
               <q-btn
                 label="Vista Previa"
                 color="secondary"
                 @click="mostrarVistaPreviaGlobal"
                 :disable="!global.datos || global.datos.length === 0"
+                id="btnVistaPreviaGlobal"
               />
             </div>
           </q-form>
@@ -144,6 +147,7 @@
           <!-- Tabla de resultados -->
           <q-card class="q-mt-md">
             <q-table
+              id="tableGlobal"
               :rows="global.datos"
               :columns="columnasGlobal"
               row-key="codigo"
@@ -175,7 +179,7 @@
         <q-tab-panel name="cliente">
           <q-form @submit.prevent="generarReporteCliente">
             <div class="row q-col-gutter-md">
-              <div class="col-md-3">
+              <div class="col-md-3" id="fechaInicioCliente">
                 <q-input
                   v-model="cliente.fechaInicio"
                   label="Fecha Inicial*"
@@ -185,7 +189,7 @@
                   :rules="[(val) => !!val || 'Campo requerido']"
                 />
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3" id="fechaFinalCliente">
                 <q-input
                   v-model="cliente.fechaFin"
                   label="Fecha Final*"
@@ -195,7 +199,7 @@
                   :rules="[(val) => !!val || 'Campo requerido']"
                 />
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3" id="clienteIndice">
                 <q-select
                   v-model="cliente.seleccionado"
                   label="Razón Social*"
@@ -215,7 +219,7 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3" id="sucursalIndice">
                 <q-select
                   v-model="cliente.sucursalSeleccionada"
                   label="Sucursal*"
@@ -231,12 +235,13 @@
             </div>
 
             <div class="row q-mt-md justify-center">
-              <q-btn type="submit" color="primary" label="Generar Reporte" class="q-mr-sm" />
+              <q-btn type="submit" color="primary" label="Generar Reporte" class="q-mr-sm" id="btnGenerarReporteCliente" />
               <q-btn
                 color="secondary"
                 label="Vista Previa"
                 @click="mostrarVistaPreviaCliente"
                 :disable="!cliente.datos || cliente.datos.length === 0"
+                id="btnVistaPreviaCliente"
               />
             </div>
           </q-form>
@@ -244,6 +249,7 @@
           <!-- Tabla de resultados -->
           <q-card class="q-mt-md">
             <q-table
+              id="tableCliente"
               :rows="cliente.datos"
               :columns="columnasCliente"
               row-key="id"

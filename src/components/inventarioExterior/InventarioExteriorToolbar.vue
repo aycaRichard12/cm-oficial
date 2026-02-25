@@ -1,13 +1,13 @@
 <template>
   <div class="row flex justify-between">
-    <div>
+    <div id="btnNuevo">
       <q-btn color="primary" @click="$emit('toggleForm')" class="btn-res q-mt-lg">
         <q-icon name="save" class="icono" />
         <span class="texto">{{ formCollapse ? 'Cancelar Registro' : 'Nuevo' }}</span>
       </q-btn>
     </div>
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-4" id="selectAlmacenExterno">
       <label for="almacen">Seleccione un Almacén</label>
       <q-select
         v-model="filtroAlmacen"
@@ -21,7 +21,7 @@
         dense
       />
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="inputBuscar">
       <label for="buscar">Buscar...</label>
       <q-input dense debounce="300" v-model="searchQuery" placeholder="Buscar..."></q-input>
     </div>
