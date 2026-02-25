@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 
 export function useCampanaCore() {
-  const userStr = localStorage.getItem('cm-usuario')
+  const userStr = localStorage.getItem('mistersofts-cm')
   const contenidousuario = userStr ? JSON.parse(userStr) : []
   const idempresa = contenidousuario[0]?.empresa?.idempresa || null
   const idusuario = contenidousuario[0]?.idusuario || null

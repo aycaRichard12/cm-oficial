@@ -1,7 +1,7 @@
-import { useFetchList } from 'src/composables/useFetchList';
+import { useFetchList } from 'src/composables/useFetchList'
 
 function getUsuarioData() {
-  return JSON.parse(localStorage.getItem('cm-usuario'))
+  return JSON.parse(localStorage.getItem('mistersofts-cm'))
 }
 
 export function idempresa_md5() {
@@ -74,8 +74,6 @@ export function validarUsuario() {
     window.location.replace('/#/login')
   }
 }
-
-
 
 export async function divisaEmonedaActiva() {
   try {

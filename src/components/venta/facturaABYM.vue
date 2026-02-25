@@ -703,7 +703,7 @@ const remainingAmount = computed(() => {
 // ====================== FUNCIONES ======================
 
 const validarUsuario = () => {
-  const user = JSON.parse(localStorage.getItem('cm-usuario'))
+  const user = JSON.parse(localStorage.getItem('mistersofts-cm'))
   return user || (window.location.href = '../app')
 }
 

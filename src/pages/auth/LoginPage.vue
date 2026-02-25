@@ -211,7 +211,12 @@ const login = async () => {
       },
     )
 
-    if (res.data && Array.isArray(res.data) && res.data.length > 0 && res.data[0].ok === 'success') {
+    if (
+      res.data &&
+      Array.isArray(res.data) &&
+      res.data.length > 0 &&
+      res.data[0].ok === 'success'
+    ) {
       const userData = [{ ...res.data[0] }]
       const rawMenu = res.data[0].menu || []
       const modulo = res.data[0].modulo || ''
@@ -230,12 +235,12 @@ const login = async () => {
 
       // Limpiar el menu del objeto de usuario
       delete userData[0].menu
-      console.log('datos el login',res.data)
-      localStorage.setItem('cm-usuario', JSON.stringify(userData))
-      localStorage.setItem('cm-usuariomenu', JSON.stringify(userMenu))
+      console.log('datos el login', res.data)
+      localStorage.setItem('mistersofts-cm', JSON.stringify(userData))
+      localStorage.setItem('mistersofts-cmmenu', JSON.stringify(userMenu))
       localStorage.setItem('puedeIniciarsesion', 'true')
-      console.log('userData',userData)
-      console.log('userMenu',userMenu)
+      console.log('userData', userData)
+      console.log('userMenu', userMenu)
 
       $q.notify({
         color: 'positive',

@@ -125,8 +125,8 @@ const compra = ref(null)
 const dashboard = ref(null)
 const producto = ref(null)
 
-const contenidoUsuario = localStorage.getItem('cm-usuario')
-const contenidoMenus = JSON.parse(localStorage.getItem('cm-usuariomenu')) || []
+const contenidoUsuario = localStorage.getItem('mistersofts-cm')
+const contenidoMenus = JSON.parse(localStorage.getItem('mistersofts-cmmenu')) || []
 
 onMounted(() => {
   if (contenidoUsuario && contenidoMenus) {
@@ -154,7 +154,7 @@ onMounted(() => {
       console.error('Error al parsear los datos de localStorage:', error)
     }
   } else {
-    console.warn('No hay datos en localStorage para "cm-usuario" o "cm-usuariomenu".')
+    console.warn('No hay datos en localStorage para "mistersofts-cm" o "mistersofts-cmmenu".')
   }
 })
 
