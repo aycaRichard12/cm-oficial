@@ -54,6 +54,8 @@ export function usePreciosCampana(q, campanas, idalmacenfiltro) {
 
       categoriasCampanaPrecioOptions.value = res1 || []
       preciosCampana.value = res2 || []
+      
+      console.log('Productos asociados en la campaña:', preciosCampana.value)
 
       dialogoPrecios.value = true
     } catch { console.error('Error cargarPrecios') }
@@ -96,18 +98,29 @@ export function usePreciosCampana(q, campanas, idalmacenfiltro) {
     try {
       cargandoGuardarPrecio.value = true
       
-      const formData = new FormData()
-      formData.append('ver', 'editarPreciocampana')
-      formData.append('idproducto', precioForm.value.idproducto || '')
-      formData.append('idproductoalmacen', precioForm.value.idproductoalmacen || '')
-      formData.append('precio', precioForm.value.precio || '')
-      formData.append('idcategoriacampaña', precioForm.value.idcategoriacampaña || '')
+      const isEditing = !!precioForm.value.id_detalle_campanas
+      let res
       
-      if (precioForm.value.id_detalle_campanas) {
+      if (isEditing) {
+        const formData = new FormData()
+        formData.append('ver', 'editarPreciocampana')
+        formData.append('idproducto', precioForm.value.idproducto || '')
+        formData.append('precio', precioForm.value.precio || '')
+        formData.append('idcategoriacampaña', precioForm.value.idcategoriacampaña || '')
+        formData.append('idproductoalmacen', precioForm.value.idproductoalmacen || '')
         formData.append('id_detalle_campanas', precioForm.value.id_detalle_campanas)
+        res = await api.post('', formData)
+      } else {
+        const payload = {
+          ver: 'registrarProductoPrecioCampana',
+          idproducto: precioForm.value.idproductoalmacen || '',
+          precio: precioForm.value.precio || '',
+          idcategoriacampaña: precioForm.value.idcategoriacampaña || ''
+        }
+        res = await api.post('', payload)
+        console.log('Respuesta al registrar precio:', payload)
       }
       
-      const res = await api.post('', formData)
       if (res.data.estado === 'exito') {
         q.notify({ type: 'positive', message: res.data.mensaje || 'Éxito' })
         const currId = precioForm.value.idcampaña

@@ -193,7 +193,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import { useSolicitudes } from 'src/composables/useSolicitudes'
+import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 
 // Composables y State
 const {
