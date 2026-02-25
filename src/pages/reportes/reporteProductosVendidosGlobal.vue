@@ -27,6 +27,7 @@
 
       <!-- Tabla de resultados -->
       <ReporteProductosTabla
+        id="reporteProductosTabla"
         ref="tableRef"
         :rows="datosFiltrados"
         :columns="columnas"

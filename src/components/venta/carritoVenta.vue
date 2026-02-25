@@ -912,10 +912,18 @@ watch(
   },
 )
 
-// Cuando cambie la campaña seleccionada, recargar productos con nuevos precios
+// Cuando cambie la campaña seleccionada, actualizar idcampana en localStorage y recargar productos
 watch(
   () => categoriaCampaniaSeleccionada.value,
   async (nuevaCampana) => {
+    // Siempre actualizar idcampana en el localStorage al cambiar campaña
+    const datosCarrito = JSON.parse(localStorage.getItem('carrito'))
+    if (datosCarrito) {
+      datosCarrito.idcampana = nuevaCampana || 0
+      localStorage.setItem('carrito', JSON.stringify(datosCarrito))
+      console.log('idcampana actualizado en localStorage:', datosCarrito.idcampana)
+    }
+
     if (nuevaCampana && categoriaPrecioSeleccionada.value) {
       console.log('Campaña cambiada, recargando productos con nuevos precios...')
       await cargarProductosDisponibles()

@@ -16,6 +16,7 @@
               unelevated
               @click="$emit('addRecord')"
               class="btn-res"
+              id="btnAgregarNuevoMovimiento"
             />
           </div>
         </div>
@@ -25,8 +26,8 @@
       <q-card-section class="q-pt-none">
         <div class="row q-col-gutter-md items-center">
           <!-- Almacen Select -->
-          <div class="col-12 col-md-4">
-            <!-- <q-select
+          <div class="col-12 col-md-4" id="selectAlmacenOrigenSelector">
+            <q-select
               v-model="selectedFilterStore"
               :options="filterStores"
               id="almacen"
@@ -41,12 +42,11 @@
               <template v-slot:prepend>
                 <q-icon name="store" color="primary" />
               </template>
-            </q-select> -->
-            <AlmacenSelector />
+            </q-select>
           </div>
 
           <!-- Search Input -->
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="inputBuscarMovimiento">
             <q-input
               v-model="searchQuery"
               placeholder="Buscar por descripción..."
@@ -110,6 +110,7 @@
       <!-- Table -->
       <q-card-section class="q-pa-none">
         <q-table
+          id="tableMovimientos"
           :rows="filteredRows"
           :columns="columns"
           row-key="id"
@@ -140,7 +141,7 @@
           </template>
 
           <template v-slot:body-cell-Detalle="props">
-            <q-td :props="props" class="text-center">
+            <q-td :props="props" class="text-center" id="detalleCarrito">
               <q-btn
                 icon="shopping_cart"
                 color="blue"
@@ -159,6 +160,7 @@
             <q-td :props="props" class="text-center">
               <div class="row justify-center no-wrap q-gutter-xs">
                 <q-btn
+                  id="verDetalle"
                   icon="visibility"
                   color="amber-8"
                   dense
@@ -172,6 +174,7 @@
 
                 <div v-if="Number(props.row.autorizacion) === 2" class="row no-wrap q-gutter-xs">
                   <q-btn
+                    id="editRecord"
                     icon="edit"
                     color="primary"
                     dense
@@ -184,6 +187,7 @@
                   </q-btn>
 
                   <q-btn
+                    id="deleteRecord"
                     icon="delete"
                     color="negative"
                     dense
@@ -196,6 +200,7 @@
                   </q-btn>
 
                   <q-btn
+                    id="toggleStatus"
                     icon="toggle_off"
                     dense
                     flat
@@ -261,7 +266,6 @@ import { useMovementStore } from 'src/stores/movement-store'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import pedidosMovimiento from './pedidosMovimiento.vue'
-import AlmacenSelector from './AlmacenSelector.vue'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
 import { PDF_LISTA_MOVIMIENTOS, PDFComprobanteMovimiento } from 'src/utils/pdfReportGenerator'
@@ -303,7 +307,7 @@ defineEmits([
 ])
 
 const searchQuery = ref('')
-// const selectedFilterStore = ref('') // Replaced by selectedAlmacen
+const selectedFilterStore = ref('') // Replaced by selectedAlmacen
 const rows = ref([]) // Data for the QTable
 
 const pagination = ref({
@@ -312,10 +316,10 @@ const pagination = ref({
 
 // filterStores now comes directly from the Pinia store
 // This computed property will react to changes in movementStore.originStores
-// const filterStores = computed(() => {
-//   // Add a default "Seleccione un Almacén" option
-//   return [...movementStore.originStores]
-// })
+const filterStores = computed(() => {
+  // Add a default "Seleccione un Almacén" option
+  return [...movementStore.originStores]
+})
 
 // Watch for changes in movementStore.originStores and automatically select the first valid option
 // if nothing is selected and stores become available.
@@ -380,13 +384,17 @@ const columns = [
   { name: 'Opciones', label: 'Opciones', align: 'center', field: 'id', sortable: false },
 ]
 
-// Filter table rows based on selectedAlmacen
+// Filter table rows based on selectedFilterStore
 const filteredRows = computed(() => {
-  if (!selectedAlmacen.value) {
-    return []
+  if (!selectedFilterStore.value) {
+    return rows.value.map((item, indice) => ({
+      ...item,
+      indice: indice + 1,
+    }))
   }
-  // Access the ID safely
-  const storeId = selectedAlmacen.value.value || selectedAlmacen.value.id
+  
+  // Access the ID safely from selectedFilterStore which comes from filterStores (value/label pair)
+  const storeId = selectedFilterStore.value.value || selectedFilterStore.value.id
 
   const filtrado = rows.value.filter(
     (row) =>

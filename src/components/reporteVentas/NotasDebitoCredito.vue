@@ -4,39 +4,48 @@
     <!-- Formulario principal -->
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechaini">
           <label for="fechaini">Fecha Inicial*</label>
-          <q-input type="date" v-model="fechai" id="fechaini" dense outlined />
+          <q-input type="date" v-model="fechai" dense outlined />
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3" id="fechafin">
           <label for="fechafin">Fecha Final*</label>
-          <q-input type="date" v-model="fechaf" id="fechafin" dense outlined />
+          <q-input type="date" v-model="fechaf" dense outlined />
         </div>
       </div>
 
       <div class="row justify-center q-mt-md">
-        <div class="">
+        <div class="" id="btnGenerarReporte">
           <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
         </div>
       </div>
     </q-form>
     <div class="row flex justify-between q-ma-md">
-      <q-btn icon="picture_as_pdf" label="Vista previa" color="red" outline @click="vistaPrevia" />
+      <q-btn
+        icon="picture_as_pdf"
+        label="Vista previa"
+        color="red"
+        outline
+        @click="vistaPrevia"
+        id="vistaPrevia"
+      >
+      </q-btn>
       <q-btn
         icon="mdi-microsoft-excel"
         label="Exportar Excel"
         color="green"
         outline
         @click="exportXLSX"
+        id="exportarExcel"
       />
     </div>
     <div class="row q-col-gutter-x-md q-ma-sm">
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="almacenCredito">
         <label for="almacen">Filtrar por Almacén</label>
         <q-select id="almacen" dense outlined v-model="almacen" :options="almacenes" clearable />
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="clienteCredito">
         <label for="cliente">Filtrar por razón social</label>
         <q-input
           v-model="clienteBusqueda"
@@ -49,6 +58,7 @@
         >
           <template v-if="clienteSeleccionadoId" v-slot:append>
             <q-btn
+              id="cleanCliente"
               dense
               flat
               round
@@ -61,7 +71,7 @@
         </q-input>
         <q-dialog v-model="dialogClientes">
           <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
+            <q-card-section class="row items-center" id="dialogClientes">
               <q-input
                 v-model="clienteFilter"
                 label="Filtrar clientes..."
@@ -72,7 +82,7 @@
               <q-btn flat round icon="close" v-close-popup />
             </q-card-section>
 
-            <q-card-section style="max-height: 70vh" class="scroll">
+            <q-card-section style="max-height: 70vh" class="scroll" id="dialogClientes">
               <q-list bordered separator>
                 <q-item
                   v-for="cliente in clientesFiltrados"
@@ -93,7 +103,7 @@
         </q-dialog>
       </div>
 
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="dialogSucursal">
         <label for="sucursal">Filtrar por sucursal del cliente</label>
         <q-input
           v-model="sucursalBusqueda"
@@ -114,12 +124,13 @@
               size="sm"
               @click="clearSucursal"
               class="q-mr-xs"
+              id="cleanSucursal"
             />
           </template>
         </q-input>
         <q-dialog v-model="dialogSucursal">
           <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
+            <q-card-section class="row items-center" id="dialogSucursal">
               <q-input
                 v-model="sucursalFilter"
                 label="Filtrar clientes..."
@@ -130,7 +141,7 @@
               <q-btn flat round icon="close" v-close-popup />
             </q-card-section>
 
-            <q-card-section style="max-height: 70vh" class="scroll">
+            <q-card-section style="max-height: 70vh" class="scroll" id="dialogSucursal">
               <q-list bordered separator>
                 <q-item
                   v-for="sucursal in sucursalesFilter"
@@ -151,12 +162,12 @@
         </q-dialog>
       </div>
 
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-2" id="dialogCanal">
         <label for="canal">Filtrar por canal de venta</label>
         <q-select id="canal" dense outlined="" v-model="canal" :options="canales" clearable />
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="col-12 col-md-3" id="dialogTipoPago">
         <label for="tipopago">Filtrar por tipo de pago</label>
         <q-select
           id="tipopago"
@@ -173,6 +184,7 @@
       </div>
     </div>
     <q-table
+      id="tableCredito"
       title="Reporte ventas"
       :rows="filteredCompra"
       :columns="columnas"
@@ -188,7 +200,7 @@
       </template>
       <template #body-cell-acciones="props">
         <q-td align="center">
-          <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" />
+          <q-btn size="sm" icon="visibility" flat @click="verDetalle(props.row)" id="verDetalle" />
           <q-btn
             size="sm"
             icon="email"
@@ -196,6 +208,7 @@
             color="primary"
             @click="crearMensaje(props.row)"
             class="q-ml-sm"
+            id="crearMensaje"
           />
           <q-btn
             v-if="props.row.tipoventa == 1"
@@ -205,6 +218,7 @@
             flat=""
             color="blue"
             @click="ir_a_factura(props.row)"
+            id="ir_a_factura"
           />
           <q-btn
             v-if="props.row.tipoventa == 1"
@@ -214,6 +228,7 @@
             flat=""
             color="warning"
             @click="ir_a_impuestos(props.row)"
+            id="ir_a_impuestos"
           />
           <q-btn
             v-if="props.row.tipoventa == 1"
@@ -221,6 +236,7 @@
             flat=""
             color="orange"
             @click="ir_a_NotaCreditoDebito(props.row)"
+            id="ir_a_NotaCreditoDebito"
           />
         </q-td>
       </template>

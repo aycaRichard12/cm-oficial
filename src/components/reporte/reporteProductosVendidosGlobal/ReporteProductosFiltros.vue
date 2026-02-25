@@ -1,6 +1,6 @@
 <template>
   <div class="row justify-center q-col-gutter-x-md q-mt-md">
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="almacenVendidos">
       <label for="almacen">Filtrar por almacén</label>
       <q-select
         id="almacen"
@@ -13,7 +13,7 @@
         map-options
       />
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="clienteVendidos">
       <label for="cliente">Filtrar por razón social</label>
       <q-select
         id="cliente"
@@ -37,7 +37,7 @@
         </template>
       </q-select>
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-3" id="sucursalVendidos">
       <label for="sucursal">Filtrar por sucursal</label>
       <q-select
         id="sucursal"
