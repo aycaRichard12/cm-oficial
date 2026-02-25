@@ -18,15 +18,15 @@
           <q-card-section>
             <div class="row q-col-gutter-md items-end">
               <!-- Fechas -->
-              <div class="col-12 col-sm-4 col-md-3">
+              <div class="col-12 col-sm-4 col-md-3" id="fechaInicio">
                 <q-input v-model="fechaInicio" type="date" label="Fecha Inicio" outlined dense />
               </div>
-              <div class="col-12 col-sm-4 col-md-3">
+              <div class="col-12 col-sm-4 col-md-3" id="fechaFin">
                 <q-input v-model="fechaFin" type="date" label="Fecha Final" outlined dense />
               </div>
 
               <!-- Botón Generar -->
-              <div class="col-12 col-sm-4 col-md-3">
+              <div class="col-12 col-sm-4 col-md-3" id="btnGenerarReporte">
                 <q-btn
                   color="primary"
                   label="Generar Reporte"
@@ -43,6 +43,7 @@
       <!-- Sección de Tabla -->
       <div class="col-12">
         <BaseFilterableTable
+          id="tablaR"
           title="Reporte Inventario Exterior"
           :rows="datosReporte"
           :columns="columns"
@@ -65,6 +66,7 @@
                 color="primary"
                 icon="picture_as_pdf"
                 @click="verPDF(props.row)"
+                id="btnVerPDF"
               >
                 <q-tooltip>Ver Detalle</q-tooltip>
               </q-btn>

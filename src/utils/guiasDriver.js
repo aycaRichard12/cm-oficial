@@ -8,6 +8,8 @@ export const guiarInicio = async (ruta, nombreExport = 'default') => {
 
     const posiblesSteps = await getGuia(ruta, nombreExport)
 
+    console.log('--- POSIBLES STEPS EXTRAIDOS ---', posiblesSteps)
+
     if (!Array.isArray(posiblesSteps)) {
       console.warn('El módulo no devolvió un array de steps')
       return

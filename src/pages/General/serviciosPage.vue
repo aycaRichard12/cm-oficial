@@ -12,6 +12,7 @@
               </div>
               <div class="col-12 col-md-auto row q-gutter-sm items-center no-wrap">
                 <q-input
+                  id="buscarServicio"
                   v-model="filter"
                   dense
                   outlined
@@ -25,6 +26,7 @@
                   </template>
                 </q-input>
                 <q-btn
+                  id="btnNuevoServicio"
                   color="primary"
                   icon="add"
                   label="Nuevo"
@@ -41,6 +43,7 @@
 
           <!-- Tabla -->
           <q-table
+            id="tablaServicios"
             :rows="services"
             :columns="columns"
             row-key="id"
@@ -72,7 +75,7 @@
 
             <!-- Slot de Estado -->
             <template v-slot:body-cell-estado="props">
-              <q-td :props="props" align="center">
+              <q-td :props="props" align="center" id="estadoServicio">
                 <q-chip
                   clickable
                   @click="toggleStatus(props.row)"
@@ -89,7 +92,7 @@
             <!-- Slot de Acciones -->
             <template v-slot:body-cell-actions="props">
               <q-td :props="props" align="right">
-                <div class="row justify-end q-gutter-x-xs">
+                <div class="row justify-end q-gutter-x-xs" id="accionesServicio">
                   <q-btn
                     flat
                     round

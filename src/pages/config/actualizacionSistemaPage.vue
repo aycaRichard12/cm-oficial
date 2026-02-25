@@ -16,7 +16,7 @@
         </div>
 
         <!-- Navegación de versiones -->
-        <div class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm">
+        <div class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm" id="navegadorVersiones">
           <q-btn
             v-for="version in versiones"
             :key="version.id"
@@ -46,6 +46,7 @@
             <!-- Version Status Banner -->
             <div
               class="row items-center justify-between q-mb-lg bg-white q-pa-md shadow-1 rounded-borders"
+              id="estadoVersion"
             >
               <div class="row items-center q-gutter-x-md">
                 <div class="text-h5 text-weight-bold text-primary">
@@ -69,18 +70,19 @@
             <div v-if="selectedVersion.content !== 'future'">
               <div class="row q-col-gutter-lg">
                 <!-- Feature List -->
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6" id="listaCaracteristicas">
                   <FeatureList :features="selectedVersion.features" />
                 </div>
 
                 <!-- Modules Grid -->
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6" id="modulosActualizados">
                   <ModulesGrid :modules="selectedVersion.modules" />
                 </div>
               </div>
 
               <!-- Video Player -->
               <VideoPlayer
+                id="videoNovedades"
                 v-if="selectedVersion.videoUrl"
                 :video-url="selectedVersion.videoUrl"
                 :title="`Video de Novedades ${selectedVersion.title}`"
