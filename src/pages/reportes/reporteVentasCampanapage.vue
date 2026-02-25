@@ -108,8 +108,8 @@
             :rows="datosFiltrados"
             :columns="columnasTabla"
             row-key="rowKey"
-            :arrayHeaders="['fecha', 'nfactura', 'almacen', 'producto', 'codigo']"
-            :sumColumns="['cantidad', 'subtotalOriginal', 'subtotalCampana', 'descuento']"
+            :arrayHeaders="arrayHeaders"
+            :sumColumns="sumColumns"
             nombreColumnaTotales="codigo"
           />
         </q-card-section>
@@ -144,7 +144,6 @@ import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/Fun
 import { validarUsuario } from 'src/composables/FuncionesG.js'
 import { PDF_REPORTE_CAMPANAS_VENTAS } from 'src/utils/pdfReportGenerator'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const $q = useQuasar()
@@ -165,15 +164,16 @@ const campanaSeleccionadaTexto = computed(() => {
   return selected ? selected.label : ''
 })
 
+
+
 // --- Columnas de la tabla (coinciden con la respuesta real de la API) ---
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'center', sortable: false, style: 'width: 50px' },
+  { name: 'n', label: 'N°', field: 'n', align: 'center', sortable: false, style: 'width: 50px', datatype: 'number'},
   {
     name: 'fecha',
     label: 'Fecha',
     field: 'fecha',
     align: 'left',
-    sortable: true,
     format: (val) => cambiarFormatoFecha(val),
   },
   {
@@ -181,7 +181,7 @@ const columnasTabla = [
     label: 'N° Factura',
     field: 'nfactura',
     align: 'center',
-    sortable: true,
+    
     format: (val) => (val === 0 ? '-' : val),
   },
   {
@@ -189,23 +189,23 @@ const columnasTabla = [
     label: 'Almacén',
     field: 'almacenNombre',
     align: 'left',
-    sortable: true,
+    
   },
   {
     name: 'producto',
     label: 'Producto',
     field: 'productoNombre',
     align: 'left',
-    sortable: true,
+    
   },
   { name: 'codigo', label: 'Código', field: 'productoCodigo', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
+  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
   {
     name: 'precioOriginal',
     label: 'P. Original',
     field: 'precioOriginal',
     align: 'right',
-    sortable: true,
+    
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -213,7 +213,7 @@ const columnasTabla = [
     label: 'P. Campaña',
     field: 'precioCampana',
     align: 'right',
-    sortable: true,
+    
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -221,7 +221,7 @@ const columnasTabla = [
     label: 'Subtot. Original',
     field: 'subtotalOriginal',
     align: 'right',
-    sortable: true,
+    
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -229,7 +229,7 @@ const columnasTabla = [
     label: 'Subtot. Campaña',
     field: 'subtotalCampana',
     align: 'right',
-    sortable: true,
+    
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -237,11 +237,13 @@ const columnasTabla = [
     label: 'Descuento',
     field: 'descuento',
     align: 'right',
-    sortable: true,
+    
     format: (val) => (Number(val) || 0).toFixed(2),
   },
 ]
 
+const arrayHeaders = ['n', 'fecha', 'nfactura', 'almacen', 'producto', 'codigo', 'cantidad', 'precioOriginal' , 'precioCampana', 'subtotalOriginal', 'subtotalCampana', 'descuento']
+const sumColumns = ['cantidad', 'precioOriginal', 'precioCampana', 'subtotalOriginal', 'subtotalCampana', 'descuento']
 // --- Funciones ---
 
 /**
