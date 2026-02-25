@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
-      <div class="text-h5 text-primary text-weight-bold">Reporte de Ventas por Campaña</div>
+      <div class="text-h5 text-primary text-weight-bold">Ventas Registradas en Campaña</div>
     </div>
 
     <!-- Configuración del Reporte -->
@@ -165,8 +165,6 @@ const campanaSeleccionadaTexto = computed(() => {
   return selected ? selected.label : ''
 })
 
-
-
 // --- Columnas de la tabla (coinciden con la respuesta real de la API) ---
 const columnasTabla = [
   { name: 'n', label: 'N°', field: 'n', align: 'center', sortable: false, style: 'width: 50px' },
@@ -243,8 +241,6 @@ const columnasTabla = [
     format: (val) => (Number(val) || 0).toFixed(2),
   },
 ]
-
-
 
 // --- Funciones ---
 

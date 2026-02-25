@@ -1,9 +1,9 @@
 <template>
-  <q-page padding >
+  <q-page padding>
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
-      <div class="text-h5 text-primary text-weight-bold">Reporte Campañas Ventas</div>
+      <div class="text-h5 text-primary text-weight-bold">Reporte de Ventas por Campaña</div>
     </div>
 
     <!-- Filtros y Opciones -->
