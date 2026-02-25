@@ -1,4 +1,4 @@
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
+﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -1192,6 +1192,7 @@ export function generarPdfCotizacion(data) {
   const clienteInfo = cotizacionDetalle.cliente
   const cotizacionInfo = cotizacionDetalle.cotizacion
   const divisaCotizacion = cotizacionDetalle.divisa
+  const almacen = cotizacionDetalle.almacen
   console.log(divisaCotizacion.divisa)
 
   comprobanteData.empresa = {
@@ -1202,7 +1203,7 @@ export function generarPdfCotizacion(data) {
     logoUrl: `.././em/${empresaInfo.logo}`, // Ajusta la URL de la imagen según tu configuración
   }
   comprobanteData.Nro = cotizacionInfo.Nro || '' // Si existe un número de cotización
-  comprobanteData.clienteDisplay = `${clienteInfo.cliente} - ${clienteInfo.nombrecomercial} - ${clienteInfo.sucursal}`
+  comprobanteData.clienteDisplay = `${clienteInfo.nombre} - ${clienteInfo.nombrecomercial} - ${clienteInfo.sucursal}`
   comprobanteData.nit = clienteInfo.nit
   comprobanteData.direccion = clienteInfo.direccion
   comprobanteData.email = clienteInfo.email
@@ -1300,7 +1301,11 @@ export function generarPdfCotizacion(data) {
     campos: [
       {
         label: '',
-        valor: detallePlano.usuario || 'Todos los Almacenes',
+        valor: almacen.almacen,
+      },
+      {
+        label: '',
+        valor: detallePlano.usuario || '',
       },
       {
         label: '',
@@ -3143,8 +3148,10 @@ export function PDF_REPORTE_CAMPANAS(reporte, datosFormulario) {
 
   return doc
 }
-export function PDF_REPORTE_CAMPANAS_VENTAS(reporte, datosFormulario) {
+
+export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+  const { fechaInicio, fechaFin, almacen, usuario } = opciones
 
   const columns = [
     { header: 'N°', dataKey: 'n' },
@@ -3152,67 +3159,142 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(reporte, datosFormulario) {
     { header: 'Campaña', dataKey: 'nombre' },
     { header: 'Fecha Inicio', dataKey: 'fechainicio' },
     { header: 'Fecha Final', dataKey: 'fechafinal' },
-    { header: 'Cantidad de Ventas', dataKey: 'nventas' },
+    { header: 'Cantidad Ventas', dataKey: 'nventas' },
   ]
 
-  const datos = reporte.map((item) => ({
-    n: item.n,
-    almacen: item.almacen,
-    nombre: item.nombre,
-    fechainicio: item.fechainicio,
-    fechafinal: item.fechafinal,
+  const filas = datos.map((item, index) => ({
+    n: index + 1,
+    almacen: item.almacen ?? '-',
+    nombre: item.nombre ?? '-',
+    fechainicio: cambiarFormatoFecha(item.fechainicio),
+    fechafinal: cambiarFormatoFecha(item.fechafinal),
     nventas: item.nventas,
   }))
 
   const columnStyles = {
     n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 40, halign: 'left' },
-    nombre: { cellWidth: 40, halign: 'left' },
-    fechainicio: { cellWidth: 35, halign: 'left' },
-    fechafinal: { cellWidth: 30, halign: 'left' },
-    nventas: { cellWidth: 40, halign: 'right' },
-  }
-  const headerColumnStyles = {
-    n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 40, halign: 'left' },
-    nombre: { cellWidth: 40, halign: 'left' },
-    fechainicio: { cellWidth: 35, halign: 'left' },
-    fechafinal: { cellWidth: 30, halign: 'left' },
-    nventas: { cellWidth: 40, halign: 'right' },
+    almacen: { cellWidth: 42, halign: 'left' },
+    nombre: { cellWidth: 50, halign: 'left' },
+    fechainicio: { cellWidth: 32, halign: 'center' },
+    fechafinal: { cellWidth: 32, halign: 'center' },
+    nventas: { cellWidth: 30, halign: 'right' },
   }
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
-    campos: [{ label: 'Almacen', valor: datosFormulario.almacen || '' }],
-  }
-  const fechas = {
-    inicio: datosFormulario.fechaInicio,
-
-    final: datosFormulario.fechaFin,
-  }
-  const derecho = {
-    titulo: 'DATOS DEL ENCARGADO',
     campos: [
-      { label: '', valor: datosFormulario.usuario.nombre },
-      { label: '', valor: datosFormulario.usuario.cargo },
+      { label: 'Almacén', valor: almacen || '' },
+      { label: 'Fecha Inicio', valor: cambiarFormatoFecha(fechaInicio) || '' },
+      { label: 'Fecha Fin', valor: cambiarFormatoFecha(fechaFin) || '' },
+    ],
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL USUARIO',
+    campos: [
+      { label: 'Usuario', valor: usuario?.nombre || '' },
+      { label: 'Cargo', valor: usuario?.cargo || '' },
     ],
   }
 
   dibujarCuerpoTabla(
     doc,
     columns,
-    datos,
-    'REPORTES CAMPAÑA VENTA',
+    filas,
+    'REPORTE DE VENTAS POR CAMPAÑA',
     columnStyles,
-    headerColumnStyles,
+    { ...columnStyles, nventas: { halign: 'right', cellWidth: 30 } },
     Izquierda,
     derecho,
     false,
-    fechas,
+    null
   )
 
   return doc
 }
+export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+
+  const { fechaInicio, fechaFin, campana, usuario } = opciones
+
+  const columns = [
+    { header: 'N°', dataKey: 'n' },
+    { header: 'Código', dataKey: 'codigo' },
+    { header: 'Producto', dataKey: 'producto' },
+    { header: 'Cant.', dataKey: 'cantidad' },
+    { header: 'Subtot. Orig.', dataKey: 'subtotalOriginal' },
+    { header: 'Subtot. Camp.', dataKey: 'subtotalCampana' },
+    { header: 'Total Descuento', dataKey: 'descuento' },
+  ]
+
+  const filas = datos.map((item, index) => ({
+    n: index + 1,
+    codigo: item.productoCodigo ?? item.codigo ?? '-',
+    producto: item.productoNombre ?? item.producto ?? '-',
+    cantidad: item.cantidad,
+    subtotalOriginal: decimas(item.subtotalOriginal),
+    subtotalCampana: decimas(item.subtotalCampana),
+    descuento: decimas(item.descuento),
+  }))
+
+  const totalSubtotOrig = datos.reduce((acc, i) => acc + Number(i.subtotalOriginal || 0), 0)
+  const totalSubtotCamp = datos.reduce((acc, i) => acc + Number(i.subtotalCampana || 0), 0)
+  const totalDescuento = datos.reduce((acc, i) => acc + Number(i.descuento || 0), 0)
+
+  const filaTotales = crearFilaTotalGeneral(
+    'TOTAL GENERAL',
+    [
+      { valor: totalSubtotOrig, halign: 'right' },
+      { valor: totalSubtotCamp, halign: 'right' },
+      { valor: totalDescuento, halign: 'right' },
+    ],
+    4, // Span over N°, Código, Producto, Cant.
+  )
+  filas.push(filaTotales)
+
+  const columnStyles = {
+    n: { cellWidth: 10, halign: 'center' },
+    codigo: { cellWidth: 25, halign: 'left' },
+    producto: { cellWidth: 55, halign: 'left' },
+    cantidad: { cellWidth: 20, halign: 'right' },
+    subtotalOriginal: { cellWidth: 28, halign: 'right' },
+    subtotalCampana: { cellWidth: 28, halign: 'right' },
+    descuento: { cellWidth: 28, halign: 'right' },
+  }
+
+  const Izquierda = {
+    titulo: 'DATOS DEL REPORTE',
+    campos: [
+      { label: 'Campaña', valor: campana || '' },
+      { label: 'Fecha Inicio', valor: cambiarFormatoFecha(fechaInicio) || '' },
+      { label: 'Fecha Fin', valor: cambiarFormatoFecha(fechaFin) || '' },
+    ],
+  }
+
+  const derecho = {
+    titulo: 'DATOS DEL USUARIO',
+    campos: [
+      { label: 'Usuario', valor: usuario?.nombre || '' },
+      { label: 'Cargo', valor: usuario?.cargo || '' },
+    ],
+  }
+
+  dibujarCuerpoTabla(
+    doc,
+    columns,
+    filas,
+    'REPORTE DE VENTAS POR CAMPAÑA - RESUMEN POR PRODUCTO',
+    columnStyles,
+    { ...columnStyles },
+    Izquierda,
+    derecho,
+    true,
+    null,
+  )
+
+  return doc
+}
+
 export function PDF_REPORTE_MOVIMIENTOS(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   const columns = [
@@ -4510,6 +4592,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
       // },
       // { label: 'Almacén', valor: detalle.almacen || '' },
       { label: 'Nombre Lote', valor: detalle.nombreIngreso || '' },
+      { label: 'Almacen', valor: detalle.almacen || '' },
     ],
   }
 
