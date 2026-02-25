@@ -76,14 +76,14 @@ export function useReporteInventarioExterior() {
       console.log('Generando reporte detallado con endpoint:', endpoint)
       const response = await api.get(endpoint)
       console.log('Datos del reporte detallado recibidos:', response.data)
-      
+
       // Limpiar descripción de productos
       if (response.data && response.data.length > 0 && response.data[0].detalle) {
-        response.data[0].detalle = response.data[0].detalle.map(item => ({
+        response.data[0].detalle = response.data[0].detalle.map((item) => ({
           ...item,
-          descripcion_producto: item.descripcion_producto 
-            ? item.descripcion_producto.replace(/\s+/g, ' ').trim() 
-            : item.descripcion_producto
+          descripcion_producto: item.descripcion_producto
+            ? item.descripcion_producto.replace(/\s+/g, ' ').trim()
+            : item.descripcion_producto,
         }))
       }
 
@@ -102,16 +102,23 @@ export function useReporteInventarioExterior() {
 
     columns: [
       // Columnas reales para la tabla UI
-      { name: 'indice', label: 'Nº', field: 'indice', sortable: true },
-      { name: 'fecha', label: 'Fecha', field: 'fecha_control', sortable: true, dataType: 'date' },
-      { name: 'almacen', label: 'Almacén', field: 'almacen', sortable: true },
-      { name: 'cliente', label: 'Cliente', field: 'cliente', sortable: true },
-      { name: 'sucursal', label: 'Sucursal', field: 'sucursal', sortable: true },
-      { name: 'observaciones', label: 'Obs.', field: 'observaciones' },
+      { name: 'indice', label: 'Nº', field: 'indice', sortable: true, align: 'left' },
+      {
+        name: 'fecha',
+        label: 'Fecha',
+        field: 'fecha_control',
+        sortable: true,
+        dataType: 'date',
+        align: 'left',
+      },
+      { name: 'almacen', label: 'Almacén', field: 'almacen', sortable: true, align: 'left' },
+      { name: 'cliente', label: 'Cliente', field: 'cliente', sortable: true, align: 'left' },
+      { name: 'sucursal', label: 'Sucursal', field: 'sucursal', sortable: true, align: 'left' },
+      { name: 'observaciones', label: 'Obs.', field: 'observaciones', align: 'left' },
       { name: 'ubicacion', label: 'Ubicacion', field: 'ubicacion' },
       { name: 'reporte', label: 'Reporte', field: 'reporte' }, // Added name and label.reporte matching table
     ],
     arrayHeaders: ['fecha', 'almacen', 'cliente', 'sucursal'], // Filtros de columna activados
-    generarReporteDetalladoIExternor
+    generarReporteDetalladoIExternor,
   }
 }

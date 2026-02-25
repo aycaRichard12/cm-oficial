@@ -243,7 +243,7 @@ const search = ref('')
 
 const columns = [
   { name: 'id', label: 'N°', field: (row) => row.numero, align: 'center' },
-  { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
   { name: 'nombre', label: 'Razón Social', field: 'nombre', align: 'left' },
   {
     name: 'nombrecomercial',
