@@ -135,6 +135,7 @@ export const PAGINAS_ICONS = Object.freeze({
   crearcampanas: 'campaign',
   reportedecampanas: 'summarize',
   reportedeventasporcampanas: 'sell',
+  reporteVentasCampana: 'sell',
   //Movimientos
   movimientos: 'swap_horiz',
   reportedemovimientos: 'assessment',
@@ -173,8 +174,16 @@ export const PAGINAS_SELECT = Object.freeze({
     'reporteinventarioexterior',
     'indicesrotacion',
   ]),
-  campanas: Object.freeze(['reportedecampanas', 'reportedeventasporcampanas']),
-  gestioncampanas: Object.freeze(['reportedecampanas', 'reportedeventasporcampanas']),
+  campanas: Object.freeze([
+    'reportedecampanas',
+    'reportedeventasporcampanas',
+    'reporteVentasCampana',
+  ]),
+  gestioncampanas: Object.freeze([
+    'reportedecampanas',
+    'reportedeventasporcampanas',
+    'reporteVentasCampana',
+  ]),
 })
 /**
  * Helper para verificar si una clave existe en los atributos.
