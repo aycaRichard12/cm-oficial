@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from 'boot/axios'
 
 function validarUsuario() {
-  const contenidousuario = JSON.parse(localStorage.getItem('cm-usuario'))
+  const contenidousuario = JSON.parse(localStorage.getItem('mistersofts-cm'))
   if (!contenidousuario) {
     localStorage.clear()
     window.location.assign('../../app/')

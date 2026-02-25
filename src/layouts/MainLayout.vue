@@ -224,8 +224,8 @@ const ocultarTabs = () => {
   tabsVisible.value = false
 }
 const irdashboard = () => {
-  localStorage.removeItem('cm-usuario')
-  localStorage.removeItem('cm-usuariomenu')
+  localStorage.removeItem('mistersofts-cm')
+  localStorage.removeItem('mistersofts-cmmenu')
   localStorage.removeItem('puedeIniciarsesion')
   window.location.replace('/#/login')
 }
@@ -430,7 +430,7 @@ onMounted(async () => {
     }
   }
 
-  const userData = loadData('cm-usuario')
+  const userData = loadData('mistersofts-cm')
   if (userData[0]) {
     nombreUsuario.value = userData[0].nombre || 'Usuario'
     cargo.value = userData[0].cargo || 'Sin cargo'
