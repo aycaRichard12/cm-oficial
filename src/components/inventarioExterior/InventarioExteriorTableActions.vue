@@ -7,6 +7,7 @@
       icon="place"
       @click="$emit('viewMap', row)"
       size="sm"
+      id="btnUbicacion"
     >
       <q-tooltip>Ver Ubicación</q-tooltip>
     </q-btn>
@@ -19,6 +20,7 @@
       @click="$emit('edit', row)"
       size="sm"
       v-if="canEdit"
+      id="btnEditar"
     >
       <q-tooltip>Editar</q-tooltip>
     </q-btn>
@@ -31,6 +33,7 @@
       @click="$emit('delete', row)"
       size="sm"
       v-if="canDelete"
+      id="btnEliminar"
     >
       <q-tooltip>Eliminar</q-tooltip>
     </q-btn>
@@ -44,7 +47,8 @@
         size="sm"
         disable
         v-if="hasEditPerm"
-      >
+        id="btnEditarDeshabilitado"
+        >
         <q-tooltip>Editar</q-tooltip>
       </q-btn>
       <q-btn
@@ -53,6 +57,7 @@
         size="sm"
         disable
         v-if="hasDeletePerm"
+        id="btnEliminarDeshabilitado"
       >
         <q-tooltip>Eliminar</q-tooltip>
       </q-btn>
