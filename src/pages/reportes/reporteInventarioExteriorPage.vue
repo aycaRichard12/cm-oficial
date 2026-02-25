@@ -49,6 +49,13 @@
           :arrayHeaders="arrayHeaders"
           row-key="id"
         >
+          <template v-slot:body-cell-ubicacion="props">
+            <q-td :props="props">
+              <q-btn col="auto" color="info" icon="place" @click="onViewMap(props.row)" size="sm">
+                <q-tooltip>Ver Ubicación</q-tooltip>
+              </q-btn>
+            </q-td>
+          </template>
           <template v-slot:body-cell-reporte="props">
             <q-td :props="props">
               <q-btn
@@ -87,6 +94,11 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <InventarioExteriorMapaDialog
+      v-model="showMapDialog"
+      :latitud="selectedLocation.lat"
+      :longitud="selectedLocation.lng"
+    />
   </q-page>
 </template>
 
@@ -96,6 +108,7 @@ import { useReporteInventarioExterior } from 'src/composables/useReporteInventar
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR } from 'src/utils/pdfReportGenerator.js'
 import { useQuasar } from 'quasar'
+import InventarioExteriorMapaDialog from 'src/components/inventarioExterior/InventarioExteriorMapaDialog.vue'
 
 const $q = useQuasar()
 const showPdfDialog = ref(false)
@@ -129,6 +142,17 @@ const verPDF = async (row) => {
   } finally {
     $q.loading.hide()
   }
+}
+const showMapDialog = ref(false)
+
+const selectedLocation = ref({ lat: '', lng: '' })
+
+const onViewMap = (row) => {
+  selectedLocation.value = {
+    lat: row.latitud, // Ensure 'latitud' is in 'row' (from inventarioData mapping)
+    lng: row.longitud,
+  }
+  showMapDialog.value = true
 }
 
 console.log('nuevos datos', columns)

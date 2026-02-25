@@ -2,7 +2,11 @@
   <q-page padding>
     <div class="titulo">Reporte Compras</div>
     <q-form>
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center" id="filtroFechas">
+      <div
+        class="row q-col-gutter-md"
+        style="display: flex; justify-content: center"
+        id="filtroFechas"
+      >
         <div class="col-12 col-md-4">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
@@ -13,8 +17,29 @@
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="generarReporte"/>
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" id="exportarExcel"/>
+        <q-btn
+          color="primary"
+          label="Generar reporte"
+          @click="generarReporte"
+          class="q-mr-sm"
+          id="generarReporte"
+        />
+        <q-btn
+          color="secondary"
+          label="Exportar a Excel"
+          @click="exportarExcel"
+          id="exportarExcel"
+        />
+      </div>
+      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
+        <div>
+          <label for="buscar">Buscar...</label>
+          <q-input dense debounce="300" v-model="search" id="buscar" outlined>
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
       </div>
     </q-form>
 
@@ -23,13 +48,14 @@
       title="Reporte de Compras"
       :rows="datosFiltrados"
       :columns="columnas"
+      :filter="search"
       row-key="codigo"
       class="q-mt-lg"
     >
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props">
           <q-btn
-          id="verDetallePDF"
+            id="verDetallePDF"
             flat
             round
             dense
@@ -82,7 +108,7 @@ const idusuario = idusuario_md5()
 const startDate = ref(null)
 const endDate = ref(null)
 const datosFiltrados = ref([])
-
+const search = ref('')
 const columnas = [
   {
     name: 'num',

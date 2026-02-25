@@ -1192,6 +1192,7 @@ export function generarPdfCotizacion(data) {
   const clienteInfo = cotizacionDetalle.cliente
   const cotizacionInfo = cotizacionDetalle.cotizacion
   const divisaCotizacion = cotizacionDetalle.divisa
+  const almacen = cotizacionDetalle.almacen
   console.log(divisaCotizacion.divisa)
 
   comprobanteData.empresa = {
@@ -1202,7 +1203,7 @@ export function generarPdfCotizacion(data) {
     logoUrl: `.././em/${empresaInfo.logo}`, // Ajusta la URL de la imagen según tu configuración
   }
   comprobanteData.Nro = cotizacionInfo.Nro || '' // Si existe un número de cotización
-  comprobanteData.clienteDisplay = `${clienteInfo.cliente} - ${clienteInfo.nombrecomercial} - ${clienteInfo.sucursal}`
+  comprobanteData.clienteDisplay = `${clienteInfo.nombre} - ${clienteInfo.nombrecomercial} - ${clienteInfo.sucursal}`
   comprobanteData.nit = clienteInfo.nit
   comprobanteData.direccion = clienteInfo.direccion
   comprobanteData.email = clienteInfo.email
@@ -1300,7 +1301,11 @@ export function generarPdfCotizacion(data) {
     campos: [
       {
         label: '',
-        valor: detallePlano.usuario || 'Todos los Almacenes',
+        valor: almacen.almacen,
+      },
+      {
+        label: '',
+        valor: detallePlano.usuario || '',
       },
       {
         label: '',
@@ -4510,6 +4515,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
       // },
       // { label: 'Almacén', valor: detalle.almacen || '' },
       { label: 'Nombre Lote', valor: detalle.nombreIngreso || '' },
+      { label: 'Almacen', valor: detalle.almacen || '' },
     ],
   }
 
