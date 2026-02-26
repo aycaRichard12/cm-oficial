@@ -264,10 +264,12 @@ const selectLeyendaSIN = async () => {
     const endpoint = `${URL_APICM}/api/listaLeyendaSIN/leyendas/${token}/${tipo}`
     const resultado = await peticionGET(endpoint)
     if (resultado[0] === 'error') {
-      $q.notify({
-        type: 'negative',
-        message: resultado.error || 'Error al cargar leyendas SIN',
-      })
+      if (token) {
+        $q.notify({
+          type: 'negative',
+          message: resultado.error || 'Error al cargar leyendas SIN',
+        })
+      }
     } else {
       leyendasSINOptions.value = resultado.data.map((item) => ({
         label: `${item.codigoActividad} - ${item.descripcion}`,
@@ -277,10 +279,13 @@ const selectLeyendaSIN = async () => {
     }
   } catch (error) {
     console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: 'Error de red al cargar leyendas SIN',
-    })
+    const contenidousuario = validarUsuario()
+    if (contenidousuario[0]?.factura?.access_token) {
+      $q.notify({
+        type: 'negative',
+        message: 'Error de red al cargar leyendas SIN',
+      })
+    }
   }
 }
 //$controlador->registroLeyendaFactura($_POST['nombre'], $_POST['codigosin'], $_POST['idempresa']);
@@ -332,19 +337,24 @@ const listarDatos = async () => {
     const endpoint = `${URL_APICM}/api/listaLeyendaFactura/${idempresa}/${token}/${tipo}`
     const resultado = await peticionGET(endpoint)
     if (resultado[0] === 'error') {
-      $q.notify({
-        type: 'negative',
-        message: resultado.error || 'Error al cargar datos',
-      })
+      if (token) {
+        $q.notify({
+          type: 'negative',
+          message: resultado.error || 'Error al cargar datos',
+        })
+      }
     } else {
       leyendas.value = resultado
     }
   } catch (error) {
     console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: 'Error de red al listar datos',
-    })
+    const contenidousuario = validarUsuario()
+    if (contenidousuario[0]?.factura?.access_token) {
+      $q.notify({
+        type: 'negative',
+        message: 'Error de red al listar datos',
+      })
+    }
   }
 }
 
