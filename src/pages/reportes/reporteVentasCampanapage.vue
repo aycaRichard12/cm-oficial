@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding id="reporteDetalleVentas">
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
@@ -17,8 +17,9 @@
         <q-form @submit.prevent="handleGenerarReporte">
           <div class="row q-col-gutter-md">
             <!-- Campaña -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4"  id="filtroSelectCampana">
               <q-select
+                
                 v-model="campanaSeleccionada"
                 :options="opcionesCampanas"
                 label="Campaña *"
@@ -37,10 +38,10 @@
             </div>
 
             <!-- Fecha Inicial -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4"    id="fechaIni">
               <q-input
                 v-model="fechaInicio"
-                id="fechaIni"
+             
                 type="date"
                 label="Fecha Inicial *"
                 outlined
@@ -55,10 +56,10 @@
             </div>
 
             <!-- Fecha Final -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaFin">
               <q-input
                 v-model="fechaFin"
-                id="fechafin"
+            
                 type="date"
                 label="Fecha Final *"
                 outlined
@@ -75,6 +76,7 @@
 
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
+              id="btnGenerarDetalle"
               label="Generar Reporte"
               color="primary"
               unelevated
@@ -82,6 +84,7 @@
               :loading="cargandoData"
             />
             <q-btn
+              id="btnExportarDetalle"
               label="Exportar PDF"
               icon="picture_as_pdf"
               color="negative"
@@ -103,6 +106,7 @@
         </q-card-section>
         <q-card-section>
           <BaseFilterableTable
+            id="tableReporteVentas"
             ref="tableRef"
             title=""
             :rows="datosFiltrados"
