@@ -39,7 +39,7 @@
         <q-td 
           v-for="(col, index) in columns" 
           :key="col.name" 
-          class="text-right"
+          :class="col.name === props.nombreColumnaTotales ? 'text-right q-pr-md' : 'text-' + (col.align || 'left')"
           :colspan="col.name === props.nombreColumnaTotales ? 2 : 1"
           v-show="columns[index + 1]?.name !== props.nombreColumnaTotales"
         >
