@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding id="reporteVentasPorCampana">
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
@@ -15,9 +15,9 @@
 
       <q-card-section>
         <q-form @submit.prevent="handleGenerarReporte">
-          <div class="row q-col-gutter-md">
+          <div id="filtroFechasVentas" class="row q-col-gutter-md">
             <!-- Fecha Inicial -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaInicio">
               <q-input
                 v-model="fechaInicio"
                 id="fechaIni"
@@ -35,7 +35,7 @@
             </div>
 
             <!-- Fecha Final -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaFin">
               <q-input
                 v-model="fechaFin"
                 id="fechafin"
@@ -54,6 +54,7 @@
           </div>
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
+              id="btnGenerarVentas"
               label="Generar Reporte"
               
               color="primary"
@@ -62,6 +63,7 @@
               :loading="cargandoData"
             />
             <q-btn
+              id="btnExportarVentas"
               label="Exportar PDF"
               icon="picture_as_pdf"
               color="negative"
@@ -83,7 +85,7 @@
           </div>
           <!-- Filtros de búsqueda (Almacén y Texto) -->
           <div class="col-12 col-sm-auto row q-gutter-sm justify-end">
-            <div style="min-width: 250px" class="q-mb-sm">
+            <div style="min-width: 250px" class="q-mb-sm" id="filtroAlmacen">
               <q-select
                 v-model="almacenSeleccionado"
                 :options="opcionesAlmacenes"
@@ -101,7 +103,7 @@
               </q-select>
             </div>
             
-            <div style="min-width: 250px" class="q-mb-sm">
+            <div style="min-width: 250px" class="q-mb-sm" id="filtroBusqueda">
               <q-input
                 v-model="busqueda"
                 label="Buscar en Resultados..."
@@ -122,6 +124,7 @@
 
       <q-card-section>
         <BaseFilterableTable
+          id="tableReporteVentas"
           ref="tableRef"
           title="Resumen de Ventas por Campaña"
           :rows="datosFiltrados"
