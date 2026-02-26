@@ -37,30 +37,12 @@
       </div>
 
       <div class="row q-gutter-sm justify-center q-mt-lg">
-        <q-btn color="primary" label="Vista previa del Reporte" @click="vistaPrevia" id="vistaPrevia" />
-        <q-btn color="primary" label="Reporte Con imagen" @click="reporteImage" id="reporteImage" />
-        <q-btn color="primary" label="Catalogo" @click="vistaCatalogo" id="vistaCatalogo" />
+        <q-btn color="primary" label="Vista Previa" @click="vistaPrevia" id="vistaPrevia" />
+        <q-btn color="primary" label="Reporte con imágen" @click="reporteImage" id="reporteImage" />
+        <q-btn color="primary" label="Catálogo" @click="vistaCatalogo" id="vistaCatalogo" />
       </div>
     </q-form>
 
-    <q-form class="q-my-md">
-      <div class="row q-col-gutter-md" id="filtrosStock">
-        <div class="col-12 col-md-6">
-          <label for="filtrarporestado">Filtrar por estado del producto</label>
-          <q-select
-            v-model="filtroEstado"
-            id="filtrarporestado"
-            :options="estados"
-            dense
-            outlined
-          />
-        </div>
-        <div class="col-12 col-md-6">
-          <label for="filtrarpororden">Ordenar por stock de manera</label>
-          <q-select v-model="filtroOrden" id="filtrarpororden" :options="ordenes" dense outlined />
-        </div>
-      </div>
-    </q-form>
     <div class="row q-col-gutter-x-md flex justify-end">
       <div class="col-12 col-md-4" id="buscador">
         <label for="buscar">Buscar...</label>
@@ -133,8 +115,7 @@ import { useQuasar } from 'quasar'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import { imagen } from 'src/boot/url'
-import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
-import { PDFreporteStockProductosIndividual_img } from 'src/utils/pdfReportGenerator'
+import { PDFreporteStockProductosIndividual, PDFreporteStockProductosIndividual_img, getLogoBase64 } from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -146,26 +127,9 @@ const contenidousuario = validarUsuario()
 const idempresa = contenidousuario[0]?.empresa?.idempresa
 const idusuario = contenidousuario[0]?.idusuario
 const form = ref({})
-const filtroEstado = ref(null)
-const filtroOrden = ref(null)
 const almacenes = ref([])
 const search = ref('')
 const divisaActiva = useCurrencyStore().simbolo
-const filtros = ref({
-  estado: '0',
-  orden: '1',
-})
-
-const estados = [
-  { label: 'Todos', value: '0' },
-  { label: 'Activos', value: '1' },
-  { label: 'Inactivos', value: '2' },
-]
-
-const ordenes = [
-  { label: 'Descendente', value: '1' },
-  { label: 'Ascendente', value: '2' },
-]
 
 const datos = ref([])
 
@@ -198,6 +162,7 @@ const definicionColumnas = [
     field: 'estado',
     align: 'left',
     datatype: 'text',
+    sortable: true,
   },
   {
     name: 'stock',
@@ -205,11 +170,12 @@ const definicionColumnas = [
     field: 'stock',
     align: 'right',
     dataType: 'number',
+    sortable: true,
     format: (val) => decimas(val),
   },
   {
     name: 'costounitario',
-    label: `C. Unit. (${divisaActiva})`,
+    label: `Costo Unit. (${divisaActiva})`,
     field: 'costounitario',
     align: 'right',
     dataType: 'number',
@@ -278,7 +244,7 @@ async function cargarAlmacenes() {
 
 // Métodos simulados
 const generarReporte = async () => {
-  console.log('Generando reporte', form.value?.almacen, filtros.value)
+  console.log('Generando reporte', form.value?.almacen)
   try {
     const point = `reporteproductoalmacen/${form.value?.almacen}/${idempresa}/${fechaFin.value}`
     console.log(point)
@@ -292,20 +258,6 @@ const generarReporte = async () => {
 }
 const processedRows = computed(() => {
   let rows = [...datos.value]
-  console.log(filtroEstado.value?.value)
-  // Filtrar por estado
-  if (filtroEstado.value && Number(filtroEstado.value?.value) !== 0) {
-    console.log('ok')
-    rows = rows.filter((item) => Number(item.estado) === Number(filtroEstado.value?.value))
-    console.log(rows)
-  }
-
-  // Ordenar por stock
-  if (Number(filtroOrden.value?.value) === 1) {
-    rows.sort((a, b) => b.stock - a.stock)
-  } else if (Number(filtroOrden.value?.value) === 2) {
-    rows.sort((a, b) => a.stock - b.stock)
-  }
 
   return rows.map((item, index) => ({
     ...item,
@@ -369,79 +321,166 @@ const vistaCatalogo = async () => {
   const contenidousuario = validarUsuario()
   const doc = new jsPDF({ orientation: 'portrait' })
   const productos = await prepararImagenes() // ahora tienen `imagenBase64`
+  
   const idempresa = contenidousuario[0]
-  const nombreEmpresa = idempresa.empresa.nombre
-  const direccionEmpresa = idempresa.empresa.direccion
-  const telefonoEmpresa = idempresa.empresa.telefono
-  //const logoEmpresa = idempresa.empresa.logo // Ruta relativa o base64
+  const empresa = idempresa.empresa
 
-  // if (logoEmpresa) {
-  //   console.log(`${URL_APIE}${logoEmpresa}`)
-  //   doc.addImage(`${URL_APIE}${logoEmpresa}`, 'PNG', 180, 8, 20, 20)
-  // }
-  doc.setFontSize(7)
+  const pageWidth = doc.internal.pageSize.getWidth()
+  
+  // LOGO de la Empresa (Centrado)
+  const logo = getLogoBase64()
+  if (logo) {
+    const imgWidth = 20
+    const imgHeight = 20
+    const xPos = (pageWidth - imgWidth) / 2
+    doc.addImage(logo, 'PNG', xPos, 5, imgWidth, imgHeight, undefined, 'FAST')
+  }
+
+  // Textos de Empresa (Lado Izquierdo)
+  doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
-  doc.text(nombreEmpresa, 10, 10)
-
-  doc.setFontSize(6)
+  doc.setTextColor(0, 0, 0)
+  doc.text(empresa.nombre || '', 10, 10)
+  
+  doc.setFontSize(8)
   doc.setFont(undefined, 'normal')
-  doc.text(direccionEmpresa, 10, 13)
-  doc.text(`Tel: ${telefonoEmpresa}`, 10, 16)
+  doc.text(empresa.direccion || '', 10, 13)
+  doc.text(empresa.oestado || '', 10, 16)
+  doc.text(empresa.ociudad || '', 10, 19)
+  doc.text(empresa.opais || '', 10, 22)
 
-  // Título centrado
-  doc.setFontSize(10)
+  // Datos Derecho
+  doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
-  doc.text('CATALOGO PRODUCTOS', doc.internal.pageSize.getWidth() / 2, 15, {
-    align: 'center',
-  })
-  let startY = 50
+  doc.text('NIT:' + (empresa.nit || ''), pageWidth - 10, 10, { align: 'right' })
+
+  doc.setFontSize(8)
+  doc.setFont(undefined, 'normal')
+  doc.text('Telf.: ' + (empresa.telefono || ''), pageWidth - 10, 13, { align: 'right' })
+  doc.text('Cel.: ' + (empresa.ocelular || ''), pageWidth - 10, 16, { align: 'right' })
+  doc.text(empresa.email || '', pageWidth - 10, 19, { align: 'right' })
+  doc.text(empresa.ositioweb || '', pageWidth - 10, 22, { align: 'right' })
+
+  // Línea Recta de la Cabecera
+  doc.setDrawColor(0)
+  doc.setLineWidth(0.2)
+  doc.line(10, 25, pageWidth - 10, 25)
+
+  // -------------------------
+  // TÍTULO CENTRADO
+  // -------------------------
+  doc.setFontSize(11)
+  doc.setFont(undefined, 'bold')
+  doc.text('CATÁLOGO DE PRODUCTOS', pageWidth / 2, 30, { align: 'center' })
+
+  // -------------------------
+  // DATOS DEL REPORTE (Izquierda)
+  // -------------------------
+  doc.setFontSize(8)
+  doc.setFont(undefined, 'bold')
+  doc.text('DATOS DEL REPORTE:', 10, 39)
+  
+  doc.setFont(undefined, 'normal')
+  let almacenName = almacenes.value.find(a => a.value === form.value.almacen)?.label || 'Todos los Almacenes'
+  doc.text(`Almacén: ${almacenName}`, 10, 42)
+
+  // -------------------------
+  // DATOS DEL ENCARGADO
+  // -------------------------
+  doc.setFont(undefined, 'bold')
+const xRight = pageWidth / 2 + 57
+
+doc.text('DATOS DEL ENCARGADO:', xRight, 39)
+doc.setFont(undefined, 'normal')
+doc.text(idempresa.nombre || '', xRight, 42)
+doc.text(idempresa.cargo || '', xRight, 45)
+  // Parametros Grilla
+  let startY = 55
+  let anchoTarjeta = 85
+  let altoTarjeta = 55
+  let colIndex = 0
 
   productos.forEach((item) => {
-    const margenIzq = 10
-    const margenDer = 120
-    const paginaAlto = doc.internal.pageSize.getHeight()
-
-    // 1. Verificar si hay espacio para el siguiente bloque (aprox 50 unidades)
-    if (startY + 50 > paginaAlto) {
+    // Control de paginado
+    if (startY + altoTarjeta > doc.internal.pageSize.getHeight() - 10) {
       doc.addPage()
       startY = 20
+      colIndex = 0
     }
 
+    let x = colIndex === 0 ? 15 : 110
+    let y = startY
+
+    // 1. Contenedor de Tarjeta (Borde Suave y Fondo)
+    doc.setDrawColor(200, 200, 200)
+    doc.setFillColor(252, 252, 252)
+    doc.roundedRect(x, y, anchoTarjeta, altoTarjeta, 3, 3, 'FD')
+
+    // 2. Título de Tarjeta
     doc.setFontSize(9)
     doc.setFont(undefined, 'bold')
-    doc.text(`Producto: ${item.producto}`, margenIzq, startY)
+    doc.setTextColor(30, 30, 30)
+    let tituloExt =
+      item.producto.length > 40 ? item.producto.substring(0, 37) + '...' : item.producto
+    doc.text(tituloExt, x + 3, y + 6)
+    doc.setDrawColor(220, 220, 220)
+    doc.line(x, y + 8, x + anchoTarjeta, y + 8)
 
-    doc.setFont(undefined, 'normal')
-    doc.setFontSize(8)
+    // 3. Contenido Detalles
+    doc.setFontSize(7)
+    doc.setTextColor(60, 60, 60)
 
-    // Listado de datos (usando un pequeño bucle o manual como tenías)
-    const datos = [
-      `Código: ${item.codigo}`,
-      `Categoría: ${item.categoria}`,
-      `Subcategoría: ${item.subcategoria}`,
-      `Descripción: ${item.descripcion}`,
-      `Unidad: ${item.unidad}`,
-      `Stock: ${item.stock}`,
-      `Costo Unitario: ${item.costounitario}`,
-      `Estado: ${item.estado == 1 ? 'Activo' : 'No activo'}`,
-    ]
-
-    datos.forEach((texto, index) => {
-      doc.text(texto, margenIzq, startY + 5 + index * 5)
-    })
-
-    // 2. Manejo de la Imagen
+    // 4. Imagen o Placeholder
     if (item.imagenBase64) {
       try {
-        // 'FAST' ayuda si el PDF se vuelve muy pesado
-        doc.addImage(item.imagenBase64, 'JPEG', margenDer, startY, 60, 40, undefined, 'FAST')
+        doc.addImage(item.imagenBase64, 'JPEG', x + 3, y + 12, 35, 30, undefined, 'FAST')
       } catch (e) {
-        console.error('Error al añadir imagen para el producto:', item.producto, e)
-        doc.text('[Imagen no disponible]', margenDer, startY + 20)
+        doc.setFillColor(240, 240, 240)
+        doc.rect(x + 3, y + 12, 35, 30, 'F')
+        doc.text('Error Img', x + 10, y + 27, e)
       }
+    } else {
+      doc.setFillColor(240, 240, 240)
+      doc.rect(x + 3, y + 12, 35, 30, 'F')
+      doc.text('Sin Imagen', x + 10, y + 27)
     }
 
-    startY += 55 // Espaciado entre productos
+    // 5. Textos al lado de la imagen
+    let txtX = x + 40
+    let txtY = y + 15
+    doc.setFont(undefined, 'normal')
+    doc.text('Cod: ' + item.codigo, txtX, txtY)
+    doc.text('Cat: ' + item.categoria, txtX, txtY + 4)
+    doc.text('Sub: ' + item.subcategoria, txtX, txtY + 8)
+    doc.text('Und: ' + item.unidad, txtX, txtY + 12)
+    doc.text('Estado: ' + (item.estado == 1 ? 'Activo' : 'Inactivo'), txtX, txtY + 16)
+
+    // Destacar Stock y Precio
+    doc.setFont(undefined, 'bold')
+    doc.text('Stock: ' + item.stock, txtX, txtY + 22)
+    doc.setTextColor(0, 100, 0) // verde para coste
+    doc.text('Costo U.: ' + divisaActiva + ' ' + item.costounitario, txtX, txtY + 26)
+
+    // 6. Descripción abajo
+    doc.setTextColor(110, 110, 110)
+    doc.setFont(undefined, 'italic')
+    doc.setFontSize(6)
+    let desc =
+      item.descripcion && item.descripcion !== 'null'
+        ? item.descripcion
+        : 'Sin descripción particular'
+    let textLines = doc.splitTextToSize(desc, anchoTarjeta - 6)
+    // Mostramos máximo 2 líneas para no desbordar la tarjeta
+    if (textLines.length > 2) textLines = [textLines[0], textLines[1] + '...']
+    doc.text(textLines, x + 3, y + 46)
+
+    // 7. Actualizar indices
+    colIndex++
+    if (colIndex > 1) {
+      // 2 columnas
+      colIndex = 0
+      startY += altoTarjeta + 8
+    }
   })
 
   pdfData.value = doc.output('dataurlstring')
