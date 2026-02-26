@@ -76,7 +76,6 @@
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
               label="Generar Reporte"
-              icon="search"
               color="primary"
               unelevated
               type="submit"
@@ -104,6 +103,7 @@
         </q-card-section>
         <q-card-section>
           <BaseFilterableTable
+            ref="tableRef"
             title=""
             :rows="datosFiltrados"
             :columns="columnasTabla"
@@ -147,6 +147,7 @@ import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTab
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const $q = useQuasar()
+const tableRef = ref(null)
 
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
@@ -400,7 +401,9 @@ async function handleGenerarReporte() {
  * Maneja el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
+  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  
+  if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
       message: 'No hay datos para mostrar en el reporte.',
@@ -408,7 +411,7 @@ function handleVerReporte() {
     })
     return
   }
-  const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFiltrados.value, {
+  const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFinales, {
     fechaInicio: fechaInicio.value,
     fechaFin: fechaFin.value,
     campana: campanaSeleccionadaTexto.value,

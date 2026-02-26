@@ -55,7 +55,7 @@
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
               label="Generar Reporte"
-              icon="search"
+              
               color="primary"
               unelevated
               @click="handleGenerarReporte"
@@ -77,48 +77,61 @@
     <!-- Resultados -->
     <q-card v-if="reporteGenerado" class="shadow-2 rounded-borders">
       <q-card-section class="q-pb-none">
-        <div class="row items-center justify-between">
-          <div class="text-h6 text-primary text-weight-bold row items-center q-mb-sm">
+        <div class="row items-center justify-between q-col-gutter-sm">
+          <div class="col-12 col-sm-auto text-h6 text-primary text-weight-bold row items-center q-mb-sm">
             <q-icon name="list_alt" size="sm" class="q-mr-sm" /> Resultados
           </div>
-          <!-- Filtro de almacén integrado en la cabecera -->
-          <div style="min-width: 250px" class="q-mb-sm">
-            <q-select
-              v-model="almacenSeleccionado"
-              :options="opcionesAlmacenes"
-              label="Filtrar por Almacén"
-              emit-value
-              map-options
-              outlined
-              dense
-              color="primary"
-            >
-              <template v-slot:prepend>
-                <q-icon name="storefront" />
-              </template>
-            </q-select>
+          <!-- Filtros de búsqueda (Almacén y Texto) -->
+          <div class="col-12 col-sm-auto row q-gutter-sm justify-end">
+            <div style="min-width: 250px" class="q-mb-sm">
+              <q-select
+                v-model="almacenSeleccionado"
+                :options="opcionesAlmacenes"
+                label="Filtrar por Almacén"
+                emit-value
+                map-options
+                outlined
+                dense
+                color="primary"
+                clearable
+              >
+                <template v-slot:prepend>
+                  <q-icon name="storefront" />
+                </template>
+              </q-select>
+            </div>
+            
+            <div style="min-width: 250px" class="q-mb-sm">
+              <q-input
+                v-model="busqueda"
+                label="Buscar en Resultados..."
+                outlined
+                dense
+                color="primary"
+                debounce="300"
+                clearable
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
           </div>
         </div>
       </q-card-section>
 
       <q-card-section>
-        <q-table
+        <BaseFilterableTable
+          ref="tableRef"
+          title="Resumen de Ventas por Campaña"
           :rows="datosFiltrados"
           :columns="columnasTabla"
-          row-key="id"
-          flat
-          bordered
-          separator="cell"
-          table-header-class="bg-blue-grey-1 text-primary text-weight-bold"
-          :pagination="{ rowsPerPage: 15 }"
-        >
-          <template v-slot:no-data>
-            <div class="full-width row flex-center q-gutter-sm q-pa-xl text-grey-7">
-              <q-icon name="search_off" size="xl" />
-              <div class="text-h6">No hay datos para mostrar.</div>
-            </div>
-          </template>
-        </q-table>
+          :arrayHeaders="['n', 'almacen', 'nombre', 'fechainicio', 'fechafinal', 'nventas']"
+          :sumColumns="['nventas']"
+          rowKey="id"
+          :search="busqueda"
+          nombreColumnaTotales="fechafinal"
+        />
       </q-card-section>
     </q-card>
 
@@ -149,17 +162,20 @@ import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG.js'
 import { validarUsuario } from 'src/composables/FuncionesG.js'
 import { PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS } from 'src/utils/pdfReportGenerator'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 //pedf
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 
 const $q = useQuasar()
+const tableRef = ref(null)
 
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
 const fechaFin = ref(obtenerFechaActualDato())
 const almacenSeleccionado = ref('0') // "0" para "Todos los almacenes"
+const busqueda = ref('') // Nuevo estado para búsqueda de texto
 const opcionesAlmacenes = ref([])
 const datosOriginales = ref([])
 const datosFiltrados = ref([])
@@ -191,12 +207,12 @@ const columnasTabla = [
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
-  { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'left' },
+  { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'center' },
 ]
 
 // --- Watchers ---
-watch(almacenSeleccionado, (newVal) => {
-  filtrarYOrdenarDatos(newVal)
+watch([almacenSeleccionado, busqueda], () => {
+  filtrarYOrdenarDatos()
 })
 
 // --- Funciones ---
@@ -321,15 +337,29 @@ async function generarReporte() {
 }
 
 /**
- * Filtra los datos del reporte según el almacén seleccionado.
- * @param {string} dato - El ID del almacén o "0" para todos.
+ * Filtra los datos del reporte combinando almacén seleccionado y el texto de búsqueda.
  */
-function filtrarYOrdenarDatos(dato) {
-  if (dato === '0') {
-    datosFiltrados.value = [...datosOriginales.value]
-  } else {
-    datosFiltrados.value = datosOriginales.value.filter((u) => String(u.idalmacen) === String(dato))
+function filtrarYOrdenarDatos() {
+  let resultado = [...datosOriginales.value]
+
+  // 1. Filtrar por almacén
+  if (almacenSeleccionado.value && almacenSeleccionado.value !== '0') {
+    resultado = resultado.filter((u) => String(u.idalmacen) === String(almacenSeleccionado.value))
   }
+
+  // 2. Filtrar por búsqueda de texto
+  if (busqueda.value && busqueda.value.trim() !== '') {
+    const term = busqueda.value.toLowerCase().trim()
+    resultado = resultado.filter((u) => {
+      return (
+        (u.almacen && u.almacen.toLowerCase().includes(term)) ||
+        (u.nombre && u.nombre.toLowerCase().includes(term)) ||
+        (u.nventas && String(u.nventas).toLowerCase().includes(term))
+      )
+    })
+  }
+
+  datosFiltrados.value = resultado
 }
 
 /**
@@ -346,14 +376,15 @@ async function handleGenerarReporte() {
  * Maneja el clic en el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
+  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
       message: 'No se ha generado ningún reporte o el reporte está vacío.',
       position: 'top',
     })
   } else {
-    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFiltrados.value, {
+    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFinales, {
       fechaInicio: fechaInicio.value,
       fechaFin: fechaFin.value,
       almacen: almacenSeleccionadoTexto.value,
