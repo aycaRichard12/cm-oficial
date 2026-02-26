@@ -40,7 +40,7 @@
           <span v-if="totales[col.name] !== undefined">
             {{ totales[col.name] }}
           </span>
-          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold">
+          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold" style="white-space: nowrap;">
             Total General :
           </span>
           <span v-else></span>
