@@ -164,14 +164,21 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     const response = await api.post('', formData)
     console.log(response.data)
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: response.data.mensaje || mensajeExito })
+      let msg = response.data.mensaje || mensajeExito
+      // Override typical warning message
+      if (msg && msg.includes('Advertencia')) {
+        msg = 'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
+      }
+      $q.notify({ type: 'positive', message: msg })
       almacenSeleccionado.value = almacenes.value.find((almacen) => almacen.value === data.almacen)
       console.log(almacenSeleccionado.value)
       //iniciar()
 
       return response
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje || mensajeError })
+      let errorMsg = response.data.mensaje || mensajeError
+      if (errorMsg) errorMsg = errorMsg.replace(/¡?Advertencia!?\s*:?\s*/ig, '')
+      $q.notify({ type: 'negative', message: errorMsg })
     }
   } catch (error) {
     console.error('Error en API:', error)
