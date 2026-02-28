@@ -1,7 +1,7 @@
 <template>
   <q-form @submit="handleSubmit">
     <q-card-section class="row q-col-gutter-x-md">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
         <label for="parametro">Parámetro*</label>
         <q-input
           v-model="localData.nombre"
@@ -11,7 +11,16 @@
           dense
         />
       </div>
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
+        <label for="descripcion">Descripción</label>
+        <q-input
+          v-model="localData.descripcion"
+          id="descripcion"
+          outlined
+          dense
+        />
+      </div>
+      <div class="col-12 col-md-3">
         <label for="valor">Valor*</label>
         <q-input
           v-model="localData.valor"
@@ -21,7 +30,7 @@
           dense
         />
       </div>
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
         <label for="color">Color*</label>
         <q-select
           v-model="localData.color"

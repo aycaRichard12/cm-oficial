@@ -78,6 +78,7 @@ const editUnit = (item) => {
     ver: 'editarParametro',
     idempresa: idempresa,
     nombre: item.nombre,
+    descripcion: item.descripcion,
     valor: item.valor,
     color: item.color,
     id: item.id,
