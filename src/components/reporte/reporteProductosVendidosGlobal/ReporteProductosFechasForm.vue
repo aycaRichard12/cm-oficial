@@ -1,7 +1,7 @@
 <template>
   <q-form @submit.prevent="$emit('generar')">
     <div class="row flex justify-center q-col-gutter-x-md">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="fechaini">
         <label for="fechaini">Fecha Inicial*</label>
         <q-input
           outlined
@@ -25,7 +25,7 @@
         </q-input>
       </div>
 
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-4" id="fechafin">
         <label for="fechafin">Fecha Final*</label>
         <q-input
           outlined
@@ -54,13 +54,14 @@
     </div>
 
     <div class="row justify-center q-mt-md">
-      <q-btn label="Generar reporte" type="submit" color="primary" class="q-mr-sm" />
+      <q-btn label="Generar reporte" type="submit" color="primary" class="q-mr-sm" id="generar" />
       <q-btn
         label="Exportar a Excel"
         color="primary"
         @click="$emit('exportar')"
         :disable="disableExport"
-      />
+        id="exportar"
+        />
     </div>
   </q-form>
 </template>

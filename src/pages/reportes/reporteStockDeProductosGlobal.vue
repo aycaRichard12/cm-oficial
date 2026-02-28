@@ -10,7 +10,7 @@
     <q-card class="q-mb-md" flat bordered>
       <q-card-section>
         <div class="row q-col-gutter-md items-center">
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" id="fechaFinal">
             <q-input
               v-model="fechaFin"
               label="Fecha Final*"
@@ -21,7 +21,7 @@
               @update:model-value="generarReporte"
             />
           </div>
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" id="almacen">
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
@@ -35,7 +35,7 @@
               @update:model-value="generarReporte"
             />
           </div>
-           <div class="col-12 col-md-3">
+           <div class="col-12 col-md-3" id="estado">
               <q-select
                 v-model="filtroEstado"
                 :options="opcionesEstado"
@@ -47,7 +47,7 @@
                 @update:model-value="filtrarYOrdenarDatos"
               />
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-3" id="ordenStock">
               <q-select
                 v-model="ordenStock"
                 :options="opcionesOrden"
@@ -61,7 +61,7 @@
             </div>
           </div>
           <div class="row justify-end q-mt-md">
-             <q-btn color="primary" label="Vista previa del Reporte" icon="picture_as_pdf" @click="mostrarVistaPrevia" />
+             <q-btn color="primary" label="Vista previa del Reporte" icon="picture_as_pdf" @click="mostrarVistaPrevia" id="vistaPrevia"/>
           </div>
       </q-card-section>
     </q-card>
@@ -75,6 +75,7 @@
 
     <!-- Tabla de resultados -->
     <StockGlobalTable
+    id="tablaResultados"
       :rows="datosFiltrados"
       :columns="columnas"
       :sumatoriaStock="sumatoriaStock"
