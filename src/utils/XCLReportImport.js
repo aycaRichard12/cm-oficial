@@ -321,13 +321,6 @@ export function exportToXLSX_Reporte_Productos(
     24: 'Nota de Crédito-Débito',
   }
   // Calcular totales
-  const totalCantidad = datos.reduce((sum, item) => sum + parseFloat(item.cantidad || 0), 0)
-  const totalImporte = datos.reduce((sum, item) => sum + parseFloat(item.importe || 0), 0)
-  const totalDescuento = datos.reduce((sum, item) => sum + parseFloat(item.descuento || 0), 0)
-  const totalCosto = datos.reduce((sum, item) => sum + parseFloat(item.totalcosto || 0), 0)
-  const totalVenta = datos.reduce((sum, item) => sum + parseFloat(item.totalventa || 0), 0)
-  const totalUtilidad = datos.reduce((sum, item) => sum + parseFloat(item.utilidad || 0), 0)
-
   // Mapear datos para exportación
   const dataForExport = datos.map((row, index) => ({
     'N°': index + 1,
@@ -337,14 +330,14 @@ export function exportToXLSX_Reporte_Productos(
     'Código Producto': row.codigo,
     'Código Barras': row.codigobarra,
     Descripción: row.descripcion,
-    'Costo Unitario': parseFloat(row.preciobase || 0).toFixed(2),
-    'Precio Unitario': parseFloat(row.preciounitario || 0).toFixed(2),
-    Cantidad: parseFloat(row.cantidad || 0).toFixed(2),
-    Importe: parseFloat(row.importe || 0).toFixed(2),
-    Descuento: parseFloat(row.descuento || 0).toFixed(2),
-    'Costo Total': parseFloat(row.totalcosto || 0).toFixed(2),
-    'Venta Total': parseFloat(row.totalventa || 0).toFixed(2),
-    Utilidad: parseFloat(row.utilidad || 0).toFixed(2),
+    'Costo Unitario': parseFloat(row.preciobase || 0),
+    'Precio Unitario': parseFloat(row.preciounitario || 0),
+    Cantidad: parseFloat(row.cantidad || 0),
+    Importe: parseFloat(row.importe || 0),
+    Descuento: parseFloat(row.descuento || 0),
+    'Costo Total': parseFloat(row.totalcosto || 0),
+    'Venta Total': parseFloat(row.totalventa || 0),
+    Utilidad: parseFloat(row.utilidad || 0),
     'Tipo Pago': row.tipopago,
     Usuario: row.idusuario,
     'Sucursal Cliente': row.sucursalc,
@@ -359,38 +352,6 @@ export function exportToXLSX_Reporte_Productos(
     Canal: row.canal,
     'Tipo Precio': row.tipoprecio,
   }))
-
-  // Agregar fila de totales
-  dataForExport.push({
-    'N°': '',
-    Fecha: '',
-    'Nro. Doc.': '',
-    'Tipo de Venta': '',
-    'Código Producto': '',
-    'Código Barras': '',
-    Descripción: '',
-    'Costo Unitario': '',
-    'Precio Unitario': '',
-    Cantidad: totalCantidad.toFixed(2),
-    Importe: totalImporte.toFixed(2),
-    Descuento: totalDescuento.toFixed(2),
-    'Costo Total': totalCosto.toFixed(2),
-    'Venta Total': totalVenta.toFixed(2),
-    Utilidad: totalUtilidad.toFixed(2),
-    'Tipo Pago': 'TOTALES:',
-    Usuario: '',
-    'Sucursal Cliente': '',
-    Almacén: '',
-    Cliente: '',
-    'Tipo Documento': '',
-    'Nro. Doc. Tributario': '',
-    'Nombre Comercial': '',
-    Unidad: '',
-    Categoría: '',
-    Subcategoría: '',
-    Canal: '',
-    'Tipo Precio': '',
-  })
 
   // Crear hoja de trabajo
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
@@ -456,23 +417,12 @@ export function exportToXLSX_Reporte_Productos(
         cellStyle.fill = { fgColor: { rgb: '4F81BD' } } // Azul oscuro
         cellStyle.alignment = { horizontal: 'center', vertical: 'center' }
       }
-      // Estilo para fila de totales
-      else if (R === range.e.r) {
-        cellStyle.font = { name: 'Arial', sz: 10, bold: true }
-        cellStyle.fill = { fgColor: { rgb: 'F2F2F2' } } // Gris claro
-
-        // Alinear columnas numéricas a la derecha
-        const numericColumns = [9, 10, 11, 12, 13, 14] // Índices de columnas numéricas
-        if (numericColumns.includes(C)) {
-          cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
-        }
-      }
       // Estilo para columnas numéricas
       else {
         const numericColumns = [7, 8, 9, 10, 11, 12, 13, 14] // Índices de columnas numéricas
         if (numericColumns.includes(C)) {
           cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
-          cell.z = '#,##0.00' // Formato numérico con 2 decimales
+          cell.z = '#,##0.00' // Formato numérico con 2 decimales dinámico adaptado a configuración local
         }
       }
 
@@ -492,16 +442,18 @@ export function exportToXLSX_Reporte_Productos(
 
   // Crear texto de filtros aplicados
   let filtros = `Del ${cambiarFormatoFecha(startDate)} al ${cambiarFormatoFecha(endDate)}`
-  if (almacenSeleccionado && almacenSeleccionado !== 0) {
-    const almacen = almacenesOptions.value.find((a) => a.value === almacenSeleccionado)
+  if (almacenSeleccionado && String(almacenSeleccionado) !== '0') {
+    const almacen = almacenesOptions.value.find((a) => String(a.value) === String(almacenSeleccionado))
     if (almacen) filtros += ` | Almacén: ${almacen.label}`
   }
   if (clienteSeleccionado) {
-    const cliente = clientesOriginal.value.find((c) => c.value === clienteSeleccionado)
+    const idCliente = typeof clienteSeleccionado === 'object' ? clienteSeleccionado.value : clienteSeleccionado
+    const cliente = clientesOriginal.value.find((c) => String(c.value) === String(idCliente))
     if (cliente) filtros += ` | Cliente: ${cliente.raw.nombre}`
   }
   if (sucursalSeleccionada) {
-    const sucursal = sucursalesOriginal.value.find((s) => s.value === sucursalSeleccionada)
+    const idSucursal = typeof sucursalSeleccionada === 'object' ? sucursalSeleccionada.value : sucursalSeleccionada
+    const sucursal = sucursalesOriginal.value.find((s) => String(s.value) === String(idSucursal))
     if (sucursal) filtros += ` | Sucursal: ${sucursal.label}`
   }
 
@@ -516,8 +468,8 @@ export function exportToXLSX_Reporte_Productos(
 
   // Generar nombre de archivo
   let filename = `Reporte_Productos_Vendidos_${startDate}_a_${endDate}`
-  if (almacenSeleccionado && almacenSeleccionado !== 0) {
-    const almacen = almacenesOptions.value.find((a) => a.value === almacenSeleccionado)
+  if (almacenSeleccionado && String(almacenSeleccionado) !== '0') {
+    const almacen = almacenesOptions.value.find((a) => String(a.value) === String(almacenSeleccionado))
     if (almacen) filename += `_${almacen.label.substring(0, 20)}`
   }
   filename += '.xlsx'
