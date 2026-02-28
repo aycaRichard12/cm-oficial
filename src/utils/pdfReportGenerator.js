@@ -4830,7 +4830,7 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
     doc,
     columns,
     datos,
-    'HISTORIAL DE COMPRAS POR PRODUCTO',
+    'DETALLE DE COMPRAS SEGÚN PRODUCTO',
     columnStyles,
     headerColumnStyles,
     Izquierda,
