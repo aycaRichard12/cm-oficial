@@ -4,8 +4,7 @@
       <label for="almacen">Filtrar por almacén</label>
       <q-select
         id="almacen"
-        :model-value="almacenSeleccionado"
-        @update:model-value="$emit('update:almacenSeleccionado', $event)"
+        v-model="localAlmacen"
         :options="almacenesOptions"
         outlined
         dense
@@ -17,8 +16,7 @@
       <label for="cliente">Filtrar por razón social</label>
       <q-select
         id="cliente"
-        :model-value="clienteSeleccionado"
-        @update:model-value="$emit('update:clienteSeleccionado', $event)"
+        v-model="localCliente"
         :options="clientesOptions"
         option-label="label"
         option-value="value"
@@ -28,7 +26,7 @@
         emit-value
         map-options
         clearable
-        @filter="onFilterClientes"
+        @filter="(val, update) => onFilterClientes(val, update)"
       >
         <template v-slot:no-option>
           <q-item>
@@ -41,8 +39,7 @@
       <label for="sucursal">Filtrar por sucursal</label>
       <q-select
         id="sucursal"
-        :model-value="sucursalSeleccionada"
-        @update:model-value="$emit('update:sucursalSeleccionada', $event)"
+        v-model="localSucursal"
         :options="sucursalesOptions"
         option-label="label"
         option-value="value"
@@ -51,9 +48,9 @@
         dense
         emit-value
         map-options
-        @filter="onFilterSucursales"
+        @filter="(val, update) => onFilterSucursales(val, update)"
         clearable
-        :disable="!clienteSeleccionado"
+        :disable="!localCliente"
       >
         <template v-slot:no-option>
           <q-item>
@@ -66,13 +63,9 @@
 </template>
 
 <script setup>
-// Nota: para los eventos @filter, usaremos funciones pasadas desde el padre o
-// emitiremos un evento 'filterClientes' que el padre maneje.
-// Vuetify/Quasar @filter(val, update) es un poco tricky de re-emitir tal cual
-// Mejor pasamos las funciones filterClientes y filterSucursales como Props o manejamos el evento.
-// En este caso, emitiremos 'filterClientes' con (val, update).
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   almacenSeleccionado: [Number, String],
   almacenesOptions: Array,
   clienteSeleccionado: [Number, String, Object],
@@ -83,9 +76,24 @@ defineProps({
   onFilterSucursales: Function,
 })
 
-defineEmits([
+const emit = defineEmits([
   'update:almacenSeleccionado',
   'update:clienteSeleccionado',
   'update:sucursalSeleccionada',
 ])
+
+const localAlmacen = computed({
+  get: () => props.almacenSeleccionado,
+  set: (val) => emit('update:almacenSeleccionado', val)
+})
+
+const localCliente = computed({
+  get: () => props.clienteSeleccionado,
+  set: (val) => emit('update:clienteSeleccionado', val)
+})
+
+const localSucursal = computed({
+  get: () => props.sucursalSeleccionada,
+  set: (val) => emit('update:sucursalSeleccionada', val)
+})
 </script>

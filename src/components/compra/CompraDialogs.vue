@@ -31,8 +31,11 @@
       @update:model-value="$emit('update:credito', $event)"
     >
       <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div class="text-h6">Registrar Datos para Credito</div>
+        <q-card-section class="bg-primary text-white text-h6 flex justify-between items-center q-px-lg">
+          <div class="text-h6 flex items-center">
+            <q-icon name="request_quote" size="sm" class="q-mr-sm" />
+            Generación de Plan de Pagos
+          </div>
           <q-btn icon="close" dense flat round @click="$emit('update:credito', false)" />
         </q-card-section>
         <q-card-section>

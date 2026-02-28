@@ -142,6 +142,12 @@ export function useReporteProductosVendidosGlobal() {
   const generarReporte = async () => {
     try {
       cargando.value = true
+      
+      // Limpiar filtros al generar un nuevo reporte
+      almacenSeleccionado.value = 0
+      clienteSeleccionado.value = null
+      sucursalSeleccionada.value = null
+
       const contenidousuario = validarUsuario()
       const idempresa = contenidousuario[0]?.empresa?.idempresa
       const point = `reporteventasporproductosglobal/${idempresa}/${fechaInicial.value}/${fechaFinal.value}`
@@ -179,13 +185,16 @@ export function useReporteProductosVendidosGlobal() {
     let temp = [...datosOriginales.value]
 
     if (almacenSeleccionado.value && almacenSeleccionado.value !== 0) {
-      temp = temp.filter((item) => item.idalmacen == almacenSeleccionado.value)
+      const idStr = String(almacenSeleccionado.value)
+      temp = temp.filter((item) => String(item.idalmacen) === idStr)
     }
     if (clienteSeleccionado.value) {
-      temp = temp.filter((item) => item.idclienteve == clienteSeleccionado.value)
+      const idCliente = typeof clienteSeleccionado.value === 'object' ? clienteSeleccionado.value.value : clienteSeleccionado.value
+      temp = temp.filter((item) => String(item.idclienteve) === String(idCliente))
     }
     if (sucursalSeleccionada.value) {
-      temp = temp.filter((item) => item.idsucursalve == sucursalSeleccionada.value)
+      const idSucursal = typeof sucursalSeleccionada.value === 'object' ? sucursalSeleccionada.value.value : sucursalSeleccionada.value
+      temp = temp.filter((item) => String(item.idsucursalve) === String(idSucursal))
     }
     datosFiltrados.value = temp
   }
@@ -194,8 +203,9 @@ export function useReporteProductosVendidosGlobal() {
   watch(almacenSeleccionado, filtrarYOrdenarDatos)
   watch(clienteSeleccionado, (newVal) => {
     sucursalSeleccionada.value = null
-    if (newVal) {
-      cargarSucursales(newVal)
+    const idCliente = newVal && typeof newVal === 'object' ? newVal.value : newVal
+    if (idCliente) {
+      cargarSucursales(idCliente)
     } else {
       sucursalesOptions.value = []
     }
