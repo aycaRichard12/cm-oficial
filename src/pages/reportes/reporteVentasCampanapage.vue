@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding id="reporteDetalleVentas">
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
@@ -17,8 +17,9 @@
         <q-form @submit.prevent="handleGenerarReporte">
           <div class="row q-col-gutter-md">
             <!-- Campaña -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4"  id="filtroSelectCampana">
               <q-select
+                
                 v-model="campanaSeleccionada"
                 :options="opcionesCampanas"
                 label="Campaña *"
@@ -37,10 +38,10 @@
             </div>
 
             <!-- Fecha Inicial -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4"    id="fechaIni">
               <q-input
                 v-model="fechaInicio"
-                id="fechaIni"
+             
                 type="date"
                 label="Fecha Inicial *"
                 outlined
@@ -55,10 +56,10 @@
             </div>
 
             <!-- Fecha Final -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaFin">
               <q-input
                 v-model="fechaFin"
-                id="fechafin"
+            
                 type="date"
                 label="Fecha Final *"
                 outlined
@@ -75,14 +76,15 @@
 
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
+              id="btnGenerarDetalle"
               label="Generar Reporte"
-              icon="search"
               color="primary"
               unelevated
               type="submit"
               :loading="cargandoData"
             />
             <q-btn
+              id="btnExportarDetalle"
               label="Exportar PDF"
               icon="picture_as_pdf"
               color="negative"
@@ -104,6 +106,8 @@
         </q-card-section>
         <q-card-section>
           <BaseFilterableTable
+            id="tableReporteVentas"
+            ref="tableRef"
             title=""
             :rows="datosFiltrados"
             :columns="columnasTabla"
@@ -147,6 +151,7 @@ import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTab
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const $q = useQuasar()
+const tableRef = ref(null)
 
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
@@ -400,7 +405,9 @@ async function handleGenerarReporte() {
  * Maneja el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
+  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  
+  if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
       message: 'No hay datos para mostrar en el reporte.',
@@ -408,7 +415,7 @@ function handleVerReporte() {
     })
     return
   }
-  const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFiltrados.value, {
+  const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFinales, {
     fechaInicio: fechaInicio.value,
     fechaFin: fechaFin.value,
     campana: campanaSeleccionadaTexto.value,

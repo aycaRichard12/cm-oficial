@@ -1,6 +1,7 @@
 
 <template>
   <q-table
+  id="tableExterno"
     title="Inventario Externo"
     :rows="rows"
     :columns="columns"
@@ -14,6 +15,7 @@
     <template v-slot:body-cell-Autorización="props">
       <q-td :props="props" class="text-center">
         <q-btn
+          id="btnAutorizacion"
           :color="Number(props.row.Autorización) === 1 ? 'positive' : 'negative'"
           @click="$emit('toggleAutorizacion', props.row)"
           :icon="Number(props.row.Autorización) === 1 ? 'thumb_up_alt' : 'thumb_down_alt'"
@@ -26,7 +28,7 @@
 
     <template v-slot:body-cell-Detalle="props">
       <q-td :props="props" class="text-center">
-        <q-btn color="primary" label="Productos" @click="$emit('showDetail', props.row)" size="sm" >
+        <q-btn color="primary" label="Productos" @click="$emit('showDetail', props.row)" size="sm" id="btnDetalle">
           <q-tooltip>Ver Productos</q-tooltip>
         </q-btn>
       </q-td>

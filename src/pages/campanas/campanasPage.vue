@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding id="crearcampanas">
     <q-card flat bordered class="q-mb-md">
       <q-card-section class="row items-center q-pb-none">
         <div class="col">
@@ -10,6 +10,7 @@
         </div>
         <div class="col-auto">
           <q-btn
+            id="nuevaCampana"
             unelevated
             color="primary"
             icon="add"
@@ -25,7 +26,7 @@
       </q-card-section>
       <q-card-section
         ><div class="row q-col-gutter-md">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-4" id="filtroAlmacen">
             <q-select
               v-model="idalmacenfiltro"
               :options="almacenesOptions"
@@ -40,8 +41,8 @@
               ><template v-slot:prepend><q-icon name="store" /></template
             ></q-select>
           </div>
-          <div class="col-12 col-md-4">
-            <q-input v-model="busqueda" label="Buscar campaña..." outlined dense clearable
+          <div class="col-12 col-md-4" id="filtroBusqueda">
+            <q-input  v-model="busqueda" label="Buscar campaña..." outlined dense clearable
               ><template v-slot:prepend><q-icon name="search" /></template
             ></q-input>
           </div></div
