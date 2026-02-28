@@ -321,6 +321,14 @@ export function exportToXLSX_Reporte_Productos(
     24: 'Nota de Crédito-Débito',
   }
   // Calcular totales
+  // Calcular totales sumando los valores sin procesar strings textules antes.
+  const totalCantidad = datos.reduce((sum, item) => sum + parseFloat(item.cantidad || 0), 0)
+  const totalImporte = datos.reduce((sum, item) => sum + parseFloat(item.importe || 0), 0)
+  const totalDescuento = datos.reduce((sum, item) => sum + parseFloat(item.descuento || 0), 0)
+  const totalCosto = datos.reduce((sum, item) => sum + parseFloat(item.totalcosto || 0), 0)
+  const totalVenta = datos.reduce((sum, item) => sum + parseFloat(item.totalventa || 0), 0)
+  const totalUtilidad = datos.reduce((sum, item) => sum + parseFloat(item.utilidad || 0), 0)
+
   // Mapear datos para exportación
   const dataForExport = datos.map((row, index) => ({
     'N°': index + 1,
@@ -353,6 +361,38 @@ export function exportToXLSX_Reporte_Productos(
     'Tipo Precio': row.tipoprecio,
   }))
 
+  // Agregar fila de totales
+  dataForExport.push({
+    'N°': '',
+    Fecha: '',
+    'Nro. Doc.': '',
+    'Tipo de Venta': '',
+    'Código Producto': '',
+    'Código Barras': '',
+    Descripción: '',
+    'Costo Unitario': '',
+    'Precio Unitario': '',
+    Cantidad: totalCantidad,
+    Importe: totalImporte,
+    Descuento: totalDescuento,
+    'Costo Total': totalCosto,
+    'Venta Total': totalVenta,
+    Utilidad: totalUtilidad,
+    'Tipo Pago': 'TOTALES:',
+    Usuario: '',
+    'Sucursal Cliente': '',
+    Almacén: '',
+    Cliente: '',
+    'Tipo Documento': '',
+    'Nro. Doc. Tributario': '',
+    'Nombre Comercial': '',
+    Unidad: '',
+    Categoría: '',
+    Subcategoría: '',
+    Canal: '',
+    'Tipo Precio': '',
+  })
+  
   // Crear hoja de trabajo
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
@@ -417,12 +457,29 @@ export function exportToXLSX_Reporte_Productos(
         cellStyle.fill = { fgColor: { rgb: '4F81BD' } } // Azul oscuro
         cellStyle.alignment = { horizontal: 'center', vertical: 'center' }
       }
+      // Estilo para fila de totales
+      else if (R === range.e.r) {
+        cellStyle.font = { name: 'Arial', sz: 10, bold: true }
+        cellStyle.fill = { fgColor: { rgb: 'F2F2F2' } } // Gris claro
+
+        // Alinear columnas numéricas a la derecha
+        const numericColumns = [9, 10, 11, 12, 13, 14] // Índices de columnas numéricas (Cantidad a Utilidad)
+        if (numericColumns.includes(C)) {
+          cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
+          if (typeof cell.v === 'number') {
+            cell.z = '#,##0.00'
+          }
+        }
+      }
       // Estilo para columnas numéricas
       else {
         const numericColumns = [7, 8, 9, 10, 11, 12, 13, 14] // Índices de columnas numéricas
         if (numericColumns.includes(C)) {
           cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
-          cell.z = '#,##0.00' // Formato numérico con 2 decimales dinámico adaptado a configuración local
+          // Formato numérico con 2 decimales dinámico adaptado a configuración local usando celdas de numero nativo
+          if (typeof cell.v === 'number') {
+            cell.z = '#,##0.00'
+          }
         }
       }
 
