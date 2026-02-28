@@ -45,7 +45,7 @@
     :pagination="pagination"
     flat
     bordered
-    title="Parametros Obsolescencia"
+    title="Parámetros de Obsolescencia"
   >
     <template v-slot:body-cell-color="props">
       <q-td :props="props">
@@ -115,8 +115,14 @@ const columns = [
   },
   {
     name: 'nombre',
-    label: 'Parámetro',
+    label: 'Nombre',
     field: 'nombre',
+    align: 'left',
+  },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
     align: 'left',
   },
   {
@@ -125,12 +131,12 @@ const columns = [
     field: 'valor',
     align: 'center',
   },
-  {
-    name: 'colorNombre',
-    label: 'Nombre color',
-    field: 'colorNombre',
-    align: 'left',
-  },
+  // {
+  //   name: 'colorNombre',
+  //   label: 'Nombre color',
+  //   field: 'colorNombre',
+  //   align: 'left',
+  // },
   {
     name: 'color',
     label: 'Color',
