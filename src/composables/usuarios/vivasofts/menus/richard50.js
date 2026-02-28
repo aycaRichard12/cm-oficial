@@ -103,16 +103,16 @@ export const menurichard50 = [
           //   permiso: '1111',
           // },
 
-          {
-            titulo: 'Adm-Cliente-Rep. de Proveedor Compras',
-            codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Adm-Cliente-Compras de Prod. x Proveedor',
-            codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Adm-Cliente-Compras según Proveedor',
+          //   codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'Adm-Cliente-Compras según Producto',
+          //   codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Adm-Campana-Crear Campañas',
             codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
@@ -489,18 +489,28 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
+            titulo: '-Compras-Compras',
+            codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
             titulo: '-Compras-Compras Desglosado',
             codigo: 'reporteproductoscomprados-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: '-Compras-Rep. Compras',
-            codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+            titulo: '-Compras-Productos y Catálogo',
+            codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: '-Compras-Rep. Stock de Productos Individual',
-            codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
+            titulo: '-Compras-Compras según Proveedor',
+            codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: '-Compras-Compras según Producto',
+            codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {

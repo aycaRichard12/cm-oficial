@@ -228,7 +228,7 @@ const columns = [
   { name: 'Existencia', label: 'Existencia', field: 'Existencia', align: 'right', sortable: true },
   {
     name: 'CUnit',
-    label: 'C. Unitario',
+    label: 'Costo Unitario',
     field: 'C.Unit',
     align: 'right',
     format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),

@@ -163,8 +163,9 @@ export const PAGINAS_SELECT = Object.freeze({
   ]),
   contingencias: Object.freeze(['reportedeextravios', 'reportedemermas']),
   gestioncompra: Object.freeze([
-    'reporteproductoscomprados',
     'reportedecompras',
+    'reporteproductoscomprados',
+
     'reportestockdeproductosindividual',
     'reporteproveedorcompras',
     'reporteproductoproveedorcompras',

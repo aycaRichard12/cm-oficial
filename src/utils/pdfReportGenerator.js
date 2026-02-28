@@ -989,7 +989,7 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     { header: 'Descripción', dataKey: 'descripcion' },
     { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Stock', dataKey: 'stock' },
-    { header: `C. Unit. (${divisaActiva})`, dataKey: 'costounitario' },
+    { header: `Costo Unit. (${divisaActiva})`, dataKey: 'costounitario' },
     { header: `Costo total (${divisaActiva})`, dataKey: 'costo' },
   ]
 
@@ -1127,18 +1127,22 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     (sum, dato) => sum + redondear(parseFloat(dato.stock) * parseFloat(dato.costounitario)),
     0,
   )
-  datos.push({
-    indice: '',
-    codigo: '',
-    producto: '',
-    categoria: '',
-    subcategoria: '',
-    descripcion: '',
-    unidad: 'Total:',
-    stock: totalstock,
-    costo: decimas(costoTotal),
-    imagen: '',
+  const filaTotal = crearFilaTotalGeneral(
+    `TOTAL GENERAL`,
+    [
+      { valor: totalstock, halign: 'right' },
+      { valor: costoTotal, halign: 'right' }
+    ],
+    7
+  )
+  
+  // Agregar la última columna de imagen en blanco para completar la tabla estructurada
+  filaTotal.push({
+    content: '',
+    styles: { halign: 'center', lineWidth: { top: 0.3, bottom: 0.3 }, lineColor: [0, 0, 0] }
   })
+
+  datos.push(filaTotal)
 
   const columnStyles = {
     indice: { cellWidth: 12, halign: 'center' },
