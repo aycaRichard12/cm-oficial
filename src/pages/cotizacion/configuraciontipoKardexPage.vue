@@ -13,6 +13,7 @@
       <!-- Si aún no tiene configurado -->
       <div>
         <q-select
+          id="selectTipoKardex"
           v-model="tipoSeleccionado"
           :options="opciones"
           label="Seleccione el tipo de Kardex"
@@ -24,6 +25,7 @@
         />
 
         <q-btn
+          id="btnGuardarKardex"
           color="primary"
           label="Guardar Configuración"
           :disable="!tipoSeleccionado"
@@ -31,7 +33,7 @@
         />
       </div>
     </q-card-section>
-    <q-banner dense rounded class="bg-yellow-1 text-yellow-10 q-pa-sm">
+    <q-banner id="bannerKardexActual" dense rounded class="bg-yellow-1 text-yellow-10 q-pa-sm">
       <q-icon name="settings" size="sm" class="q-mr-sm" />
       Método de Kardex configurado:
       <strong>{{ metodo || 'Pendiente de configurar' }}</strong>

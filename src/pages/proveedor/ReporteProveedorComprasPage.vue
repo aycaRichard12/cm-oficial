@@ -327,7 +327,12 @@ const filterProveedores = (val, update) => {
 const filteredCompras = computed(() => {
   let data = compras.value || []
   if (selectedProveedor.value) {
-    data = data.filter((c) => c.proveedor === selectedProveedor.value)
+    // Si la opción seleccionada contiene ' - ', la separamos y usamos el nombre (proveedor) para filtrar.
+    const proveedorSeleccionadoNombre = selectedProveedor.value.includes('-') 
+      ? selectedProveedor.value.substring(selectedProveedor.value.indexOf('-') + 1)
+      : selectedProveedor.value
+
+    data = data.filter((c) => c.proveedor === proveedorSeleccionadoNombre)
   }
   return data.map((item) => ({
     ...item,
