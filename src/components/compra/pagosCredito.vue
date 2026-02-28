@@ -1,89 +1,129 @@
 <template>
   <q-form @submit.prevent="crearPago" ref="formularioRef">
-    <q-card-section class="row q-col-gutter-x-md">
-      <div class="col-12 col-md-4">
-        <label for="monto">Monto Total del Crédito *</label>
-        {{ formData.compra_id }}
-        <q-input
-          v-model.number="formData.monto_total"
-          id="monto"
-          type="number"
-          :prefix="divisaActiva.simbolo"
-          dense
-          outlined
-          disable
+    <q-card-section class="q-pa-md">
+      <div class="row q-col-gutter-md">
+        <div class="col-xs-12 col-sm-6">
+          <q-input
+            v-model.number="formData.monto_total"
+            id="monto"
+            type="number"
+            dense
+            filled
+            bg-color="grey-2"
+            label="Monto Total del Crédito *"
+            stack-label
+            disable
+            input-class="text-weight-bold text-grey-9"
           lazy-rules
           :rules="[
             (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
             (val) => val > 0 || 'El monto debe ser mayor a 0',
           ]"
-        />
-      </div>
-      <div class="col-12 col-md-4">
-        <label for="numero">Número de Cuotas *</label>
-        <q-input
-          v-model.number="formData.nro_cuotas"
-          id="numero"
-          type="number"
-          dense
-          outlined
-          lazy-rules
-          :rules="[
-            (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-            (val) => val > 0 || 'Debe haber al menos 1 cuota',
-          ]"
-        />
-      </div>
+          >
+            <template v-slot:prepend>
+              <q-icon name="account_balance_wallet" size="xs" color="grey-7" />
+            </template>
+            <template v-slot:append>
+              <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
+            </template>
+          </q-input>
+        </div>
 
-      <div class="col-12 col-md-4">
-        <label for="frecuencia">Frecuencia de Pago (en días) *</label>
-        <q-input
-          v-model.number="formData.pago_cada_ciertos_dias"
-          id="frecuencia"
-          type="number"
-          hint="Ej: 30 para pagos mensuales, 7 para semanales"
-          lazy-rules
-          dense
-          outlined
-          :rules="[
-            (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-            (val) => val > 0 || 'La frecuencia debe ser de al menos 1 día',
-          ]"
-        />
-      </div>
-      <div class="col-12 col-md-4">
-        <label for="fecha">Fecha de Inicio del Primer Pago *</label>
-        <q-input
-          type="date"
-          dense
-          outlined
-          v-model="formData.fecha_inicio"
-          id="fecha"
-          :rules="[(val) => !!val || 'Debe seleccionar una fecha']"
-        >
-        </q-input>
-      </div>
-      <div class="col-12 col-md-4">
-        <q-item v-if="montoPorCuotaNumero > 0" class="q-mt-sm">
-          <q-item-section>
-            <q-item-label caption>Monto por Cuota (calculado)</q-item-label>
-            <q-item-label class="text-h6 text-positive text-weight-bold">
-              {{ montoPorCuotaFormateado }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
+        <!-- Número de Cuotas -->
+        <div class="col-xs-12 col-sm-6">
+          <q-input
+            v-model.number="formData.nro_cuotas"
+            id="numero"
+            type="number"
+            dense
+            filled
+            bg-color="grey-2"
+            label="Número de Cuotas *"
+            stack-label
+            lazy-rules
+            :rules="[
+              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
+              (val) => val > 0 || 'Debe haber al menos 1 cuota',
+            ]"
+          >
+            <template v-slot:prepend>
+              <q-icon name="format_list_numbered" size="xs" color="grey-7" />
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Frecuencia de Pago -->
+        <div class="col-xs-12 col-sm-6">
+          <q-input
+            v-model.number="formData.pago_cada_ciertos_dias"
+            id="frecuencia"
+            type="number"
+            dense
+            filled
+            bg-color="grey-2"
+            label="Frecuencia de Pago (en días) *"
+            stack-label
+            lazy-rules
+            :rules="[
+              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
+              (val) => val > 0 || 'La frecuencia debe ser de al menos 1 día',
+            ]"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event_repeat" size="xs" color="grey-7" />
+            </template>
+            <template v-slot:hint>
+              <span class="text-grey-8">Ej: 30 (mensual), 7 (semanal)</span>
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Fecha de Inicio -->
+        <div class="col-xs-12 col-sm-6">
+          <q-input
+            type="date"
+            dense
+            filled
+            bg-color="grey-2"
+            label="Fecha de Inicio del Primer Pago *"
+            stack-label
+            v-model="formData.fecha_inicio"
+            id="fecha"
+            :rules="[(val) => !!val || 'Debe seleccionar una fecha']"
+          >
+            <template v-slot:prepend>
+              <q-icon name="calendar_month" size="xs" color="grey-7" />
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Cálculo del Monto por Cuota -->
+        <div class="col-xs-12 col-sm-12 flex items-center justify-end q-pt-sm" v-if="montoPorCuotaNumero > 0">
+          <q-item class="bg-primary-1 full-width rounded-borders text-right">
+            <q-item-section>
+              <q-item-label class="text-caption text-grey-7 text-weight-medium text-right">Monto Estimado por Cuota</q-item-label>
+              <q-item-label class="text-h6 text-primary text-weight-bold row items-center justify-end">
+                <q-icon name="payments" size="sm" class="q-mr-sm" />
+                {{ montoPorCuotaFormateado }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </div>
       </div>
     </q-card-section>
 
-    <q-card-actions align="right" class="q-pa-md">
+    <q-separator />
+
+    <q-card-actions align="right" class="q-pa-md bg-transparent">
       <q-btn
         label="Generar Plan"
         type="submit"
         color="primary"
-        icon="add_circle"
+        icon="playlist_add_check"
         unelevated
+        no-caps
         rounded
-        padding="sm lg"
+        :class="$q.screen.lt.sm ? 'full-width' : 'q-px-xl'"
         :loading="cargando"
       >
         <template v-slot:loading>
@@ -143,7 +183,7 @@ const montoPorCuotaNumero = computed(() => {
  */
 const montoPorCuotaFormateado = computed(() => {
   const valor = montoPorCuotaNumero.value
-  return valor + ' ' + divisaActiva.simbolo
+  return valor.toFixed(2) + ' ' + divisaActiva.simbolo
 })
 
 /**

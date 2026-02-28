@@ -1,34 +1,36 @@
 <template>
   <!-- Form Section -->
-  <q-card-section v-if="compra.autorizacion == 2" class="q-pb-md">
-    <div class="row items-center q-mb-md">
-      <div class="col">
-        <div class="text-h6 text-grey-8">
-          <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
-          {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
-        </div>
+  <q-card-section v-if="compra.autorizacion == 2" class="q-pa-md q-pb-none">
+    <div class="row items-center justify-between q-mb-md">
+      <div class="text-subtitle1 text-weight-bold text-primary flex items-center">
+        <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
+        {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
-      <div class="col-auto" v-if="esModoEdicion">
-        <q-chip color="primary" text-color="white" icon="edit"> Modo Edición </q-chip>
-      </div>
+      <q-chip 
+        v-if="esModoEdicion" 
+        color="warning" 
+        text-color="white" 
+        icon="edit" 
+        size="sm" 
+        class="text-weight-medium"
+        removable
+        @remove="onResetForm"
+      />
     </div>
 
-    <q-separator class="q-mb-md" />
-
-    <q-form @submit="onSubmit" ref="formRef">
-      <div class="row q-col-gutter-md">
+    <q-form @submit="onSubmit" ref="formRef" class="q-mb-md">
+      <div class="row q-col-gutter-md items-start">
         <!-- Producto en modo edición -->
-        <div class="col-12 col-md-6" v-if="esModoEdicion">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Producto o Servicio
-          </label>
+        <div class="col-xs-12 col-sm-12 col-md-5" v-if="esModoEdicion">
           <q-input
             v-model="detalleForm.descripcion"
             dense
-            outlined
+            filled
             readonly
             bg-color="grey-2"
+            label="Producto o Servicio"
             class="full-width"
+            stack-label
           >
             <template v-slot:prepend>
               <q-icon name="lock" size="xs" color="grey-6" />
@@ -37,18 +39,16 @@
         </div>
 
         <!-- Producto en modo añadir -->
-        <div class="col-12 col-md-6" v-if="!esModoEdicion">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Producto o Servicio*
-          </label>
+        <div class="col-xs-12 col-sm-12 col-md-5" v-if="!esModoEdicion">
           <q-select
             use-input
-            hide-dropdown-icon
+            hide-selected
+            fill-input
             v-model="detalleForm.idproductoalmacen"
             :options="productosFiltrados"
             @filter="filtrarProductos"
             id="producto"
-            outlined
+            filled
             emit-value
             map-options
             option-label="label"
@@ -57,134 +57,176 @@
             dense
             clearable
             class="full-width"
-            placeholder="Buscar producto..."
+            label="Buscar Producto o Servicio *"
+            behavior="menu"
+            input-debounce="500"
+            bg-color="grey-2"
           >
             <template v-slot:prepend>
-              <q-icon name="search" size="xs" />
+              <q-icon name="search" size="xs" color="primary" />
             </template>
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey"> No se encontraron productos </q-item-section>
+                <q-item-section class="text-grey text-italic"> No se encontraron productos </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <q-icon name="inventory" color="primary" size="xs" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.label }}</q-item-label>
+                  <q-item-label caption>
+                    Stock: {{ productosDisponibles.find(p => p.value === scope.opt.value)?.stock || 0 }} 
+                    {{ productosDisponibles.find(p => p.value === scope.opt.value)?.unidad || '' }}
+                  </q-item-label>
+                </q-item-section>
               </q-item>
             </template>
           </q-select>
         </div>
 
-        <!-- Stock actual - solo en modo añadir -->
-        <div class="col-6 col-md-3" v-if="!esModoEdicion">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Stock Actual
-          </label>
-          <q-input
-            v-model="detalleForm.stockActual"
-            readonly
-            dense
-            outlined
-            type="number"
-            bg-color="grey-1"
-          />
+        <!-- Detalles de Stock y Unidad -->
+        <div class="col-xs-12 col-sm-12 col-md-7" v-if="!esModoEdicion">
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-6 col-md-6">
+              <q-input
+                v-model="detalleForm.stockActual"
+                readonly
+                dense
+                filled
+                type="number"
+                bg-color="grey-2"
+                label="Stock Actual"
+                class="full-width"
+                stack-label
+                text-color="grey-9"
+              >
+                <template v-slot:prepend>
+                   <q-icon name="inventory_2" size="xs" color="grey-7" />
+                </template>
+              </q-input>
+            </div>
+            <div class="col-xs-6 col-md-6">
+              <q-input
+                v-model="detalleForm.unidad"
+                type="text"
+                dense
+                filled
+                readonly
+                bg-color="grey-2"
+                label="Unidad"
+                class="full-width"
+                stack-label
+                text-color="grey-9"
+              >
+               <template v-slot:prepend>
+                   <q-icon name="straighten" size="xs" color="grey-7" />
+                </template>
+              </q-input>
+            </div>
+          </div>
         </div>
 
-        <!-- Unidad - solo en modo añadir -->
-        <div class="col-6 col-md-3" v-if="!esModoEdicion">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Unidad
-          </label>
-          <q-input
-            v-model="detalleForm.unidad"
-            type="text"
-            dense
-            outlined
-            readonly
-            bg-color="grey-1"
-          />
-        </div>
-
-        <!-- Precio -->
-        <div class="col-6 col-md-4">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Precio Unitario*
-          </label>
-          <q-input
-            v-model.number="detalleForm.precio"
-            type="number"
-            step="0.01"
-            :rules="[(val) => val > 0 || 'El precio debe ser mayor a 0']"
-            :suffix="divisaActiva.simbolo"
-            dense
-            outlined
-            clearable
-            class="full-width"
-            placeholder="0.00"
-          />
-        </div>
-
-        <!-- Cantidad -->
-        <div class="col-6 col-md-4">
-          <label class="text-weight-medium text-grey-8 q-mb-xs block">
-            Cantidad*
-          </label>
-          <q-input
-            v-model.number="detalleForm.cantidad"
-            type="number"
-            :rules="[(val) => val > 0 || 'La cantidad debe ser mayor a 0']"
-            dense
-            outlined
-            clearable
-            class="full-width"
-            placeholder="0"
-          />
+        <!-- Precios y Cantidades -->
+        <div class="col-xs-12 col-sm-12 col-md-8">
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-12 col-sm-6">
+<q-input
+  v-model="detalleForm.precio"
+  type="text"
+  inputmode="decimal"
+  :rules="[(val) => val > 0 || 'Mayor a 0']"
+  dense
+  filled
+  label="Precio Unit. *"
+  placeholder="0.00"
+  class="full-width"
+  stack-label
+  bg-color="grey-2"
+  text-color="grey-9"
+  @update:model-value="(val) => detalleForm.precio = parseFloat(val) || null"
+>
+  <template v-slot:prepend>
+    <q-icon name="payments" size="xs" color="grey-7" />
+  </template>
+  <template v-slot:append>
+    <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
+  </template>
+</q-input>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <q-input
+                v-model.number="detalleForm.cantidad"
+                type="text"
+                inputmode="decimal"
+                :rules="[(val) => val > 0 || 'Mayor a 0']"
+                dense
+                filled
+                clearable
+                label="Cantidad *"
+                placeholder="0"
+                class="full-width"
+                stack-label
+                bg-color="grey-2"
+                text-color="grey-9"
+                @update:model-value="(val) => detalleForm.cantidad = parseFloat(val) || null"
+                >
+                <template v-slot:prepend>
+                  <q-icon name="numbers" size="xs" color="grey-7" />
+                </template>
+                <template v-slot:append>
+                  <span class="text-grey-9 text-weight-bold" size="xs">{{ detalleForm.unidad || 'und' }}</span>
+                </template>
+              </q-input>
+            </div>
+          </div>
         </div>
 
         <!-- Botones de acción -->
-        <div class="col-12 col-md-4 flex items-end justify-end q-gutter-sm">
+        <div class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md">
           <q-btn
-            :label="esModoEdicion ? 'Guardar' : 'Añadir'"
+            v-if="esModoEdicion"
+            label="Cancelar"
+            color="grey-7"
+            flat
+            rounded
+            @click="onResetForm"
+            no-caps
+            icon="close"
+            :class="$q.screen.lt.md ? 'full-width q-mb-xs' : ''"
+          />
+          <q-btn
+            :label="esModoEdicion ? 'Guardar Cambios' : 'Añadir a la Compra'"
             :icon="esModoEdicion ? 'save' : 'add'"
             color="primary"
             type="submit"
             unelevated
+            rounded
             no-caps
-            class="q-px-lg"
-          >
-            <q-tooltip>{{
-              esModoEdicion ? 'Guardar cambios' : 'Añadir producto a la compra'
-            }}</q-tooltip>
-          </q-btn>
-          <q-btn
-            v-if="esModoEdicion"
-            label="Cancelar"
-            icon="close"
-            color="grey-7"
-            flat
-            @click="onResetForm"
-            no-caps
-          >
-            <q-tooltip>Cancelar edición</q-tooltip>
-          </q-btn>
+            :disable="!detalleForm.idproductoalmacen && !esModoEdicion"
+            :class="$q.screen.lt.md ? 'full-width' : 'q-px-lg'"
+          />
         </div>
       </div>
     </q-form>
   </q-card-section>
 
   <!-- Table Section -->
-  <q-card-section>
-    <div class="row items-center q-mb-md">
-      <div class="col">
-        <div class="text-h6 text-grey-8">
-          <q-icon name="list_alt" size="sm" class="q-mr-sm" />
-          Productos en la Compra
-        </div>
+  <q-card-section class="q-pt-none bg-grey-1">
+    <div class="row items-center justify-between q-py-sm">
+      <div class="text-subtitle1 text-weight-bold text-grey-8 flex items-center">
+        <q-icon name="list_alt" size="sm" class="q-mr-sm text-primary" />
+        Detalle de Productos
       </div>
-      <div class="col-auto">
-        <q-badge
-          color="primary"
-          :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
-        />
-      </div>
+      <q-badge
+        color="primary"
+        rounded
+        class="q-pa-sm text-caption text-weight-bold"
+        :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
+      />
     </div>
-
-    <q-separator class="q-mb-md" />
 
     <q-table
       :rows="detalleItems"
@@ -192,24 +234,88 @@
       row-key="id"
       flat
       bordered
-      :rows-per-page-options="[10, 25, 50]"
-      class="shadow-1"
+      table-header-class="bg-primary-2 text-grey-9 text-weight-bold"
+      :grid="$q.screen.lt.sm"
+      :rows-per-page-options="[5, 10, 25, 50]"
+      class="rounded-borders"
+      :loading="loadingTable"
+      binary-state-sort
+      separator="cell"
     >
+      <template v-slot:loading>
+        <q-inner-loading showing color="primary" />
+      </template>
+
       <template v-slot:no-data>
-        <div class="full-width row flex-center q-gutter-sm q-py-xl">
-          <q-icon name="shopping_cart" size="3em" color="grey-5" />
+        <div class="full-width row flex-center q-gutter-sm q-py-xl text-grey-5">
+          <q-icon name="shopping_cart" size="4em" />
           <div class="text-center">
-            <div class="text-h6 text-grey-6">No hay productos añadidos</div>
-            <div class="text-grey-5">
-              Añade productos a esta compra usando el formulario superior
+            <div class="text-h6 text-grey-6">La lista está vacía</div>
+            <div class="text-caption">
+              Añade productos usando el formulario superior
             </div>
           </div>
         </div>
       </template>
 
+      <!-- CUSTOM GRID CARDS ON MOBILE -->
+      <template v-slot:item="props">
+        <div class="q-pa-xs col-xs-12 col-sm-6">
+          <q-card flat bordered class="bg-white full-width rounded-borders">
+            <!-- Header Card (Description + Options) -->
+            <q-item class="q-py-sm">
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-subtitle2 text-grey-9">
+                  <q-badge color="primary" text-color="white" :label="props.row.codigo" class="q-mr-sm" />
+                  {{ props.row.descripcion }}
+                </q-item-label>
+              </q-item-section>
+              <q-item-section side v-if="compra.autorizacion == 2" class="q-pl-none">
+                <div class="row q-gutter-x-xs">
+                  <q-btn dense round flat icon="edit" color="primary" size="sm" @click="iniciarEdicion(props.row)">
+                    <q-tooltip>Editar producto</q-tooltip>
+                  </q-btn>
+                  <q-btn dense round flat icon="delete" color="negative" size="sm" @click="confirmarEliminar(props.row)">
+                    <q-tooltip>Eliminar producto</q-tooltip>
+                  </q-btn>
+                </div>
+              </q-item-section>
+            </q-item>
+            
+            <q-separator />
+            
+            <!-- Body Card (Quantities & Prices) -->
+            <q-card-section class="q-py-sm">
+              <div class="row items-center">
+                <div class="col-4">
+                  <div class="text-caption text-grey-7 text-weight-medium">Precio</div>
+                  <div class="text-weight-bold text-positive">
+                    <q-icon name="payments" size="xs" class="q-mr-xs" />
+                    {{ divisaActiva.simbolo }} {{ decimas(props.row.precio) }}
+                  </div>
+                </div>
+                <div class="col-3 text-center">
+                  <div class="text-caption text-grey-7 text-weight-medium">Cant.</div>
+                  <q-badge color="info" text-color="white" class="q-ma-none text-weight-bold">
+                    <q-icon name="numbers" size="xs" class="q-mr-xs" />
+                    {{ props.row.cantidad }}
+                  </q-badge>
+                </div>
+                <div class="col-5 text-right">
+                  <div class="text-caption text-grey-7 text-weight-medium">Sub Total</div>
+                  <div class="text-weight-bold text-primary text-subtitle1">
+                    {{ divisaActiva.simbolo }} {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </template>
+
       <template v-slot:body-cell-codigo="props">
         <q-td :props="props">
-          <q-badge color="grey-3" text-color="grey-8" :label="props.row.codigo" />
+          <q-badge color="primary" text-color="white" :label="props.row.codigo" />
         </q-td>
       </template>
 
@@ -220,22 +326,26 @@
       </template>
 
       <template v-slot:body-cell-precio="props">
-        <q-td :props="props" class="text-weight-medium">
-          {{ divisaActiva.simbolo }} {{ decimas(props.row.precio) }}
+        <q-td :props="props" class="text-weight-medium text-right">
+          <div class="text-positive">
+            <q-icon name="payments" size="xs" class="q-mr-xs" />
+            {{ decimas(props.row.precio) }}
+          </div>
         </q-td>
       </template>
 
       <template v-slot:body-cell-cantidad="props">
         <q-td :props="props">
-          <q-chip color="blue-1" text-color="blue-9" dense>
+          <q-badge color="info" text-color="white">
+            <q-icon name="numbers" size="xs" class="q-mr-xs" />
             {{ props.row.cantidad }}
-          </q-chip>
+          </q-badge>
         </q-td>
       </template>
 
       <template v-slot:body-cell-subtotal="props">
-        <q-td :props="props" class="text-weight-bold text-primary">
-          {{ divisaActiva.simbolo }} {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
+        <q-td :props="props" class="text-weight-bold text-primary text-right">
+          {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
         </q-td>
       </template>
 
@@ -249,6 +359,7 @@
             color="primary"
             size="sm"
             @click="iniciarEdicion(props.row)"
+            class="q-mr-xs"
           >
             <q-tooltip>Editar producto</q-tooltip>
           </q-btn>
@@ -267,12 +378,13 @@
       </template>
 
       <template v-slot:bottom-row>
-        <q-tr class="bg-grey-2">
-          <q-td colspan="4" class="text-right text-weight-bold text-grey-9 text-h6">
-            <q-icon name="calculate" class="q-mr-sm" />
-            Total:
+        <q-tr class="bg-primary-1">
+          <q-td colspan="4" class="text-right text-weight-bold text-grey-9 text-subtitle1">
+            <div class="row items-center justify-end q-gutter-x-sm">
+              <span>TOTAL GENERAL:</span>
+            </div>
           </q-td>
-          <q-td class="text-weight-bold text-h5 text-primary">
+          <q-td class="text-weight-bold text-h6 text-primary text-right">
             {{ divisaActiva.simbolo }} {{ total.toFixed(2) }}
           </q-td>
           <q-td v-if="compra.autorizacion == 2"></q-td>
@@ -280,33 +392,46 @@
       </template>
     </q-table>
   </q-card-section>
+
+  <q-separator />
+
+  <!-- Boton Cerrar Inferior -->
+  <q-card-actions align="right" class="q-py-sm q-px-md bg-transparent">
+    <q-btn
+      label="Cerrar Panel"
+      color="grey-9"
+      icon="close"
+      outline
+      no-caps
+      @click="emit('close')"
+      class="text-weight-medium full-width-sm q-px-lg"
+    />
+  </q-card-actions>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { useCurrencyStore } from 'src/stores/currencyStore'
-const divisaActiva = useCurrencyStore()
 
+const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
 
 const props = defineProps({
   compra: { type: Object, required: true },
 })
-console.log(props.compra)
 const emit = defineEmits(['close', 'update', 'submit'])
 
 // --- ESTADO REACTIVO ---
-const formRef = ref(null) // Referencia al QForm
-const detalleItems = ref([]) // Almacena los productos YA AÑADIDOS a la compra
-const productosDisponibles = ref([]) // Almacena TODOS los productos que se pueden añadir
-const productosFiltrados = ref([]) // Para el QSelect
+const formRef = ref(null)
+const detalleItems = ref([])
+const productosDisponibles = ref([])
+const productosFiltrados = ref([])
 const esModoEdicion = ref(false)
-
-// Estado para el formulario de añadir/editar un nuevo detalle
+const loadingTable = ref(false)
 
 const detalleForm = ref({
   id: null,
@@ -319,41 +444,20 @@ const detalleForm = ref({
 })
 
 // --- COMPUTED PROPERTIES ---
-
-const columnas = [
+const columnas = computed(() => [
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  {
-    name: 'descripcion',
-    label: 'Descripción',
-    field: 'descripcion',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'precio',
-    label: `Precio Unit. (${divisaActiva.simbolo})`,
-    field: 'precio',
-    align: 'right',
-    sortable: true,
-  },
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', sortable: true },
+  { name: 'precio', label: `Precio Unit. (${divisaActiva.simbolo})`, field: 'precio', align: 'right', sortable: true },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
-  {
-    name: 'subtotal',
-    label: `Sub Total (${divisaActiva.simbolo})`,
-    align: 'right',
-    sortable: true,
-  },
+  { name: 'subtotal', label: `Sub Total (${divisaActiva.simbolo})`, align: 'right', sortable: true },
   { name: 'opciones', label: 'Opciones', align: 'center' },
-]
+])
 
 const total = computed(() => {
-  return detalleItems.value.reduce(
-    (sum, item) => sum + Number(item.precio) * Number(item.cantidad),
-    0,
-  )
+  return detalleItems.value.reduce((sum, item) => sum + Number(item.precio) * Number(item.cantidad), 0)
 })
+
 // --- WATCHERS ---
-// Recargar datos si el objeto `compra` cambia
 watch(
   () => props.compra.id,
   (newId) => {
@@ -361,37 +465,52 @@ watch(
       cargarDatos()
     }
   },
-  { immediate: true }, // Se ejecuta inmediatamente al montar el componente
+  { immediate: true }
 )
 
-// --- MÉTODOS DE CICLO DE VIDA ---
-onMounted(() => {
-  // `watch` con `immediate: true` ya llama a cargarDatos()
-})
+watch(
+  () => detalleForm.value.idproductoalmacen,
+  (nuevoValor) => {
+    const productoSeleccionado = productosDisponibles.value.find((p) => p.value === nuevoValor)
+    if (productoSeleccionado) {
+      detalleForm.value.stockActual = productoSeleccionado.stock
+      detalleForm.value.unidad = productoSeleccionado.unidad
+      detalleForm.value.precio = productoSeleccionado.precio || null
+    }
+  },
+)
 
 // --- MÉTODOS DE DATOS (API) ---
 async function cargarDatos() {
-  // Usamos Promise.all para cargar ambos listados en paralelo
-  $q.loading.show()
+  $q.loading.show({ message: 'Cargando datos...' })
   try {
     await Promise.all([getDetalleCompra(), listaProductosDisponibles()])
   } catch (error) {
-    console.log(error)
-
-    $q.notify({ type: 'negative', message: 'Error al cargar los datos iniciales.' })
+    console.error('Error al cargar datos:', error)
+    $q.notify({ 
+      type: 'negative', 
+      message: 'Error al cargar los datos iniciales.',
+      position: 'top'
+    })
   } finally {
     $q.loading.hide()
   }
 }
 
 async function getDetalleCompra() {
+  loadingTable.value = true
   try {
     const response = await api.get(`listaDetalleCompra/${props.compra.id}`)
-    console.log(response)
     detalleItems.value = response.data
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los detalles de la compra' })
+    $q.notify({ 
+      type: 'negative', 
+      message: 'No se pudieron cargar los detalles de la compra',
+      position: 'top'
+    })
+  } finally {
+    loadingTable.value = false
   }
 }
 
@@ -404,12 +523,16 @@ async function listaProductosDisponibles() {
       value: item.idproductoalmacen,
       stock: item.stock,
       unidad: item.unidad,
+      precio: item.precio
     }))
-    console.log(response.data)
     productosFiltrados.value = [...productosDisponibles.value]
   } catch (error) {
     console.error('Error al cargar productos disponibles:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+    $q.notify({ 
+      type: 'negative', 
+      message: 'No se pudieron cargar los productos',
+      position: 'top'
+    })
   }
 }
 
@@ -418,50 +541,48 @@ function filtrarProductos(val, update) {
   const needle = val.toLowerCase()
   update(() => {
     productosFiltrados.value = productosDisponibles.value.filter((p) =>
-      p.label.toLowerCase().includes(needle),
+      p.label.toLowerCase().includes(needle)
     )
   })
 }
 
-watch(
-  () => detalleForm.value.idproductoalmacen,
-  (nuevoValor) => {
-    const productoSeleccionado = productosDisponibles.value.find((p) => p.value === nuevoValor)
-    detalleForm.value.stockActual = productoSeleccionado ? productoSeleccionado.stock : 0
-    detalleForm.value.unidad = productoSeleccionado ? productoSeleccionado.unidad : ''
-  },
-)
-
 async function onSubmit() {
-  const formData = objectToFormData(detalleForm.value)
+  if (!formRef.value.validate()) return
 
+  const formData = objectToFormData(detalleForm.value)
   formData.append('idingreso', props.compra.id)
-  // Determinar la URL y el método (crear vs actualizar)
+  
   const isUpdate = esModoEdicion.value
-  isUpdate
-    ? formData.append('ver', 'editarDetalleCompra')
-    : formData.append('ver', 'registrarDetalleCompra') // Asumiendo endpoints
-  for (let [k, v] of formData.entries()) {
-    console.log(`${k}: ${v}`)
-  }
+  isUpdate ? formData.append('ver', 'editarDetalleCompra') : formData.append('ver', 'registrarDetalleCompra')
+
   try {
     $q.loading.show({ message: 'Guardando...' })
-    // Suponiendo que tu API usa POST para crear y PUT/PATCH para actualizar
-    // Ajusta esto a tu implementación real (usaré `api.post` para ambos por simplicidad)
     const response = await api.post('', formData)
 
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: response.data.mensaje || 'Guardado con éxito' })
-      await getDetalleCompra() // Recargar la tabla
-      listaProductosDisponibles()
+      $q.notify({ 
+        type: 'positive', 
+        message: response.data.mensaje || 'Guardado con éxito',
+        position: 'top'
+      })
+      await getDetalleCompra()
+      await listaProductosDisponibles()
       onResetForm()
-      emit('update') // Notificar al padre que hubo cambios
+      emit('update')
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje || 'Error al guardar' })
+      $q.notify({ 
+        type: 'negative', 
+        message: response.data.mensaje || 'Error al guardar',
+        position: 'top'
+      })
     }
   } catch (error) {
     console.error('Error en onSubmit:', error)
-    $q.notify({ type: 'negative', message: 'Hubo un problema de comunicación con el servidor.' })
+    $q.notify({ 
+      type: 'negative', 
+      message: 'Hubo un problema de comunicación con el servidor.',
+      position: 'top'
+    })
   } finally {
     $q.loading.hide()
   }
@@ -477,22 +598,20 @@ function onResetForm() {
     stockActual: 0,
     unidad: '',
   }
-  formRef.value.reset()
-  formRef.value.resetValidation()
-
+  formRef.value?.reset()
+  formRef.value?.resetValidation()
   esModoEdicion.value = false
 }
 
 // --- MÉTODOS DE LA TABLA ---
 async function iniciarEdicion(row) {
   try {
+    $q.loading.show({ message: 'Cargando datos...' })
     const point = `verificarIDdetallecompra/${row.id}`
     const response = await api.get(point)
     
     if (response.data.estado == 'exito') {
       esModoEdicion.value = true
-      
-      // Usar datos directamente de la API
       detalleForm.value = {
         id: response.data.datos.id,
         idproductoalmacen: response.data.datos.idproductoalmacen,
@@ -503,11 +622,21 @@ async function iniciarEdicion(row) {
         unidad: response.data.datos.unidad || '',
       }
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje || 'Error al Editar' })
+      $q.notify({ 
+        type: 'negative', 
+        message: response.data.mensaje || 'Error al Editar',
+        position: 'top'
+      })
     }
   } catch (error) {
     console.error('Error al iniciar edición:', error)
-    $q.notify({ type: 'negative', message: 'No se pudo cargar la información del producto.' })
+    $q.notify({ 
+      type: 'negative', 
+      message: 'No se pudo cargar la información del producto.',
+      position: 'top'
+    })
+  } finally {
+    $q.loading.hide()
   }
 }
 
@@ -517,10 +646,7 @@ function confirmarEliminar(row) {
     message: `¿Estás seguro de que quieres eliminar el producto "${row.descripcion}"?`,
     cancel: true,
     persistent: true,
-    ok: {
-      color: 'negative',
-      label: 'Eliminar',
-    },
+    ok: { color: 'negative', label: 'Eliminar' },
   }).onOk(async () => {
     await eliminarDetalle(row)
   })
@@ -528,19 +654,30 @@ function confirmarEliminar(row) {
 
 async function eliminarDetalle(row) {
   try {
-    console.log(row)
     $q.loading.show({ message: 'Eliminando...' })
-    const response = await api.get(`eliminarDetalleCompra/${row.id}`) // Usando DELETE
+    const response = await api.get(`eliminarDetalleCompra/${row.id}`)
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: response.data.mensaje })
-      await getDetalleCompra() // Recargar la tabla
-      emit('update') // Notificar al padre que hubo cambios
+      $q.notify({ 
+        type: 'positive', 
+        message: response.data.mensaje,
+        position: 'top'
+      })
+      await getDetalleCompra()
+      emit('update')
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje })
+      $q.notify({ 
+        type: 'negative', 
+        message: response.data.mensaje,
+        position: 'top'
+      })
     }
   } catch (error) {
     console.error('Error al eliminar detalle:', error)
-    $q.notify({ type: 'negative', message: 'No se pudo eliminar el producto.' })
+    $q.notify({ 
+      type: 'negative', 
+      message: 'No se pudo eliminar el producto.',
+      position: 'top'
+    })
   } finally {
     $q.loading.hide()
   }
