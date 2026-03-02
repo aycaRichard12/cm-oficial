@@ -276,7 +276,8 @@ const vistaPrevia = () => {
   mostrarModal.value = true
 }
 const reporteImage = async () => {
-  const doc = PDFreporteStockProductosIndividual_img(processedRows)
+  const productos = await prepararImagenes()
+  const doc = PDFreporteStockProductosIndividual_img(productos)
 
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
