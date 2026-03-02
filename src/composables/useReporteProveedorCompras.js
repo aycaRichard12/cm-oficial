@@ -36,13 +36,6 @@ export function useReporteProveedorCompras() {
 
       console.log('Compras obtenidas:', compras.value)
 
-      Notify.create({
-        type: 'positive',
-        message: `Se encontraron ${compras.value.length} compras`,
-        position: 'top-right',
-        timeout: 2000,
-      })
-
       return compras.value
     } catch (error) {
       console.error('Error al obtener compras:', error)
