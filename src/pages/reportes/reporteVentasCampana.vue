@@ -129,7 +129,7 @@
           title="Resumen de Ventas por Campaña"
           :rows="datosFiltrados"
           :columns="columnasTabla"
-          :arrayHeaders="['n', 'almacen', 'nombre', 'fechainicio', 'fechafinal', 'nventas']"
+          :arrayHeaders="['n', 'almacen', 'nombre', 'porcentaje', 'fechainicio', 'fechafinal', 'est', 'nventas']"
           :sumColumns="['nventas']"
           rowKey="id"
           :search="busqueda"
@@ -196,6 +196,7 @@ const columnasTabla = [
   { name: 'n', label: 'N°', field: 'n', align: 'left' },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
   { name: 'nombre', label: 'Campaña', field: 'nombre', align: 'left' },
+  { name: 'porcentaje', label: 'Porcentaje', field: 'porcentaje', align: 'left' },
   {
     name: 'fechainicio',
     label: 'Fecha Inicio',
@@ -210,6 +211,7 @@ const columnasTabla = [
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
+  { name: 'est', label: 'Estado', field: 'est', align: 'left' },
   { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'center' },
 ]
 
@@ -301,15 +303,46 @@ async function generarReporte() {
 
   try {
     const idusuario = datosUsuario.idusuario
-    const point = `reporteventacampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
-    const response = await api.get(point)
-    console.log(response.status)
-    const data = response.data.map((item, index) => ({
-      ...item,
-      n: index + 1,
-    }))
+    const endpointVentas = `reporteventacampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+    const endpointCampanas = `reportecampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+    
+    // Llamar a ambas APIs en paralelo
+    const [responseVentas, responseCampanas] = await Promise.all([
+      api.get(endpointVentas),
+      api.get(endpointCampanas)
+    ])
 
-    if (response.status === 200) {
+    if (responseVentas.status === 200 && responseCampanas.status === 200) {
+      const validVentas = Array.isArray(responseVentas.data) ? responseVentas.data : []
+      const validCampanas = Array.isArray(responseCampanas.data) ? responseCampanas.data : []
+      const mapaGlobal = {}
+
+      // Llenamos el mapa iterando primero las de campañas (por lo general trae la config, estado, etc).
+      validCampanas.forEach(camp => {
+        mapaGlobal[camp.idcampaña] = { ...camp }
+      })
+
+      // Ahora iteramos las de ventas (actualizando el nventas y fusionando lo demás)
+      validVentas.forEach(venta => {
+        if (mapaGlobal[venta.idcampaña]) {
+          mapaGlobal[venta.idcampaña] = { ...mapaGlobal[venta.idcampaña], ...venta }
+        } else {
+          mapaGlobal[venta.idcampaña] = { ...venta }
+        }
+      })
+
+      // Transformar finalmente a un Array y darle un formato presentable
+      let indice = 1
+      const data = Object.values(mapaGlobal).map(item => {
+        return {
+          ...item,
+          n: indice++,
+          est: String(item.estado) === '1' ? 'Activa' : 'Inactiva',
+          porcentaje: item.porcentaje || '0',
+          nventas: item.nventas || '0'
+        }
+      })
+
       datosOriginales.value = data
       datosFiltrados.value = data // Inicialmente, los datos filtrados son todos los originales
       reporteGenerado.value = true
@@ -322,7 +355,7 @@ async function generarReporte() {
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar el reporte: ' + (data.error || 'Mensaje desconocido'),
+        message: 'Error al generar los reportes.',
         position: 'top',
       })
     }
@@ -357,7 +390,9 @@ function filtrarYOrdenarDatos() {
       return (
         (u.almacen && u.almacen.toLowerCase().includes(term)) ||
         (u.nombre && u.nombre.toLowerCase().includes(term)) ||
-        (u.nventas && String(u.nventas).toLowerCase().includes(term))
+        (u.porcentaje && String(u.porcentaje).toLowerCase().includes(term)) ||
+        (u.nventas && String(u.nventas).toLowerCase().includes(term)) ||
+        (u.est && u.est.toLowerCase().includes(term))
       )
     })
   }

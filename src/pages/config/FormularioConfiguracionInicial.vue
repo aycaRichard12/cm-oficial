@@ -50,6 +50,38 @@
             <q-btn type="submit" label="Ingresar" color="primary" unelevated class="full-width" />
           </div>
         </q-form>
+
+        <!-- Diálogo de Opciones de Configuración -->
+        <q-dialog v-model="mostrarOpcionesConfiguracion" persistent>
+          <q-card style="width: 400px; max-width: 90vw;">
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">Opciones de Configuración</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-md">
+              Por favor, seleccione cómo desea configurar el sistema para esta empresa:
+            </q-card-section>
+
+            <q-card-actions align="center" class="q-pb-md q-px-md column q-gutter-y-sm">
+              <q-btn
+                color="secondary"
+                icon="cloud_download"
+                label="1. Descargar Configuración Básica"
+                class="full-width"
+                @click="configurarConfiguracionBasica"
+              />
+              <q-btn
+                color="primary"
+                flat
+                icon="settings_applications"
+                label="2. Configuración Manual"
+                class="full-width q-ml-none"
+                @click="mostrarOpcionesConfiguracion = false"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
       </q-page>
     </q-page-container>
   </q-layout>
@@ -109,6 +141,44 @@ async function getSucursal() {
 
 const usuario = ref(null) // Valor por defecto: Juan Pérez
 const sucursal = ref(null) // Valor por defecto: Sucursal Norte
+const mostrarOpcionesConfiguracion = ref(true)
+
+async function configurarConfiguracionBasica() {
+  const payload = {
+    id_empresa_md5: 'c0c7c76d30bd3dcaefc96f40275bdc0a', // Puede ser sustituido dinamicamente o seguir la petición directa.
+    descripcion: 'no acepto configuracion por defecto, con datos que funcionarias bien',
+    ver: 'registrarConfiguracionInicial'
+  }
+  
+  const formData = objectToFormData(payload)
+  
+  try {
+    const response = await api.post('', formData)
+    
+    if (response.data.estado === 'exito' || response.data) {
+       $q.notify({
+        type: 'positive',
+        message: 'Configuración básica descargada e instalada correctamente.'
+      })
+      // Ocultar modal e iniciar sesión normalmente con redirección
+      mostrarOpcionesConfiguracion.value = false
+      setTimeout(() => {
+        router.push('/')
+      }, 1000)
+    } else {
+       $q.notify({
+        type: 'negative',
+        message: 'Error al aplicar configuración básica'
+      })
+    }
+  } catch (error) {
+    console.error('Error al aplicar config base: ', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Ocurrió un error en el servidor.'
+    })
+  }
+}
 
 async function enviarFormulario() {
   const formData = objectToFormData({
