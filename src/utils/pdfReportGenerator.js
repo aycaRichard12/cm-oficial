@@ -7,7 +7,7 @@ import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { numeroALetras } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
 import { cargarLogoBase64 } from 'src/composables/FuncionesG'
-import { getComercialImagenProducto } from 'src/composables/FuncionesG'
+// import { getComercialImagenProducto } from 'src/composables/FuncionesG'
 // import { convertirAMayusculas } from 'src/composables/FuncionesG'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { obtenerHora } from 'src/composables/FuncionesG'
@@ -1089,8 +1089,8 @@ export function PDFreporteStockProductosIndividual(processedRows) {
 }
 
 export function PDFreporteStockProductosIndividual_img(processedRows) {
-  console.log('procesed rows imagenes', processedRows)
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+  const arrRows = Array.isArray(processedRows) ? processedRows : processedRows.value || []
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
@@ -1104,7 +1104,7 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     { header: 'Imagen', dataKey: 'imagen' },
   ]
 
-  const datos = processedRows.value.map((item, indice) => ({
+  const datos = arrRows.map((item, indice) => ({
     indice: indice + 1,
     codigo: item.codigo,
     producto: item.producto,
@@ -1114,16 +1114,16 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     unidad: item.unidad,
     stock: item.stock,
     costo: decimas(redondear(parseFloat(item.costounitario) * parseFloat(item.stock))),
-    imagen: getComercialImagenProducto(item.imagen), // Handle cases where image might be missing
+    imagen: item.imagenBase64 ? '' : 'Sin Imagen',
+    rawImagenBase64: item.imagenBase64 || null,
   }))
 
-  console.log(datos)
-  const totalstock = processedRows.value.reduce(
+  const totalstock = arrRows.reduce(
     (sum, dato) => sum + redondear(parseFloat(dato.stock)),
     0,
   )
 
-  const costoTotal = processedRows.value.reduce(
+  const costoTotal = arrRows.reduce(
     (sum, dato) => sum + redondear(parseFloat(dato.stock) * parseFloat(dato.costounitario)),
     0,
   )
@@ -3163,7 +3163,8 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     { header: 'Campaña', dataKey: 'nombre' },
     { header: 'Fecha Inicio', dataKey: 'fechainicio' },
     { header: 'Fecha Final', dataKey: 'fechafinal' },
-    { header: 'Cantidad Ventas', dataKey: 'nventas' },
+    { header: 'Estado', dataKey: 'est' },
+    { header: 'Cant. Ventas', dataKey: 'nventas' },
   ]
 
   const filas = datos.map((item, index) => ({
@@ -3172,15 +3173,17 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     nombre: item.nombre ?? '-',
     fechainicio: cambiarFormatoFecha(item.fechainicio),
     fechafinal: cambiarFormatoFecha(item.fechafinal),
+    est: item.est ?? '-',
     nventas: item.nventas,
   }))
 
   const columnStyles = {
     n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 42, halign: 'left' },
-    nombre: { cellWidth: 50, halign: 'left' },
-    fechainicio: { cellWidth: 32, halign: 'center' },
-    fechafinal: { cellWidth: 32, halign: 'center' },
+    almacen: { cellWidth: 35, halign: 'left' },
+    nombre: { cellWidth: 40, halign: 'left' },
+    fechainicio: { cellWidth: 28, halign: 'center' },
+    fechafinal: { cellWidth: 28, halign: 'center' },
+    est: { cellWidth: 25, halign: 'center' },
     nventas: { cellWidth: 30, halign: 'right' },
   }
 
@@ -4130,6 +4133,10 @@ function dibujarCuerpoTabla(
         if (columnStyles[key]) {
           Object.assign(data.cell.styles, columnStyles[key])
         }
+        // Aplicar altura minima dinamicamente solo si existe la imagen en esta fila 
+        if (key === 'imagen' && data.row.raw && data.row.raw.rawImagenBase64) {
+          data.cell.styles.minCellHeight = 25
+        }
       }
     },
 
@@ -4137,7 +4144,23 @@ function dibujarCuerpoTabla(
       // ... Lógica para dibujar la imagen y bordes de encabezado (sin cambios) ...
 
       if (data.column.dataKey === 'imagen' && data.cell.section === 'body') {
-        // Lógica de dibujo de imagen
+        if (data.row.raw && data.row.raw.rawImagenBase64) {
+          try {
+            // Ajustamos el tamaño de la imagen dentro de la celda, con margen de 2px
+            doc.addImage(
+              data.row.raw.rawImagenBase64,
+              'JPEG',
+              data.cell.x + 2,
+              data.cell.y + 2,
+              data.cell.width - 4,
+              data.cell.height - 4,
+              undefined,
+              'FAST'
+            )
+          } catch (e) {
+            console.warn('Error adjuntando imagen sobre layout de body', e)
+          }
+        }
       }
 
       if (data.section === 'head') {

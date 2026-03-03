@@ -12,9 +12,9 @@
     >
       <template v-slot:body-cell-Opciones="props">
         <q-td
+          v-if="Number(estado) !== 1 || permisoInventarioExterno"
           :props="props"
           class="text-nowrap text-center"
-          v-if="estado !== 1 && permisoInventarioExterno"
         >
           <q-btn
             v-if="editar"
@@ -32,17 +32,13 @@
             size="sm"
           />
         </q-td>
-        <q-td :props="props" class="text-nowrap text-center" v-else>
-          <q-btn color="info" icon="edit" class="q-mr-sm" size="sm" disable v-if="editar" />
-          <q-btn color="info" icon="delete" size="sm" disable v-if="eliminar" />
-        </q-td>
       </template>
     </q-table>
   </div>
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { usePermisosUsuario } from 'src/composables/inventarioExterior/usePermisosUsuario'
 
 const props = defineProps({
@@ -53,21 +49,21 @@ const props = defineProps({
   eliminar: [Boolean, Number]
 })
 
-defineEmits(['edit', 'delete'])
-
-// Usar el composable
 const { permisoInventarioExterno, verificarPermisoUsuario } = usePermisosUsuario()
 
+defineEmits(['edit', 'delete'])
+
 const computedColumns = computed(() => {
-  if (permisoInventarioExterno.value) {
-    return props.columns
+  if ((Number(props.estado) === 1 && !permisoInventarioExterno.value) || (!props.editar && !props.eliminar)) {
+    return props.columns.filter(col => col.name !== 'Opciones')
   }
-  return props.columns.filter(col => col.name !== 'Opciones')
+  return props.columns
 })
 
 onMounted(() => {
   verificarPermisoUsuario()
 })
+
 </script>
 
 <style scoped>
