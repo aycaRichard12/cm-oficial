@@ -38,30 +38,7 @@
       <q-tooltip>Eliminar</q-tooltip>
     </q-btn>
 
-    <!-- Botones deshabilitados si tiene permiso pero row bloquea acción -->
-    <template v-if="!canEdit && !canDelete && (hasEditPerm || hasDeletePerm)">
-      <q-btn
-        color="info"
-        icon="edit"
-        class="q-mr-sm"
-        size="sm"
-        disable
-        v-if="hasEditPerm"
-        id="btnEditarDeshabilitado"
-        >
-        <q-tooltip>Editar</q-tooltip>
-      </q-btn>
-      <q-btn
-        color="negative"
-        icon="delete"
-        size="sm"
-        disable
-        v-if="hasDeletePerm"
-        id="btnEliminarDeshabilitado"
-      >
-        <q-tooltip>Eliminar</q-tooltip>
-      </q-btn>
-    </template>
+  
   </div>
 </template>
 
@@ -86,12 +63,11 @@ const hasDeletePerm = computed(() => !!props.eliminar)
 
 const canEdit = computed(() =>
   hasEditPerm.value &&
-  permisoInventarioExterno.value &&
-  props.row.Autorización !== 1
+  (Number(props.row.Autorización) !== 1 || permisoInventarioExterno.value)
 )
 const canDelete = computed(() =>
   hasDeletePerm.value &&
-  props.row.Autorización !== 1
+  (Number(props.row.Autorización) !== 1 || permisoInventarioExterno.value)
 )
 
 // Traer permisos al montar el componente
