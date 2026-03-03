@@ -3163,7 +3163,8 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     { header: 'Campaña', dataKey: 'nombre' },
     { header: 'Fecha Inicio', dataKey: 'fechainicio' },
     { header: 'Fecha Final', dataKey: 'fechafinal' },
-    { header: 'Cantidad Ventas', dataKey: 'nventas' },
+    { header: 'Estado', dataKey: 'est' },
+    { header: 'Cant. Ventas', dataKey: 'nventas' },
   ]
 
   const filas = datos.map((item, index) => ({
@@ -3172,15 +3173,17 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     nombre: item.nombre ?? '-',
     fechainicio: cambiarFormatoFecha(item.fechainicio),
     fechafinal: cambiarFormatoFecha(item.fechafinal),
+    est: item.est ?? '-',
     nventas: item.nventas,
   }))
 
   const columnStyles = {
     n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 42, halign: 'left' },
-    nombre: { cellWidth: 50, halign: 'left' },
-    fechainicio: { cellWidth: 32, halign: 'center' },
-    fechafinal: { cellWidth: 32, halign: 'center' },
+    almacen: { cellWidth: 35, halign: 'left' },
+    nombre: { cellWidth: 40, halign: 'left' },
+    fechainicio: { cellWidth: 28, halign: 'center' },
+    fechafinal: { cellWidth: 28, halign: 'center' },
+    est: { cellWidth: 25, halign: 'center' },
     nventas: { cellWidth: 30, halign: 'right' },
   }
 

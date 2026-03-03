@@ -266,7 +266,7 @@ const routes = [
       {
         path: '/reporteVentasCampana',
         component: () => import('src/pages/reportes/reporteVentasCampanapage.vue'),
-      },  
+      },
       {
         path: '/inventarioexterno',
         component: () => import('src/pages/inventarioExterior/inventarioExteriorPage.vue'),
@@ -332,10 +332,10 @@ const routes = [
         path: '/reportedeindicederotacionporcliente',
         component: () => import('src/pages/reportes/rotacionClientePage.vue'),
       },
-      {
-        path: '/reportedecampanas',
-        component: () => import('src/pages/campanas/ReporteCampanasPage.vue'),
-      },
+      // {
+      //   path: '/reportedecampanas',
+      //   component: () => import('src/pages/campanas/ReporteCampanasPage.vue'),
+      // },
       {
         path: '/reportedemovimientos',
         component: () => import('src/pages/movimiento/reporteMovimientoPage.vue'),

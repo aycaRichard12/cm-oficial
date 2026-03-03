@@ -300,6 +300,7 @@ async function generarReporte() {
   try {
     const idusuario = datosUsuario.idusuario
     const point = `reportecampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+    console.log('reporte',point)
     const response = await api.get(point)
     console.log(response.status)
     const data = response.data.map((item, index) => ({
