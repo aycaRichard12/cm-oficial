@@ -72,13 +72,35 @@ export function useCampanas(q) {
 
   const registrarCampana = async () => {
     try {
+      if (formData.value.fechai > formData.value.fechaf) {
+        q.notify({
+          type: 'warning',
+          message: 'La fecha de inicio no puede ser mayor a la fecha final',
+        })
+        return
+      }
+
       const form = objectToFormData(formData.value)
-      form.append('ver', formData.value.id ? 'editarcampaña' : 'registrarcampana')
-      form.append('idusuario', idusuario)
-      form.append('idempresa', idempresa)
-      form.append('estado', formData.value.estadoActivo ? '1' : '2')
+      form.delete('estadoActivo') // Eliminar bool de la data
+      form.set('ver', formData.value.id ? 'editarcampaña' : 'registrarcampana')
+      form.set('idusuario', idusuario)
+      form.set('idempresa', idempresa)
+      form.set('estado', formData.value.estadoActivo ? '1' : '2')
+      if (formData.value.id) {
+        form.set('id', formData.value.id)
+        form.set('idcampaña', formData.value.id)
+      }
       const res = await api.post('', form)
       if (res.data.estado === 'exito') {
+        // Forzar actualización de estado por si "editarcampaña" lo omite
+        if (formData.value.id) {
+          try {
+            await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${formData.value.id}/${formData.value.estadoActivo ? 1 : 2}`)
+          } catch(err) {
+            console.error('Error al actualizar estado:', err)
+          }
+        }
+        
         q.notify({ type: 'positive', message: res.data.mensaje || 'Éxito' })
         await listarCampanas()
         formularioActivo.value = false
@@ -102,15 +124,14 @@ export function useCampanas(q) {
         )
         // 3. Asignación atómica de datos
         Object.assign(formData.value, {
-          id: res.datos.id,
+          id: res.datos.id || campana.id,
           ver: 'editarcampaña',
-          // Si existe, asignamos el ID (res.datos.idalmacen), si no, null o undefined
-          idalmacen: existeAlmacen ? existeAlmacen : null,
-          fechai: res.datos.fechai,
-          fechaf: res.datos.fechaf,
-          campana: res.datos.nombre,
-          porcentaje: res.datos.porcentaje,
-          estadoActivo: Number(res.datos.estado) === 1,
+          idalmacen: existeAlmacen ? existeAlmacen.idalmacen : null,
+          fechai: res.datos.fechai || campana.fechainicio,
+          fechaf: res.datos.fechaf || campana.fechafinal,
+          campana: res.datos.nombre || campana.nombre || campana.campana,
+          porcentaje: res.datos.porcentaje || campana.porcentaje,
+          estadoActivo: Number(res.datos.estado || campana.estado) === 1,
         })
 
         formularioActivo.value = true

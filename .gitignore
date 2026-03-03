@@ -1,7 +1,9 @@
 .DS_Store
 .thumbs.db
 node_modules
-
+.agent
+.agents
+/skills-lock.json
 # Quasar core related directories
 .quasar
 /dist
