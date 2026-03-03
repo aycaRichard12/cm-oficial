@@ -5,7 +5,7 @@
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>
           <q-icon name="shopping_cart" size="sm" class="q-mr-sm" />
-          Reporte de Compras por Producto
+          Reporte de Compras según Producto
         </q-toolbar-title>
       </q-toolbar>
 
