@@ -15,6 +15,7 @@ export const PAGINAS = Object.freeze({
     'parametrosdeobsolescencia',
   ]),
   configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
+  configuracionIntegracionExterna: Object.freeze(['generartokensapis', 'servicios', 'credencialesservicio']),
   administracioncreacion: Object.freeze([
     'registraralmacen',
     'registrarpuntodeventa',
