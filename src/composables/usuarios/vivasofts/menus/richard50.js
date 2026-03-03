@@ -632,18 +632,18 @@ export const menurichard50 = [
             codigo: 'dashboard-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          // {
+          //   titulo: 'V-Campañas-Rep. Campañas',
+          //   codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
-            titulo: 'V-Campañas-Rep. Campañas',
-            codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'V-Campañas-Rep. Ventas por Campañas',
+            titulo: 'V-Campañas-Campañas',
             codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: 'V-Campañas-Rep. Campañas y Ventas',
+            titulo: 'V-Campañas-Ventas Campaña',
             codigo: 'reporteVentasCampana-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
