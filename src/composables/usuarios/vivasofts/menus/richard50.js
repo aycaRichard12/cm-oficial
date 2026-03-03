@@ -314,16 +314,7 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Configuración-General-Servicios',
-            codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Configuración-General-Credenciales Servicios',
-            codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+        
           {
             titulo: 'Configuración-Producto-Categoría',
             codigo: 'categoriadeproducto-03afdbd66e7929b125f8597834fa83a4',
@@ -352,6 +343,21 @@ export const menurichard50 = [
           {
             titulo: 'Configuración-Cliente-Tipo de Cliente',
             codigo: 'tiposdeclientes-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+         {
+            titulo: 'Configuración-Cliente-Apis',
+            codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+            {
+            titulo: 'Configuración-Cliente-Servicios',
+            codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-Cliente-Credenciales Servicios',
+            codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
@@ -392,8 +398,8 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'Apis',
-            codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+            titulo: 'Integración Externa',
+            codigo: 'configuracionIntegracionExterna-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           // {
