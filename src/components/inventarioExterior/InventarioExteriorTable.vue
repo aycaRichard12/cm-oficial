@@ -15,14 +15,27 @@
     <template v-slot:body-cell-Autorización="props">
       <q-td :props="props" class="text-center">
         <q-btn
+          v-if="Number(props.row.Autorización) !== 1"
           id="btnAutorizacion"
-          :color="Number(props.row.Autorización) === 1 ? 'positive' : 'negative'"
+          color="negative"
           @click="$emit('toggleAutorizacion', props.row)"
-          :icon="Number(props.row.Autorización) === 1 ? 'thumb_up_alt' : 'thumb_down_alt'"
+          icon="thumb_down_alt"
           size="sm"
         >
-        <q-tooltip>Click para autorizar</q-tooltip>
-      </q-btn>
+          <q-tooltip>Click para autorizar</q-tooltip>
+        </q-btn>
+        <q-btn
+          v-else
+          id="btnAutorizado"
+          color="positive"
+          icon="thumb_up_alt"
+          size="sm"
+          flat
+          disable
+          style="cursor: default; opacity: 1"
+        >
+          <q-tooltip>Ya autorizado — no se puede desactivar</q-tooltip>
+        </q-btn>
       </q-td>
     </template>
 

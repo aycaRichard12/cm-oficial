@@ -36,11 +36,17 @@
     </template>
     <template v-slot:bottom-row>
       <q-tr class="text-weight-bold bg-grey-3">
-        <q-td v-for="col in columns" :key="col.name" :class="[`text-right`]">
+        <q-td 
+          v-for="(col, index) in columns" 
+          :key="col.name" 
+          :class="col.name === props.nombreColumnaTotales ? 'text-right q-pr-md' : 'text-' + (col.align || 'left')"
+          :colspan="col.name === props.nombreColumnaTotales ? 2 : 1"
+          v-show="columns[index + 1]?.name !== props.nombreColumnaTotales"
+        >
           <span v-if="totales[col.name] !== undefined">
             {{ totales[col.name] }}
           </span>
-          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold">
+          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold" style="white-space: nowrap;">
             Total General :
           </span>
           <span v-else></span>

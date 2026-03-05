@@ -97,22 +97,28 @@ export const menurichard50 = [
             codigo: 'autorizarventassinstock-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+
+          {
+            titulo: 'Adm-Autorizar-Anular Compras',
+            codigo: 'anularcompra-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
           // {
           //   titulo: 'Adm-Autorizar-Autorizar Operaciones',
           //   codigo: 'autorizarOperaciones-03afdbd66e7929b125f8597834fa83a4',
           //   permiso: '1111',
           // },
 
-          {
-            titulo: 'Adm-Cliente-Rep. de Proveedor Compras',
-            codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Adm-Cliente-Compras de Prod. x Proveedor',
-            codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Adm-Cliente-Compras según Proveedor',
+          //   codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
+          // {
+          //   titulo: 'Adm-Cliente-Compras según Producto',
+          //   codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Adm-Campana-Crear Campañas',
             codigo: 'crearcampanas-03afdbd66e7929b125f8597834fa83a4',
@@ -314,16 +320,7 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Configuración-General-Servicios',
-            codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'Configuración-General-Credenciales Servicios',
-            codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+
           {
             titulo: 'Configuración-Producto-Categoría',
             codigo: 'categoriadeproducto-03afdbd66e7929b125f8597834fa83a4',
@@ -352,6 +349,21 @@ export const menurichard50 = [
           {
             titulo: 'Configuración-Cliente-Tipo de Cliente',
             codigo: 'tiposdeclientes-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-Cliente-Apis',
+            codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-Cliente-Servicios',
+            codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Configuración-Cliente-Credenciales Servicios',
+            codigo: 'credencialesservicio-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
@@ -392,8 +404,8 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
-            titulo: 'Apis',
-            codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
+            titulo: 'Integración Externa',
+            codigo: 'configuracionIntegracionExterna-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           // {
@@ -489,18 +501,28 @@ export const menurichard50 = [
             permiso: '1111',
           },
           {
+            titulo: '-Compras-Compras',
+            codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
             titulo: '-Compras-Compras Desglosado',
             codigo: 'reporteproductoscomprados-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: '-Compras-Rep. Compras',
-            codigo: 'reportedecompras-03afdbd66e7929b125f8597834fa83a4',
+            titulo: '-Compras-Productos y Catálogo',
+            codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: '-Compras-Rep. Stock de Productos Individual',
-            codigo: 'reportestockdeproductosindividual-03afdbd66e7929b125f8597834fa83a4',
+            titulo: '-Compras-Compras según Proveedor',
+            codigo: 'reporteproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: '-Compras-Compras según Producto',
+            codigo: 'reporteproductoproveedorcompras-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
@@ -622,18 +644,18 @@ export const menurichard50 = [
             codigo: 'dashboard-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          // {
+          //   titulo: 'V-Campañas-Rep. Campañas',
+          //   codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
-            titulo: 'V-Campañas-Rep. Campañas',
-            codigo: 'reportedecampanas-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
-          {
-            titulo: 'V-Campañas-Rep. Ventas por Campañas',
+            titulo: 'V-Campañas-Campañas',
             codigo: 'reportedeventasporcampanas-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
           {
-            titulo: 'V-Campañas-Rep. Campañas y Ventas',
+            titulo: 'V-Campañas-Ventas Campaña',
             codigo: 'reporteVentasCampana-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },

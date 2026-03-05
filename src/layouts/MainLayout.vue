@@ -333,6 +333,7 @@ const iconos = ref({
   reporteinventarioexterior: 'report',
   actualizacionescomercial: 'update',
   permisosusuario: 'security',
+  configuracionIntegracionExterna: 'settings',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {

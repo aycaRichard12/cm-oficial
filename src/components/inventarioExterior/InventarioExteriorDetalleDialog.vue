@@ -7,7 +7,7 @@
         <q-btn icon="close" @click="$emit('close')" flat round dense />
       </q-card-section>
       <q-card-section>
-        <q-form @submit="$emit('submit')" v-if="permisoInventarioExterno">
+        <q-form @submit="$emit('submit')" v-if="(Number(localDetalleFormData.estado) !== 1 || permisoInventarioExterno) && editar">
           <div class="row q-col-gutter-x-md">
             <!-- Hidden inputs -->
             <div class="col-md-12" style="display: none">
@@ -82,7 +82,7 @@
                 outlined
                 v-model="localDetalleFormData.cantidad"
                 required
-                :disable="localDetalleFormData.estado === 1"
+                :disable="Number(localDetalleFormData.estado) === 1 && !permisoInventarioExterno"
               />
             </div>
 
@@ -96,11 +96,11 @@
                 v-model="localDetalleFormData.fecha"
                 id="fecha"
                 required
-                :disable="localDetalleFormData.estado === 1"
+                :disable="Number(localDetalleFormData.estado) === 1 && !permisoInventarioExterno"
               />
             </div>
           </div>
-          <div class="row justify-end" v-if="localDetalleFormData.estado !== 1">
+          <div class="row justify-end">
             <q-btn
               label="Cancelar"
               type="reset"
@@ -156,8 +156,8 @@ const emit = defineEmits([
 
 const localDetalleFormData = ref({ ...props.detalleFormData })
 
-// Usar el composable
 const { permisoInventarioExterno, verificarPermisoUsuario } = usePermisosUsuario()
+
 
 watch(() => props.detalleFormData, (newVal) => {
   Object.assign(localDetalleFormData.value, newVal)

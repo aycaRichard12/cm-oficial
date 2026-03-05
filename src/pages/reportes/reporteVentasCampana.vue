@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding id="reporteVentasPorCampana">
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
@@ -15,9 +15,9 @@
 
       <q-card-section>
         <q-form @submit.prevent="handleGenerarReporte">
-          <div class="row q-col-gutter-md">
+          <div id="filtroFechasVentas" class="row q-col-gutter-md">
             <!-- Fecha Inicial -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaInicio">
               <q-input
                 v-model="fechaInicio"
                 id="fechaIni"
@@ -35,7 +35,7 @@
             </div>
 
             <!-- Fecha Final -->
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4" id="fechaFin">
               <q-input
                 v-model="fechaFin"
                 id="fechafin"
@@ -54,14 +54,16 @@
           </div>
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
+              id="btnGenerarVentas"
               label="Generar Reporte"
-              icon="search"
+              
               color="primary"
               unelevated
               @click="handleGenerarReporte"
               :loading="cargandoData"
             />
             <q-btn
+              id="btnExportarVentas"
               label="Exportar PDF"
               icon="picture_as_pdf"
               color="negative"
@@ -77,48 +79,62 @@
     <!-- Resultados -->
     <q-card v-if="reporteGenerado" class="shadow-2 rounded-borders">
       <q-card-section class="q-pb-none">
-        <div class="row items-center justify-between">
-          <div class="text-h6 text-primary text-weight-bold row items-center q-mb-sm">
+        <div class="row items-center justify-between q-col-gutter-sm">
+          <div class="col-12 col-sm-auto text-h6 text-primary text-weight-bold row items-center q-mb-sm">
             <q-icon name="list_alt" size="sm" class="q-mr-sm" /> Resultados
           </div>
-          <!-- Filtro de almacén integrado en la cabecera -->
-          <div style="min-width: 250px" class="q-mb-sm">
-            <q-select
-              v-model="almacenSeleccionado"
-              :options="opcionesAlmacenes"
-              label="Filtrar por Almacén"
-              emit-value
-              map-options
-              outlined
-              dense
-              color="primary"
-            >
-              <template v-slot:prepend>
-                <q-icon name="storefront" />
-              </template>
-            </q-select>
+          <!-- Filtros de búsqueda (Almacén y Texto) -->
+          <div class="col-12 col-sm-auto row q-gutter-sm justify-end">
+            <div style="min-width: 250px" class="q-mb-sm" id="filtroAlmacen">
+              <q-select
+                v-model="almacenSeleccionado"
+                :options="opcionesAlmacenes"
+                label="Filtrar por Almacén"
+                emit-value
+                map-options
+                outlined
+                dense
+                color="primary"
+                clearable
+              >
+                <template v-slot:prepend>
+                  <q-icon name="storefront" />
+                </template>
+              </q-select>
+            </div>
+            
+            <div style="min-width: 250px" class="q-mb-sm" id="filtroBusqueda">
+              <q-input
+                v-model="busqueda"
+                label="Buscar en Resultados..."
+                outlined
+                dense
+                color="primary"
+                debounce="300"
+                clearable
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
           </div>
         </div>
       </q-card-section>
 
       <q-card-section>
-        <q-table
+        <BaseFilterableTable
+          id="tableReporteVentas"
+          ref="tableRef"
+          title="Resumen de Ventas por Campaña"
           :rows="datosFiltrados"
           :columns="columnasTabla"
-          row-key="id"
-          flat
-          bordered
-          separator="cell"
-          table-header-class="bg-blue-grey-1 text-primary text-weight-bold"
-          :pagination="{ rowsPerPage: 15 }"
-        >
-          <template v-slot:no-data>
-            <div class="full-width row flex-center q-gutter-sm q-pa-xl text-grey-7">
-              <q-icon name="search_off" size="xl" />
-              <div class="text-h6">No hay datos para mostrar.</div>
-            </div>
-          </template>
-        </q-table>
+          :arrayHeaders="['n', 'almacen', 'nombre', 'porcentaje', 'fechainicio', 'fechafinal', 'est', 'nventas']"
+          :sumColumns="['nventas']"
+          rowKey="id"
+          :search="busqueda"
+          nombreColumnaTotales="fechafinal"
+        />
       </q-card-section>
     </q-card>
 
@@ -149,17 +165,20 @@ import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG.js'
 import { validarUsuario } from 'src/composables/FuncionesG.js'
 import { PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS } from 'src/utils/pdfReportGenerator'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 //pedf
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 
 const $q = useQuasar()
+const tableRef = ref(null)
 
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
 const fechaFin = ref(obtenerFechaActualDato())
 const almacenSeleccionado = ref('0') // "0" para "Todos los almacenes"
+const busqueda = ref('') // Nuevo estado para búsqueda de texto
 const opcionesAlmacenes = ref([])
 const datosOriginales = ref([])
 const datosFiltrados = ref([])
@@ -177,6 +196,7 @@ const columnasTabla = [
   { name: 'n', label: 'N°', field: 'n', align: 'left' },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
   { name: 'nombre', label: 'Campaña', field: 'nombre', align: 'left' },
+  { name: 'porcentaje', label: 'Porcentaje', field: 'porcentaje', align: 'left' },
   {
     name: 'fechainicio',
     label: 'Fecha Inicio',
@@ -191,12 +211,13 @@ const columnasTabla = [
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
-  { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'left' },
+  { name: 'est', label: 'Estado', field: 'est', align: 'left' },
+  { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'center' },
 ]
 
 // --- Watchers ---
-watch(almacenSeleccionado, (newVal) => {
-  filtrarYOrdenarDatos(newVal)
+watch([almacenSeleccionado, busqueda], () => {
+  filtrarYOrdenarDatos()
 })
 
 // --- Funciones ---
@@ -282,15 +303,46 @@ async function generarReporte() {
 
   try {
     const idusuario = datosUsuario.idusuario
-    const point = `reporteventacampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
-    const response = await api.get(point)
-    console.log(response.status)
-    const data = response.data.map((item, index) => ({
-      ...item,
-      n: index + 1,
-    }))
+    const endpointVentas = `reporteventacampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+    const endpointCampanas = `reportecampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
+    
+    // Llamar a ambas APIs en paralelo
+    const [responseVentas, responseCampanas] = await Promise.all([
+      api.get(endpointVentas),
+      api.get(endpointCampanas)
+    ])
 
-    if (response.status === 200) {
+    if (responseVentas.status === 200 && responseCampanas.status === 200) {
+      const validVentas = Array.isArray(responseVentas.data) ? responseVentas.data : []
+      const validCampanas = Array.isArray(responseCampanas.data) ? responseCampanas.data : []
+      const mapaGlobal = {}
+
+      // Llenamos el mapa iterando primero las de campañas (por lo general trae la config, estado, etc).
+      validCampanas.forEach(camp => {
+        mapaGlobal[camp.idcampaña] = { ...camp }
+      })
+
+      // Ahora iteramos las de ventas (actualizando el nventas y fusionando lo demás)
+      validVentas.forEach(venta => {
+        if (mapaGlobal[venta.idcampaña]) {
+          mapaGlobal[venta.idcampaña] = { ...mapaGlobal[venta.idcampaña], ...venta }
+        } else {
+          mapaGlobal[venta.idcampaña] = { ...venta }
+        }
+      })
+
+      // Transformar finalmente a un Array y darle un formato presentable
+      let indice = 1
+      const data = Object.values(mapaGlobal).map(item => {
+        return {
+          ...item,
+          n: indice++,
+          est: String(item.estado) === '1' ? 'Activa' : 'Inactiva',
+          porcentaje: item.porcentaje || '0',
+          nventas: item.nventas || '0'
+        }
+      })
+
       datosOriginales.value = data
       datosFiltrados.value = data // Inicialmente, los datos filtrados son todos los originales
       reporteGenerado.value = true
@@ -303,7 +355,7 @@ async function generarReporte() {
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar el reporte: ' + (data.error || 'Mensaje desconocido'),
+        message: 'Error al generar los reportes.',
         position: 'top',
       })
     }
@@ -321,15 +373,31 @@ async function generarReporte() {
 }
 
 /**
- * Filtra los datos del reporte según el almacén seleccionado.
- * @param {string} dato - El ID del almacén o "0" para todos.
+ * Filtra los datos del reporte combinando almacén seleccionado y el texto de búsqueda.
  */
-function filtrarYOrdenarDatos(dato) {
-  if (dato === '0') {
-    datosFiltrados.value = [...datosOriginales.value]
-  } else {
-    datosFiltrados.value = datosOriginales.value.filter((u) => String(u.idalmacen) === String(dato))
+function filtrarYOrdenarDatos() {
+  let resultado = [...datosOriginales.value]
+
+  // 1. Filtrar por almacén
+  if (almacenSeleccionado.value && almacenSeleccionado.value !== '0') {
+    resultado = resultado.filter((u) => String(u.idalmacen) === String(almacenSeleccionado.value))
   }
+
+  // 2. Filtrar por búsqueda de texto
+  if (busqueda.value && busqueda.value.trim() !== '') {
+    const term = busqueda.value.toLowerCase().trim()
+    resultado = resultado.filter((u) => {
+      return (
+        (u.almacen && u.almacen.toLowerCase().includes(term)) ||
+        (u.nombre && u.nombre.toLowerCase().includes(term)) ||
+        (u.porcentaje && String(u.porcentaje).toLowerCase().includes(term)) ||
+        (u.nventas && String(u.nventas).toLowerCase().includes(term)) ||
+        (u.est && u.est.toLowerCase().includes(term))
+      )
+    })
+  }
+
+  datosFiltrados.value = resultado
 }
 
 /**
@@ -346,14 +414,15 @@ async function handleGenerarReporte() {
  * Maneja el clic en el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
+  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
       message: 'No se ha generado ningún reporte o el reporte está vacío.',
       position: 'top',
     })
   } else {
-    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFiltrados.value, {
+    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFinales, {
       fechaInicio: fechaInicio.value,
       fechaFin: fechaFin.value,
       almacen: almacenSeleccionadoTexto.value,

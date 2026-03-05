@@ -5,7 +5,7 @@
       <q-separator />
       <q-card-section>
         <q-form @submit="registrarCategoria">
-          <q-select :model-value="categoriaForm.idcategoriaprecio" @update:model-value="$emit('update-form', val)" :options="categoriasPrecioOptions" label="Seleccione categoría de precio" option-value="id" option-label="nombre" emit-value map-options outlined dense required><template v-slot:prepend><q-icon name="label" /></template></q-select>
+          <q-select :model-value="categoriaForm.idcategoriaprecio" @update:model-value="val => $emit('update-form', val)" :options="categoriasPrecioOptions" label="Seleccione categoría de precio" option-value="id" option-label="nombre" emit-value map-options outlined dense required><template v-slot:prepend><q-icon name="label" /></template></q-select>
           <div class="q-mt-md"><q-btn type="submit" unelevated color="primary" icon="add" label="Agregar Categoría" /></div>
         </q-form>
       </q-card-section>
