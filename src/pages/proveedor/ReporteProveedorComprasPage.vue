@@ -5,13 +5,39 @@
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>
           <q-icon name="shopping_cart" size="sm" class="q-mr-sm" />
-          Reporte de Compras por Proveedor
+          Reportes de Compras según Proveedor
         </q-toolbar-title>
       </q-toolbar>
 
       <!-- Filters Section -->
-      <q-card-section>
+      <q-card-section class="q-pb-sm">
         <div class="row q-col-gutter-md items-start" id="filtroFechas">
+          <!-- Proveedor -->
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="selectedProveedor"
+              :options="proveedoresOptions"
+              label="Proveedor"
+              dense
+              outlined
+              use-input
+              input-debounce="0"
+              behavior="menu"
+              @filter="filterProveedores"
+              class="full-width"
+            >
+              <template v-slot:prepend>
+                <q-icon name="apartment" class="text-primary" />
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+
+          <!-- Fecha Inicial -->
           <div class="col-12 col-md-3">
             <q-input
               v-model="fechaInicio"
@@ -20,9 +46,15 @@
               outlined
               label="Fecha Inicial *"
               :rules="[(val) => !!val || 'Fecha inicial requerida']"
-            />
+              class="full-width"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" />
+              </template>
+            </q-input>
           </div>
 
+          <!-- Fecha Final -->
           <div class="col-12 col-md-3">
             <q-input
               v-model="fechaFin"
@@ -31,65 +63,52 @@
               outlined
               label="Fecha Final *"
               :rules="[(val) => !!val || 'Fecha final requerida']"
-            />
+              class="full-width"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" />
+              </template>
+            </q-input>
           </div>
 
-          <div class="col-12 col-md-3">
-            <q-select
-              v-model="selectedProveedor"
-              :options="proveedoresOptions"
-              label="Proveedor"
-              dense
-              outlined
-              clearable
-              use-input
-              input-debounce="0"
-              behavior="menu"
-              @filter="filterProveedores"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
+          <!-- Generar Reporte Button -->
+          <div class="col-12 col-md-2 flex items-end" id="generarReporte">
+            <q-btn
+              color="primary"
+              label="Generar"
+              icon="search"
+              :loading="loading"
+              :disable="!fechaInicio || !fechaFin || !selectedProveedor"
+              @click="generarReporte"
+              class="full-width"
+              unelevated
+            />
           </div>
         </div>
       </q-card-section>
 
-      <q-card-section>
-        <div class="row q-col-gutter-md items-center">
-          <div class="col-12 col-md-6" id="generarReporte">
+      <!-- Export Options -->
+      <q-card-section v-if="filteredCompras.length > 0" class="bg-grey-2">
+        <div class="row q-col-gutter-md">
+          <div class="col-auto">
             <q-btn
-              color="primary"
-              label="Generar Reporte"
-              icon="search"
-              :loading="loading"
-              :disable="!fechaInicio || !fechaFin"
-              @click="generarReporte"
-              class="full-width"
-              size="md"
+              color="positive"
+              label="Exportar a Excel"
+              icon="file_download"
+              @click="generarExcel"
+              flat
+              id="exportarExcel"
             />
           </div>
-          <div class="col-12 col-md-3 text-right">
-            <q-btn-group unelevated>
-              <q-btn
-                color="negative"
-                icon="picture_as_pdf"
-                label="PDF"
-                @click="generarPDF"
-                :disable="!filteredCompras.length"
-                id="exportarPDF"
-              />
-              <q-btn
-                color="positive"
-                icon="table_view"
-                label="Excel"
-                @click="generarExcel"
-                :disable="!filteredCompras.length"
-                id="exportarExcel"
-              />
-            </q-btn-group>
+          <div class="col-auto">
+            <q-btn
+              color="info"
+              label="Previsualizar PDF"
+              icon="picture_as_pdf"
+              @click="generarPDF"
+              flat
+              id="exportarPDF"
+            />
           </div>
         </div>
       </q-card-section>
@@ -324,10 +343,17 @@ const filterProveedores = (val, update) => {
 //   proveedoresOptions.value = newVal
 // })
 
+const appliedProveedor = ref(null)
+
 const filteredCompras = computed(() => {
   let data = compras.value || []
-  if (selectedProveedor.value) {
-    data = data.filter((c) => c.proveedor === selectedProveedor.value)
+  if (appliedProveedor.value) {
+    // Si la opción seleccionada contiene ' - ', la separamos y usamos el nombre (proveedor) para filtrar.
+    const proveedorSeleccionadoNombre = appliedProveedor.value.includes('-') 
+      ? appliedProveedor.value.substring(appliedProveedor.value.indexOf('-') + 1).trim()
+      : appliedProveedor.value.trim()
+
+    data = data.filter((c) => c.proveedor === proveedorSeleccionadoNombre)
   }
   return data.map((item) => ({
     ...item,
@@ -341,10 +367,30 @@ const filteredCompras = computed(() => {
 
 // Methods
 const generarReporte = async () => {
-  if (!fechaInicio.value || !fechaFin.value) {
+  if (!fechaInicio.value || !fechaFin.value || !selectedProveedor.value) {
     return
   }
   await fetchCompras(fechaInicio.value, fechaFin.value)
+  
+  appliedProveedor.value = selectedProveedor.value
+
+  const cantidadResultados = filteredCompras.value.length
+
+  if (cantidadResultados > 0) {
+    $q.notify({
+      type: 'positive',
+      message: `Se encontraron ${cantidadResultados} compras del proveedor seleccionado`,
+      position: 'top-right',
+      timeout: 2000,
+    })
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: 'No se encontraron compras para el proveedor en este rango de fechas',
+      position: 'top-right',
+      timeout: 2000,
+    })
+  }
 }
 
 const generarPDF = () => {

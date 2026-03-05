@@ -38,7 +38,16 @@ export function usePreciosCampana(q, campanas, idalmacenfiltro) {
   const listarProductosAlmacen = async () => {
     try {
       const res = await api.get(`listaProductoAlmacen/${idempresa}`)
-      if (res.data && Array.isArray(res.data)) productosAlmacen.value = res.data
+      if (res.data && Array.isArray(res.data)) {
+        // Deduplicar por ID para evitar productos repetidos en el select
+        const unicos = new Map()
+        res.data.forEach(prod => {
+          if (!unicos.has(prod.id)) {
+            unicos.set(prod.id, prod)
+          }
+        })
+        productosAlmacen.value = Array.from(unicos.values())
+      }
     } catch { console.error('Error listaProductoAlmacen') }
   }
 
@@ -167,15 +176,37 @@ export function usePreciosCampana(q, campanas, idalmacenfiltro) {
     })
   }
 
-  const alSeleccionarProducto = (val) => {
+  const alSeleccionarProducto = async (val) => {
     if (val) {
       precioForm.value.idproductoalmacen = val.id || null
       precioForm.value.idproducto = val.idproducto || null
       precioForm.value.producto = val.descripcion || val.producto || ''
+      
+      let porcentaje = 0
+      
+      try {
+        // Obtenemos el porcentaje de descuento de la campaña
+        const resCampana = await peticionGET(`${URL_APICM}api/verificarExistenciacampana/${precioForm.value.idcampaña}`)
+        if (resCampana && resCampana.estado === 'exito') {
+          porcentaje = parseFloat(resCampana.datos?.porcentaje || 0)
+        }
+      } catch (e) {
+        console.error('Error al obtener el porcentaje de la campaña:', e)
+      }
+      
+      // Aplicamos el descuento al precioSugerido del producto
+      const precioBase = val.precioSugerido ? parseFloat(val.precioSugerido) : 0
+      if (precioBase > 0) {
+        const precioDescontado = precioBase - (precioBase * (porcentaje / 100))
+        precioForm.value.precio = parseFloat(precioDescontado).toFixed(2)
+      } else {
+        precioForm.value.precio = '0.00'
+      }
     } else {
       precioForm.value.idproductoalmacen = null
       precioForm.value.idproducto = null
       precioForm.value.producto = ''
+      precioForm.value.precio = ''
     }
   }
 

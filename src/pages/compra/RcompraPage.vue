@@ -23,6 +23,7 @@
       :rows="compras"
       :almacenes="almacenes"
       :almacenSeleccionado="almacenSeleccionado"
+      :solicitudesAnulacion="solicitudes"
       @detalleCompra="verDetalle"
       @add="toggleForm"
       @edit="editarCompra"
@@ -31,6 +32,7 @@
       @repDesglosado="generarReporteDesglosado"
       @repCompras="generarReporteGeneral"
       @toggle-status="autorizarCompra"
+      @solicitar-anulacion="solicitarAnulacionCompra"
     />
 
     <q-dialog v-model="mostrarDetalleCompra" persistent>
@@ -66,6 +68,13 @@
       message="No tienes almacenes asignados. Por favor, asigna un almacén para continuar."
       @confirm="redirectToAssignment"
     />
+
+    <!-- Dialog unificado de solicitud de anulación -->
+    <SolicitudAnulacionDialog
+      v-model="dialogAnulacion"
+      :compra="compraParaAnulacion"
+      @solicitud-enviada="onSolicitudAnulacionEnviada"
+    />
   </q-page>
 </template>
 
@@ -81,6 +90,8 @@ import DetalleCompra from 'src/components/compra/DetalleCompra.vue'
 import { useCompraStore } from 'src/stores/compras'
 import { useRouter } from 'vue-router'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
+import SolicitudAnulacionDialog from 'src/components/compra/SolicitudAnulacionDialog.vue'
+import { useAnulacionCompra } from 'src/composables/compra/useAnulacionCompra'
 const compraStore = useCompraStore()
 
 const $q = useQuasar()
@@ -108,6 +119,9 @@ const productosDisponibles = ref([])
 
 const router = useRouter()
 const ShowWarningDialog = ref(false)
+
+// Anulación de compra (estado y lógica en el composable)
+const { dialogAnulacion, compraParaAnulacion, solicitudes, cargarSolicitudes, abrirDialogAnulacion } = useAnulacionCompra()
 
 async function editarCompra(compra) {
   console.log(compra)
@@ -164,14 +178,21 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     const response = await api.post('', formData)
     console.log(response.data)
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: response.data.mensaje || mensajeExito })
+      let msg = response.data.mensaje || mensajeExito
+      // Override typical warning message
+      if (msg && msg.includes('Advertencia')) {
+        msg = 'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
+      }
+      $q.notify({ type: 'positive', message: msg })
       almacenSeleccionado.value = almacenes.value.find((almacen) => almacen.value === data.almacen)
       console.log(almacenSeleccionado.value)
       //iniciar()
 
       return response
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje || mensajeError })
+      let errorMsg = response.data.mensaje || mensajeError
+      if (errorMsg) errorMsg = errorMsg.replace(/¡?Advertencia!?\s*:?\s*/ig, '')
+      $q.notify({ type: 'negative', message: errorMsg })
     }
   } catch (error) {
     console.error('Error en API:', error)
@@ -355,6 +376,30 @@ async function autorizarCompra(compra) {
   })
 }
 
+function solicitarAnulacionCompra(compra) {
+  abrirDialogAnulacion(compra)
+}
+
+function onSolicitudAnulacionEnviada() {
+  $q.notify({
+    type: 'positive',
+    message: 'Solicitud de anulación y notificación enviadas correctamente',
+    icon: 'check_circle',
+    position: 'top',
+  })
+  iniciar()
+}
+
+function generarReporteDesglosado() {
+  // Manejado internamente por TableCompra (imprimirReporte)
+  console.log('generarReporteDesglosado delegado a TableCompra')
+}
+
+function generarReporteGeneral() {
+  // Manejado internamente por TableCompra (imprimirReporte)
+  console.log('generarReporteGeneral delegado a TableCompra')
+}
+
 function generarCodigo() {
   return `C-${compras.value.length}`
 }
@@ -387,6 +432,7 @@ async function iniciar() {
   await cargarAlmacenes()
   await cargarProveedores()
   await loadRows()
+  await cargarSolicitudes()
   registroActual.value = {
     ver: 'registrarCompra',
     idusuario: idusuario,
