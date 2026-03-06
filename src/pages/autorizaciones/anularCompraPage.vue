@@ -139,7 +139,7 @@ const idusuario = idusuario_md5()
 
 const { solicitudes, cargarSolicitudes } = useAnulacionCompra()
 const { simbolo } = useCurrencyStore()
-const { responsables, loadUsuarios, enviarNotificacion } = useNotificaciones()
+const { loadUsuarios, enviarNotificacion } = useNotificaciones()
 
 const loading = ref(false)
 const filtroEstado = ref('todas')
@@ -260,14 +260,7 @@ async function enviarDecision(solicitud, estado, motivo_rechazo) {
 
 function notificarSolicitante(solicitud, estado, motivo_rechazo) {
   // Buscar al solicitante en la lista de responsables por nombre de usuario
-  const username = solicitud.solicitante?.usuario
-  const responsable = responsables.value.find(
-    (r) => r.usuarioData?.usuario === username
-  )
-  if (!responsable?.value) {
-    console.warn('No se encontró el usuario solicitante para notificar:', username)
-    return
-  }
+  const username = solicitud.solicitante.md5
 
   const esAprobada = estado === 'aprobada'
   const asunto = esAprobada
@@ -277,9 +270,9 @@ function notificarSolicitante(solicitud, estado, motivo_rechazo) {
   const mensaje = esAprobada
     ? `Tu solicitud de anulación para la compra del proveedor "${solicitud.nombre_provedor}" (Factura N° ${solicitud.nfactura}) ha sido APROBADA por ${adminNombre}.`
     : `Tu solicitud de anulación para la compra del proveedor "${solicitud.nombre_provedor}" (Factura N° ${solicitud.nfactura}) ha sido RECHAZADA por ${adminNombre}. Motivo: ${motivo_rechazo}.`
-
+  console.log('Notificación al solicitante:', { id_usuario: username, asunto, mensaje })
   enviarNotificacion({
-    id_usuario: responsable.value,
+    id_usuario: username,
     asunto,
     mensaje,
     datos_adicionales: {
