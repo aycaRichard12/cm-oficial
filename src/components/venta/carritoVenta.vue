@@ -69,7 +69,16 @@
                 </template>
               </q-select>
             </div>
-
+    <div class="col-12 col-md-3 flex items-center" id="activarCampania">
+              <q-checkbox v-model="mostrarCategoriasCampania" color="accent">
+                <template v-slot:default>
+                  <div class="flex items-center text-grey-8">
+                    <q-icon name="campaign" color="accent" class="q-mr-sm" />
+                    <span>Activar Categorías con Campaña</span>
+                  </div>
+                </template>
+              </q-checkbox>
+            </div>
             <div class="col-12 col-md-3" id="categoriaCampania">
               <label for="campana">Categorías con Campaña</label>
               <q-select
@@ -100,16 +109,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3 flex items-center" id="activarCampania">
-              <q-checkbox v-model="mostrarCategoriasCampania" color="accent">
-                <template v-slot:default>
-                  <div class="flex items-center text-grey-8">
-                    <q-icon name="campaign" color="accent" class="q-mr-sm" />
-                    <span>Activar Categorías con Campaña</span>
-                  </div>
-                </template>
-              </q-checkbox>
-            </div>
+        
           </div>
         </div>
       </div>
@@ -753,9 +753,22 @@ async function cargarCampanasDisponibles() {
       throw new Error(data.error || 'Error al cargar campañas')
     }
 
-    // Filtrar campañas por almacén seleccionado y estado activo
+    // Filtrar campañas por almacén, estado activo y vigencia de fechas
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
     const campanasActivas = Array.isArray(data)
-      ? data.filter((c) => c.idalmacen == idalm && Number(c.estado) === 1)
+      ? data.filter((c) => {
+          if (c.idalmacen != idalm || Number(c.estado) !== 1) return false
+          // Verificar vigencia si existen fechas
+          if (c.fechainicio && c.fechafinal) {
+            const inicio = new Date(c.fechainicio)
+            const fin = new Date(c.fechafinal)
+            fin.setHours(23, 59, 59, 999) // Incluir todo el día final
+            return hoy >= inicio && hoy <= fin
+          }
+          return true // Sin fechas: solo se valida estado
+        })
       : []
 
     categoriasCampania.value = campanasActivas.map((c) => ({
