@@ -9,6 +9,8 @@
 export default async function devAutologin() {
   if (import.meta.env.VITE_APP_ENV !== 'pruebas') return
   if (localStorage.getItem('puedeIniciarsesion')) return
+  // Prevent auto-login if the user just logged out
+  if (sessionStorage.getItem('logoutIntencional')) return
 
   try {
     const { USUARIOS } = await import('src/credenciales.js')
@@ -26,7 +28,10 @@ export default async function devAutologin() {
       usuario: idusuario,
       titulo: item.titulo,
       codigo: item.codigo,
-      submenu: item.submenu || [],
+      submenu: (item.submenu || []).map((sub) => ({
+        ...sub,
+        codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo
+      })),
     }))
 
     const userMenu = [{ modulo: 'cm', menu: menuTransformado }]
