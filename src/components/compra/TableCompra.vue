@@ -475,6 +475,7 @@ const onNotificacionEnviada = (datos) => {
 }
 
 onMounted(async () => {
+  await permisosStore.cargarPermisos()
   await divisaActiva.cargarDivisaActiva()
 
   if (!divisaActiva.divisa) {
