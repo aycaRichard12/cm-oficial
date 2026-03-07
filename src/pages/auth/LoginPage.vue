@@ -222,13 +222,16 @@ const login = async () => {
       const modulo = res.data[0].modulo || ''
       const idusuario = res.data[0].idusuario || ''
 
-      // Transformar menu: solo añadir "usuario" a cada item del menú
-      // (los codigo del submenu ya vienen con el ID desde la API)
+      // Transformar menu: añadir "usuario" y asegurarnos que los codigos
+      // de los submenús terminan con el idusuario real.
       const menuTransformado = rawMenu.map((item) => ({
         usuario: idusuario,
         titulo: item.titulo,
         codigo: item.codigo,
-        submenu: item.submenu || [],
+        submenu: (item.submenu || []).map((sub) => ({
+          ...sub,
+          codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo
+        })),
       }))
 
       const userMenu = [{ modulo, menu: menuTransformado }]
@@ -250,6 +253,7 @@ const login = async () => {
         position: 'top',
       })
 
+      sessionStorage.removeItem('logoutIntencional')
       router.push('/')
     } else {
       $q.notify({
