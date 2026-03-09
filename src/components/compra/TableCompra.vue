@@ -404,7 +404,7 @@ async function FormularioCredito(c) {
     const result = await showDialog(
       $q,
       'W',
-      'Advertencia: La compra está en espera de autorización. Debe validarse antes de proceder.',
+      'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.',
     )
     console.log('Warning dialog result:', result)
   }
