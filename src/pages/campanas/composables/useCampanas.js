@@ -57,7 +57,11 @@ export function useCampanas(q) {
       if (Array.isArray(res.data)) {
         for (const campana of res.data) {
           if (String(campana.estado) === '1') {
-            if (hoy < campana.fechainicio || hoy > campana.fechafinal) {
+            const dateHoy = new Date(hoy + 'T00:00:00').getTime()
+            const dateInicio = new Date(campana.fechainicio + 'T00:00:00').getTime()
+            const dateFinal = new Date(campana.fechafinal + 'T00:00:00').getTime()
+
+            if (dateHoy < dateInicio || dateHoy > dateFinal) {
               campana.estado = '2'
               try {
                 await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${campana.id}/2`)
@@ -102,7 +106,11 @@ export function useCampanas(q) {
       }
 
       const hoy = obtenerFechaActual()
-      if (formData.value.estadoActivo && (hoy < formData.value.fechai || hoy > formData.value.fechaf)) {
+      const dhoy = new Date(hoy + 'T00:00:00').getTime()
+      const dfi = new Date(formData.value.fechai + 'T00:00:00').getTime()
+      const dff = new Date(formData.value.fechaf + 'T00:00:00').getTime()
+  console.log('form',formData.value)
+      if (formData.value.estadoActivo && (dhoy < dfi || dhoy > dff)) {
         q.notify({
           type: 'warning',
           message: 'No puede guardar como Activa una campaña fuera de su rango de fechas.',
@@ -120,6 +128,7 @@ export function useCampanas(q) {
         form.set('id', formData.value.id)
         form.set('idcampaña', formData.value.id)
       }
+    
       const res = await api.post('', form)
       if (res.data.estado === 'exito') {
         // Forzar actualización de estado por si "editarcampaña" lo omite
@@ -201,7 +210,10 @@ export function useCampanas(q) {
         const campana = campanas.value.find(c => String(c.id) === String(id))
         if (campana) {
           const hoy = obtenerFechaActual()
-          if (hoy < campana.fechainicio || hoy > campana.fechafinal) {
+          const dhoy = new Date(hoy + 'T00:00:00').getTime()
+          const dfi = new Date(campana.fechainicio + 'T00:00:00').getTime()
+          const dff = new Date(campana.fechafinal + 'T00:00:00').getTime()
+          if (dhoy < dfi || dhoy > dff) {
             q.notify({ type: 'warning', message: 'No se puede activar una campaña fuera de su rango de fechas.' })
             return
           }
