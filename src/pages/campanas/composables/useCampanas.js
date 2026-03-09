@@ -50,7 +50,27 @@ export function useCampanas(q) {
     try {
       const res = await api.get(`campanas/${idempresa}`)
       if (res.data[0] === 'error') throw new Error(res.data.error)
-      campanas.value = res.data || []
+      
+      const hoy = obtenerFechaActual()
+      const campanasVerificadas = []
+      
+      if (Array.isArray(res.data)) {
+        for (const campana of res.data) {
+          if (String(campana.estado) === '1') {
+            if (hoy < campana.fechainicio || hoy > campana.fechafinal) {
+              campana.estado = '2'
+              try {
+                await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${campana.id}/2`)
+              } catch (err) {
+                console.error('Error al desactivar campaña vencida:', err)
+              }
+            }
+          }
+          campanasVerificadas.push(campana)
+        }
+      }
+      
+      campanas.value = campanasVerificadas
       console.log('campañas',campanas.value)
     } catch {
       q.notify({ type: 'negative', message: 'Error al cargar campañas' })
@@ -77,6 +97,15 @@ export function useCampanas(q) {
         q.notify({
           type: 'warning',
           message: 'La fecha de inicio no puede ser mayor a la fecha final',
+        })
+        return
+      }
+
+      const hoy = obtenerFechaActual()
+      if (formData.value.estadoActivo && (hoy < formData.value.fechai || hoy > formData.value.fechaf)) {
+        q.notify({
+          type: 'warning',
+          message: 'No puede guardar como Activa una campaña fuera de su rango de fechas.',
         })
         return
       }
@@ -168,6 +197,17 @@ export function useCampanas(q) {
 
   const cambiarEstado = async (id, estado) => {
     try {
+      if (String(estado) === '1') {
+        const campana = campanas.value.find(c => String(c.id) === String(id))
+        if (campana) {
+          const hoy = obtenerFechaActual()
+          if (hoy < campana.fechainicio || hoy > campana.fechafinal) {
+            q.notify({ type: 'warning', message: 'No se puede activar una campaña fuera de su rango de fechas.' })
+            return
+          }
+        }
+      }
+
       const res = await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${id}/${estado}`)
       if (res.estado === 'exito') {
         q.notify({ type: 'positive', message: res.mensaje })
