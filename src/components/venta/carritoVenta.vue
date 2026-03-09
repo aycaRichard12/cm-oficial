@@ -32,7 +32,7 @@
       <div class="my-card q-mb-md">
         <div>
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-3" id="origenVenta">
+            <div class="col-12 col-md-4" id="origenVenta">
               <label for="almacen">Origen de venta</label>
               <q-select
                 v-model="almacenSeleccionado"
@@ -50,7 +50,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3" id="categoriaPrecio">
+            <div class="col-12 col-md-4" id="categoriaPrecio">
               <label for="categoria">Categoría de precio</label>
               <q-select
                 v-model="categoriaPrecioSeleccionada"
@@ -69,18 +69,15 @@
                 </template>
               </q-select>
             </div>
-    <div class="col-12 col-md-3 flex items-center" id="activarCampania">
-              <q-checkbox v-model="mostrarCategoriasCampania" color="accent">
-                <template v-slot:default>
-                  <div class="flex items-center text-grey-8">
-                    <q-icon name="campaign" color="accent" class="q-mr-sm" />
-                    <span>Activar Categorías con Campaña</span>
-                  </div>
-                </template>
-              </q-checkbox>
-            </div>
-            <div class="col-12 col-md-3" id="categoriaCampania">
-              <label for="campana">Categorías con Campaña</label>
+            <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
+              <div class="flex items-center justify-between" style="margin-bottom: 2px;">
+                <label for="campana">Categorías con Campaña</label>
+                <q-checkbox v-model="mostrarCategoriasCampania" color="accent" dense>
+                  <template v-slot:default>
+                    <span class="text-grey-8" style="font-size: 13px">{{ mostrarCategoriasCampania ? 'Ocultar' : 'Activar' }}</span>
+                  </template>
+                </q-checkbox>
+              </div>
               <q-select
                 v-model="categoriaCampaniaSeleccionada"
                 :options="categoriasCampania"

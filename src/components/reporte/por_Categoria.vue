@@ -2,9 +2,15 @@
   <div class="full-width full-height">
     <q-card flat class="shadow-2 rounded-borders full-height">
       <q-card-section class="q-pb-none">
-        <div class="row items-center">
-          <q-icon name="bar_chart" color="primary" size="1.5rem" class="q-mr-sm" />
-          <div class="text-h6 text-weight-medium">Ventas por Categoría</div>
+        <div class="row items-center justify-between">
+          <div class="row items-center">
+            <q-icon name="bar_chart" color="primary" size="1.5rem" class="q-mr-sm" />
+            <div class="text-h6 text-weight-medium">Ventas por Categoría</div>
+          </div>
+          <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders" v-if="periodoInfo">
+            <q-icon name="event" class="q-mr-xs" />
+            {{ periodoInfo }}
+          </div>
         </div>
       </q-card-section>
       <q-card-section class="full-height">
@@ -47,7 +53,21 @@ const chartData = computed(() => {
     categoria: item.categoria?.trim(),
     subcategoria: item.subcategoria?.trim() || null,
     total_ventas: Number(item.total_ventas) || 0,
-  }))
+  })).filter(item => item.total_ventas > 0)
+})
+
+const periodoInfo = computed(() => {
+  const rawData = vCategorias.value?._value || vCategorias.value || []
+  if (rawData.length > 0) {
+    const item = rawData[0]
+    // Intentar deducir la información de periodo si la API la envía
+    if (item.fecha_inicio && item.fecha_fin) return `Del ${item.fecha_inicio} al ${item.fecha_fin}`
+    if (item.fechainicio && item.fechafinal) return `Del ${item.fechainicio} al ${item.fechafinal}`
+    if (item.gestion) return `Gestión: ${item.gestion}`
+    if (item.periodo) return item.periodo
+    if (item.mes && item.anio) return `${item.mes}/${item.anio}`
+  }
+  return 'Periodo Actual'
 })
 
 // Configuración del gráfico con responsividad mejorada
