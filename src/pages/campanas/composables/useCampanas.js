@@ -51,6 +51,7 @@ export function useCampanas(q) {
       const res = await api.get(`campanas/${idempresa}`)
       if (res.data[0] === 'error') throw new Error(res.data.error)
       campanas.value = res.data || []
+      console.log('campañas',campanas.value)
     } catch {
       q.notify({ type: 'negative', message: 'Error al cargar campañas' })
     }
