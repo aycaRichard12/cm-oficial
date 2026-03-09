@@ -50,7 +50,32 @@ export function useCampanas(q) {
     try {
       const res = await api.get(`campanas/${idempresa}`)
       if (res.data[0] === 'error') throw new Error(res.data.error)
-      campanas.value = res.data || []
+      
+      const hoy = obtenerFechaActual()
+      const campanasVerificadas = []
+      
+      if (Array.isArray(res.data)) {
+        for (const campana of res.data) {
+          if (String(campana.estado) === '1') {
+            const dateHoy = new Date(hoy + 'T00:00:00').getTime()
+            const dateInicio = new Date(campana.fechainicio + 'T00:00:00').getTime()
+            const dateFinal = new Date(campana.fechafinal + 'T00:00:00').getTime()
+
+            if (dateHoy < dateInicio || dateHoy > dateFinal) {
+              campana.estado = '2'
+              try {
+                await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${campana.id}/2`)
+              } catch (err) {
+                console.error('Error al desactivar campaña vencida:', err)
+              }
+            }
+          }
+          campanasVerificadas.push(campana)
+        }
+      }
+      
+      campanas.value = campanasVerificadas
+      console.log('campañas',campanas.value)
     } catch {
       q.notify({ type: 'negative', message: 'Error al cargar campañas' })
     }
@@ -80,6 +105,19 @@ export function useCampanas(q) {
         return
       }
 
+      const hoy = obtenerFechaActual()
+      const dhoy = new Date(hoy + 'T00:00:00').getTime()
+      const dfi = new Date(formData.value.fechai + 'T00:00:00').getTime()
+      const dff = new Date(formData.value.fechaf + 'T00:00:00').getTime()
+  console.log('form',formData.value)
+      if (formData.value.estadoActivo && (dhoy < dfi || dhoy > dff)) {
+        q.notify({
+          type: 'warning',
+          message: 'No puede guardar como Activa una campaña fuera de su rango de fechas.',
+        })
+        return
+      }
+
       const form = objectToFormData(formData.value)
       form.delete('estadoActivo') // Eliminar bool de la data
       form.set('ver', formData.value.id ? 'editarcampaña' : 'registrarcampana')
@@ -90,6 +128,7 @@ export function useCampanas(q) {
         form.set('id', formData.value.id)
         form.set('idcampaña', formData.value.id)
       }
+    
       const res = await api.post('', form)
       if (res.data.estado === 'exito') {
         // Forzar actualización de estado por si "editarcampaña" lo omite
@@ -167,6 +206,20 @@ export function useCampanas(q) {
 
   const cambiarEstado = async (id, estado) => {
     try {
+      if (String(estado) === '1') {
+        const campana = campanas.value.find(c => String(c.id) === String(id))
+        if (campana) {
+          const hoy = obtenerFechaActual()
+          const dhoy = new Date(hoy + 'T00:00:00').getTime()
+          const dfi = new Date(campana.fechainicio + 'T00:00:00').getTime()
+          const dff = new Date(campana.fechafinal + 'T00:00:00').getTime()
+          if (dhoy < dfi || dhoy > dff) {
+            q.notify({ type: 'warning', message: 'No se puede activar una campaña fuera de su rango de fechas.' })
+            return
+          }
+        }
+      }
+
       const res = await peticionGET(`${URL_APICM}api/actualizarEstadocampana/${id}/${estado}`)
       if (res.estado === 'exito') {
         q.notify({ type: 'positive', message: res.mensaje })
