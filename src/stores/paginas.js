@@ -54,6 +54,7 @@ export const PAGINAS = Object.freeze({
     'autorizarcompra',
     'autorizarventassinstock',
     'anularcompra',
+    'permisosusuario'
     // 'autorizarOperaciones',
   ]),
   gestioncompra: Object.freeze(['registrarcompra']),
