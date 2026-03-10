@@ -185,21 +185,23 @@ if (tipoFactura) {
       align: 'right',
       dataType: 'text',
     },
-    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text' },
+    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text', defaultVisible: false },
     {
       name: 'estadoproducto',
       label: 'Estado',
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
-    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
+    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text', defaultVisible: false },
     {
       name: 'caracteristica',
       label: 'Otras caract.',
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
     {
       name: 'productosin',
@@ -207,6 +209,7 @@ if (tipoFactura) {
       field: 'productosin',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
     {
       name: 'codigonandina',
@@ -214,6 +217,7 @@ if (tipoFactura) {
       field: 'codigonandina',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
@@ -247,21 +251,23 @@ if (tipoFactura) {
       align: 'right',
       dataType: 'text',
     },
-    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text' },
+    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text', defaultVisible: false },
     {
       name: 'estadoproducto',
       label: 'Estado',
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
-    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
+    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text', defaultVisible: false },
     {
       name: 'caracteristica',
       label: 'Otras caract.',
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
+      defaultVisible: false
     },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
