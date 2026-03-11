@@ -70,11 +70,13 @@
               </q-select>
             </div>
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
-              <div class="flex items-center justify-between" style="margin-bottom: 2px;">
+              <div class="flex items-center justify-between" style="margin-bottom: 2px">
                 <label for="campana">Categorías con Campaña</label>
-                <q-checkbox v-model="mostrarCategoriasCampania" color="accent" dense>
+                <q-checkbox v-model="mostrarCategoriasCampania" dense>
                   <template v-slot:default>
-                    <span class="text-grey-8" style="font-size: 13px">{{ mostrarCategoriasCampania ? 'Ocultar' : 'Activar' }}</span>
+                    <label class="text-emerald" style="font-size: 13px">{{
+                      mostrarCategoriasCampania ? 'Ocultar' : 'Activar'
+                    }}</label>
                   </template>
                 </q-checkbox>
               </div>
@@ -105,8 +107,6 @@
                 </template>
               </q-select>
             </div>
-
-        
           </div>
         </div>
       </div>
