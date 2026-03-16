@@ -22,70 +22,78 @@
         </template>
         <!-- Slot para Credenciales -->
         <template v-slot:body-cell-credenciales="props">
-          <q-td :props="props" style="min-width: 350px" id="verCredencialesJson">
-            <q-expansion-item
-              icon="lock"
-              label="Ver Credenciales"
-              caption="Haga clic para detalles"
-              header-class="text-primary text-weight-medium bg-grey-1 rounded-borders"
-              class="shadow-1 overflow-hidden"
-              style="border-radius: 8px"
+          <q-td :props="props" id="verCredencialesJson">
+            <q-btn
+              color="primary"
+              flat
               dense
+              icon="vpn_key"
+              label="Ver Credenciales"
+              no-caps
+              class="bg-indigo-1 rounded-borders q-px-sm"
             >
-              <q-list class="q-pa-sm bg-white">
-                <div v-for="(val, key) in props.row.credenciales" :key="key" class="q-mb-sm">
-                  <q-input
-                    :model-value="val"
-                    :label="key"
-                    dense
-                    outlined
-                    readonly
-                    :type="props.row.visibility && props.row.visibility[key] ? 'text' : 'password'"
-                    color="primary"
-                  >
-                    <template v-slot:append>
+              <q-menu
+                anchor="top right"
+                self="top left"
+                class="shadow-4 overflow-hidden"
+                style="border-radius: 8px; min-width: 320px;"
+              >
+                <q-list class="bg-white q-py-xs" dense separator>
+                  <q-item v-for="(val, key) in props.row.credenciales" :key="key" class="q-py-sm">
+                    <q-item-section>
+                      <q-item-label caption class="text-uppercase text-weight-bold text-grey-7">
+                        {{ key }}
+                      </q-item-label>
+                      <q-item-label lines="1" class="text-body2" style="font-family: monospace; font-size: 13px;">
+                        <span v-if="props.row.visibility && props.row.visibility[key]" class="text-dark">{{ val }}</span>
+                        <span v-else class="text-grey-5">••••••••••••••••••••</span>
+                      </q-item-label>
+                    </q-item-section>
+                    
+                    <q-item-section side class="row no-wrap items-center">
+                      <div class="q-gutter-x-xs">
+                        <q-btn
+                          flat
+                          round
+                          dense
+                          size="sm"
+                          :icon="props.row.visibility && props.row.visibility[key] ? 'visibility_off' : 'visibility'"
+                          :color="props.row.visibility && props.row.visibility[key] ? 'grey' : 'primary'"
+                          @click.stop="toggleVisibility(props.row, key)"
+                        >
+                          <q-tooltip>{{ props.row.visibility && props.row.visibility[key] ? 'Ocultar' : 'Mostrar' }}</q-tooltip>
+                        </q-btn>
+                        <q-btn
+                          flat
+                          round
+                          dense
+                          size="sm"
+                          icon="content_copy"
+                          color="secondary"
+                          @click.stop="copiarTexto(val)"
+                        >
+                          <q-tooltip>Copiar {{ key }}</q-tooltip>
+                        </q-btn>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  
+                  <q-item class="q-pt-sm">
+                    <q-item-section>
                       <q-btn
-                        flat
-                        round
-                        dense
-                        :icon="
-                          props.row.visibility && props.row.visibility[key]
-                            ? 'visibility'
-                            : 'visibility_off'
-                        "
-                        @click="toggleVisibility(props.row, key)"
-                        color="grey-7"
-                      >
-                        <q-tooltip>{{
-                          props.row.visibility && props.row.visibility[key] ? 'Ocultar' : 'Ver'
-                        }}</q-tooltip>
-                      </q-btn>
-                      <q-btn
-                        flat
-                        round
-                        dense
-                        icon="content_copy"
-                        @click="copiarTexto(val)"
-                        color="primary"
-                      >
-                        <q-tooltip>Copiar valor</q-tooltip>
-                      </q-btn>
-                    </template>
-                  </q-input>
-                </div>
-                <div class="row justify-end q-mt-sm">
-                  <q-btn
-                    label="Copiar JSON"
-                    icon="data_object"
-                    flat
-                    size="sm"
-                    color="secondary"
-                    class="full-width"
-                    @click="copiarTexto(JSON.stringify(props.row.credenciales, null, 2))"
-                  />
-                </div>
-              </q-list>
-            </q-expansion-item>
+                        outline
+                        color="indigo"
+                        size="sm"
+                        icon="data_object"
+                        label="Copiar JSON completo"
+                        class="full-width rounded-borders"
+                        @click.stop="copiarTexto(JSON.stringify(props.row.credenciales, null, 2))"
+                      />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
           </q-td>
         </template>
 
@@ -169,10 +177,10 @@ const { toggleStatus, deleteCredential } = useCredencialesServicioForm()
 
 const columns = [
   {
-    name: 'id_empresa_soft',
+    name: 'numero',
     align: 'left',
-    label: 'ID',
-    field: 'id_empresa_soft',
+    label: '#',
+    field: 'numero',
     sortable: true,
     style: 'width: 50px',
   },
@@ -270,8 +278,9 @@ async function getCredencialesServicios() {
     const response = await api.get(`services/listarSosftwaresCredencialesPorEmpresa/${idEmpresa}`)
     console.log('Credenciales cargadas:', response.data)
 
-    // Transformar los datos para incluir el estado de visibilidad
-    rows.value = response.data.map((item) => ({
+    // Transformar los datos para incluir la numeración y el estado de visibilidad
+    rows.value = response.data.map((item, index) => ({
+      numero: index + 1,
       ...item,
       // Inicializar visibilidad para cada clave de las credenciales como false (oculto)
       visibility: item.credenciales

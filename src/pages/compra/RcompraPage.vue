@@ -179,11 +179,10 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     console.log(response.data)
     if (response.data.estado === 'exito') {
       let msg = response.data.mensaje || mensajeExito
-      // Override typical warning message
-      if (msg && msg.includes('Advertencia')) {
-        msg = 'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
-      }
-      $q.notify({ type: 'positive', message: msg })
+      // Override typical warning message or completely replace it with specific text
+      msg = 'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
+      
+      $q.notify({ type: 'positive', message: msg, timeout: 5000 })
       almacenSeleccionado.value = almacenes.value.find((almacen) => almacen.value === data.almacen)
       console.log(almacenSeleccionado.value)
       //iniciar()
