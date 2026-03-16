@@ -4,8 +4,7 @@ export const PAGINAS = Object.freeze({
     'divisas',
     'leyendaproforma',
     'tipokardex',
-    'servicios',
-    'credencialesservicio',
+  
   ]),
   configuracionproducto: Object.freeze([
     'categoriadeproducto',
@@ -55,6 +54,7 @@ export const PAGINAS = Object.freeze({
     'autorizarcompra',
     'autorizarventassinstock',
     'anularcompra',
+    'permisosusuario'
     // 'autorizarOperaciones',
   ]),
   gestioncompra: Object.freeze(['registrarcompra']),
