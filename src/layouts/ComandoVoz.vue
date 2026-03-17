@@ -1,7 +1,7 @@
 <template>
   <q-btn
     round
-    :icon="isListening ? 'mic_off' : 'mic'"
+    :icon="isListening ? 'mic' : 'mic_off'"
     :color="isListening ? 'red' : 'primary'"
     size="md"
     @click="toggleListening"
