@@ -3,7 +3,6 @@
     :title="title"
     :rows="filteredData"
     :columns="visibleColumns"
-    :columns="visibleColumns"
     :row-key="rowKey"
     :filter="search"
     v-model:pagination="pagination"
@@ -47,7 +46,6 @@
               : 'text-' + (col.align || 'left')
           "
           :colspan="col.name === props.nombreColumnaTotales ? 2 : 1"
-          v-show="visibleColumns[index + 1]?.name !== props.nombreColumnaTotales"
           v-show="visibleColumns[index + 1]?.name !== props.nombreColumnaTotales"
         >
           <span v-if="totales[col.name] !== undefined">
