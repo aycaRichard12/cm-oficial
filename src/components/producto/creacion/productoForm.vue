@@ -211,10 +211,11 @@
             outlined
             dense
             accept="image/*"
-            hint="Formatos: JPG, PNG, GIF (máx. 2MB)"
+            hint="Formatos admitidos: JPG, PNG. La imagen se optimizará automáticamente."
             counter
-            max-file-size="2097152"
             @update:model-value="onImageSelected"
+            :loading="isCompressing"
+            :disable="isCompressing"
           >
             <template v-slot:prepend>
               <q-icon name="attach_file" />
@@ -266,6 +267,7 @@
         type="submit"
         color="primary"
         unelevated
+        :disable="isCompressing"
       />
     </q-card-actions>
   </q-form>
@@ -274,11 +276,16 @@
 <script setup>
 import { ref, watch, computed, onUnmounted } from 'vue'
 import { TipoFactura } from 'src/composables/FuncionesGenerales'
+import imageCompression from 'browser-image-compression'
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const tipoFactura = TipoFactura()
 console.log('Tipo de factura en productoForm.vue:', tipoFactura)
 
 let objectUrl = null
+const isCompressing = ref(false)
+let isProgrammaticUpdate = false // Flag to prevent infinite loop
 
 const props = defineProps({
   isEditing: Boolean,
@@ -340,10 +347,92 @@ const imagePreview = computed(() => {
   return null
 })
 
-// Handler for image selection
-const onImageSelected = (file) => {
-  // The preview will automatically update via the computed property
-  console.log('Image selected:', file?.name)
+// Handler for image selection and compression
+const onImageSelected = async (file) => {
+  // Prevent infinite loop if we are just updating the model programmatically
+  if (isProgrammaticUpdate) {
+    isProgrammaticUpdate = false
+    return
+  }
+
+  // Prevent infinite loop if the file is already a webp or undefined
+  if (!file) {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl)
+      objectUrl = null
+    }
+    return
+  }
+  
+  // If it's a string (existing image)
+  if (!(file instanceof File)) {
+    return
+  }
+
+  try {
+    isCompressing.value = true
+    
+    // We use a simple notification without trying to store its ID and update it later
+    // because doing so causes "trying to update a grouped one which is forbidden" error in Quasar.
+    $q.notify({
+      message: 'Optimizando imagen...',
+      color: 'info',
+      textColor: 'white',
+      icon: 'cloud_upload',
+      timeout: 1500, // Short timeout, the real indicator is the loading spinner on the input
+    })
+
+    const options = {
+      maxSizeMB: 1, // Compress to less than 1MB
+      maxWidthOrHeight: 1920, // Max resolution 1920px
+      useWebWorker: true,
+      fileType: 'image/jpeg', // Convert to JPEG format for backend compatibility (JPG/PNG only)
+      initialQuality: 0.9, // Maintain high visual quality
+    }
+
+    // Attempt to compress the image
+    const compressedBlob = await imageCompression(file, options)
+    
+    // Create a new File from the Blob to keep the original name (but with .jpg extension)
+    const newFileName = file.name.replace(/\.[^/.]+$/, "") + '.jpg'
+    const compressedFile = new File([compressedBlob], newFileName, {
+      type: 'image/jpeg',
+      lastModified: Date.now()
+    })
+
+    console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+    console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`)
+
+    // This flag prevents the @update:model-value from triggering this function again and causing an infinite loop
+    isProgrammaticUpdate = true
+    
+    // Update the v-model with the compressed file
+    // Note: This triggers the `imagePreview` computed properly
+    localData.value.imagen = compressedFile
+
+    // Show a success notification
+    $q.notify({
+      message: 'Imagen optimizada con éxito',
+      color: 'positive',
+      icon: 'check_circle',
+      timeout: 2500,
+    })
+
+  } catch (error) {
+    console.error('Error compressing image:', error)
+    $q.notify({
+      message: 'Hubo un error al optimizar la imagen',
+      color: 'negative',
+      icon: 'warning',
+    })
+    
+    isProgrammaticUpdate = true
+    // If compression fails, we fallback to the original file
+    // The imagePreview will still handle the display
+    localData.value.imagen = file
+  } finally {
+    isCompressing.value = false
+  }
 }
 
 // Cleanup object URL on unmount

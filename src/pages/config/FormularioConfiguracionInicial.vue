@@ -53,7 +53,7 @@
 
         <!-- Diálogo de Opciones de Configuración -->
         <q-dialog v-model="mostrarOpcionesConfiguracion" persistent>
-          <q-card style="width: 400px; max-width: 90vw;">
+          <q-card style="width: 400px; max-width: 90vw">
             <q-card-section class="bg-primary text-white">
               <div class="text-h6">Opciones de Configuración</div>
             </q-card-section>
@@ -66,7 +66,7 @@
               <q-btn
                 color="secondary"
                 icon="cloud_download"
-                label="1. Descargar Configuración Básica"
+                label="1. Configuración Básica"
                 class="full-width"
                 @click="configurarConfiguracionBasica"
               />
@@ -76,12 +76,11 @@
                 icon="settings_applications"
                 label="2. Configuración Manual"
                 class="full-width q-ml-none"
-                @click="mostrarOpcionesConfiguracion = false"
+                @click="enviarConfiguracionManual"
               />
             </q-card-actions>
           </q-card>
         </q-dialog>
-
       </q-page>
     </q-page-container>
   </q-layout>
@@ -92,13 +91,15 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { api } from 'src/boot/axios'
-import { objectToFormData, validarUsuario } from 'src/composables/FuncionesGenerales'
+import { objectToFormData, idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
 import { getIdRubro } from 'src/composables/FuncionesG'
+
 const idrubro = getIdRubro()
-const contenidousuario = validarUsuario()
-const idempresa = contenidousuario[0]?.empresa?.idempresa
+const idempresa = idempresa_md5()
 const $q = useQuasar()
 const router = useRouter()
+const contenidousuario = validarUsuario()
+const idempresa2 = contenidousuario[0]?.empresa?.idempresa
 
 // Datos de prueba para usuarios
 const usuarios = ref([])
@@ -143,41 +144,48 @@ const usuario = ref(null) // Valor por defecto: Juan Pérez
 const sucursal = ref(null) // Valor por defecto: Sucursal Norte
 const mostrarOpcionesConfiguracion = ref(true)
 
-async function configurarConfiguracionBasica() {
+async function enviarConfiguracionManual() {
   const payload = {
-    id_empresa_md5: 'c0c7c76d30bd3dcaefc96f40275bdc0a', // Puede ser sustituido dinamicamente o seguir la petición directa.
-    descripcion: 'no acepto configuracion por defecto, con datos que funcionarias bien',
-    ver: 'registrarConfiguracionInicial'
+    ver: 'registrarConfiguracionInicial',
+    id_empresa_md5: idempresa,
+    descripcion: 'No se descargo configuracion',
   }
-  
-  const formData = objectToFormData(payload)
-  
+
   try {
-    const response = await api.post('', formData)
-    
-    if (response.data.estado === 'exito' || response.data) {
-       $q.notify({
-        type: 'positive',
-        message: 'Configuración básica descargada e instalada correctamente.'
-      })
-      // Ocultar modal e iniciar sesión normalmente con redirección
+    const response = await api.post('', payload)
+    const data = extraerUltimoJSON(response.data)
+    if (data?.estado === 'exito') {
+      $q.notify({ type: 'positive', message: 'Configuración aplicada correctamente.' })
       mostrarOpcionesConfiguracion.value = false
-      setTimeout(() => {
-        router.push('/')
-      }, 1000)
+      setTimeout(() => router.push('/'), 1000)
     } else {
-       $q.notify({
+      $q.notify({
         type: 'negative',
-        message: 'Error al aplicar configuración básica'
+        message: data?.mensaje || 'Error al aplicar configuración',
       })
     }
   } catch (error) {
-    console.error('Error al aplicar config base: ', error)
-    $q.notify({
-      type: 'negative',
-      message: 'Ocurrió un error en el servidor.'
-    })
+    console.error('Error en configuración manual:', error)
+    $q.notify({ type: 'negative', message: 'Ocurrió un error en el servidor.' })
   }
+}
+
+// El backend a veces devuelve texto basura + múltiples JSONs concatenados.
+// Esta función extrae el último JSON válido del string de respuesta.
+function extraerUltimoJSON(raw) {
+  if (typeof raw === 'object') return raw // ya fue parseado por axios
+  const matches = [...raw.matchAll(/\{[^{}]*\}/g)]
+  if (!matches.length) return null
+  try {
+    return JSON.parse(matches[matches.length - 1][0])
+  } catch {
+    return null
+  }
+}
+
+async function configurarConfiguracionBasica() {
+  // Cierra el diálogo → muestra el formulario de usuario/sucursal
+  mostrarOpcionesConfiguracion.value = false
 }
 
 async function enviarFormulario() {
@@ -185,7 +193,7 @@ async function enviarFormulario() {
     usuario: usuario.value,
     sucursal: sucursal.value,
     ver: 'control',
-    empresa: idempresa,
+    empresa: idempresa2,
     idrubro: idrubro,
   })
   for (let [k, v] of formData.entries()) {
@@ -193,33 +201,24 @@ async function enviarFormulario() {
   }
 
   try {
-    let response
-
-    response = await api.post(``, formData)
-    console.log(response)
-    if (response.data.estado === 'exito') {
+    const response = await api.post('', formData)
+    const data = extraerUltimoJSON(response.data)
+    if (data?.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: `Configuración guardada: Usuario ${usuario.value}, Sucursal ${sucursal.value}`,
+        message: `Configuración guardada correctamente.`,
       })
-      setTimeout(() => {
-        router.push('/')
-      }, 1000)
+      setTimeout(() => router.push('/'), 1000)
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al configurar',
+        message: data?.mensaje || 'Hubo un problema al configurar',
       })
     }
   } catch (error) {
     console.error('Error al configurar: ', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudo configurar',
-    })
+    $q.notify({ type: 'negative', message: 'No se pudo configurar' })
   }
-
-  // Simulamos la navegación después de 1 segundo
 }
 onMounted(() => {
   getUsuarios()

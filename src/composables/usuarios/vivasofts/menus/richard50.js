@@ -97,6 +97,17 @@ export const menurichard50 = [
             codigo: 'autorizarventassinstock-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+
+          {
+            titulo: 'Adm-Autorizar-Anular Compras',
+            codigo: 'anularcompra-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Adm-Autorizar-Permisos Usuarios',
+            codigo: 'permisosusuario-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
           // {
           //   titulo: 'Adm-Autorizar-Autorizar Operaciones',
           //   codigo: 'autorizarOperaciones-03afdbd66e7929b125f8597834fa83a4',
@@ -314,7 +325,7 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-        
+
           {
             titulo: 'Configuración-Producto-Categoría',
             codigo: 'categoriadeproducto-03afdbd66e7929b125f8597834fa83a4',
@@ -345,12 +356,12 @@ export const menurichard50 = [
             codigo: 'tiposdeclientes-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-         {
+          {
             titulo: 'Configuración-Cliente-Apis',
             codigo: 'generartokensapis-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-            {
+          {
             titulo: 'Configuración-Cliente-Servicios',
             codigo: 'servicios-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
@@ -407,11 +418,11 @@ export const menurichard50 = [
           //   codigo: 'actualizacionescomercial-f457c545a9ded88f18ecee47145a72c0',
           //   permiso: '1111',
           // },
-          {
-            titulo: 'Permisos Usuarios',
-            codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Permisos Usuarios',
+          //   codigo: 'permisosusuario-f457c545a9ded88f18ecee47145a72c0',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Configuración de Factura',
             codigo: 'leyendasdefacturas-f457c545a9ded88f18ecee47145a72c0',

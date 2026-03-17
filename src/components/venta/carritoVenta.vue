@@ -32,7 +32,7 @@
       <div class="my-card q-mb-md">
         <div>
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-3" id="origenVenta">
+            <div class="col-12 col-md-4" id="origenVenta">
               <label for="almacen">Origen de venta</label>
               <q-select
                 v-model="almacenSeleccionado"
@@ -50,7 +50,7 @@
               </q-select>
             </div>
 
-            <div class="col-12 col-md-3" id="categoriaPrecio">
+            <div class="col-12 col-md-4" id="categoriaPrecio">
               <label for="categoria">Categoría de precio</label>
               <q-select
                 v-model="categoriaPrecioSeleccionada"
@@ -69,9 +69,17 @@
                 </template>
               </q-select>
             </div>
-
-            <div class="col-12 col-md-3" id="categoriaCampania">
-              <label for="campana">Categorías con Campaña</label>
+            <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
+              <div class="flex items-center justify-between" style="margin-bottom: 2px">
+                <label for="campana">Categorías con Campaña</label>
+                <q-checkbox v-model="mostrarCategoriasCampania" dense>
+                  <template v-slot:default>
+                    <label class="text-emerald" style="font-size: 13px">{{
+                      mostrarCategoriasCampania ? 'Ocultar' : 'Activar'
+                    }}</label>
+                  </template>
+                </q-checkbox>
+              </div>
               <q-select
                 v-model="categoriaCampaniaSeleccionada"
                 :options="categoriasCampania"
@@ -98,17 +106,6 @@
                   </q-item>
                 </template>
               </q-select>
-            </div>
-
-            <div class="col-12 col-md-3 flex items-center" id="activarCampania">
-              <q-checkbox v-model="mostrarCategoriasCampania" color="accent">
-                <template v-slot:default>
-                  <div class="flex items-center text-grey-8">
-                    <q-icon name="campaign" color="accent" class="q-mr-sm" />
-                    <span>Activar Categorías con Campaña</span>
-                  </div>
-                </template>
-              </q-checkbox>
             </div>
           </div>
         </div>
@@ -753,9 +750,22 @@ async function cargarCampanasDisponibles() {
       throw new Error(data.error || 'Error al cargar campañas')
     }
 
-    // Filtrar campañas por almacén seleccionado y estado activo
+    // Filtrar campañas por almacén, estado activo y vigencia de fechas
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+
     const campanasActivas = Array.isArray(data)
-      ? data.filter((c) => c.idalmacen == idalm && Number(c.estado) === 1)
+      ? data.filter((c) => {
+          if (c.idalmacen != idalm || Number(c.estado) !== 1) return false
+          // Verificar vigencia si existen fechas
+          if (c.fechainicio && c.fechafinal) {
+            const inicio = new Date(c.fechainicio)
+            const fin = new Date(c.fechafinal)
+            fin.setHours(23, 59, 59, 999) // Incluir todo el día final
+            return hoy >= inicio && hoy <= fin
+          }
+          return true // Sin fechas: solo se valida estado
+        })
       : []
 
     categoriasCampania.value = campanasActivas.map((c) => ({

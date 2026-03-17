@@ -65,10 +65,10 @@
       <q-separator class="q-my-md" />
 
       <div class="row justify-end q-gutter-sm">
-        <q-btn 
-          label="Limpiar" 
-          flat 
-          color="grey-7" 
+        <q-btn
+          label="Limpiar"
+          flat
+          color="grey-7"
           @click="resetForm"
           icon="refresh"
           class="q-px-lg"
@@ -145,7 +145,11 @@ onMounted(() => {
     {
       titulo: 'Edición de Inventario Externo',
       codigo: 'inventarioexterno',
-    }
+    },
+    {
+      titulo: 'Anular Compras de Forma Directa',
+      codigo: 'anularcompradirecta',
+    },
   ]
   const mappedMenus = menus.map((menu) => {
     return {
