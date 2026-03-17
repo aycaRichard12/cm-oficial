@@ -2,7 +2,7 @@
   <q-table
     :title="title"
     :rows="filteredData"
-    :columns="columns"
+    :columns="visibleColumns"
     :row-key="rowKey"
     :filter="search"
     v-model:pagination="pagination"
@@ -36,18 +36,26 @@
       </q-th>
     </template>
     <template v-slot:bottom-row>
-      <q-tr class="text-weight-bold bg-grey-3">
-        <q-td 
-          v-for="(col, index) in columns" 
-          :key="col.name" 
-          :class="col.name === props.nombreColumnaTotales ? 'text-right q-pr-md' : 'text-' + (col.align || 'left')"
+      <q-tr class="text-weight-bold bg-white-3">
+        <q-td
+          v-for="(col, index) in visibleColumns"
+          :key="col.name"
+          :class="
+            col.name === props.nombreColumnaTotales
+              ? 'text-right q-pr-md'
+              : 'text-' + (col.align || 'left')
+          "
           :colspan="col.name === props.nombreColumnaTotales ? 2 : 1"
-          v-show="columns[index + 1]?.name !== props.nombreColumnaTotales"
+          v-show="visibleColumns[index + 1]?.name !== props.nombreColumnaTotales"
         >
           <span v-if="totales[col.name] !== undefined">
             {{ totales[col.name] }}
           </span>
-          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold" style="white-space: nowrap;">
+          <span
+            v-else-if="col.name === props.nombreColumnaTotales"
+            class="font-bold"
+            style="white-space: nowrap"
+          >
             Total General :
           </span>
           <span v-else></span>
@@ -55,8 +63,40 @@
       </q-tr>
     </template>
 
-    <template v-for="(_, slot) in $slots" #[slot]="slotProps">
-      <slot :name="slot" v-bind="slotProps" />
+    <template v-slot:top-right="topRightProps">
+      <slot name="top-right" v-bind="topRightProps || {}"></slot>
+      <q-btn
+        flat
+        round
+        dense
+        icon="view_column"
+        class="q-ml-sm text-white-8"
+        title="Mostrar/Ocultar columnas"
+      >
+        <q-menu>
+          <q-list style="min-width: 21rem" dense>
+            <q-item-label header>Columnas</q-item-label>
+            <q-item v-for="col in columns" :key="col.name" tag="label" v-ripple>
+              <q-item-section side top>
+                <q-checkbox v-model="visibleColumnNames" :val="col.name" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ col.label }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </template>
+
+    <template
+      v-for="slot in Object.keys($slots).filter(
+        (s) => !['header-cell', 'bottom-row', 'top-right'].includes(s),
+      )"
+      :key="slot"
+      #[slot]="slotProps"
+    >
+      <slot :name="slot" v-bind="slotProps || {}" />
     </template>
   </q-table>
 </template>
@@ -82,9 +122,22 @@ console.log(props.sumColumns)
 console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
-defineExpose({ obtenerDatosFiltrados: () => filteredData.value, obtenerColumnasVisibles: () => visibleColumns.value, getActiveFiltersReport })
+defineExpose({
+  obtenerDatosFiltrados: () => filteredData.value,
+  obtenerColumnasVisibles: () => visibleColumns.value,
+  getActiveFiltersReport,
+})
 
 const activeFilters = ref({})
+
+const visibleColumnNames = ref(
+  props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name),
+)
+
+const visibleColumns = computed(() => {
+  return props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
+})
+
 const pagination = ref({
   sortBy: null,
   descending: false,
