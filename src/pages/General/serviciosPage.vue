@@ -201,6 +201,19 @@
             </q-input>
 
             <q-input
+              v-model="form.email"
+              label="Email"
+              outlined
+              dense
+              color="primary"
+              type="email"
+            >
+              <template v-slot:prepend>
+                <q-icon name="email" color="grey-6" />
+              </template>
+            </q-input>
+
+            <q-input
               v-model="form.documentacion"
               label="URL Documentación"
               outlined
@@ -283,14 +296,17 @@ const form = ref({
   descripcion: '',
   documentacion: '',
   icono: '',
+  email: '',
 })
 
 // Columnas
 const columns = [
   { name: 'id', align: 'left', label: '#', field: 'id', sortable: true, style: 'width: 60px' },
   { name: 'icono', align: 'center', label: 'Icono', field: 'icono', style: 'width: 70px' },
+  { name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true },
   { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true, classes: 'text-weight-bold text-grey-9' },
   { name: 'slug', align: 'left', label: 'Slug', field: 'slug', sortable: true, classes: 'text-caption text-grey-7' },
+  { name: 'documentacion', align: 'center', label: 'Documentación', field: 'documentacion', sortable: true },
   {
     name: 'descripcion',
     align: 'left',
@@ -350,6 +366,7 @@ const handleCreate = () => {
     descripcion: '',
     documentacion: '',
     icono: '',
+    email: '',
   }
   showDialog.value = true
 }
@@ -398,6 +415,7 @@ const submitForm = async () => {
       descripcion: form.value.descripcion,
       documentacion: form.value.documentacion,
       icono: form.value.icono,
+      email: form.value.email,
     }
 
     if (isEditing.value) {

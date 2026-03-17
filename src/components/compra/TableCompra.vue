@@ -13,7 +13,7 @@
 
       <!-- Tabla -->
       <BaseFilterableTable
-      id="tabla"
+        id="tabla"
         ref="tableRef"
         title="Compras"
         :rows="processedRows"
@@ -30,12 +30,18 @@
         <template v-slot:body-cell-autorizacion="props">
           <q-td :props="props">
             <q-badge
-              color="green"
               v-if="Number(props.row.autorizacion) === 1"
+              color="positive"
               label="Autorizado"
               outline
             />
-            <q-badge color="red" v-else label="No Autorizado" outline />
+            <q-badge
+              v-else-if="Number(props.row.autorizacion) === 0"
+              color="grey"
+              label="Anulada"
+              outline
+            />
+            <q-badge v-else color="negative" label="No Autorizado" outline />
           </q-td>
         </template>
         <template v-slot:body-cell-tipocompra="props">
@@ -72,10 +78,15 @@
           <q-td :props="props">
             <div v-if="Number(props.row.autorizacion) === 2">
               <q-btn
-              id="editar"
-              icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" />
+                id="editar"
+                icon="edit"
+                color="primary"
+                dense
+                flat
+                @click="$emit('edit', props.row)"
+              />
               <q-btn
-              id="eliminar"
+                id="eliminar"
                 icon="delete"
                 color="negative"
                 dense
@@ -83,7 +94,7 @@
                 @click="$emit('delete', props.row)"
               />
               <q-btn
-              id="autorizar"
+                id="autorizar"
                 v-if="permisosStore.tienePermiso('registrarcompra')"
                 icon="toggle_off"
                 dense
@@ -92,7 +103,7 @@
                 @click="$emit('toggle-status', props.row)"
               />
               <q-btn
-              id="notificar"
+                id="notificar"
                 icon="notifications"
                 color="warning"
                 dense
@@ -101,6 +112,44 @@
               >
                 <q-tooltip>Enviar Notificación</q-tooltip>
               </q-btn>
+            </div>
+            <!-- Botón Solicitar Anulación: solo para compras ya autorizadas -->
+            <div v-if="Number(props.row.autorizacion) === 1">
+              <template v-if="puedeAnularCompra(props.row.id)">
+                <!-- Solicitar anulación (flujo con aprobación) -->
+                <q-btn
+                  id="solicitarAnulacion"
+                  icon="block"
+                  color="deep-orange"
+                  v-if="!permisosStore.tienePermiso('anularcompradirecta')"
+                  dense
+                  flat
+                  @click="$emit('solicitar-anulacion', props.row)"
+                >
+                  <q-tooltip>Solicitar Anulación</q-tooltip>
+                </q-btn>
+                <!-- Anulación directa (sin pasar por aprobación) -->
+                <q-btn
+                  id="anularDirecta"
+                  icon="delete_forever"
+                  color="negative"
+                  dense
+                  flat
+                  v-if="permisosStore.tienePermiso('anularcompradirecta')"
+                  @click="confirmarAnulacionDirecta(props.row)"
+                >
+                  <q-tooltip>Anular Directamente</q-tooltip>
+                </q-btn>
+              </template>
+              <!-- Solicitud ya activa: mostrar su estado -->
+              <q-chip
+                v-else
+                dense
+                :color="estadoAnulacionColor(props.row.id)"
+                text-color="white"
+                :label="estadoAnulacionLabel(props.row.id)"
+                size="sm"
+              />
             </div>
           </q-td>
         </template>
@@ -138,9 +187,11 @@ import { useCurrencyStore } from 'src/stores/currencyStore'
 import { PDF_REPORTE_COMPRAS } from 'src/utils/pdfReportGenerator'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import { useAnulacionCompra } from 'src/composables/compra/useAnulacionCompra'
 
 const permisosStore = useOperacionesPermitidas()
 console.log('Permisos cargados en TableCompra.vue:', permisosStore.permisos)
+const { anularCompraDirecta } = useAnulacionCompra()
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
 const tableRef = ref(null)
@@ -162,6 +213,10 @@ const props = defineProps({
   almacenSeleccionado: {
     type: Object,
     default: null,
+  },
+  solicitudesAnulacion: {
+    type: Array,
+    default: () => [],
   },
 })
 console.log(props.almacenSeleccionado)
@@ -271,12 +326,34 @@ const arrayHeaders = [
 
 const sumColumns = ['total']
 
+function puedeAnularCompra(id_compra) {
+  const sol = props.solicitudesAnulacion.find((s) => String(s.id_ingreso) === String(id_compra))
+  if (!sol) return true
+  return sol.estado === 'rechazada'
+}
+
+function estadoAnulacionLabel(id_compra) {
+  const sol = props.solicitudesAnulacion.find((s) => String(s.id_ingreso) === String(id_compra))
+  if (!sol) return ''
+  const labels = { pendiente: 'Anulación pendiente', aprobada: 'Anulada' }
+  return labels[sol.estado] || sol.estado
+}
+
+function estadoAnulacionColor(id_compra) {
+  const sol = props.solicitudesAnulacion.find((s) => String(s.id_ingreso) === String(id_compra))
+  if (!sol) return 'grey'
+  return sol.estado === 'aprobada' ? 'negative' : 'orange'
+}
+
 const emit = defineEmits([
   'add',
   'repDesglosado',
   'repCompras',
   'edit',
   'delete',
+  'toggle-status',
+  'detalleCompra',
+  'solicitar-anulacion',
   'actualizarTablaPrincipal',
 ])
 
@@ -293,7 +370,12 @@ const processedRows = computed(() => {
     ...row,
     numero: index + 1,
     tipocompra_label: Number(row.tipocompra) === 2 ? 'Contado' : 'A crédito',
-    autorizacion_label: Number(row.autorizacion) === 1 ? 'Autorizado' : 'No Autorizado',
+    autorizacion_label:
+      Number(row.autorizacion) === 1
+        ? 'Autorizado'
+        : Number(row.autorizacion) === 0
+          ? 'Anulada'
+          : 'No Autorizado',
   }))
 })
 
@@ -322,7 +404,7 @@ async function FormularioCredito(c) {
     const result = await showDialog(
       $q,
       'W',
-      'Advertencia: La compra está en espera de autorización. Debe validarse antes de proceder.',
+      'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.',
     )
     console.log('Warning dialog result:', result)
   }
@@ -358,6 +440,24 @@ const abrirDialogNotificacion = (compra) => {
   dialogNotificacionOpen.value = true
 }
 
+async function confirmarAnulacionDirecta(row) {
+  $q.dialog({
+    title: 'Anular compra directamente',
+    message: `¿Anular la compra Factura N° ${row.nfactura} — ${row.proveedor}? Esta acción no requiere aprobación.`,
+    prompt: {
+      model: '',
+      label: 'Motivo (opcional)',
+      type: 'text',
+    },
+    cancel: true,
+    persistent: true,
+    ok: { label: 'Anular', color: 'negative' },
+  }).onOk(async (motivo) => {
+    const ok = await anularCompraDirecta({ id: row.id, motivo })
+    if (ok) emit('actualizarTablaPrincipal')
+  })
+}
+
 const onNotificacionEnviada = (datos) => {
   console.log('Notificación enviada para compra:', compraSeleccionada.value)
   console.log('Datos de notificación:', datos)
@@ -375,6 +475,7 @@ const onNotificacionEnviada = (datos) => {
 }
 
 onMounted(async () => {
+  await permisosStore.cargarPermisos()
   await divisaActiva.cargarDivisaActiva()
 
   if (!divisaActiva.divisa) {

@@ -4,8 +4,7 @@ export const PAGINAS = Object.freeze({
     'divisas',
     'leyendaproforma',
     'tipokardex',
-    'servicios',
-    'credencialesservicio',
+  
   ]),
   configuracionproducto: Object.freeze([
     'categoriadeproducto',
@@ -15,7 +14,11 @@ export const PAGINAS = Object.freeze({
     'parametrosdeobsolescencia',
   ]),
   configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
-  configuracionIntegracionExterna: Object.freeze(['generartokensapis', 'servicios', 'credencialesservicio']),
+  configuracionIntegracionExterna: Object.freeze([
+    'generartokensapis',
+    'servicios',
+    'credencialesservicio',
+  ]),
   administracioncreacion: Object.freeze([
     'registraralmacen',
     'registrarpuntodeventa',
@@ -50,6 +53,8 @@ export const PAGINAS = Object.freeze({
     'procesarventaspendientes',
     'autorizarcompra',
     'autorizarventassinstock',
+    'anularcompra',
+    'permisosusuario'
     // 'autorizarOperaciones',
   ]),
   gestioncompra: Object.freeze(['registrarcompra']),

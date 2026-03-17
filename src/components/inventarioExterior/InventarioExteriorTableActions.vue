@@ -1,44 +1,45 @@
 <template>
-  <div class="row justify-center q-gutter-sm">
+  <div class="row justify-center no-wrap items-center">
     <!-- Botón Ver Ubicación -->
     <q-btn
-      col="auto"
+      flat
+      round
+      dense
       color="info"
       icon="place"
       @click="$emit('viewMap', row)"
-      size="sm"
       id="btnUbicacion"
     >
       <q-tooltip>Ver Ubicación</q-tooltip>
     </q-btn>
 
-    <!-- Botón Editar: solo si tiene permiso y row permite editar -->
+    <!-- Botón Editar -->
     <q-btn
-      col="auto"
+      flat
+      round
+      dense
       color="primary"
       icon="edit"
       @click="$emit('edit', row)"
-      size="sm"
       v-if="canEdit"
       id="btnEditar"
     >
       <q-tooltip>Editar</q-tooltip>
     </q-btn>
 
-    <!-- Botón Eliminar: solo si tiene permiso y row permite eliminar -->
+    <!-- Botón Eliminar -->
     <q-btn
-      col="auto"
+      flat
+      round
+      dense
       color="negative"
       icon="delete"
       @click="$emit('delete', row)"
-      size="sm"
       v-if="canDelete"
       id="btnEliminar"
     >
       <q-tooltip>Eliminar</q-tooltip>
     </q-btn>
-
-  
   </div>
 </template>
 
