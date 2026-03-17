@@ -6,6 +6,7 @@
     :row-key="rowKey"
     :filter="search"
     v-model:pagination="pagination"
+    :rows-per-page-options="rowsPerPageOptions"
     :virtual-scroll="true"
     wrap-cells
   >
@@ -36,17 +37,25 @@
     </template>
     <template v-slot:bottom-row>
       <q-tr class="text-weight-bold bg-white-3">
-        <q-td 
-          v-for="(col, index) in visibleColumns" 
-          :key="col.name" 
-          :class="col.name === props.nombreColumnaTotales ? 'text-right q-pr-md' : 'text-' + (col.align || 'left')"
+        <q-td
+          v-for="(col, index) in visibleColumns"
+          :key="col.name"
+          :class="
+            col.name === props.nombreColumnaTotales
+              ? 'text-right q-pr-md'
+              : 'text-' + (col.align || 'left')
+          "
           :colspan="col.name === props.nombreColumnaTotales ? 2 : 1"
           v-show="visibleColumns[index + 1]?.name !== props.nombreColumnaTotales"
         >
           <span v-if="totales[col.name] !== undefined">
             {{ totales[col.name] }}
           </span>
-          <span v-else-if="col.name === props.nombreColumnaTotales" class="font-bold" style="white-space: nowrap;">
+          <span
+            v-else-if="col.name === props.nombreColumnaTotales"
+            class="font-bold"
+            style="white-space: nowrap"
+          >
             Total General :
           </span>
           <span v-else></span>
@@ -56,7 +65,14 @@
 
     <template v-slot:top-right="topRightProps">
       <slot name="top-right" v-bind="topRightProps || {}"></slot>
-      <q-btn flat round dense icon="view_column" class="q-ml-sm text-white-8" title="Mostrar/Ocultar columnas">
+      <q-btn
+        flat
+        round
+        dense
+        icon="view_column"
+        class="q-ml-sm text-white-8"
+        title="Mostrar/Ocultar columnas"
+      >
         <q-menu>
           <q-list style="min-width: 21rem" dense>
             <q-item-label header>Columnas</q-item-label>
@@ -64,7 +80,7 @@
               <q-item-section side top>
                 <q-checkbox v-model="visibleColumnNames" :val="col.name" />
               </q-item-section>
-              <q-item-section>  
+              <q-item-section>
                 <q-item-label>{{ col.label }}</q-item-label>
               </q-item-section>
             </q-item>
@@ -73,7 +89,13 @@
       </q-btn>
     </template>
 
-    <template v-for="slot in Object.keys($slots).filter(s => !['header-cell', 'bottom-row', 'top-right'].includes(s))" :key="slot" #[slot]="slotProps">
+    <template
+      v-for="slot in Object.keys($slots).filter(
+        (s) => !['header-cell', 'bottom-row', 'top-right'].includes(s),
+      )"
+      :key="slot"
+      #[slot]="slotProps"
+    >
       <slot :name="slot" v-bind="slotProps || {}" />
     </template>
   </q-table>
@@ -93,18 +115,23 @@ const props = defineProps({
   rowKey: { type: String, default: 'id' },
   search: { type: String, default: '' },
   filterMode: { type: String, default: 'client' }, // 'client' o 'server'
+  rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
 })
 
 console.log(props.sumColumns)
 console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
-defineExpose({ obtenerDatosFiltrados: () => filteredData.value, getActiveFiltersReport })
+defineExpose({
+  obtenerDatosFiltrados: () => filteredData.value,
+  obtenerColumnasVisibles: () => visibleColumns.value,
+  getActiveFiltersReport,
+})
 
 const activeFilters = ref({})
 
 const visibleColumnNames = ref(
-  props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name)
+  props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name),
 )
 
 const visibleColumns = computed(() => {

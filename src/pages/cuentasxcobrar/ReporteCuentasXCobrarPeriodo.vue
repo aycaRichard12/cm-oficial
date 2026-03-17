@@ -1,240 +1,178 @@
 <template>
   <div class="q-pa-md">
-    <div class="titulo" id="tituloreportecobrosdiarios">Reporte de Cobros Diarios</div>
+    <q-card flat class="q-mb-md">
+      <q-card-section class="q-pb-sm">
+        <div class="row q-col-gutter-md items-center">
+          <!-- Título y Descripción -->
+          <div class="col-12 col-md-4">
+            <div class="text-h6 text-primary text-weight-bold flex items-center">
+              <q-icon name="payments" size="sm" class="q-mr-sm" />
+              Reporte de Cobros
+            </div>
+            <div class="text-caption text-grey-7">Historial de cobros por periodo y almacén</div>
+          </div>
 
-    <q-card-section class="q-pt-none">
-      <div class="row q-col-gutter-md">
-        <div class="col-xs-12 col-sm-6" id="FIcuentasXcobrar">
-          <label for="fechainicio">Fecha Inicio</label>
-
-          <q-input
-            type="date"
-            v-model="startDate"
-            id="fechaini"
-            dense
-            outlined
-            :rules="[(val) => !!val || 'Seleccione una fecha válida']"
-          >
-          </q-input>
+          <!-- Filtros de Fecha -->
+          <div class="col-12 col-md-8">
+            <div class="row q-col-gutter-sm items-center justify-end">
+              <div class="col-6 col-sm-3">
+                <q-input
+                  v-model="startDate"
+                  label="Desde"
+                  type="date"
+                  dense
+                  outlined
+                  stack-label
+                  hide-bottom-space
+                  bg-color="grey-1"
+                />
+              </div>
+              <div class="col-6 col-sm-3">
+                <q-input
+                  v-model="endDate"
+                  label="Hasta"
+                  type="date"
+                  dense
+                  outlined
+                  stack-label
+                  hide-bottom-space
+                  bg-color="grey-1"
+                />
+              </div>
+              <div class="col-12 col-sm-6 text-right q-gutter-xs">
+                <q-btn
+                  label="Generar"
+                  color="primary"
+                  icon="refresh"
+                  @click="fetchReport"
+                  :loading="loading"
+                  :disable="!startDate || !endDate"
+                  unelevated
+                />
+                <q-btn
+                  v-if="reportData.length > 0"
+                  color="info"
+                  icon="print"
+                  @click="printFilteredTable"
+                  unelevated
+                  outline
+                >
+                  <q-tooltip>Imprimir PDF</q-tooltip>
+                </q-btn>
+                <q-btn
+                  v-if="reportData.length > 0"
+                  color="positive"
+                  icon="file_download"
+                  @click="exportToXLSX"
+                  unelevated
+                  outline
+                >
+                  <q-tooltip>Exportar Excel</q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+          </div>
         </div>
+      </q-card-section>
 
-        <div class="col-xs-12 col-sm-6" id="FFcuentasXcobrar">
-          <label for="fechafin">Fecha Fin</label>
+      <q-separator inset />
 
-          <q-input
-            type="date"
-            v-model="endDate"
-            id="fechaini"
-            dense
-            outlined
-            :rules="[(val) => !!val || 'Seleccione una fecha válida']"
-          >
-          </q-input>
-        </div>
-      </div>
-
-      <div class="q-mt-md">
-        <q-btn
-          id="btngenerarreportecobros"
-          label="Generar Reporte"
-          color="primary"
-          @click="fetchReport"
-          :loading="loading"
-          :disable="!startDate || !endDate"
-          class="q-ma-lg"
-        />
-
-        <q-btn
-          id="btnpdfreportecobros"
-          label="Imprimir Reporte"
-          color="info"
-          icon="print"
-          @click="printFilteredTable"
-          :disable="reportData.length === 0"
-          class="q-ma-lg"
-        />
-        <q-btn
-          id="btnexportarexcelreportecobros"
-          label="Exportar a Excel"
-          color="green"
-          icon="file_download"
-          @click="exportToXLSX"
-          :disable="reportData.length === 0"
-        />
-      </div>
-    </q-card-section>
-    <q-card-section>
-      <q-expansion-item id="expansionfiltrosreportecobros" label="Filtros avanzados" icon="filter_list" default-opened class="q-mb-md">
-        <!-- Indicador de filtros activos -->
-
-        <div class="row q-col-gutter-md q-pt-md">
-          <!-- Filtro por almacén -->
-          <div class="col-xs-12 col-sm-6 col-md-3" id="Fialmacen">
-            <label for="filtrarporalmacen">Filtrar por Almacén</label>
+      <!-- Filtros Avanzados (Compacto) -->
+      <q-card-section class="q-py-sm">
+        <div class="row q-col-gutter-sm items-center">
+          <div class="col-12 col-sm-4">
             <q-select
               v-model="selectedAlmacen"
               :options="almacenOptions"
-              id="filtrarporalmacen"
+              label="Almacén"
               emit-value
               map-options
               dense
               outlined
+              hide-bottom-space
+              bg-color="white"
               @update:model-value="updateFilter('almacen', $event !== 0)"
             />
           </div>
-
-          <!-- Filtro por cliente -->
-          <div class="col-xs-12 col-sm-6 col-md-4" id="Fcliente">
-            <label for="cliente">Buscar cliente</label>
+          <div class="col-12 col-sm-8 flex justify-between items-center no-wrap q-gutter-sm">
             <q-select
               v-model="clienteStore.clienteSeleccionado"
               use-input
               input-debounce="300"
               :options="clientesFiltrados"
               @filter="filterClientes"
-              id="cliente"
+              label="Buscar Cliente..."
               option-label="displayName"
               :loading="loadingClientes"
-              :disable="loadingClientes"
               clearable
               dense
               outlined
+              hide-bottom-space
+              bg-color="white"
+              class="grow"
+              style="flex: 1"
               @update:model-value="updateFilter('cliente', !!$event)"
-              @clear="resetClientSelection"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    {{
-                      loadingClientes
-                        ? 'Cargando clientes...'
-                        : clienteStore.clientes.length === 0
-                          ? 'No hay clientes disponibles'
-                          : 'No se encontraron coincidencias'
-                    }}
-                  </q-item-section>
-                </q-item>
-              </template>
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.codigo }} - {{ scope.opt.nombre }}</q-item-label>
-                    <q-item-label caption>{{ scope.opt.nombrecomercial }}</q-item-label>
-                    <q-item-label caption
-                      >{{ scope.opt.ciudad }} - {{ scope.opt.nit }}</q-item-label
-                    >
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-
-          <!-- Filtro por sucursal -->
-          <div class="col-xs-12 col-sm-6 col-md-3" id="Fsucursal">
-            <label for="seleccionarsucursal">Seleccionar sucursal</label>
-            <q-select
-              v-if="clienteStore.clienteSeleccionado"
-              v-model="clienteStore.sucursalSeleccionada"
-              :options="clienteStore.sucursales"
-              option-label="nombre"
-              id="seleccionarsucursal"
-              dense
-              outlined
-              :loading="loadingSucursales"
-              :disable="!clienteStore.sucursales.length || loadingSucursales"
-              clearable
-              @update:model-value="updateFilter('sucursal', !!$event)"
-              @clear="resetSucursalSelection"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    {{
-                      loadingSucursales ? 'Cargando sucursales...' : 'No hay sucursales disponibles'
-                    }}
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-
-          <!-- Filtro por estado (nuevo) -->
-          <div class="col-xs-12 col-sm-6 col-md-2" id="Festadocredito">
-            <label for="estadocredito">Estado crédito</label>
-            <q-select
-              v-model="selectedEstado"
-              :options="estadoOptions"
-              id="estadocredito"
-              emit-value
-              map-options
-              clearable
-              dense
-              outlined
-              @update:model-value="updateFilter('estado', !!$event)"
+            />
+            <q-btn
+              flat
+              color="negative"
+              icon="backspace"
+              label="Limpiar"
+              @click="resetAllFilters"
+              size="sm"
             />
           </div>
-
-          <!-- Botones de acción -->
-          <div class="col-12 row justify-end q-mt-sm">
-            <q-btn id="btnaplicarfiltroscobros" label="Aplicar Filtros" color="primary" @click="applyFilters" class="q-mr-sm" />
-            <q-btn id="btnlimpiarfiltroscobros" label="Limpiar Todo" color="negative" outline @click="resetAllFilters" />
-          </div>
         </div>
-      </q-expansion-item>
-    </q-card-section>
-    <q-separator />
+      </q-card-section>
+    </q-card>
 
-    <q-card-section v-if="reportData.length > 0">
-      <q-table
+    <q-card flat bordered v-if="reportData.length > 0" class="shadow-1">
+      <BaseFilterableTable
         id="tablareportecobros"
-        title="Resultados del Reporte"
+        ref="tablaRef"
         :rows="filteredReportData"
+        :array-headers="['fecha_actual', 'nombre_cliente', 'nombre_comercial']"
         :columns="columns"
+        :sum-columns="['monto_total_venta', 'saldo_estado_cobro', 'monto_detalle_cobro']"
+        nombre-columna-totales="nombre_comercial"
         row-key="id_detalle_cobro"
-        flat
-        bordered
-        :pagination-label="getPaginationLabel"
         :rows-per-page-options="[10, 20, 50, 100]"
-        no-data-label="No hay datos disponibles para el rango de fechas seleccionado."
       >
         <template v-slot:body-cell-foto_detalle_cobro="props">
           <q-td :props="props">
-            <q-img
+            <q-btn
               v-if="props.row.foto_detalle_cobro"
-              :src="props.row.foto_detalle_cobro"
-              alt="Foto de Cobro"
-              style="width: 50px; height: 50px; object-fit: cover"
-              class="rounded-borders"
-            />
-            <span v-else></span>
+              flat
+              round
+              dense
+              color="primary"
+              icon="image"
+              @click="verImagen(props.row.foto_detalle_cobro)"
+            >
+              <q-tooltip>Ver comprobante</q-tooltip>
+            </q-btn>
           </q-td>
         </template>
-      </q-table>
-    </q-card-section>
+      </BaseFilterableTable>
+    </q-card>
 
-    <q-card-section v-else-if="!loading && reportFetched">
-      <q-banner dense rounded class="bg-grey-3 text-grey-8">
-        <template v-slot:avatar>
-          <q-icon name="info" />
-        </template>
-        No se encontraron cobros para el rango de fechas y empresa seleccionados.
-      </q-banner>
-    </q-card-section>
+    <q-card flat bordered v-else-if="!loading && reportFetched">
+      <q-card-section class="text-center text-grey-7 q-pa-xl">
+        <q-icon name="search_off" size="56px" class="q-mb-md" />
+        <div class="text-h6">No se encontraron resultados</div>
+        <div>Pruebe ajustando las fechas o los filtros para su búsqueda.</div>
+      </q-card-section>
+    </q-card>
 
-    <q-inner-loading :showing="loading">
-      <q-spinner-hourglass color="primary" size="50px" />
-    </q-inner-loading>
     <q-dialog v-model="mostrarModal" full-width full-height>
-      <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
+      <q-card class="column no-wrap" style="height: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">Vista previa de Reporte</div>
           <q-space />
-          <q-btn flat round icon="close" @click="mostrarModal = false" />
+          <q-btn flat round icon="close" v-close-popup />
         </q-card-section>
-
         <q-separator />
-
-        <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
+        <q-card-section class="col q-pa-none">
           <iframe
             v-if="pdfData"
             :src="pdfData"
@@ -243,6 +181,19 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="showImage">
+      <q-card style="min-width: 350px">
+        <q-img :src="currentImage" />
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-inner-loading :showing="loading">
+      <q-spinner-dots color="primary" size="40px" />
+    </q-inner-loading>
   </div>
 </template>
 
@@ -256,9 +207,20 @@ import { exportToXLSX_Reporte_CuentasXCobrarPeriodo } from 'src/utils/XCLReportI
 import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
 import { useClienteStore } from 'stores/cliente'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 const mostrarModal = ref(false)
 const pdfData = ref(null)
+const tablaRef = ref(null)
 const $q = useQuasar()
+
+// --- State para imágenes ---
+const showImage = ref(false)
+const currentImage = ref('')
+const verImagen = (url) => {
+  currentImage.value = url
+  showImage.value = true
+}
 
 // --- Reactive State ---
 const startDate = ref(primerDiaDelMes().toISOString().slice(0, 10))
@@ -269,13 +231,14 @@ const reportFetched = ref(false) // To indicate if a fetch attempt has been made
 
 // Define table columns
 const columns = [
-  { name: 'fecha_actual', align: 'left', label: 'Fecha', field: 'fecha_actual', sortable: true },
+  { name: 'fecha_actual', align: 'left', label: 'Fecha', field: 'fecha_actual', sortable: true, dataType: 'date' },
   {
     name: 'nombre_cliente',
     align: 'left',
     label: 'Cliente',
     field: 'nombre_cliente',
     sortable: true,
+    dataType: 'text',
   },
   {
     name: 'nombre_comercial',
@@ -283,6 +246,7 @@ const columns = [
     label: 'Nombre Comercial',
     field: 'nombre_comercial',
     sortable: true,
+    dataType: 'text',
   },
 
   {
@@ -291,6 +255,7 @@ const columns = [
     label: 'Monto Venta',
     field: 'monto_total_venta',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
+    dataType: 'number',
   },
   {
     name: 'saldo_estado_cobro',
@@ -298,6 +263,7 @@ const columns = [
     label: 'Saldo Cobro',
     field: 'saldo_estado_cobro',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
+    dataType: 'number',
   },
   {
     name: 'monto_detalle_cobro',
@@ -305,18 +271,13 @@ const columns = [
     label: 'Monto Cobrado',
     field: 'monto_detalle_cobro',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
+    dataType: 'number',
   },
   { name: 'foto_detalle_cobro', align: 'center', label: 'Foto', field: 'foto_detalle_cobro' },
 ]
 
 // --- Methods ---
 
-/**
- * Custom pagination label for q-table.
- */
-const getPaginationLabel = (firstRowIndex, endRowIndex, totalRows) => {
-  return `${firstRowIndex}-${endRowIndex} de ${totalRows}`
-}
 
 /**
  * Fetches the daily collections report from the API.
@@ -405,7 +366,8 @@ const fetchReport = async () => {
   }
 }
 const printFilteredTable = () => {
-  const doc = PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate)
+  const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
+  const doc = PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
@@ -427,7 +389,8 @@ const exportToXLSX = () => {
 
   // Prepare data: only include fields that should be in the Excel file
   // and apply any necessary formatting or transformations.
-  exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate)
+  const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
+  exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
 
   $q.notify({
     type: 'positive',
@@ -492,33 +455,10 @@ const filteredReportData = computed(() => {
     data = data.filter((row) => Number(row.estado) === Number(selectedEstado.value))
   }
 
-  return processDataWithTotals(data)
+  // Ahora retornamos la data limpia sin procesar totales aquí,
+  // ya que BaseFilterableTable los calculará.
+  return data.map((row, index) => ({ ...row, numero: index + 1 }))
 })
-
-const processDataWithTotals = (data) => {
-  if (data.length === 0) return []
-
-  const numberedData = data.map((row, index) => ({
-    ...row,
-    numero: index + 1,
-  }))
-
-  const totales = {
-    fecha_actual: '',
-    nombre_cliente: '',
-    nombre_comercial: 'TOTAL:',
-    monto_total_venta: numberedData.reduce((sum, u) => sum + Number(u.monto_total_venta || 0), 0),
-    saldo_estado_cobro: numberedData.reduce((sum, u) => sum + Number(u.saldo_estado_cobro || 0), 0),
-    monto_detalle_cobro: numberedData.reduce(
-      (sum, u) => sum + Number(u.monto_detalle_cobro || 0),
-      0,
-    ),
-
-    foto_detalle_cobro: '',
-  }
-
-  return [...numberedData, totales]
-}
 
 const filterClientes = (val, update) => {
   update(() => {
@@ -539,11 +479,6 @@ const resetClientSelection = () => {
   clienteStore.clienteSeleccionado = null
   clienteStore.sucursalSeleccionada = null
   activeFilters.value.cliente = false
-  activeFilters.value.sucursal = false
-}
-
-const resetSucursalSelection = () => {
-  clienteStore.sucursalSeleccionada = null
   activeFilters.value.sucursal = false
 }
 

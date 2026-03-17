@@ -1,253 +1,171 @@
 <template>
-  <q-page ref="pageRef">
-    <!-- <q-btn label="Ir a Créditos" @click="scrollToCreditos" /> -->
+  <q-page ref="pageRef" class="q-pa-md bg-grey-1">
+    <!-- Header and Filters Card -->
+    <q-card flat bordered class="q-mb-md shadow-2">
+      <q-toolbar class="bg-primary text-white shadow-2">
+        <q-toolbar-title class="text-weight-bold">
+          Configuración de Reporte
+        </q-toolbar-title>
+      </q-toolbar>
 
-    <div class="row flex justify-between q-ml-md">
-      <div class="text-h6 text-primary" id="tituloreportecredito">
-        {{ tipoReporte ? 'Reporte de Crédito al Corte' : 'Reporte de Crédito en Periodo' }}
-      </div>
-      <q-btn
-        id="btntoggleventareportecredito"
-        :icon="tipoReporte ? 'toggle_on' : 'toggle_off'"
-        dense
-        flat
-        :color="tipoReporte ? 'green' : 'grey'"
-        @click="cambiarTipoReporte"
-        title="CAMBIAR TIPO REPORTE"
-      />
-    </div>
+      <q-card-section class="q-pt-sm q-pb-md">
+        <q-form @submit.prevent="generateReport">
+          <div class="row q-col-gutter-md items-center justify-between">
+            <!-- Selector de Tipo -->
+            <div class="col-12 col-sm-auto">
+              <div class="column items-center">
+                <div class="text-caption text-grey-7 q-mb-xs">Tipo de Reporte</div>
+                <q-toggle
+                  v-model="tipoReporte"
+                  color="primary"
+                  size="lg"
+                  dense
+                  @update:model-value="cambiarTipoReporteLabel"
+                />
+                <div class="text-weight-bold text-primary">{{ tipoReporte ? 'Al Corte' : 'Por Periodo' }}</div>
+              </div>
+            </div>
 
-    <!-- Fechas y botón generar -->
+            <!-- Inputs de Fecha -->
+            <div class="col-12 col-sm row q-col-gutter-sm justify-center">
+              <div v-if="!tipoReporte" class="col-12 col-sm-5 max-width-200">
+                <q-input
+                  v-model="startDate"
+                  label="Fecha Inicio"
+                  type="date"
+                  dense
+                  outlined
+                  stack-label
+                  :rules="[(val) => !!val || 'Requerido']"
+                  hide-bottom-space
+                  id="fechaini"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event" size="xs" />
+                  </template>
+                </q-input>
+              </div>
 
-    <q-form>
-      <div class="row q-col-gutter-x-md flex justify-center">
-        <div v-if="!tipoReporte" class="col-12 col-md-4" id="fechainicioreportecredito">
-          <label for="fechaini">Fecha Inicio</label>
-          <q-input
-            type="date"
-            v-model="startDate"
-            id="fechaini"
-            dense
-            outlined
-            :rules="[(val) => !!val || 'Seleccione una fecha válida']"
-          >
-          </q-input>
+              <div class="col-12 col-sm-5 max-width-200">
+                <q-input
+                  v-model="endDate"
+                  label="Fecha Fin"
+                  type="date"
+                  dense
+                  outlined
+                  stack-label
+                  :rules="!tipoReporte ? [validateEndDate] : [(val) => !!val || 'Requerido']"
+                  hide-bottom-space
+                  id="fechafin"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event" size="xs" />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+
+            <!-- Botón Generar -->
+            <div class="col-12 col-sm-auto text-center">
+              <q-btn
+                id="btngenerarreportecredito"
+                label="Generar Reporte"
+                color="primary"
+                icon="analytics"
+                unelevated
+                padding="8px 20px"
+                @click="generateReport"
+                :loading="loading"
+                :disable="!idmd5 || (!startDate && !tipoReporte) || !endDate"
+                class="full-width-xs shadow-1"
+              />
+            </div>
+          </div>
+        </q-form>
+      </q-card-section>
+
+      <!-- Alert Banners -->
+      <q-card-section v-if="!idmd5 || reportError" class="q-pt-none">
+        <q-banner v-if="!idmd5" dense rounded class="bg-warning text-dark q-mb-sm">
+          <template v-slot:avatar>
+            <q-icon name="warning" color="orange" />
+          </template>
+          No se encontró sesión de usuario válida.
+        </q-banner>
+
+        <q-banner v-if="reportError" dense rounded class="bg-negative text-white">
+          <template v-slot:avatar>
+            <q-icon name="error" />
+          </template>
+          {{ reportError }}
+        </q-banner>
+      </q-card-section>
+    </q-card>
+
+    <!-- Table Results Card -->
+    <q-card flat bordered class="shadow-2">
+      <q-card-section class="q-py-sm bg-grey-2 border-bottom">
+        <div class="row justify-between items-center no-wrap">
+          <div class="row items-center q-gutter-x-sm">
+            <q-icon name="summarize" color="primary" size="sm" />
+            <div class="text-subtitle2 text-weight-medium text-grey-8">
+              {{ processedReportData.length > 0 ? `Total: ${processedReportData.length} registros` : 'Resultados' }}
+            </div>
+          </div>
+          
+          <div class="row q-gutter-sm">
+            <q-btn
+              id="btnexportarexcelreportecredito"
+              icon="file_download"
+              label="Excel"
+              color="positive"
+              unelevated
+              dense
+              padding="xs md"
+              @click="exportToXLSX"
+              :disable="processedReportData.length === 0 || loading"
+            >
+              <q-tooltip>Exportar a Excel</q-tooltip>
+            </q-btn>
+            <q-btn
+              id="btnpdfreportecredito"
+              label="PDF"
+              color="indigo"
+              icon="picture_as_pdf"
+              unelevated
+              dense
+              padding="xs md"
+              @click="printFilteredTable"
+              :disable="processedReportData.length === 0 || loading"
+            >
+              <q-tooltip>Exportar a PDF</q-tooltip>
+            </q-btn>
+          </div>
         </div>
+      </q-card-section>
 
-        <div class="col-12 col-md-4" id="fechafinreportecredito">
-          <label for="fechafin">Fecha Fin</label>
-          <q-input
-            type="date"
-            v-model="endDate"
-            dense
-            outlined
-            id="fechafin"
-            :rules="!tipoReporte ? [validateEndDate] : ''"
-          >
-          </q-input>
-        </div>
-      </div>
-      <div class="row q-col-gutter-x-md flex justify-center">
-        <div class="col-12 col-md-4 flex justify-center">
-          <q-btn
-            id="btngenerarreportecredito"
-            label="Generar Reporte"
-            color="primary"
-            @click="generateReport"
-            :loading="loading"
-            :disable="!idmd5 || !startDate || !endDate"
+      <q-separator />
+
+      <q-card-section class="q-pa-none">
+        <div ref="hijoRef" id="tablareportecreditos">
+          <ReporteCreditosTable 
+            ref="tablaCreditosRef"
+            :rows="processedReportData" 
+            :loading="loading" 
           />
         </div>
-      </div>
-    </q-form>
+      </q-card-section>
+    </q-card>
 
-    <!-- Sección de filtros -->
-    <div>
-      <q-expansion-item label="Filtros" icon="filter_list" id="expansionfiltrosreportecredito">
-        <!-- Indicador de filtros activos -->
+    <!-- PDF Modal -->
+    <q-dialog v-model="mostrarModal" full-width full-height transition-show="scale" transition-hide="scale">
+      <q-card class="column no-wrap" style="background: rgba(0,0,0,0.8)">
+        <q-toolbar class="bg-primary text-white">
+          <q-toolbar-title>Vista Previa del Reporte</q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
 
-        <div class="row q-col-gutter-x-md">
-          <!-- Filtro por almacén -->
-          <div class="col-12 col-md-2" id="filtroalmacenreportecredito">
-            <label for="almacen">Filtrar por Almacén</label>
-            <q-select
-              v-model="selectedAlmacen"
-              :options="almacenOptions"
-              id="almacen"
-              dense
-              outlined
-              emit-value
-              map-options
-              @update:model-value="updateFilter('almacen', $event !== 0)"
-            />
-          </div>
-
-          <!-- Filtro por cliente -->
-          <div class="col-12 col-md-3" id="filtroclientereportecredito">
-            <label for="cliente">Razon social</label>
-            <q-select
-              v-model="clienteStore.clienteSeleccionado"
-              use-input
-              input-debounce="300"
-              :options="clientesFiltrados"
-              @filter="filterClientes"
-              id="cliente"
-              dense
-              outlined
-              option-label="displayName"
-              :loading="loadingClientes"
-              :disable="loadingClientes"
-              clearable
-              @update:model-value="updateFilter('cliente', !!$event)"
-              @clear="resetClientSelection"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    {{
-                      loadingClientes
-                        ? 'Cargando clientes...'
-                        : clienteStore.clientes.length === 0
-                          ? 'No hay clientes disponibles'
-                          : 'No se encontraron coincidencias'
-                    }}
-                  </q-item-section>
-                </q-item>
-              </template>
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.codigo }} - {{ scope.opt.nombre }}</q-item-label>
-                    <q-item-label caption>{{ scope.opt.nombrecomercial }}</q-item-label>
-                    <q-item-label caption
-                      >{{ scope.opt.ciudad }} - {{ scope.opt.nit }}</q-item-label
-                    >
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-
-          <!-- Filtro por sucursal -->
-          <div class="col-12 col-md-3" id="filtrosucursalreportecredito">
-            <label for="sucursal">Seleccionar sucursal</label>
-            <q-select
-              v-if="clienteStore.clienteSeleccionado"
-              v-model="clienteStore.sucursalSeleccionada"
-              :options="clienteStore.sucursales"
-              option-label="nombre"
-              id="sucursal"
-              dense
-              outlined
-              :loading="loadingSucursales"
-              :disable="!clienteStore.sucursales.length || loadingSucursales"
-              clearable
-              @update:model-value="updateFilter('sucursal', !!$event)"
-              @clear="resetSucursalSelection"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    {{
-                      loadingSucursales ? 'Cargando sucursales...' : 'No hay sucursales disponibles'
-                    }}
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <!-- Filtro por estado (nuevo) -->
-          <div class="col-12 col-md-2" id="filtroestadoreportecredito">
-            <label for="estado">Estado crédito</label>
-            <q-select
-              v-model="selectedEstado"
-              :options="estadoOptions"
-              id="estado"
-              dense
-              outlined
-              emit-value
-              map-options
-              clearable
-              @update:model-value="updateFilter('estado', !!$event)"
-            />
-          </div>
-          <div class="col-12 col-md-1">
-            <q-btn
-              id="btnlimpiarfiltrosreportecredito"
-              color="primary"
-              text-color="white"
-              label="Limpiar"
-              class="q-mt-lg"
-              @click="limpiarFiltro"
-            />
-          </div>
-
-          <!-- Botones de acción -->
-          <!-- <div class="col-12 row justify-end q-mt-sm">
-            <q-btn label="Aplicar Filtros" color="primary" @click="applyFilters" class="q-mr-sm" />
-            <q-btn label="Limpiar Todo" color="negative" outline @click="resetAllFilters" />
-          </div> -->
-        </div>
-      </q-expansion-item>
-    </div>
-
-    <!-- Mensajes de estado -->
-    <q-card-section v-if="!idmd5">
-      <q-banner dense rounded class="bg-red-2 text-red-10">
-        <template v-slot:avatar>
-          <q-icon name="warning" color="red" />
-        </template>
-        No se encontró el ID MD5 en el almacenamiento local. Asegúrate de que esté guardado bajo la
-        clave 'md5'.
-      </q-banner>
-    </q-card-section>
-
-    <q-card-section v-if="reportError">
-      <q-banner dense rounded class="bg-red-2 text-red-10">
-        <template v-slot:avatar>
-          <q-icon name="error" color="red" />
-        </template>
-        Error al cargar el reporte: {{ reportError }}
-      </q-banner>
-    </q-card-section>
-
-    <!-- Tabla de resultados -->
-    <q-card-section v-if="filteredReportData.length > 0">
-      <div class="row justify-between items-center">
-        <div class="text-subtitle1">Mostrando {{ filteredReportData.length - 1 }} registros</div>
-        <q-btn
-          id="btnexportarexcelreportecredito"
-          icon="mdi-microsoft-excel"
-          label="Exportar"
-          color="secondary"
-          @click="exportToXLSX"
-        />
-        <q-btn
-          id="btnpdfreportecredito"
-          label="Reporte"
-          color="info"
-          icon="print"
-          @click="printFilteredTable"
-          :disable="reportData.length === 0"
-          class="q-ma-lg"
-        />
-      </div>
-    </q-card-section>
-    <div ref="hijoRef" id="tablareportecreditos">
-      <ReporteCreditosTable :rows="filteredReportData" :loading="loading" />
-    </div>
-
-    <q-dialog v-model="mostrarModal" full-width full-height>
-      <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
-          <q-space />
-          <q-btn flat round icon="close" @click="mostrarModal = false" />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-section class="q-pa-none" style="height: calc(100% - 60px)">
+        <q-card-section class="col q-pa-none">
           <iframe
             v-if="pdfData"
             :src="pdfData"
@@ -260,23 +178,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 import { date, useQuasar } from 'quasar'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, decimas, redondear } from 'src/composables/FuncionesG'
 import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
-import { useClienteStore } from 'stores/cliente'
 import { PDFreporteCreditos } from 'src/utils/pdfReportGenerator'
 import { exportToXLSX_Reporte_Creditos } from 'src/utils/XCLReportImport'
 import ReporteCreditosTable from 'src/components/cuentasxCobrar/Reportes/ReporteCreditosTable.vue'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
+
 const mostrarModal = ref(false)
 const pdfData = ref(null)
 const $q = useQuasar()
 const almacenes = useAlmacenStore()
-const clienteStore = useClienteStore()
 const tipoReporte = ref(false)
+
 // --- Variables reactivas ---
 const idmd5 = ref('')
 const startDate = ref(primerDiaDelMes().toISOString().slice(0, 10))
@@ -284,13 +202,17 @@ const endDate = ref(date.formatDate(new Date(), 'YYYY-MM-DD'))
 const reportData = ref([])
 const loading = ref(false)
 const reportError = ref(null)
-const selectedAlmacen = ref(0)
-const selectedEstado = ref(null)
-const loadingClientes = ref(false)
-const loadingSucursales = ref(false)
-const searchCliente = ref('')
 const hijoRef = ref(null)
 const pageRef = ref(null)
+const tablaCreditosRef = ref(null)
+
+const keyEstado = {
+  1: 'Activo',
+  2: 'Finalizado',
+  3: 'Atrasado',
+  4: 'Anulado',
+  5: '',
+}
 
 // Configuración de paginación
 const pagination = ref({
@@ -301,32 +223,16 @@ const pagination = ref({
   rowsNumber: 0,
 })
 
-// Filtros activos
-const activeFilters = ref({
-  almacen: false,
-  cliente: false,
-  sucursal: false,
-  estado: false,
-})
-
 async function scrollToCreditos() {
   await nextTick()
 
   if ($q.screen.lt.md && pageRef.value && hijoRef.value) {
-    // mover el scroll del q-page hasta la posición del div
     pageRef.value.$el.scrollTo({
       top: hijoRef.value.offsetTop,
       behavior: 'smooth',
     })
   }
 }
-
-const estadoOptions = [
-  { label: 'Activo', value: 1 },
-  { label: 'Finalizado', value: 2 },
-  { label: 'Atrasado', value: 3 },
-  { label: 'Anulado', value: 4 },
-]
 
 const validateEndDate = (val) => {
   if (!val) return 'Seleccione una fecha válida'
@@ -335,84 +241,37 @@ const validateEndDate = (val) => {
   }
   return true
 }
-// dentro de <script setup>
-const limpiarFiltro = () => {
-  // Resetea filtros principales
-  selectedAlmacen.value = almacenOptions.value[0]
-  selectedEstado.value = null
 
-  // Resetea cliente y sucursal
-  clienteStore.clienteSeleccionado = null
-  clienteStore.sucursalSeleccionada = null
-  updateFilter('almacen', 0)
-}
-
-const cambiarTipoReporte = () => {
-  tipoReporte.value = !tipoReporte.value
+const cambiarTipoReporteLabel = () => {
+  // Opcional: podrías limpiar la fecha de inicio al cambiar a "Al Corte" si lo deseas
 }
 const printFilteredTable = () => {
-  const doc = PDFreporteCreditos(filteredReportData.value, startDate.value, endDate.value)
+  const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
+  const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
+  const doc = PDFreporteCreditos(data, startDate.value, endDate.value, null, null, visibleColumns)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
 
-// --- Computed properties ---
-const almacenOptions = computed(() => {
-  const options = [{ label: 'Todos los almacenes', value: 0 }]
-  almacenes.almacenes.forEach((almacen) => {
-    options.push({ label: almacen.almacen, value: Number(almacen.idalmacen) })
-  })
-  return options
-})
-
-const clientesFiltrados = computed(() => {
-  if (!searchCliente.value) return clienteStore.clientes
-  return clienteStore.clientes.filter((c) =>
-    `${c.codigo}${c.nombre}${c.nombrecomercial}${c.ciudad}${c.nit}`
-      .toLowerCase()
-      .includes(searchCliente.value),
-  )
-})
-
-const filteredReportData = computed(() => {
+const processedReportData = computed(() => {
   let data = [...reportData.value]
-
-  // Aplicar filtros solo si están activos
-  if (activeFilters.value.almacen && selectedAlmacen.value !== 0) {
-    data = data.filter((row) => Number(row.idalmacen) === selectedAlmacen.value)
-  }
-
-  if (activeFilters.value.cliente && clienteStore.clienteSeleccionado) {
-    data = data.filter(
-      (row) => Number(row.idcliente) === Number(clienteStore.clienteSeleccionado.id),
-    )
-  }
-
-  if (activeFilters.value.sucursal && clienteStore.sucursalSeleccionada) {
-    data = data.filter(
-      (row) => Number(row.idsucursal) === Number(clienteStore.sucursalSeleccionada.id),
-    )
-  }
-
-  if (activeFilters.value.estado && selectedEstado.value) {
-    data = data.filter((row) => Number(row.estado) === Number(selectedEstado.value))
-  }
-
-  return processDataWithTotals(data)
+  return mapRows(data)
 })
 
-// --- Funciones ---
-
-const processDataWithTotals = (data) => {
+const mapRows = (data) => {
   if (data.length === 0) return []
 
-  const numberedData = data.map((row, index) => {
+  return data.map((row, index) => {
     let fecha1 = new Date()
     let fecha2 = new Date(row.fechalimite)
 
     fecha1 = Math.floor(fecha1.getTime() / (1000 * 3600 * 24))
     fecha2 = Math.floor(fecha2.getTime() / (1000 * 3600 * 24))
     let dias = fecha1 - fecha2
+
+    const almacen = almacenes.almacenes.find(
+      (a) => Number(a.idalmacen) === Number(row.idalmacen),
+    )
 
     return {
       idventa: row.idventa,
@@ -422,119 +281,34 @@ const processDataWithTotals = (data) => {
       fechaventa: cambiarFormatoFecha(row.fechaventa),
       razonsocial: row.razonsocial,
       sucursal: row.sucursal,
+      almacen: almacen ? almacen.almacen : 'N/A',
       fechalimite: cambiarFormatoFecha(row.fechalimite),
       ncuotas: row.ncuotas,
       cuotasprocesadas: row.cuotaspagadas || 0,
       valorcuotas: decimas(redondear(parseFloat(row.valorcuotas))),
       totalventa: decimas(redondear(parseFloat(row.montoventa))),
-      totalcobrado: row.totalcobrado == null ? 0 : decimas(redondear(parseFloat(row.totalcobrado))),
+      totalcobrado: row.totalcobrado == null ? '0.00' : decimas(redondear(parseFloat(row.totalcobrado))),
       saldo: decimas(redondear(parseFloat(row.saldo))),
       totalatrasado: Number(row.estado) === 3 ? decimas(redondear(parseFloat(row.saldo))) : '0.00',
       totalanulado: Number(row.estado) === 4 ? decimas(redondear(parseFloat(row.saldo))) : '0.00',
-      moradias: dias < 0 ? `0.00` : decimas(dias),
+      moradias: dias < 0 ? '0.00' : decimas(dias),
       estado: row.estado,
+      estadoLabel: keyEstado[Number(row.estado)] || '',
       idalmacen: row.idalmacen,
       montoventa: row.montoventa,
       cuotaspagadas: row.cuotaspagadas,
       idsucursal: row.idsucursal,
     }
   })
-
-  const totales = {
-    numero: '',
-    fechaventa: '',
-    razonsocial: '',
-    sucursal: '',
-    fechalimite: '',
-    ncuotas: '',
-    cuotasprocesadas: 'TOTAL:',
-    valorcuotas: numberedData.reduce((sum, u) => sum + Number(u.valorcuotas || 0), 0).toFixed(2),
-    totalventa: numberedData.reduce((sum, u) => sum + Number(u.montoventa || 0), 0),
-    totalcobrado: decimas(
-      redondear(
-        parseFloat(
-          numberedData.reduce((sum, u) => {
-            const cobrado =
-              u.totalcobrado == null ? 0 : decimas(redondear(parseFloat(u.totalcobrado)))
-            return (
-              sum +
-              (Number(u.estado) === 1 || Number(u.estado) === 2 || Number(u.estado) === 3
-                ? parseFloat(cobrado)
-                : 0)
-            )
-          }, 0),
-        ),
-      ),
-    ),
-    saldo: decimas(
-      redondear(
-        parseFloat(
-          numberedData.reduce((sum, u) => {
-            return (
-              sum +
-              (Number(u.estado) === 1 || Number(u.estado) === 2 || Number(u.estado) === 3
-                ? parseFloat(u.saldo)
-                : 0)
-            )
-          }, 0),
-        ),
-      ),
-    ),
-    totalatrasado: numberedData.reduce((sum, u) => {
-      return sum + (Number(u.estado) === 3 ? parseFloat(u.saldo) : 0)
-    }, 0),
-    totalanulado: numberedData.reduce((sum, u) => {
-      const valueToAdd = Number(u.estado) === 4 ? parseFloat(u.saldo) : 0
-      return sum + valueToAdd
-    }, 0),
-    moradias: '',
-    estado: 5,
-  }
-
-  return [...numberedData, totales]
-}
-const filterClientes = (val, update) => {
-  update(() => {
-    searchCliente.value = val.toLowerCase()
-  })
-}
-
-const updateFilter = (filterName, isActive) => {
-  console.log(isActive)
-  activeFilters.value[filterName] = isActive
-}
-
-// const applyFilters = () => {
-//   // Forzar recálculo al cambiar filtros
-//   filteredReportData.value = [...filteredReportData.value]
-// }
-
-const resetClientSelection = () => {
-  clienteStore.clienteSeleccionado = null
-  clienteStore.sucursalSeleccionada = null
-  activeFilters.value.cliente = false
-  activeFilters.value.sucursal = false
-}
-
-const resetSucursalSelection = () => {
-  clienteStore.sucursalSeleccionada = null
-  activeFilters.value.sucursal = false
 }
 
 const generateReport = async () => {
   if (!idmd5.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'No hay ID MD5 disponible para generar el reporte.',
-    })
+    $q.notify({ type: 'negative', message: 'No hay ID MD5 disponible.' })
     return
   }
-
   if (!startDate.value || !endDate.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, selecciona un rango de fechas.',
-    })
+    $q.notify({ type: 'negative', message: 'Seleccione fechas.' })
     return
   }
 
@@ -543,13 +317,10 @@ const generateReport = async () => {
   reportData.value = []
 
   try {
-    //{{ tipoReporte ? 'Reporte de Crédito al Corte' : 'Reporte de Crédito en Periodo' }}
-    let point = ''
-    if (tipoReporte.value) {
-      point = `reporteCreditosAlCorte/${idmd5.value}/${startDate.value}/${endDate.value}`
-    } else {
-      point = `reportecreditos/${idmd5.value}/${startDate.value}/${endDate.value}`
-    }
+    let point = tipoReporte.value
+      ? `reporteCreditosAlCorte/${idmd5.value}/${startDate.value}/${endDate.value}`
+      : `reportecreditos/${idmd5.value}/${startDate.value}/${endDate.value}`
+    
     const response = await api.get(point)
 
     if (response.data.estado === 'exito') {
@@ -557,113 +328,51 @@ const generateReport = async () => {
       pagination.value.rowsNumber = reportData.value.length
 
       if (reportData.value.length === 0) {
-        $q.notify({
-          type: 'info',
-          message: 'No se encontraron registros para el rango de fechas seleccionado.',
-          timeout: 2000,
-        })
+        $q.notify({ type: 'info', message: 'Sin registros.', timeout: 2000 })
       } else {
-        $q.notify({
-          type: 'positive',
-          message: `Reporte generado con ${reportData.value.length} registros.`,
-          timeout: 1000,
-        })
+        $q.notify({ type: 'positive', message: `Éxito: ${reportData.value.length} registros.`, timeout: 1000 })
       }
       scrollToCreditos()
     } else {
-      reportError.value = response.data.mensaje || 'Error desconocido de la API.'
-      $q.notify({
-        type: 'negative',
-        message: reportError.value,
-        timeout: 3000,
-      })
+      reportError.value = response.data.mensaje || 'Error API.'
     }
   } catch (error) {
-    console.error('Error fetching credit report:', error)
+    console.error(error)
     reportError.value = 'Error al obtener el reporte.'
-    if (error.response) {
-      reportError.value += ` (${error.response.status}: ${error.response.data?.mensaje || error.response.data})`
-    }
-    $q.notify({
-      type: 'negative',
-      message: reportError.value,
-      timeout: 5000,
-    })
   } finally {
     loading.value = false
   }
 }
 
 const exportToXLSX = () => {
-  if (reportData.value.length === 0) {
-    $q.notify({
-      type: 'warning',
-      message: 'No hay datos en la tabla para exportar. Genere un reporte primero.',
-      position: 'top',
-    })
-    return
-  }
-
-  $q.notify({
-    message: 'Exportando a Excel con estilos...',
-    color: 'green',
-    icon: 'file_download',
-  })
-
-  // Prepare data: only include fields that should be in the Excel file
-  // and apply any necessary formatting or transformations.
-  exportToXLSX_Reporte_Creditos(reportData.value, startDate.value, endDate.value)
-
-  $q.notify({
-    type: 'positive',
-    message: 'Reporte Excel generado con éxito.',
-    position: 'top',
-  })
+  const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
+  const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
+  if (data.length === 0) return
+  
+  $q.notify({ message: 'Preparando Excel...', color: 'green', icon: 'file_download' })
+  exportToXLSX_Reporte_Creditos(data, startDate.value, endDate.value, null, null, visibleColumns)
 }
 
-// --- Lifecycle Hooks ---
 onMounted(async () => {
   const storedMd5 = idusuario_md5()
   if (storedMd5) {
     idmd5.value = storedMd5
     almacenes.listaAlmacenes()
-  } else {
-    $q.notify({
-      type: 'negative',
-      message: 'ID MD5 no encontrado. Asegúrate de iniciar sesión correctamente.',
-      timeout: 5000,
-    })
-  }
-
-  if (clienteStore.clientes.length === 0) {
-    loadingClientes.value = true
-    try {
-      await clienteStore.cargarClientes()
-    } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al cargar clientes',
-        caption: error.message,
-      })
-    } finally {
-      loadingClientes.value = false
-    }
   }
 })
-
-// Watchers
-watch(
-  () => clienteStore.clienteSeleccionado,
-  (newVal) => {
-    if (newVal) {
-      loadingSucursales.value = true
-      clienteStore.cargarSucursales(newVal.id).finally(() => {
-        loadingSucursales.value = false
-      })
-    } else {
-      clienteStore.sucursales = []
-      clienteStore.sucursalSeleccionada = null
-    }
-  },
-)
 </script>
+
+<style scoped>
+.max-width-200 {
+  max-width: 200px;
+  width: 100%;
+}
+.border-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+@media (max-width: 599px) {
+  .full-width-xs {
+    width: 100%;
+  }
+}
+</style>

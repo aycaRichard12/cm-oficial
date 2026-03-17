@@ -2,61 +2,72 @@ import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import * as XLSX from 'xlsx-js-style'
 
-export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate) {
-  // Prepare data: only include fields that should be in the Excel file
-  // and apply any necessary formatting or transformations.
-  const datos = reportData.value
-  const monto_total_venta = datos.reduce((sum, u) => {
-    return sum + Number(u.monto_total_venta)
-  }, 0)
-  const saldo_estado_cobro = datos.reduce((sum, u) => {
-    return sum + Number(u.saldo_estado_cobro)
-  }, 0)
-  const monto_detalle_cobro = datos.reduce((sum, u) => {
-    return sum + Number(u.monto_detalle_cobro)
-  }, 0)
-  const descuento_venta = datos.reduce((sum, u) => {
-    return sum + Number(u.descuento_venta)
-  }, 0)
-  const pieTable = {
-    nombre_comercial: 'Total:',
-    monto_total_venta: monto_total_venta.toFixed(2),
-    descuento_venta: descuento_venta.toFixed(2),
-    saldo_estado_cobro: saldo_estado_cobro.toFixed(2),
-    monto_detalle_cobro: monto_detalle_cobro.toFixed(2),
+export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
+  reportData,
+  startDate,
+  endDate,
+  visibleColumnsFromTable = [],
+) {
+  // Preparar datos excluyendo la fila de totales si ya existe
+  const datos = [...reportData].filter(item => item.nombre_comercial !== 'TOTAL:')
+
+  // Definir todas las posibles columnas y sus configuraciones
+  const allPossibleColumns = [
+    { header: 'Fecha', key: 'fecha_actual', width: 15 },
+    { header: 'Cliente', key: 'nombre_cliente', width: 30 },
+    { header: 'Nombre Comercial', key: 'nombre_comercial', width: 30 },
+    { header: 'Monto Venta', key: 'monto_total_venta', width: 15, numeric: true },
+    { header: 'Descuento Venta', key: 'descuento_venta', width: 15, numeric: true },
+    { header: 'Saldo Cobro', key: 'saldo_estado_cobro', width: 15, numeric: true },
+    { header: 'Monto Cobrado', key: 'monto_detalle_cobro', width: 15, numeric: true },
+  ]
+
+  // Filtrar columnas visibles
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.key))
   }
-  datos.push(pieTable)
+
+  // Mapear datos para exportación
   const dataForExport = datos.map((row) => {
-    return {
-      Fecha: row.fecha_actual,
+    const exportRow = {}
+    columns.forEach((col) => {
+      if (col.numeric) {
+        exportRow[col.header] = parseFloat(row[col.key] || 0).toFixed(2)
+      } else {
+        exportRow[col.header] = row[col.key] || ''
+      }
+    })
+    return exportRow
+  })
 
-      Cliente: row.nombre_cliente,
-      'Nombre Comercial': row.nombre_comercial,
+  // Calcular totales sumando los valores numéricos
+  const totals = {
+    monto_total_venta: datos.reduce((sum, u) => sum + Number(u.monto_total_venta || 0), 0),
+    descuento_venta: datos.reduce((sum, u) => sum + Number(u.descuento_venta || 0), 0),
+    saldo_estado_cobro: datos.reduce((sum, u) => sum + Number(u.saldo_estado_cobro || 0), 0),
+    monto_detalle_cobro: datos.reduce((sum, u) => sum + Number(u.monto_detalle_cobro || 0), 0),
+  }
 
-      'Monto Venta': parseFloat(row.monto_total_venta).toFixed(2), // Ensure numeric formatting
-      'Descuento Venta': parseFloat(row.descuento_venta).toFixed(2),
-      'Saldo Cobro': parseFloat(row.saldo_estado_cobro).toFixed(2),
-      'Monto Cobrado': parseFloat(row.monto_detalle_cobro).toFixed(2),
+  // Agregar fila de totales dinámica
+  const totalRow = {}
+  let firstStringCol = columns.find(c => !c.numeric)
+  columns.forEach(col => {
+    if (col === firstStringCol) {
+      totalRow[col.header] = 'TOTALES'
+    } else if (totals[col.key] !== undefined) {
+      totalRow[col.header] = totals[col.key].toFixed(2)
+    } else {
+      totalRow[col.header] = ''
     }
   })
+  dataForExport.push(totalRow)
 
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
-  // Define column widths based on data or sensible defaults
-  // Map your data keys to desired widths
-  const columnWidths = [
-    { wch: 15 }, // Fecha
-
-    { wch: 30 }, // Cliente
-    { wch: 30 }, // Nombre Comercial
-
-    { wch: 15 }, // Monto Venta
-    { wch: 12 }, // Descuento Venta
-    { wch: 15 }, // Saldo Cobro
-    { wch: 15 }, // Monto Cobrado
-  ]
-
-  worksheet['!cols'] = columnWidths
+  // Definir anchos de columnas dinámicamente
+  worksheet['!cols'] = columns.map(col => ({ wch: col.width }))
 
   // Apply styles to all cells
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -126,81 +137,80 @@ export function exportToXLSX_Reporte_Creditos(
   endDate,
   clienteSeleccionado = null,
   sucursalSeleccionada = null,
+  visibleColumnsFromTable = [],
 ) {
   // Preparar datos excluyendo la fila de totales si ya existe
   const datos = reportData.filter((item) => item.estado !== 5)
 
-  // Calcular totales
-  const totalValorCuotas = datos.reduce((sum, u) => sum + parseFloat(u.valorcuotas || 0), 0)
-  const totalMontoVenta = datos.reduce((sum, u) => sum + parseFloat(u.montoventa || 0), 0)
-  const totalCobrado = datos.reduce((sum, u) => sum + parseFloat(u.totalcobrado || 0), 0)
-  const totalSaldo = datos.reduce((sum, u) => sum + parseFloat(u.saldo || 0), 0)
-  const totalAtrasado = datos
-    .filter((u) => Number(u.estado) === 3)
-    .reduce((sum, u) => sum + parseFloat(u.saldo || 0), 0)
-  const totalAnulado = datos
-    .filter((u) => Number(u.estado) === 4)
-    .reduce((sum, u) => sum + parseFloat(u.saldo || 0), 0)
+  // Definir todas las posibles columnas y sus configuraciones
+  const allPossibleColumns = [
+    { header: 'N°', key: 'numero', width: 5 },
+    { header: 'Fecha Crédito', key: 'fechaventa', width: 12, format: 'date' },
+    { header: 'Cliente', key: 'razonsocial', width: 30 },
+    { header: 'Sucursal', key: 'sucursal', width: 20 },
+    { header: 'Fecha Límite', key: 'fechalimite', width: 12, format: 'date' },
+    { header: 'Cuotas', key: 'ncuotas', width: 8 },
+    { header: 'Cuotas Procesadas', key: 'cuotasprocesadas', width: 15 },
+    { header: 'Valor Cuota', key: 'valorcuotas', width: 12, numeric: true },
+    { header: 'Monto Venta', key: 'totalventa', width: 12, numeric: true },
+    { header: 'Total Cobrado', key: 'totalcobrado', width: 12, numeric: true },
+    { header: 'Saldo', key: 'saldo', width: 12, numeric: true },
+    { header: 'Total Atrasado', key: 'totalatrasado', width: 12, numeric: true },
+    { header: 'Total Anulado', key: 'totalanulado', width: 12, numeric: true },
+    { header: 'Días Mora', key: 'moradias', width: 10, numeric: true },
+    { header: 'Estado', key: 'estado', width: 12 },
+  ]
+
+  // Filtrar columnas visibles
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.key))
+  }
 
   // Mapear datos para exportación
-  const dataForExport = datos.map((row) => ({
-    'N°': row.numero,
-    'Fecha Crédito': cambiarFormatoFecha(row.fechaventa),
-    Cliente: row.razonsocial,
-    Sucursal: row.sucursal,
-    'Fecha Límite': cambiarFormatoFecha(row.fechalimite),
-    Cuotas: row.ncuotas,
-    'Cuotas Pagadas': row.cuotaspagadas || '0',
-    'Valor Cuota': parseFloat(row.valorcuotas || 0).toFixed(2),
-    'Monto Venta': parseFloat(row.montoventa || 0).toFixed(2),
-    'Total Cobrado': parseFloat(row.totalcobrado || 0).toFixed(2),
-    Saldo: parseFloat(row.saldo || 0).toFixed(2),
-    'Días Mora':
-      row.fechalimite && Number(row.estado) === 3 ? Math.max(obtenerDias(row.fechalimite), 0) : 0,
-    totalAtrasado: totalAtrasado,
-    totalAnulado: totalAnulado,
-    Estado: getEstadoText(row.estado),
-  }))
-
-  // Agregar fila de totales
-  dataForExport.push({
-    'N°': '',
-    'Fecha Crédito': '',
-    Cliente: '',
-    Sucursal: '',
-    'Fecha Límite': '',
-    Cuotas: '',
-    'Cuotas Pagadas': 'TOTAL:',
-    'Valor Cuota': totalValorCuotas.toFixed(2),
-    'Monto Venta': totalMontoVenta.toFixed(2),
-    'Total Cobrado': totalCobrado.toFixed(2),
-    Saldo: totalSaldo.toFixed(2),
-    totalAtrasado: totalAtrasado,
-    totalAnulado: totalAnulado,
-    'Días Mora': '',
-    Estado: '',
+  const dataForExport = datos.map((row) => {
+    const exportRow = {}
+    columns.forEach((col) => {
+      if (col.key === 'estado') {
+        exportRow[col.header] = getEstadoText(row.estado)
+      } else if (col.format === 'date') {
+        exportRow[col.header] = cambiarFormatoFecha(row[col.key])
+      } else if (col.numeric) {
+        exportRow[col.header] = parseFloat(row[col.key] || 0).toFixed(2)
+      } else {
+        exportRow[col.header] = row[col.key]
+      }
+    })
+    return exportRow
   })
+
+  // Calcular totales para la fila final
+  const totals = {
+    valorcuotas: datos.reduce((sum, u) => sum + parseFloat(u.valorcuotas || 0), 0),
+    totalventa: datos.reduce((sum, u) => sum + parseFloat(u.totalventa || 0), 0),
+    totalcobrado: datos.reduce((sum, u) => sum + parseFloat(u.totalcobrado || 0), 0),
+    saldo: datos.reduce((sum, u) => sum + parseFloat(u.saldo || 0), 0),
+  }
+
+  // Agregar fila de totales dinámica
+  const totalRow = {}
+  columns.forEach((col, index) => {
+    if (index === 0) {
+      totalRow[col.header] = 'TOTALES'
+    } else if (totals[col.key] !== undefined) {
+      totalRow[col.header] = totals[col.key].toFixed(2)
+    } else {
+      totalRow[col.header] = ''
+    }
+  })
+  dataForExport.push(totalRow)
 
   // Crear hoja de trabajo
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
-  // Definir anchos de columnas
-  const columnWidths = [
-    { wch: 5 }, // N°
-    { wch: 12 }, // Fecha Crédito
-    { wch: 30 }, // Cliente
-    { wch: 20 }, // Sucursal
-    { wch: 12 }, // Fecha Límite
-    { wch: 8 }, // Cuotas
-    { wch: 12 }, // Cuotas Pagadas
-    { wch: 12 }, // Valor Cuota
-    { wch: 12 }, // Monto Venta
-    { wch: 12 }, // Total Cobrado
-    { wch: 12 }, // Saldo
-    { wch: 10 }, // Días Mora
-    { wch: 12 }, // Estado
-  ]
-  worksheet['!cols'] = columnWidths
+  // Definir anchos de columnas dinámicamente
+  worksheet['!cols'] = columns.map(col => ({ wch: col.width }))
 
   // Aplicar estilos a las celdas
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -293,12 +303,6 @@ function getEstadoText(estado) {
   return estados[Number(estado)] || ''
 }
 
-// Función auxiliar para calcular días de mora
-function obtenerDias(fechalimite) {
-  const fecha1 = Math.floor(new Date().getTime() / (1000 * 3600 * 24))
-  const fecha2 = Math.floor(new Date(fechalimite).getTime() / (1000 * 3600 * 24))
-  return fecha1 - fecha2
-}
 
 export function exportToXLSX_Reporte_Productos(
   reportData,
@@ -649,20 +653,183 @@ export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, 
 
   // 6. Configurar propiedades del documento
   workbook.Props = {
-    Title: `Reporte de Ventas ${almacen.value}`,
-    Subject: `Ventas del ${startDate.value} al ${endDate.value}`,
+    Title: `Reporte de Ventas ${almacen}`,
+    Subject: `Ventas del ${startDate} al ${endDate}`,
     Author: 'Sistema de Ventas',
     CreatedDate: new Date(),
   }
 
   // 7. Generar nombre de archivo más descriptivo
-  const almacenFormatted = almacen.value ? almacen.value.replace(/\s+/g, '_') : 'Todos'
-  const filename = `Reporte_Ventas_${almacenFormatted}_${startDate.value}_a_${endDate.value}.xlsx`
+  const almacenFormatted = almacen ? almacen.replace(/\s+/g, '_') : 'Todos'
+  const filename = `Reporte_Ventas_${almacenFormatted}_${startDate}_a_${endDate}.xlsx`
 
   // 8. Exportar el archivo
   XLSX.writeFile(workbook, filename, {
     bookType: 'xlsx',
     type: 'array',
     cellStyles: true,
+  })
+}
+
+/**
+ * Exporta una plantilla de Excel con los encabezados necesarios para importar productos.
+ */
+export function exportarPlantillaProductos() {
+  const headers = [
+    { header: 'Código', key: 'codigo', width: 15 },
+    { header: 'Nombre', key: 'nombre', width: 25 },
+    { header: 'Descripción', key: 'descripcion', width: 35 },
+    { header: 'Código de Barras', key: 'codigobarras', width: 20 },
+    { header: 'Categoría', key: 'categoria', width: 20 },
+    { header: 'Subcategoría', key: 'subcategoria', width: 20 },
+    { header: 'Estado', key: 'estadoproducto', width: 15 },
+    { header: 'Unidad', key: 'unidad', width: 15 },
+    { header: 'Característica', key: 'medida', width: 20 },
+    { header: 'Otras Características', key: 'caracteristica', width: 25 },
+    { header: 'Código Nandina', key: 'codigonandina', width: 15 },
+  ]
+
+  const data = [
+    {
+      Código: 'PROD-001',
+      Nombre: 'Ejemplo Producto',
+      Descripción: 'Este es un producto de ejemplo',
+      'Código de Barras': '123456789',
+      Categoría: 'General',
+      Subcategoría: 'Básicos',
+      Estado: 'Activo',
+      Unidad: 'Unidad',
+      Característica: 'Color',
+      'Otras Características': 'Rojo, Grande',
+      'Código Nandina': '1020.30.00'
+    }
+  ]
+
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+
+  // Estilos de cabecera
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cellRef = XLSX.utils.encode_cell({ c: C, r: 0 })
+    if (worksheet[cellRef]) {
+      worksheet[cellRef].s = {
+        fill: { fgColor: { rgb: '4F81BD' } },
+        font: { color: { rgb: 'FFFFFF' }, bold: true },
+        alignment: { horizontal: 'center' }
+      }
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla Productos')
+  XLSX.writeFile(workbook, 'Plantilla_Importacion_Productos.xlsx', { cellStyles: true })
+}
+
+/**
+ * Exporta el catálogo actual de productos a Excel.
+ */
+export function exportToXLSX_CatalogoProductos(data) {
+  const headers = [
+    { header: 'N°', key: 'numero', width: 5 },
+    { header: 'Fecha', key: 'fecha', width: 15 },
+    { header: 'Código', key: 'codigo', width: 15 },
+    { header: 'Nombre', key: 'nombre', width: 25 },
+    { header: 'Descripción', key: 'descripcion', width: 35 },
+    { header: 'Código de Barras', key: 'codigobarras', width: 20 },
+    { header: 'Categoría', key: 'categoria', width: 20 },
+    { header: 'Subcategoría', key: 'subcategoria', width: 20 },
+    { header: 'Estado', key: 'estadoproducto', width: 15 },
+    { header: 'Unidad', key: 'unidad', width: 15 },
+    { header: 'Característica', key: 'medida', width: 20 },
+    { header: 'Otras Características', key: 'caracteristica', width: 25 },
+    { header: 'Código Nandina', key: 'codigonandina', width: 15 },
+  ]
+
+  const dataForExport = data.map((row, index) => ({
+    'N°': index + 1,
+    'Fecha': row.fecha || '',
+    'Código': row.codigo || '',
+    'Nombre': row.nombre || '',
+    'Descripción': row.descripcion || '',
+    'Código de Barras': row.codigobarras || '',
+    'Categoría': row.categoria || '',
+    'Subcategoría': row.subcategoria || '',
+    'Estado': row.estadoproducto || '',
+    'Unidad': row.unidad || '',
+    'Característica': row.medida || '',
+    'Otras Características': row.caracteristica || '',
+    'Código Nandina': row.codigonandina || '',
+  }))
+
+  const worksheet = XLSX.utils.json_to_sheet(dataForExport)
+  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+
+  // Estilos de cabecera
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cellRef = XLSX.utils.encode_cell({ c: C, r: 0 })
+    if (worksheet[cellRef]) {
+      worksheet[cellRef].s = {
+        fill: { fgColor: { rgb: '4F81BD' } },
+        font: { color: { rgb: 'FFFFFF' }, bold: true },
+        alignment: { horizontal: 'center' }
+      }
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo Productos')
+  XLSX.writeFile(workbook, 'Catalogo_Productos.xlsx', { cellStyles: true })
+}
+
+/**
+ * Lee un archivo Excel y retorna los datos mapeados a las claves que el sistema entiende.
+ * @param {File} file El archivo seleccionado por el usuario.
+ */
+export async function importarProductosDesdeExcel(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const bstr = e.target.result
+        const workbook = XLSX.read(bstr, { type: 'binary' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        const rows = XLSX.utils.sheet_to_json(worksheet)
+
+        // Mapeo de cabeceras en español a claves inglesas
+        const headerMap = {
+          'Código': 'codigo',
+          'Nombre': 'nombre',
+          'Descripción': 'descripcion',
+          'Código de Barras': 'codigobarras',
+          'Categoría': 'categoria_nombre',
+          'Subcategoría': 'subcategoria_nombre',
+          'Estado': 'estado_nombre',
+          'Unidad': 'unidad_nombre',
+          'Característica': 'medida_nombre',
+          'Otras Características': 'caracteristica',
+          'Código Nandina': 'codigonandina'
+        }
+
+        const mappedData = rows.map(row => {
+          const newRow = {}
+          Object.keys(row).forEach(key => {
+            const mappedKey = headerMap[key.trim()]
+            if (mappedKey) {
+              newRow[mappedKey] = row[key]
+            }
+          })
+          return newRow
+        })
+
+        resolve(mappedData)
+      } catch (err) {
+        reject(err)
+      }
+    }
+    reader.onerror = (err) => reject(err)
+    reader.readAsBinaryString(file)
   })
 }
