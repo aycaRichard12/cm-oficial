@@ -6,6 +6,7 @@
     :row-key="rowKey"
     :filter="search"
     v-model:pagination="pagination"
+    :rows-per-page-options="rowsPerPageOptions"
     :virtual-scroll="true"
     wrap-cells
   >
@@ -93,13 +94,14 @@ const props = defineProps({
   rowKey: { type: String, default: 'id' },
   search: { type: String, default: '' },
   filterMode: { type: String, default: 'client' }, // 'client' o 'server'
+  rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
 })
 
 console.log(props.sumColumns)
 console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
-defineExpose({ obtenerDatosFiltrados: () => filteredData.value, getActiveFiltersReport })
+defineExpose({ obtenerDatosFiltrados: () => filteredData.value, obtenerColumnasVisibles: () => visibleColumns.value, getActiveFiltersReport })
 
 const activeFilters = ref({})
 
