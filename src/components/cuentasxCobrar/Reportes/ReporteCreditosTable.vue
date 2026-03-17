@@ -1,45 +1,53 @@
 <template>
-  <!-- Tabla de clientes -->
-  <q-table
-    title="Creditos"
+  <BaseFilterableTable
+    ref="tableRef"
+    title="Créditos"
     :rows="props.rows"
     :columns="columns"
     row-key="idcredito"
-    flat
-    bordered
+    :array-headers="columns.map(c => c.name)"
+    :sum-columns="['valorcuotas', 'totalventa', 'totalcobrado', 'saldo', 'totalatrasado', 'totalanulado']"
+    nombre-columna-totales="moradias"
     :loading="loading"
-    no-data-label="No hay datos para mostrar"
-    class="sticky-header-table"
   >
-    <template v-slot:body-cell-estado="props">
-      <q-td :props="props" v-if="props.row.estado !== 5">
-        <q-badge :color="colorEstado[Number(props.row.estado)]">{{
-          keyEstado[Number(props.row.estado)]
-        }}</q-badge>
+    <template v-slot:body-cell-estado="scope">
+      <q-td :props="scope">
+        <q-badge v-if="scope.row.estado !== 5 && scope.row.estado !== ''" :color="colorEstado[Number(scope.row.estado)]">
+          {{ scope.value }}
+        </q-badge>
       </q-td>
     </template>
-  </q-table>
+
+    <!-- Reenvío de otros slots si fuera necesario -->
+    <template v-for="slot in Object.keys($slots)" :key="slot" #[slot]="slotProps">
+      <slot :name="slot" v-bind="slotProps || {}" />
+    </template>
+  </BaseFilterableTable>
 </template>
+
 <script setup>
-// Props desde el componente padre
+import { ref } from 'vue'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 const props = defineProps({
   rows: {
     type: Array,
     default: () => [],
   },
-
   loading: {
     type: Boolean,
     default: false,
   },
 })
-const keyEstado = {
-  1: 'Activo',
-  2: 'Finalizado',
-  3: 'Atrasado',
-  4: 'Anulado',
-  5: '',
-}
+
+const tableRef = ref(null)
+
+// Exponer el método para obtener datos filtrados (útil para reportes PDF/Excel)
+defineExpose({
+  obtenerDatosFiltrados: () => tableRef.value?.obtenerDatosFiltrados() || [],
+  obtenerColumnasVisibles: () => tableRef.value?.obtenerColumnasVisibles() || [],
+})
+
 
 const colorEstado = {
   1: 'green',
@@ -56,105 +64,113 @@ const columns = [
     align: 'center',
     label: 'Fecha Crédito',
     field: 'fechaventa',
-    sortable: true,
+    
+    dataType: 'date',
   },
   {
     name: 'razonsocial',
     align: 'left',
     label: 'Cliente',
     field: 'razonsocial',
-    sortable: true,
+    
   },
   {
     name: 'sucursal',
     align: 'left',
     label: 'Sucursal',
     field: 'sucursal',
-    sortable: true,
+    
   },
   {
     name: 'fechalimite',
     align: 'center',
     label: 'Fecha Límite',
     field: 'fechalimite',
-    sortable: true,
+    
+    dataType: 'date',
   },
   {
     name: 'ncuotas',
     align: 'center',
-    label: 'Catidad Cuotas',
+    label: 'Cant. Cuotas',
     field: 'ncuotas',
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'cuotasprocesadas',
     align: 'center',
-    label: 'Cuotas Procesadas',
+    label: 'Cuotas Proc.',
     field: 'cuotasprocesadas',
-    sortable: true,
+    
+  },
+   {
+    name: 'estado',
+    align: 'center',
+    label: 'Estado',
+    field: 'estadoLabel',
+    
+  },
+   {
+    name: 'moradias',
+    align: 'right',
+    label: 'Mora Días',
+    field: 'moradias',
+    
+    dataType: 'number',
   },
   {
     name: 'valorcuotas',
     align: 'right',
     label: 'Valor Cuota',
     field: 'valorcuotas',
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'totalventa',
     align: 'right',
     label: 'Total Venta',
     field: 'totalventa',
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'totalcobrado',
     align: 'right',
     label: 'Total Cobrado',
     field: 'totalcobrado',
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'saldo',
     align: 'right',
     label: 'Saldo',
     field: 'saldo',
-
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'totalatrasado',
     align: 'right',
     label: 'Total Atrasado',
     field: 'totalatrasado',
-    sortable: true,
+    
+    dataType: 'number',
   },
   {
     name: 'totalanulado',
     align: 'right',
     label: 'Total Anulado',
     field: 'totalanulado',
-    sortable: true,
+    
+    dataType: 'number',
   },
-  {
-    name: 'moradias',
-    align: 'right',
-    label: 'Mora Días',
-    field: 'moradias',
-    sortable: true,
-  },
-  {
-    name: 'estado',
-    align: 'center',
-    label: 'Estado',
-    field: 'estado',
-    sortable: true,
-  },
+ 
+ 
 ]
-
-// Emit para comunicar al componente padre
-
-// Filtrar los clientes según los filtros aplicados
 </script>
 
-<style scoped></style>
+
+

@@ -1,4 +1,4 @@
-﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
+import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -741,84 +741,82 @@ export default function imprimirReporte(detallePedido) {
   )
   return doc
 }
-export function PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate) {
+export function PDFreporteCuentasXCobrarPeriodo(
+  reportData,
+  startDate,
+  endDate,
+  visibleColumnsFromTable = [],
+) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
-  // Columns for jsPDF-autoTable
-  const columns = [
-    { header: 'N', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fecha_actual' }, // Match actual field names from API
-    { header: 'Cliente', dataKey: 'nombre_cliente' },
-    { header: 'Comercial', dataKey: 'nombre_comercial' },
-    { header: 'Monto Venta', dataKey: 'monto_total_venta' },
-    { header: 'Desc.', dataKey: 'descuento_venta' },
-    { header: 'Saldo Cobro', dataKey: 'saldo_estado_cobro' },
-    { header: 'Monto Cobrado', dataKey: 'monto_detalle_cobro' },
-    // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
+  // base columns configuration
+  const allPossibleColumns = [
+    { header: 'N', dataKey: 'indice', name: 'indice', width: 10 },
+    { header: 'Fecha', dataKey: 'fecha_actual', name: 'fecha_actual', width: 20 },
+    { header: 'Cliente', dataKey: 'nombre_cliente', name: 'nombre_cliente', width: 40 },
+    { header: 'Comercial', dataKey: 'nombre_comercial', name: 'nombre_comercial', width: 30 },
+    { header: 'Monto Venta', dataKey: 'monto_total_venta', name: 'monto_total_venta', width: 22, numeric: true },
+    { header: 'Desc.', dataKey: 'descuento_venta', name: 'descuento_venta', width: 18, numeric: true },
+    { header: 'Saldo Cobro', dataKey: 'saldo_estado_cobro', name: 'saldo_estado_cobro', width: 22, numeric: true },
+    { header: 'Monto Cobrado', dataKey: 'monto_detalle_cobro', name: 'monto_detalle_cobro', width: 25, numeric: true },
   ]
 
-  // Data for jsPDF-autoTable - map from `reportData.value`
-  const datos = reportData.value.map((item, indice) => ({
-    indice: indice + 1,
-    fecha_actual: item.fecha_actual,
-    nombre_cliente: item.nombre_cliente,
-    nombre_comercial: item.nombre_comercial,
-    monto_total_venta: item.monto_total_venta.toFixed(2), // Format for display
-    descuento_venta: item.descuento_venta.toFixed(2),
-    saldo_estado_cobro: item.saldo_estado_cobro.toFixed(2),
-    monto_detalle_cobro: item.monto_detalle_cobro.toFixed(2),
-    // foto_detalle_cobro: item.foto_detalle_cobro, // Handle separately if needed
-  }))
-
-  const monto_total_venta = datos.reduce((sum, u) => {
-    return sum + Number(u.monto_total_venta)
-  }, 0)
-  const saldo_estado_cobro = datos.reduce((sum, u) => {
-    return sum + Number(u.saldo_estado_cobro)
-  }, 0)
-  const monto_detalle_cobro = datos.reduce((sum, u) => {
-    return sum + Number(u.monto_detalle_cobro)
-  }, 0)
-  const descuento_venta = datos.reduce((sum, u) => {
-    return sum + Number(u.descuento_venta)
-  }, 0)
-  const pieTable = {
-    nombre_comercial: 'Total:',
-    monto_total_venta: monto_total_venta.toFixed(2),
-    descuento_venta: descuento_venta.toFixed(2),
-    saldo_estado_cobro: saldo_estado_cobro.toFixed(2),
-    monto_detalle_cobro: monto_detalle_cobro.toFixed(2),
+  // Filter columns
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.name) || c.name === 'indice')
   }
+
+  // Data mapping
+  const datos = reportData.value.map((item, indice) => {
+    const row = { indice: indice + 1 }
+    columns.forEach(col => {
+      if (col.name === 'indice') return
+      let val = item[col.dataKey]
+      if (col.numeric) {
+        row[col.dataKey] = val ? parseFloat(val).toFixed(2) : '0.00'
+      } else {
+        row[col.dataKey] = val || ''
+      }
+    })
+    return row
+  })
+
+  // Calculate totals
+  const totals = {
+    monto_total_venta: reportData.value.reduce((sum, u) => sum + Number(u.monto_total_venta || 0), 0),
+    descuento_venta: reportData.value.reduce((sum, u) => sum + Number(u.descuento_venta || 0), 0),
+    saldo_estado_cobro: reportData.value.reduce((sum, u) => sum + Number(u.saldo_estado_cobro || 0), 0),
+    monto_detalle_cobro: reportData.value.reduce((sum, u) => sum + Number(u.monto_detalle_cobro || 0), 0),
+  }
+
+  // Add totals row
+  const pieTable = {}
+  let firstStringCol = columns.find(c => !c.numeric && c.name !== 'indice')
+  columns.forEach(col => {
+    if (col === firstStringCol) {
+      pieTable[col.dataKey] = 'TOTAL:'
+    } else if (totals[col.name] !== undefined) {
+      pieTable[col.dataKey] = totals[col.name].toFixed(2)
+    } else {
+      pieTable[col.dataKey] = ''
+    }
+  })
   datos.push(pieTable)
 
-  const columnStyles = {
-    indice: { cellWidth: 15, halign: 'center' }, // Adjusted width
-    fecha_actual: { cellWidth: 20, halign: 'center' },
-    nombre_cliente: { cellWidth: 40, halign: 'left' },
-    nombre_comercial: { cellWidth: 30, halign: 'left' },
-    monto_total_venta: { cellWidth: 20, halign: 'right' },
-    descuento_venta: { cellWidth: 20, halign: 'right' },
-    saldo_estado_cobro: { cellWidth: 20, halign: 'right' },
-    monto_detalle_cobro: { cellWidth: 25, halign: 'right' },
-  }
-
-  //   ,angle: 90, valign: 'middle'
-  const headerColumnStyles = {
-    indice: { cellWidth: 15, halign: 'center' }, // Adjusted width
-    fecha_actual: { cellWidth: 20, halign: 'center' },
-    nombre_cliente: { cellWidth: 40, halign: 'left' },
-    nombre_comercial: { cellWidth: 30, halign: 'left' },
-    monto_total_venta: { cellWidth: 20, halign: 'right' },
-    descuento_venta: { cellWidth: 20, halign: 'right' },
-    saldo_estado_cobro: { cellWidth: 20, halign: 'right' },
-    monto_detalle_cobro: { cellWidth: 25, halign: 'right' },
-  }
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach(col => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.numeric ? 'right' : (col.name === 'indice' ? 'center' : 'left') }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const fechas = {
     inicio: startDate.value,
-
     final: endDate.value,
   }
+
   dibujarCuerpoTabla(
     doc,
     columns,
@@ -841,33 +839,38 @@ export function PDFreporteCreditos(
   endDate,
   clienteSeleccionado = null,
   sucursalSeleccionada = null,
+  visibleColumnsFromTable = [],
 ) {
   const doc = new jsPDF({
-    orientation: 'landscape', // Usamos horizontal para más columnas
+    orientation: 'landscape',
     unit: 'mm',
   })
 
-  // Datos de la empresa
-
-  // Configuración de columnas
-  const columns = [
-    { header: 'N°', dataKey: 'numero' },
-    { header: 'Fecha Crédito', dataKey: 'fechaventa' },
-    { header: 'Cliente', dataKey: 'razonsocial' },
-    { header: 'Sucursal', dataKey: 'sucursal' },
-    { header: 'Fecha Límite', dataKey: 'fechalimite' },
-    { header: 'Cuotas', dataKey: 'ncuotas' },
-    { header: 'Cuotas Procesadas', dataKey: 'cuotasprocesadas' },
-    { header: 'Valor Cuota', dataKey: 'valorcuotas' },
-    { header: 'Total Venta', dataKey: 'totalventa' },
-    { header: 'Total Cobrado', dataKey: 'totalcobrado' },
-    { header: 'Saldo', dataKey: 'saldo' },
-    { header: 'Total Atrasado', dataKey: 'totalatrasado' },
-    { header: 'Total Anulado', dataKey: 'totalanulado' },
-
-    { header: 'Mora Días', dataKey: 'moradias' },
-    { header: 'Estado', dataKey: 'estado' },
+  // Configuración base de todas las posibles columnas
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'numero', name: 'numero' },
+    { header: 'Fecha Crédito', dataKey: 'fechaventa', name: 'fechaventa' },
+    { header: 'Cliente', dataKey: 'razonsocial', name: 'razonsocial' },
+    { header: 'Sucursal', dataKey: 'sucursal', name: 'sucursal' },
+    { header: 'Fecha Límite', dataKey: 'fechalimite', name: 'fechalimite' },
+    { header: 'Cuotas', dataKey: 'ncuotas', name: 'ncuotas' },
+    { header: 'Cuotas Procesadas', dataKey: 'cuotasprocesadas', name: 'cuotasprocesadas' },
+    { header: 'Valor Cuota', dataKey: 'valorcuotas', name: 'valorcuotas' },
+    { header: 'Total Venta', dataKey: 'totalventa', name: 'totalventa' },
+    { header: 'Total Cobrado', dataKey: 'totalcobrado', name: 'totalcobrado' },
+    { header: 'Saldo', dataKey: 'saldo', name: 'saldo' },
+    { header: 'Total Atrasado', dataKey: 'totalatrasado', name: 'totalatrasado' },
+    { header: 'Total Anulado', dataKey: 'totalanulado', name: 'totalanulado' },
+    { header: 'Mora Días', dataKey: 'moradias', name: 'moradias' },
+    { header: 'Estado', dataKey: 'estado', name: 'estado' },
   ]
+
+  // Filtrar si se proporcionaron columnas visibles desde la tabla
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.name))
+  }
   console.log(reportData)
   // Mapeo de datos
   const datos = reportData.map((row) => ({
@@ -2574,7 +2577,8 @@ export function PDFCierreCaja(datosCierreCaja) {
     head: [['', 'Según Sistema', 'Según Arqueo', 'Diferencia']],
     body: conceptos.map((c) => [c.concepto, c.sistema, c.contado, c.diferencia]),
     startY: 55,
-    margin: { horizontal: 5 },
+    margin: { left: 5, right: 5 }, // Keeping it slightly inset or just removal
+    halign: 'center',
     theme: 'striped',
     styles: { fontSize: 7, cellPadding: 2, halign: 'right' },
     headStyles: { fillColor: [128, 128, 128], textColor: 255, halign: 'center' },
@@ -2595,7 +2599,7 @@ export function PDFCierreCaja(datosCierreCaja) {
     head: [['Método', 'Total Sistema', 'Total Contado', 'Diferencia']],
     body: metodos.map((m) => [m.metodo, m.sistema, m.contado, m.diferencia]),
     startY: doc.lastAutoTable.finalY + 10,
-    margin: { horizontal: 5 },
+    halign: 'center',
     theme: 'striped',
     styles: { fontSize: 7, cellPadding: 2, halign: 'right' },
     headStyles: { fillColor: [128, 128, 128], textColor: 255, halign: 'center' },
@@ -2619,7 +2623,7 @@ export function PDFCierreCaja(datosCierreCaja) {
     head: [['Denominación', 'Valor', 'Cantidad', 'Subtotal']],
     body: arqueo.map((a) => [a.label, a.valor, a.cantidad, a.subtotal]),
     startY: doc.lastAutoTable.finalY + 10,
-    margin: { horizontal: 5 },
+    halign: 'center',
     theme: 'striped',
     styles: { fontSize: 7, cellPadding: 2, halign: 'right' },
     headStyles: { fillColor: [128, 128, 128], textColor: 255, halign: 'center' },
@@ -2652,7 +2656,7 @@ export function PDFCierreCaja(datosCierreCaja) {
     head: [['Resumen de Totales', '', '', '']],
     body: totales,
     startY: doc.lastAutoTable.finalY + 10,
-    margin: { horizontal: 5 },
+    halign: 'center',
     theme: 'grid',
     styles: { fontSize: 7, cellPadding: 2, fontStyle: 'bold', halign: 'right' },
     headStyles: { fillColor: [128, 128, 128], textColor: 255, halign: 'center' },
@@ -2756,63 +2760,55 @@ export function PDFpedidos(ordenados, tipoestados, filtroAlmacen) {
   return doc
 }
 
-export function PDFalmacenes(props) {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
+export function PDFalmacenes({ rows, visibleColumnsFromTable = [] }) {
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' })
 
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Nombre', dataKey: 'nombre' },
-    { header: 'Codigo', dataKey: 'codigo' },
-    { header: 'Dirección', dataKey: 'direccion' },
-    { header: 'Tipo almacén', dataKey: 'tipoalmacen' },
-    { header: 'Stock min', dataKey: 'stockmin' },
-    { header: 'Stock max', dataKey: 'stockmax' },
-    { header: 'Sucursal', dataKey: 'sucursal' },
-    { header: 'Estado', dataKey: 'estado' },
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'indice', width: 10 },
+    { header: 'Nombre', dataKey: 'nombre', name: 'nombre', width: 35 },
+    { header: 'Codigo', dataKey: 'codigo', name: 'codigo', width: 25 },
+    { header: 'Dirección', dataKey: 'direccion', name: 'direccion', width: 50 },
+    { header: 'Tipo almacén', dataKey: 'tipoalmacen', name: 'tipoalmacen', width: 30 },
+    { header: 'Stock min', dataKey: 'stockmin', name: 'stockmin', width: 20 },
+    { header: 'Stock max', dataKey: 'stockmax', name: 'stockmax', width: 20 },
+    { header: 'Sucursal', dataKey: 'sucursal', name: 'sucursal', width: 35 },
+    { header: 'Estado', dataKey: 'estado', name: 'estado', width: 20 },
   ]
 
-  const datos = props.rows.map((item, indice) => ({
-    indice: indice + 1,
-    nombre: item.nombre,
-    codigo: item.codigo,
-    direccion: item.direccion,
-    tipoalmacen: item.tipoalmacen,
-    stockmin: item.stockmin,
-    stockmax: item.stockmax,
-    sucursal: item.sucursales?.[0]?.nombre || '-', // en caso de tener relación
+  // Filtrar columnas basadas en lo que se ve en la tabla (siempre incluir índice)
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.name) || c.name === 'indice')
+  }
+
+  const datos = rows.map((item, index) => ({
+    indice: index + 1,
+    nombre: item.nombre || '',
+    codigo: item.codigo || '',
+    direccion: item.direccion || '',
+    tipoalmacen: item.tipoalmacen || '',
+    stockmin: item.stockmin || '0',
+    stockmax: item.stockmax || '0',
+    sucursal: item.sucursalValor || item.sucursal || '-', 
     estado: Number(item.estado) === 1 ? 'Activo' : 'Inactivo',
   }))
 
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    nombre: { cellWidth: 25, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'left' },
-    direccion: { cellWidth: 45, halign: 'left' },
-    tipoalmacen: { cellWidth: 20, halign: 'left' },
-    stockmin: { cellWidth: 15, halign: 'right' },
-    stockmax: { cellWidth: 15, halign: 'right' },
-    sucursal: { cellWidth: 35, halign: 'left' },
-    estado: { cellWidth: 15, halign: 'left' },
-  }
-  const headerColumnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    nombre: { cellWidth: 25, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'left' },
-    direccion: { cellWidth: 45, halign: 'left' },
-    tipoalmacen: { cellWidth: 20, halign: 'left' },
-    stockmin: { cellWidth: 15, halign: 'right' },
-    stockmax: { cellWidth: 15, halign: 'right' },
-    sucursal: { cellWidth: 35, halign: 'left' },
-    estado: { cellWidth: 15, halign: 'left' },
-  }
+  const columnStyles = {}
+  columns.forEach(col => {
+    columnStyles[col.dataKey] = { 
+      cellWidth: col.width, 
+      halign: (col.dataKey === 'stockmin' || col.dataKey === 'stockmax') ? 'right' : (col.dataKey === 'indice' ? 'center' : 'left')
+    }
+  })
 
   dibujarCuerpoTabla(
     doc,
     columns,
     datos,
-    'ALMACENES',
+    'REPORTE DE ALMACENES',
     columnStyles,
-    headerColumnStyles,
+    columnStyles, // Reusar para encabezado
     null,
     null,
     true,
@@ -4093,6 +4089,25 @@ function dibujarCuerpoTabla(
   // Definición de estilos de columna específicos para este reporte (pueden generalizarse)
   let ultimaPaginaTabla = 0
 
+  // ✅ CENTRADO DINÁMICO: Calcular el margen para que la tabla siempre esté al centro
+  let sumWidths = 0
+  let allHaveFixed = true
+  columns.forEach((col) => {
+    const key = col.dataKey
+    const style = columnStyles[key]
+    if (style && style.cellWidth && typeof style.cellWidth === 'number') {
+      sumWidths += style.cellWidth
+    } else {
+      allHaveFixed = false
+    }
+  })
+
+  const pageWidth = doc.internal.pageSize.getWidth()
+  let marginLeft = 10
+  if (allHaveFixed && sumWidths < pageWidth && sumWidths > 0) {
+    marginLeft = (pageWidth - sumWidths) / 2
+  }
+
   autoTable(doc, {
     columns,
     body: datos,
@@ -4110,9 +4125,8 @@ function dibujarCuerpoTabla(
     }, // ❌ ELIMINADO: startY: 55, // Se elimina para usar margin.top en su lugar
 
     // ✅ CORRECCIÓN: Definir el margen superior para reservar espacio para el encabezado
-    margin: { top: 55, horizontal: 10, bottom: 20 },
-
-    tableWidth: 'auto',
+    margin: { top: 55, bottom: 20, left: marginLeft, right: marginLeft },
+    tableWidth: allHaveFixed && sumWidths > 0 ? sumWidths : 'auto',
     theme: 'plain',
 
     didParseCell: function (data) {

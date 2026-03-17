@@ -185,17 +185,16 @@
     <q-separator />
 
     <q-card-section v-if="reportData.length > 0">
-      <q-table
+      <BaseFilterableTable
         id="tablareportecobros"
-        title="Resultados del Reporte"
+        ref="tablaRef"
         :rows="filteredReportData"
+        :array-headers="['fecha_actual', 'nombre_cliente', 'nombre_comercial']"
         :columns="columns"
+        :sum-columns="['monto_total_venta', 'saldo_estado_cobro', 'monto_detalle_cobro']"
+        nombre-columna-totales="nombre_comercial"
         row-key="id_detalle_cobro"
-        flat
-        bordered
-        :pagination-label="getPaginationLabel"
         :rows-per-page-options="[10, 20, 50, 100]"
-        no-data-label="No hay datos disponibles para el rango de fechas seleccionado."
       >
         <template v-slot:body-cell-foto_detalle_cobro="props">
           <q-td :props="props">
@@ -206,10 +205,9 @@
               style="width: 50px; height: 50px; object-fit: cover"
               class="rounded-borders"
             />
-            <span v-else></span>
           </q-td>
         </template>
-      </q-table>
+      </BaseFilterableTable>
     </q-card-section>
 
     <q-card-section v-else-if="!loading && reportFetched">
@@ -256,8 +254,11 @@ import { exportToXLSX_Reporte_CuentasXCobrarPeriodo } from 'src/utils/XCLReportI
 import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
 import { useClienteStore } from 'stores/cliente'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
 const mostrarModal = ref(false)
 const pdfData = ref(null)
+const tablaRef = ref(null)
 const $q = useQuasar()
 
 // --- Reactive State ---
@@ -311,12 +312,6 @@ const columns = [
 
 // --- Methods ---
 
-/**
- * Custom pagination label for q-table.
- */
-const getPaginationLabel = (firstRowIndex, endRowIndex, totalRows) => {
-  return `${firstRowIndex}-${endRowIndex} de ${totalRows}`
-}
 
 /**
  * Fetches the daily collections report from the API.
@@ -405,7 +400,8 @@ const fetchReport = async () => {
   }
 }
 const printFilteredTable = () => {
-  const doc = PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate)
+  const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
+  const doc = PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
@@ -427,7 +423,8 @@ const exportToXLSX = () => {
 
   // Prepare data: only include fields that should be in the Excel file
   // and apply any necessary formatting or transformations.
-  exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate)
+  const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
+  exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
 
   $q.notify({
     type: 'positive',
@@ -492,33 +489,10 @@ const filteredReportData = computed(() => {
     data = data.filter((row) => Number(row.estado) === Number(selectedEstado.value))
   }
 
-  return processDataWithTotals(data)
+  // Ahora retornamos la data limpia sin procesar totales aquí,
+  // ya que BaseFilterableTable los calculará.
+  return data.map((row, index) => ({ ...row, numero: index + 1 }))
 })
-
-const processDataWithTotals = (data) => {
-  if (data.length === 0) return []
-
-  const numberedData = data.map((row, index) => ({
-    ...row,
-    numero: index + 1,
-  }))
-
-  const totales = {
-    fecha_actual: '',
-    nombre_cliente: '',
-    nombre_comercial: 'TOTAL:',
-    monto_total_venta: numberedData.reduce((sum, u) => sum + Number(u.monto_total_venta || 0), 0),
-    saldo_estado_cobro: numberedData.reduce((sum, u) => sum + Number(u.saldo_estado_cobro || 0), 0),
-    monto_detalle_cobro: numberedData.reduce(
-      (sum, u) => sum + Number(u.monto_detalle_cobro || 0),
-      0,
-    ),
-
-    foto_detalle_cobro: '',
-  }
-
-  return [...numberedData, totales]
-}
 
 const filterClientes = (val, update) => {
   update(() => {
