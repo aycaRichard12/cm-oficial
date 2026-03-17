@@ -2,36 +2,67 @@
   <div>
     <q-card flat class="q-mb-md">
       <q-card-section class="row items-center justify-between q-pb-none">
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-md-4">
           <div class="text-h6 text-primary text-weight-bold">
             <q-icon name="inventory_2" size="sm" class="q-mr-sm" />
             Catálogo de Productos
           </div>
           <div class="text-caption text-grey-7">Administre sus productos y servicios</div>
         </div>
-        <div class="col-12 col-md-7 row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
-          <div id="buscarproducto" style="flex: 1; max-width: 300px">
+        <div class="col-12 col-md-8">
+          <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
             <q-input
               v-model="search"
-              placeholder="Buscar en columnas..."
+              placeholder="Buscar..."
               dense
               outlined
               clearable
               debounce="300"
               bg-color="white"
+              style="min-width: 200px"
+              class="q-mr-sm"
             >
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
             </q-input>
-          </div>
-          <div id="agregarproducto">
+            <q-btn
+              unelevated
+              outline
+              color="indigo"
+              @click="exportarDatos"
+              icon="file_download"
+              label="Descargar Catálogo"
+            />
+            <q-btn
+              unelevated
+              outline
+              color="positive"
+              @click="exportarFormato"
+              icon="download"
+              label="Descargar Formato"
+            />
+            <q-btn
+              unelevated
+              outline
+              color="secondary"
+              @click="$refs.fileInput.click()"
+              icon="upload"
+              label="Cargar Excel"
+            />
             <q-btn
               unelevated
               color="primary"
               @click="$emit('add')"
               icon="add"
               label="Agregar Producto"
+            />
+            <input
+              type="file"
+              ref="fileInput"
+              style="display: none"
+              accept=".xlsx, .xls"
+              @change="onFileSelected"
             />
           </div>
         </div>
@@ -133,6 +164,11 @@ import { ref, computed } from 'vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { exportarPlantillaProductos, importarProductosDesdeExcel, exportToXLSX_CatalogoProductos } from 'src/utils/XCLReportImport'
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
+const fileInput = ref(null)
 
 const tipoFactura = getTipoFactura(true)
 
@@ -154,7 +190,6 @@ const props = defineProps({
     default: false,
   },
 })
-defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status', 'mostrarReporte'])
 
 let columns = []
 if (tipoFactura) {
@@ -296,6 +331,43 @@ const filteredRows = computed(() => {
     return Object.values(row).some((val) => val && String(val).toLowerCase().includes(term))
   })
 })
+
+const exportarFormato = () => {
+  exportarPlantillaProductos()
+}
+
+const exportarDatos = () => {
+  if (props.rows.length === 0) {
+    $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
+    return
+  }
+  exportToXLSX_CatalogoProductos(props.rows)
+}
+
+const emit = defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status', 'mostrarReporte', 'importar'])
+
+const onFileSelected = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  try {
+    $q.loading.show({ message: 'Procesando archivo Excel...' })
+    const data = await importarProductosDesdeExcel(file)
+    if (data && data.length > 0) {
+      emit('importar', data)
+    }
+    // Limpiar input
+    event.target.value = ''
+  } catch (error) {
+    console.error('Error al importar:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al procesar el archivo Excel',
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
 </script>
 <style>
 .text-truncate {
