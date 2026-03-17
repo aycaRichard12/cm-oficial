@@ -9,7 +9,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
   visibleColumnsFromTable = [],
 ) {
   // Preparar datos excluyendo la fila de totales si ya existe
-  const datos = [...reportData.value].filter(item => item.nombre_comercial !== 'TOTAL:')
+  const datos = [...reportData].filter(item => item.nombre_comercial !== 'TOTAL:')
 
   // Definir todas las posibles columnas y sus configuraciones
   const allPossibleColumns = [
@@ -653,20 +653,183 @@ export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, 
 
   // 6. Configurar propiedades del documento
   workbook.Props = {
-    Title: `Reporte de Ventas ${almacen.value}`,
-    Subject: `Ventas del ${startDate.value} al ${endDate.value}`,
+    Title: `Reporte de Ventas ${almacen}`,
+    Subject: `Ventas del ${startDate} al ${endDate}`,
     Author: 'Sistema de Ventas',
     CreatedDate: new Date(),
   }
 
   // 7. Generar nombre de archivo más descriptivo
-  const almacenFormatted = almacen.value ? almacen.value.replace(/\s+/g, '_') : 'Todos'
-  const filename = `Reporte_Ventas_${almacenFormatted}_${startDate.value}_a_${endDate.value}.xlsx`
+  const almacenFormatted = almacen ? almacen.replace(/\s+/g, '_') : 'Todos'
+  const filename = `Reporte_Ventas_${almacenFormatted}_${startDate}_a_${endDate}.xlsx`
 
   // 8. Exportar el archivo
   XLSX.writeFile(workbook, filename, {
     bookType: 'xlsx',
     type: 'array',
     cellStyles: true,
+  })
+}
+
+/**
+ * Exporta una plantilla de Excel con los encabezados necesarios para importar productos.
+ */
+export function exportarPlantillaProductos() {
+  const headers = [
+    { header: 'Código', key: 'codigo', width: 15 },
+    { header: 'Nombre', key: 'nombre', width: 25 },
+    { header: 'Descripción', key: 'descripcion', width: 35 },
+    { header: 'Código de Barras', key: 'codigobarras', width: 20 },
+    { header: 'Categoría', key: 'categoria', width: 20 },
+    { header: 'Subcategoría', key: 'subcategoria', width: 20 },
+    { header: 'Estado', key: 'estadoproducto', width: 15 },
+    { header: 'Unidad', key: 'unidad', width: 15 },
+    { header: 'Característica', key: 'medida', width: 20 },
+    { header: 'Otras Características', key: 'caracteristica', width: 25 },
+    { header: 'Código Nandina', key: 'codigonandina', width: 15 },
+  ]
+
+  const data = [
+    {
+      Código: 'PROD-001',
+      Nombre: 'Ejemplo Producto',
+      Descripción: 'Este es un producto de ejemplo',
+      'Código de Barras': '123456789',
+      Categoría: 'General',
+      Subcategoría: 'Básicos',
+      Estado: 'Activo',
+      Unidad: 'Unidad',
+      Característica: 'Color',
+      'Otras Características': 'Rojo, Grande',
+      'Código Nandina': '1020.30.00'
+    }
+  ]
+
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+
+  // Estilos de cabecera
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cellRef = XLSX.utils.encode_cell({ c: C, r: 0 })
+    if (worksheet[cellRef]) {
+      worksheet[cellRef].s = {
+        fill: { fgColor: { rgb: '4F81BD' } },
+        font: { color: { rgb: 'FFFFFF' }, bold: true },
+        alignment: { horizontal: 'center' }
+      }
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla Productos')
+  XLSX.writeFile(workbook, 'Plantilla_Importacion_Productos.xlsx', { cellStyles: true })
+}
+
+/**
+ * Exporta el catálogo actual de productos a Excel.
+ */
+export function exportToXLSX_CatalogoProductos(data) {
+  const headers = [
+    { header: 'N°', key: 'numero', width: 5 },
+    { header: 'Fecha', key: 'fecha', width: 15 },
+    { header: 'Código', key: 'codigo', width: 15 },
+    { header: 'Nombre', key: 'nombre', width: 25 },
+    { header: 'Descripción', key: 'descripcion', width: 35 },
+    { header: 'Código de Barras', key: 'codigobarras', width: 20 },
+    { header: 'Categoría', key: 'categoria', width: 20 },
+    { header: 'Subcategoría', key: 'subcategoria', width: 20 },
+    { header: 'Estado', key: 'estadoproducto', width: 15 },
+    { header: 'Unidad', key: 'unidad', width: 15 },
+    { header: 'Característica', key: 'medida', width: 20 },
+    { header: 'Otras Características', key: 'caracteristica', width: 25 },
+    { header: 'Código Nandina', key: 'codigonandina', width: 15 },
+  ]
+
+  const dataForExport = data.map((row, index) => ({
+    'N°': index + 1,
+    'Fecha': row.fecha || '',
+    'Código': row.codigo || '',
+    'Nombre': row.nombre || '',
+    'Descripción': row.descripcion || '',
+    'Código de Barras': row.codigobarras || '',
+    'Categoría': row.categoria || '',
+    'Subcategoría': row.subcategoria || '',
+    'Estado': row.estadoproducto || '',
+    'Unidad': row.unidad || '',
+    'Característica': row.medida || '',
+    'Otras Características': row.caracteristica || '',
+    'Código Nandina': row.codigonandina || '',
+  }))
+
+  const worksheet = XLSX.utils.json_to_sheet(dataForExport)
+  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+
+  // Estilos de cabecera
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cellRef = XLSX.utils.encode_cell({ c: C, r: 0 })
+    if (worksheet[cellRef]) {
+      worksheet[cellRef].s = {
+        fill: { fgColor: { rgb: '4F81BD' } },
+        font: { color: { rgb: 'FFFFFF' }, bold: true },
+        alignment: { horizontal: 'center' }
+      }
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo Productos')
+  XLSX.writeFile(workbook, 'Catalogo_Productos.xlsx', { cellStyles: true })
+}
+
+/**
+ * Lee un archivo Excel y retorna los datos mapeados a las claves que el sistema entiende.
+ * @param {File} file El archivo seleccionado por el usuario.
+ */
+export async function importarProductosDesdeExcel(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const bstr = e.target.result
+        const workbook = XLSX.read(bstr, { type: 'binary' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        const rows = XLSX.utils.sheet_to_json(worksheet)
+
+        // Mapeo de cabeceras en español a claves inglesas
+        const headerMap = {
+          'Código': 'codigo',
+          'Nombre': 'nombre',
+          'Descripción': 'descripcion',
+          'Código de Barras': 'codigobarras',
+          'Categoría': 'categoria_nombre',
+          'Subcategoría': 'subcategoria_nombre',
+          'Estado': 'estado_nombre',
+          'Unidad': 'unidad_nombre',
+          'Característica': 'medida_nombre',
+          'Otras Características': 'caracteristica',
+          'Código Nandina': 'codigonandina'
+        }
+
+        const mappedData = rows.map(row => {
+          const newRow = {}
+          Object.keys(row).forEach(key => {
+            const mappedKey = headerMap[key.trim()]
+            if (mappedKey) {
+              newRow[mappedKey] = row[key]
+            }
+          })
+          return newRow
+        })
+
+        resolve(mappedData)
+      } catch (err) {
+        reject(err)
+      }
+    }
+    reader.onerror = (err) => reject(err)
+    reader.readAsBinaryString(file)
   })
 }

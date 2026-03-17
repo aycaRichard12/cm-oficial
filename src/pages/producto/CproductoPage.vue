@@ -33,6 +33,7 @@
       @edit-item="editUnit"
       @delete-item="confirmDelete"
       @toggleStatus="toggleStatus"
+      @importar="handleImport"
     />
   </q-page>
 </template>
@@ -369,6 +370,65 @@ const confirmDelete = (row) => {
       })
     }
   })
+}
+
+const handleImport = async (data) => {
+  let successCount = 0
+  let errorCount = 0
+
+  $q.loading.show({
+    message: 'Importando productos...',
+  })
+
+  for (const item of data) {
+    try {
+      // Mapear nombres a IDs
+      const cat = categorias.value.find(c => c.label.toLowerCase() === item.categoria_nombre?.toLowerCase())
+      const unit = unidades.value.find(u => u.label.toLowerCase().includes(item.unidad_nombre?.toLowerCase()))
+      const state = estados.value.find(e => e.label.toLowerCase() === item.estado_nombre?.toLowerCase())
+      const measure = medidas.value.find(m => m.label.toLowerCase() === item.medida_nombre?.toLowerCase())
+
+      const payload = {
+        ver: 'registrarProducto',
+        idempresa: idempresa,
+        codigo: item.codigo || '',
+        nombre: item.nombre || '',
+        descripcion: item.descripcion || '',
+        codigobarras: item.codigobarras || '',
+        categoria: cat ? cat.value : null,
+        subcategoria: null, // No tenemos mapeo de subcat directo sin contexto de cat en Excel por ahora
+        estadoproductos: state ? state.value : (estados.value[0]?.value || null),
+        unidad: unit ? unit.value : (unidades.value[0]?.value || null),
+        medida: measure ? measure.value : (medidas.value[0]?.value || null),
+        caracteristica: item.caracteristica || '',
+        codigonandina: item.codigonandina || '',
+      }
+
+      console.log('Bulk Import saving:', payload)
+      const fData = objectToFormData(payload)
+      const response = await api.post(``, fData)
+      
+      if (response.data.estado === 'exito') {
+        successCount++
+      } else {
+        errorCount++
+      }
+    } catch (err) {
+      console.error('Error importing product:', err)
+      errorCount++
+    }
+  }
+
+  $q.loading.hide()
+
+  $q.notify({
+    type: successCount > 0 ? 'positive' : 'negative',
+    message: `Importación finalizada. Éxito: ${successCount}, Errores: ${errorCount}`,
+    position: 'center',
+    timeout: 5000
+  })
+
+  loadRows()
 }
 onMounted(() => {
   loadcategorias()
