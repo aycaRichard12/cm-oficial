@@ -34,6 +34,7 @@
     </div>
 
     <BaseFilterableTable
+      ref="tableRef"
       id="tablaAlmacenes"
       title="Almacenes"
       :rows="decoratedRows"
@@ -138,6 +139,13 @@ defineEmits([
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const search = ref('')
+const tableRef = ref(null)
+
+// Exponer métodos para reportes externos si se requiere
+defineExpose({
+  obtenerDatosFiltrados: () => tableRef.value?.obtenerDatosFiltrados() || [],
+  obtenerColumnasVisibles: () => tableRef.value?.obtenerColumnasVisibles() || [],
+})
 
 // Pre-procesar las filas para que los valores anidados sean campos de nivel superior
 // Esto facilita el trabajo de BaseFilterableTable y ColumnFilter.
@@ -153,9 +161,30 @@ const decoratedRows = computed(() => {
 const columnas = [
   { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left', dataType: 'text' },
   { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left', dataType: 'text' },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'left', dataType: 'text' },
-  { name: 'email', label: 'Email', field: 'email', align: 'left', dataType: 'text' },
+  {
+    name: 'direccion',
+    label: 'Dirección',
+    field: 'direccion',
+    align: 'left',
+    dataType: 'text',
+    defaultVisible: false,
+  },
+  {
+    name: 'telefono',
+    label: 'Teléfono',
+    field: 'telefono',
+    align: 'left',
+    dataType: 'text',
+    defaultVisible: false,
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    field: 'email',
+    align: 'left',
+    dataType: 'text',
+    defaultVisible: false,
+  },
   {
     name: 'tipoalmacen',
     label: 'Tipo almacén',
@@ -185,8 +214,9 @@ const ArrayHeaders = [
 ]
 
 function mostrarReporte() {
-  // Nota: PDFalmacenes podría necesitar 'decoratedRows.value' en lugar de 'props.rows'
-  const doc = PDFalmacenes({ rows: decoratedRows.value })
+  const data = tableRef.value?.obtenerDatosFiltrados() || []
+  const visibleColumns = tableRef.value?.obtenerColumnasVisibles() || []
+  const doc = PDFalmacenes({ rows: data, visibleColumnsFromTable: visibleColumns })
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
