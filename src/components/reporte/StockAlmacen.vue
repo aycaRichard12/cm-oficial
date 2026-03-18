@@ -2,13 +2,13 @@
   <div class="full-width full-height">
     <q-card flat class="shadow-2 rounded-borders full-height">
       <!-- Header -->
-      <q-card-section class="q-pb-none">
+      <!-- <q-card-section class="q-pb-none">
         <div class="row items-center q-mb-sm">
           <q-icon name="inventory_2" color="primary" size="1.5rem" class="q-mr-sm" />
           <div class="text-h6 text-weight-medium">Stock por Almacén</div>
         </div>
         <div class="text-caption text-grey-7">Distribución de inventario por producto</div>
-      </q-card-section>
+      </q-card-section> -->
 
       <!-- Selector de Almacén -->
       <q-card-section class="q-pt-md">
@@ -131,6 +131,23 @@ const chartOptions = ref({
         download: true,
       },
     },
+  },
+  title: {
+    text: 'Stock por Almacén',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
+  },
+  subtitle: {
+    text: 'Distribución de inventario por producto',
+    align: 'center',
+    style: {
+      fontSize: '12px',
+      color: '#546E7A'
+    }
   },
   labels: [],
   colors: [

@@ -49,7 +49,7 @@
             <q-btn
               color="primary"
               size="md"
-              label="Asignar Punto de Venta"
+              label="Nuevo"
               @click="showModal = true"
             />
           </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="full-width full-height">
     <q-card flat class="shadow-2 rounded-borders full-height">
-      <q-card-section class="q-pb-none">
+      <!-- <q-card-section class="q-pb-none">
         <div class="row items-center justify-between">
           <div class="row items-center">
             <q-icon name="bar_chart" color="primary" size="1.5rem" class="q-mr-sm" />
@@ -12,7 +12,7 @@
             <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
           </div>
         </div>
-      </q-card-section>
+      </q-card-section> -->
       <q-card-section class="full-height">
         <div 
           class="full-width" 
@@ -127,6 +127,15 @@ const chartOptions = ref({
       easing: 'easeinout',
       speed: 800,
     },
+  },
+  title: {
+    text: 'Ventas por Categoría',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
   },
   plotOptions: {
     bar: {
@@ -309,6 +318,14 @@ watch(
         ...chartOptions.value.xaxis,
         categories: categories,
       },
+      subtitle: {
+        text: periodoInfo.value ? `Periodo: ${periodoInfo.value}` : '',
+        align: 'center',
+        style: {
+          fontSize: '12px',
+          color: '#546E7A'
+        }
+      }
     }
 
     series.value = [
