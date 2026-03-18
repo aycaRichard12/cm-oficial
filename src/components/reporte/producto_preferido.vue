@@ -4,9 +4,9 @@
     <!-- <pre v-if="debug">{{ { chartOptions, series, rawData: chartData } }}</pre> -->
 
     <q-card class="q-pa-md">
-      <q-card-section>
+      <!-- <q-card-section>
         <div class="text-h6">Productos más Vendidos</div>
-      </q-card-section>
+      </q-card-section> -->
       <q-card-section>
         <VueApexCharts type="bar" height="350" :options="chartOptions" :series="series" />
       </q-card-section>
@@ -44,6 +44,15 @@ const chartOptions = ref({
     stacked: false,
     toolbar: { show: true },
   },
+  title: {
+    text: 'Productos más Vendidos',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
+  },
   plotOptions: {
     bar: {
       horizontal: false,
@@ -78,7 +87,7 @@ const chartOptions = ref({
     },
   },
   yaxis: {
-    title: { text: 'Cantidad Vendidas' },
+    title: { text: 'Unidades Vendidas' },
     labels: {
       formatter: function (val) {
         return Math.floor(val) === val ? val : ''

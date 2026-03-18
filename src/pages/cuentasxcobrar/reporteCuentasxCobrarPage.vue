@@ -178,7 +178,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick, watch, onBeforeUnmount } from 'vue'
 import { date, useQuasar } from 'quasar'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
@@ -249,9 +249,31 @@ const printFilteredTable = () => {
   const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
   const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
   const doc = PDFreporteCreditos(data, startDate.value, endDate.value, null, null, visibleColumns)
-  pdfData.value = doc.output('dataurlstring')
+
+  // Liberar URL anterior si existe
+  if (pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+  }
+
+  const blob = doc.output('blob')
+  pdfData.value = URL.createObjectURL(blob)
   mostrarModal.value = true
 }
+
+// Limpiar la URL de objeto al cerrar el modal o desmontar el componente
+watch(mostrarModal, (val) => {
+  if (!val && pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+    pdfData.value = null
+  }
+})
+
+onBeforeUnmount(() => {
+  if (pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+  }
+})
+
 
 const processedReportData = computed(() => {
   let data = [...reportData.value]
