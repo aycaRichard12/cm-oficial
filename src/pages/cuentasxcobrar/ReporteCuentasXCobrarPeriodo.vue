@@ -166,7 +166,7 @@
 
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="column no-wrap" style="height: 100%">
-        <q-card-section class="row items-center q-pb-none">
+        <q-card-section class="row items-center q-pb-none bg-primary text-white"  >
           <div class="text-h6">Vista previa de Reporte</div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup />
@@ -198,7 +198,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { api } from 'src/boot/axios'
 import { date, useQuasar } from 'quasar'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -366,13 +366,37 @@ const fetchReport = async () => {
   }
 }
 const printFilteredTable = () => {
+  const data = tablaRef.value?.obtenerDatosFiltrados() || []
   const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
-  const doc = PDFreporteCuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
-  pdfData.value = doc.output('dataurlstring')
+  const doc = PDFreporteCuentasXCobrarPeriodo(data, startDate.value, endDate.value, visibleColumns)
+
+  // Liberar URL anterior si existe
+  if (pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+  }
+
+  const blob = doc.output('blob')
+  pdfData.value = URL.createObjectURL(blob)
   mostrarModal.value = true
 }
+
+// Limpiar la URL de objeto al cerrar el modal o desmontar el componente
+watch(mostrarModal, (val) => {
+  if (!val && pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+    pdfData.value = null
+  }
+})
+
+onBeforeUnmount(() => {
+  if (pdfData.value) {
+    URL.revokeObjectURL(pdfData.value)
+  }
+})
+
 const exportToXLSX = () => {
-  if (reportData.value.length === 0) {
+  const data = tablaRef.value?.obtenerDatosFiltrados() || []
+  if (data.length === 0) {
     $q.notify({
       type: 'warning',
       message: 'No hay datos en la tabla para exportar. Genere un reporte primero.',
@@ -387,10 +411,9 @@ const exportToXLSX = () => {
     icon: 'file_download',
   })
 
-  // Prepare data: only include fields that should be in the Excel file
-  // and apply any necessary formatting or transformations.
+  // Usar los valores crudos para evitar problemas con Vue Refs en la utilidad
   const visibleColumns = tablaRef.value?.obtenerColumnasVisibles() || []
-  exportToXLSX_Reporte_CuentasXCobrarPeriodo(reportData, startDate, endDate, visibleColumns)
+  exportToXLSX_Reporte_CuentasXCobrarPeriodo(data, startDate.value, endDate.value, visibleColumns)
 
   $q.notify({
     type: 'positive',

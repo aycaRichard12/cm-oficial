@@ -1,10 +1,10 @@
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 
 /**
  * Composable para análisis de clientes
  * Procesa datos de ventas y calcula métricas clave
  */
-export function useClientAnalytics(rawClients, diasAnalisis = 60) {
+export function useClientAnalytics(rawClients, diasAnalisis = 60, fechaInicio = null, fechaFin = null) {
   /**
    * Parsear fechas_ventas (string separado por comas) a array de fechas
    */
@@ -35,10 +35,48 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
   }
 
   /**
+   * Parsear fecha en formato DD/MM/YYYY a objeto Date
+   */
+  const parseInputFecha = (fechaStr) => {
+    if (!fechaStr || typeof fechaStr !== 'string') return null
+    const parts = fechaStr.split('/')
+    if (parts.length !== 3) return null
+    const [day, month, year] = parts.map(Number)
+    const date = new Date(year, month - 1, day)
+    return isNaN(date.getTime()) ? null : date
+  }
+
+  /**
    * Obtener fecha actual sin hora
    */
   const hoy = new Date()
   hoy.setHours(0, 0, 0, 0)
+
+  /**
+   * Período global de análisis (usado por varios cálculos)
+   */
+  const periodoFiltro = computed(() => {
+    const fFin = unref(fechaFin)
+    const fInicio = unref(fechaInicio)
+    const dAnalisis = unref(diasAnalisis)
+
+    let fin = fFin ? parseInputFecha(fFin) : new Date(hoy)
+    if (!fin) fin = new Date(hoy)
+    fin.setHours(23, 59, 59, 999)
+    let inicio = null
+
+    if (fInicio) {
+      inicio = parseInputFecha(fInicio)
+      if (inicio) inicio.setHours(0, 0, 0, 0)
+    } 
+    
+    if (!inicio) {
+      inicio = new Date(fin)
+      inicio.setDate(inicio.getDate() - (dAnalisis || 60))
+      inicio.setHours(0, 0, 0, 0)
+    }
+    return { inicio, fin }
+  })
 
   /**
    * Procesar datos de clientes con todas las métricas
@@ -57,13 +95,16 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
       const diasTotales = fechaMasAntigua ? calcularDiasEntre(fechaMasAntigua, hoy) : 0
       const frecuencia_compra = diasTotales > 0 ? (total_compras / diasTotales) : 0
 
-      // Compras en los últimos X días
-      const fechaLimite = new Date(hoy)
-      fechaLimite.setDate(fechaLimite.getDate() - diasAnalisis.value)
-      const compras_ultimos_X_dias = fechasArray.filter(fecha => fecha >= fechaLimite).length
+      // Período de análisis: prioridad a fechas explícitas, luego a diasAnalisis
+      const { inicio: inicioVal, fin: finVal } = periodoFiltro.value
 
-      // Frecuencia específica para el período seleccionado (compras/día en últimos X días)
-      const frecuencia_periodo = diasAnalisis.value > 0 ? (compras_ultimos_X_dias / diasAnalisis.value) : 0
+      const compras_ultimos_X_dias = fechasArray.filter(fecha => {
+        return fecha >= inicioVal && fecha <= finVal
+      }).length
+
+      // Calcular días del período para frecuencia
+      const diasPeriodo = Math.max(1, calcularDiasEntre(inicioVal, finVal))
+      const frecuencia_periodo = total_compras > 0 ? (compras_ultimos_X_dias / diasPeriodo) : 0
 
       // Clasificación del cliente
       let estado = 'discontinued'
@@ -81,7 +122,6 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
       }
 
       // Predicción de próxima compra (solo para clientes activos)
-      let proxima_compra_prediccion = null
       let proxima_compra_fecha = null
       let dias_hasta_proxima_compra = null
       
@@ -101,12 +141,14 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
         proxima_compra_fecha.setDate(proxima_compra_fecha.getDate() + Math.round(intervaloPromedio))
         
         dias_hasta_proxima_compra = calcularDiasEntre(hoy, proxima_compra_fecha)
-        
-        proxima_compra_prediccion = proxima_compra_fecha.toLocaleDateString('es-ES', { 
-          year: 'numeric', 
-          month: '2-digit', 
-          day: '2-digit' 
-        })
+      }
+
+      const formatDateDDMMYYYY = (date) => {
+        if (!date) return 'Nunca'
+        const d = String(date.getDate()).padStart(2, '0')
+        const m = String(date.getMonth() + 1).padStart(2, '0')
+        const y = date.getFullYear()
+        return `${d}/${m}/${y}`
       }
 
       return {
@@ -114,9 +156,7 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
         fechas_ventas_array: fechasArray,
         total_compras,
         ultima_compra,
-        ultima_compra_formatted: ultima_compra 
-          ? ultima_compra.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' })
-          : 'Nunca',
+        ultima_compra_formatted: formatDateDDMMYYYY(ultima_compra),
         dias_sin_compra: dias_sin_compra === Infinity ? 999999 : dias_sin_compra,
         frecuencia_compra: parseFloat(frecuencia_compra.toFixed(4)),
         compras_ultimos_X_dias,
@@ -124,7 +164,7 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
         estado,
         estadoLabel,
         estadoColor,
-        proxima_compra_prediccion,
+        proxima_compra_prediccion: proxima_compra_fecha ? formatDateDDMMYYYY(proxima_compra_fecha) : null,
         proxima_compra_fecha,
         dias_hasta_proxima_compra
       }
@@ -206,11 +246,11 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
    */
   const ventasPorFecha = computed(() => {
     const ventasPorDia = {}
-    const añoActual = new Date().getFullYear()
+    const { inicio: inicioGrafico, fin: finGrafico } = periodoFiltro.value
 
     clientesProcesados.value.forEach(cliente => {
       cliente.fechas_ventas_array.forEach(fecha => {
-        if (fecha.getFullYear() === añoActual) {
+        if (fecha >= inicioGrafico && fecha <= finGrafico) {
           const fechaKey = fecha.toISOString().split('T')[0]
           ventasPorDia[fechaKey] = (ventasPorDia[fechaKey] || 0) + 1
         }
@@ -232,11 +272,13 @@ export function useClientAnalytics(rawClients, diasAnalisis = 60) {
    */
   const ventasPorMes = computed(() => {
     const ventasPorMes = {}
-    const añoActual = new Date().getFullYear()
+    const { inicio: inicioGrafico, fin: finGrafico } = periodoFiltro.value
 
     clientesProcesados.value.forEach(cliente => {
       cliente.fechas_ventas_array.forEach(fecha => {
-        if (fecha.getFullYear() === añoActual) {
+        // Para mensual podemos mostrar un periodo más largo o el mismo. 
+        // Usaremos el mismo periodo por consistencia.
+        if (fecha >= inicioGrafico && fecha <= finGrafico) {
           const mesKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`
           ventasPorMes[mesKey] = (ventasPorMes[mesKey] || 0) + 1
         }
