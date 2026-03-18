@@ -91,13 +91,13 @@
       <!-- Top Clientes por Volumen -->
       <div class="col-12 col-lg-6">
         <q-card>
-          <q-card-section>
+          <!-- <q-card-section>
             <div class="text-h6">
               <q-icon name="emoji_events" class="q-mr-sm" color="amber" />
               Top Clientes con más compras
             </div>
             <div class="text-caption text-grey-6">Últimos {{ diasAnalisis }} días</div>
-          </q-card-section>
+          </q-card-section> -->
           <q-card-section>
             <VueApexCharts
               type="bar"
@@ -112,13 +112,13 @@
       <!-- Top Clientes por Frecuencia -->
       <div class="col-12 col-lg-6">
         <q-card>
-          <q-card-section>
+          <!-- <q-card-section>
             <div class="text-h6">
               <q-icon name="flash_on" class="q-mr-sm" color="orange" />
               Top Clientes por Frecuencia
             </div>
             <div class="text-caption text-grey-6">Últimos {{ diasAnalisis }} días</div>
-          </q-card-section>
+          </q-card-section> -->
           <q-card-section>
             <VueApexCharts
               type="bar"
@@ -133,13 +133,13 @@
       <!-- Mejores Clientes Históricos -->
       <div class="col-12 col-lg-6">
         <q-card>
-          <q-card-section>
+          <!-- <q-card-section>
             <div class="text-h6">
               <q-icon name="workspace_premium" class="q-mr-sm" color="purple" />
               Mejores Clientes (Histórico)
             </div>
             <div class="text-caption text-grey-6">Total de compras acumuladas</div>
-          </q-card-section>
+          </q-card-section> -->
           <q-card-section>
             <VueApexCharts
               type="bar"
@@ -154,13 +154,13 @@
       <!-- Distribución por Estado -->
       <div class="col-12 col-lg-6">
         <q-card>
-          <q-card-section>
+          <!-- <q-card-section>
             <div class="text-h6">
               <q-icon name="pie_chart" class="q-mr-sm" color="primary" />
               Distribución por Estado
             </div>
             <div class="text-caption text-grey-6">Clasificación de clientes</div>
-          </q-card-section>
+          </q-card-section> -->
           <q-card-section>
             <VueApexCharts
               type="donut"
@@ -175,13 +175,13 @@
       <!-- Timeline de Ventas -->
       <div class="col-12">
         <q-card>
-          <q-card-section>
+          <!-- <q-card-section>
             <div class="text-h6">
               <q-icon name="show_chart" class="q-mr-sm" color="deep-purple" />
               Evolución de Ventas {{ new Date().getFullYear() }}
             </div>
             <div class="text-caption text-grey-6">Ventas por día del año actual</div>
-          </q-card-section>
+          </q-card-section> -->
           <q-card-section>
             <VueApexCharts
               type="line"
@@ -439,6 +439,15 @@ const chartTopVolumen = computed(() => ({
     height: 350,
     toolbar: { show: true },
   },
+  title: {
+    text: 'Top Clientes con más compras',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
+  },
   plotOptions: {
     bar: {
       horizontal: true,
@@ -486,6 +495,11 @@ const chartTopVolumen = computed(() => ({
     },
   },
   colors: ['#3b82f6'],
+  subtitle: {
+    text: `Últimos ${diasAnalisis.value} días`,
+    align: 'center',
+    style: { fontSize: '12px', color: '#666' }
+  }
 }))
 
 const seriesTopVolumen = computed(() => [
@@ -503,6 +517,15 @@ const chartTopFrecuencia = computed(() => ({
     type: 'bar',
     height: 350,
     toolbar: { show: true },
+  },
+  title: {
+    text: 'Top Clientes por Frecuencia',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
   },
   plotOptions: {
     bar: {
@@ -551,6 +574,11 @@ const chartTopFrecuencia = computed(() => ({
     },
   },
   colors: ['#10b981'],
+  subtitle: {
+    text: `Últimos ${diasAnalisis.value} días`,
+    align: 'center',
+    style: { fontSize: '12px', color: '#666' }
+  }
 }))
 
 const seriesTopFrecuencia = computed(() => [
@@ -568,6 +596,15 @@ const chartMejoresHistoricos = computed(() => ({
     type: 'bar',
     height: 350,
     toolbar: { show: true },
+  },
+  title: {
+    text: 'Mejores Clientes (Histórico)',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
   },
   plotOptions: {
     bar: {
@@ -637,6 +674,15 @@ const chartDistribucion = computed(() => ({
     type: 'donut',
     height: 350,
   },
+  title: {
+    text: 'Distribución por Estado',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
+  },
   labels: ['Activos', 'En Riesgo', 'Discontinuados'],
   colors: ['#10b981', '#f59e0b', '#ef4444'],
   legend: {
@@ -695,6 +741,15 @@ const chartTimeline = computed(() => ({
     height: 350,
     zoom: { enabled: true },
     toolbar: { show: true },
+  },
+  title: {
+    text: 'Evolución de Ventas',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
   },
   stroke: {
     curve: 'smooth',
