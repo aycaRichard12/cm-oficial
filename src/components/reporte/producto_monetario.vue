@@ -1,7 +1,7 @@
 <template>
   <div class="full-width full-height">
     <q-card flat class="shadow-2 rounded-borders full-height">
-      <q-card-section class="q-pb-none">
+      <!-- <q-card-section class="q-pb-none">
         <div class="row items-center">
           <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
           <div class="text-h6 text-weight-medium">Productos más Vendidos</div>
@@ -9,7 +9,7 @@
         <div class="text-caption text-grey-7 q-mt-xs">
           Ranking de productos por ingresos generados
         </div>
-      </q-card-section>
+      </q-card-section> -->
       <q-card-section class="full-height">
         <div 
           class="full-width" 
@@ -74,6 +74,23 @@ const chartOptions = ref({
       easing: 'easeinout',
       speed: 800,
     },
+  },
+  title: {
+    text: 'Productos más Vendidos',
+    align: 'center',
+    style: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#263238'
+    }
+  },
+  subtitle: {
+    text: 'Ranking por ingresos generados',
+    align: 'center',
+    style: {
+      fontSize: '12px',
+      color: '#546E7A'
+    }
   },
   plotOptions: {
     bar: {
