@@ -33,10 +33,14 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
   const dataForExport = datos.map((row) => {
     const exportRow = {}
     columns.forEach((col) => {
+      const val = row[col.key]
       if (col.numeric) {
-        exportRow[col.header] = parseFloat(row[col.key] || 0).toFixed(2)
+        exportRow[col.header] = Number(val || 0)
+      } else if (col.key === 'fecha_actual') {
+        // Solo formatear si parece ser una fecha ISO con guiones
+        exportRow[col.header] = (typeof val === 'string' && val.includes('-')) ? cambiarFormatoFecha(val) : (val || '')
       } else {
-        exportRow[col.header] = row[col.key] || ''
+        exportRow[col.header] = val || ''
       }
     })
     return exportRow
@@ -57,7 +61,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
     if (col === firstStringCol) {
       totalRow[col.header] = 'TOTALES'
     } else if (totals[col.key] !== undefined) {
-      totalRow[col.header] = totals[col.key].toFixed(2)
+      totalRow[col.header] = Number(totals[col.key])
     } else {
       totalRow[col.header] = ''
     }
@@ -112,13 +116,15 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
         }
         cellStyle.alignment.horizontal = 'center' // Center header text
       } else {
-        // Numeric column alignment for data rows
+        // Numeric column alignment and format for data rows
+        const headerCell = worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })]
+        const headerText = headerCell ? String(headerCell.v).trim() : ''
         const numericColumns = ['Monto Venta', 'Descuento Venta', 'Saldo Cobro', 'Monto Cobrado']
-        const headerCell = worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })] // Get header cell to check column name
-        if (headerCell && numericColumns.includes(headerCell.v)) {
+        
+        if (numericColumns.includes(headerText)) {
           cellStyle.alignment.horizontal = 'right'
-          // Optional: Set number format for currency/decimals
-          cell.z = '0.00' // Two decimal places
+          cell.z = '[$-40A]#,##0.00'
+          cellStyle.numFmt = '[$-40A]#,##0.00' // Forzar coma decimal y punto de miles (Bolivia)
         }
       }
 
@@ -128,8 +134,8 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
 
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Cobros Diarios')
-  const filename = `Reporte_Cobros_Diarios_${startDate.value}_a_${endDate.value}.xlsx`
-  XLSX.writeFile(workbook, filename)
+  const filename = `Reporte_Cobros_Diarios_${startDate}_a_${endDate}.xlsx`
+  XLSX.writeFile(workbook, filename, { cellStyles: true })
 }
 export function exportToXLSX_Reporte_Creditos(
   reportData,
@@ -172,14 +178,16 @@ export function exportToXLSX_Reporte_Creditos(
   const dataForExport = datos.map((row) => {
     const exportRow = {}
     columns.forEach((col) => {
+      const val = row[col.key]
       if (col.key === 'estado') {
         exportRow[col.header] = getEstadoText(row.estado)
       } else if (col.format === 'date') {
-        exportRow[col.header] = cambiarFormatoFecha(row[col.key])
+        // Solo formatear si parece ser una fecha ISO con guiones
+        exportRow[col.header] = (typeof val === 'string' && val.includes('-')) ? cambiarFormatoFecha(val) : (val || '')
       } else if (col.numeric) {
-        exportRow[col.header] = parseFloat(row[col.key] || 0).toFixed(2)
+        exportRow[col.header] = Number(val || 0)
       } else {
-        exportRow[col.header] = row[col.key]
+        exportRow[col.header] = val || ''
       }
     })
     return exportRow
@@ -187,10 +195,10 @@ export function exportToXLSX_Reporte_Creditos(
 
   // Calcular totales para la fila final
   const totals = {
-    valorcuotas: datos.reduce((sum, u) => sum + parseFloat(u.valorcuotas || 0), 0),
-    totalventa: datos.reduce((sum, u) => sum + parseFloat(u.totalventa || 0), 0),
-    totalcobrado: datos.reduce((sum, u) => sum + parseFloat(u.totalcobrado || 0), 0),
-    saldo: datos.reduce((sum, u) => sum + parseFloat(u.saldo || 0), 0),
+    valorcuotas: datos.reduce((sum, u) => sum + Number(u.valorcuotas || 0), 0),
+    totalventa: datos.reduce((sum, u) => sum + Number(u.totalventa || 0), 0),
+    totalcobrado: datos.reduce((sum, u) => sum + Number(u.totalcobrado || 0), 0),
+    saldo: datos.reduce((sum, u) => sum + Number(u.saldo || 0), 0),
   }
 
   // Agregar fila de totales dinámica
@@ -199,7 +207,7 @@ export function exportToXLSX_Reporte_Creditos(
     if (index === 0) {
       totalRow[col.header] = 'TOTALES'
     } else if (totals[col.key] !== undefined) {
-      totalRow[col.header] = totals[col.key].toFixed(2)
+      totalRow[col.header] = Number(totals[col.key])
     } else {
       totalRow[col.header] = ''
     }
@@ -247,11 +255,21 @@ export function exportToXLSX_Reporte_Creditos(
       }
       // Estilo para columnas numéricas
       else {
-        const numericColumns = ['Valor Cuota', 'Monto Venta', 'Total Cobrado', 'Saldo', 'Días Mora']
+        const numericColumns = [
+          'Valor Cuota', 
+          'Monto Venta', 
+          'Total Cobrado', 
+          'Saldo', 
+          'Total Atrasado', 
+          'Total Anulado', 
+          'Días Mora'
+        ]
         const headerCell = worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })]
-        if (headerCell && numericColumns.includes(headerCell.v)) {
+        const headerText = headerCell ? String(headerCell.v).trim() : ''
+        if (headerCell && numericColumns.includes(headerText)) {
           cellStyle.alignment.horizontal = 'right'
-          cell.z = '0.00' // Formato de 2 decimales
+          cell.z = '[$-40A]#,##0.00'
+          cellStyle.numFmt = '[$-40A]#,##0.00' // Forzar coma decimal y punto de miles (Bolivia)
         }
       }
 
@@ -289,7 +307,7 @@ export function exportToXLSX_Reporte_Creditos(
   filename += '.xlsx'
 
   // Exportar archivo
-  XLSX.writeFile(workbook, filename)
+  XLSX.writeFile(workbook, filename, { cellStyles: true })
 }
 
 // Función auxiliar para obtener texto del estado
@@ -334,36 +352,39 @@ export function exportToXLSX_Reporte_Productos(
   const totalUtilidad = datos.reduce((sum, item) => sum + parseFloat(item.utilidad || 0), 0)
 
   // Mapear datos para exportación
-  const dataForExport = datos.map((row, index) => ({
-    'N°': index + 1,
-    Fecha: cambiarFormatoFecha(row.fecha),
-    'Nro. Doc.': row.nrofactura,
-    'Tipo de Venta': tipoVenta[row.tipoventa] || row.tipoventa,
-    'Código Producto': row.codigo,
-    'Código Barras': row.codigobarra,
-    Descripción: row.descripcion,
-    'Costo Unitario': parseFloat(row.preciobase || 0),
-    'Precio Unitario': parseFloat(row.preciounitario || 0),
-    Cantidad: parseFloat(row.cantidad || 0),
-    Importe: parseFloat(row.importe || 0),
-    Descuento: parseFloat(row.descuento || 0),
-    'Costo Total': parseFloat(row.totalcosto || 0),
-    'Venta Total': parseFloat(row.totalventa || 0),
-    Utilidad: parseFloat(row.utilidad || 0),
-    'Tipo Pago': row.tipopago,
-    Usuario: row.idusuario,
-    'Sucursal Cliente': row.sucursalc,
-    Almacén: row.almacen,
-    Cliente: row.cliente,
-    'Tipo Documento': row.tipodocumento,
-    'Nro. Doc. Tributario': row.nrodoc,
-    'Nombre Comercial': row.nombrecomercial,
-    Unidad: row.unidad,
-    Categoría: row.categoria,
-    Subcategoría: row.subcategoria,
-    Canal: row.canal,
-    'Tipo Precio': row.tipoprecio,
-  }))
+  const dataForExport = datos.map((row, index) => {
+    const fecha = row.fecha
+    return {
+      'N°': index + 1,
+      Fecha: (typeof fecha === 'string' && fecha.includes('-')) ? cambiarFormatoFecha(fecha) : (fecha || ''),
+      'Nro. Doc.': row.nrofactura,
+      'Tipo de Venta': tipoVenta[row.tipoventa] || row.tipoventa,
+      'Código Producto': row.codigo,
+      'Código Barras': row.codigobarra,
+      Descripción: row.descripcion,
+      'Costo Unitario': parseFloat(row.preciobase || 0),
+      'Precio Unitario': parseFloat(row.preciounitario || 0),
+      Cantidad: parseFloat(row.cantidad || 0),
+      Importe: parseFloat(row.importe || 0),
+      Descuento: parseFloat(row.descuento || 0),
+      'Costo Total': parseFloat(row.totalcosto || 0),
+      'Venta Total': parseFloat(row.totalventa || 0),
+      Utilidad: parseFloat(row.utilidad || 0),
+      'Tipo Pago': row.tipopago,
+      Usuario: row.idusuario,
+      'Sucursal Cliente': row.sucursalc,
+      Almacén: row.almacen,
+      Cliente: row.cliente,
+      'Tipo Documento': row.tipodocumento,
+      'Nro. Doc. Tributario': row.nrodoc,
+      'Nombre Comercial': row.nombrecomercial,
+      Unidad: row.unidad,
+      Categoría: row.categoria,
+      Subcategoría: row.subcategoria,
+      Canal: row.canal,
+      'Tipo Precio': row.tipoprecio,
+    }
+  })
 
   // Agregar fila de totales
   dataForExport.push({
@@ -471,7 +492,8 @@ export function exportToXLSX_Reporte_Productos(
         if (numericColumns.includes(C)) {
           cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
           if (typeof cell.v === 'number') {
-            cell.z = '#,##0.00'
+            cell.z = '[$-40A]#,##0.00'
+            cellStyle.numFmt = '[$-40A]#,##0.00'
           }
         }
       }
@@ -482,7 +504,8 @@ export function exportToXLSX_Reporte_Productos(
           cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
           // Formato numérico con 2 decimales dinámico adaptado a configuración local usando celdas de numero nativo
           if (typeof cell.v === 'number') {
-            cell.z = '#,##0.00'
+            cell.z = '[$-40A]#,##0.00'
+            cellStyle.numFmt = '[$-40A]#,##0.00'
           }
         }
       }
@@ -536,7 +559,7 @@ export function exportToXLSX_Reporte_Productos(
   filename += '.xlsx'
 
   // Exportar archivo
-  XLSX.writeFile(workbook, filename)
+  XLSX.writeFile(workbook, filename, { cellStyles: true })
 }
 
 export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, endDate) {
@@ -545,10 +568,10 @@ export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, 
   // 1. Preparar los datos con formato adecuado
   const datosFormateados = datos.map((item) => {
     const itemCopy = { ...item }
-    // Formatear números con separadores de miles y decimales
-    if (itemCopy.Total) itemCopy.Total = Number(itemCopy.Total).toFixed(2)
-    if (itemCopy.Dscto) itemCopy.Dscto = Number(itemCopy.Dscto).toFixed(2)
-    if (itemCopy.Monto) itemCopy.Monto = Number(itemCopy.Monto).toFixed(2)
+    // Mantener como números para que Excel aplique el formato según la región
+    if (itemCopy.Total) itemCopy.Total = Number(itemCopy.Total)
+    if (itemCopy.Dscto) itemCopy.Dscto = Number(itemCopy.Dscto)
+    if (itemCopy.Monto) itemCopy.Monto = Number(itemCopy.Monto)
     return itemCopy
   })
 
@@ -634,7 +657,10 @@ export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, 
           left: { style: 'thin', color: { rgb: 'D9D9D9' } },
           right: { style: 'thin', color: { rgb: 'D9D9D9' } },
         },
-        numFmt: isNumeric ? '#,##0.00' : undefined,
+        numFmt: isNumeric ? '[$-40A]#,##0.00' : undefined,
+      }
+      if (isNumeric) {
+        worksheet[cellRef].z = '[$-40A]#,##0.00'
       }
 
       // Alternar colores de fila para mejor legibilidad
