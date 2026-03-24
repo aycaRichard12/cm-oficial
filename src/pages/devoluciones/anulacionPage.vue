@@ -5,7 +5,12 @@
       <q-tab id="tabvalidas" name="validas" label="Válidas" />
       <q-tab id="tabanuladas" name="anuladas" label="Anuladas" />
       <q-tab id="tabdevueltas" name="devueltas" label="Devueltas" />
-      <q-tab id="tabdetalledevolucion" v-if="showDevolucionDetail" name="detalleDevolucion" label="Detalle Devolución" />
+      <q-tab
+        id="tabdetalledevolucion"
+        v-if="showDevolucionDetail"
+        name="detalleDevolucion"
+        label="Detalle Devolución"
+      />
     </q-tabs>
 
     <q-separator />
@@ -350,7 +355,7 @@ const generarComprobantePDF = async (row) => {
 
     let doc
     if (Number(row.tipoventa) === -1) {
-      doc = generarPdfCotizacion(data)
+      doc = await generarPdfCotizacion(data)
     } else {
       doc = await PDFdetalleVentaInicio(ref(data))
     }

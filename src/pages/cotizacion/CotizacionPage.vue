@@ -86,9 +86,20 @@
           </q-select>
           <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
         </div>
-        <div class="col-12 col-md-2" id="botonRegistrarCliente">
+        <div class="col-12 col-md-1" id="botonRegistrarCliente">
           <q-btn color="blue q-mt-lg" icon="person_add" @click="RegistrarCliente" />
         </div>
+        <div v-if="tipoOperacion.value == 1" class="col-12 col-md-1" id="botonRegistrarFirma">
+          <q-btn color="blue q-mt-lg" icon="draw" @click="RegistrarFirma" />
+        </div>
+
+        <ModalfirmaPage
+          v-model="modalfirmaActivo"
+          :id-entidad="selectedClient"
+          tipo-operacion="CLIENTE"
+          @onSuccess="alTerminarFirma"
+          @onError="alFallarFirma"
+        />
       </div>
     </q-form>
 
@@ -683,7 +694,8 @@ const showAddModal = ref(false)
 import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
-
+import ModalfirmaPage from './ModalfirmaPage.vue'
+const modalfirmaActivo = ref(false)
 const token = getToken()
 const tipoFactura = getTipoFactura()
 const idempresa = idempresa_md5()
@@ -754,6 +766,7 @@ const pagosDivididos = ref([{ metodoPago: null, monto: 0, porcentaje: 0 }])
 const metodosPagos = ref([])
 const metodoPago = ref(null)
 const permitirStock = ref(false)
+const idfirma = ref(null)
 const carritoCO = reactive({
   ventatotal: 0,
   subtotal: 0,
@@ -769,8 +782,43 @@ const carritoCO = reactive({
   fecha: fecha.value,
   credito: false,
   periodo: null,
+  idfirma: null,
 })
+console.log(idfirma.value)
+const RegistrarFirma = () => {
+  console.log(selectedClient.value)
+  if (selectedClient.value != null) {
+    modalfirmaActivo.value = true
+    console.log(modalfirmaActivo.value)
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: 'Por favor, selecciona un cliente antes de continuar.',
+      position: 'top',
+    })
+  }
+}
+const alTerminarFirma = (respuesta) => {
+  console.log('Firma registrada:', respuesta)
+  if (respuesta.id_firma) {
+    carritoCO.idfirma = respuesta.id_firma
+    console.log(carritoCO.idfirma)
+  }
+  // 2. Cerrar el modal (aunque el hijo ya lo hace, aseguramos el estado)
+  modalfirmaActivo.value = false
 
+  // 3. Notificación de Quasar (Feedback visual)
+  $q.notify({
+    type: 'positive',
+    message: 'Documento firmado correctamente',
+    caption: `ID de Firma: ${respuesta.id_firma || 'N/A'}`,
+    position: 'top-right',
+  })
+}
+
+const alFallarFirma = (err) => {
+  console.error('El registro falló:', err)
+}
 const toggleCredit = (value) => {
   if (!value) {
     carritoCO.cantidadPagos = 0
@@ -1703,7 +1751,7 @@ async function generarComprobante(id) {
       if (leyendasCotizacion.value.length === 0) {
         await cargarLeyendasCotizacion()
       }
-      const doc = generarPdfCotizacion(data)
+      const doc = await generarPdfCotizacion(data)
       pdfData.value = doc.output('dataurlstring')
       mostrarModal.value = true
       console.log(data[0]?.cliente.idcliente, data)
