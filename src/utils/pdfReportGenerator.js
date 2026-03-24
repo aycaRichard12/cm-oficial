@@ -1,4 +1,4 @@
-﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
+import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'

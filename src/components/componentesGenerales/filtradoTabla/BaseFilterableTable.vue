@@ -122,11 +122,7 @@ console.log(props.sumColumns)
 console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
-defineExpose({
-  obtenerDatosFiltrados: () => filteredData.value,
-  obtenerColumnasVisibles: () => visibleColumns.value,
-  getActiveFiltersReport,
-})
+defineExpose({ obtenerDatosFiltrados: () => filteredData.value, obtenerColumnasVisibles: () => visibleColumns.value, getActiveFiltersReport })
 
 const activeFilters = ref({})
 
