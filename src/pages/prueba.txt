@@ -1,0 +1,1 @@
+librerias para utilizar en quasar me permita añadir firmas  dibujando en pantalla desde celular y poder insertarlas o subir una imagen al poder dibujar poder convertirlo en png o jpg y enviarlo ala api como file la imagen 

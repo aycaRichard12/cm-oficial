@@ -582,7 +582,7 @@ const generarComprobantePDF = async (id) => {
       Object.keys(comprobanteData).forEach((key) => delete comprobanteData[key])
     } else {
       Object.assign(comprobanteData, data[0]) // Assign properties to reactive object
-      const doc = generarPdfCotizacion(data)
+      const doc = await generarPdfCotizacion(data)
       pdfData.value = doc.output('dataurlstring')
       showPdfModal.value = true
     }

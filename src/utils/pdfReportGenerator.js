@@ -1,4 +1,4 @@
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
+﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -11,6 +11,7 @@ import { cargarLogoBase64 } from 'src/composables/FuncionesG'
 // import { convertirAMayusculas } from 'src/composables/FuncionesG'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { obtenerHora } from 'src/composables/FuncionesG'
+import { cargarFirmaBase64 } from 'src/composables/FuncionesG'
 const divisaActiva = useCurrencyStore().simbolo
 
 // Variables globales
@@ -755,10 +756,34 @@ export function PDFreporteCuentasXCobrarPeriodo(
     { header: 'Fecha', dataKey: 'fecha_actual', name: 'fecha_actual', width: 20 },
     { header: 'Cliente', dataKey: 'nombre_cliente', name: 'nombre_cliente', width: 40 },
     { header: 'Comercial', dataKey: 'nombre_comercial', name: 'nombre_comercial', width: 30 },
-    { header: 'Monto Venta', dataKey: 'monto_total_venta', name: 'monto_total_venta', width: 22, numeric: true },
-    { header: 'Desc.', dataKey: 'descuento_venta', name: 'descuento_venta', width: 18, numeric: true },
-    { header: 'Saldo Cobro', dataKey: 'saldo_estado_cobro', name: 'saldo_estado_cobro', width: 22, numeric: true },
-    { header: 'Monto Cobrado', dataKey: 'monto_detalle_cobro', name: 'monto_detalle_cobro', width: 25, numeric: true },
+    {
+      header: 'Monto Venta',
+      dataKey: 'monto_total_venta',
+      name: 'monto_total_venta',
+      width: 22,
+      numeric: true,
+    },
+    {
+      header: 'Desc.',
+      dataKey: 'descuento_venta',
+      name: 'descuento_venta',
+      width: 18,
+      numeric: true,
+    },
+    {
+      header: 'Saldo Cobro',
+      dataKey: 'saldo_estado_cobro',
+      name: 'saldo_estado_cobro',
+      width: 22,
+      numeric: true,
+    },
+    {
+      header: 'Monto Cobrado',
+      dataKey: 'monto_detalle_cobro',
+      name: 'monto_detalle_cobro',
+      width: 25,
+      numeric: true,
+    },
   ]
 
   // Filter columns
@@ -771,7 +796,7 @@ export function PDFreporteCuentasXCobrarPeriodo(
   // Data mapping
   const datos = reportData.map((item, indice) => {
     const row = { indice: indice + 1 }
-    columns.forEach(col => {
+    columns.forEach((col) => {
       if (col.name === 'indice') return
       let val = item[col.dataKey]
       if (col.numeric) {
@@ -793,8 +818,8 @@ export function PDFreporteCuentasXCobrarPeriodo(
 
   // Add totals row
   const pieTable = {}
-  let firstStringCol = columns.find(c => !c.numeric && c.name !== 'indice')
-  columns.forEach(col => {
+  let firstStringCol = columns.find((c) => !c.numeric && c.name !== 'indice')
+  columns.forEach((col) => {
     if (col === firstStringCol) {
       pieTable[col.dataKey] = 'TOTAL:'
     } else if (totals[col.name] !== undefined) {
@@ -807,8 +832,11 @@ export function PDFreporteCuentasXCobrarPeriodo(
 
   const columnStyles = {}
   const headerColumnStyles = {}
-  columns.forEach(col => {
-    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.numeric ? 'right' : (col.name === 'indice' ? 'center' : 'left') }
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = {
+      cellWidth: col.width,
+      halign: col.numeric ? 'right' : col.name === 'indice' ? 'center' : 'left',
+    }
     headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
   })
 
@@ -1121,10 +1149,7 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     rawImagenBase64: item.imagenBase64 || null,
   }))
 
-  const totalstock = arrRows.reduce(
-    (sum, dato) => sum + redondear(parseFloat(dato.stock)),
-    0,
-  )
+  const totalstock = arrRows.reduce((sum, dato) => sum + redondear(parseFloat(dato.stock)), 0)
 
   const costoTotal = arrRows.reduce(
     (sum, dato) => sum + redondear(parseFloat(dato.stock) * parseFloat(dato.costounitario)),
@@ -1134,15 +1159,15 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     `TOTAL GENERAL`,
     [
       { valor: totalstock, halign: 'right' },
-      { valor: costoTotal, halign: 'right' }
+      { valor: costoTotal, halign: 'right' },
     ],
-    7
+    7,
   )
-  
+
   // Agregar la última columna de imagen en blanco para completar la tabla estructurada
   filaTotal.push({
     content: '',
-    styles: { halign: 'center', lineWidth: { top: 0.3, bottom: 0.3 }, lineColor: [0, 0, 0] }
+    styles: { halign: 'center', lineWidth: { top: 0.3, bottom: 0.3 }, lineColor: [0, 0, 0] },
   })
 
   datos.push(filaTotal)
@@ -1189,7 +1214,7 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
   return doc
 }
 
-export function generarPdfCotizacion(data) {
+export async function generarPdfCotizacion(data) {
   console.log(data)
   const comprobanteData = []
   const cotizacionDetalle = data[0]
@@ -1221,15 +1246,20 @@ export function generarPdfCotizacion(data) {
   const estado = cotizacionInfo.estado
   console.log(estado)
   let currentSubtotal = 0
+  let firma = ''
   const detalleProductos = cotizacionDetalle.detalle.map((item) => {
     const totalProducto = redondear(item.cantidad * item.precio)
     currentSubtotal += totalProducto
+    firma = item.firma_url
     return {
       ...item,
       total: totalProducto,
     }
   })
-
+  firma = firma.split('/').pop()
+  console.log(firma)
+  const base64 = await cargarFirmaBase64(firma)
+  console.log(base64.length)
   comprobanteData.detalle = detalleProductos
   comprobanteData.descuento = cotizacionInfo.descuento
   comprobanteData.subtotal = redondear(currentSubtotal)
@@ -1341,6 +1371,7 @@ export function generarPdfCotizacion(data) {
     false,
     null,
     extras,
+    base64,
   )
 
   // --- Lógica para el Watermark "Anulado" ---
@@ -1821,7 +1852,7 @@ export async function PDFenviarComprobanteCorreo(idcliente, data, $q) {
   const cotizacionInfo = cotizacionDetalle.cotizacion
   const clienteInfo = cotizacionDetalle.cliente
 
-  const doc = generarPdfCotizacion(data)
+  const doc = await generarPdfCotizacion(data)
   try {
     const response = await api.get(`obtenerEmailCliente/${idcliente}`) // Cambia a tu ruta real
     console.log(response.data) // res { email: 'ClienteVarios@one.com' }
@@ -2790,15 +2821,20 @@ export function PDFalmacenes({ rows, visibleColumnsFromTable = [] }) {
     tipoalmacen: item.tipoalmacen || '',
     stockmin: item.stockmin || '0',
     stockmax: item.stockmax || '0',
-    sucursal: item.sucursalValor || item.sucursal || '-', 
+    sucursal: item.sucursalValor || item.sucursal || '-',
     estado: Number(item.estado) === 1 ? 'Activo' : 'Inactivo',
   }))
 
   const columnStyles = {}
-  columns.forEach(col => {
-    columnStyles[col.dataKey] = { 
-      cellWidth: col.width, 
-      halign: (col.dataKey === 'stockmin' || col.dataKey === 'stockmax') ? 'right' : (col.dataKey === 'indice' ? 'center' : 'left')
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = {
+      cellWidth: col.width,
+      halign:
+        col.dataKey === 'stockmin' || col.dataKey === 'stockmax'
+          ? 'right'
+          : col.dataKey === 'indice'
+            ? 'center'
+            : 'left',
     }
   })
 
@@ -3210,7 +3246,7 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     Izquierda,
     derecho,
     false,
-    null
+    null,
   )
 
   return doc
@@ -4085,11 +4121,12 @@ function dibujarCuerpoTabla(
   conImpresionEncargado = null,
   fechas = null,
   extras = null,
+  firma = null,
 ) {
   // Definición de estilos de columna específicos para este reporte (pueden generalizarse)
   let ultimaPaginaTabla = 0
 
-  // ✅ CENTRADO DINÁMICO: Calcular el margen para que la tabla siempre esté al centro
+  //CENTRADO DINÁMICO: Calcular el margen para que la tabla siempre esté al centro
   let sumWidths = 0
   let allHaveFixed = true
   columns.forEach((col) => {
@@ -4147,7 +4184,7 @@ function dibujarCuerpoTabla(
         if (columnStyles[key]) {
           Object.assign(data.cell.styles, columnStyles[key])
         }
-        // Aplicar altura minima dinamicamente solo si existe la imagen en esta fila 
+        // Aplicar altura minima dinamicamente solo si existe la imagen en esta fila
         if (key === 'imagen' && data.row.raw && data.row.raw.rawImagenBase64) {
           data.cell.styles.minCellHeight = 25
         }
@@ -4169,7 +4206,7 @@ function dibujarCuerpoTabla(
               data.cell.width - 4,
               data.cell.height - 4,
               undefined,
-              'FAST'
+              'FAST',
             )
           } catch (e) {
             console.warn('Error adjuntando imagen sobre layout de body', e)
@@ -4215,6 +4252,25 @@ function dibujarCuerpoTabla(
   doc.text(`Fecha hora reporte: ${fechaGeneracion} ${obtenerHora()}`, 14, y, {
     align: 'left',
   })
+  if (firma) {
+    const imgW = 30
+    const imgH = 15
+    const pageWidth = doc.internal.pageSize.getWidth()
+    // Colocarla a la derecha, arriba de "Firma del Cliente"
+    const xPos = pageWidth - imgW - 10
+
+    firma = firma.replace('data:image/jpeg', 'data:image/png')
+
+    try {
+      doc.addImage(firma, 'PNG', xPos, y, imgW, imgH)
+
+      doc.setFontSize(7)
+      // El texto debe estar centrado respecto a la IMAGEN, no a la página
+      doc.text('Firma del Cliente', xPos + imgW / 2, y + imgH + 3, { align: 'center' })
+    } catch (e) {
+      console.error('Error al dibujar firma en el PDF', e)
+    }
+  }
 
   agregarPieDePagina(doc)
 }
@@ -4226,6 +4282,7 @@ function agregarEncabezado(doc) {
 
   //LOGO
   if (logoBase64) {
+    console.log(logoBase64)
     const imgWidth = 20
     const imgHeight = 20
 
@@ -4295,6 +4352,7 @@ function agregarEncabezadoInfo(
       },
     )
   }
+
   if (extras) {
     if (extras.numFactura) {
       doc.setFontSize(8)
@@ -4430,7 +4488,6 @@ function agregarEncabezadoInfo(
   }
 }
 
-// 3. PIE DE PÁGINA (FOOTER) - REUTILIZABLE
 function agregarPieDePagina(doc) {
   const finalPageCount = doc.internal.getNumberOfPages()
   doc.setFontSize(8)
