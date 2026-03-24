@@ -110,7 +110,9 @@ export const useMenuStore = defineStore('menu', {
     },
     // Obtiene los datos completos de una página
     obtenerPagina: (state) => (codigopagina) => {
+      console.log(codigopagina)
       const pagina = state.permitidos.find((pagina) => pagina.codigo === codigopagina)
+      console.log(pagina)
       if (!pagina) return null
 
       // Convertir permiso de string "1111" a boolean
