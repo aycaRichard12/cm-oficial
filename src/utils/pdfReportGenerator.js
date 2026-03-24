@@ -794,7 +794,7 @@ export function PDFreporteCuentasXCobrarPeriodo(
   }
 
   // Data mapping
-  const datos = reportData.value.map((item, indice) => {
+  const datos = reportData.map((item, indice) => {
     const row = { indice: indice + 1 }
     columns.forEach((col) => {
       if (col.name === 'indice') return
@@ -810,19 +810,10 @@ export function PDFreporteCuentasXCobrarPeriodo(
 
   // Calculate totals
   const totals = {
-    monto_total_venta: reportData.value.reduce(
-      (sum, u) => sum + Number(u.monto_total_venta || 0),
-      0,
-    ),
-    descuento_venta: reportData.value.reduce((sum, u) => sum + Number(u.descuento_venta || 0), 0),
-    saldo_estado_cobro: reportData.value.reduce(
-      (sum, u) => sum + Number(u.saldo_estado_cobro || 0),
-      0,
-    ),
-    monto_detalle_cobro: reportData.value.reduce(
-      (sum, u) => sum + Number(u.monto_detalle_cobro || 0),
-      0,
-    ),
+    monto_total_venta: reportData.reduce((sum, u) => sum + Number(u.monto_total_venta || 0), 0),
+    descuento_venta: reportData.reduce((sum, u) => sum + Number(u.descuento_venta || 0), 0),
+    saldo_estado_cobro: reportData.reduce((sum, u) => sum + Number(u.saldo_estado_cobro || 0), 0),
+    monto_detalle_cobro: reportData.reduce((sum, u) => sum + Number(u.monto_detalle_cobro || 0), 0),
   }
 
   // Add totals row
@@ -850,8 +841,8 @@ export function PDFreporteCuentasXCobrarPeriodo(
   })
 
   const fechas = {
-    inicio: startDate.value,
-    final: endDate.value,
+    inicio: startDate,
+    final: endDate,
   }
 
   dibujarCuerpoTabla(
