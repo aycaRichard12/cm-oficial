@@ -122,6 +122,22 @@ export async function cargarLogoBase64(logoPath) {
     return null
   }
 }
+export async function cargarFirmaBase64(firma) {
+  try {
+    const response = await api.get(`getFirmaBase64/${firma}`)
+    const data = response.data
+
+    console.log(data)
+
+    if (data.base64) {
+      return data.base64
+    }
+    return null
+  } catch (err) {
+    console.error('Error cargando logo:', err)
+    return null
+  }
+}
 export async function getComercialImagenProducto(logoPath) {
   const [carpeta, imagen] = logoPath.split('/')
   try {
