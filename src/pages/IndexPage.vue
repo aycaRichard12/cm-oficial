@@ -1,19 +1,18 @@
 <template>
-  <q-page class="q-pa-md">
-    <div class="row q-col-gutter-md q-mb-md">
+  <q-page class="q-pa-md q-pa-sm-lg">
+    <!-- Cajas de navegación superiores -->
+    <div class="row q-col-gutter-md q-mb-lg">
       <template v-for="box in orderedTopBoxes" :key="box.id">
-        <div class="col-xs-12 col-sm-6 col-md-3" :class="box.colorClass" :id="box.cardId">
+        <div class="col-12 col-sm-6 col-md-3" :class="box.colorClass" :id="box.cardId">
           <q-card
             flat
-            dense
             bordered
-            class="full-height"
-            style="background: linear-gradient(to right, #219286, #044e49)"
-            :style="{ color: 'white' }"
+            class="full-height hover-card cursor-pointer"
+            style="background: linear-gradient(135deg, #219286 0%, #044e49 100%); color: white; transition: all 0.3s ease;"
+            @click="cambiarComponente(box.id)"
           >
-            <q-item>
-              <!-- Eliminamos la prop :avatar ya que no estamos usando q-avatar directamente aquí -->
-              <q-item-section>
+            <q-item class="q-pa-md items-center">
+              <q-item-section avatar>
                 <template v-if="typeof box.iconComponent === 'string'">
                   <div class="svg-icon-wrapper">
                     <img :src="box.iconComponent" alt="icon" class="svg-icon" />
@@ -22,23 +21,24 @@
               </q-item-section>
 
               <q-item-section>
-                <q-item-label style="font-size: 10px">{{ box.title }}</q-item-label>
-                <q-item-label
-                  caption
-                  style="font-family: Arial, Helvetica, sans-serif; color: white; font-size: 12px"
-                >
-                  {{ box.subtitle }}
+                <q-item-label class="text-weight-bold text-caption text-sm-subtitle2 text-uppercase" style="letter-spacing: 0.5px">
+                  {{ box.title }}
+                </q-item-label>
+                <q-item-label caption class="text-white" style="font-size: 11px; opacity: 0.8">
+                  {{ box.subtitle || 'Acceder al módulo' }}
                 </q-item-label>
               </q-item-section>
-            </q-item>
-            <q-item class="q-pt-none">
-              <q-item-section> </q-item-section>
-              <q-item-section>
+
+              <q-item-section side>
                 <q-btn
-                  outline=""
-                  :style="{ color: componenteActivo === box.component ? '#f2c037' : 'white' }"
-                  label="Ir"
-                  @click="cambiarComponente(box.id)"
+                  outline
+                  rounded
+                  size="sm"
+                  :style="{ color: componenteActivo === box.component ? '#f2c037' : 'rgba(255,255,255,0.7)' }"
+                  :icon-right="componenteActivo === box.component ? 'check_circle' : 'arrow_forward'"
+                  :label="componenteActivo === box.component ? 'Activo' : 'Ir'"
+                  class="q-px-sm"
+                  @click.stop="cambiarComponente(box.id)"
                 />
               </q-item-section>
             </q-item>
@@ -47,16 +47,19 @@
       </template>
     </div>
 
-    <div class="row q-col-gutter-x-md">
+    <!-- Contenedor principal de vistas (con q-col-gutter-md para gap vertical en móvil) -->
+    <div class="row q-col-gutter-md">
       <div
-        :class="componenteActivo === VentaComponent ? 'col-xs-12 col-md-8' : 'col-12'"
+        :class="componenteActivo === VentaComponent ? 'col-12 col-md-8' : 'col-12'"
         ref="componentContainer"
         id="carrito"
       >
         <component :is="componenteActivo" />
       </div>
-      <div v-if="componenteActivo === VentaComponent" class="col-xs-12 col-md-4" id="reportes-hoy">
-        <div class="full-height"><ReporteVentaInicio /></div>
+      <div v-if="componenteActivo === VentaComponent" class="col-12 col-md-4" id="reportes-hoy">
+        <div class="full-height">
+          <ReporteVentaInicio />
+        </div>
       </div>
     </div>
   </q-page>
@@ -236,15 +239,27 @@ const orderedTopBoxes = computed(() => {
   overflow: hidden;
 }
 
-/* MODIFICACIÓN AQUÍ: Nuevos estilos para el contenedor del SVG */
+/* MODIFICACIÓN AQUÍ: Nuevos estilos responsive para el contenedor del SVG */
 .svg-icon-wrapper {
-  width: 90px; /* Ancho deseado para el contenedor del SVG */
-  height: 60px; /* Alto deseado para el contenedor del SVG */
-  display: flex; /* Usar flexbox para centrar el SVG */
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  overflow: hidden; /* Asegurar que el SVG no se desborde del contenedor */
-  flex-shrink: 0; /* Evita que el contenedor se encoja */
+  width: 60px;
+  height: 50px;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  overflow: hidden; 
+  flex-shrink: 0; 
+}
+
+@media (min-width: 600px) {
+  .svg-icon-wrapper {
+    width: 80px; 
+    height: 60px; 
+  }
+}
+
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
 /* Estilos para el SVG real dentro del contenedor */
