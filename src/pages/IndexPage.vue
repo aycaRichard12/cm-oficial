@@ -7,41 +7,36 @@
           <q-card
             flat
             bordered
-            class="full-height hover-card cursor-pointer"
-            style="background: linear-gradient(135deg, #219286 0%, #044e49 100%); color: white; transition: all 0.3s ease;"
+            class="full-height hover-card cursor-pointer q-pa-sm flex flex-center"
+            style="background: linear-gradient(135deg, #219286 0%, #044e49 100%); color: white; border-radius: 12px; transition: all 0.3s ease;"
             @click="cambiarComponente(box.id)"
           >
-            <q-item class="q-pa-md items-center">
-              <q-item-section avatar>
-                <template v-if="typeof box.iconComponent === 'string'">
-                  <div class="svg-icon-wrapper">
-                    <img :src="box.iconComponent" alt="icon" class="svg-icon" />
-                  </div>
-                </template>
-              </q-item-section>
+            <!-- Fila Flex layout Mobile-First: Nunca permite que los items se quiebren o aplasten -->
+            <div class="row items-center no-wrap full-width" style="min-height: 55px;">
+              <!-- Columna 1: Icono del Módulo -->
+              <div class="col-auto q-mr-md flex flex-center" style="width: 50px;">
+                <img :src="box.iconComponent" style="max-width: 100%; max-height: 48px; object-fit: contain;" alt="icon" />
+              </div>
 
-              <q-item-section>
-                <q-item-label class="text-weight-bold text-caption text-sm-subtitle2 text-uppercase" style="letter-spacing: 0.5px">
+              <!-- Columna 2: Textos truncados automáticamente si fuesen muy largos -->
+              <div class="col overflow-hidden">
+                <div class="text-subtitle2 text-weight-bold ellipsis text-uppercase" style="letter-spacing: 0.5px; opacity: 1;">
                   {{ box.title }}
-                </q-item-label>
-                <q-item-label caption class="text-white" style="font-size: 11px; opacity: 0.8">
+                </div>
+                <div class="text-caption ellipsis" style="font-size: 11px; opacity: 0.75;">
                   {{ box.subtitle || 'Acceder al módulo' }}
-                </q-item-label>
-              </q-item-section>
+                </div>
+              </div>
 
-              <q-item-section side>
-                <q-btn
-                  outline
-                  rounded
-                  size="sm"
+              <!-- Columna 3: Icono Flecha/Check Ckecked -->
+              <div class="col-auto q-pl-sm">
+                <q-icon 
+                  :name="componenteActivo === box.component ? 'check_circle' : 'chevron_right'" 
+                  size="sm" 
                   :style="{ color: componenteActivo === box.component ? '#f2c037' : 'rgba(255,255,255,0.7)' }"
-                  :icon-right="componenteActivo === box.component ? 'check_circle' : 'arrow_forward'"
-                  :label="componenteActivo === box.component ? 'Activo' : 'Ir'"
-                  class="q-px-sm"
-                  @click.stop="cambiarComponente(box.id)"
                 />
-              </q-item-section>
-            </q-item>
+              </div>
+            </div>
           </q-card>
         </div>
       </template>
@@ -217,68 +212,55 @@ const orderedTopBoxes = computed(() => {
 </script>
 
 <style scoped>
-/* ======= ESTILOS GENERALES (Flexbox-friendly) ======= */
+/* ======= ESTILOS GENERALES Y LAYOUT ======= */
 .q-page {
   overflow-x: hidden;
 }
 
-.box {
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  align-items: stretch;
-  min-width: 0;
-  overflow: hidden;
+/* CARDS DE NAVEGACION (MOBILE FIRST) */
+.hover-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 12px;
+}
+.hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
 }
 
-.q-card {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
+/* Estado de los Menús */
+.card-activa {
+  background: linear-gradient(135deg, #1f8a7e 0%, #033f3a 100%);
+  color: white;
+  border: 1px solid #1f8a7e;
+}
+.card-inactiva {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
 }
 
-/* MODIFICACIÓN AQUÍ: Nuevos estilos responsive para el contenedor del SVG */
-.svg-icon-wrapper {
-  width: 60px;
-  height: 50px;
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  overflow: hidden; 
-  flex-shrink: 0; 
+/* Burbuja del Icono */
+.icon-bubble {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
-
 @media (min-width: 600px) {
-  .svg-icon-wrapper {
-    width: 80px; 
-    height: 60px; 
+  .icon-bubble {
+    width: 56px;
+    height: 56px;
   }
 }
 
-.hover-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+.module-img {
+  max-width: 60%;
+  max-height: 60%;
+  object-fit: contain;
+  transition: all 0.3s ease;
 }
 
-/* Estilos para el SVG real dentro del contenedor */
-.svg-icon {
-  max-width: 100% !important; /* Forzar al SVG a ocupar el 100% del ancho del contenedor */
-  max-height: 100% !important; /* Forzar al SVG a ocupar el 100% del alto del contenedor */
-  display: block; /* Eliminar espacio extra debajo del SVG */
-  color: white;
-  /* El color se aplica a través de la prop `style` en el template,
-     pero si el SVG usa `currentColor`, este estilo lo afectará. */
-}
-
-/* Asegurar imágenes escalan (si aún se usan img dentro de q-avatar en otros lugares) */
-.q-avatar img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
+/* Evitar roturas de texto general */
 .q-item-label {
   word-break: break-word;
   overflow-wrap: break-word;
