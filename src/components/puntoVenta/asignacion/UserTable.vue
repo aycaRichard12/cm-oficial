@@ -1,10 +1,32 @@
 <template>
-  <div class="flex justify-end">
-    <div class="q-mb-md" id="buscadorUsuarios">
-      <label for="buscar">Buscar...</label>
-      <q-input dense outlined debounce="300" v-model="filter" id="buscar" />
+<div class="row items-center justify-between q-col-gutter-md q-mb-md">
+
+  <!-- Título -->
+  <div class="col-12 col-md-auto">
+    <div class="text-h5 text-weight-bold text-primary">
+      Asignación de Responsables
+    </div>
+    <div class="text-subtitle2 text-grey-7">
+      Seleccione un usuario para gestionar sus puntos de venta
     </div>
   </div>
+
+  <!-- Buscador -->
+  <div class="col-12 col-md-3">
+    <q-input
+      v-model="filter"
+      dense
+      outlined
+      debounce="300"
+      placeholder="Buscar usuario..."
+    >
+      <template v-slot:prepend>
+        <q-icon name="search" />
+      </template>
+    </q-input>
+  </div>
+
+</div>
 
   <q-table
     id="tableUsuarios"
