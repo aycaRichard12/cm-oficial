@@ -1251,15 +1251,21 @@ export async function generarPdfCotizacion(data) {
     const totalProducto = redondear(item.cantidad * item.precio)
     currentSubtotal += totalProducto
     firma = item.firma_url
+    console.log(item.firma_url)
     return {
       ...item,
       total: totalProducto,
     }
   })
-  firma = firma.split('/').pop()
   console.log(firma)
-  const base64 = await cargarFirmaBase64(firma)
-  console.log(base64.length)
+  if (firma) {
+    firma = firma.split('/').pop()
+  }
+
+  let base64 = ''
+  if (firma) {
+    base64 = await cargarFirmaBase64(firma)
+  }
   comprobanteData.detalle = detalleProductos
   comprobanteData.descuento = cotizacionInfo.descuento
   comprobanteData.subtotal = redondear(currentSubtotal)
