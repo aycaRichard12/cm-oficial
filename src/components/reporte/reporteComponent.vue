@@ -24,7 +24,7 @@
           <q-tab v-if="permCategoria" name="categoria" label="Categorías" icon="category" />
           <q-tab v-if="permPreferido" name="preferido" label="Preferidos" icon="star" />
           <q-tab v-if="permMonetario" name="monetario" label="Monetario" icon="payments" />
-          <q-tab v-if="permMayorVenta" name="mayor_venta" label="Evolución" icon="timeline" />
+          <!-- <q-tab v-if="permMayorVenta" name="mayor_venta" label="Evolución" icon="timeline" /> -->
           <q-tab v-if="permAlmacen" name="almacen" label="Almacén" icon="store" />
           <q-tab v-if="permTodos" name="todos" label="Todos" icon="dashboard" />
         </q-tabs>
@@ -36,7 +36,7 @@
         <GCategoria v-if="showChart('categoria') && permCategoria" />
         <GpPreferido v-if="showChart('preferido') && permPreferido" class="q-my-md" />
         <GpMonetario v-if="showChart('monetario') && permMonetario" />
-        <GpMayorVenta v-if="showChart('mayor_venta') && permMayorVenta" />
+        <!-- <GpMayorVenta v-if="showChart('mayor_venta') && permMayorVenta" /> -->
         <GpAlmacen v-if="showChart('almacen') && permAlmacen" />
       </template>
 
@@ -57,7 +57,7 @@ import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales
 import GCategoria from './por_Categoria.vue'
 import GpPreferido from './producto_preferido.vue'
 import GpMonetario from './producto_monetario.vue'
-import GpMayorVenta from './mayor_venta.vue'
+// import GpMayorVenta from './mayor_venta.vue'
 import GpAlmacen from './StockAlmacen.vue'
 import GpClientes from './fecha_venta_cliente.vue'
 
