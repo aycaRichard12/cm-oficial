@@ -89,7 +89,7 @@
         <div class="col-12 col-md-1" id="botonRegistrarCliente">
           <q-btn color="blue q-mt-lg" icon="person_add" @click="RegistrarCliente" />
         </div>
-        <div v-if="tipoOperacion.value == 1" class="col-12 col-md-1" id="botonRegistrarFirma">
+        <div  class="col-12 col-md-1" id="botonRegistrarFirma">
           <q-btn color="blue q-mt-lg" icon="draw" @click="RegistrarFirma" />
         </div>
 
