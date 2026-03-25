@@ -1,5 +1,5 @@
 <template>
-  <div class="full-width full-height">
+  <div class="full-width full-height q-ma-md">
     <q-card flat class="shadow-2 rounded-borders full-height">
       <!-- Header -->
       <!-- <q-card-section class="q-pb-none">
@@ -78,6 +78,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
 import * as funGeneral from 'src/composables/FuncionesG'
+import { api } from 'src/boot/axios'
 
 const $q = useQuasar()
 
@@ -273,10 +274,31 @@ async function cargarDatos() {
       return
     }
 
-    Lista_stock.value = await funGeneral.consultar_api(
+    // 1. Consultar a qué almacenes tiene acceso real este usuario
+    const endpointPermisos = `/listaResponsableAlmacen/${idEmpresa}`
+    const { data: dataPermisos } = await api.get(endpointPermisos)
+    
+    let almacenesPermitidosNombres = []
+    if (Array.isArray(dataPermisos)) {
+      almacenesPermitidosNombres = dataPermisos
+        .filter((item) => item.idusuario == idusuario)
+        .map((item) => item.almacen?.trim())
+    }
+
+    // 2. Traer el stock global (que la API devuelve crudo)
+    const dataStock = await funGeneral.consultar_api(
       'stock_productos_dashboard',
       `${idEmpresa}/${idusuario}`,
     )
+
+    // 3. Filtrar de forma severa el stock a nivel local (solo lo permitido)
+    if (dataStock?.length > 0 && almacenesPermitidosNombres.length > 0) {
+      Lista_stock.value = dataStock.filter(item => 
+         item.almacen && almacenesPermitidosNombres.includes(item.almacen.trim())
+      )
+    } else {
+      Lista_stock.value = [] // Bloqueo si no hay accesos
+    }
 
     if (Lista_stock.value?.length > 0) {
       opcionesAlmacenes.value = Object.keys(stockPorAlmacen.value)
@@ -287,7 +309,7 @@ async function cargarDatos() {
     } else {
       $q.notify({
         type: 'info',
-        message: 'No hay datos de stock disponibles',
+        message: 'No hay datos de stock en los almacenes a los que tienes acceso',
       })
     }
   } catch (error) {

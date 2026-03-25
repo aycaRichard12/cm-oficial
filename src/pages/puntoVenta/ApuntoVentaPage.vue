@@ -1,69 +1,106 @@
 <template>
-  <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
-    <div class="titulo">Asignar Punto Venta</div>
-    <q-card-section>
+  <q-page padding >
+    <!-- Vista 1: Tabla de Usuarios -->
+  <div v-if="showFirstView">
+
+  <q-card flat bordered class="q-pa-md">
+
+    <!-- Header -->
+    <div class="row items-center justify-between q-mb-md">
+     
+
+      <!-- (Opcional) botón -->
+      <!--
+      <q-btn
+        color="primary"
+        icon="person_add"
+        label="Nuevo"
+        unelevated
+      />
+      -->
+    </div>
+
+  
+    <!-- Tabla -->
+    <div class="q-mt-sm">
       <UserTable
-        v-if="showFirstView"
         :users="users"
         :columns="userColumns"
         @asignar="showAssignForm"
       />
-      <div v-else>
-        <q-dialog v-model="showModal" persistent>
-          <q-card class="responsive-dialog">
-            <q-card-section class="bg-primary flex justify-between text-h6 text-white">
-              <div class="text-h6">Asignación de Puntos de Venta</div>
-              <q-space />
-              <q-btn icon="close" flat round dense v-close-popup />
-            </q-card-section>
+    </div>
 
-            <q-card-section>
-              <AsignacionForm
-                :user="selectedUser"
-                :warehouses="warehouses"
-                :pointsOfSale="pointsOfSale"
-                @submit="submitAssignment"
-                @volver="showFirstView = true"
-                @load="loadPointsOfSale"
-              />
-            </q-card-section>
-          </q-card>
-        </q-dialog>
+  </q-card>
 
-        <div>
-          <div class="row items-center q-mb-xl">
+</div>
+
+    <!-- Vista 2: Gestión de Asignaciones para el usuario seleccionado -->
+    <div v-else>
+      <!-- Cabecera de Usuario Seleccionado -->
+      <q-card flat class="bg-white q-mb-md shadow-1 rounded-borders overflow-hidden">
+        <q-card-section class="q-pa-md">
+          <div class="row items-center no-wrap">
+            <q-btn flat round color="grey-7" icon="arrow_back" @click="showFirstView = true" class="q-mr-md" />
+            <q-avatar size="56px" font-size="28px" color="primary" text-color="white" icon="person" class="q-mr-md shadow-2" />
+            <div class="col">
+              <div class="text-h5 text-weight-bold text-dark">{{ selectedUser.name }}</div>
+              <div class="text-subtitle2 text-grey-7">{{ selectedUser.cargo || 'Responsable de Ventas' }}</div>
+            </div>
             <div class="col-auto">
               <q-btn
-                flat
-                color="grey-7"
-                icon="arrow_back"
-                label="Volver"
-                size="md"
-                @click="showFirstView = true"
-                id="btnVolverAsignacion"
-                class="q-px-sm"
-                :ripple="{ center: true }"
-                style="transition: all 0.2s ease"
+                color="primary"
+                icon="add_circle"
+                label="Nueva Asignación"
+                unelevated
+                @click="showModal = true"
+                class="q-px-md"
               />
             </div>
-            <q-btn
-              color="primary"
-              size="md"
-              label="Nuevo"
-              @click="showModal = true"
-            />
           </div>
-        </div>
+        </q-card-section>
+      </q-card>
 
-        <AsignacionTable
-          :assignments="assignments"
-          :columns="assignmentColumns"
-          :warehouses="warehouses"
-          @delete="deleteAssignment"
-          @loadAssignments="cargarAsignaciones"
-        />
-      </div>
-    </q-card-section>
+      <!-- Tabla de Asignaciones Actuales -->
+      <q-card flat class="shadow-2 rounded-borders">
+        <q-card-section class="q-pa-none">
+          <div class="q-pa-md text-h6 text-grey-8 row items-center">
+            <q-icon name="list" color="primary" class="q-mr-sm" />
+            Puntos de Venta Asignados
+          </div>
+          <AsignacionTable
+            :assignments="assignments"
+            :columns="assignmentColumns"
+            :warehouses="warehouses"
+            @delete="deleteAssignment"
+            @loadAssignments="cargarAsignaciones"
+          />
+        </q-card-section>
+      </q-card>
+
+      <!-- Diálogo de Formulario (Simplificado) -->
+      <q-dialog v-model="showModal" persistent backdrop-filter="blur(4px)">
+        <q-card style="width: 700px; max-width: 95vw;" class="rounded-borders shadow-10">
+          <q-card-section class="row items-center bg-primary text-white q-py-sm">
+            <div class="text-h6">Registrar Punto de Venta</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+
+          <q-card-section class="q-pa-none">
+            <AsignacionForm
+              ref="formRef"
+              :user="selectedUser"
+              :warehouses="warehouses"
+              :pointsOfSale="pointsOfSale"
+              :submitting="submitting"
+              @submit="submitAssignment"
+              @volver="showModal = false"
+              @load="loadPointsOfSale"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </div>
   </q-page>
 </template>
 
@@ -72,27 +109,36 @@ import { ref, onMounted } from 'vue'
 import UserTable from 'components/puntoVenta/asignacion/UserTable.vue'
 import AsignacionForm from 'components/puntoVenta/asignacion/AsignacionForm.vue'
 import AsignacionTable from 'components/puntoVenta/asignacion/AsignacionTable.vue'
-import { api } from 'boot/axios' // Asegúrate de tener esto configurado
+import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
+// Estados de control UI
 const showModal = ref(false)
+const showFirstView = ref(true)
+const submitting = ref(false)
+const formRef = ref(null)
+
+// Datos de sesión
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
-const showFirstView = ref(true)
-const selectedUser = ref({})
-const pointsOfSale = ref([])
 const $q = useQuasar()
+
+// Referencias de selección
+const selectedUser = ref({})
 const idresponsable = ref('')
-const idalmacen = ref('')
 const idalmacenF = ref('')
-// Datos simulados
+
+// Datos dinámicos
 const users = ref([])
+const warehouses = ref([])
+const assignments = ref([])
+const pointsOfSale = ref([])
+
+// Cargar catálogo de usuarios
 async function loadUsuarios() {
   try {
-    const response = await api.get(`listaResponsable/${idempresa}`) // Cambia a tu ruta real
-    console.log(response.data)
-
+    const response = await api.get(`listaResponsable/${idempresa}`)
     users.value = response.data.map((key) => ({
       id: key.idusuario,
       idresponsable: key.id,
@@ -100,170 +146,117 @@ async function loadUsuarios() {
       nombre: key.usuario[0].nombre,
       apellido: key.usuario[0].apellido,
       cargo: key.usuario[0].cargo,
-      almacenes: key.almacenes,
     }))
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
+  } catch {
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar los usuarios' })
   }
 }
-const warehouses = ref([])
-const assignments = ref([
-  /* ... */
-])
 
-const userColumns = [
-  /* ... */
-]
-const assignmentColumns = [
-  /* ... */
-]
+// Cargar catálogo de almacenes permitidos para el usuario activo
 async function getAlmacenes() {
   try {
-    const response = await api.get(`listaResponsableAlmacen/${idempresa}`) // ejemplo
-    console.log(response)
+    const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
     const filtrado = response.data.filter((u) => u.idusuario == idusuario)
-    console.log(filtrado)
-    const formateado = filtrado.map((item) => ({
+    warehouses.value = filtrado.map((item) => ({
       name: item.almacen,
       id: item.idalmacen,
     }))
-    console.log(formateado)
-    warehouses.value = formateado
+    
     if (warehouses.value.length > 0) {
-      const primerAlmacenId = warehouses.value[0].id
-      cargarAsignaciones(primerAlmacenId)
+      cargarAsignaciones(warehouses.value[0].id)
     }
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Error cargando almacenes' })
   }
 }
+
+// Acción al seleccionar un usuario para gestionar
 function showAssignForm(user) {
-  console.log(user)
   idresponsable.value = user.idresponsable
   selectedUser.value = {
     id: user.idusuario,
-    name: `${user.usuario} ${user.nombre}`,
+    name: `${user.usuario} | ${user.nombre} ${user.apellido}`,
     idresponsable: user.idresponsable,
+    cargo: user.cargo
   }
   showFirstView.value = false
   getAlmacenes()
 }
 
+// Cargar puntos de venta libres de un almacén específico
 async function loadPointsOfSale(warehouseId) {
-  console.log('Cargar puntos para:', warehouseId)
   idalmacenF.value = warehouseId
   try {
-    const response = await api.get(`listaPuntoVenta/${warehouseId}`) // ejemplo
-
-    const todosLosPuntos = response.data.map((item) => ({
-      name: item.nombre,
-      id: item.id,
-    }))
-
-    // Filtrar puntos ya asignados (según assignments)
-    const idsAsignados = assignments.value.map((a) => a.idpuntoventa)
-    const noAsignados = todosLosPuntos.filter((p) => !idsAsignados.includes(p.id))
-
-    pointsOfSale.value = noAsignados
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
+    const response = await api.get(`listaPuntoVenta/${warehouseId}`)
+    const todosLosPuntos = response.data.map((item) => ({ name: item.nombre, id: item.id }))
+    
+    // Filtro local: solo mostrar los que no han sido asignados ya en este view
+    const idsAsignados = assignments.value.map((a) => a.idpuntoventa || a.id)
+    pointsOfSale.value = todosLosPuntos.filter((p) => !idsAsignados.includes(p.id))
+  } catch {
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar los puntos de venta' })
   }
 }
 
+// Procesar el registro en el servidor
 async function submitAssignment({ warehouse, pointOfSale }) {
-  console.log('Asignando a', selectedUser.value, warehouse, pointOfSale)
+  submitting.value = true
+  
   const formData = new FormData()
   formData.append('idresponsable', idresponsable.value)
   formData.append('ver', 'registrarResponsablePuntoVenta')
   formData.append('idalmacen', warehouse)
   formData.append('idpuntoventa', pointOfSale)
-  for (let [k, v] of formData.entries()) {
-    console.log(`${k}: ${v}`)
-  }
+
   try {
     const response = await api.post(``, formData)
     if (response.data.estado === 'exito') {
-      console.log(idalmacenF.value)
-      cargarAsignaciones(idalmacenF.value)
-      loadPointsOfSale(warehouse)
-      $q.notify({
-        type: 'positive',
-        message: 'Registrado correctamente',
-      })
+      $q.notify({ type: 'positive', message: 'Asignación registrada con éxito' })
+      
+      // Actualizar datos y cerrar
+      await cargarAsignaciones(warehouse)
+      showModal.value = false
+      if (formRef.value) formRef.value.resetForm()
     } else {
-      $q.notify({
-        type: 'negative',
-        message: 'No se a podido Registrar',
-      })
+      $q.notify({ type: 'negative', message: response.data.mensaje || 'Fallo en el registro' })
     }
-  } catch (error) {
-    console.error('Error al guardar:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
-    })
+  } catch (err) {
+    $q.notify({ type: 'negative', message: 'Ocurrió un error en el servidor: ' + err })
+  } finally {
+    submitting.value = false
+  }
+}
+
+async function cargarAsignaciones(warehouseId) {
+  try {
+    const response = await api.get(`listaResponsablePuntoVenta/${idempresa}`)
+    assignments.value = response.data.filter(
+      (u) => u.idalmacen == warehouseId && u.idresponsable == idresponsable.value
+    )
+  } catch {
+    $q.notify({ type: 'negative', message: 'Error cargando historial de asignaciones' })
   }
 }
 
 function deleteAssignment(id) {
-  console.log('Eliminar asignación con ID:', id)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Almacen Punto de Venta?`,
+    title: 'Confirmar Eliminación',
+    message: '¿Estás seguro de que deseas retirar este punto de venta?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
     try {
-      const response = await api.get(`eliminarResponsablePuntoVenta/${id}`) // Cambia a tu ruta real
-      console.log(response)
+      const response = await api.get(`eliminarResponsablePuntoVenta/${id}`)
       if (response.data.estado === 'exito') {
-        cargarAsignaciones(idalmacen.value)
-        $q.notify({
-          type: 'positive',
-          message: response.data.mensaje,
-        })
+        $q.notify({ type: 'positive', message: 'Asignación eliminada correctamente' })
+        cargarAsignaciones(idalmacenF.value)
       }
-    } catch (error) {
-      console.error('Error al cargar datos:', error)
-      $q.notify({
-        type: 'negative',
-        message: 'No se pudieron cargar los datos',
-      })
+    } catch {
+      $q.notify({ type: 'negative', message: 'Fallo al eliminar asignación' })
     }
   })
 }
 
-async function cargarAsignaciones(warehouseId) {
-  console.log('Cargar puntos para:', warehouseId)
-  console.log(idresponsable.value)
-  idalmacen.value = warehouseId
-  try {
-    const response = await api.get(`listaResponsablePuntoVenta/${idempresa}`) // ejemplo
-    const filtrado = response.data.filter(
-      (u) => u.idalmacen == warehouseId && u.idresponsable == idresponsable.value,
-    )
-    assignments.value = filtrado
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
-  }
-}
-onMounted(() => {
-  loadUsuarios()
-})
+onMounted(loadUsuarios)
 </script>
+

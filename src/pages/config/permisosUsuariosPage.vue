@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="bg-grey-1">
+  <q-page padding>
     <!-- Header Section -->
     <div class="row q-mb-md">
       <div class="col-12">
@@ -22,7 +22,7 @@
     <!-- Form Section -->
     <div class="row q-mb-md">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-2 rounded-borders">
+        <q-card flat class=" shadow-2 rounded-borders">
           <q-card-section class="q-pa-md">
             <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
           </q-card-section>
@@ -33,7 +33,7 @@
     <!-- Table Section -->
     <div class="row">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-2 rounded-borders">
+        <q-card flat class="shadow-2 rounded-borders">
           <q-card-section class="q-pa-md">
             <base-filterable-table
               title="Operaciones Registradas"
@@ -176,27 +176,42 @@ const fetchOperaciones = async () => {
   }
 }
 
-// Crear o Actualizar
+// Crear o Actualizar (Soporta múltiples registros para Dashboard Checks)
 const handleSave = async (payload) => {
   loading.value = true
   try {
-    const isUpdate = !!payload.id
-    const url = isUpdate ? 'actualizarOperacion' : 'crearOperaciones'
-
-    const method = isUpdate ? 'post' : 'post'
-    const body = {
-      ...payload,
-      ver: isUpdate ? 'actualizarOperacion' : 'crearOperaciones',
-      idmd5: IDMD5,
+    // Es una selección masiva (array) proveniente de los Checkboxes
+    if (Array.isArray(payload)) {
+      for (const req of payload) {
+        const body = {
+          ...req,
+          ver: 'crearOperaciones',
+          idmd5: IDMD5,
+        }
+        await api.post('crearOperaciones', body)
+      }
+      $q.notify({
+        color: 'positive',
+        message: 'Permisos estadísticos asignados con éxito',
+      })
+    } 
+    // Es una petición singular (Operaciones menú principal)
+    else {
+      const isUpdate = !!payload.id
+      const url = isUpdate ? 'actualizarOperacion' : 'crearOperaciones'
+      const method = isUpdate ? 'post' : 'post'
+      const body = {
+        ...payload,
+        ver: isUpdate ? 'actualizarOperacion' : 'crearOperaciones',
+        idmd5: IDMD5,
+      }
+      await api[method](url, body)
+      $q.notify({
+        color: 'positive',
+        message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
+      })
     }
-
-    const response = await api[method](url, body)
-    console.log(response.data)
-    $q.notify({
-      color: 'positive',
-      message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
-    })
-    fetchOperaciones() // Refrescar tabla
+    fetchOperaciones() // Refrescar tabla en ambas circunstancias
   } catch (error) {
     $q.notify({ color: 'negative', message: 'Error en la solicitud: ' + error })
   } finally {

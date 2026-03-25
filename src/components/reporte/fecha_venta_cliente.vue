@@ -1,69 +1,76 @@
 <template>
   <q-page class="q-pa-md">
     <!-- Header -->
-    <div class="row items-center q-mb-lg">
-      <div class="col">
-        <div class="text-h4 text-weight-bold">
-          <q-icon name="analytics" class="q-mr-sm" />
-          Análisis de Clientes
+    <div class="row justify-between items-center q-mb-lg q-col-gutter-y-md">
+      <!-- Título de la vista -->
+      <div class="col-12 col-md-auto">
+        <div class="text-weight-bold flex items-center q-mb-xs">
+          <q-icon name="analytics" class="q-mr-sm text-h4" />
+          <span class="text-h5 text-md-h4">Análisis de Clientes</span>
         </div>
-        <div class="text-subtitle2 text-grey-6">Dashboard de comportamiento y ventas</div>
+        <div class="text-subtitle2 text-grey-6 text-caption text-sm-subtitle2">Dashboard de comportamiento y ventas</div>
       </div>
-      <div class="col-auto row q-gutter-sm items-center">
-        <!-- Date Pickers -->
-        <q-input 
-          v-model="fechaInicio" 
-          dense 
-          outlined 
-          label="Inicio" 
-          mask="##/##/####"
-          class="date-input"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+      
+      <!-- Controles de Filtro -->
+      <div class="col-12 col-md-auto">
+        <div class="row q-col-gutter-sm items-center">
+          <div class="col-6 col-sm-auto">
+            <!-- Date Pickers -->
+            <q-input 
+              v-model="fechaInicio" 
+              dense 
+              outlined 
+              label="Inicio" 
+              mask="##/##/####"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
 
-        <q-input 
-          v-model="fechaFin" 
-          dense 
-          outlined 
-          label="Fin" 
-          mask="##/##/####"
-          class="date-input"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="fechaFin" mask="DD/MM/YYYY">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Cerrar" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+          <div class="col-6 col-sm-auto">
+            <q-input 
+              v-model="fechaFin" 
+              dense 
+              outlined 
+              label="Fin" 
+              mask="##/##/####"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date v-model="fechaFin" mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
 
-        <q-separator vertical inset class="q-mx-sm" />
-
-        <q-btn 
-          color="primary" 
-          icon="search" 
-          label="Consultar" 
-          unelevated 
-          :loading="loading"
-          @click="consultar"
-          class="q-ml-sm"
-        />
+          <div class="col-12 col-sm-auto flex items-center">
+            <q-btn 
+              color="primary" 
+              icon="search" 
+              label="Consultar" 
+              unelevated 
+              :loading="loading"
+              @click="consultar"
+              class="full-width"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -181,7 +188,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.date-input {
-  max-width: 160px;
-}
+/* Responsive layout handling directly in template via Quasar classes */
 </style>
