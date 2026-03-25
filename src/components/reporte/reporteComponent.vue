@@ -12,6 +12,7 @@
         narrow-indicator
         outside-arrows
         mobile-arrows
+        :inline="$q.screen.gt.xs"
       >
         <q-tab name="clientes" label="Clientes" icon="people" />
         <q-tab name="categoria" label="Categorías" icon="category" />
