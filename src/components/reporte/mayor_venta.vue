@@ -1,9 +1,5 @@
 <template>
   <div class="full-width full-height">
-      <div class="q-my-md">
-        <GpMayorVenta     />
-  </div>
-
     <q-card flat class="shadow-2 rounded-borders full-height column">
       <!-- Sección Superior: Título y Filtros -->
       <q-card-section class="q-pb-sm">
@@ -11,8 +7,8 @@
           <!-- Título -->
           <div class="col-12 col-md-auto">
             <div class="row items-center">
-              <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
-              <div class="text-h6 text-weight-medium">Ingresos por Producto</div>
+              <q-icon name="timeline" color="teal" size="1.5rem" class="q-mr-sm" />
+              <div class="text-h6 text-weight-medium">Evolución de Ventas Propias</div>
             </div>
             <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block">
               <q-icon name="event" class="q-mr-xs" />
@@ -81,7 +77,7 @@
           }"
         >
           <VueApexCharts 
-            type="bar" 
+            type="line" 
             height="100%" 
             :options="chartOptions" 
             :series="series" 
@@ -90,21 +86,19 @@
       </q-card-section>
     </q-card>
   </div>
-
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-import GpMayorVenta from './mayor_venta.vue'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
 import { useQuasar, date as qDate } from 'quasar'
 import { api } from 'src/boot/axios'
 
 const $q = useQuasar()
 const empresa = idempresa_md5()
+const idusuario = idusuario_md5()
 
-// Estado Fechas
 const timeStamp = Date.now()
 const fechaFin = ref(qDate.formatDate(timeStamp, 'DD/MM/YYYY'))
 const fechaInicio = ref(qDate.formatDate(qDate.subtractFromDate(timeStamp, { days: 30 }), 'DD/MM/YYYY'))
@@ -112,32 +106,23 @@ const fechaInicio = ref(qDate.formatDate(qDate.subtractFromDate(timeStamp, { day
 const loading = ref(false)
 const rawDataAPI = ref([])
 
-// Función de consulta a la API con fechas
 const consultarFechas = async () => {
   loading.value = true
   try {
-    // Transformar DD/MM/YYYY a YYYY-MM-DD
     const [diaIni, mesIni, anioIni] = fechaInicio.value.split('/')
     const inicioStr = `${anioIni}-${mesIni}-${diaIni}`
-
     const [diaFin, mesFin, anioFin] = fechaFin.value.split('/')
     const finStr = `${anioFin}-${mesFin}-${diaFin}`
 
-    const endpoint = `/productos_mayor_venta_monetario/${empresa}/${inicioStr}/${finStr}`
+    const endMayorVenta = `/mayor_venta/${empresa}/${idusuario}/${inicioStr}/${finStr}`
+    const { data } = await api.get(endMayorVenta)
     
-    const { data } = await api.get(endpoint)
-    
-    // Asignación segura de respuesta
-    if (Array.isArray(data)) {
-      rawDataAPI.value = data
-    } else if (data && Array.isArray(data.datos)) {
-      rawDataAPI.value = data.datos
-    } else {
-      rawDataAPI.value = []
-    }
+    if (Array.isArray(data)) rawDataAPI.value = data
+    else if (data && Array.isArray(data.datos)) rawDataAPI.value = data.datos
+    else rawDataAPI.value = []
 
   } catch (error) {
-    console.error('Error al cargar reportes:', error)
+    console.error('Error al cargar reporte:', error)
     $q.notify({ type: 'negative', message: 'Error cargando datos de indicadores' })
     rawDataAPI.value = []
   } finally {
@@ -145,88 +130,89 @@ const consultarFechas = async () => {
   }
 }
 
-const periodoInfo = computed(() => {
-  return `Del ${fechaInicio.value} al ${fechaFin.value}`
-})
+const periodoInfo = computed(() => `Del ${fechaInicio.value} al ${fechaFin.value}`)
 
 const chartData = computed(() => {
-  const rawData = rawDataAPI.value || []
-  return rawData.map((item) => ({
-    ...item,
-    nombre_producto: `${item.codigo?.trim() ?? ''} ${item.nombre?.trim() ?? ''}`.trim(),
-    total_vendido: Number(item.precio) || 0,
-  }))
+  let rawData = Array.isArray(rawDataAPI.value) ? [...rawDataAPI.value] : []
+  rawData.sort((a, b) => new Date(a.fecha_venta) - new Date(b.fecha_venta))
+  return rawData
 })
 
 const chartOptions = ref({
   chart: {
-    type: 'bar',
+    type: 'line', 
     height: '100%',
-    stacked: false,
     toolbar: { show: true, tools: { download: true, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } },
     animations: { enabled: true, easing: 'easeinout', speed: 800 },
   },
+  dataLabels: { enabled: false },
+  stroke: { curve: 'smooth', width: [3, 4] },
+  fill: {
+    type: ['gradient', 'solid'], 
+    gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1, stops: [0, 90, 100] }
+  },
   title: { text: '', align: 'center' },
-  subtitle: { text: '', align: 'center' },
-  plotOptions: {
-    bar: {
-      horizontal: false, borderRadius: 6, columnWidth: '60%', 
-      dataLabels: { position: 'top' },
-      distributed: true,
-    },
-  },
-  dataLabels: {
-    enabled: true,
-    formatter: function (val) { return val > 0 ? val.toFixed(2) + ' Bs' : '' },
-    offsetY: -20,
-    style: { fontSize: '11px', fontWeight: 'bold', colors: ['#304758'] },
-  },
   xaxis: {
-    categories: [],
-    labels: {
-      rotate: -45, rotateAlways: false, hideOverlappingLabels: true, trim: true,
-      style: { fontSize: '11px', fontWeight: 500 },
-      formatter: function (value) {
-        if (!value) return ''
-        return value.length > 30 ? value.substring(0, 30) + '...' : value
-      },
-    },
-    tickPlacement: 'on',
+    categories: [], 
+    type: 'category', 
+    labels: { rotate: -45, style: { fontSize: '11px', fontWeight: 500, color: '#546E7A' } },
   },
-  yaxis: {
-    title: { text: 'Ingresos (Bs)', style: { fontSize: '12px', fontWeight: 600 } },
-    labels: { formatter: function (val) { return val ? val.toFixed(2) : '0.00' }, style: { fontSize: '11px' } },
-  },
-  tooltip: {
-    enabled: true, shared: false, followCursor: true,
-    y: { formatter: function (val) { return `${val.toFixed(2)} Bs` }, title: { formatter: () => 'Ingresos:' } },
-  },
-  colors: ['#1976D2', '#00897B', '#FB8C00', '#E53935', '#8E24AA', '#5E35B1', '#00ACC1', '#43A047', '#F4511E', '#6D4C41'],
-  grid: { borderColor: '#e7e7e7', strokeDashArray: 4, padding: { top: 0, right: 10, bottom: 0, left: 10 } },
-  legend: { show: false },
-  responsive: [
-    { breakpoint: 1024, options: { plotOptions: { bar: { columnWidth: '70%' }}, xaxis: { labels: { rotate: -45, style: { fontSize: '10px' } } }} },
-    { breakpoint: 768, options: { plotOptions: { bar: { columnWidth: '80%' }}, xaxis: { labels: { rotate: -90, style: { fontSize: '9px' } } }, dataLabels: { enabled: false } } },
+  yaxis: [
+    { title: { text: 'Total Facturado', style: { color: '#00897B', fontWeight: 600 } }, labels: { formatter: (val) => val ? val.toFixed(2) : '0', style: { colors: '#00897B' } } },
+    { opposite: true, title: { text: 'Transacciones / Cantidad', style: { color: '#FB8C00', fontWeight: 600 } }, labels: { formatter: (val) => val ? Math.round(val) : '0', style: { colors: '#FB8C00' } } }
   ],
-  noData: { text: 'Cargando datos...', align: 'center', verticalAlign: 'middle', style: { fontSize: '14px' } },
+  colors: ['#00897B', '#FB8C00'],
+  tooltip: {
+    shared: true, intersect: false,
+    y: {
+      formatter: function (y, { seriesIndex }) {
+        if(typeof y !== "undefined") {
+          return seriesIndex === 0 ? `Bs. ${y.toFixed(2)}` : `${y} items`
+        }
+        return y
+      }
+    }
+  },
+  grid: { borderColor: '#e7e7e7', strokeDashArray: 4, padding: { top: 0, right: 10, bottom: 0, left: 10 } },
+  legend: { 
+    position: 'bottom', 
+    horizontalAlign: 'center',
+    itemMargin: { horizontal: 10, vertical: 8 }
+  },
+  noData: { text: 'Cargando datos...', align: 'center', verticalAlign: 'middle', style: { fontSize: '14px', color: '#888' } },
 })
 
-const series = ref([{ name: 'Ingresos', data: [] }])
+const series = ref([
+  { name: 'Total Recaudado', type: 'area', data: [] },
+  { name: 'Ventas', type: 'line', data: [] }
+])
 
 watch(chartData, (newData) => {
   if (!newData || newData.length === 0) {
-    chartOptions.value.noData.text = 'No hay datos disponibles'
-    series.value = [{ name: 'Ingresos', data: [] }]
+    chartOptions.value.noData.text = 'No hay compras registradas en este periodo'
+    series.value = [
+      { name: 'Total Recaudado', type: 'area', data: [] },
+      { name: 'Ventas', type: 'line', data: [] }
+    ]
     return
   }
-  const categories = []
-  const seriesData = []
+
+  const categoriesDates = []
+  const dataTotals = []
+  const dataQuantities = []
+
   newData.forEach((item) => {
-    categories.push(item.nombre_producto)
-    seriesData.push(item.total_vendido)
+    const [year, month, day] = item.fecha_venta.split('-')
+    categoriesDates.push(`${day}/${month}/${year}`)
+    dataTotals.push(item.total)
+    dataQuantities.push(item.cantidad)
   })
-  chartOptions.value = { ...chartOptions.value, xaxis: { ...chartOptions.value.xaxis, categories: categories } }
-  series.value = [{ name: 'Ingresos por Producto', data: seriesData }]
+
+  chartOptions.value = { ...chartOptions.value, xaxis: { ...chartOptions.value.xaxis, categories: categoriesDates } }
+  series.value = [
+    { name: 'Total Recaudado', type: 'area', data: dataTotals },
+    { name: 'Ventas', type: 'line', data: dataQuantities }
+  ]
 }, { immediate: true, deep: true })
 
 onMounted(() => {
