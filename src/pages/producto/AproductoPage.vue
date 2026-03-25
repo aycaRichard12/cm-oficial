@@ -85,7 +85,14 @@ const productosFiltrados = computed(() => {
   console.log(almacenSeleccionado.value)
   console.log(productos)
   if (!almacenSeleccionado.value) return []
-  return productos.value.filter((p) => p.idalmacen == almacenSeleccionado.value)
+  return productos.value
+    .filter((p) => p.idalmacen == almacenSeleccionado.value)
+    .map((obj, index) => {
+      return {
+        ...obj,
+        index: index + 1,
+      }
+    })
 })
 const getAlmacenes = async () => {
   try {
@@ -185,7 +192,12 @@ const almacenSeleccionadoAP = async (almacenId) => {
   try {
     const response = await api.get(`listaProductoAlmacenFaltantes/${almacenId}/${idempresa}`) // ejemplo
     console.log(response.data)
-    productoSA.value = response.data
+    productoSA.value = response.data.map((obj, index) => {
+      return {
+        ...obj,
+        index: index + 1,
+      }
+    })
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({

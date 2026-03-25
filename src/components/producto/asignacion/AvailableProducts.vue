@@ -47,13 +47,12 @@
       v-if="filtro"
       :rows="rows"
       :columns="columns"
-      :pagination="pagination"
       row-key="id"
       flat
-      bordered
       virtual-scroll
+      virtual-scroll-slice-ratio-after=""
+      bordered
       :filter="filter"
-      class="my-sticky-header-table q-mt-md"
     >
       <template v-slot:top-right> </template>
       <template #body-cell-imagen="props">
@@ -129,12 +128,9 @@ const filter = ref('') // texto del buscador
 const seleccionados = ref([])
 
 // Paginación
-const pagination = ref({
-  rowsPerPage: 10,
-})
 
 const columns = [
-  { name: 'nro', label: 'N°', field: 'nro', align: 'right' },
+  { name: 'index', label: 'N°', field: 'index', align: 'right' },
   { name: 'codigo', label: 'Código', field: 'codigo' },
   { name: 'nombre', label: 'Nombre', field: 'nombre' },
   { name: 'categoria', label: 'Categoría', field: 'categoria' },
