@@ -1,22 +1,79 @@
 <template>
   <div class="full-width full-height">
-    <q-card flat class="shadow-2 rounded-borders full-height">
-      <!-- <q-card-section class="q-pb-none">
-        <div class="row items-center">
-          <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
-          <div class="text-h6 text-weight-medium">Productos más Vendidos</div>
+    <q-card flat class="shadow-2 rounded-borders full-height column">
+      <!-- Sección Superior: Título y Filtros -->
+      <q-card-section class="q-pb-sm">
+        <div class="row justify-between items-center q-col-gutter-y-md">
+          <!-- Título -->
+          <div class="col-12 col-md-auto">
+            <div class="row items-center">
+              <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
+              <div class="text-h6 text-weight-medium">Ingresos por Producto</div>
+            </div>
+            <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block">
+              <q-icon name="event" class="q-mr-xs" />
+              <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
+            </div>
+          </div>
+          
+          <!-- Filtros de Fecha -->
+          <div class="col-12 col-md-auto">
+            <div class="row q-col-gutter-sm items-center">
+              <div class="col-6 col-sm-auto">
+                <q-input v-model="fechaInicio" dense outlined label="Inicio" mask="##/##/####">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-6 col-sm-auto">
+                <q-input v-model="fechaFin" dense outlined label="Fin" mask="##/##/####">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="fechaFin" mask="DD/MM/YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-sm-auto flex items-center">
+                <q-btn 
+                  color="primary" 
+                  icon="search" 
+                  label="Consultar" 
+                  unelevated 
+                  :loading="loading"
+                  @click="consultarFechas"
+                  class="full-width"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="text-caption text-grey-7 q-mt-xs">
-          Ranking de productos por ingresos generados
-        </div>
-      </q-card-section> -->
-      <q-card-section class="full-height">
+      </q-card-section>
+
+      <!-- Sección Gráfico -->
+      <q-card-section class="col-grow q-pt-none">
         <div 
           class="full-width" 
           :style="{ 
-            minHeight: $q.screen.lt.md ? '300px' : $q.screen.lt.lg ? '350px' : '400px',
-            height: $q.screen.lt.md ? '45vh' : $q.screen.lt.lg ? '50vh' : '60vh',
-            maxHeight: '600px'
+            minHeight: $q.screen.lt.md ? '350px' : '400px',
+            height: '100%'
           }"
         >
           <VueApexCharts 
@@ -32,24 +89,65 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useFetchList } from 'src/composables/useFetchList'
+import { ref, computed, watch, onMounted } from 'vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
-import { useQuasar } from 'quasar'
+import { useQuasar, date } from 'quasar'
+import { api } from 'src/boot/axios'
 
 const $q = useQuasar()
 const empresa = idempresa_md5()
 
-const { items: pPreferido } = useFetchList(`/productos_mayor_venta_monetario/${empresa || null}`)
+// Estado Fechas
+const timeStamp = Date.now()
+const fechaFin = ref(date.formatDate(timeStamp, 'DD/MM/YYYY'))
+const fechaInicio = ref(date.formatDate(date.subtractFromDate(timeStamp, { days: 30 }), 'DD/MM/YYYY'))
+
+const loading = ref(false)
+const rawDataAPI = ref([])
+
+// Función de consulta a la API con fechas
+const consultarFechas = async () => {
+  loading.value = true
+  try {
+    // Transformar DD/MM/YYYY a YYYY-MM-DD
+    const [diaIni, mesIni, anioIni] = fechaInicio.value.split('/')
+    const inicioStr = `${anioIni}-${mesIni}-${diaIni}`
+
+    const [diaFin, mesFin, anioFin] = fechaFin.value.split('/')
+    const finStr = `${anioFin}-${mesFin}-${diaFin}`
+
+    const endpoint = `/productos_mayor_venta_monetario/${empresa}/${inicioStr}/${finStr}`
+    const { data } = await api.get(endpoint)
+    
+    // Asignación segura de respuesta
+    if (Array.isArray(data)) {
+      rawDataAPI.value = data
+    } else if (data && Array.isArray(data.datos)) {
+      rawDataAPI.value = data.datos
+    } else {
+      rawDataAPI.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar reporte monetario:', error)
+    $q.notify({ type: 'negative', message: 'Error cargando datos de ingresos' })
+    rawDataAPI.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 const chartData = computed(() => {
-  const rawData = pPreferido.value?._value || pPreferido.value || []
+  const rawData = rawDataAPI.value || []
   return rawData.map((item) => ({
     ...item,
     nombre_producto: `${item.codigo?.trim() ?? ''} ${item.nombre?.trim() ?? ''}`.trim(),
     total_vendido: Number(item.precio) || 0,
   }))
+})
+
+const periodoInfo = computed(() => {
+  return `Del ${fechaInicio.value} al ${fechaFin.value}`
 })
 
 const chartOptions = ref({
@@ -76,21 +174,12 @@ const chartOptions = ref({
     },
   },
   title: {
-    text: 'Productos más Vendidos',
-    align: 'center',
-    style: {
-      fontSize: '16px',
-      fontWeight: 'bold',
-      color: '#263238'
-    }
+    text: '', // Movido al layout superior HTML
+    align: 'center'
   },
   subtitle: {
-    text: 'Ranking por ingresos generados',
-    align: 'center',
-    style: {
-      fontSize: '12px',
-      color: '#546E7A'
-    }
+    text: '', // Movido al layout superior HTML
+    align: 'center'
   },
   plotOptions: {
     bar: {
@@ -279,4 +368,8 @@ watch(
   },
   { immediate: true, deep: true },
 )
+
+onMounted(() => {
+  consultarFechas()
+})
 </script>
