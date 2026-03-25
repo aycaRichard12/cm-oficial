@@ -30,10 +30,10 @@
       </q-card>
 
       <div class="my-card q-mb-md">
-        <div>
+        <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-4" id="origenVenta">
-              <label for="almacen">Origen de venta</label>
+              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block">Origen de venta</label>
               <q-select
                 v-model="almacenSeleccionado"
                 :options="almacenes"
@@ -51,7 +51,7 @@
             </div>
 
             <div class="col-12 col-md-4" id="categoriaPrecio">
-              <label for="categoria">Categoría de precio</label>
+              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block">Categoría de precio</label>
               <q-select
                 v-model="categoriaPrecioSeleccionada"
                 :options="categoriasPrecio"
@@ -70,8 +70,8 @@
               </q-select>
             </div>
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
-              <div class="flex items-center justify-between" style="margin-bottom: 2px">
-                <label for="campana">Categorías con Campaña</label>
+              <div class="flex items-center justify-between q-mb-sm">
+                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none">Categorías con Campaña</label>
                 <q-checkbox v-model="mostrarCategoriasCampania" dense>
                   <template v-slot:default>
                     <label class="text-emerald" style="font-size: 13px">{{
@@ -112,10 +112,10 @@
       </div>
 
       <div class="my-card q-mb-md">
-        <div>
+        <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-10" id="buscarProductoVenta">
-              <label for="producto">Buscar producto (código o descripción)</label>
+              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block">Buscar producto (código o descripción)</label>
               <q-select
                 v-model="productoSeleccionado"
                 :options="productosFiltrados"
@@ -158,12 +158,12 @@
                 </template>
               </q-select>
             </div>
-            <div class="q-ma-md flex justify-around" style="width: 120px; height: 120px">
+            <div class="col-12 col-md-2 flex justify-center items-start">
               <q-img
                 :src="imagen + productoSeleccionado?.originalData?.imagen || null"
                 @click="mostrarGrande = true"
                 fit="contain"
-                style="width: 100%; cursor: pointer"
+                style="width: 100%; max-width: 140px; height: 110px; cursor: pointer; border-radius: 8px; border: 1px solid #e0e0e0; padding: 4px; margin-top: 28px;"
                 spinner-color="primary"
               >
                 <template v-slot:error>
@@ -194,9 +194,9 @@
             </div>
           </div>
 
-          <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-md">
+          <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
-              <label for="stockdisponible">Stock disponible</label>
+              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block">Stock disponible</label>
               <q-input
                 v-model="productoSeleccionado.originalData.stock"
                 id="stockdisponible"
@@ -209,7 +209,7 @@
             </div>
 
             <div class="col-12 col-sm-3" id="cantidadVenta">
-              <label for="cantidad">Cantidad</label>
+              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block">Cantidad</label>
               <q-input
                 v-model.number="cantidad"
                 id="cantidad"
@@ -225,7 +225,7 @@
             </div>
 
             <div class="col-12 col-sm-3" id="precioVenta">
-              <label for="precio">Precio unitario</label>
+              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block">Precio unitario</label>
               <q-input
                 v-model="precioUnitario"
                 id="precio"
@@ -238,7 +238,7 @@
               </q-input>
             </div>
 
-            <div class="col-12 col-md-3 flex justify-end q-mt-lg">
+            <div class="col-12 col-sm-3 flex items-end justify-end">
               <q-btn
                 id="agregarProductoVenta"
                 color="primary"
@@ -254,8 +254,8 @@
         </div>
       </div>
 
-      <div class="row items-center q-gutter-sm q-mb-md">
-        <q-label class="text-subtitle2">Venta sin stock</q-label>
+      <div class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2" style="border-radius: 8px; border: 1px solid #e0e0e0;">
+        <div class="text-subtitle2 q-ml-sm text-weight-bold text-grey-8">Venta sin stock</div>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
           dense
