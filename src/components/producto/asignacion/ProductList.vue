@@ -163,7 +163,7 @@ watch(
 )
 // Columnas de la tabla
 const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
+  { name: 'index', label: 'N°', field: 'index', align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
   {
     name: 'codigobarra',

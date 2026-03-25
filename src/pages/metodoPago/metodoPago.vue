@@ -171,10 +171,16 @@
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch.js'
-import { validarUsuario, normalizeText } from 'src/composables/FuncionesG.js'
+import {
+  validarUsuario,
+  normalizeText,
+  getTipoFactura,
+  getToken,
+} from 'src/composables/FuncionesG.js'
 import { URL_APICM } from 'src/composables/services'
 import { api } from 'src/boot/axios'
 import { TipoFactura } from 'src/composables/FuncionesGenerales'
+
 const $q = useQuasar()
 const tipoFactura = TipoFactura()
 let columns = []
@@ -398,30 +404,43 @@ const handleSubmit = async () => {
 
 const editMetodoPago = async (metodo) => {
   try {
-    const contenidousuario = validarUsuario()
-    const token = contenidousuario[0]?.factura?.access_token
-    const tipo = contenidousuario[0]?.factura?.tipo
-    const endpoint = `${URL_APICM}api/verificarExistenciaMetodopagoFactura/${metodo.id}/${token}/${tipo}`
-    const resultado = await peticionGET(endpoint)
+    console.log(metodo)
+    console.log(getToken(true))
+    console.log(getTipoFactura())
+    if (getToken(true) && getTipoFactura(true)) {
+      const token = getToken()
+      const tipo = getTipoFactura()
+      const endpoint = `${URL_APICM}api/verificarExistenciaMetodopagoFactura/${metodo.id}/${token}/${tipo}`
+      const resultado = await peticionGET(endpoint)
 
-    if (resultado.estado === 'exito') {
+      if (resultado.estado === 'exito') {
+        if (!showForm.value) {
+          showForm.value = true
+        }
+        formTitle.value = 'Editar registro'
+        form.id = resultado.datos.id
+        form.nombre = resultado.datos.nombre
+        // Find the full object from options to set the q-select v-model
+        form.descripcionSIN =
+          leyendaSINOptions.value.find((opt) => opt.codigo === resultado.datos.metodopagosin.codigo)
+            ?.codigo || null // Set the code directly for emit-value
+        form.codigoSIN = resultado.datos.metodopagosin.codigo
+        form.verMPF = 'editarMetodoPagoFactura'
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: resultado.mensaje || 'No se pudo cargar el registro para editar.',
+        })
+      }
+    } else {
       if (!showForm.value) {
         showForm.value = true
       }
       formTitle.value = 'Editar registro'
-      form.id = resultado.datos.id
-      form.nombre = resultado.datos.nombre
-      // Find the full object from options to set the q-select v-model
-      form.descripcionSIN =
-        leyendaSINOptions.value.find((opt) => opt.codigo === resultado.datos.metodopagosin.codigo)
-          ?.codigo || null // Set the code directly for emit-value
-      form.codigoSIN = resultado.datos.metodopagosin.codigo
+      form.id = metodo.id
+      form.nombre = metodo.nombre
+
       form.verMPF = 'editarMetodoPagoFactura'
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: resultado.mensaje || 'No se pudo cargar el registro para editar.',
-      })
     }
   } catch (error) {
     console.error('Error editing metodo pago:', error)
