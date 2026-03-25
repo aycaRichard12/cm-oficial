@@ -1,20 +1,25 @@
 <template>
   <q-page class="q-pa-md">
-    <!-- Menú de botones para seleccionar gráficos -->
-    <div class="q-mb-md">
-      <q-btn-toggle
+    <!-- Menú de navegación táctil y responsive -->
+    <div class="q-mb-md" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1)">
+      <q-tabs
         v-model="visibleChart"
-        toggle-color="primary"
-        :options="[
-          { label: 'Clientes', value: 'clientes' },
-          { label: 'Categorías', value: 'categoria' },
-          { label: 'Preferidos', value: 'preferido' },
-          { label: 'Monetario', value: 'monetario' },
-          { label: 'Almacen', value: 'almacen' },
-          { label: 'Todos', value: 'todos' },
-        ]"
-        class="q-mb-md"
-      />
+        dense
+        class="bg-white text-grey-8"
+        active-color="primary"
+        indicator-color="primary"
+        align="left"
+        narrow-indicator
+        outside-arrows
+        mobile-arrows
+      >
+        <q-tab name="clientes" label="Clientes" icon="people" />
+        <q-tab name="categoria" label="Categorías" icon="category" />
+        <q-tab name="preferido" label="Preferidos" icon="star" />
+        <q-tab name="monetario" label="Monetario" icon="payments" />
+        <q-tab name="almacen" label="Almacén" icon="store" />
+        <q-tab name="todos" label="Todos" icon="dashboard" />
+      </q-tabs>
     </div>
 
     <!-- Gráficos condicionales -->
