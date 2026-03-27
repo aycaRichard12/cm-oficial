@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import { api } from 'boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesG'
 
-
 export function useVentas() {
   const ventasValidas = ref([])
   const ventasAnuladas = ref([])
@@ -16,7 +15,7 @@ export function useVentas() {
       const idempresa = usuario?.empresa?.idempresa
 
       const response = await api.get(`listaVentas/${idempresa}`)
-      
+
       if (response.data.estado === 'error') {
         throw new Error(response.data.error)
       }
@@ -135,13 +134,13 @@ export function useVentas() {
       throw error
     }
   }
-  
+
   const cargarTodosLosDatos = async () => {
     cargando.value = true
     try {
-        await Promise.all([listarDatos(), listarDatosANU(), listarDatosDEV()])
+      await Promise.all([listarDatos(), listarDatosANU(), listarDatosDEV()])
     } finally {
-        cargando.value = false
+      cargando.value = false
     }
   }
 
@@ -153,6 +152,6 @@ export function useVentas() {
     listarDatos,
     listarDatosANU,
     listarDatosDEV,
-    cargarTodosLosDatos
+    cargarTodosLosDatos,
   }
 }

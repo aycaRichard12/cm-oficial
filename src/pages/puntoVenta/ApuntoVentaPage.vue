@@ -1,16 +1,12 @@
 <template>
-  <q-page padding >
+  <q-page padding>
     <!-- Vista 1: Tabla de Usuarios -->
-  <div v-if="showFirstView">
-
-  <q-card flat bordered class="q-pa-md">
-
-    <!-- Header -->
-    <div class="row items-center justify-between q-mb-md">
-     
-
-      <!-- (Opcional) botón -->
-      <!--
+    <div v-if="showFirstView">
+      <q-card flat bordered class="q-pa-md">
+        <!-- Header -->
+        <div class="row items-center justify-between q-mb-md">
+          <!-- (Opcional) botón -->
+          <!--
       <q-btn
         color="primary"
         icon="person_add"
@@ -18,21 +14,14 @@
         unelevated
       />
       -->
+        </div>
+
+        <!-- Tabla -->
+        <div class="q-mt-sm">
+          <UserTable :users="users" :columns="userColumns" @asignar="showAssignForm" />
+        </div>
+      </q-card>
     </div>
-
-  
-    <!-- Tabla -->
-    <div class="q-mt-sm">
-      <UserTable
-        :users="users"
-        :columns="userColumns"
-        @asignar="showAssignForm"
-      />
-    </div>
-
-  </q-card>
-
-</div>
 
     <!-- Vista 2: Gestión de Asignaciones para el usuario seleccionado -->
     <div v-else>
@@ -40,11 +29,27 @@
       <q-card flat class="bg-white q-mb-md shadow-1 rounded-borders overflow-hidden">
         <q-card-section class="q-pa-md">
           <div class="row items-center no-wrap">
-            <q-btn flat round color="grey-7" icon="arrow_back" @click="showFirstView = true" class="q-mr-md" />
-            <q-avatar size="56px" font-size="28px" color="primary" text-color="white" icon="person" class="q-mr-md shadow-2" />
+            <q-btn
+              flat
+              round
+              color="grey-7"
+              icon="arrow_back"
+              @click="showFirstView = true"
+              class="q-mr-md"
+            />
+            <q-avatar
+              size="56px"
+              font-size="28px"
+              color="primary"
+              text-color="white"
+              icon="person"
+              class="q-mr-md shadow-2"
+            />
             <div class="col">
               <div class="text-h5 text-weight-bold text-dark">{{ selectedUser.name }}</div>
-              <div class="text-subtitle2 text-grey-7">{{ selectedUser.cargo || 'Responsable de Ventas' }}</div>
+              <div class="text-subtitle2 text-grey-7">
+                {{ selectedUser.cargo || 'Responsable de Ventas' }}
+              </div>
             </div>
             <div class="col-auto">
               <q-btn
@@ -79,7 +84,7 @@
 
       <!-- Diálogo de Formulario (Simplificado) -->
       <q-dialog v-model="showModal" persistent backdrop-filter="blur(4px)">
-        <q-card style="width: 700px; max-width: 95vw;" class="rounded-borders shadow-10">
+        <q-card style="width: 700px; max-width: 95vw" class="rounded-borders shadow-10">
           <q-card-section class="row items-center bg-primary text-white q-py-sm">
             <div class="text-h6">Registrar Punto de Venta</div>
             <q-space />
@@ -161,7 +166,7 @@ async function getAlmacenes() {
       name: item.almacen,
       id: item.idalmacen,
     }))
-    
+
     if (warehouses.value.length > 0) {
       cargarAsignaciones(warehouses.value[0].id)
     }
@@ -177,7 +182,7 @@ function showAssignForm(user) {
     id: user.idusuario,
     name: `${user.usuario} | ${user.nombre} ${user.apellido}`,
     idresponsable: user.idresponsable,
-    cargo: user.cargo
+    cargo: user.cargo,
   }
   showFirstView.value = false
   getAlmacenes()
@@ -189,7 +194,7 @@ async function loadPointsOfSale(warehouseId) {
   try {
     const response = await api.get(`listaPuntoVenta/${warehouseId}`)
     const todosLosPuntos = response.data.map((item) => ({ name: item.nombre, id: item.id }))
-    
+
     // Filtro local: solo mostrar los que no han sido asignados ya en este view
     const idsAsignados = assignments.value.map((a) => a.idpuntoventa || a.id)
     pointsOfSale.value = todosLosPuntos.filter((p) => !idsAsignados.includes(p.id))
@@ -201,7 +206,7 @@ async function loadPointsOfSale(warehouseId) {
 // Procesar el registro en el servidor
 async function submitAssignment({ warehouse, pointOfSale }) {
   submitting.value = true
-  
+
   const formData = new FormData()
   formData.append('idresponsable', idresponsable.value)
   formData.append('ver', 'registrarResponsablePuntoVenta')
@@ -212,7 +217,7 @@ async function submitAssignment({ warehouse, pointOfSale }) {
     const response = await api.post(``, formData)
     if (response.data.estado === 'exito') {
       $q.notify({ type: 'positive', message: 'Asignación registrada con éxito' })
-      
+
       // Actualizar datos y cerrar
       await cargarAsignaciones(warehouse)
       showModal.value = false
@@ -231,7 +236,7 @@ async function cargarAsignaciones(warehouseId) {
   try {
     const response = await api.get(`listaResponsablePuntoVenta/${idempresa}`)
     assignments.value = response.data.filter(
-      (u) => u.idalmacen == warehouseId && u.idresponsable == idresponsable.value
+      (u) => u.idalmacen == warehouseId && u.idresponsable == idresponsable.value,
     )
   } catch {
     $q.notify({ type: 'negative', message: 'Error cargando historial de asignaciones' })
@@ -259,4 +264,3 @@ function deleteAssignment(id) {
 
 onMounted(loadUsuarios)
 </script>
-
