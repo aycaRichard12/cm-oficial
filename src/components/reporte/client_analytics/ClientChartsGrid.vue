@@ -1,7 +1,7 @@
 <template>
   <div class="row q-col-gutter-md">
     <!-- Top Clientes por Volumen -->
-    <div class="col-12 col-lg-6">
+    <!-- <div class="col-12 col-lg-6">
       <q-card>
         <q-card-section>
           <VueApexCharts
@@ -12,10 +12,10 @@
           />
         </q-card-section>
       </q-card>
-    </div>
+    </div> -->
 
     <!-- Top Clientes por Frecuencia -->
-    <div class="col-12 col-lg-6">
+    <!-- <div class="col-12 col-lg-6">
       <q-card>
         <q-card-section>
           <VueApexCharts
@@ -26,7 +26,7 @@
           />
         </q-card-section>
       </q-card>
-    </div>
+    </div> -->
 
     <!-- Mejores Clientes Históricos -->
     <div class="col-12 col-lg-6">
@@ -86,162 +86,162 @@ const props = defineProps({
   fechaFin: String,
 })
 
-const subtitleText = computed(() => {
-  if (props.fechaInicio || props.fechaFin) {
-    return `Periodo: ${props.fechaInicio || '...'} al ${props.fechaFin || '...'}`
-  }
-  return 'Análisis General'
-})
+// const subtitleText = computed(() => {
+//   if (props.fechaInicio || props.fechaFin) {
+//     return `Periodo: ${props.fechaInicio || '...'} al ${props.fechaFin || '...'}`
+//   }
+//   return 'Análisis General'
+// })
 
 // ============================================
 // CHART 1: Top Clientes por Volumen
 // ============================================
-const chartTopVolumen = computed(() => ({
-  chart: {
-    type: 'bar',
-    height: 350,
-    toolbar: { show: true },
-  },
-  title: {
-    text: 'Top Clientes con más compras',
-    align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-      borderRadius: 4,
-      dataLabels: { position: 'top' },
-    },
-  },
-  dataLabels: {
-    enabled: true,
-    offsetX: 30,
-    style: { fontSize: '12px', colors: ['#333'] },
-  },
-  xaxis: {
-    categories: props.topClientesPorVolumen.map((c) => c.nombre),
-    title: { text: 'Compras' },
-  },
-  yaxis: {
-    labels: {
-      formatter: (value) => (value.length > 25 ? value.substring(0, 25) + '...' : value),
-    },
-  },
-  tooltip: {
-    custom: ({ dataPointIndex }) => {
-      const cliente = props.topClientesPorVolumen[dataPointIndex]
-      if (!cliente) return ''
-      let html = `
-        <div class="custom-tooltip">
-          <div class="tooltip-header">${cliente.nombre}</div>
-          <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
-          <div class="tooltip-row"><strong>Compras (${subtitleText.value}):</strong> ${cliente.compras_ultimos_X_dias}</div>
-          <div class="tooltip-row"><strong>Total Histórico:</strong> ${cliente.total_compras}</div>
-          <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
-      `
-      if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
-        html += `
-          <div class="tooltip-divider"></div>
-          <div class="tooltip-prediction">
-            <strong>Próxima compra estimada:</strong><br>
-            ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
-          </div>
-        `
-      }
-      html += '</div>'
-      return html
-    },
-  },
-  colors: ['#3b82f6'],
-  subtitle: {
-    text: subtitleText.value,
-    align: 'center',
-    style: { fontSize: '12px', color: '#666' }
-  }
-}))
+// const chartTopVolumen = computed(() => ({
+//   chart: {
+//     type: 'bar',
+//     height: 350,
+//     toolbar: { show: true },
+//   },
+//   title: {
+//     text: 'Top Clientes con más compras',
+//     align: 'center',
+//     style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
+//   },
+//   plotOptions: {
+//     bar: {
+//       horizontal: true,
+//       borderRadius: 4,
+//       dataLabels: { position: 'top' },
+//     },
+//   },
+//   dataLabels: {
+//     enabled: true,
+//     offsetX: 30,
+//     style: { fontSize: '12px', colors: ['#333'] },
+//   },
+//   xaxis: {
+//     categories: props.topClientesPorVolumen.map((c) => c.nombre),
+//     title: { text: 'Compras' },
+//   },
+//   yaxis: {
+//     labels: {
+//       formatter: (value) => (value.length > 25 ? value.substring(0, 25) + '...' : value),
+//     },
+//   },
+//   tooltip: {
+//     custom: ({ dataPointIndex }) => {
+//       const cliente = props.topClientesPorVolumen[dataPointIndex]
+//       if (!cliente) return ''
+//       let html = `
+//         <div class="custom-tooltip">
+//           <div class="tooltip-header">${cliente.nombre}</div>
+//           <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
+//           <div class="tooltip-row"><strong>Compras (${subtitleText.value}):</strong> ${cliente.compras_ultimos_X_dias}</div>
+//           <div class="tooltip-row"><strong>Total Histórico:</strong> ${cliente.total_compras}</div>
+//           <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
+//       `
+//       if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
+//         html += `
+//           <div class="tooltip-divider"></div>
+//           <div class="tooltip-prediction">
+//             <strong>Próxima compra estimada:</strong><br>
+//             ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
+//           </div>
+//         `
+//       }
+//       html += '</div>'
+//       return html
+//     },
+//   },
+//   colors: ['#3b82f6'],
+//   subtitle: {
+//     text: subtitleText.value,
+//     align: 'center',
+//     style: { fontSize: '12px', color: '#666' }
+//   }
+// }))
 
-const seriesTopVolumen = computed(() => [
-  {
-    name: 'Compras',
-    data: props.topClientesPorVolumen.map((c) => c.compras_ultimos_X_dias),
-  },
-])
+// const seriesTopVolumen = computed(() => [
+//   {
+//     name: 'Compras',
+//     data: props.topClientesPorVolumen.map((c) => c.compras_ultimos_X_dias),
+//   },
+// ])
 
 // ============================================
 // CHART 2: Top Clientes por Frecuencia
 // ============================================
-const chartTopFrecuencia = computed(() => ({
-  chart: {
-    type: 'bar',
-    height: 350,
-    toolbar: { show: true },
-  },
-  title: {
-    text: 'Top Clientes por Frecuencia',
-    align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-      borderRadius: 4,
-      dataLabels: { position: 'top' },
-    },
-  },
-  dataLabels: {
-    enabled: true,
-    offsetX: 30,
-    style: { fontSize: '12px', colors: ['#333'] },
-  },
-  xaxis: {
-    categories: props.topClientesPorFrecuencia.map((c) => c.nombre),
-    title: { text: 'Número de Compras' },
-  },
-  yaxis: {
-    labels: {
-      formatter: (value) => (value.length > 25 ? value.substring(0, 25) + '...' : value),
-    },
-  },
-  tooltip: {
-    custom: ({ dataPointIndex }) => {
-      const cliente = props.topClientesPorFrecuencia[dataPointIndex]
-      if (!cliente) return ''
-      let html = `
-        <div class="custom-tooltip">
-          <div class="tooltip-header">${cliente.nombre}</div>
-          <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
-          <div class="tooltip-row"><strong>Compras en el periodo:</strong> ${cliente.compras_ultimos_X_dias}</div>
-          <div class="tooltip-row"><strong>Total Compras:</strong> ${cliente.total_compras}</div>
-          <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
-      `
-      if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
-        html += `
-          <div class="tooltip-divider"></div>
-          <div class="tooltip-prediction">
-            <strong>Próxima compra estimada:</strong><br>
-            ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
-          </div>
-        `
-      }
-      html += '</div>'
-      return html
-    },
-  },
-  colors: ['#10b981'],
-  subtitle: {
-    text: subtitleText.value,
-    align: 'center',
-    style: { fontSize: '12px', color: '#666' }
-  }
-}))
+// const chartTopFrecuencia = computed(() => ({
+//   chart: {
+//     type: 'bar',
+//     height: 350,
+//     toolbar: { show: true },
+//   },
+//   title: {
+//     text: 'Top Clientes por Frecuencia',
+//     align: 'center',
+//     style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
+//   },
+//   plotOptions: {
+//     bar: {
+//       horizontal: true,
+//       borderRadius: 4,
+//       dataLabels: { position: 'top' },
+//     },
+//   },
+//   dataLabels: {
+//     enabled: true,
+//     offsetX: 30,
+//     style: { fontSize: '12px', colors: ['#333'] },
+//   },
+//   xaxis: {
+//     categories: props.topClientesPorFrecuencia.map((c) => c.nombre),
+//     title: { text: 'Número de Compras' },
+//   },
+//   yaxis: {
+//     labels: {
+//       formatter: (value) => (value.length > 25 ? value.substring(0, 25) + '...' : value),
+//     },
+//   },
+//   tooltip: {
+//     custom: ({ dataPointIndex }) => {
+//       const cliente = props.topClientesPorFrecuencia[dataPointIndex]
+//       if (!cliente) return ''
+//       let html = `
+//         <div class="custom-tooltip">
+//           <div class="tooltip-header">${cliente.nombre}</div>
+//           <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
+//           <div class="tooltip-row"><strong>Compras en el periodo:</strong> ${cliente.compras_ultimos_X_dias}</div>
+//           <div class="tooltip-row"><strong>Total Compras:</strong> ${cliente.total_compras}</div>
+//           <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
+//       `
+//       if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
+//         html += `
+//           <div class="tooltip-divider"></div>
+//           <div class="tooltip-prediction">
+//             <strong>Próxima compra estimada:</strong><br>
+//             ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
+//           </div>
+//         `
+//       }
+//       html += '</div>'
+//       return html
+//     },
+//   },
+//   colors: ['#10b981'],
+//   subtitle: {
+//     text: subtitleText.value,
+//     align: 'center',
+//     style: { fontSize: '12px', color: '#666' }
+//   }
+// }))
 
-const seriesTopFrecuencia = computed(() => [
-  {
-    name: 'Compras',
-    data: props.topClientesPorFrecuencia.map((c) => c.compras_ultimos_X_dias),
-  },
-])
+// const seriesTopFrecuencia = computed(() => [
+//   {
+//     name: 'Compras',
+//     data: props.topClientesPorFrecuencia.map((c) => c.compras_ultimos_X_dias),
+//   },
+// ])
 
 // ============================================
 // CHART 3: Mejores Clientes Históricos
@@ -255,7 +255,7 @@ const chartMejoresHistoricos = computed(() => ({
   title: {
     text: 'Mejores Clientes (Histórico)',
     align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
+    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
   },
   plotOptions: {
     bar: {
@@ -328,7 +328,7 @@ const chartDistribucion = computed(() => ({
   title: {
     text: 'Distribución por Estado',
     align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
+    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
   },
   labels: ['Activos', 'En Riesgo', 'Discontinuados'],
   colors: ['#10b981', '#f59e0b', '#ef4444'],
@@ -392,7 +392,7 @@ const chartTimeline = computed(() => ({
   title: {
     text: 'Evolución de Ventas',
     align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' }
+    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
   },
   stroke: {
     curve: 'smooth',
