@@ -12,6 +12,10 @@
                 <div class="text-subtitle1 text-grey-7 q-mt-xs">
                   Gestiona las operaciones y niveles de autorización para los usuarios del sistema
                 </div>
+                <div v-if="usuarioSesion" class="text-caption text-grey-6 q-mt-xs">
+                  <q-icon name="person_outline" size="xs" color="grey-7" class="q-mr-xs" />
+                  Sesión iniciada como: <span class="text-weight-medium">{{ usuarioSesion }}</span>
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -39,7 +43,7 @@
               title="Operaciones Registradas"
               :rows="operaciones"
               :columns="columns"
-              :array-headers="['usuario', 'codigo', 'operacion', 'estado']"
+              :array-headers="['usuario', 'nombreCompleto', 'codigo', 'operacion', 'estado']"
               row-key="id"
             >
               <template v-slot:body-cell-estado="props">
@@ -97,12 +101,13 @@ import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 import FormAutorizarPermisos from 'src/components/general/operacionesPermisos/FormAutorizarPermisos.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 
 const $q = useQuasar()
 const operaciones = ref([])
 const loading = ref(false)
 const IDMD5 = idempresa_md5()
+const usuarioSesion = getUsuario() // Devuelve el nombre completo (string)
 
 // Definición de columnas para la tabla
 const columns = [
@@ -119,6 +124,14 @@ const columns = [
     align: 'left', 
     label: 'Usuario', 
     field: 'usuario', 
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'nombreCompleto', 
+    align: 'left', 
+    label: 'Nombre Completo', 
+    field: 'nombreCompleto', 
     sortable: true,
     dataType: 'text'
   },
@@ -163,10 +176,12 @@ const fetchOperaciones = async () => {
     const response = data.data
     console.log('operaciones que pueden hacer creo ',response)
     operaciones.value = response.data.map((obj, index) => {
+      const userPermiso = obj.usuario?.[0] || {}
       return {
-        ...obj,
-        id: index + 1,
-        usuario: obj.usuario[0]?.usuario || 'N/A',
+       ...obj,
+       id: index + 1,
+       usuario: userPermiso.usuario || 'N/A',
+       nombreCompleto: usuarioSesion
       }
     })
   } catch (error) {
