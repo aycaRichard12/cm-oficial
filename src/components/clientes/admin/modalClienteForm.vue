@@ -1,28 +1,53 @@
 <template>
-  <q-card class="q-pa-m">
-    <q-card-section>
-      <h5 class="text-left q-mt-none q-mb-md">Nuevo Registro</h5>
-      <q-form @submit.prevent="onSubmit" class="">
+  <q-card style="width: 800px; max-width: 95vw" class="shadow-24">
+    <q-toolbar class="bg-primary text-white">
+      <q-toolbar-title>
+        <q-icon name="person_add" class="q-mr-sm" size="28px" />
+        Nuevo Registro de Cliente
+      </q-toolbar-title>
+      <q-btn flat round dense icon="close" v-close-popup @click="$emit('cancel')" />
+    </q-toolbar>
+
+    <q-card-section class="q-pa-lg">
+      <q-form @submit.prevent="onSubmit" class="q-gutter-y-sm">
         <div class="row q-col-gutter-md">
-          <div class="col-md-3">
+          <!-- Razón Social -->
+          <div class="col-12 col-md-6">
             <q-input
               outlined
+              dense
               v-model="localData.nombre"
               label="Razón Social *"
+              placeholder="Ej: Juan Pérez o Empresa S.A."
               :rules="[(val) => !!val || 'Campo Obligatorio']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="business" color="primary" />
+              </template>
+            </q-input>
           </div>
-          <div class="col-md-3">
+
+          <!-- Nombre Comercial -->
+          <div class="col-12 col-md-6">
             <q-input
               outlined
+              dense
               v-model="localData.nombrecomercial"
               label="Nombre Comercial *"
+              placeholder="Ej: Mi Negocio"
               :rules="[(val) => !!val || 'Campo Obligatorio']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="storefront" color="primary" />
+              </template>
+            </q-input>
           </div>
-          <div class="col-md-3">
+
+          <!-- Tipo de Cliente -->
+          <div class="col-12 col-md-4">
             <q-select
               outlined
+              dense
               v-model="localData.tipocliente"
               :options="tipoClienteOptions"
               label="Tipo de Cliente *"
@@ -31,11 +56,18 @@
               emit-value
               map-options
               :rules="[(val) => !!val || 'Seleccione un tipo']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="groups" color="primary" />
+              </template>
+            </q-select>
           </div>
-          <div class="col-md-3">
+
+          <!-- Canal de Venta -->
+          <div class="col-12 col-md-4">
             <q-select
               outlined
+              dense
               v-model="localData.canalventa"
               :options="canalVentaOptions"
               label="Canal de venta *"
@@ -44,11 +76,18 @@
               emit-value
               map-options
               :rules="[(val) => !!val || 'Seleccione un canal']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="shopping_cart" color="primary" />
+              </template>
+            </q-select>
           </div>
-          <div class="col-md-3">
+
+          <!-- Tipo de Documento -->
+          <div class="col-12 col-md-4">
             <q-select
               outlined
+              dense
               v-model="localData.tipodocumento"
               :options="tipoDocumetosOptions"
               label="Tipo de Documentos *"
@@ -57,24 +96,64 @@
               emit-value
               map-options
               :rules="[(val) => !!val || 'Seleccione un tipo']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="badge" color="primary" />
+              </template>
+            </q-select>
           </div>
-          <div class="col-md-3">
+
+          <!-- Nro De Documento -->
+          <div class="col-12 col-md-6">
             <q-input
               outlined
+              dense
               v-model="localData.nrodocumento"
-              label="Nro De Documento"
+              label="Nro De Documento *"
               :rules="[(val) => !!val || 'Campo obligatorio']"
-            />
+            >
+              <template v-slot:prepend>
+                <q-icon name="numbers" color="primary" />
+              </template>
+            </q-input>
           </div>
-          <div class="col-md-3">
-            <q-input outlined v-model="localData.telefono" label="Teléfono" />
+
+          <!-- Teléfono -->
+          <div class="col-12 col-md-6">
+            <q-input
+              outlined
+              dense
+              v-model="localData.telefono"
+              label="Teléfono"
+              placeholder="Ej: 71234567"
+            >
+              <template v-slot:prepend>
+                <q-icon name="phone" color="primary" />
+              </template>
+            </q-input>
           </div>
         </div>
-        <q-card-actions align="right">
-          <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-          <q-btn label="Guardar" type="submit" color="primary" />
-        </q-card-actions>
+
+        <q-separator class="q-my-md" />
+
+        <div class="row justify-end q-gutter-sm">
+          <q-btn
+            label="Cancelar"
+            flat
+            color="grey-7"
+            v-close-popup
+            @click="$emit('cancel')"
+            class="q-px-md"
+          />
+          <q-btn
+            label="Guardar Cliente"
+            type="submit"
+            color="primary"
+            unelevated
+            icon="save"
+            class="q-px-lg"
+          />
+        </div>
       </q-form>
     </q-card-section>
   </q-card>
@@ -82,25 +161,23 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 
-const idempresa = idempresa_md5()
-const emit = defineEmits(['update:modelValue', 'recordCreated'])
 
-const $q = useQuasar()
+const idempresa = idempresa_md5()
+const emit = defineEmits(['update:modelValue', 'recordCreated', 'cancel'])
 
 const localData = ref({
   ver: 'registroClienteMinimal',
   idempresa: idempresa,
   nombre: '',
   nombrecomercial: '',
-  tipocliente: null, // Will be set after options load
-  canalventa: null, // Will be set after options load
-  tipodocumento: null, // Defaulting to '5' (NIT) as per your options
-  nrodocumento: '0', // Defaulting to '0' instead of '11 1111 11' for a numeric field
-  telefono: '0', // Defaulting to '0' instead of '000 000 00'
+  tipocliente: null,
+  canalventa: null,
+  tipodocumento: null,
+  nrodocumento: '',
+  telefono: '',
 })
 
 // Define options for your select fields
@@ -120,18 +197,13 @@ const cargarCanalesVenta = async () => {
     const response = await api.get(`listaCanalVenta/${idempresa}`)
     canalVentaOptions.value = response.data.map((item) => ({
       label: item.canal,
-      value: item.id, // Assuming 'id' is the value you want to emit
+      value: item.id,
     }))
-    // Set default *after* options are loaded
     if (canalVentaOptions.value.length > 0) {
-      localData.value.canalventa = canalVentaOptions.value[0].value // Sets the first option as default
+      localData.value.canalventa = canalVentaOptions.value[0].value
     }
   } catch (error) {
     console.error('Error al cargar canales de venta:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los canales de venta.',
-    })
   }
 }
 
@@ -140,26 +212,19 @@ const cargarTipoCliente = async () => {
     const response = await api.get(`listaTipoCliente/${idempresa}`)
     tipoClienteOptions.value = response.data.map((item) => ({
       label: item.tipo,
-      value: item.id, // Assuming 'id' is the value you want to emit
+      value: item.id,
     }))
-    // Set default *after* options are loaded
     if (tipoClienteOptions.value.length > 0) {
-      localData.value.tipocliente = tipoClienteOptions.value[0].value // Sets the first option as default
+      localData.value.tipocliente = tipoClienteOptions.value[0].value
     }
   } catch (error) {
     console.error('Error al cargar tipos de cliente:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los tipos de cliente.',
-    })
   }
 }
 
 const onSubmit = async () => {
-  // You would typically perform form validation here if not relying solely on Quasar's :rules
-  // For now, we'll just emit and close
+  emit('recordCreated', localData.value)
   emit('update:modelValue', false)
-  emit('recordCreated', localData.value) // localData.value is the object
 }
 
 onMounted(() => {
@@ -167,3 +232,5 @@ onMounted(() => {
   cargarCanalesVenta()
 })
 </script>
+
+

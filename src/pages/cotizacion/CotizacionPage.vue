@@ -371,29 +371,54 @@
     <!-- Diálogo: metodo de pago -->
 
     <q-dialog v-model="modalmetodopago">
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Metodo pago</div>
-          <q-btn icon="close" @click="modalmetodopago = false" flat round dense />
+      <q-card class="responsive-dialog" style="min-width: 450px; max-width: 700px">
+        <q-card-section class="bg-primary text-white text-h6 flex justify-between items-center">
+          <div class="flex items-center">
+            <q-icon name="payments" class="q-mr-sm" />
+            Método de Pago
+          </div>
+          <q-btn icon="close" v-close-popup flat round dense />
         </q-card-section>
-        <q-card-section>
-          <div class="">
-            <div class="q-gutter-sm q-mb-md">
-              <q-radio v-model="variablePago" val="directo" color="green" label="Pago Único">
+
+        <q-card-section class="q-pt-lg">
+          <div class="row justify-center q-mb-xl">
+            <q-btn-toggle
+              v-model="carritoCO.credito"
+              toggle-color="primary"
+              color="white"
+              text-color="primary"
+              unelevated
+              padding="8px 24px"
+              class="shadow-2"
+              @update:model-value="handleTipoPagoGeneralChange"
+              :options="[
+                { label: 'Efectivo', value: false, icon: 'payments' },
+                { label: 'Crédito', value: true, icon: 'credit_score' },
+              ]"
+            />
+          </div>
+
+          <!-- SECCIÓN EFECTIVO -->
+          <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
+            <div class="text-subtitle1 text-weight-bold q-mb-md text-primary flex items-center">
+              <q-icon name="payments" class="q-mr-xs" /> Caso Efectivo
+            </div>
+            <div class="q-gutter-sm q-mb-lg row justify-center">
+              <q-radio v-model="variablePago" val="directo" color="positive" label="Pago Único">
                 <template v-slot:prepend>
-                  <q-icon name="attach_money" color="green" />
+                  <q-icon name="account_balance_wallet" color="positive" />
                 </template>
               </q-radio>
-              <q-radio v-model="variablePago" val="dividido" label="Método de Pago Dividido">
+              <q-radio v-model="variablePago" val="dividido" color="orange" label="Pago Dividido">
                 <template v-slot:prepend>
-                  <q-icon name="money_off" color="orange" />
+                  <q-icon name="call_split" color="orange" />
                 </template>
               </q-radio>
             </div>
 
             <div v-if="variablePago === 'directo'" class="row q-col-gutter-md q-pt-md">
-              <div class="col-12 col-md-4">
-                <label for="metodopago">Método de pago*</label>
+              <div class="col-12">
+                <label for="metodopago" class="text-weight-medium">Método de pago*</label>
                 <q-select
                   v-model="metodoPago"
                   id="metodopago"
@@ -402,52 +427,54 @@
                   :options="metodosPagos"
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un canal']"
+                  :rules="[(val) => !!val || 'Seleccione un método de pago']"
                 >
+                  <template v-slot:prepend>
+                    <q-icon name="payment" />
+                  </template>
                 </q-select>
               </div>
             </div>
+
             <div v-else-if="variablePago === 'dividido'" class="q-pt-md">
               <div
                 v-for="(payment, index) in pagosDivididos"
                 :key="index"
-                class="row q-col-gutter-md q-mb-sm items-center"
+                class="row q-col-gutter-md q-mb-sm items-start"
               >
-                <div class="col-12 col-md-4">
-                  <label for="metodopago">Método de pago*</label>
+                <div class="col-12 col-md-5">
                   <q-select
                     v-model="payment.metodoPago"
-                    id="metodopago"
+                    label="Método de pago*"
                     dense
                     outlined
                     :options="metodosPagos"
                     option-label="label"
                     option-value="value"
-                    :rules="[(val) => !!val || 'Seleccione un metodoPago']"
+                    :rules="[(val) => !!val || 'Requerido']"
                   >
+                    <template v-slot:prepend>
+                      <q-icon name="payment" />
+                    </template>
                   </q-select>
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="monto">{{ 'Monto' + ' (' + divisaActiva.tipo + ')' }}</label>
                   <q-input
                     v-model="payment.monto"
-                    id="monto"
+                    :label="'Monto (' + divisaActiva.tipo + ')'"
                     type="number"
                     min="0"
                     step="0.01"
-                    required
                     dense
                     outlined
                     @update:model-value="calculateRemainingAmount(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  >
-                  </q-input>
+                    :rules="[(val) => !!val || 'Requerido']"
+                  />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="porcentaje">Porcentaje (%)</label>
                   <q-input
                     v-model="payment.porcentaje"
-                    id="porcentaje"
+                    label="Porcentaje (%)"
                     type="number"
                     min="0"
                     max="100"
@@ -455,171 +482,161 @@
                     dense
                     outlined
                     @update:model-value="calculateAmountFromPercentage(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  >
-                  </q-input>
+                    :rules="[(val) => !!val || 'Requerido']"
+                  />
                 </div>
-                <div class="col-12 col-md-2 text-right">
+                <div class="col-12 col-md-1 text-center">
                   <q-btn
                     v-if="pagosDivididos.length > 1"
-                    icon="delete"
+                    icon="remove_circle"
                     color="negative"
                     flat
                     round
                     @click="removePaymentMethod(index)"
+                    class="q-mt-xs"
                   />
                 </div>
               </div>
-              <q-btn
-                label="Agregar Método de Pago"
-                icon="add"
-                color="green"
-                @click="addPaymentMethod"
-                class="q-mt-md"
-              />
-              <div class="q-mt-lg" style="font-size: 15px">
-                <p class="">
-                  <q-icon name="calculate" color="primary" class="q-mr-sm" />
-                  <strong>Total Pagado:</strong> {{ totalPaidAmount.toFixed(2) }}
-                  {{ divisaActiva.tipo }}
-                </p>
-                <p class="">
-                  <q-icon name="pending_actions" color="orange" class="q-mr-sm" />
-                  <strong>Restante por Pagar:</strong> {{ remainingAmount.toFixed(2) }}
-                  {{ divisaActiva.tipo }}
-                </p>
-                <q-banner
-                  v-if="remainingAmount !== 0"
+
+              <div class="flex justify-end q-mt-sm">
+                <q-btn
+                  label="Agregar Pago"
+                  icon="add"
+                  color="positive"
+                  outline
                   dense
-                  rounded
-                  class="bg-warning text-white q-mt-sm"
+                  @click="addPaymentMethod"
+                />
+              </div>
+
+              <q-banner
+                v-if="remainingAmount !== 0"
+                dense
+                rounded
+                class="bg-orange-1 text-orange-9 q-mt-md"
+              >
+                <template v-slot:avatar>
+                  <q-icon name="warning" />
+                </template>
+                <div class="row q-col-gutter-x-lg">
+                  <div><strong>Pagado:</strong> {{ totalPaidAmount.toFixed(2) }}</div>
+                  <div><strong>Restante:</strong> {{ remainingAmount.toFixed(2) }}</div>
+                </div>
+              </q-banner>
+            </div>
+          </div>
+
+          <!-- SECCIÓN CRÉDITO -->
+          <div v-else class="animate__animated animate__fadeIn">
+            <div class="text-subtitle1 text-weight-bold q-mb-md text-primary flex items-center">
+              <q-icon name="credit_score" class="q-mr-xs" /> Caso Crédito
+            </div>
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-6">
+                <label for="cantidadpagos" class="text-weight-medium">Cantidad de pagos*</label>
+                <q-input
+                  v-model="carritoCO.cantidadPagos"
+                  id="cantidadpagos"
+                  type="number"
+                  min="1"
+                  dense
+                  outlined
+                  @update:model-value="calculatePayments(); calculateDueDate()"
+                  :rules="[(val) => !!val || 'Requerido']"
                 >
-                  <template v-slot:avatar>
-                    <q-icon name="warning" color="white" />
+                  <template v-slot:prepend>
+                    <q-icon name="format_list_numbered" color="primary" />
                   </template>
-                  El monto total pagado no coincide con la venta total.
-                </q-banner>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="montopago" class="text-weight-medium">Monto de pagos*</label>
+                <q-input
+                  v-model="carritoCO.montoPagos"
+                  id="montopago"
+                  dense
+                  outlined
+                  readonly
+                  class="bg-grey-1"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="paid" color="primary" />
+                  </template>
+                  <template v-slot:append>
+                    <span class="text-body2 text-grey-7">{{ divisaActiva.tipo }}</span>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="periodo" class="text-weight-medium">Frecuencia de pagos*</label>
+                <q-select
+                  v-model="carritoCO.periodo"
+                  id="periodo"
+                  dense
+                  outlined
+                  :options="periodOptions"
+                  option-label="label"
+                  option-value="value"
+                  emit-value
+                  map-options
+                  @update:model-value="calculateDueDate"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event_repeat" color="primary" />
+                  </template>
+                </q-select>
+              </div>
+
+              <div v-if="carritoCO.periodo === 0" class="col-12 col-md-6">
+                <label for="plazopersonalizada" class="text-weight-medium">Plazo total (días)*</label>
+                <q-input
+                  v-model="carritoCO.plazoPersonalizado"
+                  id="plazopersonalizada"
+                  type="number"
+                  min="0"
+                  dense
+                  outlined
+                  @update:model-value="calculateDueDate"
+                  :rules="[(val) => !!val || 'Requerido']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="edit_calendar" color="primary" />
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="fechalimite" class="text-weight-medium">Fecha límite*</label>
+                <q-input
+                  v-model="carritoCO.fechaLimite"
+                  id="fechalimite"
+                  dense
+                  outlined
+                  type="date"
+                  readonly
+                  class="bg-grey-2"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event_available" color="primary" />
+                  </template>
+                </q-input>
               </div>
             </div>
           </div>
         </q-card-section>
 
-        <q-card-section>
-          <h5 class="q-my-sm text-primary" style="font-size: 15px">
-            <q-icon name="schedule" color="purple" class="q-mr-sm" />
-            Condiciones de Crédito
-          </h5>
-          <div class="col-12 q-mb-md">
-            <q-toggle
-              v-model="carritoCO.credito"
-              label="¿A crédito?"
-              left-label
-              @update:model-value="toggleCredit"
-            >
-              <template v-slot:prepend>
-                <q-icon name="credit_score" color="purple" />
-              </template>
-            </q-toggle>
-          </div>
-
-          <div v-if="carritoCO.credito" class="row q-col-gutter-md q-pt-md">
-            <div class="col-12 col-md-4">
-              <label for="cantidadpagos">Cantidad de pagos*</label>
-              <q-input
-                v-model="carritoCO.cantidadPagos"
-                id="cantidadpagos"
-                type="number"
-                min="0"
-                required
-                dense
-                outlined
-                @update:model-value="calculatePayments"
-                :rules="[(val) => !!val || 'Campo Obligatorio']"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="format_list_numbered" color="purple" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="montopago">Monto de pagos*</label>
-              <q-input
-                v-model="carritoCO.montoPagos"
-                id="montopago"
-                dense
-                outlined
-                :disable="!carritoCO.credito"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="paid" color="purple" />
-                </template>
-                <template v-slot:append>
-                  <q-btn flat :label="divisaActiva.simbolo" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="periodo">Período establecido*</label>
-              <q-select
-                v-model="carritoCO.periodo"
-                id="periodo"
-                dense
-                outlined
-                :options="periodOptions"
-                option-label="label"
-                option-value="value"
-                emit-value
-                map-options
-                required
-                @update:model-value="calculateDueDate"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="calendar_today" color="purple" />
-                </template>
-              </q-select>
-            </div>
-
-            <div v-if="carritoCO.periodo === 0" class="col-12 col-md-4">
-              <label for="plazopersonalizada">Plazo total (días)*</label>
-              <q-input
-                v-model="carritoCO.plazoPersonalizado"
-                id="plazopersonalizada"
-                type="number"
-                min="0"
-                dense
-                outlined
-                required
-                @update:model-value="calculateDueDate"
-                :rules="[(val) => !!val || 'Campo Obligatorio']"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="edit_calendar" color="purple" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="fechalimite">Fecha límite*</label>
-              <q-input
-                v-model="carritoCO.fechaLimite"
-                id="fechalimite"
-                dense
-                outlined
-                type="date"
-                :disable="true"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="event_available" color="purple" />
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="OK" color="primary" @click="enviarDatos" />
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Cancelar" color="grey-7" v-close-popup />
+          <q-btn
+            unelevated
+            label="Confirmar Cotización"
+            color="primary"
+            class="q-px-lg"
+            @click="enviarDatos"
+            :disable="variablePago === 'dividido' && remainingAmount !== 0"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -942,17 +959,11 @@ const handleTipoOperacionChange = () => {
   console.log(tipoOperacion.value)
 }
 const cambioFecha = () => {
-  const storedCarrito = localStorage.getItem('carritoCO')
-  if (storedCarrito) {
-    const carritoData = JSON.parse(storedCarrito)
-    carritoData.fecha = fecha.value
-    Object.assign(carritoCO, carritoData)
-    localStorage.setItem('carritoCO', JSON.stringify(carritoData))
+  carritoCO.fecha = fecha.value
+  if (carritoCO.credito) {
+    calculateDueDate()
   }
-  cotizacionFormRef.value.resetValidation() // Resetear validación
-
-  resetFormulario()
-  console.log(tipoOperacion.value)
+  cotizacionFormRef.value?.resetValidation()
 }
 
 // Cargar carrito desde localStorage al inicio
@@ -1002,26 +1013,21 @@ const cotizacion_proforma = async () => {
 // ======================== TIpo de pago combinado =================
 
 const totalSaleAmount = computed(() => {
-  const cartData = JSON.parse(localStorage.getItem('carritoCO') || '{}')
-  if (cartData && cartData.ventatotal) {
-    return parseFloat(cartData.ventatotal)
-  }
-  return 0
+  return parseFloat(carritoCO.ventatotal) || 0
 })
 
 const totalPaidAmount = computed(() => {
   if (variablePago.value === 'dividido') {
     return pagosDivididos.value.reduce((sum, payment) => sum + parseFloat(payment.monto || 0), 0)
   }
-  return 0 // Not applicable for direct payment or credit for this specific calculation
+  return 0
 })
 
 const remainingAmount = computed(() => {
-  // Only calculate remaining if it's a divided payment type
   if (variablePago.value === 'dividido') {
     return totalSaleAmount.value - totalPaidAmount.value
   }
-  return 0 // Not relevant for direct or credit payment types
+  return 0
 })
 
 const addPaymentMethod = () => {
@@ -1835,15 +1841,25 @@ watch(
     console.log(nuevoValor)
     if (nuevoValor === 'directo') {
       // Limpiar los datos de pago dividido
-      pagosDivididos.value = []
-      remainingAmount.value = 0
-      totalPaidAmount.value = 0
+      pagosDivididos.value = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
     } else if (nuevoValor === 'dividido') {
       // Limpiar el método de pago único
       metodoPago.value = null
     }
   },
 )
+
+const handleTipoPagoGeneralChange = (val) => {
+  if (val) {
+    // Caso Crédito
+    variablePago.value = 'directo'
+    calculatePayments()
+    calculateDueDate()
+  } else {
+    // Caso Efectivo
+    toggleCredit(false)
+  }
+}
 
 // --- Inicialización ---
 onMounted(async () => {

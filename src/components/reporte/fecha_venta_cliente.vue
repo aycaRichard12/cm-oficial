@@ -8,21 +8,17 @@
           <q-icon name="analytics" class="q-mr-sm text-h4" />
           <span class="text-h5 text-md-h4">Análisis de Clientes</span>
         </div>
-        <div class="text-subtitle2 text-grey-6 text-caption text-sm-subtitle2">Dashboard de comportamiento y ventas</div>
+        <div class="text-subtitle2 text-grey-6 text-caption text-sm-subtitle2">
+          Dashboard de comportamiento y ventas
+        </div>
       </div>
-      
+
       <!-- Controles de Filtro -->
       <div class="col-12 col-md-auto">
         <div class="row q-col-gutter-sm items-center">
           <div class="col-6 col-sm-auto">
             <!-- Date Pickers -->
-            <q-input 
-              v-model="fechaInicio" 
-              dense 
-              outlined 
-              label="Inicio" 
-              mask="##/##/####"
-            >
+            <q-input v-model="fechaInicio" dense outlined label="Inicio" mask="##/##/####">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -38,13 +34,7 @@
           </div>
 
           <div class="col-6 col-sm-auto">
-            <q-input 
-              v-model="fechaFin" 
-              dense 
-              outlined 
-              label="Fin" 
-              mask="##/##/####"
-            >
+            <q-input v-model="fechaFin" dense outlined label="Fin" mask="##/##/####">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -60,11 +50,11 @@
           </div>
 
           <div class="col-12 col-sm-auto flex items-center">
-            <q-btn 
-              color="primary" 
-              icon="search" 
-              label="Consultar" 
-              unelevated 
+            <q-btn
+              color="primary"
+              icon="search"
+              label="Consultar"
+              unelevated
               :loading="loading"
               @click="consultar"
               class="full-width"
@@ -117,7 +107,9 @@ const diasInactivosTabla = ref(30)
 import { date } from 'quasar'
 const timeStamp = Date.now()
 const fechaFin = ref(date.formatDate(timeStamp, 'DD/MM/YYYY'))
-const fechaInicio = ref(date.formatDate(date.subtractFromDate(timeStamp, { days: 60 }), 'DD/MM/YYYY'))
+const fechaInicio = ref(
+  date.formatDate(date.subtractFromDate(timeStamp, { days: 60 }), 'DD/MM/YYYY'),
+)
 
 // Analytics data orchestration
 // Usamos refs para los valores 'activos' que recibe el composable
