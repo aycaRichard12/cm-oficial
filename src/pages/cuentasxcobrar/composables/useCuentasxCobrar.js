@@ -24,44 +24,9 @@ import {
   decimas,
   obtenerFechaActualDato,
 } from 'src/composables/FuncionesG'
-
-/**
- * Convierte un File object (devuelto por q-file) a un archivo JPEG comprimido.
- * La función original convertirImagenUtil espera un HTMLInputElement (.files[0]),
- * por lo que aquí manejamos el File directamente.
- */
-function convertirFileAImagen(file, width = 500, calidad = 0.4) {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      reject('No se ha seleccionado ningún archivo.')
-      return
-    }
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = (event) => {
-      const img = new Image()
-      img.src = event.target.result
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const ratio = width / img.width
-        canvas.width = width
-        canvas.height = img.height * ratio
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
-        const dataUrl = canvas.toDataURL('image/jpeg', calidad)
-        // Convertir dataURL a File
-        const arr = dataUrl.split(',')
-        const mime = arr[0].match(/:(.*?);/)[1]
-        const bstr = atob(arr[1])
-        const n = bstr.length
-        const u8arr = new Uint8Array(n)
-        for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i)
-        resolve(new File([u8arr], 'comprobante.jpg', { type: mime }))
-      }
-      img.onerror = reject
-    }
-    reader.onerror = reject
-  })
-}
+import { objectToFormData } from 'src/composables/FuncionesGenerales'
+import imageCompression from 'browser-image-compression'
+import { useCurrencyStore } from 'src/stores/currencyStore'
 
 // ─────────────────────────────────────────────
 // Constantes
@@ -132,13 +97,19 @@ function formularioInicial() {
 export function useCuentasxCobrar() {
   const $q = useQuasar()
 
+  // ── Divisa ────────────────────────────────
+  const currencyStore = useCurrencyStore()
+
   // ── Estado de UI ──────────────────────────
   const vistaActiva = ref('principal')
   const mostrarForm = ref(false)
   const cargando = ref(false)
   const mostrarDialogoImagen = ref(false)
   const imagenSeleccionada = ref('')
-  const divisa = ref('$')
+  const isCompressing = ref(false)
+
+  /** Símbolo de la divisa activa (p. ej. '$', 'Bs.') */
+  const divisa = computed(() => currencyStore.simbolo)
 
   // ── Datos ─────────────────────────────────
   const rows = ref([])
@@ -207,6 +178,11 @@ export function useCuentasxCobrar() {
    *   – N almacenes → ofrece "Todos mis almacenes" + cada almacén individual.
    */
   async function cargarAlmacenesAutorizados() {
+    // Carga la divisa activa en paralelo con los almacenes
+    if (!currencyStore.divisa) {
+      currencyStore.cargarDivisaActiva()
+    }
+
     try {
       const contenidousuario = validarUsuario()
       const idempresa = contenidousuario[0]?.empresa?.idempresa
@@ -388,14 +364,43 @@ export function useCuentasxCobrar() {
   }
 
   async function convertirImagen(file) {
-    if (!file) {
+    if (!file || !(file instanceof File)) {
       formulario.value.imagenConvertida = null
       return
     }
+
     try {
-      formulario.value.imagenConvertida = await convertirFileAImagen(file)
-    } catch {
-      $q.notify({ type: 'negative', message: 'Error al procesar la imagen' })
+      isCompressing.value = true
+      
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+        fileType: 'image/jpeg',
+        initialQuality: 0.8,
+      }
+
+      const compressedBlob = await imageCompression(file, options)
+      
+      const newFileName = file.name.replace(/\.[^/.]+$/, "") + '.jpg'
+      const compressedFile = new File([compressedBlob], newFileName, {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      })
+
+      formulario.value.imagenConvertida = compressedFile
+
+      $q.notify({
+        message: 'Imagen optimizada con éxito',
+        color: 'positive',
+        icon: 'check_circle',
+        timeout: 1500,
+      })
+    } catch (error) {
+      console.error('Error al optimizar imagen:', error)
+      formulario.value.imagenConvertida = file
+    } finally {
+      isCompressing.value = false
     }
   }
 
@@ -406,14 +411,17 @@ export function useCuentasxCobrar() {
     }
 
     try {
-      const datos = new FormData()
-      datos.append('ver', 'registroPagoCuentaxCobrar')
-      datos.append('idestadocobro', formulario.value.idCredito)
-      datos.append('ncuotas', formulario.value.numeroCobros)
-      datos.append('total', formulario.value.totalCobro)
-      datos.append('saldo', formulario.value.saldoPorCobrar)
-      datos.append('fecha', formulario.value.fecha)
-      datos.append('imagen', formulario.value.imagenConvertida ?? '')
+      const dataForForm = {
+        ver: 'registroPagoCuentaxCobrar',
+        idestadocobro: formulario.value.idCredito,
+        ncuotas: formulario.value.numeroCobros,
+        total: formulario.value.totalCobro,
+        saldo: formulario.value.saldoPorCobrar,
+        fecha: formulario.value.fecha,
+        imagen: formulario.value.imagenConvertida ?? '',
+      }
+
+      const datos = objectToFormData(dataForForm)
 
       const response = await api.post(``, datos)
       const data = response.data
@@ -446,6 +454,7 @@ export function useCuentasxCobrar() {
     try {
       const response = await api.get(`listadetallecobros/${dato.id}`)
       const data = response.data
+      console.log("detalle", data)
 
       if (data.estado === 'error') throw new Error(data.error)
 
@@ -496,6 +505,7 @@ export function useCuentasxCobrar() {
 
     // Formulario
     formulario,
+    isCompressing,
 
     // Métodos de inicialización
     cargarAlmacenesAutorizados,
