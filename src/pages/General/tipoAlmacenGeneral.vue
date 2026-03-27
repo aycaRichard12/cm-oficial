@@ -115,27 +115,56 @@ function editItem(item) {
 }
 
 async function deleteItem(item) {
+  const esAlmacenAutomatico = item.tipoalmacen === 'ALMACEN_1'
+
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar el tipo de almacén "${item.tipoalmacen}"?`,
-    cancel: true,
+    title: 'Confirmar Eliminación',
+    message: esAlmacenAutomatico
+      ? `Este almacén ("${item.tipoalmacen}") fue creado automáticamente por el sistema. Su eliminación es una acción delicada que puede afectar reportes previos. Para confirmar la eliminación definitiva, escriba el nombre "${item.tipoalmacen}" abajo:`
+      : `¿Está seguro que desea eliminar el tipo de almacén "${item.tipoalmacen}"? Esta acción no se puede deshacer.`,
+    prompt: esAlmacenAutomatico
+      ? {
+          model: '',
+          isValid: (val) => val === item.tipoalmacen,
+          type: 'text',
+          placeholder: 'Escriba el nombre aquí...',
+        }
+      : null,
     persistent: true,
+    ok: {
+      flat: true,
+      label: 'Eliminar definitivamente',
+      color: 'negative',
+    },
+    cancel: {
+      flat: true,
+      color: 'primary',
+      label: 'Cancelar',
+    },
   }).onOk(async () => {
     try {
-      const response = await api.get(`eliminarTipoAlmacen/${item.id}/`) // Cambia a tu ruta real
-      console.log(response)
+      const response = await api.get(`eliminarTipoAlmacen/${item.id}/`)
       if (response.data.estado === 'exito') {
         loadRows()
         $q.notify({
           type: 'positive',
-          message: response.data.mensaje,
+          message: response.data.mensaje || 'Eliminado correctamente',
+        })
+      } else {
+        $q.notify({
+          type: 'warning',
+          message: response.data.mensaje || 'No se pudo eliminar el tipo de almacén',
+          icon: 'warning',
+          timeout: 4000,
         })
       }
     } catch (error) {
-      console.error('Error al cargar datos:', error)
+      console.error('Error al eliminar:', error)
+      const errorMsg =
+        error.response?.data?.mensaje || 'Error al conectar con el servidor para eliminar'
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: errorMsg,
       })
     }
   })

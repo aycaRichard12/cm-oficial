@@ -17,7 +17,7 @@
         <q-input
           v-model="filter.dateRange.from"
           id="fechaini"
-          mask="####-##-##"
+          mask="##/##/####"
           clearable
           dense
           outlined
@@ -26,7 +26,11 @@
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="filter.dateRange.from" @update:model-value="applyFilters" />
+                <q-date
+                  v-model="filter.dateRange.from"
+                  mask="DD/MM/YYYY"
+                  @update:model-value="applyFilters"
+                />
               </q-popup-proxy>
             </q-icon>
           </template>
@@ -39,14 +43,18 @@
           id="Fechafin"
           dense
           outlined
-          mask="####-##-##"
+          mask="##/##/####"
           clearable
           @update:model-value="applyFilters"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="filter.dateRange.to" @update:model-value="applyFilters" />
+                <q-date
+                  v-model="filter.dateRange.to"
+                  mask="DD/MM/YYYY"
+                  @update:model-value="applyFilters"
+                />
               </q-popup-proxy>
             </q-icon>
           </template>
@@ -73,14 +81,18 @@
           id="fechac"
           dense
           outlined
-          mask="####-##-##"
+          mask="##/##/####"
           clearable
           @update:model-value="applyFilters"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="filter.creationDate" @update:model-value="applyFilters" />
+                <q-date
+                  v-model="filter.creationDate"
+                  mask="DD/MM/YYYY"
+                  @update:model-value="applyFilters"
+                />
               </q-popup-proxy>
             </q-icon>
           </template>
@@ -198,7 +210,7 @@ import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { PDFCierreCaja } from 'src/utils/pdfReportGenerator'
 import CierreCajaPage from './CierreCajaPage.vue'
-import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
+
 const mostrarPDF = ref(false)
 const pdfData = ref(null)
 const cierrecaja = ref(false)
@@ -228,9 +240,17 @@ const columns = [
     label: 'Fecha Inicio',
     align: 'left',
     field: 'fecha_inicio',
+    format: (val) => (val ? date.formatDate(val, 'DD/MM/YYYY') : ''),
     sortable: true,
   },
-  { name: 'fecha_fin', label: 'Fecha Fin', align: 'left', field: 'fecha_fin', sortable: true },
+  {
+    name: 'fecha_fin',
+    label: 'Fecha Fin',
+    align: 'left',
+    field: 'fecha_fin',
+    format: (val) => (val ? date.formatDate(val, 'DD/MM/YYYY') : ''),
+    sortable: true,
+  },
   {
     name: 'observacion',
     label: 'Observación',
@@ -251,7 +271,7 @@ const columns = [
     label: 'Fecha de Creación',
     align: 'left',
     field: 'creado_en',
-    format: (val) => date.formatDate(val, 'YYYY-MM-DD HH:mm:ss'),
+    format: (val) => (val ? date.formatDate(val, 'DD/MM/YYYY HH:mm:ss') : ''),
     sortable: true,
   },
 
@@ -269,7 +289,10 @@ const authorizationOptions = [
 
 // Estado de los filtros
 const filter = ref({
-  dateRange: { from: obtenerFechaActualDato(), to: obtenerFechaActualDato() },
+  dateRange: {
+    from: date.formatDate(new Date(), 'DD/MM/YYYY'),
+    to: date.formatDate(new Date(), 'DD/MM/YYYY'),
+  },
   authorized: null,
   creationDate: null,
 })
@@ -298,8 +321,8 @@ const filteredData = computed(() => {
 
   // Filtro por rango de fechas
   if (filter.value.dateRange.from && filter.value.dateRange.to) {
-    const start = new Date(filter.value.dateRange.from)
-    const end = new Date(filter.value.dateRange.to)
+    const start = date.extractDate(filter.value.dateRange.from, 'DD/MM/YYYY')
+    const end = date.extractDate(filter.value.dateRange.to, 'DD/MM/YYYY')
     temp = temp.filter((row) => {
       const rowStartDate = new Date(row.fecha_inicio)
       const rowEndDate = new Date(row.fecha_fin)
@@ -315,7 +338,7 @@ const filteredData = computed(() => {
   // Filtro por fecha de creación
   if (filter.value.creationDate) {
     temp = temp.filter((row) => {
-      const rowCreationDate = date.formatDate(row.creado_en, 'YYYY-MM-DD')
+      const rowCreationDate = date.formatDate(row.creado_en, 'DD/MM/YYYY')
       return rowCreationDate === filter.value.creationDate
     })
   }
@@ -371,7 +394,6 @@ const viewPdf = async (id) => {
 // Llamar a la función de obtención de datos cuando el componente se monta
 onMounted(fetchData)
 </script>
-
 <style lang="scss">
 .q-table__title {
   font-size: 24px;
