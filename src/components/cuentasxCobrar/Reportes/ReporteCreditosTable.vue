@@ -5,14 +5,31 @@
     :rows="props.rows"
     :columns="columns"
     row-key="idcredito"
-    :array-headers="columns.map(c => c.name)"
-    :sum-columns="['valorcuotas', 'totalventa', 'totalcobrado', 'saldo', 'totalatrasado', 'totalanulado']"
+    :array-headers="columns.map((c) => c.name)"
+    :sum-columns="[
+      'valorcuotas',
+      'totalventa',
+      'totalcobrado',
+      'saldo',
+      'totalatrasado',
+      'totalanulado',
+    ]"
     nombre-columna-totales="moradias"
     :loading="loading"
   >
     <template v-slot:body-cell-estado="scope">
       <q-td :props="scope">
-        <q-badge v-if="scope.row.estado !== 5 && scope.row.estado !== ''" :color="colorEstado[Number(scope.row.estado)]">
+        <q-badge
+          v-if="scope.row.estado !== 5 && scope.row.estado !== ''"
+          :color="colorEstado[Number(scope.row.estado)]"
+        >
+          {{ scope.value }}
+        </q-badge>
+      </q-td>
+    </template>
+    <template v-slot:body-cell-tipo_cobro="scope">
+      <q-td :props="scope">
+        <q-badge :color="scope.row.tipo_cobro == 'CF' ? 'green-14' : 'yellow-8'">
           {{ scope.value }}
         </q-badge>
       </q-td>
@@ -48,7 +65,6 @@ defineExpose({
   obtenerColumnasVisibles: () => tableRef.value?.obtenerColumnasVisibles() || [],
 })
 
-
 const colorEstado = {
   1: 'green',
   2: 'blue',
@@ -60,33 +76,48 @@ const colorEstado = {
 const columns = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'right', sortable: true },
   {
+    name: 'tipo_cobro',
+    align: 'center',
+    label: 'Tipo',
+    field: 'tipo_cobro',
+
+    dataType: 'text',
+  },
+  {
     name: 'fechaventa',
     align: 'center',
     label: 'Fecha Crédito',
     field: 'fechaventa',
-    
+
     dataType: 'date',
   },
+  {
+    name: 'numFactura',
+    align: 'center',
+    label: 'num Factura',
+    field: 'numFactura',
+
+    dataType: 'number',
+  },
+
   {
     name: 'razonsocial',
     align: 'left',
     label: 'Cliente',
     field: 'razonsocial',
-    
   },
   {
     name: 'sucursal',
     align: 'left',
     label: 'Sucursal',
     field: 'sucursal',
-    
   },
   {
     name: 'fechalimite',
     align: 'center',
     label: 'Fecha Límite',
     field: 'fechalimite',
-    
+
     dataType: 'date',
   },
   {
@@ -94,7 +125,7 @@ const columns = [
     align: 'center',
     label: 'Cant. Cuotas',
     field: 'ncuotas',
-    
+
     dataType: 'number',
   },
   {
@@ -102,21 +133,19 @@ const columns = [
     align: 'center',
     label: 'Cuotas Proc.',
     field: 'cuotasprocesadas',
-    
   },
-   {
+  {
     name: 'estado',
     align: 'center',
     label: 'Estado',
     field: 'estadoLabel',
-    
   },
-   {
+  {
     name: 'moradias',
     align: 'right',
     label: 'Mora Días',
     field: 'moradias',
-    
+
     dataType: 'number',
   },
   {
@@ -124,7 +153,7 @@ const columns = [
     align: 'right',
     label: 'Valor Cuota',
     field: 'valorcuotas',
-    
+
     dataType: 'number',
   },
   {
@@ -132,7 +161,7 @@ const columns = [
     align: 'right',
     label: 'Total Venta',
     field: 'totalventa',
-    
+
     dataType: 'number',
   },
   {
@@ -140,7 +169,7 @@ const columns = [
     align: 'right',
     label: 'Total Cobrado',
     field: 'totalcobrado',
-    
+
     dataType: 'number',
   },
   {
@@ -148,7 +177,7 @@ const columns = [
     align: 'right',
     label: 'Saldo',
     field: 'saldo',
-    
+
     dataType: 'number',
   },
   {
@@ -156,7 +185,7 @@ const columns = [
     align: 'right',
     label: 'Total Atrasado',
     field: 'totalatrasado',
-    
+
     dataType: 'number',
   },
   {
@@ -164,13 +193,8 @@ const columns = [
     align: 'right',
     label: 'Total Anulado',
     field: 'totalanulado',
-    
+
     dataType: 'number',
   },
- 
- 
 ]
 </script>
-
-
-
