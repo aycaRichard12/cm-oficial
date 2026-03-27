@@ -103,6 +103,19 @@
           :rules="[(val) => !!val || 'Campo requerido']"
         />
       </div>
+      <div class="col-12 col-md-3">
+        <label for="cajaBanco">Seleccione Caja Banco</label>
+        <q-select
+          v-model="localData.cajabanco"
+          :options="props.cajaBancos"
+          id="cajaBanco"
+          dense
+          outlined
+          emit-value
+          map-options
+          :rules="[(val) => !!val || 'Campo requerido']"
+        />
+      </div>
     </q-card-section>
 
     <q-card-actions class="flex justify-start">
@@ -117,7 +130,6 @@ import { ref, watch, computed } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
-
 const $q = useQuasar()
 const idempresa = idempresa_md5()
 const conPEdido = ref(true)
@@ -126,12 +138,12 @@ const props = defineProps({
   modalValue: Object,
   almacenes: Array,
   proveedores: Array,
+  cajaBancos: Array,
 })
 const PedidosAlmacen = ref([])
 const emit = defineEmits(['submit', 'cancel'])
 const pedidos = ref([])
 const localData = ref({ ...props.modalValue })
-
 const isIngresoConPedido = computed({
   get() {
     // La vista lee este valor para saber si el toggle está 'encendido'
@@ -165,49 +177,47 @@ async function cargarPedidos() {
   console.log('=== CARGANDO PEDIDOS ===')
   console.log('props.almacenes:', props.almacenes)
   console.log('props.almacenes.length:', props.almacenes?.length)
-  
+
   if (!props.almacenes || props.almacenes.length === 0) {
     console.warn('No hay almacenes disponibles para cargar pedidos')
     pedidos.value = []
     return
   }
-  
+
   try {
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
     console.log('IDs de almacenes:', idAlmacenes)
-    
+
     const response = await api.get(`listaPedido/${idempresa}`)
     console.log('Respuesta API pedidos:', response.data)
     console.log('Total pedidos recibidos:', response.data.length)
-    
-    const filtrados = response.data.filter(
-      (item) => {
-        // Convert to number for comparison since API returns strings
-        const idAlmacenNum = Number(item.idalmacen)
-        const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
-        const cumpleEstado = Number(item.estado) == 2  // Pendiente
-        const cumpleAutorizacion = Number(item.autorizacion) == 1  // Autorizado
-        const cumpleTipoPedido = Number(item.tipopedido) == 1  // Solo pedidos de compra
-        
-        console.log(`Pedido ${item.id}:`, {
-          idalmacen: item.idalmacen,
-          idAlmacenNum,
-          cumpleAlmacen,
-          estado: item.estado,
-          cumpleEstado,
-          autorizacion: item.autorizacion,
-          cumpleAutorizacion,
-          tipopedido: item.tipopedido,
-          cumpleTipoPedido,
-          pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
-        })
-        
-        return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
-      }
-    )
-    
+
+    const filtrados = response.data.filter((item) => {
+      // Convert to number for comparison since API returns strings
+      const idAlmacenNum = Number(item.idalmacen)
+      const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
+      const cumpleEstado = Number(item.estado) == 2 // Pendiente
+      const cumpleAutorizacion = Number(item.autorizacion) == 1 // Autorizado
+      const cumpleTipoPedido = Number(item.tipopedido) == 1 // Solo pedidos de compra
+
+      console.log(`Pedido ${item.id}:`, {
+        idalmacen: item.idalmacen,
+        idAlmacenNum,
+        cumpleAlmacen,
+        estado: item.estado,
+        cumpleEstado,
+        autorizacion: item.autorizacion,
+        cumpleAutorizacion,
+        tipopedido: item.tipopedido,
+        cumpleTipoPedido,
+        pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido,
+      })
+
+      return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
+    })
+
     console.log('Pedidos filtrados:', filtrados)
-    
+
     PedidosAlmacen.value = filtrados
     pedidos.value = filtrados.map((item) => ({
       label: `${item.almacen} - ${item.observacion || 'Sin observación'}`,
