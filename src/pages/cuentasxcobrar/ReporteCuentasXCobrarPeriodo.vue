@@ -131,25 +131,38 @@
         id="tablareportecobros"
         ref="tablaRef"
         :rows="filteredReportData"
-        :array-headers="['fecha_actual', 'nombre_cliente', 'nombre_comercial']"
+        :array-headers="['fecha_actual', 'nombre_cliente', 'nombre_comercial', 'nombre_almacen', 'nombre_sucursal', 'tipo_cobro']"
         :columns="columns"
         :sum-columns="['monto_total_venta', 'saldo_estado_cobro', 'monto_detalle_cobro']"
         nombre-columna-totales="nombre_comercial"
         row-key="id_detalle_cobro"
         :rows-per-page-options="[10, 20, 50, 100]"
       >
+        <template v-slot:body-cell-tipo_cobro="props">
+          <q-td :props="props">
+            <q-badge 
+              v-if="props.value" 
+              :color="props.value === 'CF' ? 'green-2' : (props.value === 'SF' ? 'cyan-2' : 'teal-2')" 
+              :text-color="props.value === 'CF' ? 'green-10' : (props.value === 'SF' ? 'cyan-10' : 'teal-10')" 
+              class="text-weight-bold q-px-sm q-py-xs"
+              style="font-size: 0.85rem;"
+            >
+              {{ props.value }}
+            </q-badge>
+          </q-td>
+        </template>
         <template v-slot:body-cell-foto_detalle_cobro="props">
           <q-td :props="props">
             <q-btn
-              v-if="props.row.foto_detalle_cobro"
+              v-if="props.row.foto_detalle_cobro || props.row.urlpdf"
               flat
               round
               dense
               color="primary"
-              icon="image"
-              @click="verImagen(props.row.foto_detalle_cobro)"
+              :icon="esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'picture_as_pdf' : 'photo'"
+              @click="verImagen(props.row.foto_detalle_cobro || props.row.urlpdf)"
             >
-              <q-tooltip>Ver comprobante</q-tooltip>
+              <q-tooltip>Ver {{ esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'PDF' : 'Imagen' }}</q-tooltip>
             </q-btn>
           </q-td>
         </template>
@@ -182,14 +195,11 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showImage">
-      <q-card style="min-width: 350px">
-        <q-img :src="currentImage" />
-        <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <!-- Visor de Comprobante (Soporta PDF e Imagen) -->
+    <ComprobanteViewerDialog
+      v-model="showImage"
+      :imagen-seleccionada="currentImage"
+    />
 
     <q-inner-loading :showing="loading">
       <q-spinner-dots color="primary" size="40px" />
@@ -208,18 +218,33 @@ import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
 import { useClienteStore } from 'stores/cliente'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import ComprobanteViewerDialog from './components/ComprobanteViewerDialog.vue'
 
 const mostrarModal = ref(false)
 const pdfData = ref(null)
 const tablaRef = ref(null)
 const $q = useQuasar()
 
-// --- State para imágenes ---
+// --- State para imágenes/PDFs ---
 const showImage = ref(false)
 const currentImage = ref('')
+
 const verImagen = (url) => {
-  currentImage.value = url
+  if (!url) return
+  
+  // Si la URL es relativa (ej: uploads/...), concatenamos la base de la API
+  if (!url.startsWith('http') && !url.startsWith('blob:')) {
+    currentImage.value = `${api.defaults.baseURL}${url}`
+  } else {
+    currentImage.value = url
+  }
+  
   showImage.value = true
+}
+
+const esArchivoPDF = (url) => {
+  if (!url) return false
+  return url.toLowerCase().split('?')[0].endsWith('.pdf')
 }
 
 // --- Reactive State ---
@@ -273,7 +298,15 @@ const columns = [
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
     dataType: 'number',
   },
-  { name: 'foto_detalle_cobro', align: 'center', label: 'Foto', field: 'foto_detalle_cobro' },
+  {
+    name: 'tipo_cobro',
+    align: 'center',
+    label: 'Tipo Cobro',
+    field: 'tipo_cobro',
+    sortable: true,
+    dataType: 'text',
+  },
+  { name: 'foto_detalle_cobro', align: 'center', label: 'Comprobante', field: 'foto_detalle_cobro' },
 ]
 
 // --- Methods ---
