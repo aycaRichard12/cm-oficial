@@ -22,8 +22,16 @@
     >
       <template v-slot:body-cell-comprobante="props">
         <q-td :props="props">
-          <q-btn v-if="props.value" flat round dense color="primary" icon="visibility" @click="$emit('ver-comprobante', props.value)">
-            <q-tooltip>Ver comprobante</q-tooltip>
+          <q-btn 
+            v-if="props.row.imagen || props.row.urlpdf || props.row.foto_detalle_cobro" 
+            flat 
+            round 
+            dense 
+            color="primary" 
+            :icon="esArchivoPDF(props.row.imagen || props.row.urlpdf || props.row.foto_detalle_cobro) ? 'picture_as_pdf' : 'photo'" 
+            @click="$emit('ver-comprobante', props.row.imagen || props.row.urlpdf || props.row.foto_detalle_cobro)"
+          >
+            <q-tooltip>Ver {{ esArchivoPDF(props.row.imagen || props.row.urlpdf || props.row.foto_detalle_cobro) ? 'PDF' : 'Imagen' }}</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -55,7 +63,7 @@
 <script setup>
 import { decimas, redondear } from 'src/composables/FuncionesG'
 
-const props = defineProps({
+defineProps({
   rows: Array,
   totalCobrado: [Number, String],
   divisa: String,
@@ -63,7 +71,12 @@ const props = defineProps({
   formatoMoneda: Function
 })
 
-const emit = defineEmits(['back', 'ver-comprobante'])
+defineEmits(['back', 'ver-comprobante'])
+
+const esArchivoPDF = (url) => {
+  if (!url) return false
+  return String(url).toLowerCase().split('?')[0].endsWith('.pdf')
+}
 
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
