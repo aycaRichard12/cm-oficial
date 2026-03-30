@@ -1246,18 +1246,15 @@ export async function generarPdfCotizacion(data) {
   const estado = cotizacionInfo.estado
   console.log(estado)
   let currentSubtotal = 0
-  let firma = ''
+  let firma = cotizacionInfo.firma_url
   const detalleProductos = cotizacionDetalle.detalle.map((item) => {
     const totalProducto = redondear(item.cantidad * item.precio)
     currentSubtotal += totalProducto
-    firma = item.firma_url
-    console.log(item.firma_url)
     return {
       ...item,
       total: totalProducto,
     }
   })
-  console.log(firma)
   if (firma) {
     firma = firma.split('/').pop()
   }

@@ -89,9 +89,6 @@
         <div class="col-12 col-md-1" id="botonRegistrarCliente">
           <q-btn color="blue q-mt-lg" icon="person_add" @click="RegistrarCliente" />
         </div>
-        <div  class="col-12 col-md-1" id="botonRegistrarFirma">
-          <q-btn color="blue q-mt-lg" icon="draw" @click="RegistrarFirma" />
-        </div>
 
         <ModalfirmaPage
           v-model="modalfirmaActivo"
@@ -359,6 +356,7 @@
       </q-table>
 
       <div class="row justify-end q-mt-md">
+        <q-btn color="blue" icon="draw" @click="RegistrarFirma" label="Firma del Cliente" />
         <q-btn
           label="Registrar Cotización"
           color="primary"
@@ -397,7 +395,6 @@
               ]"
             />
           </div>
-
           <!-- SECCIÓN EFECTIVO -->
           <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
             <div class="text-subtitle1 text-weight-bold q-mb-md text-primary flex items-center">
@@ -541,7 +538,7 @@
                   min="1"
                   dense
                   outlined
-                  @update:model-value="calculatePayments(); calculateDueDate()"
+                  @update:model-value="(calculatePayments(), calculateDueDate())"
                   :rules="[(val) => !!val || 'Requerido']"
                 >
                   <template v-slot:prepend>
@@ -590,7 +587,9 @@
               </div>
 
               <div v-if="carritoCO.periodo === 0" class="col-12 col-md-6">
-                <label for="plazopersonalizada" class="text-weight-medium">Plazo total (días)*</label>
+                <label for="plazopersonalizada" class="text-weight-medium"
+                  >Plazo total (días)*</label
+                >
                 <q-input
                   v-model="carritoCO.plazoPersonalizado"
                   id="plazopersonalizada"
