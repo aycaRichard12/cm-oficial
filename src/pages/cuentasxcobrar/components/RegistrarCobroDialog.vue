@@ -13,15 +13,31 @@
       <q-card-section class="q-pb-xs">
         <div class="row q-col-gutter-md q-mb-sm">
           <div class="col-12 col-sm-7">
-            <div class="q-pa-sm bg-grey-2 rounded-borders" style="border-left: 4px solid var(--q-primary)">
-              <div class="text-caption text-grey-7 text-uppercase text-weight-bold" style="font-size: 0.65rem">Cliente</div>
-              <div class="text-subtitle2 text-weight-bolder">{{ formulario.cliente }}</div>
+            <div
+              class="q-pa-sm bg-grey-2 rounded-borders"
+              style="border-left: 4px solid var(--q-primary)"
+            >
+              <div
+                class="text-caption text-grey-7 text-uppercase text-weight-bold"
+                style="font-size: 0.65rem"
+              >
+                Cliente
+              </div>
+              <div class="text-subtitle2 text-weight-bolder">{{ localFormulario.cliente }}</div>
             </div>
           </div>
           <div class="col-12 col-sm-5">
-            <div class="q-pa-sm bg-grey-2 rounded-borders" style="border-left: 4px solid var(--q-primary)">
-              <div class="text-caption text-grey-7 text-uppercase text-weight-bold" style="font-size: 0.65rem">Sucursal</div>
-              <div class="text-subtitle2 text-weight-bolder">{{ formulario.sucursal }}</div>
+            <div
+              class="q-pa-sm bg-grey-2 rounded-borders"
+              style="border-left: 4px solid var(--q-primary)"
+            >
+              <div
+                class="text-caption text-grey-7 text-uppercase text-weight-bold"
+                style="font-size: 0.65rem"
+              >
+                Sucursal
+              </div>
+              <div class="text-subtitle2 text-weight-bolder">{{ localFormulario.sucursal }}</div>
             </div>
           </div>
         </div>
@@ -29,26 +45,55 @@
         <div class="row q-col-gutter-sm">
           <div class="col-6 col-sm-3">
             <q-card flat bordered class="q-pa-xs text-center bg-blue-1 border-blue-2">
-              <div class="text-caption text-blue-9 text-uppercase text-weight-bold" style="font-size: 0.6rem">Total Venta</div>
-              <div class="text-subtitle1 text-weight-bold text-primary">{{ formulario.deudaTotal }} <small class="text-caption">{{ divisa }}</small></div>
+              <div
+                class="text-caption text-blue-9 text-uppercase text-weight-bold"
+                style="font-size: 0.6rem"
+              >
+                Total Venta
+              </div>
+              <div class="text-subtitle1 text-weight-bold text-primary">
+                {{ localFormulario.deudaTotal }} <small class="text-caption">{{ divisa }}</small>
+              </div>
             </q-card>
           </div>
           <div class="col-6 col-sm-3">
             <q-card flat bordered class="q-pa-xs text-center bg-orange-1 border-orange-2">
-              <div class="text-caption text-orange-9 text-uppercase text-weight-bold" style="font-size: 0.6rem">Saldo</div>
-              <div class="text-subtitle1 text-weight-bold text-deep-orange">{{ formulario.saldoPendiente }} <small class="text-caption">{{ divisa }}</small></div>
+              <div
+                class="text-caption text-orange-9 text-uppercase text-weight-bold"
+                style="font-size: 0.6rem"
+              >
+                Saldo
+              </div>
+              <div class="text-subtitle1 text-weight-bold text-deep-orange">
+                {{ localFormulario.saldoPendiente }}
+                <small class="text-caption">{{ divisa }}</small>
+              </div>
             </q-card>
           </div>
           <div class="col-6 col-sm-3">
             <q-card flat bordered class="q-pa-xs text-center bg-red-1 border-red-2">
-              <div class="text-caption text-red-9 text-uppercase text-weight-bold" style="font-size: 0.6rem">Cuotas Pend.</div>
-              <div class="text-subtitle1 text-weight-bold text-negative">{{ formulario.cuotasPendientes }}</div>
+              <div
+                class="text-caption text-red-9 text-uppercase text-weight-bold"
+                style="font-size: 0.6rem"
+              >
+                Cuotas Pend.
+              </div>
+              <div class="text-subtitle1 text-weight-bold text-negative">
+                {{ localFormulario.cuotasPendientes }}
+              </div>
             </q-card>
           </div>
           <div class="col-6 col-sm-3">
             <q-card flat bordered class="q-pa-xs text-center bg-green-1 border-green-2">
-              <div class="text-caption text-green-9 text-uppercase text-weight-bold" style="font-size: 0.6rem">V. Cuota</div>
-              <div class="text-subtitle1 text-weight-bold text-positive">{{ formulario.valorCuota }} <small class="text-caption">{{ divisa }}</small></div>
+              <div
+                class="text-caption text-green-9 text-uppercase text-weight-bold"
+                style="font-size: 0.6rem"
+              >
+                V. Cuota
+              </div>
+              <div class="text-subtitle1 text-weight-bold text-positive">
+                {{ localFormulario.valorCuota }} <small class="text-caption">{{ divisa }}</small>
+              </div>
             </q-card>
           </div>
         </div>
@@ -67,12 +112,12 @@
                 dense
                 outlined
                 readonly
-                :rules="[() => !!formulario.fecha || 'Seleccione una fecha']"
+                :rules="[() => !!localFormulario.fecha || 'Seleccione una fecha']"
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer text-primary">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="formulario.fecha" mask="YYYY-MM-DD" today-btn>
+                      <q-date v-model="localFormulario.fecha" mask="YYYY-MM-DD" today-btn>
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Cerrar" color="primary" flat />
                         </div>
@@ -85,44 +130,52 @@
 
             <div class="col-12 col-sm-6">
               <q-input
-                v-model.number="formulario.numeroCobros"
+                v-model.number="localFormulario.numeroCobros"
                 id="nrocobrosregistrocobro"
                 label="N° Cobros"
                 type="number"
                 min="1"
-                :max="formulario.cuotasPendientes"
+                :max="localFormulario.cuotasPendientes"
                 step="1"
                 dense
                 outlined
                 :rules="[
                   (val) => !!val || 'Campo requerido',
                   (val) => Number(val) > 0 || 'Debe ser mayor a 0',
-                  (val) => Number(val) <= formulario.cuotasPendientes || `Máximo ${formulario.cuotasPendientes} cuotas`,
+                  (val) =>
+                    Number(val) <= localFormulario.cuotasPendientes ||
+                    `Máximo ${localFormulario.cuotasPendientes} cuotas`,
                 ]"
-                :disable="formulario.cuotasPendientes === 1"
-                :hint="formulario.cuotasPendientes > 1 ? `Pendientes: ${formulario.cuotasPendientes}` : ''"
+                :disable="localFormulario.cuotasPendientes === 1"
+                :hint="
+                  localFormulario.cuotasPendientes > 1
+                    ? `Pendientes: ${localFormulario.cuotasPendientes}`
+                    : ''
+                "
                 @update:model-value="$emit('calcular-totales')"
               />
             </div>
 
             <div class="col-12 col-sm-6">
               <q-input
-                v-model="formulario.totalCobro"
+                v-model="localFormulario.totalCobro"
                 id="totalacobrarregistrocobro"
                 label="Total a Cobrar"
                 type="number"
                 min="0.01"
-                :max="formulario.saldoPendiente"
+                :max="localFormulario.saldoPendiente"
                 step="0.01"
                 dense
                 outlined
                 :rules="[
                   (val) => !!val || 'Campo requerido',
                   (val) => parseFloat(val) > 0 || 'Debe ser mayor a 0',
-                  (val) => parseFloat(val) <= parseFloat(formulario.saldoPendiente) || `No puede superar el saldo`,
+                  (val) =>
+                    parseFloat(val) <= parseFloat(localFormulario.saldoPendiente) ||
+                    `No puede superar el saldo`,
                 ]"
-                :disable="formulario.cuotasPendientes === 1"
-                :hint="`Saldo disponible: ${formulario.saldoPendiente} ${divisa}`"
+                :disable="localFormulario.cuotasPendientes === 1"
+                :hint="`Saldo disponible: ${localFormulario.saldoPendiente} ${divisa}`"
                 @update:model-value="$emit('calcular-numero-cobros')"
               >
                 <template v-slot:append>
@@ -132,19 +185,39 @@
             </div>
 
             <div class="col-12 col-sm-6 flex items-center">
-              <q-card flat bordered class="full-width q-pa-sm text-center"
-                :class="parseFloat(formulario.saldoPorCobrar) < 0 ? 'bg-red-1 border-red-3' : 'bg-green-1 border-green-3'"
+              <q-card
+                flat
+                bordered
+                class="full-width q-pa-sm text-center"
+                :class="
+                  parseFloat(localFormulario.saldoPorCobrar) < 0
+                    ? 'bg-red-1 border-red-3'
+                    : 'bg-green-1 border-green-3'
+                "
               >
-                <div class="text-caption text-grey-7 text-uppercase text-weight-bold" style="font-size: 0.6rem">Nuevo Saldo</div>
-                <div class="text-h6 text-weight-bolder" :class="parseFloat(formulario.saldoPorCobrar) < 0 ? 'text-negative' : 'text-primary'">
-                  {{ formulario.saldoPorCobrar }} <small class="text-caption">{{ divisa }}</small>
+                <div
+                  class="text-caption text-grey-7 text-uppercase text-weight-bold"
+                  style="font-size: 0.6rem"
+                >
+                  Nuevo Saldo
+                </div>
+                <div
+                  class="text-h6 text-weight-bolder"
+                  :class="
+                    parseFloat(localFormulario.saldoPorCobrar) < 0
+                      ? 'text-negative'
+                      : 'text-primary'
+                  "
+                >
+                  {{ localFormulario.saldoPorCobrar }}
+                  <small class="text-caption">{{ divisa }}</small>
                 </div>
               </q-card>
             </div>
 
             <div class="col-12">
               <q-file
-                v-model="formulario.comprobante"
+                v-model="localFormulario.comprobante"
                 id="comprobanteregistrocobro"
                 label="Adjuntar Comprobante (JPG, PNG, PDF)"
                 dense
@@ -152,7 +225,9 @@
                 accept=".jpg,.jpeg,.png,.pdf"
                 max-file-size="5242880"
                 @update:model-value="onArchivoCambiado"
-                @rejected="$q.notify({ type: 'negative', message: 'Archivo no válido o demasiado grande' })"
+                @rejected="
+                  $q.notify({ type: 'negative', message: 'Archivo no válido o demasiado grande' })
+                "
                 :loading="isCompressing"
                 :disable="isCompressing"
               >
@@ -162,19 +237,36 @@
               </q-file>
 
               <div v-if="previewUrl" class="q-mt-sm rounded-borders overflow-hidden border-grey-4">
-                <div v-if="formulario.tipoArchivo === 'pdf'" class="q-pa-md bg-red-1 border-red-2 text-red-9 row items-center rounded-borders">
+                <div
+                  v-if="localFormulario.tipoArchivo === 'pdf'"
+                  class="q-pa-md bg-red-1 border-red-2 text-red-9 row items-center rounded-borders"
+                >
                   <q-icon name="picture_as_pdf" size="lg" />
                   <div class="q-ml-md">
                     <div class="text-weight-bold">PDF Seleccionado</div>
-                    <div class="text-caption text-grey-9 truncate" style="max-width: 250px">{{ formulario.comprobante?.name }}</div>
+                    <div class="text-caption text-grey-9 truncate" style="max-width: 250px">
+                      {{ localFormulario.comprobante?.name }}
+                    </div>
                   </div>
                 </div>
-                <q-img v-else :src="previewUrl" style="max-height: 200px" fit="contain" class="bg-grey-1" />
+                <q-img
+                  v-else
+                  :src="previewUrl"
+                  style="max-height: 200px"
+                  fit="contain"
+                  class="bg-grey-1"
+                />
               </div>
             </div>
           </div>
 
-          <q-banner v-if="parseFloat(formulario.saldoPorCobrar) < 0" dense rounded class="bg-negative text-white q-mt-md" icon="warning">
+          <q-banner
+            v-if="parseFloat(localFormulario.saldoPorCobrar) < 0"
+            dense
+            rounded
+            class="bg-negative text-white q-mt-md"
+            icon="warning"
+          >
             El monto ingresado excede el saldo pendiente.
           </q-banner>
 
@@ -185,7 +277,7 @@
               color="primary"
               icon="check_circle"
               unelevated
-              :disable="parseFloat(formulario.saldoPorCobrar) < 0 || isCompressing"
+              :disable="parseFloat(localFormulario.saldoPorCobrar) < 0 || isCompressing"
               :loading="isCompressing"
             />
             <q-btn label="Cancelar" color="grey-7" flat icon="close" @click="cerrar" />
@@ -197,14 +289,14 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, reactive } from 'vue'
 import { useQuasar } from 'quasar'
 
 const props = defineProps({
   modelValue: Boolean,
   formulario: Object,
   divisa: String,
-  isCompressing: Boolean
+  isCompressing: Boolean,
 })
 
 const emit = defineEmits([
@@ -213,19 +305,45 @@ const emit = defineEmits([
   'submit',
   'handle-archivo',
   'calcular-totales',
-  'calcular-numero-cobros'
+  'calcular-numero-cobros',
+  'update:formulario',
 ])
+
+const localFormulario = reactive({ ...(props.formulario || {}) })
+
+// keep local copy in sync when parent updates the prop
+watch(
+  () => props.formulario,
+  (newVal) => {
+    if (newVal) Object.assign(localFormulario, newVal)
+  },
+  { deep: true },
+)
+
+// emit updates when localFormulario changes to avoid mutating props directly
+watch(
+  localFormulario,
+  (val) => {
+    try {
+      const payload = JSON.parse(JSON.stringify(val))
+      emit('update:formulario', payload)
+    } catch {
+      emit('update:formulario', val)
+    }
+  },
+  { deep: true },
+)
 
 const $q = useQuasar()
 const previewUrl = ref(null)
 
 const model = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val) => emit('update:modelValue', val),
 })
 
 const fechaMostrar = computed(() => {
-  const f = props.formulario.fecha
+  const f = localFormulario.fecha
   if (!f) return ''
   const [y, m, d] = f.split('-')
   return `${d}/${m}/${y}`
@@ -243,7 +361,7 @@ function cerrar() {
 }
 
 function guardar() {
-  emit('submit')
+  emit('submit', JSON.parse(JSON.stringify(localFormulario)))
 }
 
 watch(model, (abierto) => {
