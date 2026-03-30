@@ -103,19 +103,6 @@
           :rules="[(val) => !!val || 'Campo requerido']"
         />
       </div>
-      <div class="col-12 col-md-3">
-        <label for="cajaBanco">Seleccione Caja Banco</label>
-        <q-select
-          v-model="localData.cajabanco"
-          :options="props.cajaBancos"
-          id="cajaBanco"
-          dense
-          outlined
-          emit-value
-          map-options
-          :rules="[(val) => !!val || 'Campo requerido']"
-        />
-      </div>
     </q-card-section>
 
     <q-card-actions class="flex justify-start">
