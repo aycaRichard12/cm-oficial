@@ -16,7 +16,6 @@
 import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
-import { URL_APICM } from 'src/composables/services'
 import {
   validarUsuario,
   cambiarFormatoFecha,
@@ -88,6 +87,8 @@ function formularioInicial() {
     saldoPorCobrar: '0.00',
     comprobante: null,
     imagenConvertida: null,
+    urlpdf: '',
+    tipoArchivo: '', // 'image' o 'pdf'
   }
 }
 
@@ -366,7 +367,20 @@ export function useCuentasxCobrar() {
   async function convertirImagen(file) {
     if (!file || !(file instanceof File)) {
       formulario.value.imagenConvertida = null
+      formulario.value.tipoArchivo = ''
       return
+    }
+
+    // Identificar el tipo de archivo
+    if (file.type === 'application/pdf') {
+      formulario.value.tipoArchivo = 'pdf'
+      formulario.value.imagenConvertida = file // No se comprime el PDF
+      formulario.value.urlpdf = '' // Se limpiará cualquier URL previa
+      return
+    } else if (file.type.startsWith('image/')) {
+      formulario.value.tipoArchivo = 'image'
+    } else {
+      formulario.value.tipoArchivo = ''
     }
 
     try {
@@ -411,6 +425,32 @@ export function useCuentasxCobrar() {
     }
 
     try {
+      let linkPdfSubido = ''
+
+      // PASO 1: Si es un PDF, primero lo subimos para obtener el link (Lógica de baucherPedido.vue)
+      if (formulario.value.tipoArchivo === 'pdf' && formulario.value.imagenConvertida) {
+        console.log('--- PASO 1: SUBIENDO PDF AL SERVIDOR ---')
+        const formDataPDF = new FormData()
+        formDataPDF.append('idpedido', formulario.value.idCredito)
+        formDataPDF.append('recibo', formulario.value.imagenConvertida)
+        formDataPDF.append('ver', 'uploadRecibo')
+
+        const resPDF = await api.post('', formDataPDF)
+        
+        if (resPDF.data.estado === 'exito') {
+          // Extraemos solo la parte relativa del link: "uploads/recibos/..."
+          // El servidor puede devolver dominios distintos, así que buscamos desde "uploads/"
+          const rutaCompleta = resPDF.data.ruta_recibo
+          const indexUploads = rutaCompleta.indexOf('uploads/')
+          linkPdfSubido = indexUploads !== -1 ? rutaCompleta.substring(indexUploads) : rutaCompleta
+          
+          console.log('PDF subido. Ruta relativa extraída:', linkPdfSubido)
+        } else {
+          throw new Error('No se pudo subir el PDF al servidor: ' + resPDF.data.mensaje)
+        }
+      }
+
+      // PASO 2: Registro final del cobro
       const dataForForm = {
         ver: 'registroPagoCuentaxCobrar',
         idestadocobro: formulario.value.idCredito,
@@ -418,13 +458,20 @@ export function useCuentasxCobrar() {
         total: formulario.value.totalCobro,
         saldo: formulario.value.saldoPorCobrar,
         fecha: formulario.value.fecha,
-        imagen: formulario.value.imagenConvertida ?? '',
+        // Las imágenes se envían directo, los PDFs envían el link relativo
+        imagen: formulario.value.tipoArchivo === 'image' ? (formulario.value.imagenConvertida ?? '') : '',
+        urlpdf: linkPdfSubido,
       }
 
       const datos = objectToFormData(dataForForm)
 
+      // LOGS DE DEPURACIÓN
+      console.log('--- PASO 2: REGISTRANDO COBRO FINAL ---')
+      console.log('Datos finales:', dataForForm)
+
       const response = await api.post(``, datos)
       const data = response.data
+      console.log("Respuesta servidor:", data)
 
       if (data.estado === 'exito') {
         $q.notify({ type: 'positive', message: 'Cobro registrado correctamente' })
@@ -434,7 +481,8 @@ export function useCuentasxCobrar() {
         throw new Error(data.mensaje || 'Error al registrar el cobro')
       }
     } catch (error) {
-      $q.notify({ type: 'negative', message: `Error al registrar el cobro: ${error.message}` })
+      console.error('Error en el proceso de registro:', error)
+      $q.notify({ type: 'negative', message: `${error.message}` })
     }
   }
 
@@ -461,7 +509,8 @@ export function useCuentasxCobrar() {
       detallesCobros.value = data.map((item, index) => ({
         ...item,
         numero: index + 1,
-        imagen: `${URL_APICM}api/${item.imagen}`,
+        // Construimos la URL completa usando VITE_API_URL (api.defaults.baseURL) + la ruta guadada
+        imagen: item.urlpdf ? `${api.defaults.baseURL}${item.urlpdf}` : (item.imagen ? `${api.defaults.baseURL}${item.imagen}` : null),
       }))
 
       vistaActiva.value = 'detalles'
