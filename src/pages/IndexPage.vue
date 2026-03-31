@@ -8,32 +8,46 @@
             flat
             bordered
             class="full-height hover-card cursor-pointer q-pa-sm flex flex-center"
-            style="background: linear-gradient(135deg, #219286 0%, #044e49 100%); color: white; border-radius: 12px; transition: all 0.3s ease;"
+            style="
+              background: linear-gradient(135deg, #219286 0%, #044e49 100%);
+              color: white;
+              border-radius: 12px;
+              transition: all 0.3s ease;
+            "
             @click="cambiarComponente(box.id)"
           >
             <!-- Fila Flex layout Mobile-First: Nunca permite que los items se quiebren o aplasten -->
-            <div class="row items-center no-wrap full-width" style="min-height: 55px;">
+            <div class="row items-center no-wrap full-width" style="min-height: 55px">
               <!-- Columna 1: Icono del Módulo -->
-              <div class="col-auto q-mr-md flex flex-center" style="width: 50px;">
-                <img :src="box.iconComponent" style="max-width: 100%; max-height: 48px; object-fit: contain;" alt="icon" />
+              <div class="col-auto q-mr-md flex flex-center" style="width: 50px">
+                <img
+                  :src="box.iconComponent"
+                  style="max-width: 100%; max-height: 48px; object-fit: contain"
+                  alt="icon"
+                />
               </div>
 
               <!-- Columna 2: Textos truncados automáticamente si fuesen muy largos -->
               <div class="col overflow-hidden">
-                <div class="text-subtitle2 text-weight-bold ellipsis text-uppercase" style="letter-spacing: 0.5px; opacity: 1;">
+                <div
+                  class="text-subtitle2 text-weight-bold ellipsis text-uppercase"
+                  style="letter-spacing: 0.5px; opacity: 1"
+                >
                   {{ box.title }}
                 </div>
-                <div class="text-caption ellipsis" style="font-size: 11px; opacity: 0.75;">
+                <!-- <div class="text-caption ellipsis" style="font-size: 11px; opacity: 0.75">
                   {{ box.subtitle || 'Acceder al módulo' }}
-                </div>
+                </div> -->
               </div>
 
               <!-- Columna 3: Icono Flecha/Check Ckecked -->
               <div class="col-auto q-pl-sm">
-                <q-icon 
-                  :name="componenteActivo === box.component ? 'check_circle' : 'chevron_right'" 
-                  size="sm" 
-                  :style="{ color: componenteActivo === box.component ? '#f2c037' : 'rgba(255,255,255,0.7)' }"
+                <q-icon
+                  :name="componenteActivo === box.component ? 'check_circle' : 'chevron_right'"
+                  size="sm"
+                  :style="{
+                    color: componenteActivo === box.component ? '#f2c037' : 'rgba(255,255,255,0.7)',
+                  }"
                 />
               </div>
             </div>
@@ -224,7 +238,7 @@ const orderedTopBoxes = computed(() => {
 }
 .hover-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Estado de los Menús */
