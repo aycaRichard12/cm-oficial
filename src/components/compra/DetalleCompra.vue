@@ -6,12 +6,12 @@
         <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
         {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
-      <q-chip 
-        v-if="esModoEdicion" 
-        color="warning" 
-        text-color="white" 
-        icon="edit" 
-        size="sm" 
+      <q-chip
+        v-if="esModoEdicion"
+        color="warning"
+        text-color="white"
+        icon="edit"
+        size="sm"
         class="text-weight-medium"
         removable
         @remove="onResetForm"
@@ -67,7 +67,9 @@
             </template>
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey text-italic"> No se encontraron productos </q-item-section>
+                <q-item-section class="text-grey text-italic">
+                  No se encontraron productos
+                </q-item-section>
               </q-item>
             </template>
             <template v-slot:option="scope">
@@ -78,8 +80,11 @@
                 <q-item-section>
                   <q-item-label>{{ scope.opt.label }}</q-item-label>
                   <q-item-label caption>
-                    Stock: {{ productosDisponibles.find(p => p.value === scope.opt.value)?.stock || 0 }} 
-                    {{ productosDisponibles.find(p => p.value === scope.opt.value)?.unidad || '' }}
+                    Stock:
+                    {{ productosDisponibles.find((p) => p.value === scope.opt.value)?.stock || 0 }}
+                    {{
+                      productosDisponibles.find((p) => p.value === scope.opt.value)?.unidad || ''
+                    }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -104,7 +109,7 @@
                 text-color="grey-9"
               >
                 <template v-slot:prepend>
-                   <q-icon name="inventory_2" size="xs" color="grey-7" />
+                  <q-icon name="inventory_2" size="xs" color="grey-7" />
                 </template>
               </q-input>
             </div>
@@ -121,8 +126,8 @@
                 stack-label
                 text-color="grey-9"
               >
-               <template v-slot:prepend>
-                   <q-icon name="straighten" size="xs" color="grey-7" />
+                <template v-slot:prepend>
+                  <q-icon name="straighten" size="xs" color="grey-7" />
                 </template>
               </q-input>
             </div>
@@ -133,28 +138,28 @@
         <div class="col-xs-12 col-sm-12 col-md-8">
           <div class="row q-col-gutter-md">
             <div class="col-xs-12 col-sm-6">
-<q-input
-  v-model="detalleForm.precio"
-  type="text"
-  inputmode="decimal"
-  :rules="[(val) => val > 0 || 'Mayor a 0']"
-  dense
-  filled
-  label="Precio Unit. *"
-  placeholder="0.00"
-  class="full-width"
-  stack-label
-  bg-color="grey-2"
-  text-color="grey-9"
-  @update:model-value="(val) => detalleForm.precio = parseFloat(val) || null"
->
-  <template v-slot:prepend>
-    <q-icon name="payments" size="xs" color="grey-7" />
-  </template>
-  <template v-slot:append>
-    <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
-  </template>
-</q-input>
+              <q-input
+                v-model="detalleForm.precio"
+                type="text"
+                inputmode="decimal"
+                :rules="[(val) => val > 0 || 'Mayor a 0']"
+                dense
+                filled
+                label="Precio Unit. *"
+                placeholder="0.00"
+                class="full-width"
+                stack-label
+                bg-color="grey-2"
+                text-color="grey-9"
+                @update:model-value="(val) => (detalleForm.precio = parseFloat(val) || null)"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="payments" size="xs" color="grey-7" />
+                </template>
+                <template v-slot:append>
+                  <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
+                </template>
+              </q-input>
             </div>
             <div class="col-xs-12 col-sm-6">
               <q-input
@@ -171,13 +176,15 @@
                 stack-label
                 bg-color="grey-2"
                 text-color="grey-9"
-                @update:model-value="(val) => detalleForm.cantidad = parseFloat(val) || null"
-                >
+                @update:model-value="(val) => (detalleForm.cantidad = parseFloat(val) || null)"
+              >
                 <template v-slot:prepend>
                   <q-icon name="numbers" size="xs" color="grey-7" />
                 </template>
                 <template v-slot:append>
-                  <span class="text-grey-9 text-weight-bold" size="xs">{{ detalleForm.unidad || 'und' }}</span>
+                  <span class="text-grey-9 text-weight-bold" size="xs">{{
+                    detalleForm.unidad || 'und'
+                  }}</span>
                 </template>
               </q-input>
             </div>
@@ -185,7 +192,9 @@
         </div>
 
         <!-- Botones de acción -->
-        <div class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md">
+        <div
+          class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
+        >
           <q-btn
             v-if="esModoEdicion"
             label="Cancelar"
@@ -251,9 +260,7 @@
           <q-icon name="shopping_cart" size="4em" />
           <div class="text-center">
             <div class="text-h6 text-grey-6">La lista está vacía</div>
-            <div class="text-caption">
-              Añade productos usando el formulario superior
-            </div>
+            <div class="text-caption">Añade productos usando el formulario superior</div>
           </div>
         </div>
       </template>
@@ -266,24 +273,45 @@
             <q-item class="q-py-sm">
               <q-item-section>
                 <q-item-label class="text-weight-bold text-subtitle2 text-grey-9">
-                  <q-badge color="primary" text-color="white" :label="props.row.codigo" class="q-mr-sm" />
+                  <q-badge
+                    color="primary"
+                    text-color="white"
+                    :label="props.row.codigo"
+                    class="q-mr-sm"
+                  />
                   {{ props.row.descripcion }}
                 </q-item-label>
               </q-item-section>
               <q-item-section side v-if="compra.autorizacion == 2" class="q-pl-none">
                 <div class="row q-gutter-x-xs">
-                  <q-btn dense round flat icon="edit" color="primary" size="sm" @click="iniciarEdicion(props.row)">
+                  <q-btn
+                    dense
+                    round
+                    flat
+                    icon="edit"
+                    color="primary"
+                    size="sm"
+                    @click="iniciarEdicion(props.row)"
+                  >
                     <q-tooltip>Editar producto</q-tooltip>
                   </q-btn>
-                  <q-btn dense round flat icon="delete" color="negative" size="sm" @click="confirmarEliminar(props.row)">
+                  <q-btn
+                    dense
+                    round
+                    flat
+                    icon="delete"
+                    color="negative"
+                    size="sm"
+                    @click="confirmarEliminar(props.row)"
+                  >
                     <q-tooltip>Eliminar producto</q-tooltip>
                   </q-btn>
                 </div>
               </q-item-section>
             </q-item>
-            
+
             <q-separator />
-            
+
             <!-- Body Card (Quantities & Prices) -->
             <q-card-section class="q-py-sm">
               <div class="row items-center">
@@ -304,7 +332,8 @@
                 <div class="col-5 text-right">
                   <div class="text-caption text-grey-7 text-weight-medium">Sub Total</div>
                   <div class="text-weight-bold text-primary text-subtitle1">
-                    {{ divisaActiva.simbolo }} {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
+                    {{ divisaActiva.simbolo }}
+                    {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
                   </div>
                 </div>
               </div>
@@ -373,6 +402,17 @@
             @click="confirmarEliminar(props.row)"
           >
             <q-tooltip>Eliminar producto</q-tooltip>
+          </q-btn>
+          <q-btn
+            dense
+            round
+            flat
+            icon="visibility"
+            color="green"
+            size="sm"
+            @click="mostrarDetalleProducto(props.row)"
+          >
+            <q-tooltip>Producto Unico</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -446,15 +486,35 @@ const detalleForm = ref({
 // --- COMPUTED PROPERTIES ---
 const columnas = computed(() => [
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', sortable: true },
-  { name: 'precio', label: `Precio Unit. (${divisaActiva.simbolo})`, field: 'precio', align: 'right', sortable: true },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'precio',
+    label: `Precio Unit. (${divisaActiva.simbolo})`,
+    field: 'precio',
+    align: 'right',
+    sortable: true,
+  },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
-  { name: 'subtotal', label: `Sub Total (${divisaActiva.simbolo})`, align: 'right', sortable: true },
+  {
+    name: 'subtotal',
+    label: `Sub Total (${divisaActiva.simbolo})`,
+    align: 'right',
+    sortable: true,
+  },
   { name: 'opciones', label: 'Opciones', align: 'center' },
 ])
 
 const total = computed(() => {
-  return detalleItems.value.reduce((sum, item) => sum + Number(item.precio) * Number(item.cantidad), 0)
+  return detalleItems.value.reduce(
+    (sum, item) => sum + Number(item.precio) * Number(item.cantidad),
+    0,
+  )
 })
 
 // --- WATCHERS ---
@@ -465,7 +525,7 @@ watch(
       cargarDatos()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 watch(
@@ -487,10 +547,10 @@ async function cargarDatos() {
     await Promise.all([getDetalleCompra(), listaProductosDisponibles()])
   } catch (error) {
     console.error('Error al cargar datos:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'Error al cargar los datos iniciales.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -504,10 +564,10 @@ async function getDetalleCompra() {
     detalleItems.value = response.data
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudieron cargar los detalles de la compra',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     loadingTable.value = false
@@ -523,15 +583,15 @@ async function listaProductosDisponibles() {
       value: item.idproductoalmacen,
       stock: item.stock,
       unidad: item.unidad,
-      precio: item.precio
+      precio: item.precio,
     }))
     productosFiltrados.value = [...productosDisponibles.value]
   } catch (error) {
     console.error('Error al cargar productos disponibles:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudieron cargar los productos',
-      position: 'top'
+      position: 'top',
     })
   }
 }
@@ -541,7 +601,7 @@ function filtrarProductos(val, update) {
   const needle = val.toLowerCase()
   update(() => {
     productosFiltrados.value = productosDisponibles.value.filter((p) =>
-      p.label.toLowerCase().includes(needle)
+      p.label.toLowerCase().includes(needle),
     )
   })
 }
@@ -551,37 +611,39 @@ async function onSubmit() {
 
   const formData = objectToFormData(detalleForm.value)
   formData.append('idingreso', props.compra.id)
-  
+
   const isUpdate = esModoEdicion.value
-  isUpdate ? formData.append('ver', 'editarDetalleCompra') : formData.append('ver', 'registrarDetalleCompra')
+  isUpdate
+    ? formData.append('ver', 'editarDetalleCompra')
+    : formData.append('ver', 'registrarDetalleCompra')
 
   try {
     $q.loading.show({ message: 'Guardando...' })
     const response = await api.post('', formData)
-
+    console.log('Respuesta API al guardar detalle:', response.data)
     if (response.data.estado === 'exito') {
-      $q.notify({ 
-        type: 'positive', 
+      $q.notify({
+        type: 'positive',
         message: response.data.mensaje || 'Guardado con éxito',
-        position: 'top'
+        position: 'top',
       })
       await getDetalleCompra()
       await listaProductosDisponibles()
       onResetForm()
       emit('update')
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje || 'Error al guardar',
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error en onSubmit:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'Hubo un problema de comunicación con el servidor.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -609,7 +671,7 @@ async function iniciarEdicion(row) {
     $q.loading.show({ message: 'Cargando datos...' })
     const point = `verificarIDdetallecompra/${row.id}`
     const response = await api.get(point)
-    
+
     if (response.data.estado == 'exito') {
       esModoEdicion.value = true
       detalleForm.value = {
@@ -622,18 +684,18 @@ async function iniciarEdicion(row) {
         unidad: response.data.datos.unidad || '',
       }
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje || 'Error al Editar',
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error al iniciar edición:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudo cargar la información del producto.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -651,32 +713,35 @@ function confirmarEliminar(row) {
     await eliminarDetalle(row)
   })
 }
-
+async function mostrarDetalleProducto(row) {
+  console.log('producto:', row)
+  console.log('Compra', detalleItems.value)
+}
 async function eliminarDetalle(row) {
   try {
     $q.loading.show({ message: 'Eliminando...' })
     const response = await api.get(`eliminarDetalleCompra/${row.id}`)
     if (response.data.estado === 'exito') {
-      $q.notify({ 
-        type: 'positive', 
+      $q.notify({
+        type: 'positive',
         message: response.data.mensaje,
-        position: 'top'
+        position: 'top',
       })
       await getDetalleCompra()
       emit('update')
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje,
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error al eliminar detalle:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudo eliminar el producto.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
