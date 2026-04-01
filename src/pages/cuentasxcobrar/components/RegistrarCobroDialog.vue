@@ -117,7 +117,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer text-primary">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="localFormulario.fecha" mask="YYYY-MM-DD" today-btn>
+                      <q-date v-model="localFormulario.fecha" mask="YYYY-MM-DD" today-btn @update:model-value="onFieldUpdate">
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Cerrar" color="primary" flat />
                         </div>
@@ -140,11 +140,7 @@
                 dense
                 outlined
                 :rules="[
-                  (val) => !!val || 'Campo requerido',
-                  (val) => Number(val) > 0 || 'Debe ser mayor a 0',
-                  (val) =>
-                    Number(val) <= localFormulario.cuotasPendientes ||
-                    `Máximo ${localFormulario.cuotasPendientes} cuotas`,
+                  (val) => !!val || 'Campo requerido'
                 ]"
                 :disable="localFormulario.cuotasPendientes === 1"
                 :hint="
@@ -152,7 +148,8 @@
                     ? `Pendientes: ${localFormulario.cuotasPendientes}`
                     : ''
                 "
-                @update:model-value="$emit('calcular-totales')"
+                @keypress="onNumeroCobrosKeypress"
+                @update:model-value="onNumeroCobrosInput"
               />
             </div>
 
@@ -176,7 +173,7 @@
                 ]"
                 :disable="localFormulario.cuotasPendientes === 1"
                 :hint="`Saldo disponible: ${localFormulario.saldoPendiente} ${divisa}`"
-                @update:model-value="$emit('calcular-numero-cobros')"
+                @update:model-value="() => { onFieldUpdate(); $emit('calcular-numero-cobros') }"
               >
                 <template v-slot:append>
                   <span class="text-weight-bold text-grey-7">{{ divisa }}</span>
@@ -321,18 +318,7 @@ watch(
 )
 
 // emit updates when localFormulario changes to avoid mutating props directly
-watch(
-  localFormulario,
-  (val) => {
-    try {
-      const payload = JSON.parse(JSON.stringify(val))
-      emit('update:formulario', payload)
-    } catch {
-      emit('update:formulario', val)
-    }
-  },
-  { deep: true },
-)
+// No deep watch. We sync explicitly in the event handlers.
 
 const $q = useQuasar()
 const previewUrl = ref(null)
@@ -349,7 +335,41 @@ const fechaMostrar = computed(() => {
   return `${d}/${m}/${y}`
 })
 
+function onNumeroCobrosKeypress(e) {
+  // Evitar cualquier caracter que no sea número estricto
+  if (['.', ',', 'e', 'E', '-', '+'].includes(e.key)) {
+    e.preventDefault()
+  }
+}
+
+function onNumeroCobrosInput(val) {
+  if (val === '' || val === null) {
+    onFieldUpdate()
+    emit('calcular-totales')
+    return
+  }
+  
+  let validVal = Math.floor(Number(val))
+  let maximo = localFormulario.cuotasPendientes
+
+  if (validVal < 1) {
+    validVal = 1
+  } else if (validVal > maximo) {
+    validVal = maximo
+  }
+
+  localFormulario.numeroCobros = validVal
+  
+  onFieldUpdate()
+  emit('calcular-totales')
+}
+
+function onFieldUpdate() {
+  emit('update:formulario', { ...localFormulario })
+}
+
 function onArchivoCambiado(file) {
+  onFieldUpdate()
   emit('handle-archivo', file)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   previewUrl.value = file ? URL.createObjectURL(file) : null
@@ -361,7 +381,8 @@ function cerrar() {
 }
 
 function guardar() {
-  emit('submit', JSON.parse(JSON.stringify(localFormulario)))
+  // Same here, avoid JSON.stringify to not destroy File objects
+  emit('submit', { ...localFormulario })
 }
 
 watch(model, (abierto) => {
