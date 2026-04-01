@@ -216,7 +216,7 @@ import { PDFreporteCuentasXCobrarPeriodo } from 'src/utils/pdfReportGenerator'
 import { exportToXLSX_Reporte_CuentasXCobrarPeriodo } from 'src/utils/XCLReportImport'
 import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
 import { useClienteStore } from 'stores/cliente'
-import { primerDiaDelMes } from 'src/composables/FuncionesG'
+import { primerDiaDelMes, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import ComprobanteViewerDialog from './components/ComprobanteViewerDialog.vue'
 
@@ -256,7 +256,15 @@ const reportFetched = ref(false) // To indicate if a fetch attempt has been made
 
 // Define table columns
 const columns = [
-  { name: 'fecha_actual', align: 'left', label: 'Fecha', field: 'fecha_actual', sortable: true, dataType: 'date' },
+  { 
+    name: 'fecha_actual', 
+    align: 'left', 
+    label: 'Fecha', 
+    field: 'fecha_actual', 
+    sortable: true, 
+    dataType: 'date',
+    format: (val) => val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''
+  },
   {
     name: 'nombre_cliente',
     align: 'left',
