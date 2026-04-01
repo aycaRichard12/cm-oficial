@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { decimas, redondear } from 'src/composables/FuncionesG'
+import { decimas, redondear, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 defineProps({
   rows: Array,
@@ -80,7 +80,13 @@ const esArchivoPDF = (url) => {
 
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'fecha', label: 'Fecha de cobro', field: 'fecha', align: 'center' },
+  { 
+    name: 'fecha', 
+    label: 'Fecha de cobro', 
+    field: 'fecha', 
+    align: 'center',
+    format: (val) => val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''
+  },
   {
     name: 'cuotas',
     label: 'N° cobros',
@@ -90,11 +96,11 @@ const columnas = [
   },
   { name: 'comprobante', label: 'Comprobante', field: 'imagen', align: 'center' },
   {
-    name: 'monto',
+    name: 'total_cobrado',
     label: 'Total cobro',
-    field: 'monto',
+    field: row => row.total || row.monto,
     align: 'right',
-    format: (val) => decimas(redondear(parseFloat(val))),
+    format: (val) => decimas(redondear(parseFloat(val || 0))),
   },
 ]
 </script>
