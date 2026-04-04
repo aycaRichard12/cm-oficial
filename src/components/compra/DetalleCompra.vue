@@ -255,191 +255,105 @@
       row-key="id"
       flat
       bordered
-      table-header-class="bg-primary-2 text-grey-9 text-weight-bold"
-      :grid="$q.screen.lt.sm"
-      :rows-per-page-options="[5, 10, 25, 50]"
-      class="rounded-borders"
-      :loading="loadingTable"
-      binary-state-sort
       separator="cell"
+      :loading="loadingTable"
+      class="rounded-borders"
     >
-      <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td auto-width>
+            <q-btn
+              v-if="props.row.productos_detallados && props.row.productos_detallados.length > 0"
+              size="sm"
+              color="primary"
+              round
+              dense
+              @click="props.expand = !props.expand"
+              :icon="props.expand ? 'expand_less' : 'expand_more'"
+            />
+          </q-td>
+          <q-td key="codigo" :props="props">
+            <q-badge color="primary" :label="props.row.codigo" />
+          </q-td>
+          <q-td key="descripcion" :props="props">
+            <div class="text-weight-medium">{{ props.row.descripcion }}</div>
+          </q-td>
+          <q-td key="precio" :props="props" class="text-right">
+            <div class="text-positive">{{ decimas(props.row.precio) }}</div>
+          </q-td>
+          <q-td key="cantidad" :props="props" class="text-right">
+            <q-badge color="info">{{ props.row.cantidad }}</q-badge>
+          </q-td>
+          <q-td key="subtotal" :props="props" class="text-right text-weight-bold text-primary">
+            {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
+          </q-td>
+          <q-td key="opciones" :props="props" align="center">
+            <q-btn
+              dense
+              round
+              flat
+              icon="edit"
+              color="primary"
+              size="sm"
+              @click="iniciarEdicion(props.row)"
+            />
+            <q-btn
+              dense
+              round
+              flat
+              icon="delete"
+              color="negative"
+              size="sm"
+              @click="confirmarEliminar(props.row)"
+            />
+          </q-td>
+        </q-tr>
 
-      <template v-slot:no-data>
-        <div class="full-width row flex-center q-gutter-sm q-py-xl text-grey-5">
-          <q-icon name="shopping_cart" size="4em" />
-          <div class="text-center">
-            <div class="text-h6 text-grey-6">La lista está vacía</div>
-            <div class="text-caption">Añade productos usando el formulario superior</div>
-          </div>
-        </div>
-      </template>
-
-      <!-- CUSTOM GRID CARDS ON MOBILE -->
-      <template v-slot:item="props">
-        <div class="q-pa-xs col-xs-12 col-sm-6">
-          <q-card flat bordered class="bg-white full-width rounded-borders">
-            <!-- Header Card (Description + Options) -->
-            <q-item class="q-py-sm">
-              <q-item-section>
-                <q-item-label class="text-weight-bold text-subtitle2 text-grey-9">
-                  <q-badge
-                    color="primary"
-                    text-color="white"
-                    :label="props.row.codigo"
-                    class="q-mr-sm"
-                  />
-                  {{ props.row.descripcion }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section side v-if="compra.autorizacion == 2" class="q-pl-none">
-                <div class="row q-gutter-x-xs">
-                  <q-btn
+        <q-tr v-show="props.expand" :props="props" class="bg-grey-2">
+          <q-td colspan="100%">
+            <div class="q-pa-sm">
+              <div class="text-caption text-weight-bold q-mb-xs">ASIGNACIÓN DE CÓDIGOS ÚNICOS:</div>
+              <div class="row q-col-gutter-sm">
+                <div
+                  v-for="(sub, index) in props.row.productos_detallados"
+                  :key="sub.id"
+                  class="col-xs-12 col-sm-6 col-md-4"
+                >
+                  <q-input
+                    v-model="sub.codigo"
                     dense
-                    round
-                    flat
-                    icon="edit"
-                    color="primary"
-                    size="sm"
-                    @click="iniciarEdicion(props.row)"
+                    filled
+                    bg-color="white"
+                    label-slot
+                    @blur="actualizarCodigoIndividual(sub)"
                   >
-                    <q-tooltip>Editar producto</q-tooltip>
-                  </q-btn>
-                  <q-btn
-                    dense
-                    round
-                    flat
-                    icon="delete"
-                    color="negative"
-                    size="sm"
-                    @click="confirmarEliminar(props.row)"
-                  >
-                    <q-tooltip>Eliminar producto</q-tooltip>
-                  </q-btn>
-                </div>
-              </q-item-section>
-            </q-item>
-
-            <q-separator />
-
-            <!-- Body Card (Quantities & Prices) -->
-            <q-card-section class="q-py-sm">
-              <div class="row items-center">
-                <div class="col-4">
-                  <div class="text-caption text-grey-7 text-weight-medium">Precio</div>
-                  <div class="text-weight-bold text-positive">
-                    <q-icon name="payments" size="xs" class="q-mr-xs" />
-                    {{ divisaActiva.simbolo }} {{ decimas(props.row.precio) }}
-                  </div>
-                </div>
-                <div class="col-3 text-center">
-                  <div class="text-caption text-grey-7 text-weight-medium">Cant.</div>
-                  <q-badge color="info" text-color="white" class="q-ma-none text-weight-bold">
-                    <q-icon name="numbers" size="xs" class="q-mr-xs" />
-                    {{ props.row.cantidad }}
-                  </q-badge>
-                </div>
-                <div class="col-5 text-right">
-                  <div class="text-caption text-grey-7 text-weight-medium">Sub Total</div>
-                  <div class="text-weight-bold text-primary text-subtitle1">
-                    {{ divisaActiva.simbolo }}
-                    {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
-                  </div>
+                    <template v-slot:label> Código #{{ index + 1 }} </template>
+                    <template v-slot:append>
+                      <q-btn
+                        round
+                        dense
+                        flat
+                        icon="close"
+                        color="negative"
+                        size="xs"
+                        @click="eliminarSubCodigo(props.row, sub)"
+                      />
+                    </template>
+                  </q-input>
                 </div>
               </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </template>
-
-      <template v-slot:body-cell-codigo="props">
-        <q-td :props="props">
-          <q-badge color="primary" text-color="white" :label="props.row.codigo" />
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-descripcion="props">
-        <q-td :props="props">
-          <div class="text-weight-medium">{{ props.row.descripcion }}</div>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-precio="props">
-        <q-td :props="props" class="text-weight-medium text-right">
-          <div class="text-positive">
-            <q-icon name="payments" size="xs" class="q-mr-xs" />
-            {{ decimas(props.row.precio) }}
-          </div>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-cantidad="props">
-        <q-td :props="props">
-          <q-badge color="info" text-color="white">
-            <q-icon name="numbers" size="xs" class="q-mr-xs" />
-            {{ props.row.cantidad }}
-          </q-badge>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-subtotal="props">
-        <q-td :props="props" class="text-weight-bold text-primary text-right">
-          {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-opciones="props" v-if="compra.autorizacion == 2">
-        <q-td align="center">
-          <q-btn
-            dense
-            round
-            flat
-            icon="edit"
-            color="primary"
-            size="sm"
-            @click="iniciarEdicion(props.row)"
-            class="q-mr-xs"
-          >
-            <q-tooltip>Editar producto</q-tooltip>
-          </q-btn>
-          <q-btn
-            dense
-            round
-            flat
-            icon="delete"
-            color="negative"
-            size="sm"
-            @click="confirmarEliminar(props.row)"
-          >
-            <q-tooltip>Eliminar producto</q-tooltip>
-          </q-btn>
-          <q-btn
-            dense
-            round
-            flat
-            icon="visibility"
-            color="green"
-            size="sm"
-            @click="mostrarDetalleProducto(props.row)"
-          >
-            <q-tooltip>Producto Unico</q-tooltip>
-          </q-btn>
-        </q-td>
+            </div>
+          </q-td>
+        </q-tr>
       </template>
 
       <template v-slot:bottom-row>
         <q-tr class="bg-primary-1">
-          <q-td colspan="4" class="text-right text-weight-bold text-grey-9 text-subtitle1">
-            <div class="row items-center justify-end q-gutter-x-sm">
-              <span>TOTAL GENERAL:</span>
-            </div>
-          </q-td>
+          <q-td colspan="5" class="text-right text-weight-bold text-subtitle1">TOTAL GENERAL:</q-td>
           <q-td class="text-weight-bold text-h6 text-primary text-right">
             {{ divisaActiva.simbolo }} {{ total.toFixed(2) }}
           </q-td>
-          <q-td v-if="compra.autorizacion == 2"></q-td>
+          <q-td></q-td>
         </q-tr>
       </template>
     </q-table>
@@ -514,6 +428,9 @@ const detalleForm = ref({
 
 // --- COMPUTED PROPERTIES ---
 const columnas = computed(() => [
+  { name: 'exp', label: '', align: 'left' }, // Espacio para el botón +
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  // ... el resto de tus columnas
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
   {
     name: 'descripcion',
@@ -769,9 +686,61 @@ function confirmarEliminar(row) {
     await eliminarDetalle(row)
   })
 }
-async function mostrarDetalleProducto(row) {
-  console.log('producto:', row)
-  console.log('Compra', detalleItems.value)
+
+// Actualizar un código individual al salir del input (blur)
+async function actualizarCodigoIndividual(subProducto) {
+  try {
+    // Aquí deberías llamar a tu API que actualice solo el código del producto detallado
+    // Ejemplo:
+    const formData = new FormData()
+    formData.append('id', subProducto.id)
+    formData.append('codigo', subProducto.codigo)
+    formData.append('ver', 'actualizarCodigoUnico') // Ajusta según tu API
+
+    const response = await api.post('', formData)
+    console.log('Respuesta al actualizar código individual:', response.data)
+    if (response.data.estado === 'exito') {
+      $q.notify({
+        type: 'positive',
+        message: 'Código actualizado',
+        position: 'bottom-right',
+        timeout: 800,
+      })
+    }
+  } catch (error) {
+    console.error('Error al actualizar sub-código', error)
+  }
+}
+
+// Eliminar un sub-código y actualizar la cantidad del padre
+async function eliminarSubCodigo(padre, sub) {
+  console.log('Intentando eliminar sub-código:', sub)
+  $q.dialog({
+    title: 'Eliminar Código Único',
+    message: `¿Deseas eliminar el código ${sub.codigo}? Esto reducirá la cantidad del producto principal.`,
+    cancel: true,
+    ok: { color: 'negative', label: 'Eliminar' },
+  }).onOk(async () => {
+    try {
+      $q.loading.show()
+      // Llamada a la API para eliminar el sub-registro
+      const response = await api.get(`eliminarProductoUnico/${sub.id}`) // Ajusta la ruta
+      console.log('Respuesta al eliminar sub-código:', response.data)
+      if (response.data.estado === 'exito') {
+        // Actualizamos localmente para no recargar toda la tabla
+        padre.productos_detallados = padre.productos_detallados.filter((i) => i.id !== sub.id)
+        padre.cantidad = padre.productos_detallados.length
+
+        $q.notify({ type: 'positive', message: 'Eliminado correctamente' })
+        emit('update') // Para refrescar totales si es necesario
+      }
+    } catch (error) {
+      $q.notify({ type: 'negative', message: 'No se pudo eliminar' })
+      console.error('Error al eliminar sub-código', error)
+    } finally {
+      $q.loading.hide()
+    }
+  })
 }
 async function eliminarDetalle(row) {
   try {
