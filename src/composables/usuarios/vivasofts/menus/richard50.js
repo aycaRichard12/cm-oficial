@@ -325,6 +325,11 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'Configuración-General-Producto Único',
+            codigo: 'configuracionproductounico-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
 
           {
             titulo: 'Configuración-Producto-Categoría',

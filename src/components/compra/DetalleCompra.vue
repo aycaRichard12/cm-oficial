@@ -195,6 +195,18 @@
         <div
           class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
         >
+          <q-checkbox
+            v-if="productoUnico"
+            v-model="detalleForm.productoUnico"
+            label="Producto Único"
+            color="primary"
+            class="q-mr-md"
+            :disable="esModoEdicion"
+          >
+            <q-tooltip v-if="esModoEdicion">
+              No se puede cambiar el tipo de producto en edición
+            </q-tooltip>
+          </q-checkbox>
           <q-btn
             v-if="esModoEdicion"
             label="Cancelar"
@@ -456,10 +468,26 @@ import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { useCurrencyStore } from 'src/stores/currencyStore'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+const productoUnico = ref(false)
+const idempresa = idempresa_md5()
 
+const { config } = useProductoConfig(idempresa)
+watch(
+  () => config.value.idempresa,
+  (nuevoValor) => {
+    if (nuevoValor) {
+      productoUnico.value = Boolean(config.value.productounico)
+      console.log('Configuración actualizada:', config.value)
+      console.log(productoUnico.value)
+    }
+  },
+  { deep: true },
+)
+console.log('Producto Único Activado:', productoUnico.value)
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
-
 const props = defineProps({
   compra: { type: Object, required: true },
 })
@@ -481,6 +509,7 @@ const detalleForm = ref({
   descripcion: '',
   stockActual: 0,
   unidad: '',
+  productoUnico: false,
 })
 
 // --- COMPUTED PROPERTIES ---
@@ -562,6 +591,7 @@ async function getDetalleCompra() {
   try {
     const response = await api.get(`listaDetalleCompra/${props.compra.id}`)
     detalleItems.value = response.data
+    console.log('Detalle de compra cargado:', detalleItems.value)
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
     $q.notify({
@@ -605,10 +635,35 @@ function filtrarProductos(val, update) {
     )
   })
 }
-
+function confirmarCantidadEspecial() {
+  return new Promise((resolve) => {
+    $q.dialog({
+      title: '<span class="text-primary">Atención: Producto Único</span>',
+      message: `
+        <div class="text-center">
+          <p>Vas a registrar una cantidad de:</p>
+          <div class="text-h2 text-bold text-primary q-my-md">
+            ${detalleForm.value.cantidad}
+          </div>
+          <p>Se generarán <b>${detalleForm.value.cantidad}</b> registros individuales con códigos únicos. <br>¿Confirmas que la cantidad es correcta?</p>
+        </div>
+      `,
+      html: true,
+      persistent: true,
+      ok: { label: 'Sí, Correcto', color: 'primary', unelevated: true },
+      cancel: { label: 'Corregir', color: 'grey', flat: true },
+    })
+      .onOk(() => resolve(true))
+      .onCancel(() => resolve(false))
+      .onDismiss(() => resolve(false))
+  })
+}
 async function onSubmit() {
   if (!formRef.value.validate()) return
-
+  if (!esModoEdicion.value && detalleForm.value.productoUnico) {
+    const confirmado = await confirmarCantidadEspecial()
+    if (!confirmado) return
+  }
   const formData = objectToFormData(detalleForm.value)
   formData.append('idingreso', props.compra.id)
 
@@ -659,6 +714,7 @@ function onResetForm() {
     descripcion: '',
     stockActual: 0,
     unidad: '',
+    productoUnico: false,
   }
   formRef.value?.reset()
   formRef.value?.resetValidation()
