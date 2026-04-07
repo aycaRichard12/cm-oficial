@@ -255,91 +255,319 @@
       row-key="id"
       flat
       bordered
-      separator="cell"
+      class="my-custom-table shadow-1"
       :loading="loadingTable"
-      class="rounded-borders"
     >
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
           <q-td auto-width>
             <q-btn
-              v-if="props.row.productos_detallados && props.row.productos_detallados.length > 0"
+              v-if="props.row.productos_detallados?.length > 0"
               size="sm"
               color="primary"
+              flat
               round
-              dense
               @click="props.expand = !props.expand"
-              :icon="props.expand ? 'expand_less' : 'expand_more'"
-            />
+              :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+            >
+              <q-tooltip>Ver detalles de códigos</q-tooltip>
+            </q-btn>
           </q-td>
+
           <q-td key="codigo" :props="props">
-            <q-badge color="primary" :label="props.row.codigo" />
+            <q-chip outline color="primary" label-slot dense>
+              <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+              {{ props.row.codigo }}
+            </q-chip>
           </q-td>
+
           <q-td key="descripcion" :props="props">
-            <div class="text-weight-medium">{{ props.row.descripcion }}</div>
+            <div class="text-weight-bold">{{ props.row.descripcion }}</div>
           </q-td>
+
           <q-td key="precio" :props="props" class="text-right">
-            <div class="text-positive">{{ decimas(props.row.precio) }}</div>
+            {{ decimas(props.row.precio) }}
           </q-td>
+
           <q-td key="cantidad" :props="props" class="text-right">
-            <q-badge color="info">{{ props.row.cantidad }}</q-badge>
+            <q-badge color="grey-8">{{ props.row.cantidad }}</q-badge>
           </q-td>
-          <q-td key="subtotal" :props="props" class="text-right text-weight-bold text-primary">
+
+          <q-td key="subtotal" :props="props" class="text-right text-weight-bolder text-primary">
             {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
           </q-td>
-          <q-td key="opciones" :props="props" align="center">
+
+          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2">
             <q-btn
-              dense
-              round
               flat
+              round
+              dense
               icon="edit"
               color="primary"
               size="sm"
               @click="iniciarEdicion(props.row)"
             />
             <q-btn
-              dense
-              round
               flat
+              round
+              dense
               icon="delete"
               color="negative"
               size="sm"
               @click="confirmarEliminar(props.row)"
             />
           </q-td>
+          <q-td v-else />
         </q-tr>
 
-        <q-tr v-show="props.expand" :props="props" class="bg-grey-2">
-          <q-td colspan="100%">
-            <div class="q-pa-sm">
-              <div class="text-caption text-weight-bold q-mb-xs">ASIGNACIÓN DE CÓDIGOS ÚNICOS:</div>
-              <div class="row q-col-gutter-sm">
-                <div
-                  v-for="(sub, index) in props.row.productos_detallados"
-                  :key="sub.id"
-                  class="col-xs-12 col-sm-6 col-md-4"
-                >
-                  <q-input
-                    v-model="sub.codigo"
-                    dense
-                    filled
-                    bg-color="white"
-                    label-slot
-                    @blur="actualizarCodigoIndividual(sub)"
-                  >
-                    <template v-slot:label> Código #{{ index + 1 }} </template>
-                    <template v-slot:append>
-                      <q-btn
-                        round
-                        dense
-                        flat
-                        icon="close"
-                        color="negative"
-                        size="xs"
-                        @click="eliminarSubCodigo(props.row, sub)"
-                      />
-                    </template>
-                  </q-input>
+        <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
+          <q-td colspan="100%" class="q-pa-lg">
+            <div class="premium-card">
+              <!-- Header Premium con Gradiente -->
+              <div class="premium-header">
+                <div class="row items-center full-width">
+                  <div class="header-icon-wrapper">
+                    <q-icon name="qr_code_scanner" size="22px" color="white" />
+                  </div>
+                  <div class="header-content">
+                    <h3 class="header-title">Desglose de Identificadores Únicos</h3>
+                    <p class="header-subtitle">Gestión avanzada de códigos serializados</p>
+                  </div>
+                  <q-space />
+                  <div class="header-stats">
+                    <div class="stat-badge">
+                      <q-icon name="inventory_2" size="16px" class="q-mr-xs" />
+                      <span class="stat-value">{{ props.row.productos_detallados.length }}</span>
+                      <span class="stat-label">Registros</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barra de Herramientas Superior -->
+              <div class="toolbar-section">
+                <div class="row items-center q-px-md q-py-sm">
+                  <div class="search-indicator">
+                    <q-icon name="info" size="14px" color="primary" class="q-mr-xs" />
+                    <span class="text-caption text-grey-7">
+                      Doble clic en cualquier código para editarlo
+                    </span>
+                  </div>
+                  <q-space />
+                  <div class="keyboard-shortcuts">
+                    <q-badge outline color="grey-6" class="q-mr-xs">
+                      <q-icon name="keyboard_return" size="12px" class="q-mr-xs" />
+                      Enter
+                    </q-badge>
+                    <q-badge outline color="grey-6">
+                      <q-icon name="keyboard_esc" size="12px" class="q-mr-xs" />
+                      ESC
+                    </q-badge>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabla de Datos Premium -->
+              <div class="table-wrapper">
+                <q-markup-table flat bordered separator="none" class="premium-table">
+                  <thead>
+                    <tr class="premium-table-header">
+                      <th style="width: 70px">
+                        <div class="header-cell-content">
+                          <q-icon name="tag" size="14px" class="q-mr-xs" />
+                          <span>#</span>
+                        </div>
+                      </th>
+                      <th>
+                        <div class="header-cell-content">
+                          <q-icon name="fingerprint" size="14px" class="q-mr-xs" />
+                          <span>Código de Identificación</span>
+                        </div>
+                      </th>
+                      <th style="width: 120px" class="text-center">
+                        <div class="header-cell-content justify-center">
+                          <q-icon name="settings" size="14px" class="q-mr-xs" />
+                          <span>Acciones</span>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(sub, index) in props.row.productos_detallados"
+                      :key="sub.id"
+                      class="premium-table-row"
+                      :class="{ 'row-editing': editandoId === sub.id }"
+                    >
+                      <!-- Índice con Diseño Premium -->
+                      <td class="index-cell">
+                        <div class="index-badge" :class="{ 'index-badge-assigned': sub.codigo }">
+                          <span class="index-number">{{ String(index + 1).padStart(2, '0') }}</span>
+                          <q-icon
+                            v-if="sub.codigo"
+                            name="check_circle"
+                            size="12px"
+                            class="index-icon"
+                          />
+                        </div>
+                      </td>
+
+                      <!-- Código Editable Premium -->
+                      <td class="code-cell">
+                        <!-- Modo Visualización -->
+                        <div
+                          v-if="editandoId !== sub.id"
+                          class="code-viewer"
+                          @dblclick="habilitarEdicion(sub)"
+                        >
+                          <div class="code-content">
+                            <q-icon
+                              :name="sub.codigo ? 'verified' : 'pending_actions'"
+                              :color="sub.codigo ? 'positive' : 'warning'"
+                              size="18px"
+                              class="code-status-icon"
+                            />
+                            <div class="code-text-wrapper">
+                              <span class="code-text" :class="{ 'code-text-empty': !sub.codigo }">
+                                {{ sub.codigo || 'Sin asignar' }}
+                              </span>
+                              <span v-if="!sub.codigo" class="code-placeholder">
+                                Haga doble clic para asignar
+                              </span>
+                            </div>
+                          </div>
+                          <div class="code-hover-indicator">
+                            <q-icon name="edit_note" size="16px" color="primary" />
+                            <span class="hover-text">Editar</span>
+                          </div>
+                        </div>
+
+                        <!-- Modo Edición Premium -->
+                        <div v-else class="code-editor">
+                          <q-input
+                            v-model="sub.codigo"
+                            dense
+                            borderless
+                            autofocus
+                            bg-color="white"
+                            class="premium-input"
+                            @keyup.enter="guardarEdicion(sub)"
+                            @keyup.esc="cancelarEdicion(sub)"
+                            @blur="guardarEdicion(sub)"
+                            placeholder="Ingrese el código único..."
+                          >
+                            <template v-slot:prepend>
+                              <q-icon name="edit" color="primary" size="18px" />
+                            </template>
+                            <template v-slot:append>
+                              <div class="editor-actions">
+                                <q-btn
+                                  flat
+                                  round
+                                  dense
+                                  size="10px"
+                                  icon="check"
+                                  color="positive"
+                                  @click.stop="guardarEdicion(sub)"
+                                  class="editor-action-btn"
+                                >
+                                  <q-tooltip>Guardar (Enter)</q-tooltip>
+                                </q-btn>
+                                <q-btn
+                                  flat
+                                  round
+                                  dense
+                                  size="10px"
+                                  icon="close"
+                                  color="negative"
+                                  @click.stop="cancelarEdicion(sub)"
+                                  class="editor-action-btn"
+                                >
+                                  <q-tooltip>Cancelar (Esc)</q-tooltip>
+                                </q-btn>
+                              </div>
+                            </template>
+                          </q-input>
+                        </div>
+                      </td>
+
+                      <!-- Acciones Premium -->
+                      <td class="actions-cell">
+                        <div class="actions-wrapper">
+                          <q-btn
+                            v-if="compra.autorizacion == 2"
+                            flat
+                            round
+                            dense
+                            icon="delete_outline"
+                            color="grey-7"
+                            size="12px"
+                            class="action-btn"
+                            @click="eliminarSubCodigo(props.row, sub)"
+                          >
+                            <q-tooltip class="premium-tooltip">
+                              <div class="tooltip-content">
+                                <q-icon name="delete" size="14px" class="q-mr-xs" />
+                                Eliminar código
+                              </div>
+                            </q-tooltip>
+                          </q-btn>
+                          <div v-else class="action-placeholder"></div>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Estado Vacío Premium -->
+                    <tr v-if="props.row.productos_detallados.length === 0">
+                      <td colspan="3" class="empty-state-cell">
+                        <div class="empty-state-premium">
+                          <div class="empty-icon-wrapper">
+                            <q-icon name="qr_code" size="48px" color="grey-5" />
+                          </div>
+                          <h4 class="empty-title">Sin identificadores registrados</h4>
+                          <p class="empty-description">
+                            No hay códigos únicos asociados a este producto
+                          </p>
+                          <q-badge outline color="primary" class="empty-badge">
+                            <q-icon name="info" size="12px" class="q-mr-xs" />
+                            Doble clic para agregar
+                          </q-badge>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </q-markup-table>
+              </div>
+
+              <!-- Footer Premium -->
+              <div class="premium-footer">
+                <div class="footer-content">
+                  <div class="footer-info">
+                    <q-icon name="schedule" size="14px" color="grey-6" class="q-mr-xs" />
+                    <span class="text-caption text-grey-6">
+                      Última actualización: {{ new Date().toLocaleString() }}
+                    </span>
+                  </div>
+                  <div class="footer-stats">
+                    <div class="stat-item">
+                      <q-icon name="check_circle" size="14px" color="positive" class="q-mr-xs" />
+                      <span class="text-caption">
+                        {{
+                          props.row.productos_detallados.filter((s) => s.codigo).length
+                        }}
+                        asignados
+                      </span>
+                    </div>
+                    <div class="stat-item">
+                      <q-icon name="pending" size="14px" color="warning" class="q-mr-xs" />
+                      <span class="text-caption">
+                        {{
+                          props.row.productos_detallados.filter((s) => !s.codigo).length
+                        }}
+                        pendientes
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -348,12 +576,12 @@
       </template>
 
       <template v-slot:bottom-row>
-        <q-tr class="bg-primary-1">
-          <q-td colspan="5" class="text-right text-weight-bold text-subtitle1">TOTAL GENERAL:</q-td>
-          <q-td class="text-weight-bold text-h6 text-primary text-right">
+        <q-tr class="bg-primary text-white">
+          <q-td colspan="5" class="text-right text-weight-bold">TOTAL GENERAL:</q-td>
+          <q-td class="text-right text-weight-bolder text-subtitle1">
             {{ divisaActiva.simbolo }} {{ total.toFixed(2) }}
           </q-td>
-          <q-td></q-td>
+          <q-td />
         </q-tr>
       </template>
     </q-table>
@@ -393,13 +621,10 @@ watch(
   (nuevoValor) => {
     if (nuevoValor) {
       productoUnico.value = Boolean(config.value.productounico)
-      console.log('Configuración actualizada:', config.value)
-      console.log(productoUnico.value)
     }
   },
   { deep: true },
 )
-console.log('Producto Único Activado:', productoUnico.value)
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
 const props = defineProps({
@@ -428,9 +653,7 @@ const detalleForm = ref({
 
 // --- COMPUTED PROPERTIES ---
 const columnas = computed(() => [
-  { name: 'exp', label: '', align: 'left' }, // Espacio para el botón +
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  // ... el resto de tus columnas
+  { name: 'exp', label: '', align: 'left' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
   {
     name: 'descripcion',
@@ -462,6 +685,27 @@ const total = computed(() => {
     0,
   )
 })
+
+// Dentro de tu setup o data
+const editandoId = ref(null) // ID del sub-código en edición
+const copiaRespaldo = ref('') // Para restaurar si presiona ESC
+
+const habilitarEdicion = (sub) => {
+  editandoId.value = sub.id
+  copiaRespaldo.value = sub.codigo // Guardamos el valor original
+}
+
+const guardarEdicion = (sub) => {
+  if (editandoId.value === sub.id) {
+    editandoId.value = null
+    actualizarCodigoIndividual(sub) // Tu función existente
+  }
+}
+
+const cancelarEdicion = (sub) => {
+  sub.codigo = copiaRespaldo.value // Restauramos el valor
+  editandoId.value = null
+}
 
 // --- WATCHERS ---
 watch(
@@ -773,3 +1017,50 @@ async function eliminarDetalle(row) {
   }
 }
 </script>
+<style scoped>
+.my-custom-table {
+  border-radius: 8px;
+}
+
+.sub-table-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #e0e0e0;
+}
+
+/* Estilo para que el input parezca texto normal hasta que se hace focus */
+.input-edicion-activa {
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(25, 118, 210, 0.3); /* Un suave resplandor azul */
+}
+
+/* Efecto hover para el botón de check */
+.icon-hover-positive:hover {
+  background-color: #e8f5e9; /* green-1 */
+  transform: scale(1.2);
+  color: #2e7d32 !important;
+}
+
+/* Efecto hover para el botón de cerrar */
+.icon-hover-negative:hover {
+  background-color: #ffebee; /* red-1 */
+  transform: scale(1.2);
+  color: #c62828 !important;
+}
+
+/* Animación simple de entrada */
+.input-edicion-activa {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
