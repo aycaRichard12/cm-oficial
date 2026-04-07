@@ -165,7 +165,7 @@ export function useCuentasxCobrar() {
   })
 
   const totalCobrado = computed(() =>
-    detallesCobros.value.reduce((total, item) => total + parseFloat(item.monto || 0), 0),
+    detallesCobros.value.reduce((totalAcc, item) => totalAcc + parseFloat(item.total || item.monto || 0), 0),
   )
 
   const opcionesTipo = OPCIONES_TIPO
@@ -290,6 +290,21 @@ export function useCuentasxCobrar() {
 
   function cargarFormulario(dato) {
     const cuotasPendientes = parseFloat(dato.ncuotas) - parseFloat(dato.cuotaspagas || 0)
+    
+    // Default to 1 quota if there are quotas left.
+    const defaultNumCobros = 1
+    const saldo = parseFloat(dato.saldo || 0)
+    const valorCuota = parseFloat(dato.valorcuota || 0)
+    
+    // If only 1 quota is left, totalCobro is exactly the remaining balance
+    const isSingleQuotaRemaining = cuotasPendientes === 1
+    const totalCobro = isSingleQuotaRemaining 
+      ? saldo 
+      : (defaultNumCobros * valorCuota)
+
+    const saldoPorCobrar = isSingleQuotaRemaining 
+      ? 0 
+      : (saldo - totalCobro)
 
     formulario.value = {
       ...formularioInicial(),
@@ -297,16 +312,12 @@ export function useCuentasxCobrar() {
       cliente: dato.cliente,
       sucursal: dato.sucursal,
       deudaTotal: decimas(dato.ventatotal),
-      saldoPendiente: decimas(dato.saldo),
+      saldoPendiente: decimas(saldo),
       cuotasPendientes,
-      valorCuota: decimas(dato.valorcuota),
-    }
-
-    // Si sólo queda 1 cuota, se completa automáticamente
-    if (cuotasPendientes === 1) {
-      formulario.value.numeroCobros = 1
-      formulario.value.totalCobro = decimas(redondear(parseFloat(formulario.value.saldoPendiente)))
-      formulario.value.saldoPorCobrar = '0.00'
+      valorCuota: decimas(valorCuota),
+      numeroCobros: defaultNumCobros,
+      totalCobro: decimas(redondear(totalCobro)),
+      saldoPorCobrar: decimas(redondear(saldoPorCobrar))
     }
 
     mostrarForm.value = true
@@ -317,10 +328,15 @@ export function useCuentasxCobrar() {
     const valorCuota = parseFloat(formulario.value.valorCuota || 0)
     const saldoPendiente = parseFloat(formulario.value.saldoPendiente || 0)
 
-    if (numCobros > formulario.value.cuotasPendientes) {
-      $q.notify({ type: 'warning', message: 'El N°Cobros no puede ser mayor a los cobros pendientes' })
-      formulario.value.numeroCobros = 0
+    if (!Number.isInteger(numCobros) || numCobros < 1) {
       formulario.value.totalCobro = '0.00'
+      formulario.value.saldoPorCobrar = '0.00'
+      return
+    }
+
+    if (numCobros > formulario.value.cuotasPendientes) {
+      formulario.value.totalCobro = '0.00'
+      formulario.value.saldoPorCobrar = '0.00'
       return
     }
 
