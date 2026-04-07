@@ -4,7 +4,7 @@ export const PAGINAS = Object.freeze({
     'divisas',
     'leyendaproforma',
     'tipokardex',
-  
+    'configuracionproductounico',
   ]),
   configuracionproducto: Object.freeze([
     'categoriadeproducto',
@@ -54,7 +54,7 @@ export const PAGINAS = Object.freeze({
     'autorizarcompra',
     'autorizarventassinstock',
     'anularcompra',
-    'permisosusuario'
+    'permisosusuario',
     // 'autorizarOperaciones',
   ]),
   gestioncompra: Object.freeze(['registrarcompra']),
@@ -74,6 +74,7 @@ export const PAGINAS_ICONS = Object.freeze({
   tipodealmacen: 'store',
   divisas: 'attach_money',
   leyendaproforma: 'description',
+  configuracionproductounico: 'description',
 
   // Íconos para los submenús de Configuración de Producto
   categoriadeproducto: 'category',
