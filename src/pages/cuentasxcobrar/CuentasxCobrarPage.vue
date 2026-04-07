@@ -32,7 +32,7 @@
     <!-- Diálogo Registrar Cobro -->
     <RegistrarCobroDialog
       v-model="mostrarForm"
-      :formulario="formulario"
+      v-model:formulario="formulario"
       :divisa="divisa"
       :is-compressing="isCompressing"
       @close="cerrarFormulario"
