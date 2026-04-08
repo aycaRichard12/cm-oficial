@@ -156,6 +156,18 @@
     <!-- Sección: Selección de productos -->
 
     <div class="row q-col-gutter-x-md q-col-gutter-y-sm items-start">
+      <div
+        class="col-12 col-md-2 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
+      >
+        <q-checkbox
+          v-if="esProductoUnico"
+          v-model="registrarComoProductoUnico"
+          label="Producto Único"
+          color="primary"
+          class="q-mr-md"
+        >
+        </q-checkbox>
+      </div>
       <div class="col-12 col-md-4" id="productoCotizacion">
         <label for="producto" class="text-weight-medium">Producto o Servicio*</label>
         <q-select
@@ -180,18 +192,6 @@
             </q-item>
           </template>
         </q-select>
-      </div>
-      <div
-        class="col-12 col-md-2 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
-      >
-        <q-checkbox
-          v-if="esProductoUnico"
-          v-model="registrarComoProductoUnico"
-          label="Producto Único"
-          color="primary"
-          class="q-mr-md"
-        >
-        </q-checkbox>
       </div>
 
       <UniqueProductSelector
@@ -362,10 +362,18 @@
 
           <q-tr v-show="props.expand" :props="props" class="expanded-row">
             <q-td colspan="100%" class="q-pa-lg">
-              <DetalleCodigosUnicos
+              <TableCodigosUnicos
                 v-model="props.row.codigosUnicos"
-                :can-edit="false"
-                :can-delete="false"
+                :parent-row="props.row"
+                :can-delete="true"
+                :can-edit="true"
+                :api-mode="false"
+                @update-parent-quantity="
+                  (nuevaCant) => {
+                    props.row.cantidad = nuevaCant
+                    calcularTotalesCarrito()
+                  }
+                "
               />
             </q-td>
           </q-tr>
@@ -769,7 +777,7 @@ import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
 import ModalfirmaPage from './ModalfirmaPage.vue'
 import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
-import DetalleCodigosUnicos from 'src/components/venta/DetalleCodigosUnicos.vue'
+import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
 const showAddModal = ref(false)
 const esProductoUnico = ref(false)
 const registrarComoProductoUnico = ref(false)
@@ -790,6 +798,7 @@ watch(
 const guardarCodigosEnVenta = (codigos) => {
   CodigosUnicosSeleccionados.value = codigos
   console.log('Códigos únicos seleccionados:', CodigosUnicosSeleccionados.value)
+  cantidadCO.value = codigos.length
 }
 
 const modalfirmaActivo = ref(false)
