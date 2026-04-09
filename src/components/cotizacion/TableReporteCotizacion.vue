@@ -13,11 +13,12 @@
     class="q-ma-sm shadow-2 rounded-borders"
   >
     <!-- Columna: Tipo (Estado) -->
-    <template v-slot:body-cell-estado="props">
+    <template v-slot:body-cell-estadoResumido="props">
       <q-td :props="props" class="text-center">
         <!-- Anulado -->
+        <!-- Mostrar el texto del estado resumido -->
         <q-badge
-          v-if="Number(props.row.condicion) === 2"
+          v-if="props.row.estadoResumido === 'ANU'"
           color="red"
           label="ANU"
           outline
@@ -28,18 +29,20 @@
 
         <!-- Proforma (Activo, Estado 1) -->
         <q-badge
-          v-if="Number(props.row.estado) === 1 && Number(props.row.condicion) === 1"
+          v-if="props.row.estadoResumido === 'PREF'"
           color="deep-purple"
           label="PREF"
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Proforma / Cotización</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption"
+            >Proforma / Cotización</q-tooltip
+          >
         </q-badge>
 
         <!-- Normal (Activo, Estado 0) -->
         <q-badge
-          v-if="Number(props.row.estado) === 0 && Number(props.row.condicion) === 1"
+          v-if="props.row.estadoResumido === 'NOR'"
           color="blue"
           label="NOR"
           outline
@@ -50,7 +53,7 @@
 
         <!-- Facturado (Activo, Estado 2) -->
         <q-badge
-          v-if="Number(props.row.estado) === 2 && Number(props.row.condicion) === 1"
+          v-if="props.row.estadoResumido === 'FACT'"
           color="positive"
           label="FACT"
           outline
@@ -61,7 +64,7 @@
 
         <!-- Devolución (Activo, Estado 3) -->
         <q-badge
-          v-if="Number(props.row.estado) === 3 && Number(props.row.condicion) === 1"
+          v-if="props.row.estadoResumido === 'DEV'"
           color="orange"
           label="DEV"
           outline
@@ -73,24 +76,23 @@
     </template>
 
     <!-- Columna: Estado de Cobro -->
-    <template v-slot:body-cell-estado_cobro="props">
+    <template v-slot:body-cell-estadoCobroResumido="props">
       <q-td :props="props" class="text-center">
         <!-- Cobrado (2, 0 o null) -->
         <q-badge
-          v-if="[2, 0, null].includes(Number(props.row.estado_cobro)) || props.row.estado_cobro == null"
+          v-if="props.row.estadoCobroResumido == 'Cobrado'"
           :label="estadoCobro[0].cobrado"
           color="positive"
           icon="check_circle"
           outline
           class="cursor-pointer q-px-sm shadow-1"
-        
         >
           <q-tooltip>Ya esta cobrado, no se puede ir a gestionar cobro</q-tooltip>
         </q-badge>
 
         <!-- Pendiente (1 o 3) -->
         <q-badge
-          v-if="Number(props.row.estado_cobro) === 1 || Number(props.row.estado_cobro) === 3"
+          v-if="props.row.estadoCobroResumido === 'Pendiente'"
           :label="estadoCobro[0].pendiente"
           color="warning"
           icon="schedule"
@@ -103,7 +105,7 @@
 
         <!-- Anulado (4) -->
         <q-badge
-          v-if="Number(props.row.estado_cobro) === 4"
+          v-if="props.row.estadoCobroResumido === 'Anulado'"
           :label="estadoCobro[0].anulado"
           color="negative"
           icon="block"
@@ -128,7 +130,7 @@
             dense
             @click="$emit('generarComprobantePDF', props.row.idcotizacion)"
           >
-             <q-tooltip>Ver Comprobante</q-tooltip>
+            <q-tooltip>Ver Comprobante</q-tooltip>
           </q-btn>
           <q-btn
             id="btnfacturarcotizacion"
@@ -145,7 +147,7 @@
             dense
             @click="$emit('facturarVenta', props.row.idcotizacion)"
           >
-             <q-tooltip>Facturar</q-tooltip>
+            <q-tooltip>Facturar</q-tooltip>
           </q-btn>
         </div>
       </q-td>
@@ -159,15 +161,14 @@
     </template>
     <template v-slot:body-cell-descuento="props">
       <q-td :props="props" class="text-right text-grey-7">
-         {{ formatCurrency(props.row.descuento) }}
+        {{ formatCurrency(props.row.descuento) }}
       </q-td>
     </template>
     <template v-slot:body-cell-total_sumatorias="props">
       <q-td :props="props" class="text-right text-weight-bold">
-         {{ formatCurrency(props.row.total_sumatorias) }}
+        {{ formatCurrency(props.row.total_sumatorias) }}
       </q-td>
     </template>
-
   </BaseFilterableTable>
 </template>
 
@@ -211,15 +212,78 @@ defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
 // Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
 const columnas = [
   { name: 'nro', label: 'N°', align: 'center', field: 'nro', sortable: true },
-  { name: 'fecha', label: 'Fecha', align: 'left', field: 'fecha', dataType: 'date', sortable: true },
-  { name: 'almacen', label: 'Almacén', align: 'left', field: 'almacen', dataType: 'text', sortable: true },
-  { name: 'cliente', label: 'Cliente', align: 'left', field: 'cliente', dataType: 'text', sortable: true },
-  { name: 'sucursal', label: 'Sucursal', align: 'left', field: 'sucursal', dataType: 'text', sortable: true },
-  { name: 'estado', label: 'Tipo', align: 'center', field: 'estado', sortable: true },
-  { name: 'monto', label: 'Monto', align: 'right', field: 'monto', dataType: 'number', sortable: true },
-  { name: 'descuento', label: 'Desc.', align: 'right', field: 'descuento', dataType: 'number', sortable: true },
-  { name: 'total_sumatorias', label: 'Total', align: 'right', field: 'total_sumatorias', dataType: 'number', sortable: true },
-  { name: 'estado_cobro', label: 'Estado Pago', align: 'center', field: 'estado_cobro', dataType: 'text', sortable: true },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    align: 'left',
+    field: 'fecha',
+    dataType: 'date',
+    sortable: true,
+  },
+  {
+    name: 'almacen',
+    label: 'Almacén',
+    align: 'left',
+    field: 'almacen',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'cliente',
+    label: 'Cliente',
+    align: 'left',
+    field: 'cliente',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'sucursal',
+    label: 'Sucursal',
+    align: 'left',
+    field: 'sucursal',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'estadoResumido',
+    label: 'Tipo',
+    align: 'center',
+    field: 'estadoResumido',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'monto',
+    label: 'Monto',
+    align: 'right',
+    field: 'monto',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'descuento',
+    label: 'Desc.',
+    align: 'right',
+    field: 'descuento',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'total_sumatorias',
+    label: 'Total',
+    align: 'right',
+    field: 'total_sumatorias',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'estadoCobroResumido',
+    label: 'Estado Pago',
+    align: 'center',
+    field: 'estadoCobroResumido',
+    dataType: 'text',
+    sortable: true,
+  },
   { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
 ]
 
@@ -245,7 +309,7 @@ function irCuentasPorCobrar() {
 function formatCurrency(value) {
   return new Intl.NumberFormat('es-BO', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(Number(value) || 0)
 }
 
@@ -258,8 +322,8 @@ const ArrayHeaders = [
   'monto',
   'descuento',
   'total_sumatorias',
-  'estado',
-  'estado_cobro'
+  'estadoResumido',
+  'estadoCobroResumido',
 ]
 
 const summationHeaders = ['monto', 'descuento', 'total_sumatorias']
