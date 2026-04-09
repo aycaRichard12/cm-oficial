@@ -71,11 +71,7 @@
 
               <q-space />
 
-              <q-btn
-                label="Cancelar Devolución"
-                color="negative"
-                @click="eliminarDevolucion"
-              />
+              <q-btn label="Cancelar Devolución" color="negative" @click="eliminarDevolucion" />
 
               <q-btn
                 label="Confirmar Devolución"
@@ -98,13 +94,7 @@
     >
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props">
-          <q-btn
-            icon="edit"
-            color="info"
-            dense
-            round
-            @click="editarDetalle(props.row)"
-          />
+          <q-btn icon="edit" color="info" dense round @click="editarDetalle(props.row)" />
         </q-td>
       </template>
     </q-table>
@@ -115,10 +105,10 @@
 import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
-import { validarUsuario } from 'src/composables/FuncionesG'
+//import { validarUsuario } from 'src/composables/FuncionesG'
 
 const props = defineProps({
-  idDevolucion: { type: [Number, String], default: null }
+  idDevolucion: { type: [Number, String], default: null },
 })
 
 const emit = defineEmits(['volver', 'finalizado'])
@@ -283,20 +273,20 @@ const confirmarAutorizarDevolucion = () => {
 
 const autorizarDevolucion = async () => {
   try {
-    const usuarioResponse = validarUsuario()
-    const usuario = usuarioResponse[0]
-    const idusuario = usuario?.idusuario
-    
+    //const usuarioResponse = validarUsuario()
+    //const usuario = usuarioResponse[0]
+    //const idusuario = usuario?.idusuario
+
     $q.loading.show({ message: 'Autorizando devolución...' })
 
-    const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
+    // const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
 
-    if (response.data.estado === 100) {
-      $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
-      emit('finalizado')
-    } else {
-      throw new Error(response.data.error || 'Error al autorizar devolución')
-    }
+    // if (response.data.estado === 100) {
+    //   $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
+    //   emit('finalizado')
+    // } else {
+    //   throw new Error(response.data.error || 'Error al autorizar devolución')
+    // }
   } catch (error) {
     console.error('Error al autorizar devolución:', error)
     $q.notify({ type: 'negative', message: 'Error al autorizar devolución' })
@@ -305,9 +295,13 @@ const autorizarDevolucion = async () => {
   }
 }
 
-watch(() => props.idDevolucion, (newVal) => {
-  if (newVal) {
-    listarDatosDetalleDevolucion(newVal)
-  }
-}, { immediate: true })
+watch(
+  () => props.idDevolucion,
+  (newVal) => {
+    if (newVal) {
+      listarDatosDetalleDevolucion(newVal)
+    }
+  },
+  { immediate: true },
+)
 </script>
