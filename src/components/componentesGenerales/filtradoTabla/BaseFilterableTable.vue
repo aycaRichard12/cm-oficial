@@ -383,6 +383,26 @@ function universalCompare(a, b) {
 }
 
 /**
+ * Extrae todos los valores de un objeto de forma recursiva para búsqueda universal.
+ * @param {any} obj - El objeto o valor a extraer.
+ * @returns {string} - String con todos los valores concatenados.
+ */
+function extractAllValues(obj) {
+  if (obj == null) return ''
+  if (typeof obj !== 'object') return String(obj)
+
+  // Si es array, convertir a string
+  if (Array.isArray(obj)) {
+    return obj.map((item) => extractAllValues(item)).join(' ')
+  }
+
+  // Si es objeto, extraer todos los valores recursivamente
+  return Object.values(obj)
+    .map((value) => extractAllValues(value))
+    .join(' ')
+}
+
+/**
  * Aplica todos los filtros activos de columna (lógica AND) y la ordenación.
  */
 const filteredData = computed(() => {
@@ -413,16 +433,13 @@ const filteredData = computed(() => {
     })
   })
 
-  // Aplicar filtro de búsqueda global (search)
+  // Aplicar filtro de búsqueda global (search) - búsqueda universal en todos los datos de la fila
   if (localSearch.value && localSearch.value.trim() !== '') {
     const searchTerm = localSearch.value.toLowerCase().trim()
     data = data.filter((row) => {
-      // Buscar en todas las columnas visibles
-      return visibleColumns.value.some((col) => {
-        const value = getByPath(row, col.field)
-        if (value == null) return false
-        return String(value).toLowerCase().includes(searchTerm)
-      })
+      // Buscar en TODOS los datos de la fila, incluyendo objetos anidados
+      const allValues = extractAllValues(row)
+      return allValues.toLowerCase().includes(searchTerm)
     })
   }
 
