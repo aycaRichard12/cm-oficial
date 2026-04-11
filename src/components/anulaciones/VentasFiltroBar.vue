@@ -1,6 +1,6 @@
 <template>
   <div class="row q-col-gutter-x-md q-mb-md">
-    <div class="col-12 col-md-3" id="filtroalmacenanulaciones">
+    <div class="col-12 col-md-2" id="filtroalmacenanulaciones">
       <label for="almacen">Almacén</label>
       <q-select
         :model-value="almacen"
@@ -15,7 +15,7 @@
         dense
       />
     </div>
-    <div class="col-12 col-md-3" id="filtrotipoventaanulaciones">
+    <div class="col-12 col-md-2" id="filtrotipoventaanulaciones">
       <label for="tipoventa">Tipo de venta</label>
       <q-select
         :model-value="tipo"
@@ -32,7 +32,7 @@
       />
     </div>
 
-    <div class="col-12 col-md-6 flex justify-end">
+    <!-- <div class="col-12 col-md-6 flex justify-end">
       <div class="col-12 col-md-6" id="filtrobuscaranulaciones">
         <label for="buscar">Buscar...</label>
         <q-input
@@ -48,7 +48,7 @@
           </template>
         </q-input>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
