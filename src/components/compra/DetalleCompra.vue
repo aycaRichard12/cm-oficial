@@ -142,7 +142,10 @@
                 v-model="detalleForm.precio"
                 type="text"
                 inputmode="decimal"
-                :rules="[(val) => val > 0 || 'Mayor a 0']"
+                :rules="[
+                  (val) => (val !== null && val !== '') || 'Requerido',
+                  (val) => parseFloat(val) > 0 || 'Mayor a 0',
+                ]"
                 dense
                 filled
                 label="Precio Unit. *"
@@ -151,13 +154,14 @@
                 stack-label
                 bg-color="grey-2"
                 text-color="grey-9"
-                @update:model-value="(val) => (detalleForm.precio = parseFloat(val) || null)"
               >
                 <template v-slot:prepend>
                   <q-icon name="payments" size="xs" color="grey-7" />
                 </template>
                 <template v-slot:append>
-                  <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
+                  <span class="text-grey-7 text-body1 text-weight-bold">
+                    {{ divisaActiva.simbolo }}
+                  </span>
                 </template>
               </q-input>
             </div>
@@ -182,7 +186,7 @@
                   <q-icon name="numbers" size="xs" color="grey-7" />
                 </template>
                 <template v-slot:append>
-                  <span class="text-grey-9 text-weight-bold" size="xs">{{
+                  <span class="text-grey-7 text-body1 text-weight-bold">{{
                     detalleForm.unidad || 'und'
                   }}</span>
                 </template>
@@ -407,8 +411,8 @@ const loadingTable = ref(false)
 const detalleForm = ref({
   id: null,
   idproductoalmacen: null,
-  precio: null,
-  cantidad: null,
+  precio: '',
+  cantidad: '',
   descripcion: '',
   stockActual: 0,
   unidad: '',
@@ -468,7 +472,7 @@ watch(
     if (productoSeleccionado) {
       detalleForm.value.stockActual = productoSeleccionado.stock
       detalleForm.value.unidad = productoSeleccionado.unidad
-      detalleForm.value.precio = productoSeleccionado.precio || null
+      detalleForm.value.precio = productoSeleccionado.precio?.toString() || ''
     }
   },
 )
@@ -568,7 +572,13 @@ async function onSubmit() {
     const confirmado = await confirmarCantidadEspecial()
     if (!confirmado) return
   }
-  const formData = objectToFormData(detalleForm.value)
+
+  // Convertir valores string a números con decimales antes de enviar
+  const formData = objectToFormData({
+    ...detalleForm.value,
+    precio: parseFloat(detalleForm.value.precio) || 0,
+    cantidad: parseFloat(detalleForm.value.cantidad) || 0,
+  })
   formData.append('idingreso', props.compra.id)
 
   const isUpdate = esModoEdicion.value
@@ -613,8 +623,8 @@ function onResetForm() {
   detalleForm.value = {
     id: null,
     idproductoalmacen: null,
-    precio: null,
-    cantidad: null,
+    precio: '',
+    cantidad: '',
     descripcion: '',
     stockActual: 0,
     unidad: '',
@@ -637,8 +647,8 @@ async function iniciarEdicion(row) {
       detalleForm.value = {
         id: response.data.datos.id,
         idproductoalmacen: response.data.datos.idproductoalmacen,
-        precio: response.data.datos.precio,
-        cantidad: response.data.datos.cantidad,
+        precio: response.data.datos.precio?.toString() || '',
+        cantidad: response.data.datos.cantidad?.toString() || '',
         descripcion: response.data.datos.descripcion,
         stockActual: Number(response.data.datos.stock) || 0,
         unidad: response.data.datos.unidad || '',
