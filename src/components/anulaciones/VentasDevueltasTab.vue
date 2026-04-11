@@ -54,6 +54,7 @@ import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
 import VentasTableVerButtons from './VentasTableVerButtons.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -95,9 +96,29 @@ const columnas = [
     label: 'Fecha devolución',
     field: 'fechadevolucion',
     align: 'center',
-    dataType: 'date',
+
+    format: (val) => (val ? cambiarFormatoFecha(val) : ''),
   },
-  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
+  {
+    name: 'fechaventa',
+    label: 'Fecha',
+    field: 'fechaventa',
+    align: 'center',
+    format: (val) => (val ? cambiarFormatoFecha(val) : ''),
+  },
+  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
+  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
+  { name: 'motivo', label: 'Motivo', field: 'motivo', align: 'left', dataType: 'text' },
+  {
+    name: 'nfactura',
+    label: 'Nro. factura',
+    field: 'nfactura',
+    align: 'center',
+    dataType: 'number',
+  },
+  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
   { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
   { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
