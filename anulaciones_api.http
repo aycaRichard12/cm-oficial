@@ -1,0 +1,194 @@
+# ============================================================
+# DOCUMENTACIÓN DE APIS - MÓDULO ANULACIONES / DEVOLUCIONES
+# Base URL: {{baseUrl}} (process.env.VITE_API_URL)
+# ============================================================
+# Variables de entorno (ajustar en .env o manualmente):
+#   baseUrl = http://localhost:8080/app/cm/api/  (ejemplo local)
+#   idempresa = <tu idempresa md5>
+#   idusuario = <tu idusuario md5>
+#   token = <access_token SIAT>
+#   tipoFactura = <tipo de factura>
+# ============================================================
+
+@baseUrl = http://localhost:8080/app/cm/api/
+@idempresa = TU_IDEMPRESA_AQUI
+@idusuario = TU_IDUSUARIO_AQUI
+@token = TU_TOKEN_AQUI
+@tipoFactura = 1
+
+# ============================================================
+# 1. CONFIGURACIÓN INICIAL (anulacionPage.vue)
+# ============================================================
+
+### 1.1 - Listar almacenes del usuario
+# Propósito: Cargar opciones de almacén para el filtro
+GET {{baseUrl}}listaResponsableAlmacen/{{idempresa}}
+Content-Type: application/json
+
+### 1.2 - Listar tipos de venta (documentos sector SIAT)
+# Propósito: Cargar tipos de comprobante permitidos
+GET {{baseUrl}}listaLeyendaSIN/tiposector/{{token}}/{{tipoFactura}}
+Content-Type: application/json
+
+# ============================================================
+# 2. LISTADO DE VENTAS (useVentas.js)
+# ============================================================
+
+### 2.1 - Listar ventas válidas (estado != 2 y != 3)
+# Propósito: Obtener ventas activas (no anuladas, no devueltas)
+GET {{baseUrl}}listaVentas/{{idempresa}}
+Content-Type: application/json
+
+### 2.2 - Listar anulaciones
+# Propósito: Obtener todas las ventas anuladas
+GET {{baseUrl}}listadoanulaciones/{{idempresa}}
+Content-Type: application/json
+
+### 2.3 - Listar devoluciones
+# Propósito: Obtener todas las ventas devueltas
+GET {{baseUrl}}listadevolucion/{{idempresa}}
+Content-Type: application/json
+
+# ============================================================
+# 3. ANULACIÓN DE VENTAS (useAccionesVenta.js)
+# ============================================================
+
+### 3.1 - Anular cotización
+# Propósito: Cambiar estado de cotización a anulada
+# motivo: 1=FACTURA MAL EMITIDA, 2=NOTA DE CREDITO-DEBITO MAL EMITIDA, 
+#         3=DATOS DE EMISION INCORRECTOS, 4=FACTURA O NOTA DEVUELTA
+@idcotizacion = 123
+@motivo = 1
+GET {{baseUrl}}anularCotizacion/{{idcotizacion}}/{{motivo}}/{{idusuario}}
+Content-Type: application/json
+
+### 3.2 - Anular venta (cambiar estado)
+# Propósito: Cambiar estado de venta a anulada (estado=2)
+@idventa = 456
+@motivo = 1
+@tipo = 1
+GET {{baseUrl}}cambiarestadoventa/{{idventa}}/2/{{motivo}}/{{idusuario}}/{{token}}/{{tipo}}
+Content-Type: application/json
+
+# ============================================================
+# 4. DEVOLUCIONES (useAccionesVenta.js + DetalleDevolucionTab.vue)
+# ============================================================
+
+### 4.1 - Verificar si ya existe devolución
+# Propósito: Comprobar si venta/cotización ya tiene devolución registrada
+# codigo: 'VE' = venta, 'COT' = cotización
+@idregistro = 789
+@codigoTipo = VE
+GET {{baseUrl}}verificardevolucion/{{idregistro}}/{{codigoTipo}}
+Content-Type: application/json
+
+### 4.2 - Registrar nueva devolución
+# Propósito: Crear registro de devolución
+# tipo_dev: 'VE' = venta, 'COT' = cotización
+POST {{baseUrl}}
+Content-Type: multipart/form-data; boundary=---BOUNDARY
+
+-----BOUNDARY
+Content-Disposition: form-data; name="ver"
+
+registroDevolucion
+-----BOUNDARY
+Content-Disposition: form-data; name="idventa"
+
+123
+-----BOUNDARY
+Content-Disposition: form-data; name="motivo"
+
+Devolución de productos
+-----BOUNDARY
+Content-Disposition: form-data; name="idusuario"
+
+{{idusuario}}
+-----BOUNDARY
+Content-Disposition: form-data; name="tipo_dev"
+
+VE
+-----BOUNDARY--
+
+### 4.3 - Listar detalle de devolución
+# Propósito: Ver los productos/items de una devolución específica
+@iddevolucion = 100
+GET {{baseUrl}}listadetalledevolicion/{{iddevolucion}}
+Content-Type: application/json
+
+### 4.4 - Verificar existencia de detalle para editar
+# Propósito: Obtener datos de un item específico de devolución
+@iddetalle = 500
+GET {{baseUrl}}verificarExistenciaDetalledevolucion/{{iddetalle}}
+Content-Type: application/json
+
+### 4.5 - Actualizar detalle de devolución
+# Propósito: Modificar cantidad y/o pérdida de un item devuelto
+POST {{baseUrl}}
+Content-Type: multipart/form-data; boundary=---BOUNDARY2
+
+-----BOUNDARY2
+Content-Disposition: form-data; name="ver"
+
+actualizarDetalleDev
+-----BOUNDARY2
+Content-Disposition: form-data; name="id"
+
+500
+-----BOUNDARY2
+Content-Disposition: form-data; name="cantidad"
+
+3
+-----BOUNDARY2
+Content-Disposition: form-data; name="perdida"
+
+2
+-----BOUNDARY2
+Content-Disposition: form-data; name="cantidadperdida"
+
+0
+-----BOUNDARY2--
+
+### 4.6 - Eliminar devolución completa
+# Propósito: Borrar toda la devolución y sus detalles
+@iddevolucion = 100
+GET {{baseUrl}}eliminarDevolucion/{{iddevolucion}}
+Content-Type: application/json
+
+### 4.7 - Autorizar devolución (COMENTADA - NO ACTIVA)
+# Propósito: Finalizar devolución y actualizar stock
+# @iddevolucion = 100
+# GET {{baseUrl}}autorizarDevolucion/{{iddevolucion}}/1/{{idusuario}}
+# Content-Type: application/json
+
+# ============================================================
+# 5. VERIFICACIÓN DE ESTADO (useAccionesVenta.js)
+# ============================================================
+
+### 5.1 - Verificar estado de factura SIAT
+# Propósito: Consultar estado de factura en sistema SIAT
+@cuf = CUF_DE_FACTURA
+GET {{baseUrl}}estadofactura/{{cuf}}/{{token}}/{{tipo}}
+Content-Type: application/json
+
+### 5.2 - Verificar estado de cotización
+# Propósito: Consultar condición/estado de una cotización
+@idcotizacion = 123
+GET {{baseUrl}}estadoCotizacion/{{idcotizacion}}
+Content-Type: application/json
+
+# ============================================================
+# 6. GENERACIÓN DE COMPROBANTES PDF (anulacionPage.vue)
+# ============================================================
+
+### 6.1 - Detalles de cotización (para PDF)
+# Propósito: Obtener datos para generar PDF de cotización
+@idcotizacion = 123
+GET {{baseUrl}}detallesCotizacion/{{idcotizacion}}/{{idempresa}}
+Content-Type: application/json
+
+### 6.2 - Detalles de venta (para PDF)
+# Propósito: Obtener datos para generar PDF de venta
+@idventa = 456
+GET {{baseUrl}}detallesVenta/{{idventa}}/{{idempresa}}
+Content-Type: application/json
