@@ -82,7 +82,13 @@ const columnasBusqueda = [
 ]
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
+  {
+    name: 'numero',
+    label: 'N°',
+    field: (row) => filteredRows.value.indexOf(row) + 1,
+    align: 'center',
+    dataType: 'number',
+  },
   {
     name: 'fecharegistro',
     label: 'Fecha anulación',
