@@ -17,9 +17,9 @@
         style="white-space: normal; vertical-align: top"
       >
         <div class="flex items-start no-wrap">
-          <div class="flex items-center text-weight-bold q-pr-sm">
+          <span class="flex items-center text-weight-bold q-pr-sm">
             {{ props.col.label }}
-          </div>
+          </span>
           <ColumnFilter
             v-if="arrayHeaders.includes(props.col.name)"
             :column="props.col"
@@ -65,12 +65,38 @@
 
     <template v-slot:top-right="topRightProps">
       <slot name="top-right" v-bind="topRightProps || {}"></slot>
+
+      <!-- Buscador global de la tabla -->
+      <q-input
+        v-model="localSearch"
+        outlined
+        dense
+        :placeholder="searchPlaceholder"
+        class="q-ml-sm table-search-input"
+        bg-color="white"
+        style="min-width: 200px"
+      >
+        <template v-slot:prepend>
+          <q-icon name="search" color="grey-7" />
+        </template>
+
+        <template v-slot:append>
+          <q-icon
+            v-if="localSearch"
+            name="close"
+            class="cursor-pointer"
+            @click="clearSearch"
+            color="grey-7"
+          />
+        </template>
+      </q-input>
+
       <q-btn
-        flat
-        round
+        outline
         dense
         icon="view_column"
-        class="q-ml-sm text-white-8"
+        class="q-ml-sm"
+        style="height: 40px"
         title="Mostrar/Ocultar columnas"
       >
         <q-menu>
@@ -102,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue'
+import { ref, computed, defineProps, defineEmits, watch } from 'vue'
 import ColumnFilter from './ColumnFilter.vue' // Asegúrate de que la ruta sea correcta
 
 const props = defineProps({
@@ -126,9 +152,27 @@ defineExpose({
   obtenerDatosFiltrados: () => filteredData.value,
   obtenerColumnasVisibles: () => visibleColumns.value,
   getActiveFiltersReport,
+  getSearchText: () => localSearch.value,
 })
 
 const activeFilters = ref({})
+const localSearch = ref(props.search)
+
+const searchPlaceholder = computed(() => {
+  return props.search ? 'Buscar...' : 'Buscar en la tabla...'
+})
+
+// Sincronizar el search prop con el search local
+watch(
+  () => props.search,
+  (newVal) => {
+    localSearch.value = newVal
+  },
+)
+
+function clearSearch() {
+  localSearch.value = ''
+}
 
 const visibleColumnNames = ref(
   props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name),
@@ -368,6 +412,19 @@ const filteredData = computed(() => {
       return true
     })
   })
+
+  // Aplicar filtro de búsqueda global (search)
+  if (localSearch.value && localSearch.value.trim() !== '') {
+    const searchTerm = localSearch.value.toLowerCase().trim()
+    data = data.filter((row) => {
+      // Buscar en todas las columnas visibles
+      return visibleColumns.value.some((col) => {
+        const value = getByPath(row, col.field)
+        if (value == null) return false
+        return String(value).toLowerCase().includes(searchTerm)
+      })
+    })
+  }
 
   // ORDENAMIENTO robusto y estable
   if (pagination.value.sortBy) {
