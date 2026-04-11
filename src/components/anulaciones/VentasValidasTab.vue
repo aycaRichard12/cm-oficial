@@ -58,6 +58,7 @@ import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
 import VentasTableVerButtons from './VentasTableVerButtons.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 const props = defineProps({
   rows: { type: Array, required: true },
@@ -99,7 +100,25 @@ const columnas = [
     dataType: 'number',
   },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
-  { name: 'fechaventa', label: 'Fecha', field: 'fechaventa', align: 'center', dataType: 'date' },
+  {
+    name: 'fechaventa',
+    label: 'Fecha',
+    field: 'fechaventa',
+    align: 'center',
+    dataType: 'date',
+    format: (val) => {
+      if (!val) return ''
+      if (typeof val === 'string' && val.includes('/')) return val
+      if (typeof val === 'string' && val.includes('-')) {
+        try {
+          return cambiarFormatoFecha(val)
+        } catch {
+          return val
+        }
+      }
+      return String(val)
+    },
+  },
   { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
   { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
