@@ -14,15 +14,15 @@
         clickable
         @click="filtroEstado = item.valor"
       >
-        {{ item.label }}  <strong class="q-ml-xs">{{ item.cantidad }}</strong>
+        {{ item.label }} <strong class="q-ml-xs">{{ item.cantidad }}</strong>
       </q-chip>
 
       <q-space />
 
       <!-- Buscador -->
-      <q-input v-model="busqueda" dense label="Buscar..." clearable style="min-width: 240px">
+      <!-- <q-input v-model="busqueda" dense label="Buscar..." clearable style="min-width: 240px">
         <template v-slot:prepend><q-icon name="search" /></template>
-      </q-input>
+      </q-input> -->
 
       <!-- Recargar -->
       <q-btn icon="refresh" color="primary" flat round :loading="loading" @click="recargar">
@@ -86,7 +86,9 @@
 
       <!-- Fecha resolución -->
       <template v-slot:body-cell-fecha_resolucion="props">
-        <q-td :props="props" class="text-center">{{ props.value ? formatDate(props.value) : '—' }}</q-td>
+        <q-td :props="props" class="text-center">{{
+          props.value ? cambiarFormatoFecha(props.value) : '—'
+        }}</q-td>
       </template>
 
       <!-- Acciones -->
@@ -132,10 +134,11 @@ import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNoti
 import { idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 const $q = useQuasar()
 const idusuario = idusuario_md5()
-  const adminNombre = getUsuario()
+const adminNombre = getUsuario()
 
 const { solicitudes, cargarSolicitudes } = useAnulacionCompra()
 const { simbolo } = useCurrencyStore()
@@ -146,28 +149,106 @@ const filtroEstado = ref('todas')
 const busqueda = ref('')
 
 const estadoConfig = {
-  pendiente: { color: 'orange',   icon: 'schedule',     label: 'Pendiente' },
-  aprobada:  { color: 'positive', icon: 'check_circle', label: 'Aprobada'  },
-  rechazada: { color: 'negative', icon: 'cancel',       label: 'Rechazada' },
+  pendiente: { color: 'orange', icon: 'schedule', label: 'Pendiente' },
+  aprobada: { color: 'positive', icon: 'check_circle', label: 'Aprobada' },
+  rechazada: { color: 'negative', icon: 'cancel', label: 'Rechazada' },
 }
 
-
 const columnas = computed(() => [
-  { name: 'id_solicitud',    label: '#',               field: 'id_solicitud',    sortable: true,  align: 'center', dataType: 'number' },
-  { name: 'estado',          label: 'Estado',          field: 'estado',          sortable: true,  align: 'center', dataType: 'text'   },
-  { name: 'nfactura',        label: 'Factura',         field: 'nfactura',        sortable: true,  align: 'center', dataType: 'text'   },
-  { name: 'nombre_provedor', label: 'Proveedor',       field: 'nombre_provedor', sortable: true,  align: 'center', dataType: 'text'   },
-  { name: 'solicitante',     label: 'Solicitante',     field: 'solicitante',     sortable: false, align: 'center'                     },
-  { name: 'motivo_usuario',  label: 'Motivo',          field: 'motivo_usuario',  sortable: false, align: 'center', dataType: 'text'   },
-  { name: 'fecha_solicitud', label: 'Fecha Sol.',      field: 'fecha_solicitud', sortable: true,  align: 'center', dataType: 'date',  format: (v) => formatDate(v) },
-  { name: 'fecha_compra',    label: 'Fecha Compra',    field: 'fecha_compra',    sortable: true,  align: 'center', dataType: 'date',  format: (v) => formatDate(v) },
-  { name: 'fecha_resolucion',label: 'Fecha Resolución',field: 'fecha_resolucion',sortable: true,  align: 'center', dataType: 'date'   },
-  { name: 'total',           label: `Total (${simbolo || 'Bs.'})`, field: 'total', sortable: true, align: 'center', dataType: 'number' },
-  { name: 'acciones',        label: 'Acciones',        field: 'acciones',        sortable: false, align: 'center' },
+  {
+    name: 'id_solicitud',
+    label: '#',
+    field: 'id_solicitud',
+    sortable: true,
+    align: 'center',
+    dataType: 'number',
+  },
+  {
+    name: 'estado',
+    label: 'Estado',
+    field: 'estado',
+    sortable: true,
+    align: 'center',
+    dataType: 'text',
+  },
+  {
+    name: 'nfactura',
+    label: 'Factura',
+    field: 'nfactura',
+    sortable: true,
+    align: 'center',
+    dataType: 'text',
+  },
+  {
+    name: 'nombre_provedor',
+    label: 'Proveedor',
+    field: 'nombre_provedor',
+    sortable: true,
+    align: 'center',
+    dataType: 'text',
+  },
+  {
+    name: 'solicitante',
+    label: 'Solicitante',
+    field: 'solicitante',
+    sortable: false,
+    align: 'center',
+  },
+  {
+    name: 'motivo_usuario',
+    label: 'Motivo',
+    field: 'motivo_usuario',
+    sortable: false,
+    align: 'center',
+    dataType: 'text',
+  },
+  {
+    name: 'fecha_solicitud',
+    label: 'Fecha Sol.',
+    field: 'fecha_solicitud',
+    sortable: true,
+    align: 'center',
+    dataType: 'date',
+    format: (v) => cambiarFormatoFecha(v),
+  },
+  {
+    name: 'fecha_compra',
+    label: 'Fecha Compra',
+    field: 'fecha_compra',
+    sortable: true,
+    align: 'center',
+    dataType: 'date',
+    format: (v) => cambiarFormatoFecha(v),
+  },
+  {
+    name: 'fecha_resolucion',
+    label: 'Fecha Resolución',
+    field: 'fecha_resolucion',
+    sortable: true,
+    align: 'center',
+    dataType: 'date',
+  },
+  {
+    name: 'total',
+    label: `Total (${simbolo || 'Bs.'})`,
+    field: 'total',
+    sortable: true,
+    align: 'center',
+    dataType: 'number',
+  },
+  { name: 'acciones', label: 'Acciones', field: 'acciones', sortable: false, align: 'center' },
 ])
 
 // Columnas que tendrán filtros avanzados por cabecera
-const columnasFiltrables = ['estado', 'nfactura', 'nombre_provedor', 'fecha_solicitud', 'fecha_compra', 'fecha_resolucion', 'total']
+const columnasFiltrables = [
+  'estado',
+  'nfactura',
+  'nombre_provedor',
+  'fecha_solicitud',
+  'fecha_compra',
+  'fecha_resolucion',
+  'total',
+]
 
 const solicitudesFiltradas = computed(() => {
   if (filtroEstado.value === 'todas') return solicitudes.value
@@ -175,16 +256,40 @@ const solicitudesFiltradas = computed(() => {
 })
 
 const resumen = computed(() => [
-  { label: 'Total',      cantidad: solicitudes.value.length,                                         color: 'primary',  icon: 'list',         valor: 'todas'     },
-  { label: 'Pendientes', cantidad: solicitudes.value.filter((s) => s.estado === 'pendiente').length,  color: 'orange',   icon: 'schedule',     valor: 'pendiente' },
-  { label: 'Aprobadas',  cantidad: solicitudes.value.filter((s) => s.estado === 'aprobada').length,   color: 'positive', icon: 'check_circle', valor: 'aprobada'  },
-  { label: 'Rechazadas', cantidad: solicitudes.value.filter((s) => s.estado === 'rechazada').length,  color: 'negative', icon: 'cancel',       valor: 'rechazada' },
+  {
+    label: 'Total',
+    cantidad: solicitudes.value.length,
+    color: 'primary',
+    icon: 'list',
+    valor: 'todas',
+  },
+  {
+    label: 'Pendientes',
+    cantidad: solicitudes.value.filter((s) => s.estado === 'pendiente').length,
+    color: 'orange',
+    icon: 'schedule',
+    valor: 'pendiente',
+  },
+  {
+    label: 'Aprobadas',
+    cantidad: solicitudes.value.filter((s) => s.estado === 'aprobada').length,
+    color: 'positive',
+    icon: 'check_circle',
+    valor: 'aprobada',
+  },
+  {
+    label: 'Rechazadas',
+    cantidad: solicitudes.value.filter((s) => s.estado === 'rechazada').length,
+    color: 'negative',
+    icon: 'cancel',
+    valor: 'rechazada',
+  },
 ])
 
-function formatDate(val) {
-  if (!val) return '—'
-  return new Date(val).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-}
+// function cambiarFormatoFecha(val) {
+//   if (!val) return '—'
+//   return new Date(val).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+// }
 
 // function formatMonto(val) {
 //   if (val == null) return '—'
@@ -208,7 +313,12 @@ async function procesarSolicitud(solicitud, estado) {
     $q.dialog({
       title: 'Motivo de rechazo',
       message: `Ingresa el motivo para rechazar la solicitud #${solicitud.id_solicitud}:`,
-      prompt: { model: '', isValid: (val) => val.trim().length > 0, type: 'text', label: 'Motivo *' },
+      prompt: {
+        model: '',
+        isValid: (val) => val.trim().length > 0,
+        type: 'text',
+        label: 'Motivo *',
+      },
       cancel: true,
       persistent: true,
     }).onOk(async (motivo) => {
