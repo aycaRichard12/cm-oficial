@@ -1,6 +1,6 @@
 <template>
   <q-card-section>
-    <q-form @submit.prevent>
+    <q-form @submit.prevent class="q-mb-md">
       <div class="q-gutter-md">
         <div class="row q-col-gutter-md justify-center" id="filtroFechas">
           <div class="col-md-4">
@@ -43,7 +43,7 @@
       </div>
     </q-form>
 
-    <div class="row q-col-gutter-x-md flex justify-end">
+    <!-- <div class="row q-col-gutter-x-md flex justify-end">
       <div class="col-12 col-md-4" id="buscador">
         <label for="buscar">Buscar...</label>
         <q-input
@@ -60,7 +60,7 @@
           </template>
         </q-input>
       </div>
-    </div>
+    </div> -->
     <BaseFilterableTable
       id="tablaStock"
       ref="miTabla"
@@ -115,7 +115,11 @@ import { useQuasar } from 'quasar'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import jsPDF from 'jspdf'
 import { imagen } from 'src/boot/url'
-import { PDFreporteStockProductosIndividual, PDFreporteStockProductosIndividual_img, getLogoBase64 } from 'src/utils/pdfReportGenerator'
+import {
+  PDFreporteStockProductosIndividual,
+  PDFreporteStockProductosIndividual_img,
+  getLogoBase64,
+} from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -322,12 +326,12 @@ const vistaCatalogo = async () => {
   const contenidousuario = validarUsuario()
   const doc = new jsPDF({ orientation: 'portrait' })
   const productos = await prepararImagenes() // ahora tienen `imagenBase64`
-  
+
   const idempresa = contenidousuario[0]
   const empresa = idempresa.empresa
 
   const pageWidth = doc.internal.pageSize.getWidth()
-  
+
   // LOGO de la Empresa (Centrado)
   const logo = getLogoBase64()
   if (logo) {
@@ -342,7 +346,7 @@ const vistaCatalogo = async () => {
   doc.setFont(undefined, 'bold')
   doc.setTextColor(0, 0, 0)
   doc.text(empresa.nombre || '', 10, 10)
-  
+
   doc.setFontSize(8)
   doc.setFont(undefined, 'normal')
   doc.text(empresa.direccion || '', 10, 13)
@@ -380,21 +384,22 @@ const vistaCatalogo = async () => {
   doc.setFontSize(8)
   doc.setFont(undefined, 'bold')
   doc.text('DATOS DEL REPORTE:', 10, 39)
-  
+
   doc.setFont(undefined, 'normal')
-  let almacenName = almacenes.value.find(a => a.value === form.value.almacen)?.label || 'Todos los Almacenes'
+  let almacenName =
+    almacenes.value.find((a) => a.value === form.value.almacen)?.label || 'Todos los Almacenes'
   doc.text(`Almacén: ${almacenName}`, 10, 42)
 
   // -------------------------
   // DATOS DEL ENCARGADO
   // -------------------------
   doc.setFont(undefined, 'bold')
-const xRight = pageWidth / 2 + 57
+  const xRight = pageWidth / 2 + 57
 
-doc.text('DATOS DEL ENCARGADO:', xRight, 39)
-doc.setFont(undefined, 'normal')
-doc.text(idempresa.nombre || '', xRight, 42)
-doc.text(idempresa.cargo || '', xRight, 45)
+  doc.text('DATOS DEL ENCARGADO:', xRight, 39)
+  doc.setFont(undefined, 'normal')
+  doc.text(idempresa.nombre || '', xRight, 42)
+  doc.text(idempresa.cargo || '', xRight, 45)
   // Parametros Grilla
   let startY = 55
   let anchoTarjeta = 85
