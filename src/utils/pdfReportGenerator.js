@@ -1,5 +1,6 @@
-﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
+import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
+import { Platform } from 'quasar'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
@@ -14,6 +15,19 @@ import { obtenerHora } from 'src/composables/FuncionesG'
 import { cargarFirmaBase64 } from 'src/composables/FuncionesG'
 const divisaActiva = useCurrencyStore().simbolo
 
+/**
+ * Verifica si la pantalla es móvil o pequeña y abre el PDF en una nueva ventana.
+ * @param {jsPDF} doc - Instancia del documento PDF ya generado.
+ * @returns {jsPDF} La misma instancia del documento.
+ */
+function verificarTamanoPantallaYRedirigir(doc) {
+  if (Platform.is.mobile || window.innerWidth < 768) {
+    const blobUrl = doc.output('bloburl')
+    window.open(blobUrl, '_blank')
+    return null
+  }
+  return doc
+}
 // Variables globales
 let logoBase64 = null
 let contenidousuario = null
@@ -236,7 +250,9 @@ export function PDF_DETALLE_PEDIDO(detalle_pedido) {
     null,
     extras,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -327,7 +343,9 @@ export function PDF_REPORTE_DETALLE_INVENTARIO_EXTERIOR(detalleData) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
@@ -414,7 +432,9 @@ export function PDF_REPORTE_PROVEEDORES(filtrarProveedores) {
     null,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_CLIENTES(filtrarClientes) {
@@ -485,7 +505,9 @@ export function PDF_REPORTE_CLIENTES(filtrarClientes) {
     null,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 //a esta funcion tienes que enviarle si es mayor menor o de fabrica lo que selecciono en el select de categoria
@@ -550,7 +572,9 @@ export function PDF_PRECIOS_SUGERIDOS(filtrados, filtroAlmacen, filtroCategoria)
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
   console.log('datos del almacen traidos', filtroAlmacen, filtrados)
@@ -573,17 +597,17 @@ export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
 
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    codigo: { cellWidth: 20, halign: 'center' },
-    descripcion: { cellWidth: 80, halign: 'center' },
-    unidad: { cellWidth: 40, halign: 'center' },
-    precio: { cellWidth: 41, halign: 'center' },
+    codigo: { cellWidth: 30, halign: 'left' },
+    descripcion: { cellWidth: 85, halign: 'left' },
+    unidad: { cellWidth: 30, halign: 'left' },
+    precio: { cellWidth: 36, halign: 'right' },
   }
   const headerColumnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    codigo: { cellWidth: 20, halign: 'center' },
-    descripcion: { cellWidth: 80, halign: 'center' },
-    unidad: { cellWidth: 40, halign: 'center' },
-    precio: { cellWidth: 41, halign: 'center' },
+    codigo: { cellWidth: 30, halign: 'left' },
+    descripcion: { cellWidth: 85, halign: 'left' },
+    unidad: { cellWidth: 30, halign: 'left' },
+    precio: { cellWidth: 36, halign: 'right' },
   }
 
   const Izquierda = {
@@ -609,7 +633,9 @@ export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
     null,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export const PDF_REPORTE_CATEGORIA_PRECIO_X_ALMACEN = (filtradas, filtroAlmacen) => {
@@ -661,7 +687,9 @@ export const PDF_REPORTE_CATEGORIA_PRECIO_X_ALMACEN = (filtradas, filtroAlmacen)
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export default function imprimirReporte(detallePedido) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -740,7 +768,9 @@ export default function imprimirReporte(detallePedido) {
     null,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDFreporteCuentasXCobrarPeriodo(
   reportData,
@@ -858,7 +888,9 @@ export function PDFreporteCuentasXCobrarPeriodo(
     fechas,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFreporteCreditos(
@@ -1000,7 +1032,9 @@ export function PDFreporteCreditos(
     fechas,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFreporteStockProductosIndividual(processedRows) {
@@ -1116,7 +1150,9 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFreporteStockProductosIndividual_img(processedRows) {
@@ -1211,7 +1247,9 @@ export function PDFreporteStockProductosIndividual_img(processedRows) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export async function generarPdfCotizacion(data) {
@@ -1401,7 +1439,9 @@ export async function generarPdfCotizacion(data) {
     doc.setTextColor(0)
   }
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFfacturaCorreo(detalleVenta) {
@@ -1518,7 +1558,9 @@ export function PDFfacturaCorreo(detalleVenta) {
     extras,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFComprovanteVenta(detalleVenta) {
@@ -1644,7 +1686,9 @@ export function PDFComprovanteVenta(detalleVenta) {
     extras,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
@@ -1763,7 +1807,9 @@ export function PDFreporteVentasPeriodo(filteredCompra, almacen) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export async function PDFenviarFacturaCorreo(
@@ -2024,7 +2070,9 @@ export async function PDFdetalleVentaInicio(detalleVenta) {
     extras,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export async function PDFenviarFacturaCorreoAlInicio(idcliente, detalleVenta, $q) {
@@ -2198,13 +2246,17 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFConprovanteCotizacion(cotizacion) {
   console.log(cotizacion[0].detalle)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFextrabiosRobos(extravios, almacen) {
@@ -2269,7 +2321,9 @@ export function PDFextrabiosRobos(extravios, almacen) {
   )
 
   // Set the PDF data URL and show the modal didParseCell
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFComprovanteExtravio(detalleExtravio, robo) {
@@ -2329,7 +2383,9 @@ export function PDFComprovanteExtravio(detalleExtravio, robo) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFreporteMermas(mermas, almacen) {
@@ -2393,7 +2449,9 @@ export function PDFreporteMermas(mermas, almacen) {
   )
 
   // Set the PDF data URL and show the modal didParseCell
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFComprovanteMerma(detallemerma, merma) {
@@ -2454,7 +2512,9 @@ export function PDFComprovanteMerma(detallemerma, merma) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFKardex(kardex, almacenLabel, productoLabel, fechaiR, fechafR) {
@@ -2543,7 +2603,9 @@ export function PDFKardex(kardex, almacenLabel, productoLabel, fechaiR, fechafR)
     true,
     fechas,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFCierreCaja(datosCierreCaja) {
@@ -2723,7 +2785,9 @@ export function PDFCierreCaja(datosCierreCaja) {
   const splitText = doc.splitTextToSize(datosCierreCaja.observacion || 'Sin observaciones.', 190)
   doc.text(splitText, 5, finalY + 10)
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFpedidos(ordenados, tipoestados, filtroAlmacen) {
@@ -2805,7 +2869,9 @@ export function PDFpedidos(ordenados, tipoestados, filtroAlmacen) {
     true,
     null,
   )
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFalmacenes({ rows, visibleColumnsFromTable = [] }) {
@@ -2868,7 +2934,9 @@ export function PDFalmacenes({ rows, visibleColumnsFromTable = [] }) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_DE_ROTACION_POR_ALMACEN(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -2955,7 +3023,9 @@ export function PDF_REPORTE_DE_ROTACION_POR_ALMACEN(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_DE_ROTACION_POR_CLIENTE(reporte, datosFormulario) {
@@ -3043,7 +3113,9 @@ export function PDF_REPORTE_DE_ROTACION_POR_CLIENTE(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_DE_ROTACION_POR_GLOBAL(reporte, datosFormulario) {
@@ -3126,7 +3198,9 @@ export function PDF_REPORTE_DE_ROTACION_POR_GLOBAL(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_CAMPANAS(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3199,7 +3273,9 @@ export function PDF_REPORTE_CAMPANAS(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
@@ -3266,7 +3342,9 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3348,7 +3426,9 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_MOVIMIENTOS(reporte, datosFormulario) {
@@ -3418,7 +3498,9 @@ export function PDF_REPORTE_MOVIMIENTOS(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_PEDIDOS(reporte, datosFormulario) {
   const doc = new jsPDF({
@@ -3504,7 +3586,9 @@ export function PDF_REPORTE_PEDIDOS(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_PRECIO_BASE(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3586,7 +3670,9 @@ export function PDF_REPORTE_PRECIO_BASE(reporte, datosFormulario) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_CATEGORIA_PRECIO(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3647,7 +3733,9 @@ export function PDF_REPORTE_CATEGORIA_PRECIO(reporte, datosFormulario) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_EXTRAVIO(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3714,7 +3802,9 @@ export function PDF_REPORTE_EXTRAVIO(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function PDF_REPORTE_MERMA(reporte, datosFormulario) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3781,7 +3871,9 @@ export function PDF_REPORTE_MERMA(reporte, datosFormulario) {
     fechas,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 export function DPF_REPORTE_PRODUCTO_ASIGNADOS(productoLista, almacen) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
@@ -3871,7 +3963,9 @@ export function DPF_REPORTE_PRODUCTO_ASIGNADOS(productoLista, almacen) {
 
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
@@ -3956,7 +4050,9 @@ export function PDF_REPORTE_GESTIPO_PEDIDOS_DETALLE(detallePedido) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export const PDF_REPORTE_GESTION_PEDIDOS = (filterPedido, tipoestados, fechai, fechaf, almacen) => {
@@ -4034,7 +4130,9 @@ export const PDF_REPORTE_GESTION_PEDIDOS = (filterPedido, tipoestados, fechai, f
   )
   // doc.save('proveedores.pdf') ← comenta o elimina esta línea
   //doc.output('dataurlnewwindow') // ← muestra el PDF en una nueva ventana del navegador
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 // FUNCIÓN PRINCIPAL DEL REPORTE (PUNTO DE ENTRADA ESPECÍFICO)
@@ -4123,7 +4221,9 @@ export function PDF_REPORTE_COMPRAS(filteredCompra, filtroAlmacen) {
   )
 
   // doc.save('reporte_compras.pdf');
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 function dibujarCuerpoTabla(
@@ -4600,7 +4700,9 @@ export function PDF_LISTA_MOVIMIENTOS(data, datosFormulario) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
@@ -4757,7 +4859,9 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     extras,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
@@ -4839,7 +4943,9 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
@@ -4962,7 +5068,9 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }
 
 export function PDFComprobanteMovimiento(detalleMovimiento) {
@@ -5056,5 +5164,7 @@ export function PDFComprobanteMovimiento(detalleMovimiento) {
     null,
   )
 
-  return doc
+  const docResult = verificarTamanoPantallaYRedirigir(doc)
+  if (!docResult) return
+  return docResult
 }

@@ -4,7 +4,6 @@ export const PAGINAS = Object.freeze({
     'divisas',
     'leyendaproforma',
     'tipokardex',
-    'configuracionproductounico',
   ]),
   configuracionproducto: Object.freeze([
     'categoriadeproducto',
@@ -12,6 +11,8 @@ export const PAGINAS = Object.freeze({
     'unidaddeproducto',
     'caracteristicadeproducto',
     'parametrosdeobsolescencia',
+        'configuracionproductounico',
+
   ]),
   configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
   configuracionIntegracionExterna: Object.freeze([
