@@ -597,17 +597,17 @@ export function PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN(filtrados, filtroAlmacen) {
 
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    codigo: { cellWidth: 20, halign: 'center' },
-    descripcion: { cellWidth: 80, halign: 'center' },
-    unidad: { cellWidth: 40, halign: 'center' },
-    precio: { cellWidth: 41, halign: 'center' },
+    codigo: { cellWidth: 30, halign: 'left' },
+    descripcion: { cellWidth: 85, halign: 'left' },
+    unidad: { cellWidth: 30, halign: 'left' },
+    precio: { cellWidth: 36, halign: 'right' },
   }
   const headerColumnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
-    codigo: { cellWidth: 20, halign: 'center' },
-    descripcion: { cellWidth: 80, halign: 'center' },
-    unidad: { cellWidth: 40, halign: 'center' },
-    precio: { cellWidth: 41, halign: 'center' },
+    codigo: { cellWidth: 30, halign: 'left' },
+    descripcion: { cellWidth: 85, halign: 'left' },
+    unidad: { cellWidth: 30, halign: 'left' },
+    precio: { cellWidth: 36, halign: 'right' },
   }
 
   const Izquierda = {
