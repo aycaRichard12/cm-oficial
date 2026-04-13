@@ -245,6 +245,14 @@ const columnas = [
     sortable: true,
   },
   {
+    name: 'estadoCobroResumido',
+    label: 'Estado Pago',
+    align: 'center',
+    field: 'estadoCobroResumido',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
     name: 'estadoResumido',
     label: 'Tipo',
     align: 'center',
@@ -276,14 +284,7 @@ const columnas = [
     dataType: 'number',
     sortable: true,
   },
-  {
-    name: 'estadoCobroResumido',
-    label: 'Estado Pago',
-    align: 'center',
-    field: 'estadoCobroResumido',
-    dataType: 'text',
-    sortable: true,
-  },
+
   { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
 ]
 

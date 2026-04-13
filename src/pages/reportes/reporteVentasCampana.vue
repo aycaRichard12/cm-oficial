@@ -56,7 +56,6 @@
             <q-btn
               id="btnGenerarVentas"
               label="Generar Reporte"
-              
               color="primary"
               unelevated
               @click="handleGenerarReporte"
@@ -80,7 +79,9 @@
     <q-card v-if="reporteGenerado" class="shadow-2 rounded-borders">
       <q-card-section class="q-pb-none">
         <div class="row items-center justify-between q-col-gutter-sm">
-          <div class="col-12 col-sm-auto text-h6 text-primary text-weight-bold row items-center q-mb-sm">
+          <div
+            class="col-12 col-sm-auto text-h6 text-primary text-weight-bold row items-center q-mb-sm"
+          >
             <q-icon name="list_alt" size="sm" class="q-mr-sm" /> Resultados
           </div>
           <!-- Filtros de búsqueda (Almacén y Texto) -->
@@ -102,8 +103,8 @@
                 </template>
               </q-select>
             </div>
-            
-            <div style="min-width: 250px" class="q-mb-sm" id="filtroBusqueda">
+
+            <!-- <div style="min-width: 250px" class="q-mb-sm" id="filtroBusqueda">
               <q-input
                 v-model="busqueda"
                 label="Buscar en Resultados..."
@@ -117,7 +118,7 @@
                   <q-icon name="search" />
                 </template>
               </q-input>
-            </div>
+            </div> -->
           </div>
         </div>
       </q-card-section>
@@ -129,7 +130,16 @@
           title="Resumen de Ventas por Campaña"
           :rows="datosFiltrados"
           :columns="columnasTabla"
-          :arrayHeaders="['n', 'almacen', 'nombre', 'porcentaje', 'fechainicio', 'fechafinal', 'est', 'nventas']"
+          :arrayHeaders="[
+            'n',
+            'almacen',
+            'nombre',
+            'porcentaje',
+            'fechainicio',
+            'fechafinal',
+            'est',
+            'nventas',
+          ]"
           :sumColumns="['nventas']"
           rowKey="id"
           :search="busqueda"
@@ -305,11 +315,11 @@ async function generarReporte() {
     const idusuario = datosUsuario.idusuario
     const endpointVentas = `reporteventacampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
     const endpointCampanas = `reportecampaña/${idusuario}/${fechaInicio.value}/${fechaFin.value}`
-    
+
     // Llamar a ambas APIs en paralelo
     const [responseVentas, responseCampanas] = await Promise.all([
       api.get(endpointVentas),
-      api.get(endpointCampanas)
+      api.get(endpointCampanas),
     ])
 
     if (responseVentas.status === 200 && responseCampanas.status === 200) {
@@ -318,12 +328,12 @@ async function generarReporte() {
       const mapaGlobal = {}
 
       // Llenamos el mapa iterando primero las de campañas (por lo general trae la config, estado, etc).
-      validCampanas.forEach(camp => {
+      validCampanas.forEach((camp) => {
         mapaGlobal[camp.idcampaña] = { ...camp }
       })
 
       // Ahora iteramos las de ventas (actualizando el nventas y fusionando lo demás)
-      validVentas.forEach(venta => {
+      validVentas.forEach((venta) => {
         if (mapaGlobal[venta.idcampaña]) {
           mapaGlobal[venta.idcampaña] = { ...mapaGlobal[venta.idcampaña], ...venta }
         } else {
@@ -333,13 +343,13 @@ async function generarReporte() {
 
       // Transformar finalmente a un Array y darle un formato presentable
       let indice = 1
-      const data = Object.values(mapaGlobal).map(item => {
+      const data = Object.values(mapaGlobal).map((item) => {
         return {
           ...item,
           n: indice++,
           est: String(item.estado) === '1' ? 'Activa' : 'Inactiva',
           porcentaje: item.porcentaje || '0',
-          nventas: item.nventas || '0'
+          nventas: item.nventas || '0',
         }
       })
 
@@ -414,7 +424,9 @@ async function handleGenerarReporte() {
  * Maneja el clic en el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  const datosFinales = tableRef.value
+    ? tableRef.value.obtenerDatosFiltrados()
+    : datosFiltrados.value
   if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',

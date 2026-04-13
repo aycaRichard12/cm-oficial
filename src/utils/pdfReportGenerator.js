@@ -2551,9 +2551,23 @@ export function PDFCierreCaja(datosCierreCaja) {
 
   // === Información del Encabezado ===
   if (logoBase64) {
+    // Obtener dimensiones reales de la imagen para mantener proporción
+    const imgProps = doc.getImageProperties(logoBase64)
+    const maxWidth = 40 // Ancho máximo del logo en mm
+
+    // Calcular dimensiones manteniendo aspect ratio
+    const aspectRatio = imgProps.width / imgProps.height
+    let imgWidth = maxWidth
+    let imgHeight = maxWidth / aspectRatio
+
+    // Si la imagen es más alta que ancha, limitar por altura máxima
+    const maxHeight = 25 // Altura máxima del logo en mm
+    if (imgHeight > maxHeight) {
+      imgHeight = maxHeight
+      imgWidth = maxHeight * aspectRatio
+    }
+
     const pageWidth = doc.internal.pageSize.getWidth()
-    const imgWidth = 20
-    const imgHeight = 20
     const xPos = pageWidth - imgWidth - 10
     const yPos = 5
     doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
@@ -4286,10 +4300,22 @@ function agregarEncabezado(doc) {
   //LOGO
   if (logoBase64) {
     console.log(logoBase64)
-    const imgWidth = 20
-    const imgHeight = 20
 
-    const pageWidth = doc.internal.pageSize.getWidth()
+    // Obtener dimensiones reales de la imagen para mantener proporción
+    const imgProps = doc.getImageProperties(logoBase64)
+    const maxWidth = 40 // Ancho máximo del logo en mm
+
+    // Calcular dimensiones manteniendo aspect ratio
+    const aspectRatio = imgProps.width / imgProps.height
+    let imgWidth = maxWidth
+    let imgHeight = maxWidth / aspectRatio
+
+    // Si la imagen es más alta que ancha, limitar por altura máxima
+    const maxHeight = 25 // Altura máxima del logo en mm
+    if (imgHeight > maxHeight) {
+      imgHeight = maxHeight
+      imgWidth = maxHeight * aspectRatio
+    }
 
     const xPos = (pageWidth - imgWidth) / 2 // ← CENTRAR
     const yPos = startY // tu altura elegida
