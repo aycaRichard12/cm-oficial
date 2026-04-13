@@ -157,7 +157,7 @@ const estadoConfig = {
 const columnas = computed(() => [
   {
     name: 'id_solicitud',
-    label: '#',
+    label: 'N°',
     field: 'id_solicitud',
     sortable: true,
     align: 'center',
