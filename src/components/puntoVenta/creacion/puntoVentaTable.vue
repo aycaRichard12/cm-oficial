@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-col-gutter-x-md flex justify-between">
+  <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
     <div class="col-12 col-md-3" id="agregarPuntoVenta">
       <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
         <q-icon name="add" class="icono" />
@@ -20,7 +20,7 @@
         clearable
       />
     </div>
-    <div class="col-12 col-md-3" id="buscarPuntoVenta">
+    <!-- <div class="col-12 col-md-3" id="buscarPuntoVenta">
       <label for="buscar">Buscar...</label>
       <q-input
         v-model="search"
@@ -35,7 +35,7 @@
           <q-icon name="search" />
         </template>
       </q-input>
-    </div>
+    </div> -->
   </div>
 
   <BaseFilterableTable

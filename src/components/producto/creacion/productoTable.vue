@@ -11,7 +11,7 @@
         </div>
         <div class="col-12 col-md-8">
           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
-            <q-input
+            <!-- <q-input
               v-model="search"
               placeholder="Buscar..."
               dense
@@ -25,7 +25,7 @@
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
-            </q-input>
+            </q-input> -->
             <q-btn
               unelevated
               outline
@@ -164,9 +164,13 @@ import { ref, computed } from 'vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { exportarPlantillaProductos, importarProductosDesdeExcel, exportToXLSX_CatalogoProductos } from 'src/utils/XCLReportImport'
+import {
+  exportarPlantillaProductos,
+  importarProductosDesdeExcel,
+  exportToXLSX_CatalogoProductos,
+} from 'src/utils/XCLReportImport'
 import { useQuasar } from 'quasar'
-
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 const $q = useQuasar()
 const fileInput = ref(null)
 
@@ -195,7 +199,14 @@ let columns = []
 if (tipoFactura) {
   columns = [
     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
-    { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', dataType: 'date' },
+    {
+      name: 'fecha',
+      label: 'Fecha',
+      field: 'fecha',
+      align: 'left',
+      format: (val) => cambiarFormatoFecha(val),
+      dataType: 'date',
+    },
     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
     {
@@ -220,23 +231,37 @@ if (tipoFactura) {
       align: 'right',
       dataType: 'text',
     },
-    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text', defaultVisible: false },
+    {
+      name: 'medida',
+      label: 'Caract.',
+      field: 'medida',
+      align: 'left',
+      dataType: 'text',
+      defaultVisible: false,
+    },
     {
       name: 'estadoproducto',
       label: 'Estado',
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
-    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text', defaultVisible: false },
+    {
+      name: 'unidad',
+      label: 'Unidad',
+      field: 'unidad',
+      align: 'left',
+      dataType: 'text',
+      defaultVisible: false,
+    },
     {
       name: 'caracteristica',
       label: 'Otras caract.',
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
     {
       name: 'productosin',
@@ -244,7 +269,7 @@ if (tipoFactura) {
       field: 'productosin',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
     {
       name: 'codigonandina',
@@ -252,7 +277,7 @@ if (tipoFactura) {
       field: 'codigonandina',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
@@ -261,7 +286,14 @@ if (tipoFactura) {
 } else {
   columns = [
     { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
-    { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', dataType: 'date' },
+    {
+      name: 'fecha',
+      label: 'Fecha',
+      field: 'fecha',
+      align: 'left',
+      format: (val) => cambiarFormatoFecha(val),
+      dataType: 'date',
+    },
     { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
     { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
     {
@@ -286,23 +318,37 @@ if (tipoFactura) {
       align: 'right',
       dataType: 'text',
     },
-    { name: 'medida', label: 'Caract.', field: 'medida', align: 'left', dataType: 'text', defaultVisible: false },
+    {
+      name: 'medida',
+      label: 'Caract.',
+      field: 'medida',
+      align: 'left',
+      dataType: 'text',
+      defaultVisible: false,
+    },
     {
       name: 'estadoproducto',
       label: 'Estado',
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
-    { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text', defaultVisible: false },
+    {
+      name: 'unidad',
+      label: 'Unidad',
+      field: 'unidad',
+      align: 'left',
+      dataType: 'text',
+      defaultVisible: false,
+    },
     {
       name: 'caracteristica',
       label: 'Otras caract.',
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false
+      defaultVisible: false,
     },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
@@ -350,7 +396,14 @@ const exportarDatos = () => {
   exportToXLSX_CatalogoProductos(props.rows)
 }
 
-const emit = defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status', 'mostrarReporte', 'importar'])
+const emit = defineEmits([
+  'add',
+  'edit-item',
+  'delete-item',
+  'toggle-status',
+  'mostrarReporte',
+  'importar',
+])
 
 const onFileSelected = async (event) => {
   const file = event.target.files[0]

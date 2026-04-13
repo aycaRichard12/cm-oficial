@@ -264,17 +264,32 @@ export function validarNumeros(input) {
 }
 
 export function cambiarFormatoFecha(fechaOriginal) {
-  const [anio, mes, dia] = fechaOriginal.split('-')
+  if (!fechaOriginal) return ''
 
-  const nuevaFecha = new Date(anio, mes - 1, dia)
+  // Separar fecha y hora si existe
+  const [fechaParte, horaParte] = fechaOriginal.split(' ')
+
+  const [anio, mes, dia] = fechaParte.split('-')
+
+  const nuevaFecha = new Date(Number(anio), Number(mes) - 1, Number(dia))
 
   const diaFormateado = String(nuevaFecha.getDate()).padStart(2, '0')
   const mesFormateado = String(nuevaFecha.getMonth() + 1).padStart(2, '0')
   const anioFormateado = nuevaFecha.getFullYear()
 
-  const nuevoFormato = `${diaFormateado}/${mesFormateado}/${anioFormateado}`
+  // Si NO hay hora
+  if (!horaParte) {
+    return `${diaFormateado}/${mesFormateado}/${anioFormateado}`
+  }
 
-  return nuevoFormato
+  // Si hay hora → formatearla
+  const [hora, minutos, segundos] = horaParte.split(':')
+
+  const horaFormateada = String(hora).padStart(2, '0')
+  const minutosFormateados = String(minutos).padStart(2, '0')
+  const segundosFormateados = String(segundos).padStart(2, '0')
+
+  return `${diaFormateado}/${mesFormateado}/${anioFormateado} ${horaFormateada}:${minutosFormateados}:${segundosFormateados}`
 }
 
 export function normalizeText(text) {
