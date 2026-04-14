@@ -4398,30 +4398,29 @@ function agregarEncabezado(doc) {
   const startY = 5
 
   //LOGO
-  if (logoBase64) {
-    console.log(logoBase64)
+if (logoBase64) {
+  const imgProps = doc.getImageProperties(logoBase64)
 
-    // Obtener dimensiones reales de la imagen para mantener proporción
-    const imgProps = doc.getImageProperties(logoBase64)
-    const maxWidth = 40 // Ancho máximo del logo en mm
+  const maxWidth = 36
+  const maxHeight = 21
 
-    // Calcular dimensiones manteniendo aspect ratio
-    const aspectRatio = imgProps.width / imgProps.height
-    let imgWidth = maxWidth
-    let imgHeight = maxWidth / aspectRatio
+  const aspectRatio = imgProps.width / imgProps.height
 
-    // Si la imagen es más alta que ancha, limitar por altura máxima
-    const maxHeight = 25 // Altura máxima del logo en mm
-    if (imgHeight > maxHeight) {
-      imgHeight = maxHeight
-      imgWidth = maxHeight * aspectRatio
-    }
+  let imgWidth = maxWidth
+  let imgHeight = maxWidth / aspectRatio
 
-    const xPos = (pageWidth - imgWidth) / 2 // ← CENTRAR
-    const yPos = startY // tu altura elegida
-
-    doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
+  if (imgHeight > maxHeight) {
+    imgHeight = maxHeight
+    imgWidth = maxHeight * aspectRatio
   }
+
+  const xPos = (pageWidth - imgWidth) / 2
+  const yPos = startY
+
+  const format = logoBase64.includes('png') ? 'PNG' : 'JPEG'
+
+  doc.addImage(logoBase64, format, xPos, yPos, imgWidth, imgHeight)
+}
   //Datos Izquierda
   doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
