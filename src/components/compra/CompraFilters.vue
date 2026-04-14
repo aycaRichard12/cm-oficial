@@ -10,10 +10,9 @@
         clearable
         dense
         outlined
-        
       />
     </div>
-    <div class="col-12 col-md-2">
+    <!-- <div class="col-12 col-md-2">
       <label for="buscar">Buscar...</label>
       <q-input
         dense
@@ -27,7 +26,7 @@
           <q-icon name="search" />
         </template>
       </q-input>
-    </div>
+    </div> -->
   </div>
 </template>
 

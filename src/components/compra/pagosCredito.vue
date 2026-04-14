@@ -14,17 +14,19 @@
             stack-label
             disable
             input-class="text-weight-bold text-grey-9"
-          lazy-rules
-          :rules="[
-            (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-            (val) => val > 0 || 'El monto debe ser mayor a 0',
-          ]"
+            lazy-rules
+            :rules="[
+              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
+              (val) => val > 0 || 'El monto debe ser mayor a 0',
+            ]"
           >
             <template v-slot:prepend>
               <q-icon name="account_balance_wallet" size="xs" color="grey-7" />
             </template>
             <template v-slot:append>
-              <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
+              <span class="text-grey-9 text-weight-bold text-body1">{{
+                divisaActiva.simbolo
+              }}</span>
             </template>
           </q-input>
         </div>
@@ -98,11 +100,18 @@
         </div>
 
         <!-- Cálculo del Monto por Cuota -->
-        <div class="col-xs-12 col-sm-12 flex items-center justify-end q-pt-sm" v-if="montoPorCuotaNumero > 0">
+        <div
+          class="col-xs-12 col-sm-12 flex items-center justify-end q-pt-sm"
+          v-if="montoPorCuotaNumero > 0"
+        >
           <q-item class="bg-primary-1 full-width rounded-borders text-right">
             <q-item-section>
-              <q-item-label class="text-caption text-grey-7 text-weight-medium text-right">Monto Estimado por Cuota</q-item-label>
-              <q-item-label class="text-h6 text-primary text-weight-bold row items-center justify-end">
+              <q-item-label class="text-caption text-grey-7 text-weight-medium text-right"
+                >Monto Estimado por Cuota</q-item-label
+              >
+              <q-item-label
+                class="text-h6 text-primary text-weight-bold row items-center justify-end"
+              >
                 <q-icon name="payments" size="sm" class="q-mr-sm" />
                 {{ montoPorCuotaFormateado }}
               </q-item-label>
@@ -159,7 +168,7 @@ const cargando = ref(false)
 const formData = ref({
   ver: 'registrarCompraCredito',
   compra_id: props.compra.id,
-  monto_total: props.compra.total,
+  monto_total: parseFloat(props.compra.total).toFixed(2) || 0,
   nro_cuotas: null,
   fecha_inicio: obtenerFechaActualDato(),
   pago_cada_ciertos_dias: null,

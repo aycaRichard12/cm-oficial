@@ -99,7 +99,7 @@ async function loadcategorias() {
   try {
     const response = await api.get(`listaCategoriaProducto/${idempresa}`) // Cambia a tu ruta real
     console.log(response)
-    const filtrados = response.data.filter((u) => u.estado == 1 && u.idp == 0)
+    const filtrados = response.data.filter((u) => u.estado == 1 && (!u.idp || u.idp == 0))
     const formateado = filtrados.map((item) => ({
       label: item.nombre,
       value: item.id,

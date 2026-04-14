@@ -412,6 +412,10 @@ const routes = [
         path: '/anularcompra',
         component: () => import('src/pages/autorizaciones/anularCompraPage.vue'),
       },
+      {
+        path: '/configuracionproductounico',
+        component: () => import('src/pages/productoUnico/ConfiguracionPage.vue'),
+      },
     ],
   },
   {

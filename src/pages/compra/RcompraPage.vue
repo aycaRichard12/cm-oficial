@@ -12,6 +12,7 @@
             :modalValue="registroActual"
             :almacenes="almacenes"
             :proveedores="proveedores"
+            :cajaBancos="listaCajaBancos"
             @submit="guardarRegistro"
             @cancel="cerrarFormulario"
           />
@@ -92,6 +93,7 @@ import { useRouter } from 'vue-router'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import SolicitudAnulacionDialog from 'src/components/compra/SolicitudAnulacionDialog.vue'
 import { useAnulacionCompra } from 'src/composables/compra/useAnulacionCompra'
+import { apiCt } from 'boot/axios'
 const compraStore = useCompraStore()
 
 const $q = useQuasar()
@@ -116,12 +118,19 @@ const showFormEdit = ref(false)
 const formularioDetalleCompra = ref({ ver: 'registrarDetalleCompra' })
 const detalleCompra = ref([])
 const productosDisponibles = ref([])
+const listaCajaBancos = ref([])
 
 const router = useRouter()
 const ShowWarningDialog = ref(false)
 
 // Anulación de compra (estado y lógica en el composable)
-const { dialogAnulacion, compraParaAnulacion, solicitudes, cargarSolicitudes, abrirDialogAnulacion } = useAnulacionCompra()
+const {
+  dialogAnulacion,
+  compraParaAnulacion,
+  solicitudes,
+  cargarSolicitudes,
+  abrirDialogAnulacion,
+} = useAnulacionCompra()
 
 async function editarCompra(compra) {
   console.log(compra)
@@ -180,8 +189,9 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     if (response.data.estado === 'exito') {
       let msg = response.data.mensaje || mensajeExito
       // Override typical warning message or completely replace it with specific text
-      msg = 'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
-      
+      msg =
+        'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.'
+
       $q.notify({ type: 'positive', message: msg, timeout: 5000 })
       almacenSeleccionado.value = almacenes.value.find((almacen) => almacen.value === data.almacen)
       console.log(almacenSeleccionado.value)
@@ -190,7 +200,7 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
       return response
     } else {
       let errorMsg = response.data.mensaje || mensajeError
-      if (errorMsg) errorMsg = errorMsg.replace(/¡?Advertencia!?\s*:?\s*/ig, '')
+      if (errorMsg) errorMsg = errorMsg.replace(/¡?Advertencia!?\s*:?\s*/gi, '')
       $q.notify({ type: 'negative', message: errorMsg })
     }
   } catch (error) {
@@ -200,6 +210,7 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
 }
 
 async function guardarRegistro(data) {
+  console.log(data)
   const endpoint = isEditing.value ? 'editarCompra' : 'nuevaCompra'
   const response = await enviarFormData(
     endpoint,
@@ -265,6 +276,22 @@ async function cargarAlmacenes() {
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+  }
+}
+
+async function listarcajasbanco() {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
+    console.log(response.data)
+
+    listaCajaBancos.value = response.data.map((item) => ({
+      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      value: item.idcaja_bancos,
+    }))
+    console.log(listaCajaBancos.value)
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
   }
 }
 
@@ -432,6 +459,7 @@ async function iniciar() {
   await cargarProveedores()
   await loadRows()
   await cargarSolicitudes()
+  await listarcajasbanco()
   registroActual.value = {
     ver: 'registrarCompra',
     idusuario: idusuario,

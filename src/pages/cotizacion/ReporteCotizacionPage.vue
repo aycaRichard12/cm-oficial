@@ -381,9 +381,11 @@ const generarReporte = async () => {
         sucursal: p.sucursal,
         estado: p.estado,
         condicion: p.condicion,
+        estadoResumido: p.estadoResumido,
         total_sumatorias: Number(parseFloat(p.cotizaciontotal) + parseFloat(p.descuento)),
         almacen: p.almacen,
         estado_cobro: Number(p.estado_cobro),
+        estadoCobroResumido: p.estadoCobroResumido,
         nro: index + 1,
       })) // Initialize with all data
       $q.notify({

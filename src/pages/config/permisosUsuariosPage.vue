@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="bg-grey-1">
+  <q-page padding>
     <!-- Header Section -->
     <div class="row q-mb-md">
       <div class="col-12">
@@ -12,6 +12,10 @@
                 <div class="text-subtitle1 text-grey-7 q-mt-xs">
                   Gestiona las operaciones y niveles de autorización para los usuarios del sistema
                 </div>
+                <div v-if="usuarioSesion" class="text-caption text-grey-6 q-mt-xs">
+                  <q-icon name="person_outline" size="xs" color="grey-7" class="q-mr-xs" />
+                  Sesión iniciada como: <span class="text-weight-medium">{{ usuarioSesion }}</span>
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -22,7 +26,7 @@
     <!-- Form Section -->
     <div class="row q-mb-md">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-2 rounded-borders">
+        <q-card flat class=" shadow-2 rounded-borders">
           <q-card-section class="q-pa-md">
             <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
           </q-card-section>
@@ -33,13 +37,13 @@
     <!-- Table Section -->
     <div class="row">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-2 rounded-borders">
+        <q-card flat class="shadow-2 rounded-borders">
           <q-card-section class="q-pa-md">
             <base-filterable-table
               title="Operaciones Registradas"
               :rows="operaciones"
               :columns="columns"
-              :array-headers="['usuario', 'codigo', 'operacion', 'estado']"
+              :array-headers="['usuario', 'nombreCompleto', 'codigo', 'operacion', 'estado']"
               row-key="id"
             >
               <template v-slot:body-cell-estado="props">
@@ -97,12 +101,13 @@ import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 import FormAutorizarPermisos from 'src/components/general/operacionesPermisos/FormAutorizarPermisos.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 
 const $q = useQuasar()
 const operaciones = ref([])
 const loading = ref(false)
 const IDMD5 = idempresa_md5()
+const usuarioSesion = getUsuario() // Devuelve el nombre completo (string)
 
 // Definición de columnas para la tabla
 const columns = [
@@ -119,6 +124,14 @@ const columns = [
     align: 'left', 
     label: 'Usuario', 
     field: 'usuario', 
+    sortable: true,
+    dataType: 'text'
+  },
+  { 
+    name: 'nombreCompleto', 
+    align: 'left', 
+    label: 'Nombre Completo', 
+    field: 'nombreCompleto', 
     sortable: true,
     dataType: 'text'
   },
@@ -163,10 +176,12 @@ const fetchOperaciones = async () => {
     const response = data.data
     console.log('operaciones que pueden hacer creo ',response)
     operaciones.value = response.data.map((obj, index) => {
+      const userPermiso = obj.usuario?.[0] || {}
       return {
-        ...obj,
-        id: index + 1,
-        usuario: obj.usuario[0]?.usuario || 'N/A',
+       ...obj,
+       id: index + 1,
+       usuario: userPermiso.usuario || 'N/A',
+       nombreCompleto: usuarioSesion
       }
     })
   } catch (error) {
@@ -176,27 +191,42 @@ const fetchOperaciones = async () => {
   }
 }
 
-// Crear o Actualizar
+// Crear o Actualizar (Soporta múltiples registros para Dashboard Checks)
 const handleSave = async (payload) => {
   loading.value = true
   try {
-    const isUpdate = !!payload.id
-    const url = isUpdate ? 'actualizarOperacion' : 'crearOperaciones'
-
-    const method = isUpdate ? 'post' : 'post'
-    const body = {
-      ...payload,
-      ver: isUpdate ? 'actualizarOperacion' : 'crearOperaciones',
-      idmd5: IDMD5,
+    // Es una selección masiva (array) proveniente de los Checkboxes
+    if (Array.isArray(payload)) {
+      for (const req of payload) {
+        const body = {
+          ...req,
+          ver: 'crearOperaciones',
+          idmd5: IDMD5,
+        }
+        await api.post('crearOperaciones', body)
+      }
+      $q.notify({
+        color: 'positive',
+        message: 'Permisos estadísticos asignados con éxito',
+      })
+    } 
+    // Es una petición singular (Operaciones menú principal)
+    else {
+      const isUpdate = !!payload.id
+      const url = isUpdate ? 'actualizarOperacion' : 'crearOperaciones'
+      const method = isUpdate ? 'post' : 'post'
+      const body = {
+        ...payload,
+        ver: isUpdate ? 'actualizarOperacion' : 'crearOperaciones',
+        idmd5: IDMD5,
+      }
+      await api[method](url, body)
+      $q.notify({
+        color: 'positive',
+        message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
+      })
     }
-
-    const response = await api[method](url, body)
-    console.log(response.data)
-    $q.notify({
-      color: 'positive',
-      message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
-    })
-    fetchOperaciones() // Refrescar tabla
+    fetchOperaciones() // Refrescar tabla en ambas circunstancias
   } catch (error) {
     $q.notify({ color: 'negative', message: 'Error en la solicitud: ' + error })
   } finally {

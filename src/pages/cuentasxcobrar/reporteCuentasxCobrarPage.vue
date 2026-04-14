@@ -3,9 +3,7 @@
     <!-- Header and Filters Card -->
     <q-card flat bordered class="q-mb-md shadow-2">
       <q-toolbar class="bg-primary text-white shadow-2">
-        <q-toolbar-title class="text-weight-bold">
-          Configuración de Reporte
-        </q-toolbar-title>
+        <q-toolbar-title class="text-weight-bold"> Configuración de Reporte </q-toolbar-title>
       </q-toolbar>
 
       <q-card-section class="q-pt-sm q-pb-md">
@@ -22,7 +20,9 @@
                   dense
                   @update:model-value="cambiarTipoReporteLabel"
                 />
-                <div class="text-weight-bold text-primary">{{ tipoReporte ? 'Al Corte' : 'Por Periodo' }}</div>
+                <div class="text-weight-bold text-primary">
+                  {{ tipoReporte ? 'Al Corte' : 'Por Periodo' }}
+                </div>
               </div>
             </div>
 
@@ -109,10 +109,14 @@
           <div class="row items-center q-gutter-x-sm">
             <q-icon name="summarize" color="primary" size="sm" />
             <div class="text-subtitle2 text-weight-medium text-grey-8">
-              {{ processedReportData.length > 0 ? `Total: ${processedReportData.length} registros` : 'Resultados' }}
+              {{
+                processedReportData.length > 0
+                  ? `Total: ${processedReportData.length} registros`
+                  : 'Resultados'
+              }}
             </div>
           </div>
-          
+
           <div class="row q-gutter-sm">
             <q-btn
               id="btnexportarexcelreportecredito"
@@ -148,18 +152,24 @@
 
       <q-card-section class="q-pa-none">
         <div ref="hijoRef" id="tablareportecreditos">
-          <ReporteCreditosTable 
+          <ReporteCreditosTable
             ref="tablaCreditosRef"
-            :rows="processedReportData" 
-            :loading="loading" 
+            :rows="processedReportData"
+            :loading="loading"
           />
         </div>
       </q-card-section>
     </q-card>
 
     <!-- PDF Modal -->
-    <q-dialog v-model="mostrarModal" full-width full-height transition-show="scale" transition-hide="scale">
-      <q-card class="column no-wrap" style="background: rgba(0,0,0,0.8)">
+    <q-dialog
+      v-model="mostrarModal"
+      full-width
+      full-height
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="column no-wrap" style="background: rgba(0, 0, 0, 0.8)">
         <q-toolbar class="bg-primary text-white">
           <q-toolbar-title>Vista Previa del Reporte</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
@@ -274,7 +284,6 @@ onBeforeUnmount(() => {
   }
 })
 
-
 const processedReportData = computed(() => {
   let data = [...reportData.value]
   return mapRows(data)
@@ -291,11 +300,11 @@ const mapRows = (data) => {
     fecha2 = Math.floor(fecha2.getTime() / (1000 * 3600 * 24))
     let dias = fecha1 - fecha2
 
-    const almacen = almacenes.almacenes.find(
-      (a) => Number(a.idalmacen) === Number(row.idalmacen),
-    )
+    const almacen = almacenes.almacenes.find((a) => Number(a.idalmacen) === Number(row.idalmacen))
 
     return {
+      numFactura: row.numFactura,
+      tipo_cobro: row.tipo_cobro,
       idventa: row.idventa,
       idcredito: row.idcredito,
       idcliente: row.idcliente,
@@ -309,7 +318,8 @@ const mapRows = (data) => {
       cuotasprocesadas: row.cuotaspagadas || 0,
       valorcuotas: decimas(redondear(parseFloat(row.valorcuotas))),
       totalventa: decimas(redondear(parseFloat(row.montoventa))),
-      totalcobrado: row.totalcobrado == null ? '0.00' : decimas(redondear(parseFloat(row.totalcobrado))),
+      totalcobrado:
+        row.totalcobrado == null ? '0.00' : decimas(redondear(parseFloat(row.totalcobrado))),
       saldo: decimas(redondear(parseFloat(row.saldo))),
       totalatrasado: Number(row.estado) === 3 ? decimas(redondear(parseFloat(row.saldo))) : '0.00',
       totalanulado: Number(row.estado) === 4 ? decimas(redondear(parseFloat(row.saldo))) : '0.00',
@@ -342,7 +352,8 @@ const generateReport = async () => {
     let point = tipoReporte.value
       ? `reporteCreditosAlCorte/${idmd5.value}/${startDate.value}/${endDate.value}`
       : `reportecreditos/${idmd5.value}/${startDate.value}/${endDate.value}`
-    
+
+    console.log(point)
     const response = await api.get(point)
 
     if (response.data.estado === 'exito') {
@@ -352,7 +363,11 @@ const generateReport = async () => {
       if (reportData.value.length === 0) {
         $q.notify({ type: 'info', message: 'Sin registros.', timeout: 2000 })
       } else {
-        $q.notify({ type: 'positive', message: `Éxito: ${reportData.value.length} registros.`, timeout: 1000 })
+        $q.notify({
+          type: 'positive',
+          message: `Éxito: ${reportData.value.length} registros.`,
+          timeout: 1000,
+        })
       }
       scrollToCreditos()
     } else {
@@ -370,7 +385,7 @@ const exportToXLSX = () => {
   const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
   const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
   if (data.length === 0) return
-  
+
   $q.notify({ message: 'Preparando Excel...', color: 'green', icon: 'file_download' })
   exportToXLSX_Reporte_Creditos(data, startDate.value, endDate.value, null, null, visibleColumns)
 }

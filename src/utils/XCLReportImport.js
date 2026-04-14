@@ -9,7 +9,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
   visibleColumnsFromTable = [],
 ) {
   // Preparar datos excluyendo la fila de totales si ya existe
-  const datos = [...reportData].filter(item => item.nombre_comercial !== 'TOTAL:')
+  const datos = [...reportData].filter((item) => item.nombre_comercial !== 'TOTAL:')
 
   // Definir todas las posibles columnas y sus configuraciones
   const allPossibleColumns = [
@@ -38,7 +38,8 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
         exportRow[col.header] = Number(val || 0)
       } else if (col.key === 'fecha_actual') {
         // Solo formatear si parece ser una fecha ISO con guiones
-        exportRow[col.header] = (typeof val === 'string' && val.includes('-')) ? cambiarFormatoFecha(val) : (val || '')
+        exportRow[col.header] =
+          typeof val === 'string' && val.includes('-') ? cambiarFormatoFecha(val) : val || ''
       } else {
         exportRow[col.header] = val || ''
       }
@@ -56,8 +57,8 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
 
   // Agregar fila de totales dinámica
   const totalRow = {}
-  let firstStringCol = columns.find(c => !c.numeric)
-  columns.forEach(col => {
+  let firstStringCol = columns.find((c) => !c.numeric)
+  columns.forEach((col) => {
     if (col === firstStringCol) {
       totalRow[col.header] = 'TOTALES'
     } else if (totals[col.key] !== undefined) {
@@ -71,7 +72,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
   // Definir anchos de columnas dinámicamente
-  worksheet['!cols'] = columns.map(col => ({ wch: col.width }))
+  worksheet['!cols'] = columns.map((col) => ({ wch: col.width }))
 
   // Apply styles to all cells
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -120,7 +121,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
         const headerCell = worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })]
         const headerText = headerCell ? String(headerCell.v).trim() : ''
         const numericColumns = ['Monto Venta', 'Descuento Venta', 'Saldo Cobro', 'Monto Cobrado']
-        
+
         if (numericColumns.includes(headerText)) {
           cellStyle.alignment.horizontal = 'right'
           cell.z = '[$-40A]#,##0.00'
@@ -183,7 +184,8 @@ export function exportToXLSX_Reporte_Creditos(
         exportRow[col.header] = getEstadoText(row.estado)
       } else if (col.format === 'date') {
         // Solo formatear si parece ser una fecha ISO con guiones
-        exportRow[col.header] = (typeof val === 'string' && val.includes('-')) ? cambiarFormatoFecha(val) : (val || '')
+        exportRow[col.header] =
+          typeof val === 'string' && val.includes('-') ? cambiarFormatoFecha(val) : val || ''
       } else if (col.numeric) {
         exportRow[col.header] = Number(val || 0)
       } else {
@@ -218,7 +220,7 @@ export function exportToXLSX_Reporte_Creditos(
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
   // Definir anchos de columnas dinámicamente
-  worksheet['!cols'] = columns.map(col => ({ wch: col.width }))
+  worksheet['!cols'] = columns.map((col) => ({ wch: col.width }))
 
   // Aplicar estilos a las celdas
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -256,13 +258,13 @@ export function exportToXLSX_Reporte_Creditos(
       // Estilo para columnas numéricas
       else {
         const numericColumns = [
-          'Valor Cuota', 
-          'Monto Venta', 
-          'Total Cobrado', 
-          'Saldo', 
-          'Total Atrasado', 
-          'Total Anulado', 
-          'Días Mora'
+          'Valor Cuota',
+          'Monto Venta',
+          'Total Cobrado',
+          'Saldo',
+          'Total Atrasado',
+          'Total Anulado',
+          'Días Mora',
         ]
         const headerCell = worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })]
         const headerText = headerCell ? String(headerCell.v).trim() : ''
@@ -321,7 +323,6 @@ function getEstadoText(estado) {
   return estados[Number(estado)] || ''
 }
 
-
 export function exportToXLSX_Reporte_Productos(
   reportData,
   startDate,
@@ -356,7 +357,8 @@ export function exportToXLSX_Reporte_Productos(
     const fecha = row.fecha
     return {
       'N°': index + 1,
-      Fecha: (typeof fecha === 'string' && fecha.includes('-')) ? cambiarFormatoFecha(fecha) : (fecha || ''),
+      Fecha:
+        typeof fecha === 'string' && fecha.includes('-') ? cambiarFormatoFecha(fecha) : fecha || '',
       'Nro. Doc.': row.nrofactura,
       'Tipo de Venta': tipoVenta[row.tipoventa] || row.tipoventa,
       'Código Producto': row.codigo,
@@ -417,7 +419,7 @@ export function exportToXLSX_Reporte_Productos(
     Canal: '',
     'Tipo Precio': '',
   })
-  
+
   // Crear hoja de trabajo
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
 
@@ -527,16 +529,20 @@ export function exportToXLSX_Reporte_Productos(
   // Crear texto de filtros aplicados
   let filtros = `Del ${cambiarFormatoFecha(startDate)} al ${cambiarFormatoFecha(endDate)}`
   if (almacenSeleccionado && String(almacenSeleccionado) !== '0') {
-    const almacen = almacenesOptions.value.find((a) => String(a.value) === String(almacenSeleccionado))
+    const almacen = almacenesOptions.value.find(
+      (a) => String(a.value) === String(almacenSeleccionado),
+    )
     if (almacen) filtros += ` | Almacén: ${almacen.label}`
   }
   if (clienteSeleccionado) {
-    const idCliente = typeof clienteSeleccionado === 'object' ? clienteSeleccionado.value : clienteSeleccionado
+    const idCliente =
+      typeof clienteSeleccionado === 'object' ? clienteSeleccionado.value : clienteSeleccionado
     const cliente = clientesOriginal.value.find((c) => String(c.value) === String(idCliente))
     if (cliente) filtros += ` | Cliente: ${cliente.raw.nombre}`
   }
   if (sucursalSeleccionada) {
-    const idSucursal = typeof sucursalSeleccionada === 'object' ? sucursalSeleccionada.value : sucursalSeleccionada
+    const idSucursal =
+      typeof sucursalSeleccionada === 'object' ? sucursalSeleccionada.value : sucursalSeleccionada
     const sucursal = sucursalesOriginal.value.find((s) => String(s.value) === String(idSucursal))
     if (sucursal) filtros += ` | Sucursal: ${sucursal.label}`
   }
@@ -553,7 +559,9 @@ export function exportToXLSX_Reporte_Productos(
   // Generar nombre de archivo
   let filename = `Reporte_Productos_Vendidos_${startDate}_a_${endDate}`
   if (almacenSeleccionado && String(almacenSeleccionado) !== '0') {
-    const almacen = almacenesOptions.value.find((a) => String(a.value) === String(almacenSeleccionado))
+    const almacen = almacenesOptions.value.find(
+      (a) => String(a.value) === String(almacenSeleccionado),
+    )
     if (almacen) filename += `_${almacen.label.substring(0, 20)}`
   }
   filename += '.xlsx'
@@ -562,141 +570,321 @@ export function exportToXLSX_Reporte_Productos(
   XLSX.writeFile(workbook, filename, { cellStyles: true })
 }
 
+// export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, endDate) {
+//   const datos = filteredVentas.value
+//   console.log(filteredVentas.value)
+//   console.log(almacen.value)
+//   console.log(startDate.value)
+//   console.log(endDate.value)
+
+//   // 1. Preparar los datos con formato adecuado
+//   const datosFormateados = datos.map((item) => {
+//     const itemCopy = { ...item }
+//     // Mantener como números para que Excel aplique el formato según la región
+//     if (itemCopy.Total) itemCopy.Total = Number(itemCopy.Total)
+//     if (itemCopy.Dscto) itemCopy.Dscto = Number(itemCopy.Dscto)
+//     if (itemCopy.Monto) itemCopy.Monto = Number(itemCopy.Monto)
+//     return itemCopy
+//   })
+
+//   // 2. Crear la hoja de cálculo
+//   const worksheet = XLSX.utils.json_to_sheet(datosFormateados)
+
+//   // 3. Configurar anchos de columnas
+//   const columnWidths = [
+//     { wch: 12 }, // Nro.Factura
+//     { wch: 18 }, // Fecha
+//     { wch: 35 }, // Cliente
+//     { wch: 25 }, // Vendedor
+//     { wch: 25 }, // Almacén
+//     { wch: 15 }, // Moneda
+//     { wch: 15 }, // Estado
+//     { wch: 18 }, // Total
+//     { wch: 18 }, // Descuento
+//     { wch: 18 }, // Monto
+//     { wch: 15 }, // Tipo
+//     { wch: 50 }, // Observación
+//   ]
+//   worksheet['!cols'] = columnWidths
+
+//   // 4. Aplicar estilos
+//   const range = XLSX.utils.decode_range(worksheet['!ref'])
+
+//   // Estilo para la fila de encabezado
+//   for (let C = range.s.c; C <= range.e.c; ++C) {
+//     const cellAddress = { c: C, r: 0 }
+//     const cellRef = XLSX.utils.encode_cell(cellAddress)
+//     if (!worksheet[cellRef]) continue
+
+//     worksheet[cellRef].s = {
+//       font: {
+//         name: 'Calibri',
+//         sz: 12,
+//         bold: true,
+//         color: { rgb: 'FFFFFF' },
+//       },
+//       fill: {
+//         patternType: 'solid',
+//         fgColor: { rgb: '4472C4' }, // Azul corporativo
+//       },
+//       alignment: {
+//         horizontal: 'center',
+//         vertical: 'center',
+//         wrapText: true,
+//       },
+//       border: {
+//         top: { style: 'thin', color: { rgb: 'FFFFFF' } },
+//         bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
+//         left: { style: 'thin', color: { rgb: 'FFFFFF' } },
+//         right: { style: 'thin', color: { rgb: 'FFFFFF' } },
+//       },
+//     }
+//   }
+
+//   // Estilos para las filas de datos
+//   for (let R = 1; R <= range.e.r; R++) {
+//     for (let C = range.s.c; C <= range.e.c; C++) {
+//       const cellAddress = { c: C, r: R }
+//       const cellRef = XLSX.utils.encode_cell(cellAddress)
+//       if (!worksheet[cellRef]) continue
+
+//       const isNumeric = ['Total', 'Dscto', 'Monto'].includes(
+//         worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })].v,
+//       )
+
+//       worksheet[cellRef].s = {
+//         font: {
+//           name: 'Calibri',
+//           sz: 11,
+//           color: { rgb: '000000' },
+//         },
+//         alignment: {
+//           horizontal: isNumeric ? 'right' : 'left',
+//           vertical: 'center',
+//           wrapText: true,
+//         },
+//         border: {
+//           top: { style: 'thin', color: { rgb: 'D9D9D9' } },
+//           bottom: { style: 'thin', color: { rgb: 'D9D9D9' } },
+//           left: { style: 'thin', color: { rgb: 'D9D9D9' } },
+//           right: { style: 'thin', color: { rgb: 'D9D9D9' } },
+//         },
+//         numFmt: isNumeric ? '[$-40A]#,##0.00' : undefined,
+//       }
+//       if (isNumeric) {
+//         worksheet[cellRef].z = '[$-40A]#,##0.00'
+//       }
+
+//       // Alternar colores de fila para mejor legibilidad
+//       if (R % 2 === 0) {
+//         worksheet[cellRef].s.fill = {
+//           patternType: 'solid',
+//           fgColor: { rgb: 'F2F2F2' },
+//         }
+//       }
+//     }
+//   }
+
+//   // 5. Agregar título y metadatos
+//   const workbook = XLSX.utils.book_new()
+//   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Ventas')
+
+//   // 6. Configurar propiedades del documento
+//   workbook.Props = {
+//     Title: `Reporte de Ventas ${almacen.value}`,
+//     Subject: `Ventas del ${startDate.value} al ${endDate.value}`,
+//     Author: 'Sistema de Ventas',
+//     CreatedDate: new Date(),
+//   }
+
+//   // 7. Generar nombre de archivo más descriptivo
+//   const almacenFormatted = almacen.value ? almacen.replace(/\s+/g, '_') : 'Todos'
+//   const filename = `Reporte_Ventas_${almacenFormatted}_${startDate.value}_a_${endDate.value}.xlsx`
+
+//   // 8. Exportar el archivo
+//   XLSX.writeFile(workbook, filename, {
+//     bookType: 'xlsx',
+//     type: 'array',
+//     cellStyles: true,
+//   })
+// }
+
 export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, endDate) {
   const datos = filteredVentas.value
+  const nombreAlmacen = almacen.value || 'Todos los Almacenes'
 
-  // 1. Preparar los datos con formato adecuado
-  const datosFormateados = datos.map((item) => {
-    const itemCopy = { ...item }
-    // Mantener como números para que Excel aplique el formato según la región
-    if (itemCopy.Total) itemCopy.Total = Number(itemCopy.Total)
-    if (itemCopy.Dscto) itemCopy.Dscto = Number(itemCopy.Dscto)
-    if (itemCopy.Monto) itemCopy.Monto = Number(itemCopy.Monto)
-    return itemCopy
-  })
-
-  // 2. Crear la hoja de cálculo
-  const worksheet = XLSX.utils.json_to_sheet(datosFormateados)
-
-  // 3. Configurar anchos de columnas
-  const columnWidths = [
-    { wch: 12 }, // Nro.Factura
-    { wch: 18 }, // Fecha
-    { wch: 35 }, // Cliente
-    { wch: 25 }, // Vendedor
-    { wch: 25 }, // Almacén
-    { wch: 15 }, // Moneda
-    { wch: 15 }, // Estado
-    { wch: 18 }, // Total
-    { wch: 18 }, // Descuento
-    { wch: 18 }, // Monto
-    { wch: 15 }, // Tipo
-    { wch: 50 }, // Observación
+  // 1. Definir los encabezados de la tabla
+  const encabezados = [
+    [
+      'Nro. Factura',
+      'Fecha',
+      'Sucursal',
+      'Cliente',
+      'Vendedor',
+      'Almacén',
+      'Moneda',
+      'Estado',
+      'Canal',
+      'Tipo pago',
+      'Total',
+      'Dscto',
+      'Monto',
+      'Tipo',
+      'Observación',
+    ],
   ]
-  worksheet['!cols'] = columnWidths
 
-  // 4. Aplicar estilos
+  // 2. Formatear los datos del cuerpo
+  const cuerpo = datos.map((item) => [
+    item.nfactura || '',
+    item.fecha || '',
+    item.sucursal || '',
+    item.cliente || '',
+    item.Vendedor || '',
+    item.almacen || '',
+    item.divisa || '',
+    item.estado || '',
+    item.canal || '',
+    item.tipopago || '',
+    Number(item.total || 0),
+    Number(item.descuento || 0),
+    Number(item.ventatotal || 0),
+    item.tipoventa || '',
+    item.Observacion || '',
+  ])
+
+  // 3. Crear el libro y la hoja con un offset para el título (fila 5 empieza la tabla)
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    [`REPORTE DE VENTAS DETALLADO`], // Fila 0
+    [`Almacén: ${nombreAlmacen}`], // Fila 1
+    [`Periodo: ${startDate.value} al ${endDate.value}`], // Fila 2
+    [`Fecha de generación: ${new Date().toLocaleString()}`], // Fila 3
+    [], // Fila 4 (Espacio en blanco)
+    ...encabezados, // Fila 5
+    ...cuerpo, // Fila 6 en adelante
+  ])
+
+  // 4. Configuración de celdas combinadas para el título
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }, // Título principal
+    //{ s: { r: 1, c: 0 }, e: { r: 1, c: 14 } }, // Subtítulo almacén
+  ]
+
+  // 5. Configurar anchos de columnas
+  worksheet['!cols'] = [
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 35 },
+    { wch: 20 },
+    { wch: 20 },
+    { wch: 10 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 30 },
+    { wch: 15 },
+  ]
+
+  // 6. Aplicar Estilos
   const range = XLSX.utils.decode_range(worksheet['!ref'])
 
-  // Estilo para la fila de encabezado
-  for (let C = range.s.c; C <= range.e.c; ++C) {
-    const cellAddress = { c: C, r: 0 }
-    const cellRef = XLSX.utils.encode_cell(cellAddress)
-    if (!worksheet[cellRef]) continue
-
-    worksheet[cellRef].s = {
-      font: {
-        name: 'Calibri',
-        sz: 12,
-        bold: true,
-        color: { rgb: 'FFFFFF' },
-      },
-      fill: {
-        patternType: 'solid',
-        fgColor: { rgb: '4472C4' }, // Azul corporativo
-      },
-      alignment: {
-        horizontal: 'center',
-        vertical: 'center',
-        wrapText: true,
-      },
-      border: {
-        top: { style: 'thin', color: { rgb: 'FFFFFF' } },
-        bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
-        left: { style: 'thin', color: { rgb: 'FFFFFF' } },
-        right: { style: 'thin', color: { rgb: 'FFFFFF' } },
-      },
-    }
-  }
-
-  // Estilos para las filas de datos
-  for (let R = 1; R <= range.e.r; R++) {
+  for (let R = range.s.r; R <= range.e.r; R++) {
     for (let C = range.s.c; C <= range.e.c; C++) {
-      const cellAddress = { c: C, r: R }
-      const cellRef = XLSX.utils.encode_cell(cellAddress)
+      const cellRef = XLSX.utils.encode_cell({ r: R, c: C })
       if (!worksheet[cellRef]) continue
 
-      const isNumeric = ['Total', 'Dscto', 'Monto'].includes(
-        worksheet[XLSX.utils.encode_cell({ c: C, r: 0 })].v,
-      )
-
+      // Estilo base
       worksheet[cellRef].s = {
-        font: {
-          name: 'Calibri',
-          sz: 11,
-          color: { rgb: '000000' },
-        },
-        alignment: {
-          horizontal: isNumeric ? 'right' : 'left',
-          vertical: 'center',
-          wrapText: true,
-        },
-        border: {
-          top: { style: 'thin', color: { rgb: 'D9D9D9' } },
-          bottom: { style: 'thin', color: { rgb: 'D9D9D9' } },
-          left: { style: 'thin', color: { rgb: 'D9D9D9' } },
-          right: { style: 'thin', color: { rgb: 'D9D9D9' } },
-        },
-        numFmt: isNumeric ? '[$-40A]#,##0.00' : undefined,
-      }
-      if (isNumeric) {
-        worksheet[cellRef].z = '[$-40A]#,##0.00'
+        font: { name: 'Segoe UI', sz: 10 },
+        alignment: { vertical: 'center' },
+        fill: {},
       }
 
-      // Alternar colores de fila para mejor legibilidad
-      if (R % 2 === 0) {
-        worksheet[cellRef].s.fill = {
-          patternType: 'solid',
-          fgColor: { rgb: 'F2F2F2' },
+      // --- ESTILO TÍTULO PRINCIPAL ---
+      if (R === 0) {
+        worksheet[cellRef].s = {
+          font: { sz: 16, bold: true, color: { rgb: '2F5597' } },
+          alignment: { horizontal: 'center' },
+        }
+      }
+      // --- ESTILO METADATOS (Subtítulos) ---
+      // --- ESTILO METADATOS (Subtítulos) ---
+      else if (R > 0 && R < 4) {
+        worksheet[cellRef].s = {
+          font: {
+            name: 'Segoe UI',
+            sz: 10,
+            bold: true,
+            color: { rgb: '000000' },
+          },
+          fill: {
+            patternType: 'solid',
+            fgColor: { rgb: 'FFFFFF' }, // Forzamos fondo blanco para evitar el negro
+          },
+          alignment: {
+            vertical: 'center',
+            horizontal: 'left',
+          },
+        }
+      }
+      // --- ESTILO ENCABEZADOS DE TABLA (Fila 5) ---
+      else if (R === 5) {
+        worksheet[cellRef].s = {
+          font: { bold: true, color: { rgb: 'FFFFFF' } },
+          fill: { patternType: 'solid', fgColor: { rgb: '2F5597' } },
+          alignment: { horizontal: 'center' },
+          border: {
+            bottom: { style: 'medium', color: { rgb: 'E3E1E1' } },
+          },
+        }
+      }
+      // --- ESTILO CUERPO DE DATOS ---
+      // --- ESTILO CUERPO DE DATOS (DENTRO DEL BUCLE R > 5) ---
+      else if (R > 5) {
+        // Ajustamos el índice de columnas numéricas (ahora son Total, Dscto, Monto en las posiciones 10, 11, 12)
+        const isNumericCol = C >= 10 && C <= 12
+
+        worksheet[cellRef].s.alignment.horizontal = isNumericCol ? 'right' : 'left'
+
+        if (isNumericCol) {
+          worksheet[cellRef].z = '#,##0.00'
+        }
+
+        // Filas cebra
+        if (R % 2 === 0) {
+          worksheet[cellRef].s.fill = { patternType: 'solid', fgColor: { rgb: 'F9F9F9' } }
+        } else {
+          // Para las filas impares, forzamos el fondo blanco para limpiar cualquier residuo
+          worksheet[cellRef].s.fill = {
+            patternType: 'solid',
+            fgColor: { rgb: 'FFFFFF' },
+          }
+        }
+
+        // BORDES: Definir el color gris explícitamente para que no salga negro
+        const greyColor = { rgb: 'DCDCDC' } // Gris suave
+        worksheet[cellRef].s.border = {
+          top: { style: 'thin', color: greyColor },
+          bottom: { style: 'thin', color: greyColor },
+          left: { style: 'thin', color: greyColor },
+          right: { style: 'thin', color: greyColor },
         }
       }
     }
   }
 
-  // 5. Agregar título y metadatos
+  // 7. Generar Archivo
   const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Ventas')
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
 
-  // 6. Configurar propiedades del documento
-  workbook.Props = {
-    Title: `Reporte de Ventas ${almacen}`,
-    Subject: `Ventas del ${startDate} al ${endDate}`,
-    Author: 'Sistema de Ventas',
-    CreatedDate: new Date(),
-  }
+  const filename = `Ventas_${nombreAlmacen.replace(/\s+/g, '_')}_${startDate.value}.xlsx`
 
-  // 7. Generar nombre de archivo más descriptivo
-  const almacenFormatted = almacen ? almacen.replace(/\s+/g, '_') : 'Todos'
-  const filename = `Reporte_Ventas_${almacenFormatted}_${startDate}_a_${endDate}.xlsx`
-
-  // 8. Exportar el archivo
-  XLSX.writeFile(workbook, filename, {
-    bookType: 'xlsx',
-    type: 'array',
-    cellStyles: true,
-  })
+  XLSX.writeFile(workbook, filename)
 }
-
 /**
  * Exporta una plantilla de Excel con los encabezados necesarios para importar productos.
  */
@@ -727,12 +915,12 @@ export function exportarPlantillaProductos() {
       Unidad: 'Unidad',
       Característica: 'Color',
       'Otras Características': 'Rojo, Grande',
-      'Código Nandina': '1020.30.00'
-    }
+      'Código Nandina': '1020.30.00',
+    },
   ]
 
   const worksheet = XLSX.utils.json_to_sheet(data)
-  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+  worksheet['!cols'] = headers.map((h) => ({ wch: h.width }))
 
   // Estilos de cabecera
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -742,7 +930,7 @@ export function exportarPlantillaProductos() {
       worksheet[cellRef].s = {
         fill: { fgColor: { rgb: '4F81BD' } },
         font: { color: { rgb: 'FFFFFF' }, bold: true },
-        alignment: { horizontal: 'center' }
+        alignment: { horizontal: 'center' },
       }
     }
   }
@@ -774,22 +962,22 @@ export function exportToXLSX_CatalogoProductos(data) {
 
   const dataForExport = data.map((row, index) => ({
     'N°': index + 1,
-    'Fecha': row.fecha || '',
-    'Código': row.codigo || '',
-    'Nombre': row.nombre || '',
-    'Descripción': row.descripcion || '',
+    Fecha: row.fecha || '',
+    Código: row.codigo || '',
+    Nombre: row.nombre || '',
+    Descripción: row.descripcion || '',
     'Código de Barras': row.codigobarras || '',
-    'Categoría': row.categoria || '',
-    'Subcategoría': row.subcategoria || '',
-    'Estado': row.estadoproducto || '',
-    'Unidad': row.unidad || '',
-    'Característica': row.medida || '',
+    Categoría: row.categoria || '',
+    Subcategoría: row.subcategoria || '',
+    Estado: row.estadoproducto || '',
+    Unidad: row.unidad || '',
+    Característica: row.medida || '',
     'Otras Características': row.caracteristica || '',
     'Código Nandina': row.codigonandina || '',
   }))
 
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
-  worksheet['!cols'] = headers.map(h => ({ wch: h.width }))
+  worksheet['!cols'] = headers.map((h) => ({ wch: h.width }))
 
   // Estilos de cabecera
   const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -799,7 +987,7 @@ export function exportToXLSX_CatalogoProductos(data) {
       worksheet[cellRef].s = {
         fill: { fgColor: { rgb: '4F81BD' } },
         font: { color: { rgb: 'FFFFFF' }, bold: true },
-        alignment: { horizontal: 'center' }
+        alignment: { horizontal: 'center' },
       }
     }
   }
@@ -826,22 +1014,22 @@ export async function importarProductosDesdeExcel(file) {
 
         // Mapeo de cabeceras en español a claves inglesas
         const headerMap = {
-          'Código': 'codigo',
-          'Nombre': 'nombre',
-          'Descripción': 'descripcion',
+          Código: 'codigo',
+          Nombre: 'nombre',
+          Descripción: 'descripcion',
           'Código de Barras': 'codigobarras',
-          'Categoría': 'categoria_nombre',
-          'Subcategoría': 'subcategoria_nombre',
-          'Estado': 'estado_nombre',
-          'Unidad': 'unidad_nombre',
-          'Característica': 'medida_nombre',
+          Categoría: 'categoria_nombre',
+          Subcategoría: 'subcategoria_nombre',
+          Estado: 'estado_nombre',
+          Unidad: 'unidad_nombre',
+          Característica: 'medida_nombre',
           'Otras Características': 'caracteristica',
-          'Código Nandina': 'codigonandina'
+          'Código Nandina': 'codigonandina',
         }
 
-        const mappedData = rows.map(row => {
+        const mappedData = rows.map((row) => {
           const newRow = {}
-          Object.keys(row).forEach(key => {
+          Object.keys(row).forEach((key) => {
             const mappedKey = headerMap[key.trim()]
             if (mappedKey) {
               newRow[mappedKey] = row[key]

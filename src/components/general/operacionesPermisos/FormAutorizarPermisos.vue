@@ -1,49 +1,39 @@
 <template>
-  <div>
+  <q-card flat bordered class="q-pa-md">
+    <!-- Header -->
     <div class="row items-center q-mb-md">
-      <q-icon name="admin_panel_settings" color="primary" size="1.8rem" class="q-mr-sm" />
-      <div class="text-h6 text-weight-medium text-grey-8">Gestionar Permiso</div>
+      <q-avatar color="primary" text-color="white" icon="admin_panel_settings" />
+      <div class="text-h6 text-weight-bold text-grey-8 q-ml-sm">
+        Gestionar Permiso
+      </div>
     </div>
 
-    <q-form @submit="submitForm" class="q-gutter-md">
-      <div class="row q-col-gutter-md">
-        <div class="col-12 col-md-6">
-          <label for="operacion" class="text-weight-medium text-grey-8 q-mb-xs block">
-            <q-icon name="settings" size="xs" class="q-mr-xs" />
-            Operación
-          </label>
-          <q-select
-            v-model="form.menuSeleccionado"
-            :options="menuOptions"
-            id="operacion"
-            outlined
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            input-debounce="0"
-            @filter="filterFn"
-            :rules="[(val) => !!val || 'Campo requerido']"
-            placeholder="Seleccione una operación"
-            class="q-mb-sm"
-          >
-            <template v-slot:prepend>
-              <q-icon name="task_alt" color="primary" />
-            </template>
-          </q-select>
-        </div>
+    <!-- Tabs -->
+    <q-tabs
+      v-model="tipoPermiso"
+      dense
+      inline-label
+      class="text-grey-7"
+      active-color="primary"
+      indicator-color="primary"
+      align="left"
+    >
+      <q-tab name="operacion" label="Operaciones" icon="settings" />
+      <q-tab name="graficos" label="Gráficos" icon="insert_chart" />
+    </q-tabs>
 
+    <q-separator class="q-my-md" />
+
+    <!-- Form -->
+    <q-form @submit="submitForm" class="q-gutter-md q-mb-md">
+      <div class="row q-col-gutter-md">
+        <!-- Usuario -->
         <div class="col-12 col-md-6">
-          <label for="usuario" class="text-weight-medium text-grey-8 q-mb-xs block">
-            <q-icon name="person" size="xs" class="q-mr-xs" />
-            Usuario
-          </label>
           <q-select
             v-model="form.usuarioSeleccionado"
             :options="usuarios"
-            id="usuario"
             outlined
+            dense
             emit-value
             map-options
             use-input
@@ -51,156 +41,120 @@
             hide-selected
             input-debounce="0"
             @filter="filterUsuarios"
-            :rules="[(val) => !!val || 'Campo requerido']"
-            placeholder="Seleccione un usuario"
-            class="q-mb-sm"
+            :rules="[(val) => !!val || 'Seleccione un usuario']"
+            label="Usuario"
+            @update:model-value="alCambiarUsuario"
           >
             <template v-slot:prepend>
-              <q-icon name="account_circle" color="primary" />
+              <q-icon name="person" color="primary" />
             </template>
           </q-select>
+        </div>
+
+        <!-- Operaciones -->
+        <div v-show="tipoPermiso === 'operacion'" class="col-12 col-md-6">
+          <q-select
+            v-model="form.menuSeleccionado"
+            :options="menuOptions"
+            outlined
+            dense
+            emit-value
+            map-options
+            use-input
+            fill-input
+            hide-selected
+            input-debounce="0"
+            @filter="filterMenus"
+            :rules="[val => tipoPermiso === 'graficos' || !!val || 'Seleccione una operación']"
+            label="Operación"
+          >
+            <template v-slot:prepend>
+              <q-icon name="settings" color="primary" />
+            </template>
+          </q-select>
+          
+          <q-banner v-if="estadoOperacionPrevia" dense class="bg-amber-1 text-amber-9 rounded-borders q-mt-sm">
+            <template v-slot:avatar>
+              <q-icon name="warning" size="xs" />
+            </template>
+            <span v-if="estadoOperacionPrevia === 'activo'" class="text-caption">Esta operación ya está autorizada.</span>
+            <span v-else class="text-caption">Esta operación ya existe pero está desactivada.</span>
+          </q-banner>
+        </div>
+      </div>
+
+      <!-- Graficos -->
+      <div v-show="tipoPermiso === 'graficos'" class="q-mt-sm">
+        <div class="row items-center q-mb-sm">
+          <div class="text-subtitle2 text-grey-7">Visualizaciones del Dashboard</div>
+          <q-spinner-dots v-if="cargandoPermisosActuales" color="primary" size="1em" class="q-ml-sm" />
+          <q-badge v-else-if="form.usuarioSeleccionado" color="grey-3" text-color="grey-9" class="q-ml-sm">
+            {{ cantidadGraficosAsignados }} activos
+          </q-badge>
+        </div>
+
+        <q-option-group
+          v-model="form.graficosSeleccionados"
+          :options="graficosOpciones"
+          type="checkbox"
+          color="primary"
+          inline
+        />
+        
+        <div v-if="tipoPermiso === 'graficos' && form.graficosSeleccionados.length === 0" class="text-negative text-caption q-mt-sm">
+          Falta seleccionar al menos un gráfico.
         </div>
       </div>
 
       <q-separator class="q-my-md" />
 
-      <div class="row justify-end q-gutter-sm">
+      <div class="row justify-between items-center">
+        <q-btn flat icon="refresh" label="Limpiar" color="grey-7" @click="resetForm" />
         <q-btn
-          label="Limpiar"
-          flat
-          color="grey-7"
-          @click="resetForm"
-          icon="refresh"
-          class="q-px-lg"
-        />
-        <q-btn
-          :label="form.id ? 'Actualizar Permiso' : 'Crear Permiso'"
+          :label="form.id ? 'Actualizar' : 'Asignar'"
           type="submit"
           color="primary"
-          :loading="loading"
+          :loading="loading || cargandoPermisosActuales"
           :icon="form.id ? 'edit' : 'add'"
           unelevated
-          class="q-px-lg"
+          :disable="tipoPermiso === 'operacion' && !!estadoOperacionPrevia"
         />
       </div>
     </q-form>
-  </div>
+  </q-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useMenuStore } from 'src/stores/permitidos'
-import { api } from 'src/boot/axios'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-import { useQuasar } from 'quasar'
-const $q = useQuasar()
-const menuStore = useMenuStore()
+import { onMounted } from 'vue'
+import { useAutorizarPermisos } from 'src/composables/useAutorizarPermisos'
+
 defineProps(['loading'])
 const emit = defineEmits(['on-submit'])
 
-const idempresa = idempresa_md5()
-const allUsuarios = ref([])
-const usuarios = ref([])
-// 1. Mantenemos una referencia a los datos originales para no perderlos al filtrar
-const allMenus = ref([])
-// 2. Esta es la que se vincula al :options del q-select
-const menuOptions = ref([])
-
-const form = ref({
-  id: null,
-  codigo: '',
-  operacion: '',
-  menuSeleccionado: null,
-})
-
-// Función de filtrado corregida
-function filterFn(val, update) {
-  update(() => {
-    const needle = val.toLowerCase()
-    // Filtramos siempre sobre la lista maestra (allMenus)
-    menuOptions.value = allMenus.value.filter((v) => v.label.toLowerCase().indexOf(needle) > -1)
-  })
-}
-// Función de filtrado para usuarios
-function filterUsuarios(val, update) {
-  update(() => {
-    const needle = val.toLowerCase()
-    // Filtramos siempre sobre la lista maestra (allMenus)
-    usuarios.value = allUsuarios.value.filter((v) => v.label.toLowerCase().indexOf(needle) > -1)
-  })
-}
+// Aplicación de Principios SOLID mediante Composables
+const {
+  form,
+  tipoPermiso,
+  usuarios,
+  menuOptions,
+  graficosOpciones,
+  menusReferencia,
+  cargandoPermisosActuales,
+  estadoOperacionPrevia,
+  cantidadGraficosAsignados,
+  loadUsuarios,
+  alCambiarUsuario,
+  submitForm,
+  resetForm,
+  filterUsuarios,
+  filterMenus,
+  allMenus
+} = useAutorizarPermisos(emit)
 
 onMounted(() => {
-  // Mapeamos los datos del store
-  console.log(menuStore.permitidos)
-  const menus = [
-    {
-      titulo: 'Generar Pedidos Provedores',
-      codigo: 'generarpedido',
-    },
-    {
-      titulo: 'Registrar Compras',
-      codigo: 'registrarcompra',
-    },
-    {
-      titulo: 'Edición de Inventario Externo',
-      codigo: 'inventarioexterno',
-    },
-    {
-      titulo: 'Anular Compras de Forma Directa',
-      codigo: 'anularcompradirecta',
-    },
-  ]
-  const mappedMenus = menus.map((menu) => {
-    return {
-      // Si existe la parte 2, la usamos; si no, usamos el título completo
-      label: menu.titulo,
-      // Obtenemos el código antes del primer guion
-      value: menu.codigo,
-    }
-  })
-  loadUsuarios()
-
-  // Inicializamos ambas listas
+  const mappedMenus = menusReferencia.map((menu) => ({ label: menu.titulo, value: menu.codigo }))
   allMenus.value = mappedMenus
   menuOptions.value = mappedMenus
+  loadUsuarios()
 })
-
-async function loadUsuarios() {
-  try {
-    const response = await api.get(`usuariosConfiguracion/${idempresa}`)
-    usuarios.value = response.data.map((item) => ({
-      label: item.usuario,
-      value: item.id,
-      data: [item.cargo, item.nombre, item.apellido],
-    }))
-    allUsuarios.value = usuarios.value
-  } catch (error) {
-    console.error('Error al cargar usuarios:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
-  }
-}
-
-const submitForm = () => {
-  // Antes de emitir, podemos asignar el label a 'operacion' y el value a 'codigo'
-  // si es que necesitas que coincidan con tu API
-  const selected = allMenus.value.find((m) => m.value === form.value.menuSeleccionado)
-  const usuario = allUsuarios.value.find((m) => m.value === form.value.usuarioSeleccionado)
-  if (selected) {
-    form.value.codigo = selected.value
-    form.value.operacion = selected.label
-    form.value.idusuario = usuario.value
-  }
-  console.log('Formulario enviado con datos:', form.value)
-
-  emit('on-submit', { ...form.value })
-  resetForm()
-}
-
-const resetForm = () => {
-  form.value = { id: null, codigo: '', operacion: '', menuSeleccionado: null }
-}
 </script>
