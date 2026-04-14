@@ -6,12 +6,12 @@
         <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
         {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
-      <q-chip 
-        v-if="esModoEdicion" 
-        color="warning" 
-        text-color="white" 
-        icon="edit" 
-        size="sm" 
+      <q-chip
+        v-if="esModoEdicion"
+        color="warning"
+        text-color="white"
+        icon="edit"
+        size="sm"
         class="text-weight-medium"
         removable
         @remove="onResetForm"
@@ -67,7 +67,9 @@
             </template>
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey text-italic"> No se encontraron productos </q-item-section>
+                <q-item-section class="text-grey text-italic">
+                  No se encontraron productos
+                </q-item-section>
               </q-item>
             </template>
             <template v-slot:option="scope">
@@ -78,8 +80,11 @@
                 <q-item-section>
                   <q-item-label>{{ scope.opt.label }}</q-item-label>
                   <q-item-label caption>
-                    Stock: {{ productosDisponibles.find(p => p.value === scope.opt.value)?.stock || 0 }} 
-                    {{ productosDisponibles.find(p => p.value === scope.opt.value)?.unidad || '' }}
+                    Stock:
+                    {{ productosDisponibles.find((p) => p.value === scope.opt.value)?.stock || 0 }}
+                    {{
+                      productosDisponibles.find((p) => p.value === scope.opt.value)?.unidad || ''
+                    }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -104,7 +109,7 @@
                 text-color="grey-9"
               >
                 <template v-slot:prepend>
-                   <q-icon name="inventory_2" size="xs" color="grey-7" />
+                  <q-icon name="inventory_2" size="xs" color="grey-7" />
                 </template>
               </q-input>
             </div>
@@ -121,8 +126,8 @@
                 stack-label
                 text-color="grey-9"
               >
-               <template v-slot:prepend>
-                   <q-icon name="straighten" size="xs" color="grey-7" />
+                <template v-slot:prepend>
+                  <q-icon name="straighten" size="xs" color="grey-7" />
                 </template>
               </q-input>
             </div>
@@ -133,28 +138,32 @@
         <div class="col-xs-12 col-sm-12 col-md-8">
           <div class="row q-col-gutter-md">
             <div class="col-xs-12 col-sm-6">
-<q-input
-  v-model="detalleForm.precio"
-  type="text"
-  inputmode="decimal"
-  :rules="[(val) => val > 0 || 'Mayor a 0']"
-  dense
-  filled
-  label="Precio Unit. *"
-  placeholder="0.00"
-  class="full-width"
-  stack-label
-  bg-color="grey-2"
-  text-color="grey-9"
-  @update:model-value="(val) => detalleForm.precio = parseFloat(val) || null"
->
-  <template v-slot:prepend>
-    <q-icon name="payments" size="xs" color="grey-7" />
-  </template>
-  <template v-slot:append>
-    <span class="text-grey-9 text-weight-bold">{{ divisaActiva.simbolo }}</span>
-  </template>
-</q-input>
+              <q-input
+                v-model="detalleForm.precio"
+                type="text"
+                inputmode="decimal"
+                :rules="[
+                  (val) => (val !== null && val !== '') || 'Requerido',
+                  (val) => parseFloat(val) > 0 || 'Mayor a 0',
+                ]"
+                dense
+                filled
+                label="Precio Unit. *"
+                placeholder="0.00"
+                class="full-width"
+                stack-label
+                bg-color="grey-2"
+                text-color="grey-9"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="payments" size="xs" color="grey-7" />
+                </template>
+                <template v-slot:append>
+                  <span class="text-grey-7 text-body1 text-weight-bold">
+                    {{ divisaActiva.simbolo }}
+                  </span>
+                </template>
+              </q-input>
             </div>
             <div class="col-xs-12 col-sm-6">
               <q-input
@@ -171,13 +180,15 @@
                 stack-label
                 bg-color="grey-2"
                 text-color="grey-9"
-                @update:model-value="(val) => detalleForm.cantidad = parseFloat(val) || null"
-                >
+                @update:model-value="(val) => (detalleForm.cantidad = parseFloat(val) || null)"
+              >
                 <template v-slot:prepend>
                   <q-icon name="numbers" size="xs" color="grey-7" />
                 </template>
                 <template v-slot:append>
-                  <span class="text-grey-9 text-weight-bold" size="xs">{{ detalleForm.unidad || 'und' }}</span>
+                  <span class="text-grey-7 text-body1 text-weight-bold">{{
+                    detalleForm.unidad || 'und'
+                  }}</span>
                 </template>
               </q-input>
             </div>
@@ -185,7 +196,21 @@
         </div>
 
         <!-- Botones de acción -->
-        <div class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md">
+        <div
+          class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
+        >
+          <q-checkbox
+            v-if="productoUnico"
+            v-model="detalleForm.productoUnico"
+            label="Producto Único"
+            color="primary"
+            class="q-mr-md"
+            :disable="esModoEdicion"
+          >
+            <q-tooltip v-if="esModoEdicion">
+              No se puede cambiar el tipo de producto en edición
+            </q-tooltip>
+          </q-checkbox>
           <q-btn
             v-if="esModoEdicion"
             label="Cancelar"
@@ -234,160 +259,96 @@
       row-key="id"
       flat
       bordered
-      table-header-class="bg-primary-2 text-grey-9 text-weight-bold"
-      :grid="$q.screen.lt.sm"
-      :rows-per-page-options="[5, 10, 25, 50]"
-      class="rounded-borders"
+      class="my-custom-table shadow-1"
       :loading="loadingTable"
-      binary-state-sort
-      separator="cell"
     >
-      <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
+          <q-td auto-width>
+            <q-btn
+              v-if="props.row.productos_detallados?.length > 0"
+              size="sm"
+              color="primary"
+              flat
+              round
+              @click="props.expand = !props.expand"
+              :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+            >
+              <q-tooltip>Ver detalles de códigos</q-tooltip>
+            </q-btn>
+          </q-td>
 
-      <template v-slot:no-data>
-        <div class="full-width row flex-center q-gutter-sm q-py-xl text-grey-5">
-          <q-icon name="shopping_cart" size="4em" />
-          <div class="text-center">
-            <div class="text-h6 text-grey-6">La lista está vacía</div>
-            <div class="text-caption">
-              Añade productos usando el formulario superior
-            </div>
-          </div>
-        </div>
-      </template>
+          <q-td key="codigo" :props="props">
+            <q-chip outline color="primary" label-slot dense>
+              <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+              {{ props.row.codigo }}
+            </q-chip>
+          </q-td>
 
-      <!-- CUSTOM GRID CARDS ON MOBILE -->
-      <template v-slot:item="props">
-        <div class="q-pa-xs col-xs-12 col-sm-6">
-          <q-card flat bordered class="bg-white full-width rounded-borders">
-            <!-- Header Card (Description + Options) -->
-            <q-item class="q-py-sm">
-              <q-item-section>
-                <q-item-label class="text-weight-bold text-subtitle2 text-grey-9">
-                  <q-badge color="primary" text-color="white" :label="props.row.codigo" class="q-mr-sm" />
-                  {{ props.row.descripcion }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section side v-if="compra.autorizacion == 2" class="q-pl-none">
-                <div class="row q-gutter-x-xs">
-                  <q-btn dense round flat icon="edit" color="primary" size="sm" @click="iniciarEdicion(props.row)">
-                    <q-tooltip>Editar producto</q-tooltip>
-                  </q-btn>
-                  <q-btn dense round flat icon="delete" color="negative" size="sm" @click="confirmarEliminar(props.row)">
-                    <q-tooltip>Eliminar producto</q-tooltip>
-                  </q-btn>
-                </div>
-              </q-item-section>
-            </q-item>
-            
-            <q-separator />
-            
-            <!-- Body Card (Quantities & Prices) -->
-            <q-card-section class="q-py-sm">
-              <div class="row items-center">
-                <div class="col-4">
-                  <div class="text-caption text-grey-7 text-weight-medium">Precio</div>
-                  <div class="text-weight-bold text-positive">
-                    <q-icon name="payments" size="xs" class="q-mr-xs" />
-                    {{ divisaActiva.simbolo }} {{ decimas(props.row.precio) }}
-                  </div>
-                </div>
-                <div class="col-3 text-center">
-                  <div class="text-caption text-grey-7 text-weight-medium">Cant.</div>
-                  <q-badge color="info" text-color="white" class="q-ma-none text-weight-bold">
-                    <q-icon name="numbers" size="xs" class="q-mr-xs" />
-                    {{ props.row.cantidad }}
-                  </q-badge>
-                </div>
-                <div class="col-5 text-right">
-                  <div class="text-caption text-grey-7 text-weight-medium">Sub Total</div>
-                  <div class="text-weight-bold text-primary text-subtitle1">
-                    {{ divisaActiva.simbolo }} {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
-                  </div>
-                </div>
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </template>
+          <q-td key="descripcion" :props="props">
+            <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+          </q-td>
 
-      <template v-slot:body-cell-codigo="props">
-        <q-td :props="props">
-          <q-badge color="primary" text-color="white" :label="props.row.codigo" />
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-descripcion="props">
-        <q-td :props="props">
-          <div class="text-weight-medium">{{ props.row.descripcion }}</div>
-        </q-td>
-      </template>
-
-      <template v-slot:body-cell-precio="props">
-        <q-td :props="props" class="text-weight-medium text-right">
-          <div class="text-positive">
-            <q-icon name="payments" size="xs" class="q-mr-xs" />
+          <q-td key="precio" :props="props" class="text-right">
             {{ decimas(props.row.precio) }}
-          </div>
-        </q-td>
-      </template>
+          </q-td>
 
-      <template v-slot:body-cell-cantidad="props">
-        <q-td :props="props">
-          <q-badge color="info" text-color="white">
-            <q-icon name="numbers" size="xs" class="q-mr-xs" />
-            {{ props.row.cantidad }}
-          </q-badge>
-        </q-td>
-      </template>
+          <q-td key="cantidad" :props="props" class="text-right">
+            <q-badge color="grey-8">{{ props.row.cantidad }}</q-badge>
+          </q-td>
 
-      <template v-slot:body-cell-subtotal="props">
-        <q-td :props="props" class="text-weight-bold text-primary text-right">
-          {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
-        </q-td>
-      </template>
+          <q-td key="subtotal" :props="props" class="text-right text-weight-bolder text-primary">
+            {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
+          </q-td>
 
-      <template v-slot:body-cell-opciones="props" v-if="compra.autorizacion == 2">
-        <q-td align="center">
-          <q-btn
-            dense
-            round
-            flat
-            icon="edit"
-            color="primary"
-            size="sm"
-            @click="iniciarEdicion(props.row)"
-            class="q-mr-xs"
-          >
-            <q-tooltip>Editar producto</q-tooltip>
-          </q-btn>
-          <q-btn
-            dense
-            round
-            flat
-            icon="delete"
-            color="negative"
-            size="sm"
-            @click="confirmarEliminar(props.row)"
-          >
-            <q-tooltip>Eliminar producto</q-tooltip>
-          </q-btn>
-        </q-td>
+          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2">
+            <q-btn
+              flat
+              round
+              dense
+              icon="edit"
+              color="primary"
+              size="sm"
+              @click="iniciarEdicion(props.row)"
+            />
+            <q-btn
+              flat
+              round
+              dense
+              icon="delete"
+              color="negative"
+              size="sm"
+              @click="confirmarEliminar(props.row)"
+            />
+          </q-td>
+          <q-td v-else />
+        </q-tr>
+
+        <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
+          <q-td colspan="100%" class="q-pa-lg">
+            <TableCodigosUnicos
+              v-model="props.row.productos_detallados"
+              :parent-row="props.row"
+              :can-delete="compra.autorizacion == 2"
+              :can-edit="true"
+              :api-mode="true"
+              @update-parent-quantity="
+                (nuevaCant) => {
+                  props.row.cantidad = nuevaCant
+                }
+              "
+            />
+          </q-td>
+        </q-tr>
       </template>
 
       <template v-slot:bottom-row>
-        <q-tr class="bg-primary-1">
-          <q-td colspan="4" class="text-right text-weight-bold text-grey-9 text-subtitle1">
-            <div class="row items-center justify-end q-gutter-x-sm">
-              <span>TOTAL GENERAL:</span>
-            </div>
-          </q-td>
-          <q-td class="text-weight-bold text-h6 text-primary text-right">
+        <q-tr class="bg-primary text-white">
+          <q-td colspan="5" class="text-right text-weight-bold">TOTAL GENERAL:</q-td>
+          <q-td class="text-right text-weight-bolder text-subtitle1">
             {{ divisaActiva.simbolo }} {{ total.toFixed(2) }}
           </q-td>
-          <q-td v-if="compra.autorizacion == 2"></q-td>
+          <q-td />
         </q-tr>
       </template>
     </q-table>
@@ -416,10 +377,24 @@ import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { useCurrencyStore } from 'src/stores/currencyStore'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+import TableCodigosUnicos from '../cotizacion/TableCodigosUnicos.vue'
+const productoUnico = ref(false)
+const idempresa = idempresa_md5()
 
+const { config } = useProductoConfig(idempresa)
+watch(
+  () => config.value.idempresa,
+  (nuevoValor) => {
+    if (nuevoValor) {
+      productoUnico.value = Boolean(config.value.productounico)
+    }
+  },
+  { deep: true },
+)
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()
-
 const props = defineProps({
   compra: { type: Object, required: true },
 })
@@ -436,25 +411,47 @@ const loadingTable = ref(false)
 const detalleForm = ref({
   id: null,
   idproductoalmacen: null,
-  precio: null,
-  cantidad: null,
+  precio: '',
+  cantidad: '',
   descripcion: '',
   stockActual: 0,
   unidad: '',
+  productoUnico: false,
 })
 
 // --- COMPUTED PROPERTIES ---
 const columnas = computed(() => [
+  { name: 'exp', label: '', align: 'left' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', sortable: true },
-  { name: 'precio', label: `Precio Unit. (${divisaActiva.simbolo})`, field: 'precio', align: 'right', sortable: true },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'precio',
+    label: `Precio Unit. (${divisaActiva.simbolo})`,
+    field: 'precio',
+    align: 'right',
+    sortable: true,
+  },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
-  { name: 'subtotal', label: `Sub Total (${divisaActiva.simbolo})`, align: 'right', sortable: true },
+  {
+    name: 'subtotal',
+    label: `Sub Total (${divisaActiva.simbolo})`,
+    align: 'right',
+    sortable: true,
+  },
   { name: 'opciones', label: 'Opciones', align: 'center' },
 ])
 
 const total = computed(() => {
-  return detalleItems.value.reduce((sum, item) => sum + Number(item.precio) * Number(item.cantidad), 0)
+  return detalleItems.value.reduce(
+    (sum, item) => sum + Number(item.precio) * Number(item.cantidad),
+    0,
+  )
 })
 
 // --- WATCHERS ---
@@ -465,7 +462,7 @@ watch(
       cargarDatos()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 watch(
@@ -475,7 +472,7 @@ watch(
     if (productoSeleccionado) {
       detalleForm.value.stockActual = productoSeleccionado.stock
       detalleForm.value.unidad = productoSeleccionado.unidad
-      detalleForm.value.precio = productoSeleccionado.precio || null
+      detalleForm.value.precio = productoSeleccionado.precio?.toString() || ''
     }
   },
 )
@@ -487,10 +484,10 @@ async function cargarDatos() {
     await Promise.all([getDetalleCompra(), listaProductosDisponibles()])
   } catch (error) {
     console.error('Error al cargar datos:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'Error al cargar los datos iniciales.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -502,12 +499,13 @@ async function getDetalleCompra() {
   try {
     const response = await api.get(`listaDetalleCompra/${props.compra.id}`)
     detalleItems.value = response.data
+    console.log('Detalle de compra cargado:', detalleItems.value)
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudieron cargar los detalles de la compra',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     loadingTable.value = false
@@ -523,15 +521,15 @@ async function listaProductosDisponibles() {
       value: item.idproductoalmacen,
       stock: item.stock,
       unidad: item.unidad,
-      precio: item.precio
+      precio: item.precio,
     }))
     productosFiltrados.value = [...productosDisponibles.value]
   } catch (error) {
     console.error('Error al cargar productos disponibles:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudieron cargar los productos',
-      position: 'top'
+      position: 'top',
     })
   }
 }
@@ -541,47 +539,80 @@ function filtrarProductos(val, update) {
   const needle = val.toLowerCase()
   update(() => {
     productosFiltrados.value = productosDisponibles.value.filter((p) =>
-      p.label.toLowerCase().includes(needle)
+      p.label.toLowerCase().includes(needle),
     )
   })
 }
-
+function confirmarCantidadEspecial() {
+  return new Promise((resolve) => {
+    $q.dialog({
+      title: '<span class="text-primary">Atención: Producto Único</span>',
+      message: `
+        <div class="text-center">
+          <p>Vas a registrar una cantidad de:</p>
+          <div class="text-h2 text-bold text-primary q-my-md">
+            ${detalleForm.value.cantidad}
+          </div>
+          <p>Se generarán <b>${detalleForm.value.cantidad}</b> registros individuales con códigos únicos. <br>¿Confirmas que la cantidad es correcta?</p>
+        </div>
+      `,
+      html: true,
+      persistent: true,
+      ok: { label: 'Sí, Correcto', color: 'primary', unelevated: true },
+      cancel: { label: 'Corregir', color: 'grey', flat: true },
+    })
+      .onOk(() => resolve(true))
+      .onCancel(() => resolve(false))
+      .onDismiss(() => resolve(false))
+  })
+}
 async function onSubmit() {
   if (!formRef.value.validate()) return
+  if (!esModoEdicion.value && detalleForm.value.productoUnico) {
+    const confirmado = await confirmarCantidadEspecial()
+    if (!confirmado) return
+  }
 
-  const formData = objectToFormData(detalleForm.value)
+  // Convertir valores string a números con decimales antes de enviar
+  const formData = objectToFormData({
+    ...detalleForm.value,
+    precio: parseFloat(detalleForm.value.precio) || 0,
+    cantidad: parseFloat(detalleForm.value.cantidad) || 0,
+  })
   formData.append('idingreso', props.compra.id)
-  
+
   const isUpdate = esModoEdicion.value
-  isUpdate ? formData.append('ver', 'editarDetalleCompra') : formData.append('ver', 'registrarDetalleCompra')
+  isUpdate
+    ? formData.append('ver', 'editarDetalleCompra')
+    : formData.append('ver', 'registrarDetalleCompra')
 
   try {
     $q.loading.show({ message: 'Guardando...' })
     const response = await api.post('', formData)
-
+    console.log('Respuesta API al guardar detalle:', response.data)
     if (response.data.estado === 'exito') {
-      $q.notify({ 
-        type: 'positive', 
+      $q.notify({
+        type: 'positive',
         message: response.data.mensaje || 'Guardado con éxito',
-        position: 'top'
+        position: 'top',
       })
       await getDetalleCompra()
       await listaProductosDisponibles()
       onResetForm()
       emit('update')
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje || 'Error al guardar',
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error en onSubmit:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'Hubo un problema de comunicación con el servidor.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -592,11 +623,12 @@ function onResetForm() {
   detalleForm.value = {
     id: null,
     idproductoalmacen: null,
-    precio: null,
-    cantidad: null,
+    precio: '',
+    cantidad: '',
     descripcion: '',
     stockActual: 0,
     unidad: '',
+    productoUnico: false,
   }
   formRef.value?.reset()
   formRef.value?.resetValidation()
@@ -609,31 +641,31 @@ async function iniciarEdicion(row) {
     $q.loading.show({ message: 'Cargando datos...' })
     const point = `verificarIDdetallecompra/${row.id}`
     const response = await api.get(point)
-    
+
     if (response.data.estado == 'exito') {
       esModoEdicion.value = true
       detalleForm.value = {
         id: response.data.datos.id,
         idproductoalmacen: response.data.datos.idproductoalmacen,
-        precio: response.data.datos.precio,
-        cantidad: response.data.datos.cantidad,
+        precio: response.data.datos.precio?.toString() || '',
+        cantidad: response.data.datos.cantidad?.toString() || '',
         descripcion: response.data.datos.descripcion,
         stockActual: Number(response.data.datos.stock) || 0,
         unidad: response.data.datos.unidad || '',
       }
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje || 'Error al Editar',
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error al iniciar edición:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudo cargar la información del producto.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
@@ -657,29 +689,76 @@ async function eliminarDetalle(row) {
     $q.loading.show({ message: 'Eliminando...' })
     const response = await api.get(`eliminarDetalleCompra/${row.id}`)
     if (response.data.estado === 'exito') {
-      $q.notify({ 
-        type: 'positive', 
+      $q.notify({
+        type: 'positive',
         message: response.data.mensaje,
-        position: 'top'
+        position: 'top',
       })
       await getDetalleCompra()
       emit('update')
     } else {
-      $q.notify({ 
-        type: 'negative', 
+      $q.notify({
+        type: 'negative',
         message: response.data.mensaje,
-        position: 'top'
+        position: 'top',
       })
     }
   } catch (error) {
     console.error('Error al eliminar detalle:', error)
-    $q.notify({ 
-      type: 'negative', 
+    $q.notify({
+      type: 'negative',
       message: 'No se pudo eliminar el producto.',
-      position: 'top'
+      position: 'top',
     })
   } finally {
     $q.loading.hide()
   }
 }
 </script>
+<style scoped>
+.my-custom-table {
+  border-radius: 8px;
+}
+
+.sub-table-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #e0e0e0;
+}
+
+/* Estilo para que el input parezca texto normal hasta que se hace focus */
+.input-edicion-activa {
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(25, 118, 210, 0.3); /* Un suave resplandor azul */
+}
+
+/* Efecto hover para el botón de check */
+.icon-hover-positive:hover {
+  background-color: #e8f5e9; /* green-1 */
+  transform: scale(1.2);
+  color: #2e7d32 !important;
+}
+
+/* Efecto hover para el botón de cerrar */
+.icon-hover-negative:hover {
+  background-color: #ffebee; /* red-1 */
+  transform: scale(1.2);
+  color: #c62828 !important;
+}
+
+/* Animación simple de entrada */
+.input-edicion-activa {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>

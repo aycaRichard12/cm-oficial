@@ -1,22 +1,83 @@
 <template>
   <div class="full-width full-height">
-    <q-card flat class="shadow-2 rounded-borders full-height">
-      <!-- <q-card-section class="q-pb-none">
-        <div class="row items-center">
-          <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
-          <div class="text-h6 text-weight-medium">Productos más Vendidos</div>
+      <div class="q-my-md">
+        <GpMayorVenta     />
+  </div>
+
+    <q-card flat class="shadow-2 rounded-borders full-height column">
+      <!-- Sección Superior: Título y Filtros -->
+      <q-card-section class="q-pb-sm">
+        <div class="row justify-between items-center q-col-gutter-y-md">
+          <!-- Título -->
+          <div class="col-12 col-md-auto">
+            <div class="row items-center">
+              <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
+              <div class="text-h6 text-weight-medium">Ingresos por Producto</div>
+            </div>
+            <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block">
+              <q-icon name="event" class="q-mr-xs" />
+              <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
+            </div>
+          </div>
+          
+          <!-- Filtros de Fecha -->
+          <div class="col-12 col-md-auto">
+            <div class="row q-col-gutter-sm items-center">
+              <div class="col-6 col-sm-auto">
+                <q-input v-model="fechaInicio" dense outlined label="Inicio" mask="##/##/####">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-6 col-sm-auto">
+                <q-input v-model="fechaFin" dense outlined label="Fin" mask="##/##/####">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="fechaFin" mask="DD/MM/YYYY">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-sm-auto flex items-center">
+                <q-btn 
+                  color="primary" 
+                  icon="search" 
+                  label="Consultar" 
+                  unelevated 
+                  :loading="loading"
+                  @click="consultarFechas"
+                  class="full-width"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="text-caption text-grey-7 q-mt-xs">
-          Ranking de productos por ingresos generados
-        </div>
-      </q-card-section> -->
-      <q-card-section class="full-height">
+      </q-card-section>
+
+      <!-- Sección Gráfico -->
+      <q-card-section class="col-grow q-pt-none">
         <div 
           class="full-width" 
           :style="{ 
-            minHeight: $q.screen.lt.md ? '300px' : $q.screen.lt.lg ? '350px' : '400px',
-            height: $q.screen.lt.md ? '45vh' : $q.screen.lt.lg ? '50vh' : '60vh',
-            maxHeight: '600px'
+            minHeight: $q.screen.lt.md ? '350px' : '400px',
+            height: '100%'
           }"
         >
           <VueApexCharts 
@@ -29,22 +90,67 @@
       </q-card-section>
     </q-card>
   </div>
+
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useFetchList } from 'src/composables/useFetchList'
+import { ref, computed, watch, onMounted } from 'vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import GpMayorVenta from './mayor_venta.vue'
 import VueApexCharts from 'vue3-apexcharts'
-import { useQuasar } from 'quasar'
+import { useQuasar, date as qDate } from 'quasar'
+import { api } from 'src/boot/axios'
 
 const $q = useQuasar()
 const empresa = idempresa_md5()
 
-const { items: pPreferido } = useFetchList(`/productos_mayor_venta_monetario/${empresa || null}`)
+// Estado Fechas
+const timeStamp = Date.now()
+const fechaFin = ref(qDate.formatDate(timeStamp, 'DD/MM/YYYY'))
+const fechaInicio = ref(qDate.formatDate(qDate.subtractFromDate(timeStamp, { days: 30 }), 'DD/MM/YYYY'))
+
+const loading = ref(false)
+const rawDataAPI = ref([])
+
+// Función de consulta a la API con fechas
+const consultarFechas = async () => {
+  loading.value = true
+  try {
+    // Transformar DD/MM/YYYY a YYYY-MM-DD
+    const [diaIni, mesIni, anioIni] = fechaInicio.value.split('/')
+    const inicioStr = `${anioIni}-${mesIni}-${diaIni}`
+
+    const [diaFin, mesFin, anioFin] = fechaFin.value.split('/')
+    const finStr = `${anioFin}-${mesFin}-${diaFin}`
+
+    const endpoint = `/productos_mayor_venta_monetario/${empresa}/${inicioStr}/${finStr}`
+    
+    const { data } = await api.get(endpoint)
+    
+    // Asignación segura de respuesta
+    if (Array.isArray(data)) {
+      rawDataAPI.value = data
+    } else if (data && Array.isArray(data.datos)) {
+      rawDataAPI.value = data.datos
+    } else {
+      rawDataAPI.value = []
+    }
+
+  } catch (error) {
+    console.error('Error al cargar reportes:', error)
+    $q.notify({ type: 'negative', message: 'Error cargando datos de indicadores' })
+    rawDataAPI.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+const periodoInfo = computed(() => {
+  return `Del ${fechaInicio.value} al ${fechaFin.value}`
+})
 
 const chartData = computed(() => {
-  const rawData = pPreferido.value?._value || pPreferido.value || []
+  const rawData = rawDataAPI.value || []
   return rawData.map((item) => ({
     ...item,
     nombre_producto: `${item.codigo?.trim() ?? ''} ${item.nombre?.trim() ?? ''}`.trim(),
@@ -57,75 +163,29 @@ const chartOptions = ref({
     type: 'bar',
     height: '100%',
     stacked: false,
-    toolbar: { 
-      show: true,
-      tools: {
-        download: true,
-        selection: true,
-        zoom: true,
-        zoomin: true,
-        zoomout: true,
-        pan: true,
-        reset: true
-      }
-    },
-    animations: {
-      enabled: true,
-      easing: 'easeinout',
-      speed: 800,
-    },
+    toolbar: { show: true, tools: { download: true, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true, reset: true } },
+    animations: { enabled: true, easing: 'easeinout', speed: 800 },
   },
-  title: {
-    text: 'Productos más Vendidos',
-    align: 'center',
-    style: {
-      fontSize: '16px',
-      fontWeight: 'bold',
-      color: '#263238'
-    }
-  },
-  subtitle: {
-    text: 'Ranking por ingresos generados',
-    align: 'center',
-    style: {
-      fontSize: '12px',
-      color: '#546E7A'
-    }
-  },
+  title: { text: '', align: 'center' },
+  subtitle: { text: '', align: 'center' },
   plotOptions: {
     bar: {
-      horizontal: false,
-      borderRadius: 6,
-      columnWidth: '60%',
-      dataLabels: {
-        position: 'top',
-      },
-      distributed: true, // Cada barra con un color diferente
+      horizontal: false, borderRadius: 6, columnWidth: '60%', 
+      dataLabels: { position: 'top' },
+      distributed: true,
     },
   },
   dataLabels: {
     enabled: true,
-    formatter: function (val) {
-      return val > 0 ? val.toFixed(2) + ' Bs' : ''
-    },
+    formatter: function (val) { return val > 0 ? val.toFixed(2) + ' Bs' : '' },
     offsetY: -20,
-    style: {
-      fontSize: '11px',
-      fontWeight: 'bold',
-      colors: ['#304758'],
-    },
+    style: { fontSize: '11px', fontWeight: 'bold', colors: ['#304758'] },
   },
   xaxis: {
     categories: [],
     labels: {
-      rotate: -45,
-      rotateAlways: false,
-      hideOverlappingLabels: true,
-      trim: true,
-      style: {
-        fontSize: '11px',
-        fontWeight: 500,
-      },
+      rotate: -45, rotateAlways: false, hideOverlappingLabels: true, trim: true,
+      style: { fontSize: '11px', fontWeight: 500 },
       formatter: function (value) {
         if (!value) return ''
         return value.length > 30 ? value.substring(0, 30) + '...' : value
@@ -134,149 +194,42 @@ const chartOptions = ref({
     tickPlacement: 'on',
   },
   yaxis: {
-    title: { 
-      text: 'Ingresos (Bs)',
-      style: {
-        fontSize: '12px',
-        fontWeight: 600,
-      }
-    },
-    labels: {
-      formatter: function (val) {
-        return val ? val.toFixed(2) : '0.00'
-      },
-      style: {
-        fontSize: '11px',
-      }
-    },
+    title: { text: 'Ingresos (Bs)', style: { fontSize: '12px', fontWeight: 600 } },
+    labels: { formatter: function (val) { return val ? val.toFixed(2) : '0.00' }, style: { fontSize: '11px' } },
   },
   tooltip: {
-    enabled: true,
-    shared: false,
-    followCursor: true,
-    y: {
-      formatter: function (val) {
-        return `${val.toFixed(2)} Bs`
-      },
-      title: {
-        formatter: () => 'Ingresos:'
-      }
-    },
+    enabled: true, shared: false, followCursor: true,
+    y: { formatter: function (val) { return `${val.toFixed(2)} Bs` }, title: { formatter: () => 'Ingresos:' } },
   },
   colors: ['#1976D2', '#00897B', '#FB8C00', '#E53935', '#8E24AA', '#5E35B1', '#00ACC1', '#43A047', '#F4511E', '#6D4C41'],
-  grid: {
-    borderColor: '#e7e7e7',
-    strokeDashArray: 4,
-    xaxis: {
-      lines: {
-        show: false
-      }
-    },
-    yaxis: {
-      lines: {
-        show: true
-      }
-    },
-    padding: {
-      top: 0,
-      right: 10,
-      bottom: 0,
-      left: 10
-    }
-  },
-  legend: {
-    show: false // Ocultamos la leyenda ya que usamos distributed colors
-  },
+  grid: { borderColor: '#e7e7e7', strokeDashArray: 4, padding: { top: 0, right: 10, bottom: 0, left: 10 } },
+  legend: { show: false },
   responsive: [
-    {
-      breakpoint: 1024,
-      options: {
-        plotOptions: {
-          bar: {
-            columnWidth: '70%',
-          },
-        },
-        xaxis: {
-          labels: {
-            rotate: -45,
-            style: {
-              fontSize: '10px',
-            },
-          },
-        },
-      },
-    },
-    {
-      breakpoint: 768,
-      options: {
-        plotOptions: {
-          bar: {
-            columnWidth: '80%',
-          },
-        },
-        xaxis: {
-          labels: {
-            rotate: -90,
-            style: {
-              fontSize: '9px',
-            },
-          },
-        },
-        dataLabels: {
-          enabled: false,
-        },
-      },
-    },
+    { breakpoint: 1024, options: { plotOptions: { bar: { columnWidth: '70%' }}, xaxis: { labels: { rotate: -45, style: { fontSize: '10px' } } }} },
+    { breakpoint: 768, options: { plotOptions: { bar: { columnWidth: '80%' }}, xaxis: { labels: { rotate: -90, style: { fontSize: '9px' } } }, dataLabels: { enabled: false } } },
   ],
-  noData: {
-    text: 'Cargando datos...',
-    align: 'center',
-    verticalAlign: 'middle',
-    style: {
-      fontSize: '14px',
-    }
-  },
+  noData: { text: 'Cargando datos...', align: 'center', verticalAlign: 'middle', style: { fontSize: '14px' } },
 })
 
-const series = ref([
-  {
-    name: 'Ingresos',
-    data: [],
-  },
-])
+const series = ref([{ name: 'Ingresos', data: [] }])
 
-watch(
-  chartData,
-  (newData) => {
-    if (!newData || newData.length === 0) {
-      chartOptions.value.noData.text = 'No hay datos disponibles'
-      series.value = [{ name: 'Ingresos', data: [] }]
-      return
-    }
+watch(chartData, (newData) => {
+  if (!newData || newData.length === 0) {
+    chartOptions.value.noData.text = 'No hay datos disponibles'
+    series.value = [{ name: 'Ingresos', data: [] }]
+    return
+  }
+  const categories = []
+  const seriesData = []
+  newData.forEach((item) => {
+    categories.push(item.nombre_producto)
+    seriesData.push(item.total_vendido)
+  })
+  chartOptions.value = { ...chartOptions.value, xaxis: { ...chartOptions.value.xaxis, categories: categories } }
+  series.value = [{ name: 'Ingresos por Producto', data: seriesData }]
+}, { immediate: true, deep: true })
 
-    const categories = []
-    const seriesData = []
-
-    newData.forEach((item) => {
-      categories.push(item.nombre_producto)
-      seriesData.push(item.total_vendido)
-    })
-
-    chartOptions.value = {
-      ...chartOptions.value,
-      xaxis: {
-        ...chartOptions.value.xaxis,
-        categories: categories,
-      },
-    }
-
-    series.value = [
-      {
-        name: 'Ingresos por Producto',
-        data: seriesData,
-      },
-    ]
-  },
-  { immediate: true, deep: true },
-)
+onMounted(() => {
+  consultarFechas()
+})
 </script>

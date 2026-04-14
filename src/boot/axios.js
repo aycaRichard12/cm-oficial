@@ -13,30 +13,39 @@ const api = axios.create({
   baseURL: process.env.VITE_API_URL,
   timeout: 10000,
 })
-console.log(process.env.VITE_API_URL)
-export default defineBoot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
-  app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-  app.config.globalProperties.$api = api
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
 
+const apiCt = axios.create({
+  baseURL: process.env.VITE_URL_APIC,
+  timeout: 10000,
+})
+export default defineBoot(({ app }) => {
+  app.config.globalProperties.$axios = axios
+  app.config.globalProperties.$api = api // API principal
+  app.config.globalProperties.$apiCt = apiCt // API secundaria
+
+  // Interceptors API principal
   api.interceptors.response.use(
     (response) => response,
     (error) => {
-      console.error('Error en la API:', error.response?.data || error.message)
-
-      // Manejo de errores específicos
+      console.error('Error en la API principal:', error.response?.data || error.message)
       if (error.response?.status === 401) {
-        console.warn('No autorizado, redirigiendo a login...')
-        // Aquí podrías redirigir a login o hacer logout
+        console.warn('No autorizado API principal')
       }
+      return Promise.reject(error)
+    },
+  )
 
+  // Interceptors API secundaria
+  apiCt.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      console.error('Error en la API secundaria:', error.response?.data || error.message)
+      if (error.response?.status === 401) {
+        console.warn('No autorizado API secundaria')
+      }
       return Promise.reject(error)
     },
   )
 })
 
-export { api }
+export { api, apiCt }

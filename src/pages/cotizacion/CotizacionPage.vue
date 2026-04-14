@@ -89,9 +89,6 @@
         <div class="col-12 col-md-1" id="botonRegistrarCliente">
           <q-btn color="blue q-mt-lg" icon="person_add" @click="RegistrarCliente" />
         </div>
-        <div v-if="tipoOperacion.value == 1" class="col-12 col-md-1" id="botonRegistrarFirma">
-          <q-btn color="blue q-mt-lg" icon="draw" @click="RegistrarFirma" />
-        </div>
 
         <ModalfirmaPage
           v-model="modalfirmaActivo"
@@ -158,24 +155,36 @@
 
     <!-- Sección: Selección de productos -->
 
-    <div class="row q-col-gutter-x-md">
-      <div class="col-12 col-md-5" id="productoCotizacion">
-        <label for="producto">Producto o Servicio*</label>
+    <div class="row q-col-gutter-x-md q-col-gutter-y-sm items-start">
+      <div
+        class="col-12 col-md-2 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
+      >
+        <q-checkbox
+          v-if="esProductoUnico"
+          v-model="registrarComoProductoUnico"
+          label="Producto Único"
+          color="primary"
+          class="q-mr-md"
+        >
+        </q-checkbox>
+      </div>
+      <div class="col-12 col-md-4" id="productoCotizacion">
+        <label for="producto" class="text-weight-medium">Producto o Servicio*</label>
         <q-select
+          id="producto"
           v-model="selectedProduct"
+          :options="filteredProducts"
+          option-value="id"
+          option-label="display"
           use-input
           hide-selected
           fill-input
           input-debounce="0"
-          id="producto"
-          :options="filteredProducts"
+          outlined
+          dense
           @filter="filterProduct"
           @input-value="setProductInputValue"
           @update:model-value="elegirUnProducto"
-          option-value="id"
-          option-label="display"
-          outlined
-          dense
         >
           <template v-slot:no-option>
             <q-item>
@@ -185,50 +194,59 @@
         </q-select>
       </div>
 
-      <div class="col-12 col-md-2" id="stockDisponibleCotizacion">
-        <label for="stockdisponible">Stock disponible</label>
-        <q-input v-model="cantidaddisponibleCO" id="stockdisponible" disable outlined dense />
+      <UniqueProductSelector
+        :product-id="idproductoalmacenCO"
+        :is-unique="esProductoUnico && registrarComoProductoUnico"
+        :cantidad-requerida="cantidadCO"
+        @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
+      />
+    </div>
+
+    <div class="row q-col-gutter-x-md q-col-gutter-y-sm items-start">
+      <div class="col-12 col-md-10">
+        <div class="row q-col-gutter-x-sm">
+          <div class="col-6" id="cantidadCotizacion">
+            <label for="cantidad">Cantidad *</label>
+            <q-input
+              id="cantidad"
+              v-model.number="cantidadCO"
+              type="number"
+              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              :readonly="esProductoUnico && registrarComoProductoUnico"
+              required
+              outlined
+              dense
+            />
+          </div>
+
+          <div class="col-6" id="precioCotizacion">
+            <label for="precio">Precio unitario *</label>
+            <q-input
+              id="precio"
+              v-model.number="precioCO"
+              type="number"
+              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              required
+              outlined
+              dense
+            >
+              <template v-slot:append>
+                <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
+              </template>
+            </q-input>
+          </div>
+        </div>
       </div>
 
-      <div class="col-12 col-md-2" id="cantidadCotizacion">
-        <label for="cantidad">Canidad *</label>
-        <q-input
-          v-model.number="cantidadCO"
-          id="cantidad"
-          type="number"
-          :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
-          required
-          outlined
-          dense
-        />
-      </div>
-
-      <div class="col-12 col-md-2" id="precioCotizacion">
-        <label for="precio">Precio unitario *</label>
-        <q-input
-          v-model.number="precioCO"
-          id="precio"
-          type="number"
-          :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
-          required
-          outlined
-          dense
-        >
-          <template v-slot:append>
-            <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
-          </template>
-        </q-input>
-      </div>
-
-      <div class="col-12 col-md-1 q-mt-lg" id="botonAnadirProductoCotizacion">
+      <div class="col-12 col-md-1 flex flex-center q-pt-md" id="botonAnadirProductoCotizacion">
         <q-btn
           icon="add"
           color="primary"
           round
-          @click="anadirProductoACarrito"
-          :disable="!canAddProduct"
           outlined
           dense
+          :disable="!canAddProduct"
+          @click="anadirProductoACarrito"
         />
       </div>
     </div>
@@ -253,84 +271,125 @@
         flat
         bordered
         hide-bottom
+        class="my-custom-table shadow-1"
         :pagination="{ rowsPerPage: 0 }"
         title="Resumen de Cotización"
       >
-        <template v-slot:body-cell-descripcion="props">
-          <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
-            <!-- Descripción principal -->
-            <div>{{ props.row.descripcion }}</div>
+        <template v-slot:body="props">
+          <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
+            <q-td auto-width>
+              <q-btn
+                v-if="props.row.codigosUnicos?.length > 0"
+                size="sm"
+                color="primary"
+                flat
+                round
+                @click="props.expand = !props.expand"
+                :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              />
+            </q-td>
 
-            <!-- Descripción adicional editable debajo -->
-            <div
-              style="
-                margin-top: 4px;
-                font-size: 0.9em;
-                color: #555;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <q-popup-edit v-model="props.row.descripcionAdicional" v-slot="scope">
-                <label for="desAdicional">Añadir Descripción Adicional</label>
-                <q-input
-                  v-model="scope.value"
-                  outlined
-                  dense
-                  id="desAdicional"
-                  autofocus
-                  type="text"
-                  @keyup.enter="validarDescripcion(scope, props.row)"
-                  @keyup.esc="scope.cancel"
-                />
-              </q-popup-edit>
-              <span style="margin-left: 4px">{{ props.row.descripcionAdicional }}</span>
-              <q-icon name="edit" size="16px" color="primary" class="q-ml-xs" />
-            </div>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-cantidad="props">
-          <q-td :props="props" class="text-right">
-            {{ props.row.cantidad }}
-          </q-td>
-        </template>
+            <q-td key="num" :props="props" class="text-left">
+              <q-chip label-slot dense>
+                {{ props.row.num }}
+              </q-chip>
+            </q-td>
+            <q-td key="codigo" :props="props" class="text-left">
+              <q-chip outline color="primary" label-slot dense>
+                {{ props.row.codigo }}
+              </q-chip>
+            </q-td>
 
-        <template v-slot:body-cell-precio="props">
-          <q-td :props="props" class="text-right">
-            {{ decimas(props.row.precio) }}{{ ' ' + divisaActiva.tipo }}
-          </q-td>
-        </template>
+            <q-td key="descripcion" :props="props" style="vertical-align: top">
+              <div class="text-weight-bold">{{ props.row.descripcion }}</div>
 
-        <template v-slot:body-cell-total="props">
-          <q-td :props="props" class="text-right">
-            {{ decimas(props.row.cantidad * props.row.precio) }} {{ ' ' + divisaActiva.tipo }}
-          </q-td>
-        </template>
+              <div
+                class="flex items-center text-grey-8 cursor-pointer"
+                style="font-size: 0.9em; margin-top: 4px"
+              >
+                <q-icon name="edit" size="14px" color="primary" class="q-mr-xs" />
+                <span>{{ props.row.descripcionAdicional || 'Añadir nota...' }}</span>
 
-        <template v-slot:body-cell-options="props">
-          <q-td :props="props" class="text-center">
-            <q-btn
-              icon="delete"
-              color="negative"
-              flat
-              round
-              size="sm"
-              @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
-            />
-          </q-td>
+                <q-popup-edit
+                  v-model="props.row.descripcionAdicional"
+                  v-slot="scope"
+                  buttons
+                  label-set="Guardar"
+                  label-cancel="Cancelar"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    outlined
+                    dense
+                    autofocus
+                    counter
+                    @keyup.enter="validarDescripcion(scope, props.row)"
+                  />
+                </q-popup-edit>
+              </div>
+            </q-td>
+
+            <q-td key="cantidad" :props="props" class="text-right">
+              <q-badge color="grey-8" label-slot>
+                {{ props.row.cantidad }}
+              </q-badge>
+            </q-td>
+
+            <q-td key="precio" :props="props" class="text-right">
+              {{ decimas(props.row.precio) }}
+              <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
+            </q-td>
+
+            <q-td key="total" :props="props" class="text-right text-weight-bolder text-primary">
+              {{ decimas(props.row.cantidad * props.row.precio) }}
+              <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
+            </q-td>
+
+            <q-td key="options" :props="props" class="text-center">
+              <q-btn
+                icon="delete"
+                color="negative"
+                flat
+                round
+                dense
+                size="sm"
+                @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
+              >
+                <q-tooltip>Quitar producto</q-tooltip>
+              </q-btn>
+            </q-td>
+          </q-tr>
+
+          <q-tr v-show="props.expand" :props="props" class="expanded-row">
+            <q-td colspan="100%" class="q-pa-lg">
+              <TableCodigosUnicos
+                v-model="props.row.codigosUnicos"
+                :parent-row="props.row"
+                :can-delete="true"
+                :can-edit="true"
+                :api-mode="false"
+                @update-parent-quantity="
+                  (nuevaCant) => {
+                    props.row.cantidad = nuevaCant
+                    calcularTotalesCarrito()
+                  }
+                "
+              />
+            </q-td>
+          </q-tr>
         </template>
 
         <template v-slot:bottom-row>
-          <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold">Sub Total:</q-td>
-            <q-td class="text-right"
-              >{{ decimas(carritoCO.subtotal) }} {{ ' ' + divisaActiva.tipo }}</q-td
-            >
-            <q-td></q-td>
+          <q-tr class="bg-grey-2">
+            <q-td colspan="6" class="text-right text-weight-bold">Sub Total:</q-td>
+            <q-td class="text-right text-weight-bold">
+              {{ decimas(carritoCO.subtotal) }} {{ divisaActiva.tipo }}
+            </q-td>
+            <q-td />
           </q-tr>
+
           <q-tr id="descuentoCotizacion">
-            <q-td colspan="5" class="text-right text-weight-bold">Descuento:</q-td>
+            <q-td colspan="6" class="text-right text-weight-bold">Descuento:</q-td>
             <q-td class="text-right">
               <q-input
                 v-model.number="carritoCO.descuento"
@@ -338,27 +397,31 @@
                 min="0"
                 :max="carritoCO.subtotal"
                 @change="aplicarDescuento"
-                style="width: 100px"
-                class="text-right"
+                dense
+                outlined
+                input-class="text-right"
+                style="max-width: 120px; margin-left: auto"
               >
                 <template v-slot:append>
                   <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
                 </template>
               </q-input>
             </q-td>
-            <q-td></q-td>
+            <q-td />
           </q-tr>
-          <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold">Total:</q-td>
-            <q-td class="text-right text-weight-bold text-primary">
-              {{ decimas(carritoCO.ventatotal) }} {{ ' ' + divisaActiva.tipo }}
+
+          <q-tr class="bg-primary text-white">
+            <q-td colspan="6" class="text-right text-weight-bold">TOTAL GENERAL:</q-td>
+            <q-td class="text-right text-weight-bolder text-subtitle1">
+              {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
             </q-td>
-            <q-td></q-td>
+            <q-td />
           </q-tr>
         </template>
       </q-table>
 
       <div class="row justify-end q-mt-md">
+        <q-btn color="blue" icon="draw" @click="RegistrarFirma" label="Firma del Cliente" />
         <q-btn
           label="Registrar Cotización"
           color="primary"
@@ -371,29 +434,53 @@
     <!-- Diálogo: metodo de pago -->
 
     <q-dialog v-model="modalmetodopago">
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Metodo pago</div>
-          <q-btn icon="close" @click="modalmetodopago = false" flat round dense />
+      <q-card class="responsive-dialog" style="min-width: 450px; max-width: 700px">
+        <q-card-section class="bg-primary text-white text-h6 flex justify-between items-center">
+          <div class="flex items-center">
+            <q-icon name="payments" class="q-mr-sm" />
+            Método de Pago
+          </div>
+          <q-btn icon="close" v-close-popup flat round dense />
         </q-card-section>
-        <q-card-section>
-          <div class="">
-            <div class="q-gutter-sm q-mb-md">
-              <q-radio v-model="variablePago" val="directo" color="green" label="Pago Único">
+
+        <q-card-section class="q-pt-lg">
+          <div class="row justify-center q-mb-xl">
+            <q-btn-toggle
+              v-model="carritoCO.credito"
+              toggle-color="primary"
+              color="white"
+              text-color="primary"
+              unelevated
+              padding="8px 24px"
+              class="shadow-2"
+              @update:model-value="handleTipoPagoGeneralChange"
+              :options="[
+                { label: 'Efectivo', value: false, icon: 'payments' },
+                { label: 'Crédito', value: true, icon: 'credit_score' },
+              ]"
+            />
+          </div>
+          <!-- SECCIÓN EFECTIVO -->
+          <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
+            <div class="text-subtitle1 text-weight-bold q-mb-md text-primary flex items-center">
+              <q-icon name="payments" class="q-mr-xs" /> Caso Efectivo
+            </div>
+            <div class="q-gutter-sm q-mb-lg row justify-center">
+              <q-radio v-model="variablePago" val="directo" color="positive" label="Pago Único">
                 <template v-slot:prepend>
-                  <q-icon name="attach_money" color="green" />
+                  <q-icon name="account_balance_wallet" color="positive" />
                 </template>
               </q-radio>
-              <q-radio v-model="variablePago" val="dividido" label="Método de Pago Dividido">
+              <q-radio v-model="variablePago" val="dividido" color="orange" label="Pago Dividido">
                 <template v-slot:prepend>
-                  <q-icon name="money_off" color="orange" />
+                  <q-icon name="call_split" color="orange" />
                 </template>
               </q-radio>
             </div>
 
             <div v-if="variablePago === 'directo'" class="row q-col-gutter-md q-pt-md">
-              <div class="col-12 col-md-4">
-                <label for="metodopago">Método de pago*</label>
+              <div class="col-12">
+                <label for="metodopago" class="text-weight-medium">Método de pago*</label>
                 <q-select
                   v-model="metodoPago"
                   id="metodopago"
@@ -402,52 +489,54 @@
                   :options="metodosPagos"
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un canal']"
+                  :rules="[(val) => !!val || 'Seleccione un método de pago']"
                 >
+                  <template v-slot:prepend>
+                    <q-icon name="payment" />
+                  </template>
                 </q-select>
               </div>
             </div>
+
             <div v-else-if="variablePago === 'dividido'" class="q-pt-md">
               <div
                 v-for="(payment, index) in pagosDivididos"
                 :key="index"
-                class="row q-col-gutter-md q-mb-sm items-center"
+                class="row q-col-gutter-md q-mb-sm items-start"
               >
-                <div class="col-12 col-md-4">
-                  <label for="metodopago">Método de pago*</label>
+                <div class="col-12 col-md-5">
                   <q-select
                     v-model="payment.metodoPago"
-                    id="metodopago"
+                    label="Método de pago*"
                     dense
                     outlined
                     :options="metodosPagos"
                     option-label="label"
                     option-value="value"
-                    :rules="[(val) => !!val || 'Seleccione un metodoPago']"
+                    :rules="[(val) => !!val || 'Requerido']"
                   >
+                    <template v-slot:prepend>
+                      <q-icon name="payment" />
+                    </template>
                   </q-select>
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="monto">{{ 'Monto' + ' (' + divisaActiva.tipo + ')' }}</label>
                   <q-input
                     v-model="payment.monto"
-                    id="monto"
+                    :label="'Monto (' + divisaActiva.tipo + ')'"
                     type="number"
                     min="0"
                     step="0.01"
-                    required
                     dense
                     outlined
                     @update:model-value="calculateRemainingAmount(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  >
-                  </q-input>
+                    :rules="[(val) => !!val || 'Requerido']"
+                  />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="porcentaje">Porcentaje (%)</label>
                   <q-input
                     v-model="payment.porcentaje"
-                    id="porcentaje"
+                    label="Porcentaje (%)"
                     type="number"
                     min="0"
                     max="100"
@@ -455,171 +544,163 @@
                     dense
                     outlined
                     @update:model-value="calculateAmountFromPercentage(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  >
-                  </q-input>
+                    :rules="[(val) => !!val || 'Requerido']"
+                  />
                 </div>
-                <div class="col-12 col-md-2 text-right">
+                <div class="col-12 col-md-1 text-center">
                   <q-btn
                     v-if="pagosDivididos.length > 1"
-                    icon="delete"
+                    icon="remove_circle"
                     color="negative"
                     flat
                     round
                     @click="removePaymentMethod(index)"
+                    class="q-mt-xs"
                   />
                 </div>
               </div>
-              <q-btn
-                label="Agregar Método de Pago"
-                icon="add"
-                color="green"
-                @click="addPaymentMethod"
-                class="q-mt-md"
-              />
-              <div class="q-mt-lg" style="font-size: 15px">
-                <p class="">
-                  <q-icon name="calculate" color="primary" class="q-mr-sm" />
-                  <strong>Total Pagado:</strong> {{ totalPaidAmount.toFixed(2) }}
-                  {{ divisaActiva.tipo }}
-                </p>
-                <p class="">
-                  <q-icon name="pending_actions" color="orange" class="q-mr-sm" />
-                  <strong>Restante por Pagar:</strong> {{ remainingAmount.toFixed(2) }}
-                  {{ divisaActiva.tipo }}
-                </p>
-                <q-banner
-                  v-if="remainingAmount !== 0"
+
+              <div class="flex justify-end q-mt-sm">
+                <q-btn
+                  label="Agregar Pago"
+                  icon="add"
+                  color="positive"
+                  outline
                   dense
-                  rounded
-                  class="bg-warning text-white q-mt-sm"
+                  @click="addPaymentMethod"
+                />
+              </div>
+
+              <q-banner
+                v-if="remainingAmount !== 0"
+                dense
+                rounded
+                class="bg-orange-1 text-orange-9 q-mt-md"
+              >
+                <template v-slot:avatar>
+                  <q-icon name="warning" />
+                </template>
+                <div class="row q-col-gutter-x-lg">
+                  <div><strong>Pagado:</strong> {{ totalPaidAmount.toFixed(2) }}</div>
+                  <div><strong>Restante:</strong> {{ remainingAmount.toFixed(2) }}</div>
+                </div>
+              </q-banner>
+            </div>
+          </div>
+
+          <!-- SECCIÓN CRÉDITO -->
+          <div v-else class="animate__animated animate__fadeIn">
+            <div class="text-subtitle1 text-weight-bold q-mb-md text-primary flex items-center">
+              <q-icon name="credit_score" class="q-mr-xs" /> Caso Crédito
+            </div>
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-md-6">
+                <label for="cantidadpagos" class="text-weight-medium">Cantidad de pagos*</label>
+                <q-input
+                  v-model="carritoCO.cantidadPagos"
+                  id="cantidadpagos"
+                  type="number"
+                  min="1"
+                  dense
+                  outlined
+                  @update:model-value="(calculatePayments(), calculateDueDate())"
+                  :rules="[(val) => !!val || 'Requerido']"
                 >
-                  <template v-slot:avatar>
-                    <q-icon name="warning" color="white" />
+                  <template v-slot:prepend>
+                    <q-icon name="format_list_numbered" color="primary" />
                   </template>
-                  El monto total pagado no coincide con la venta total.
-                </q-banner>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="montopago" class="text-weight-medium">Monto de pagos*</label>
+                <q-input
+                  v-model="carritoCO.montoPagos"
+                  id="montopago"
+                  dense
+                  outlined
+                  readonly
+                  class="bg-grey-1"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="paid" color="primary" />
+                  </template>
+                  <template v-slot:append>
+                    <span class="text-body2 text-grey-7">{{ divisaActiva.tipo }}</span>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="periodo" class="text-weight-medium">Frecuencia de pagos*</label>
+                <q-select
+                  v-model="carritoCO.periodo"
+                  id="periodo"
+                  dense
+                  outlined
+                  :options="periodOptions"
+                  option-label="label"
+                  option-value="value"
+                  emit-value
+                  map-options
+                  @update:model-value="calculateDueDate"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event_repeat" color="primary" />
+                  </template>
+                </q-select>
+              </div>
+
+              <div v-if="carritoCO.periodo === 0" class="col-12 col-md-6">
+                <label for="plazopersonalizada" class="text-weight-medium"
+                  >Plazo total (días)*</label
+                >
+                <q-input
+                  v-model="carritoCO.plazoPersonalizado"
+                  id="plazopersonalizada"
+                  type="number"
+                  min="0"
+                  dense
+                  outlined
+                  @update:model-value="calculateDueDate"
+                  :rules="[(val) => !!val || 'Requerido']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="edit_calendar" color="primary" />
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="fechalimite" class="text-weight-medium">Fecha límite*</label>
+                <q-input
+                  v-model="carritoCO.fechaLimite"
+                  id="fechalimite"
+                  dense
+                  outlined
+                  type="date"
+                  readonly
+                  class="bg-grey-2"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="event_available" color="primary" />
+                  </template>
+                </q-input>
               </div>
             </div>
           </div>
         </q-card-section>
 
-        <q-card-section>
-          <h5 class="q-my-sm text-primary" style="font-size: 15px">
-            <q-icon name="schedule" color="purple" class="q-mr-sm" />
-            Condiciones de Crédito
-          </h5>
-          <div class="col-12 q-mb-md">
-            <q-toggle
-              v-model="carritoCO.credito"
-              label="¿A crédito?"
-              left-label
-              @update:model-value="toggleCredit"
-            >
-              <template v-slot:prepend>
-                <q-icon name="credit_score" color="purple" />
-              </template>
-            </q-toggle>
-          </div>
-
-          <div v-if="carritoCO.credito" class="row q-col-gutter-md q-pt-md">
-            <div class="col-12 col-md-4">
-              <label for="cantidadpagos">Cantidad de pagos*</label>
-              <q-input
-                v-model="carritoCO.cantidadPagos"
-                id="cantidadpagos"
-                type="number"
-                min="0"
-                required
-                dense
-                outlined
-                @update:model-value="calculatePayments"
-                :rules="[(val) => !!val || 'Campo Obligatorio']"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="format_list_numbered" color="purple" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="montopago">Monto de pagos*</label>
-              <q-input
-                v-model="carritoCO.montoPagos"
-                id="montopago"
-                dense
-                outlined
-                :disable="!carritoCO.credito"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="paid" color="purple" />
-                </template>
-                <template v-slot:append>
-                  <q-btn flat :label="divisaActiva.simbolo" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="periodo">Período establecido*</label>
-              <q-select
-                v-model="carritoCO.periodo"
-                id="periodo"
-                dense
-                outlined
-                :options="periodOptions"
-                option-label="label"
-                option-value="value"
-                emit-value
-                map-options
-                required
-                @update:model-value="calculateDueDate"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="calendar_today" color="purple" />
-                </template>
-              </q-select>
-            </div>
-
-            <div v-if="carritoCO.periodo === 0" class="col-12 col-md-4">
-              <label for="plazopersonalizada">Plazo total (días)*</label>
-              <q-input
-                v-model="carritoCO.plazoPersonalizado"
-                id="plazopersonalizada"
-                type="number"
-                min="0"
-                dense
-                outlined
-                required
-                @update:model-value="calculateDueDate"
-                :rules="[(val) => !!val || 'Campo Obligatorio']"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="edit_calendar" color="purple" />
-                </template>
-              </q-input>
-            </div>
-
-            <div class="col-12 col-md-4">
-              <label for="fechalimite">Fecha límite*</label>
-              <q-input
-                v-model="carritoCO.fechaLimite"
-                id="fechalimite"
-                dense
-                outlined
-                type="date"
-                :disable="true"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="event_available" color="purple" />
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="OK" color="primary" @click="enviarDatos" />
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat label="Cancelar" color="grey-7" v-close-popup />
+          <q-btn
+            unelevated
+            label="Confirmar Cotización"
+            color="primary"
+            class="q-px-lg"
+            @click="enviarDatos"
+            :disable="variablePago === 'dividido' && remainingAmount !== 0"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -690,15 +771,39 @@ import { redondear, normalizeText, decimas, validarUsuario } from 'src/composabl
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-const showAddModal = ref(false)
 import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
 import ModalfirmaPage from './ModalfirmaPage.vue'
+import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+const showAddModal = ref(false)
+const esProductoUnico = ref(false)
+const registrarComoProductoUnico = ref(false)
+const idempresa = idempresa_md5()
+const CodigosUnicosSeleccionados = ref([])
+const { config } = useProductoConfig(idempresa)
+watch(
+  () => config.value.idempresa,
+  (nuevoValor) => {
+    if (nuevoValor) {
+      esProductoUnico.value = Boolean(config.value.productounico)
+      console.log(esProductoUnico.value)
+    }
+  },
+  { deep: true },
+)
+
+const guardarCodigosEnVenta = (codigos) => {
+  CodigosUnicosSeleccionados.value = codigos
+  console.log('Códigos únicos seleccionados:', CodigosUnicosSeleccionados.value)
+  cantidadCO.value = codigos.length
+}
+
 const modalfirmaActivo = ref(false)
 const token = getToken()
 const tipoFactura = getTipoFactura()
-const idempresa = idempresa_md5()
 const fecha = ref(obtenerFechaActualDato())
 const variablePago = ref('directo')
 const modalmetodopago = ref(false)
@@ -733,6 +838,7 @@ const periodOptions = [
   { label: '60 días', value: 60 },
   { label: '90 días', value: 90 },
 ]
+
 // Datos del formulario
 const filtroAlmacenCO = ref(null)
 const almacenesOptions = ref([])
@@ -774,7 +880,7 @@ const carritoCO = reactive({
   idalmacen: 0,
   divisa: divisaActiva.id,
   ipv: puntoVenta.value,
-  idusuario: 0, // Se llenará al validar el usuario
+  idusuario: 0,
   listaProductos: [],
   pagosDivididos: [],
   metodoPago: 0,
@@ -783,6 +889,7 @@ const carritoCO = reactive({
   credito: false,
   periodo: null,
   idfirma: null,
+  codigosUnicos: [], // Para productos únicos
 })
 console.log(idfirma.value)
 const RegistrarFirma = () => {
@@ -883,6 +990,8 @@ const permitirStockvacio = () => {
 }
 // Columnas para la tabla del carrito
 const carritoColumns = [
+  { name: 'exp', label: '', align: 'left' },
+
   { name: 'num', label: 'N°', align: 'left', field: 'num' },
   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
@@ -942,17 +1051,11 @@ const handleTipoOperacionChange = () => {
   console.log(tipoOperacion.value)
 }
 const cambioFecha = () => {
-  const storedCarrito = localStorage.getItem('carritoCO')
-  if (storedCarrito) {
-    const carritoData = JSON.parse(storedCarrito)
-    carritoData.fecha = fecha.value
-    Object.assign(carritoCO, carritoData)
-    localStorage.setItem('carritoCO', JSON.stringify(carritoData))
+  carritoCO.fecha = fecha.value
+  if (carritoCO.credito) {
+    calculateDueDate()
   }
-  cotizacionFormRef.value.resetValidation() // Resetear validación
-
-  resetFormulario()
-  console.log(tipoOperacion.value)
+  cotizacionFormRef.value?.resetValidation()
 }
 
 // Cargar carrito desde localStorage al inicio
@@ -981,8 +1084,8 @@ watch(filtroCategoriaCO, (newVal) => {
 watch(selectedProduct, (newVal) => {
   if (!newVal) {
     cantidaddisponibleCO.value = ''
-    cantidadCO.value = 0
-    precioCO.value = 0
+    cantidadCO.value = 1
+    precioCO.value = 1
     idstockCO.value = ''
     idporcentajeCO.value = ''
     idproductoalmacenCO.value = ''
@@ -1002,26 +1105,21 @@ const cotizacion_proforma = async () => {
 // ======================== TIpo de pago combinado =================
 
 const totalSaleAmount = computed(() => {
-  const cartData = JSON.parse(localStorage.getItem('carritoCO') || '{}')
-  if (cartData && cartData.ventatotal) {
-    return parseFloat(cartData.ventatotal)
-  }
-  return 0
+  return parseFloat(carritoCO.ventatotal) || 0
 })
 
 const totalPaidAmount = computed(() => {
   if (variablePago.value === 'dividido') {
     return pagosDivididos.value.reduce((sum, payment) => sum + parseFloat(payment.monto || 0), 0)
   }
-  return 0 // Not applicable for direct payment or credit for this specific calculation
+  return 0
 })
 
 const remainingAmount = computed(() => {
-  // Only calculate remaining if it's a divided payment type
   if (variablePago.value === 'dividido') {
     return totalSaleAmount.value - totalPaidAmount.value
   }
-  return 0 // Not relevant for direct or credit payment types
+  return 0
 })
 
 const addPaymentMethod = () => {
@@ -1420,7 +1518,7 @@ function elegirUnProducto(product) {
     cantidadCO.value = 1 // Set default quantity to 1
   } else {
     cantidaddisponibleCO.value = ''
-    precioCO.value = 0
+    precioCO.value = 1
     idstockCO.value = ''
     idporcentajeCO.value = ''
     idproductoalmacenCO.value = ''
@@ -1441,7 +1539,6 @@ async function anadirProductoACarrito() {
     return
   }
 
-  console.log(tipoOperacion.value?.value)
   if (Number(tipoOperacion.value?.value) === 1) {
     if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
       $q.notify({
@@ -1468,11 +1565,9 @@ async function anadirProductoACarrito() {
       })
     }
   }
-  console.log(selectedProduct.value, cantidadCO.value)
 
   const contenidousuario = await getUserData()
   const idusuario = contenidousuario?.idusuario
-  console.log(selectedProduct.value.stock)
   const nuevoProducto = {
     num: carritoCO.listaProductos.length + 1,
     idproductoalmacen: idproductoalmacenCO.value,
@@ -1489,13 +1584,13 @@ async function anadirProductoACarrito() {
       Number(selectedProduct.value.stock) < Number(cantidadCO.value)
         ? 2
         : 1,
+    codigosUnicos: [...CodigosUnicosSeleccionados.value],
   }
-  console.log(carritoCO.listaProductos.length)
   carritoCO.idusuario = idusuario
   carritoCO.idempresa = idempresa_md5()
   carritoCO.divisa = divisaActiva.id // Asegúrate de que la divisa activa esté cargada
   carritoCO.listaProductos.push(nuevoProducto)
-
+  carritoCO.codigosUnicos = [...carritoCO.codigosUnicos, ...CodigosUnicosSeleccionados.value]
   calcularTotalesCarrito()
   listaProductosDisponibles() // Recargar la lista de productos disponibles para excluir el añadido
   resetProductoInputs()
@@ -1835,15 +1930,25 @@ watch(
     console.log(nuevoValor)
     if (nuevoValor === 'directo') {
       // Limpiar los datos de pago dividido
-      pagosDivididos.value = []
-      remainingAmount.value = 0
-      totalPaidAmount.value = 0
+      pagosDivididos.value = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
     } else if (nuevoValor === 'dividido') {
       // Limpiar el método de pago único
       metodoPago.value = null
     }
   },
 )
+
+const handleTipoPagoGeneralChange = (val) => {
+  if (val) {
+    // Caso Crédito
+    variablePago.value = 'directo'
+    calculatePayments()
+    calculateDueDate()
+  } else {
+    // Caso Efectivo
+    toggleCredit(false)
+  }
+}
 
 // --- Inicialización ---
 onMounted(async () => {

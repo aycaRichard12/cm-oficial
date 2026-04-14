@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <div class="flex justify-between">
+    <div class="flex justify-between q-mb-md">
       <q-btn
         color="primary"
         @click="$emit('add')"
@@ -15,7 +15,7 @@
         <q-icon name="picture_as_pdf" class="icono" />
         <span class="texto" id="vistaPreviaPDF">Vista previa PDF</span>
       </q-btn>
-      <div id="buscarAlmacen">
+      <!-- <div id="buscarAlmacen">
         <label for="buscar">Buscar...</label>
         <q-input
           v-model="search"
@@ -30,7 +30,7 @@
             <q-icon name="search" />
           </template>
         </q-input>
-      </div>
+      </div> -->
     </div>
 
     <BaseFilterableTable

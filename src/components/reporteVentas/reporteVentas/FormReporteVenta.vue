@@ -15,12 +15,25 @@
 
       <div class="row justify-center q-mt-md">
         <div class="">
-          <q-btn id="btngenerarreporte" label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
+          <q-btn
+            id="btngenerarreporte"
+            label="Generar reporte"
+            color="primary"
+            type="submit"
+            class="q-mr-sm"
+          />
         </div>
       </div>
     </q-form>
     <div class="row flex justify-between q-ma-md">
-      <q-btn id="btnvistaprevia" icon="picture_as_pdf" label="Vista previa" color="red" outline @click="vistaPrevia" />
+      <q-btn
+        id="btnvistaprevia"
+        icon="picture_as_pdf"
+        label="Vista previa"
+        color="red"
+        outline
+        @click="vistaPrevia"
+      />
       <q-btn
         id="btnexportarexcel"
         icon="mdi-microsoft-excel"
@@ -635,7 +648,13 @@ const vistaPrevia = () => {
 }
 const exportXLSX = () => {
   resultadoFiltrado.value = refHijo.value.obtenerDatos()
-
+  console.log(
+    'Datos a exportar:',
+    resultadoFiltrado.value,
+    almacen.value,
+    fechai.value,
+    fechaf.value,
+  )
   exportTOXLSX_Reporte_Ventas(resultadoFiltrado, almacen, fechai, fechaf)
 }
 const onSubmit = async () => {

@@ -325,6 +325,11 @@ export const menurichard50 = [
             codigo: 'tipokardex-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
+          {
+            titulo: 'Configuración-General-Seríe Única',
+            codigo: 'configuracionproductounico-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
 
           {
             titulo: 'Configuración-Producto-Categoría',
@@ -455,11 +460,11 @@ export const menurichard50 = [
             codigo: 'registrarclienteoproveedor-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
-          {
-            titulo: 'Cierre Caja',
-            codigo: 'cierrecaja-03afdbd66e7929b125f8597834fa83a4',
-            permiso: '1111',
-          },
+          // {
+          //   titulo: 'Cierre Caja',
+          //   codigo: 'cierrecaja-03afdbd66e7929b125f8597834fa83a4',
+          //   permiso: '1111',
+          // },
           {
             titulo: 'Autorizaciones',
             codigo: 'admautorizaciones-03afdbd66e7929b125f8597834fa83a4',
@@ -580,6 +585,11 @@ export const menurichard50 = [
           {
             titulo: 'Movimientos',
             codigo: 'movimientos-03afdbd66e7929b125f8597834fa83a4',
+            permiso: '1111',
+          },
+          {
+            titulo: 'Cierre Caja',
+            codigo: 'cierrecaja-03afdbd66e7929b125f8597834fa83a4',
             permiso: '1111',
           },
         ],

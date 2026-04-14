@@ -115,30 +115,89 @@ function editItem(item) {
 }
 
 async function deleteItem(item) {
-  $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar el tipo de almacén "${item.tipoalmacen}"?`,
-    cancel: true,
-    persistent: true,
-  }).onOk(async () => {
-    try {
-      const response = await api.get(`eliminarTipoAlmacen/${item.id}/`) // Cambia a tu ruta real
-      console.log(response)
-      if (response.data.estado === 'exito') {
-        loadRows()
+  const esAlmacenAutomatico = item.tipoalmacen === 'ALMACEN_1'
+
+  if (esAlmacenAutomatico) {
+    // Para almacén automático: diálogo con confirmación de texto
+    $q.dialog({
+      title: 'Confirmar Eliminación',
+      message: `Este almacén ("${item.tipoalmacen}") fue creado automáticamente por el sistema. Su eliminación es una acción delicada que puede afectar reportes previos. Para confirmar la eliminación definitiva, escriba el nombre "${item.tipoalmacen}" abajo:`,
+      prompt: {
+        model: '',
+        type: 'text',
+        placeholder: 'Escriba el nombre aquí...',
+      },
+      persistent: true,
+      ok: {
+        flat: true,
+        label: 'Eliminar definitivamente',
+        color: 'negative',
+      },
+      cancel: {
+        flat: true,
+        color: 'primary',
+        label: 'Cancelar',
+      },
+    }).onOk(async (userInput) => {
+      if (userInput !== item.tipoalmacen) {
         $q.notify({
-          type: 'positive',
-          message: response.data.mensaje,
+          type: 'warning',
+          message: 'El texto ingresado no coincide. Eliminación cancelada.',
+          icon: 'warning',
         })
+        return
       }
-    } catch (error) {
-      console.error('Error al cargar datos:', error)
+      await procesarEliminacion(item)
+    })
+  } else {
+    // Para almacén normal: diálogo de confirmación simple
+    $q.dialog({
+      title: 'Confirmar Eliminación',
+      message: `¿Está seguro que desea eliminar el tipo de almacén "${item.tipoalmacen}"? Esta acción no se puede deshacer.`,
+      persistent: true,
+      ok: {
+        flat: true,
+        label: 'Eliminar',
+        color: 'negative',
+      },
+      cancel: {
+        flat: true,
+        color: 'primary',
+        label: 'Cancelar',
+      },
+    }).onOk(async () => {
+      await procesarEliminacion(item)
+    })
+  }
+}
+
+async function procesarEliminacion(item) {
+  try {
+    const response = await api.get(`eliminarTipoAlmacen/${item.id}/`)
+    if (response.data.estado === 'exito') {
+      loadRows()
       $q.notify({
-        type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        type: 'positive',
+        message: 'El registro fue eliminado correctamente',
+        icon: 'check',
+      })
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: `¡No permitido!, debido a registros dependientes`,
+        icon: 'warning',
+        timeout: 4000,
       })
     }
-  })
+  } catch (error) {
+    console.error('Error al eliminar:', error)
+    $q.notify({
+      type: 'warning',
+      message: `¡No permitido!, debido a registros dependientes`,
+      icon: 'warning',
+      timeout: 4000,
+    })
+  }
 }
 
 async function changeStatus(item) {
