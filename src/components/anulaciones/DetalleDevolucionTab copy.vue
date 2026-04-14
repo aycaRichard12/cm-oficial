@@ -93,7 +93,7 @@
       flat
     >
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
           <q-td auto-width>
             <q-btn
               size="sm"
@@ -102,36 +102,43 @@
               round
               @click="props.expand = !props.expand"
               :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-            />
+            >
+              <q-tooltip>Ver detalles de códigos</q-tooltip>
+            </q-btn>
           </q-td>
 
-          <q-td
-            v-for="col in props.cols.filter((c) => c.name !== 'expandir')"
-            :key="col.name"
-            :props="props"
-          >
-            <template v-if="col.name === 'acciones'">
-              <q-btn icon="edit" color="info" dense round @click="editarDetalle(props.row)" />
-            </template>
-            <template v-else>
-              {{ col.value }}
-            </template>
+          <q-td key="codigo" :props="props">
+            <q-chip outline color="primary" label-slot dense>
+              <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+              {{ props.row.codigo }}
+            </q-chip>
+          </q-td>
+
+          <q-td key="descripcion" :props="props">
+            <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+          </q-td>
+
+          <q-td key="precio" :props="props" class="text-right">
+            {{ decimas(props.row.precio) }}
+          </q-td>
+
+          <q-td key="cantidad" :props="props" class="text-right">
+            <q-badge color="grey-8">{{ props.row.cantidad }}</q-badge>
+          </q-td>
+          <q-td key="perdida" :props="props" class="text-right">
+            <q-badge color="grey-8">{{ props.row.perdida }}</q-badge>
+          </q-td>
+          <q-td key="cantidadperdida" :props="props" class="text-right">
+            <q-badge color="grey-8">{{ props.row.cantidadperdida }}</q-badge>
+          </q-td>
+
+          <q-td key="acciones" :props="props" align="center">
+            <q-btn icon="edit" color="info" dense round @click="editarDetalle(props.row)" />
           </q-td>
         </q-tr>
 
-        <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
-            <div class="q-pa-md bg-grey-2">
-              <tablaCodigosDevolucion
-                v-model="detallesProducto"
-                :parent-row="selectedProduct"
-                :api-mode="true"
-                :can-edit="true"
-                :can-delete="true"
-                @update-parent-quantity="actualizarCantidadPadre"
-              />
-            </div>
-          </q-td>
+        <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
+          <q-td colspan="100%" class="q-pa-lg"> </q-td>
         </q-tr>
       </template>
     </q-table>
@@ -142,24 +149,11 @@
 import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
-import tablaCodigosDevolucion from '../cotizacion/tablaCodigosDevolucion.vue'
+//import { validarUsuario } from 'src/composables/FuncionesG'
 
 const props = defineProps({
   idDevolucion: { type: [Number, String], default: null },
 })
-const detallesProducto = ref([])
-const selectedProduct = ref({
-  id: 101,
-  nombre: 'Laptop Dell XPS',
-  cantidad: 2, // Cantidad actual en la lista
-  cantidad_limite: 5, // Máximo permitido para registrar
-})
-const actualizarCantidadPadre = (nuevaCantidad) => {
-  selectedProduct.value.cantidad = nuevaCantidad
-  console.log(`La nueva cantidad del padre es: ${nuevaCantidad}`)
-
-  // Aquí podrías disparar una petición API extra para guardar la cantidad del padre si fuera necesario
-}
 
 const emit = defineEmits(['volver', 'finalizado'])
 
@@ -184,7 +178,7 @@ const opcionesPerdida = ref([
 ])
 
 const columnas = [
-  { name: 'expandir', label: '', align: 'left' },
+  { name: 'exp', label: '', align: 'left' },
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },

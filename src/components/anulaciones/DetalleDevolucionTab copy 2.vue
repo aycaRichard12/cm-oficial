@@ -92,47 +92,10 @@
       :loading="loading"
       flat
     >
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <q-btn
-              size="sm"
-              color="primary"
-              flat
-              round
-              @click="props.expand = !props.expand"
-              :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-            />
-          </q-td>
-
-          <q-td
-            v-for="col in props.cols.filter((c) => c.name !== 'expandir')"
-            :key="col.name"
-            :props="props"
-          >
-            <template v-if="col.name === 'acciones'">
-              <q-btn icon="edit" color="info" dense round @click="editarDetalle(props.row)" />
-            </template>
-            <template v-else>
-              {{ col.value }}
-            </template>
-          </q-td>
-        </q-tr>
-
-        <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
-            <div class="q-pa-md bg-grey-2">
-              <tablaCodigosDevolucion
-                v-model="detallesProducto"
-                :parent-row="selectedProduct"
-                :api-mode="true"
-                :can-edit="true"
-                :can-delete="true"
-                @update-parent-quantity="actualizarCantidadPadre"
-              />
-            </div>
-          </q-td>
-        </q-tr>
+      <template v-slot:body-cell-acciones="props">
+        <q-td :props="props">
+          <q-btn icon="edit" color="info" dense round @click="editarDetalle(props.row)" />
+        </q-td>
       </template>
     </q-table>
   </q-tab-panel>
@@ -142,24 +105,11 @@
 import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
-import tablaCodigosDevolucion from '../cotizacion/tablaCodigosDevolucion.vue'
+//import { validarUsuario } from 'src/composables/FuncionesG'
 
 const props = defineProps({
   idDevolucion: { type: [Number, String], default: null },
 })
-const detallesProducto = ref([])
-const selectedProduct = ref({
-  id: 101,
-  nombre: 'Laptop Dell XPS',
-  cantidad: 2, // Cantidad actual en la lista
-  cantidad_limite: 5, // Máximo permitido para registrar
-})
-const actualizarCantidadPadre = (nuevaCantidad) => {
-  selectedProduct.value.cantidad = nuevaCantidad
-  console.log(`La nueva cantidad del padre es: ${nuevaCantidad}`)
-
-  // Aquí podrías disparar una petición API extra para guardar la cantidad del padre si fuera necesario
-}
 
 const emit = defineEmits(['volver', 'finalizado'])
 
@@ -184,7 +134,6 @@ const opcionesPerdida = ref([
 ])
 
 const columnas = [
-  { name: 'expandir', label: '', align: 'left' },
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
