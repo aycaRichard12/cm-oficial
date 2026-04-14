@@ -56,7 +56,7 @@ export default defineConfig((ctx) => {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
-      publicPath: '/app/cmv1/',
+      publicPath: '/app/cm/',
       vitePlugins: [
         // Plugin simple: vite-svg-loader
         svgLoader(),

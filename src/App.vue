@@ -6,10 +6,10 @@
 
 <script setup>
 import { useMeta } from 'quasar'
-import { getNombreEmpresa } from './composables/FuncionesGenerales'
+//import { getNombreEmpresa } from './composables/FuncionesGenerales'
 
 const metaData = {
-  title: getNombreEmpresa(),
+  title: 'Comercial', //getNombreEmpresa(),
   titleTemplate: (title) => `${title} - Mistersofts`,
 }
 useMeta(metaData)

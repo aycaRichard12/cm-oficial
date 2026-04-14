@@ -228,7 +228,7 @@ const irdashboard = () => {
   localStorage.removeItem('mistersofts-cmmenu')
   localStorage.removeItem('puedeIniciarsesion')
   sessionStorage.setItem('logoutIntencional', 'true')
-  window.location.replace('/#/login')
+  window.location.replace('login')
 }
 const router = useRouter()
 const route = useRoute()

@@ -196,7 +196,7 @@ const login = async () => {
 
   try {
     const res = await axios.post(
-      'https://vivasoft.link/app/auth/',
+      process.env.VITE_URL_AUTH,
       {
         action: 'login',
         usuario: username.value,
@@ -230,7 +230,7 @@ const login = async () => {
         codigo: item.codigo,
         submenu: (item.submenu || []).map((sub) => ({
           ...sub,
-          codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo
+          codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo,
         })),
       }))
 
