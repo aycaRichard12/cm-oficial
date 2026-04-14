@@ -1,4 +1,4 @@
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
+﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import { Platform } from 'quasar'
 import jsPDF from 'jspdf'
@@ -3288,44 +3288,55 @@ export function PDF_REPORTE_CAMPANAS(reporte, datosFormulario) {
 
 export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  const { fechaInicio, fechaFin, almacen, usuario } = opciones
+  const { fechaInicio, fechaFin, almacen, usuario, visibleColumnsFromTable = [] } = opciones
 
-  const columns = [
-    { header: 'N°', dataKey: 'n' },
-    { header: 'Almacén', dataKey: 'almacen' },
-    { header: 'Campaña', dataKey: 'nombre' },
-    { header: 'Fecha Inicio', dataKey: 'fechainicio' },
-    { header: 'Fecha Final', dataKey: 'fechafinal' },
-    { header: 'Estado', dataKey: 'est' },
-    { header: 'Cant. Ventas', dataKey: 'nventas' },
+  /* Catalogo completo de columnas posibles */
+  const allPossibleColumns = [
+    { header: 'N\u00b0',           dataKey: 'n',          name: 'n',          width: 10, halign: 'center' },
+    { header: 'Almac\u00e9n',      dataKey: 'almacen',    name: 'almacen',    width: 35, halign: 'left'   },
+    { header: 'Campa\u00f1a',      dataKey: 'nombre',     name: 'nombre',     width: 40, halign: 'left'   },
+    { header: 'Porcentaje',   dataKey: 'porcentaje', name: 'porcentaje', width: 22, halign: 'center' },
+    { header: 'Fecha Inicio', dataKey: 'fechainicio',name: 'fechainicio',width: 28, halign: 'center' },
+    { header: 'Fecha Final',  dataKey: 'fechafinal', name: 'fechafinal', width: 28, halign: 'center' },
+    { header: 'Estado',       dataKey: 'est',        name: 'est',        width: 25, halign: 'center' },
+    { header: 'Cant. Ventas', dataKey: 'nventas',    name: 'nventas',    width: 30, halign: 'right'  },
   ]
 
+  /* Filtrar columnas visibles. El N siempre se incluye. */
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    columns = allPossibleColumns.filter((c) => c.name === 'n' || visibleNames.has(c.name))
+  } else {
+    columns = allPossibleColumns
+  }
+
+  /* Mapeo de datos */
   const filas = datos.map((item, index) => ({
-    n: index + 1,
-    almacen: item.almacen ?? '-',
-    nombre: item.nombre ?? '-',
-    fechainicio: cambiarFormatoFecha(item.fechainicio),
+    n:          index + 1,
+    almacen:    item.almacen    ?? '-',
+    nombre:     item.nombre     ?? '-',
+    porcentaje: item.porcentaje ?? '0',
+    fechainicio:cambiarFormatoFecha(item.fechainicio),
     fechafinal: cambiarFormatoFecha(item.fechafinal),
-    est: item.est ?? '-',
-    nventas: item.nventas,
+    est:        item.est        ?? '-',
+    nventas:    item.nventas    ?? '0',
   }))
 
-  const columnStyles = {
-    n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 35, halign: 'left' },
-    nombre: { cellWidth: 40, halign: 'left' },
-    fechainicio: { cellWidth: 28, halign: 'center' },
-    fechafinal: { cellWidth: 28, halign: 'center' },
-    est: { cellWidth: 25, halign: 'center' },
-    nventas: { cellWidth: 30, halign: 'right' },
-  }
+  /* Estilos generados dinamicamente */
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey]       = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
     campos: [
-      { label: 'Almacén', valor: almacen || '' },
+      { label: 'Almac\u00e9n',      valor: almacen || '' },
       { label: 'Fecha Inicio', valor: cambiarFormatoFecha(fechaInicio) || '' },
-      { label: 'Fecha Fin', valor: cambiarFormatoFecha(fechaFin) || '' },
+      { label: 'Fecha Fin',    valor: cambiarFormatoFecha(fechaFin)    || '' },
     ],
   }
 
@@ -3333,7 +3344,7 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     titulo: 'DATOS DEL USUARIO',
     campos: [
       { label: 'Usuario', valor: usuario?.nombre || '' },
-      { label: 'Cargo', valor: usuario?.cargo || '' },
+      { label: 'Cargo',   valor: usuario?.cargo  || '' },
     ],
   }
 
@@ -3341,9 +3352,9 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     doc,
     columns,
     filas,
-    'REPORTE DE VENTAS POR CAMPAÑA',
+    'REPORTE DE VENTAS POR CAMPA\u00d1A',
     columnStyles,
-    { ...columnStyles, nventas: { halign: 'right', cellWidth: 30 } },
+    headerColumnStyles,
     Izquierda,
     derecho,
     false,
