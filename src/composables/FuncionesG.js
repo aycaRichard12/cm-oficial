@@ -206,7 +206,7 @@ export function generarCabeceraHTML(datos) {
 }
 
 export function validarUsuario() {
-  const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
+  const contenidousuario = JSON.parse(localStorage.getItem('mistersofts-cm'))
   if (contenidousuario) {
     return contenidousuario
   } else {

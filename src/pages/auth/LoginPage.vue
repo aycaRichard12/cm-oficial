@@ -28,6 +28,7 @@
                   bg-color="grey-1"
                   color="primary"
                   dense
+                  placeholder="Usuario"
                 >
                   <template v-slot:prepend>
                     <q-icon name="person" color="grey-7" />
@@ -56,6 +57,7 @@
                   bg-color="grey-1"
                   color="primary"
                   dense
+                  placeholder="Contraseña"
                 >
                   <template v-slot:prepend>
                     <q-icon name="lock" color="grey-7" />
@@ -172,9 +174,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import axios from 'axios'
 
-const username = ref('usuario.comercial')
-const password = ref('comercial.123')
+const username = ref('')
+const password = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
 
@@ -188,33 +191,59 @@ if (isAuthenticated) {
   router.push('/')
 }
 
-const login = () => {
+const login = async () => {
   loading.value = true
 
-  // Simulating API call
-  setTimeout(() => {
-    if (username.value === 'usuario.comercial' && password.value === 'comercial.123') {
-      // Mock Data mimicking the project structure found in FuncionesG.js logic
-      // contenidousuario[0]?.empresa?.idempresa etc.
-      const mockUser = [
-        {
-          usuario: {
-            name: 'Usuario Comercial',
-            username: username.value,
-          },
-          empresa: {
-            idempresa: 1,
-            nombre: 'Empresa Demo',
-            idtn: 1, // Example for IdRubro logic
-          },
-          factura: {
-            access_token: 'mock_token_12345',
-            tipo: 1,
-          },
+  try {
+    const res = await axios.post(
+      'https://vivasoft.link/app/auth/',
+      {
+        action: 'login',
+        usuario: username.value,
+        password: password.value,
+        modulo: 'cm',
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-App-Token': 'APP_CM_KEY_2026',
         },
-      ]
+      },
+    )
 
-      localStorage.setItem('puedeIniciarsesion', JSON.stringify(mockUser))
+    if (
+      res.data &&
+      Array.isArray(res.data) &&
+      res.data.length > 0 &&
+      res.data[0].ok === 'success'
+    ) {
+      const userData = [{ ...res.data[0] }]
+      const rawMenu = res.data[0].menu || []
+      const modulo = res.data[0].modulo || ''
+      const idusuario = res.data[0].idusuario || ''
+
+      // Transformar menu: añadir "usuario" y asegurarnos que los codigos
+      // de los submenús terminan con el idusuario real.
+      const menuTransformado = rawMenu.map((item) => ({
+        usuario: idusuario,
+        titulo: item.titulo,
+        codigo: item.codigo,
+        submenu: (item.submenu || []).map((sub) => ({
+          ...sub,
+          codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo
+        })),
+      }))
+
+      const userMenu = [{ modulo, menu: menuTransformado }]
+
+      // Limpiar el menu del objeto de usuario
+      delete userData[0].menu
+      console.log('datos el login', res.data)
+      localStorage.setItem('mistersofts-cm', JSON.stringify(userData))
+      localStorage.setItem('mistersofts-cmmenu', JSON.stringify(userMenu))
+      localStorage.setItem('puedeIniciarsesion', 'true')
+      console.log('userData', userData)
+      console.log('userMenu', userMenu)
 
       $q.notify({
         color: 'positive',
@@ -224,18 +253,29 @@ const login = () => {
         position: 'top',
       })
 
+      sessionStorage.removeItem('logoutIntencional')
       router.push('/')
     } else {
       $q.notify({
         color: 'negative',
         textColor: 'white',
         icon: 'error',
-        message: 'Credenciales inválidas. Intente nuevamente.',
+        message: res.data[0]?.error || 'Credenciales inválidas. Intente nuevamente.',
         position: 'top',
       })
     }
+  } catch (error) {
+    console.error('Error en authentication:', error)
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'error',
+      message: 'Error al conectar con el servidor',
+      position: 'top',
+    })
+  } finally {
     loading.value = false
-  }, 1000)
+  }
 }
 </script>
 
