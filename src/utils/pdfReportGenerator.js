@@ -1037,103 +1037,112 @@ export function PDFreporteCreditos(
   return docResult
 }
 
-export function PDFreporteStockProductosIndividual(processedRows) {
+/**
+ * Genera el PDF del reporte de Stock de Productos.
+ * @param {Array} rows - Array plano de filas (ya filtradas según la tabla UI).
+ * @param {Array} visibleColumnsFromTable - Columnas actualmente visibles en la tabla UI (objetos con { name, label }).
+ */
+export function PDFreporteStockProductosIndividual(rows, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
+  // Normalizar entrada: acepta array plano o ref reactiva
+  const arrRows = Array.isArray(rows) ? rows : (rows?.value ?? [])
+
   /* =========================
-   * 1. TODAS LAS COLUMNAS (sin filtrar)
+   * 1. CATÁLOGO COMPLETO DE COLUMNAS
+   * Mapa de columnas posibles con sus estilos PDF.
+   * La columna 'indice' siempre se incluye.
    ========================= */
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    // { header: 'Fecha Registro', dataKey: 'fecha' },
-    // { header: 'Almacén', dataKey: 'almacen' },
-    { header: 'Código', dataKey: 'codigo' },
-    { header: 'Producto', dataKey: 'producto' },
-    { header: 'Categoría', dataKey: 'categoria' },
-    { header: 'Sub Categoría', dataKey: 'subcategoria' },
-    { header: 'Descripción', dataKey: 'descripcion' },
-    { header: 'Unidad', dataKey: 'unidad' },
-    { header: 'Stock', dataKey: 'stock' },
-    { header: `Costo Unit. (${divisaActiva})`, dataKey: 'costounitario' },
-    { header: `Costo total (${divisaActiva})`, dataKey: 'costo' },
+  const allPossibleColumns = [
+    { header: 'N°',                            dataKey: 'indice',       name: 'numero',       width: 10, halign: 'center' },
+    { header: 'Código',                         dataKey: 'codigo',       name: 'codigo',       width: 15, halign: 'center' },
+    { header: 'Producto',                       dataKey: 'producto',     name: 'producto',     width: 20, halign: 'left'   },
+    { header: 'Categoría',                      dataKey: 'categoria',    name: 'categoria',    width: 15, halign: 'center' },
+    { header: 'Sub Categoría',                  dataKey: 'subcategoria', name: 'subcategoria', width: 25, halign: 'center' },
+    { header: 'Descripción',                    dataKey: 'descripcion',  name: 'descripcion',  width: 35, halign: 'left'   },
+    { header: 'Unidad',                         dataKey: 'unidad',       name: 'unidad',       width: 10, halign: 'center' },
+    { header: 'País',                           dataKey: 'pais',         name: 'pais',         width: 15, halign: 'left'   },
+    { header: 'Stock',                          dataKey: 'stock',        name: 'stock',        width: 15, halign: 'right'  },
+    { header: 'Estado',                         dataKey: 'estado',       name: 'estado',       width: 15, halign: 'center' },
+    { header: `C.Unit (${divisaActiva})`,       dataKey: 'costounitario', name: 'costounitario', width: 20, halign: 'right' },
+    { header: `Costo total (${divisaActiva})`,  dataKey: 'costototal',   name: 'costototal',   width: 25, halign: 'right'  },
   ]
 
   /* =========================
-   * 2. DATOS
+   * 2. FILTRAR COLUMNAS VISIBLES
+   * Si se reciben columnas desde la tabla UI, filtrar el catálogo.
+   * El índice (N°) siempre se incluye.
    ========================= */
-  const datos = processedRows.value.map((item, indice) => ({
-    indice: indice + 1,
-    fecha: cambiarFormatoFecha(item.fecha),
-    almacen: item.almacen,
-    codigo: item.codigo,
-    producto: item.producto,
-    categoria: item.categoria,
-    subcategoria: item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    columns = allPossibleColumns.filter((c) => c.name === 'numero' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas excepto 'pais' y 'estado' por defecto
+    columns = allPossibleColumns.filter((c) => !['pais', 'estado'].includes(c.name))
+  }
 
-    descripcion: item.descripcion,
-    unidad: item.unidad,
-    stock: item.stock,
-    costounitario: decimas(redondear(parseFloat(item.costounitario))),
-    costo: decimas(redondear(parseFloat(item.costounitario) * parseFloat(item.stock))),
+  /* =========================
+   * 3. MAPEO DE DATOS
+   ========================= */
+  const datos = arrRows.map((item, indice) => ({
+    indice:        indice + 1,
+    codigo:        item.codigo       ?? '',
+    producto:      item.producto     ?? '',
+    categoria:     item.categoria    ?? '',
+    subcategoria:  item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+    descripcion:   item.descripcion  ?? '',
+    unidad:        item.unidad       ?? '',
+    pais:          item.pais         ?? '',
+    stock:         item.stock        ?? 0,
+    estado:        item.estado       ?? '',
+    costounitario: decimas(redondear(parseFloat(item.costounitario ?? 0))),
+    costototal:    decimas(redondear(parseFloat(item.costounitario ?? 0) * parseFloat(item.stock ?? 0))),
   }))
 
   /* =========================
-   * 3. TOTALES
+   * 4. FILA DE TOTAL
+   * El colSpan se calcula dinámicamente según las columnas visibles.
+   * El total monetario solo aparece si la columna 'costototal' es visible.
    ========================= */
-  const costoTotal = processedRows.value.reduce(
-    (sum, row) => sum + redondear(parseFloat(row.stock) * parseFloat(row.costounitario)),
+  const costoTotal = arrRows.reduce(
+    (sum, row) => sum + redondear(parseFloat(row.costounitario ?? 0) * parseFloat(row.stock ?? 0)),
     0,
   )
 
-  // datos.push({
-  //   costounitario: `Total: (${divisaActiva})`,
-  //   costo: decimas(costoTotal),
-  // })
+  const costoTotalIndex = columns.findIndex((c) => c.dataKey === 'costototal')
+  const hasCostoTotal = costoTotalIndex !== -1
+  const spanTotal = hasCostoTotal ? costoTotalIndex : columns.length
+
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
-      [{ valor: costoTotal, halign: 'right' }],
-      9,
+      hasCostoTotal ? [{ valor: costoTotal, halign: 'right' }] : [],
+      spanTotal,
     ),
   )
 
   /* =========================
-   * 4. ESTILOS
+   * 5. ESTILOS (generados dinámicamente desde el catálogo)
    ========================= */
-  const allColumnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    // fecha: { cellWidth: 20, halign: 'center' },
-    // almacen: { cellWidth: 20, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'center' },
-    producto: { cellWidth: 20, halign: 'center' },
-    categoria: { cellWidth: 15, halign: 'center' },
-    subcategoria: { cellWidth: 25, halign: 'center' },
-    descripcion: { cellWidth: 35, halign: 'center' },
-    unidad: { cellWidth: 10, halign: 'center' },
-    stock: { cellWidth: 15, halign: 'center' },
-    costounitario: { cellWidth: 20, halign: 'center' },
-    costo: { cellWidth: 25, halign: 'center' },
-  }
-
   const columnStyles = {}
+  const headerColumnStyles = {}
   columns.forEach((col) => {
-    if (allColumnStyles[col.dataKey]) {
-      columnStyles[col.dataKey] = allColumnStyles[col.dataKey]
-    }
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
   })
 
-  const headerColumnStyles = columnStyles
-
   /* =========================
-   * 5. CABECERA IZQUIERDA
+   * 6. CABECERA IZQUIERDA
    ========================= */
+  const almacenValor = arrRows[0]?.almacen ?? ''
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
-    campos: datos[0]?.almacen ? [{ label: 'Almacén', valor: datos[0].almacen }] : [],
+    campos: almacenValor ? [{ label: 'Almacén', valor: almacenValor }] : [],
   }
 
   /* =========================
-   * 6. DIBUJAR PDF
+   * 7. DIBUJAR PDF
    ========================= */
   dibujarCuerpoTabla(
     doc,
@@ -1143,7 +1152,6 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     columnStyles,
     headerColumnStyles,
     Izquierda,
-
     null,
     true,
     null,
