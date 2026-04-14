@@ -1054,18 +1054,42 @@ export function PDFreporteStockProductosIndividual(rows, visibleColumnsFromTable
    * La columna 'indice' siempre se incluye.
    ========================= */
   const allPossibleColumns = [
-    { header: 'N°',                            dataKey: 'indice',       name: 'numero',       width: 10, halign: 'center' },
-    { header: 'Código',                         dataKey: 'codigo',       name: 'codigo',       width: 15, halign: 'center' },
-    { header: 'Producto',                       dataKey: 'producto',     name: 'producto',     width: 20, halign: 'left'   },
-    { header: 'Categoría',                      dataKey: 'categoria',    name: 'categoria',    width: 15, halign: 'center' },
-    { header: 'Sub Categoría',                  dataKey: 'subcategoria', name: 'subcategoria', width: 25, halign: 'center' },
-    { header: 'Descripción',                    dataKey: 'descripcion',  name: 'descripcion',  width: 35, halign: 'left'   },
-    { header: 'Unidad',                         dataKey: 'unidad',       name: 'unidad',       width: 10, halign: 'center' },
-    { header: 'País',                           dataKey: 'pais',         name: 'pais',         width: 15, halign: 'left'   },
-    { header: 'Stock',                          dataKey: 'stock',        name: 'stock',        width: 15, halign: 'right'  },
-    { header: 'Estado',                         dataKey: 'estado',       name: 'estado',       width: 15, halign: 'center' },
-    { header: `C.Unit (${divisaActiva})`,       dataKey: 'costounitario', name: 'costounitario', width: 20, halign: 'right' },
-    { header: `Costo total (${divisaActiva})`,  dataKey: 'costototal',   name: 'costototal',   width: 25, halign: 'right'  },
+    { header: 'N°', dataKey: 'indice', name: 'numero', width: 10, halign: 'center' },
+    { header: 'Código', dataKey: 'codigo', name: 'codigo', width: 15, halign: 'center' },
+    { header: 'Producto', dataKey: 'producto', name: 'producto', width: 20, halign: 'left' },
+    { header: 'Categoría', dataKey: 'categoria', name: 'categoria', width: 15, halign: 'center' },
+    {
+      header: 'Sub Categoría',
+      dataKey: 'subcategoria',
+      name: 'subcategoria',
+      width: 25,
+      halign: 'center',
+    },
+    {
+      header: 'Descripción',
+      dataKey: 'descripcion',
+      name: 'descripcion',
+      width: 35,
+      halign: 'left',
+    },
+    { header: 'Unidad', dataKey: 'unidad', name: 'unidad', width: 10, halign: 'center' },
+    { header: 'País', dataKey: 'pais', name: 'pais', width: 15, halign: 'left' },
+    { header: 'Stock', dataKey: 'stock', name: 'stock', width: 15, halign: 'right' },
+    { header: 'Estado', dataKey: 'estado', name: 'estado', width: 15, halign: 'center' },
+    {
+      header: `C.Unit (${divisaActiva})`,
+      dataKey: 'costounitario',
+      name: 'costounitario',
+      width: 20,
+      halign: 'right',
+    },
+    {
+      header: `Costo total (${divisaActiva})`,
+      dataKey: 'costototal',
+      name: 'costototal',
+      width: 25,
+      halign: 'right',
+    },
   ]
 
   /* =========================
@@ -1086,18 +1110,20 @@ export function PDFreporteStockProductosIndividual(rows, visibleColumnsFromTable
    * 3. MAPEO DE DATOS
    ========================= */
   const datos = arrRows.map((item, indice) => ({
-    indice:        indice + 1,
-    codigo:        item.codigo       ?? '',
-    producto:      item.producto     ?? '',
-    categoria:     item.categoria    ?? '',
-    subcategoria:  item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
-    descripcion:   item.descripcion  ?? '',
-    unidad:        item.unidad       ?? '',
-    pais:          item.pais         ?? '',
-    stock:         item.stock        ?? 0,
-    estado:        item.estado       ?? '',
+    indice: indice + 1,
+    codigo: item.codigo ?? '',
+    producto: item.producto ?? '',
+    categoria: item.categoria ?? '',
+    subcategoria: item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+    descripcion: item.descripcion ?? '',
+    unidad: item.unidad ?? '',
+    pais: item.pais ?? '',
+    stock: item.stock ?? 0,
+    estado: item.estado ?? '',
     costounitario: decimas(redondear(parseFloat(item.costounitario ?? 0))),
-    costototal:    decimas(redondear(parseFloat(item.costounitario ?? 0) * parseFloat(item.stock ?? 0))),
+    costototal: decimas(
+      redondear(parseFloat(item.costounitario ?? 0) * parseFloat(item.stock ?? 0)),
+    ),
   }))
 
   /* =========================
@@ -3292,14 +3318,32 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
 
   /* Catalogo completo de columnas posibles */
   const allPossibleColumns = [
-    { header: 'N\u00b0',           dataKey: 'n',          name: 'n',          width: 10, halign: 'center' },
-    { header: 'Almac\u00e9n',      dataKey: 'almacen',    name: 'almacen',    width: 35, halign: 'left'   },
-    { header: 'Campa\u00f1a',      dataKey: 'nombre',     name: 'nombre',     width: 40, halign: 'left'   },
-    { header: 'Porcentaje',   dataKey: 'porcentaje', name: 'porcentaje', width: 22, halign: 'center' },
-    { header: 'Fecha Inicio', dataKey: 'fechainicio',name: 'fechainicio',width: 28, halign: 'center' },
-    { header: 'Fecha Final',  dataKey: 'fechafinal', name: 'fechafinal', width: 28, halign: 'center' },
-    { header: 'Estado',       dataKey: 'est',        name: 'est',        width: 25, halign: 'center' },
-    { header: 'Cant. Ventas', dataKey: 'nventas',    name: 'nventas',    width: 30, halign: 'right'  },
+    { header: 'N\u00b0', dataKey: 'n', name: 'n', width: 10, halign: 'center' },
+    { header: 'Almac\u00e9n', dataKey: 'almacen', name: 'almacen', width: 35, halign: 'left' },
+    { header: 'Campa\u00f1a', dataKey: 'nombre', name: 'nombre', width: 40, halign: 'left' },
+    {
+      header: 'Porcentaje',
+      dataKey: 'porcentaje',
+      name: 'porcentaje',
+      width: 22,
+      halign: 'center',
+    },
+    {
+      header: 'Fecha Inicio',
+      dataKey: 'fechainicio',
+      name: 'fechainicio',
+      width: 28,
+      halign: 'center',
+    },
+    {
+      header: 'Fecha Final',
+      dataKey: 'fechafinal',
+      name: 'fechafinal',
+      width: 28,
+      halign: 'center',
+    },
+    { header: 'Estado', dataKey: 'est', name: 'est', width: 25, halign: 'center' },
+    { header: 'Cant. Ventas', dataKey: 'nventas', name: 'nventas', width: 30, halign: 'right' },
   ]
 
   /* Filtrar columnas visibles. El N siempre se incluye. */
@@ -3313,30 +3357,30 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
 
   /* Mapeo de datos */
   const filas = datos.map((item, index) => ({
-    n:          index + 1,
-    almacen:    item.almacen    ?? '-',
-    nombre:     item.nombre     ?? '-',
+    n: index + 1,
+    almacen: item.almacen ?? '-',
+    nombre: item.nombre ?? '-',
     porcentaje: item.porcentaje ?? '0',
-    fechainicio:cambiarFormatoFecha(item.fechainicio),
+    fechainicio: cambiarFormatoFecha(item.fechainicio),
     fechafinal: cambiarFormatoFecha(item.fechafinal),
-    est:        item.est        ?? '-',
-    nventas:    item.nventas    ?? '0',
+    est: item.est ?? '-',
+    nventas: item.nventas ?? '0',
   }))
 
   /* Estilos generados dinamicamente */
   const columnStyles = {}
   const headerColumnStyles = {}
   columns.forEach((col) => {
-    columnStyles[col.dataKey]       = { cellWidth: col.width, halign: col.halign }
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
     headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
   })
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
     campos: [
-      { label: 'Almac\u00e9n',      valor: almacen || '' },
+      { label: 'Almac\u00e9n', valor: almacen || '' },
       { label: 'Fecha Inicio', valor: cambiarFormatoFecha(fechaInicio) || '' },
-      { label: 'Fecha Fin',    valor: cambiarFormatoFecha(fechaFin)    || '' },
+      { label: 'Fecha Fin', valor: cambiarFormatoFecha(fechaFin) || '' },
     ],
   }
 
@@ -3344,7 +3388,7 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     titulo: 'DATOS DEL USUARIO',
     campos: [
       { label: 'Usuario', valor: usuario?.nombre || '' },
-      { label: 'Cargo',   valor: usuario?.cargo  || '' },
+      { label: 'Cargo', valor: usuario?.cargo || '' },
     ],
   }
 
@@ -3368,9 +3412,10 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
 export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
-  const { fechaInicio, fechaFin, campana, usuario } = opciones
+  const { fechaInicio, fechaFin, campana, usuario, visibleColumnsFromTable } = opciones
 
-  const columns = [
+  // Definimos todas las columnas posibles para este reporte
+  const allColumns = [
     { header: 'N°', dataKey: 'n' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Producto', dataKey: 'producto' },
@@ -3380,6 +3425,25 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     { header: 'Total Descuento', dataKey: 'descuento' },
   ]
 
+  // Determinar las columnas visibles solicitadas (acepta array de nombres o array de objetos { name })
+  let visibleKeys = []
+  if (Array.isArray(visibleColumnsFromTable) && visibleColumnsFromTable.length > 0) {
+    visibleKeys = visibleColumnsFromTable
+      .map((c) => {
+        if (!c) return null
+        if (typeof c === 'string') return c
+        return c.name || c.field || c.dataKey || null
+      })
+      .filter(Boolean)
+  }
+
+  // Si no se especificaron columnas visibles, usar todas
+  let columns = visibleKeys.length
+    ? allColumns.filter((c) => visibleKeys.includes(c.dataKey))
+    : allColumns.slice()
+  if (columns.length === 0) columns = allColumns.slice()
+
+  // Construir filas con todos los campos (jsPDF-autoTable usará solo los dataKeys presentes en `columns`)
   const filas = datos.map((item, index) => ({
     n: index + 1,
     codigo: item.productoCodigo ?? item.codigo ?? '-',
@@ -3390,22 +3454,29 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     descuento: decimas(item.descuento),
   }))
 
+  // Totales globales
   const totalSubtotOrig = datos.reduce((acc, i) => acc + Number(i.subtotalOriginal || 0), 0)
   const totalSubtotCamp = datos.reduce((acc, i) => acc + Number(i.subtotalCampana || 0), 0)
   const totalDescuento = datos.reduce((acc, i) => acc + Number(i.descuento || 0), 0)
 
-  const filaTotales = crearFilaTotalGeneral(
-    'TOTAL GENERAL',
-    [
-      { valor: totalSubtotOrig, halign: 'right' },
-      { valor: totalSubtotCamp, halign: 'right' },
-      { valor: totalDescuento, halign: 'right' },
-    ],
-    4, // Span over N°, Código, Producto, Cant.
-  )
+  // Insertar totales sólo en las columnas de totales presentes, respetando el orden de `columns`
+  const totalsKeys = ['subtotalOriginal', 'subtotalCampana', 'descuento']
+  const totalsMap = {
+    subtotalOriginal: totalSubtotOrig,
+    subtotalCampana: totalSubtotCamp,
+    descuento: totalDescuento,
+  }
+
+  const columnasTotales = columns
+    .filter((c) => totalsKeys.includes(c.dataKey))
+    .map((c) => ({ valor: totalsMap[c.dataKey] || 0, halign: 'right' }))
+
+  const colSpan = Math.max(1, columns.length - columnasTotales.length)
+  const filaTotales = crearFilaTotalGeneral('TOTAL GENERAL', columnasTotales, colSpan)
   filas.push(filaTotales)
 
-  const columnStyles = {
+  // Estilos base y filtrado para incluir sólo las columnas visibles
+  const baseColumnStyles = {
     n: { cellWidth: 10, halign: 'center' },
     codigo: { cellWidth: 25, halign: 'left' },
     producto: { cellWidth: 55, halign: 'left' },
@@ -3414,6 +3485,11 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     subtotalCampana: { cellWidth: 28, halign: 'right' },
     descuento: { cellWidth: 28, halign: 'right' },
   }
+
+  const columnStyles = {}
+  columns.forEach((c) => {
+    if (baseColumnStyles[c.dataKey]) columnStyles[c.dataKey] = baseColumnStyles[c.dataKey]
+  })
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
@@ -4417,29 +4493,29 @@ function agregarEncabezado(doc) {
   const startY = 5
 
   //LOGO
-if (logoBase64) {
-  const imgProps = doc.getImageProperties(logoBase64)
+  if (logoBase64) {
+    const imgProps = doc.getImageProperties(logoBase64)
 
-  const maxWidth = 36
-  const maxHeight = 21
+    const maxWidth = 36
+    const maxHeight = 21
 
-  const aspectRatio = imgProps.width / imgProps.height
+    const aspectRatio = imgProps.width / imgProps.height
 
-  let imgWidth = maxWidth
-  let imgHeight = maxWidth / aspectRatio
+    let imgWidth = maxWidth
+    let imgHeight = maxWidth / aspectRatio
 
-  if (imgHeight > maxHeight) {
-    imgHeight = maxHeight
-    imgWidth = maxHeight * aspectRatio
+    if (imgHeight > maxHeight) {
+      imgHeight = maxHeight
+      imgWidth = maxHeight * aspectRatio
+    }
+
+    const xPos = (pageWidth - imgWidth) / 2
+    const yPos = startY
+
+    const format = logoBase64.includes('png') ? 'PNG' : 'JPEG'
+
+    doc.addImage(logoBase64, format, xPos, yPos, imgWidth, imgHeight)
   }
-
-  const xPos = (pageWidth - imgWidth) / 2
-  const yPos = startY
-
-  const format = logoBase64.includes('png') ? 'PNG' : 'JPEG'
-
-  doc.addImage(logoBase64, format, xPos, yPos, imgWidth, imgHeight)
-}
   //Datos Izquierda
   doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
