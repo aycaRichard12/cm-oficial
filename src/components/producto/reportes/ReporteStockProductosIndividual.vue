@@ -274,8 +274,19 @@ const processedRows = computed(() => {
 onMounted(() => {
   cargarAlmacenes()
 })
+const miTabla = ref(null)
+
 const vistaPrevia = () => {
-  const doc = PDFreporteStockProductosIndividual(processedRows)
+  // Obtener las columnas visibles de la tabla
+  const visibleColumnsFromTable = miTabla.value?.obtenerColumnasVisibles() || []
+
+  // Mapejar nombres de columnas: 'costo' en la UI -> 'costototal' en el PDF
+  const mappedColumns = visibleColumnsFromTable.map((col) => ({
+    ...col,
+    name: col.name === 'costo' ? 'costototal' : col.name,
+  }))
+
+  const doc = PDFreporteStockProductosIndividual(processedRows.value, mappedColumns)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }

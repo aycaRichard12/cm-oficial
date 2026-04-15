@@ -42,6 +42,8 @@ reporte_avance.xlsx
 pygenrarreporte.py
 cambios_actuales.txt
 pyCambiosHead.py
+
+env.example
 pyLimpiarCarpetaAssets.py
 pySubirDistAlServidor.py
 pySubirApi.py

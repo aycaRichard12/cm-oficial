@@ -1,4 +1,4 @@
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
+﻿import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 import { Platform } from 'quasar'
 import jsPDF from 'jspdf'
@@ -1037,103 +1037,138 @@ export function PDFreporteCreditos(
   return docResult
 }
 
-export function PDFreporteStockProductosIndividual(processedRows) {
+/**
+ * Genera el PDF del reporte de Stock de Productos.
+ * @param {Array} rows - Array plano de filas (ya filtradas según la tabla UI).
+ * @param {Array} visibleColumnsFromTable - Columnas actualmente visibles en la tabla UI (objetos con { name, label }).
+ */
+export function PDFreporteStockProductosIndividual(rows, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
+  // Normalizar entrada: acepta array plano o ref reactiva
+  const arrRows = Array.isArray(rows) ? rows : (rows?.value ?? [])
+
   /* =========================
-   * 1. TODAS LAS COLUMNAS (sin filtrar)
+   * 1. CATÁLOGO COMPLETO DE COLUMNAS
+   * Mapa de columnas posibles con sus estilos PDF.
+   * La columna 'indice' siempre se incluye.
    ========================= */
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    // { header: 'Fecha Registro', dataKey: 'fecha' },
-    // { header: 'Almacén', dataKey: 'almacen' },
-    { header: 'Código', dataKey: 'codigo' },
-    { header: 'Producto', dataKey: 'producto' },
-    { header: 'Categoría', dataKey: 'categoria' },
-    { header: 'Sub Categoría', dataKey: 'subcategoria' },
-    { header: 'Descripción', dataKey: 'descripcion' },
-    { header: 'Unidad', dataKey: 'unidad' },
-    { header: 'Stock', dataKey: 'stock' },
-    { header: `Costo Unit. (${divisaActiva})`, dataKey: 'costounitario' },
-    { header: `Costo total (${divisaActiva})`, dataKey: 'costo' },
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'numero', width: 10, halign: 'center' },
+    { header: 'Código', dataKey: 'codigo', name: 'codigo', width: 15, halign: 'center' },
+    { header: 'Producto', dataKey: 'producto', name: 'producto', width: 20, halign: 'left' },
+    { header: 'Categoría', dataKey: 'categoria', name: 'categoria', width: 15, halign: 'center' },
+    {
+      header: 'Sub Categoría',
+      dataKey: 'subcategoria',
+      name: 'subcategoria',
+      width: 25,
+      halign: 'center',
+    },
+    {
+      header: 'Descripción',
+      dataKey: 'descripcion',
+      name: 'descripcion',
+      width: 35,
+      halign: 'left',
+    },
+    { header: 'Unidad', dataKey: 'unidad', name: 'unidad', width: 10, halign: 'center' },
+    { header: 'País', dataKey: 'pais', name: 'pais', width: 15, halign: 'left' },
+    { header: 'Stock', dataKey: 'stock', name: 'stock', width: 15, halign: 'right' },
+    { header: 'Estado', dataKey: 'estado', name: 'estado', width: 15, halign: 'center' },
+    {
+      header: `C.Unit (${divisaActiva})`,
+      dataKey: 'costounitario',
+      name: 'costounitario',
+      width: 20,
+      halign: 'right',
+    },
+    {
+      header: `Costo total (${divisaActiva})`,
+      dataKey: 'costototal',
+      name: 'costototal',
+      width: 25,
+      halign: 'right',
+    },
   ]
 
   /* =========================
-   * 2. DATOS
+   * 2. FILTRAR COLUMNAS VISIBLES
+   * Si se reciben columnas desde la tabla UI, filtrar el catálogo.
+   * El índice (N°) siempre se incluye.
    ========================= */
-  const datos = processedRows.value.map((item, indice) => ({
-    indice: indice + 1,
-    fecha: cambiarFormatoFecha(item.fecha),
-    almacen: item.almacen,
-    codigo: item.codigo,
-    producto: item.producto,
-    categoria: item.categoria,
-    subcategoria: item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    columns = allPossibleColumns.filter((c) => c.name === 'numero' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas excepto 'pais' y 'estado' por defecto
+    columns = allPossibleColumns.filter((c) => !['pais', 'estado'].includes(c.name))
+  }
 
-    descripcion: item.descripcion,
-    unidad: item.unidad,
-    stock: item.stock,
-    costounitario: decimas(redondear(parseFloat(item.costounitario))),
-    costo: decimas(redondear(parseFloat(item.costounitario) * parseFloat(item.stock))),
+  /* =========================
+   * 3. MAPEO DE DATOS
+   ========================= */
+  const datos = arrRows.map((item, indice) => ({
+    indice: indice + 1,
+    codigo: item.codigo ?? '',
+    producto: item.producto ?? '',
+    categoria: item.categoria ?? '',
+    subcategoria: item.subcategoria ? item.subcategoria : 'Sin/Subcategoría',
+    descripcion: item.descripcion ?? '',
+    unidad: item.unidad ?? '',
+    pais: item.pais ?? '',
+    stock: item.stock ?? 0,
+    estado: item.estado ?? '',
+    costounitario: decimas(redondear(parseFloat(item.costounitario ?? 0))),
+    costototal: decimas(
+      redondear(parseFloat(item.costounitario ?? 0) * parseFloat(item.stock ?? 0)),
+    ),
   }))
 
   /* =========================
-   * 3. TOTALES
+   * 4. FILA DE TOTAL
+   * El colSpan se calcula dinámicamente según las columnas visibles.
+   * El total monetario solo aparece si la columna 'costototal' es visible.
    ========================= */
-  const costoTotal = processedRows.value.reduce(
-    (sum, row) => sum + redondear(parseFloat(row.stock) * parseFloat(row.costounitario)),
+  const costoTotal = arrRows.reduce(
+    (sum, row) => sum + redondear(parseFloat(row.costounitario ?? 0) * parseFloat(row.stock ?? 0)),
     0,
   )
 
-  // datos.push({
-  //   costounitario: `Total: (${divisaActiva})`,
-  //   costo: decimas(costoTotal),
-  // })
+  const costoTotalIndex = columns.findIndex((c) => c.dataKey === 'costototal')
+  const hasCostoTotal = costoTotalIndex !== -1
+  const spanTotal = hasCostoTotal ? costoTotalIndex : columns.length
+
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
-      [{ valor: costoTotal, halign: 'right' }],
-      9,
+      hasCostoTotal ? [{ valor: costoTotal, halign: 'right' }] : [],
+      spanTotal,
     ),
   )
 
   /* =========================
-   * 4. ESTILOS
+   * 5. ESTILOS (generados dinámicamente desde el catálogo)
    ========================= */
-  const allColumnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    // fecha: { cellWidth: 20, halign: 'center' },
-    // almacen: { cellWidth: 20, halign: 'left' },
-    codigo: { cellWidth: 15, halign: 'center' },
-    producto: { cellWidth: 20, halign: 'center' },
-    categoria: { cellWidth: 15, halign: 'center' },
-    subcategoria: { cellWidth: 25, halign: 'center' },
-    descripcion: { cellWidth: 35, halign: 'center' },
-    unidad: { cellWidth: 10, halign: 'center' },
-    stock: { cellWidth: 15, halign: 'center' },
-    costounitario: { cellWidth: 20, halign: 'center' },
-    costo: { cellWidth: 25, halign: 'center' },
-  }
-
   const columnStyles = {}
+  const headerColumnStyles = {}
   columns.forEach((col) => {
-    if (allColumnStyles[col.dataKey]) {
-      columnStyles[col.dataKey] = allColumnStyles[col.dataKey]
-    }
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
   })
 
-  const headerColumnStyles = columnStyles
-
   /* =========================
-   * 5. CABECERA IZQUIERDA
+   * 6. CABECERA IZQUIERDA
    ========================= */
+  const almacenValor = arrRows[0]?.almacen ?? ''
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
-    campos: datos[0]?.almacen ? [{ label: 'Almacén', valor: datos[0].almacen }] : [],
+    campos: almacenValor ? [{ label: 'Almacén', valor: almacenValor }] : [],
   }
 
   /* =========================
-   * 6. DIBUJAR PDF
+   * 7. DIBUJAR PDF
    ========================= */
   dibujarCuerpoTabla(
     doc,
@@ -1143,7 +1178,6 @@ export function PDFreporteStockProductosIndividual(processedRows) {
     columnStyles,
     headerColumnStyles,
     Izquierda,
-
     null,
     true,
     null,
@@ -3280,42 +3314,71 @@ export function PDF_REPORTE_CAMPANAS(reporte, datosFormulario) {
 
 export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-  const { fechaInicio, fechaFin, almacen, usuario } = opciones
+  const { fechaInicio, fechaFin, almacen, usuario, visibleColumnsFromTable = [] } = opciones
 
-  const columns = [
-    { header: 'N°', dataKey: 'n' },
-    { header: 'Almacén', dataKey: 'almacen' },
-    { header: 'Campaña', dataKey: 'nombre' },
-    { header: 'Fecha Inicio', dataKey: 'fechainicio' },
-    { header: 'Fecha Final', dataKey: 'fechafinal' },
-    { header: 'Estado', dataKey: 'est' },
-    { header: 'Cant. Ventas', dataKey: 'nventas' },
+  /* Catalogo completo de columnas posibles */
+  const allPossibleColumns = [
+    { header: 'N\u00b0', dataKey: 'n', name: 'n', width: 10, halign: 'center' },
+    { header: 'Almac\u00e9n', dataKey: 'almacen', name: 'almacen', width: 35, halign: 'left' },
+    { header: 'Campa\u00f1a', dataKey: 'nombre', name: 'nombre', width: 40, halign: 'left' },
+    {
+      header: 'Porcentaje',
+      dataKey: 'porcentaje',
+      name: 'porcentaje',
+      width: 22,
+      halign: 'center',
+    },
+    {
+      header: 'Fecha Inicio',
+      dataKey: 'fechainicio',
+      name: 'fechainicio',
+      width: 28,
+      halign: 'center',
+    },
+    {
+      header: 'Fecha Final',
+      dataKey: 'fechafinal',
+      name: 'fechafinal',
+      width: 28,
+      halign: 'center',
+    },
+    { header: 'Estado', dataKey: 'est', name: 'est', width: 25, halign: 'center' },
+    { header: 'Cant. Ventas', dataKey: 'nventas', name: 'nventas', width: 30, halign: 'right' },
   ]
 
+  /* Filtrar columnas visibles. El N siempre se incluye. */
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    columns = allPossibleColumns.filter((c) => c.name === 'n' || visibleNames.has(c.name))
+  } else {
+    columns = allPossibleColumns
+  }
+
+  /* Mapeo de datos */
   const filas = datos.map((item, index) => ({
     n: index + 1,
     almacen: item.almacen ?? '-',
     nombre: item.nombre ?? '-',
+    porcentaje: item.porcentaje ?? '0',
     fechainicio: cambiarFormatoFecha(item.fechainicio),
     fechafinal: cambiarFormatoFecha(item.fechafinal),
     est: item.est ?? '-',
-    nventas: item.nventas,
+    nventas: item.nventas ?? '0',
   }))
 
-  const columnStyles = {
-    n: { cellWidth: 10, halign: 'center' },
-    almacen: { cellWidth: 35, halign: 'left' },
-    nombre: { cellWidth: 40, halign: 'left' },
-    fechainicio: { cellWidth: 28, halign: 'center' },
-    fechafinal: { cellWidth: 28, halign: 'center' },
-    est: { cellWidth: 25, halign: 'center' },
-    nventas: { cellWidth: 30, halign: 'right' },
-  }
+  /* Estilos generados dinamicamente */
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
     campos: [
-      { label: 'Almacén', valor: almacen || '' },
+      { label: 'Almac\u00e9n', valor: almacen || '' },
       { label: 'Fecha Inicio', valor: cambiarFormatoFecha(fechaInicio) || '' },
       { label: 'Fecha Fin', valor: cambiarFormatoFecha(fechaFin) || '' },
     ],
@@ -3333,9 +3396,9 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
     doc,
     columns,
     filas,
-    'REPORTE DE VENTAS POR CAMPAÑA',
+    'REPORTE DE VENTAS POR CAMPA\u00d1A',
     columnStyles,
-    { ...columnStyles, nventas: { halign: 'right', cellWidth: 30 } },
+    headerColumnStyles,
     Izquierda,
     derecho,
     false,
@@ -3349,9 +3412,10 @@ export function PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datos, opciones = {}) {
 export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
-  const { fechaInicio, fechaFin, campana, usuario } = opciones
+  const { fechaInicio, fechaFin, campana, usuario, visibleColumnsFromTable } = opciones
 
-  const columns = [
+  // Definimos todas las columnas posibles para este reporte
+  const allColumns = [
     { header: 'N°', dataKey: 'n' },
     { header: 'Código', dataKey: 'codigo' },
     { header: 'Producto', dataKey: 'producto' },
@@ -3361,6 +3425,25 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     { header: 'Total Descuento', dataKey: 'descuento' },
   ]
 
+  // Determinar las columnas visibles solicitadas (acepta array de nombres o array de objetos { name })
+  let visibleKeys = []
+  if (Array.isArray(visibleColumnsFromTable) && visibleColumnsFromTable.length > 0) {
+    visibleKeys = visibleColumnsFromTable
+      .map((c) => {
+        if (!c) return null
+        if (typeof c === 'string') return c
+        return c.name || c.field || c.dataKey || null
+      })
+      .filter(Boolean)
+  }
+
+  // Si no se especificaron columnas visibles, usar todas
+  let columns = visibleKeys.length
+    ? allColumns.filter((c) => visibleKeys.includes(c.dataKey))
+    : allColumns.slice()
+  if (columns.length === 0) columns = allColumns.slice()
+
+  // Construir filas con todos los campos (jsPDF-autoTable usará solo los dataKeys presentes en `columns`)
   const filas = datos.map((item, index) => ({
     n: index + 1,
     codigo: item.productoCodigo ?? item.codigo ?? '-',
@@ -3371,22 +3454,29 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     descuento: decimas(item.descuento),
   }))
 
+  // Totales globales
   const totalSubtotOrig = datos.reduce((acc, i) => acc + Number(i.subtotalOriginal || 0), 0)
   const totalSubtotCamp = datos.reduce((acc, i) => acc + Number(i.subtotalCampana || 0), 0)
   const totalDescuento = datos.reduce((acc, i) => acc + Number(i.descuento || 0), 0)
 
-  const filaTotales = crearFilaTotalGeneral(
-    'TOTAL GENERAL',
-    [
-      { valor: totalSubtotOrig, halign: 'right' },
-      { valor: totalSubtotCamp, halign: 'right' },
-      { valor: totalDescuento, halign: 'right' },
-    ],
-    4, // Span over N°, Código, Producto, Cant.
-  )
+  // Insertar totales sólo en las columnas de totales presentes, respetando el orden de `columns`
+  const totalsKeys = ['subtotalOriginal', 'subtotalCampana', 'descuento']
+  const totalsMap = {
+    subtotalOriginal: totalSubtotOrig,
+    subtotalCampana: totalSubtotCamp,
+    descuento: totalDescuento,
+  }
+
+  const columnasTotales = columns
+    .filter((c) => totalsKeys.includes(c.dataKey))
+    .map((c) => ({ valor: totalsMap[c.dataKey] || 0, halign: 'right' }))
+
+  const colSpan = Math.max(1, columns.length - columnasTotales.length)
+  const filaTotales = crearFilaTotalGeneral('TOTAL GENERAL', columnasTotales, colSpan)
   filas.push(filaTotales)
 
-  const columnStyles = {
+  // Estilos base y filtrado para incluir sólo las columnas visibles
+  const baseColumnStyles = {
     n: { cellWidth: 10, halign: 'center' },
     codigo: { cellWidth: 25, halign: 'left' },
     producto: { cellWidth: 55, halign: 'left' },
@@ -3395,6 +3485,11 @@ export function PDF_REPORTE_CAMPANAS_VENTAS(datos, opciones = {}) {
     subtotalCampana: { cellWidth: 28, halign: 'right' },
     descuento: { cellWidth: 28, halign: 'right' },
   }
+
+  const columnStyles = {}
+  columns.forEach((c) => {
+    if (baseColumnStyles[c.dataKey]) columnStyles[c.dataKey] = baseColumnStyles[c.dataKey]
+  })
 
   const Izquierda = {
     titulo: 'DATOS DEL REPORTE',
@@ -4399,28 +4494,27 @@ function agregarEncabezado(doc) {
 
   //LOGO
   if (logoBase64) {
-    console.log(logoBase64)
-
-    // Obtener dimensiones reales de la imagen para mantener proporción
     const imgProps = doc.getImageProperties(logoBase64)
-    const maxWidth = 40 // Ancho máximo del logo en mm
 
-    // Calcular dimensiones manteniendo aspect ratio
+    const maxWidth = 36
+    const maxHeight = 21
+
     const aspectRatio = imgProps.width / imgProps.height
+
     let imgWidth = maxWidth
     let imgHeight = maxWidth / aspectRatio
 
-    // Si la imagen es más alta que ancha, limitar por altura máxima
-    const maxHeight = 25 // Altura máxima del logo en mm
     if (imgHeight > maxHeight) {
       imgHeight = maxHeight
       imgWidth = maxHeight * aspectRatio
     }
 
-    const xPos = (pageWidth - imgWidth) / 2 // ← CENTRAR
-    const yPos = startY // tu altura elegida
+    const xPos = (pageWidth - imgWidth) / 2
+    const yPos = startY
 
-    doc.addImage(logoBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight)
+    const format = logoBase64.includes('png') ? 'PNG' : 'JPEG'
+
+    doc.addImage(logoBase64, format, xPos, yPos, imgWidth, imgHeight)
   }
   //Datos Izquierda
   doc.setFontSize(9)
@@ -4864,18 +4958,42 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   return docResult
 }
 
-export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
+export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fechaIngreso' },
-    { header: 'Proveedor', dataKey: 'proveedor' },
-    { header: 'Factura', dataKey: 'nFactura' },
-    { header: 'Almacen', dataKey: 'nombreAlmacen' },
-    { header: 'Estado', dataKey: 'estado' },
-    { header: `Total (${divisaActiva})`, dataKey: 'totalIngreso' },
+  // Catálogo completo de columnas posibles
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'num', width: 10, halign: 'center' },
+    { header: 'Fecha', dataKey: 'fechaIngreso', name: 'fechaIngreso', width: 25, halign: 'center' },
+    { header: 'Proveedor', dataKey: 'proveedor', name: 'proveedor', width: 50, halign: 'left' },
+    { header: 'Factura', dataKey: 'nFactura', name: 'nFactura', width: 20, halign: 'center' },
+    {
+      header: 'Almacen',
+      dataKey: 'nombreAlmacen',
+      name: 'nombreAlmacen',
+      width: 35,
+      halign: 'left',
+    },
+    { header: 'Estado', dataKey: 'estado', name: 'estado', width: 20, halign: 'center' },
+    {
+      header: `Total (${divisaActiva})`,
+      dataKey: 'totalIngreso',
+      name: 'totalIngreso',
+      width: 36,
+      halign: 'right',
+    },
   ]
+
+  // Filtrar columnas según las columnas visibles de la tabla
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    // Siempre incluir 'num' (índice)
+    columns = allPossibleColumns.filter((c) => c.name === 'num' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas
+    columns = allPossibleColumns
+  }
 
   const datos = compras.map((item, index) => ({
     indice: index + 1,
@@ -4889,37 +5007,25 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
 
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
 
-  // datos.push({
-  //   nombreAlmacen: 'TOTAL GENERAL (' + divisaActiva + ')',
-  //   totalIngreso: decimas(totalGeneral),
-  // })
+  // Calcular el span para el total general basado en las columnas visibles
+  const totalIngresoIndex = columns.findIndex((c) => c.dataKey === 'totalIngreso')
+  const spanTotal = totalIngresoIndex !== -1 ? totalIngresoIndex : columns.length
+
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
       [{ valor: totalGeneral, halign: 'right' }],
-      6,
+      spanTotal,
     ),
   )
 
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    fechaIngreso: { cellWidth: 25, halign: 'center' },
-    proveedor: { cellWidth: 50, halign: 'left' },
-    nFactura: { cellWidth: 20, halign: 'center' },
-    nombreAlmacen: { cellWidth: 35, halign: 'left' },
-    totalIngreso: { cellWidth: 36, halign: 'right' },
-    estado: { cellWidth: 20, halign: 'center' },
-  }
-
-  const headerColumnStyles = {
-    indice: { halign: 'center' },
-    fechaIngreso: { halign: 'center' },
-    proveedor: { halign: 'left' },
-    nFactura: { halign: 'center' },
-    nombreAlmacen: { halign: 'left' },
-    totalIngreso: { halign: 'right' },
-    estado: { halign: 'center' },
-  }
+  // Generar columnStyles dinámicamente desde el catálogo
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'REPORTE DE COMPRAS POR PROVEEDOR',
@@ -4948,25 +5054,55 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
   return docResult
 }
 
-export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
+export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' })
   console.log('compras', compras)
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fechaIngreso' },
-    { header: 'Cód. Prov.', dataKey: 'codigoProveedor' },
-    { header: 'Proveedor', dataKey: 'proveedor' },
-    { header: 'Lote', dataKey: 'nombreIngreso' },
-    { header: 'Factura', dataKey: 'nFactura' },
-    { header: 'Tipo', dataKey: 'tipoCompra' },
-    { header: 'Almacén', dataKey: 'almacen' },
 
-    { header: 'Aut.', dataKey: 'autorizacion' },
-    { header: 'Estado', dataKey: 'estado' },
-    { header: 'Cant.', dataKey: 'cantidad' },
-    { header: `P. Unit. ${divisaActiva}`, dataKey: 'precioUnitario' },
-    { header: `Total (${divisaActiva})`, dataKey: 'total' },
+  // Catálogo completo de columnas posibles
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'indice', width: 10, halign: 'center' },
+    { header: 'Fecha', dataKey: 'fechaIngreso', name: 'fechaIngreso', width: 20, halign: 'center' },
+    {
+      header: 'Cód. Prov.',
+      dataKey: 'codigoProveedor',
+      name: 'codigoProveedor',
+      width: 20,
+      halign: 'left',
+    },
+    { header: 'Proveedor', dataKey: 'proveedor', name: 'proveedor', width: 35, halign: 'left' },
+    { header: 'Lote', dataKey: 'nombreIngreso', name: 'nombreIngreso', width: 25, halign: 'left' },
+    { header: 'Factura', dataKey: 'nFactura', name: 'nFactura', width: 18, halign: 'center' },
+    { header: 'Tipo', dataKey: 'tipoCompra', name: 'tipoCompra', width: 20, halign: 'center' },
+    { header: 'Almacén', dataKey: 'almacen', name: 'almacen', width: 20, halign: 'left' },
+    { header: 'Aut.', dataKey: 'autorizacion', name: 'autorizacion', width: 12, halign: 'center' },
+    { header: 'Estado', dataKey: 'estado', name: 'estadoIngreso', width: 15, halign: 'center' },
+    { header: 'Cant.', dataKey: 'cantidad', name: 'cantidad', width: 25, halign: 'right' },
+    {
+      header: `P. Unit. ${divisaActiva}`,
+      dataKey: 'precioUnitario',
+      name: 'precioUnitario',
+      width: 18,
+      halign: 'right',
+    },
+    {
+      header: `Total (${divisaActiva})`,
+      dataKey: 'total',
+      name: 'total',
+      width: 20,
+      halign: 'right',
+    },
   ]
+
+  // Filtrar columnas según las columnas visibles de la tabla
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    // Siempre incluir 'indice' (N°)
+    columns = allPossibleColumns.filter((c) => c.name === 'indice' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas
+    columns = allPossibleColumns
+  }
 
   const datos = [...compras]
     .map((item) => ({
@@ -4996,12 +5132,10 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
   )
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.total || 0), 0)
 
-  // datos.push({
-  //   cantidad: 'TOTAL GENERAL' + ` (${divisaActiva})`,
+  // Calcular el span para el total general basado en las columnas visibles
+  const precioUnitarioIndex = columns.findIndex((c) => c.dataKey === 'precioUnitario')
+  const spanTotal = precioUnitarioIndex !== -1 ? precioUnitarioIndex : columns.length
 
-  //   precioUnitario: decimas(totalPrecioUnitario),
-  //   total: decimas(totalGeneral),
-  // })
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
@@ -5009,41 +5143,17 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
         { valor: totalPrecioUnitario, halign: 'right' },
         { valor: totalGeneral, halign: 'right' },
       ],
-      11,
+      spanTotal,
     ),
   )
 
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    fechaIngreso: { cellWidth: 20, halign: 'center' },
-    codigoProveedor: { cellWidth: 20, halign: 'left' },
-    proveedor: { cellWidth: 35, halign: 'left' },
-    nombreIngreso: { cellWidth: 25, halign: 'left' },
-    nFactura: { cellWidth: 18, halign: 'center' },
-    tipoCompra: { cellWidth: 20, halign: 'center' },
-    almacen: { cellWidth: 20, halign: 'left' },
-    cantidad: { cellWidth: 25, halign: 'right' },
-    precioUnitario: { cellWidth: 18, halign: 'right' },
-    total: { cellWidth: 20, halign: 'right' },
-    autorizacion: { cellWidth: 12, halign: 'center' },
-    estado: { cellWidth: 15, halign: 'center' },
-  }
-
-  const headerColumnStyles = {
-    indice: { halign: 'center' },
-    fechaIngreso: { halign: 'center' },
-    codigoProveedor: { halign: 'left' },
-    proveedor: { halign: 'left' },
-    nombreIngreso: { halign: 'left' },
-    nFactura: { halign: 'center' },
-    tipoCompra: { halign: 'center' },
-    almacen: { halign: 'left' },
-    cantidad: { halign: 'right' },
-    precioUnitario: { halign: 'right' },
-    total: { halign: 'right' },
-    autorizacion: { halign: 'center' },
-    estado: { halign: 'center' },
-  }
+  // Generar columnStyles dinámicamente desde el catálogo
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'REPORTE DE COMPRAS POR PRODUCTO',

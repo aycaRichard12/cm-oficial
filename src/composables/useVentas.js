@@ -26,6 +26,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        [-1]: 'Cotización de Venta',
       }
 
       const estado = {
@@ -73,6 +74,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        [-1]: 'Cotización de Venta',
       }
 
       const motivosanulacion = {
@@ -118,6 +120,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        [-1]: 'Cotización de Venta',
       }
 
       ventasDevueltas.value = response.data.map((key, index) => {

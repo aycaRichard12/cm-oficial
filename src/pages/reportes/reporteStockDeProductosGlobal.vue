@@ -75,7 +75,8 @@
 
     <!-- Tabla de resultados -->
     <StockGlobalTable
-    id="tablaResultados"
+      ref="stockTableRef"
+      id="tablaResultados"
       :rows="datosFiltrados"
       :columns="columnas"
       :sumatoriaStock="sumatoriaStock"
@@ -100,6 +101,8 @@ import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator
 // import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
 import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
 import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
+
+const stockTableRef = ref(null)
 import { useCurrencyStore } from 'src/stores/currencyStore'
 
 const divisaActiva = useCurrencyStore().simbolo
@@ -299,17 +302,18 @@ async function mostrarVistaPrevia() {
   }
   await generarReporte()
   if (!datosFiltrados.value.length) {
-    if (!almacenSeleccionado.value) {
-      // Already handled in generating report but double check
-    } else {
-      $q.notify({
-        type: 'warning',
-        message: 'No hay datos para mostrar',
-      })
-    }
+    $q.notify({
+      type: 'warning',
+      message: 'No hay datos para mostrar',
+    })
     return
   }
-  const doc = PDFreporteStockProductosIndividual(datosFiltrados)
+
+  // Obtener el estado actual de la tabla (datos filtrados + columnas visibles)
+  const datosDeLaTabla = stockTableRef.value?.obtenerDatosFiltrados() ?? datosFiltrados.value
+  const columnasDeLaTabla = stockTableRef.value?.obtenerColumnasVisibles() ?? []
+
+  const doc = PDFreporteStockProductosIndividual(datosDeLaTabla, columnasDeLaTabla)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }

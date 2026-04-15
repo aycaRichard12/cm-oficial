@@ -117,6 +117,7 @@
       <q-card-section>
         <BaseFilterableTable
           id="reporteCompras"
+          ref="miTabla"
           title="Listado de Compras"
           :rows="filteredCompras"
           :columns="columnas"
@@ -152,7 +153,7 @@
           <template v-slot:body-cell-acciones="props">
             <q-td :props="props">
               <q-btn
-              id="verDetallePDF"
+                id="verDetallePDF"
                 flat
                 round
                 dense
@@ -206,7 +207,7 @@ import { useCurrencyStore } from 'src/stores/currencyStore'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
 import { api } from 'boot/axios'
-import { validarUsuario } from 'src/composables/FuncionesG'
+import { validarUsuario, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 const divisaActiva = useCurrencyStore()
 
@@ -224,6 +225,7 @@ const selectedProveedor = ref(null)
 const $q = useQuasar()
 
 // Table configuration
+const miTabla = ref(null)
 const arrayHeaders = [
   'codigoProveedor',
   'proveedor',
@@ -262,7 +264,7 @@ const columnas = [
     label: 'Fecha Ingreso',
     field: 'fechaIngreso',
     align: 'center',
-    dataType: 'date',
+    format: (val) => cambiarFormatoFecha(val),
   },
   {
     name: 'nombreIngreso',
@@ -349,7 +351,7 @@ const filteredCompras = computed(() => {
   let data = compras.value || []
   if (appliedProveedor.value) {
     // Si la opción seleccionada contiene ' - ', la separamos y usamos el nombre (proveedor) para filtrar.
-    const proveedorSeleccionadoNombre = appliedProveedor.value.includes('-') 
+    const proveedorSeleccionadoNombre = appliedProveedor.value.includes('-')
       ? appliedProveedor.value.substring(appliedProveedor.value.indexOf('-') + 1).trim()
       : appliedProveedor.value.trim()
 
@@ -371,7 +373,7 @@ const generarReporte = async () => {
     return
   }
   await fetchCompras(fechaInicio.value, fechaFin.value)
-  
+
   appliedProveedor.value = selectedProveedor.value
 
   const cantidadResultados = filteredCompras.value.length
@@ -403,13 +405,16 @@ const generarPDF = () => {
     return
   }
 
+  // Obtener las columnas visibles de la tabla
+  const visibleColumnsFromTable = miTabla.value?.obtenerColumnasVisibles() || []
+
   const filters = {
     fechaInicio: fechaInicio.value,
     fechaFin: fechaFin.value,
     proveedor: selectedProveedor.value,
   }
 
-  const doc = PDF_REPORTE_COMPRAS_GENERAL(filteredCompras.value, filters)
+  const doc = PDF_REPORTE_COMPRAS_GENERAL(filteredCompras.value, filters, visibleColumnsFromTable)
   // Convertir a blob URL para mostrar en iframe
   const pdfBlob = doc.output('blob')
 
