@@ -10,7 +10,7 @@ export function idempresa_md5() {
     return contenidousuario?.[0]?.empresa?.idempresa
   } else {
     console.warn('Sin sesión: idempresa_md5')
-    window.location.replace('/#/login')
+    window.location.replace('login')
   }
 }
 export function getNombreEmpresa() {
@@ -35,7 +35,7 @@ export function idusuario_md5() {
     return contenidousuario?.[0]?.idusuario
   } else {
     console.warn('Sin sesión: idusuario_md5')
-    window.location.replace('/#/login')
+    window.location.replace('login')
   }
 }
 export function TipoFactura() {
@@ -49,7 +49,7 @@ export function TipoFactura() {
     }
   } else {
     console.warn('Sin sesión: TipoFactura')
-    window.location.replace('/#/login')
+    window.location.replace('login')
   }
 }
 export function expires_in() {
@@ -58,7 +58,7 @@ export function expires_in() {
     return contenidousuario?.[0]?.empresa?.fex
   } else {
     console.warn('Sin sesión: expires_in')
-    window.location.replace('/#/login')
+    window.location.replace('login')
   }
 }
 export function obtenerEstadoFactura() {
@@ -71,7 +71,7 @@ export function validarUsuario() {
     return contenidousuario
   } else {
     console.warn('Sin sesión: validarUsuario')
-    window.location.replace('/#/login')
+    window.location.replace('login')
   }
 }
 

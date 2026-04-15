@@ -42,3 +42,7 @@ reporte_avance.xlsx
 pygenrarreporte.py
 cambios_actuales.txt
 pyCambiosHead.py
+pyLimpiarCarpetaAssets.py
+pySubirDistAlServidor.py
+pySubirApi.py
+upload_dist.bat
