@@ -5054,25 +5054,55 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters, visibleColumnsFrom
   return docResult
 }
 
-export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
+export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' })
   console.log('compras', compras)
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fechaIngreso' },
-    { header: 'Cód. Prov.', dataKey: 'codigoProveedor' },
-    { header: 'Proveedor', dataKey: 'proveedor' },
-    { header: 'Lote', dataKey: 'nombreIngreso' },
-    { header: 'Factura', dataKey: 'nFactura' },
-    { header: 'Tipo', dataKey: 'tipoCompra' },
-    { header: 'Almacén', dataKey: 'almacen' },
 
-    { header: 'Aut.', dataKey: 'autorizacion' },
-    { header: 'Estado', dataKey: 'estado' },
-    { header: 'Cant.', dataKey: 'cantidad' },
-    { header: `P. Unit. ${divisaActiva}`, dataKey: 'precioUnitario' },
-    { header: `Total (${divisaActiva})`, dataKey: 'total' },
+  // Catálogo completo de columnas posibles
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'indice', width: 10, halign: 'center' },
+    { header: 'Fecha', dataKey: 'fechaIngreso', name: 'fechaIngreso', width: 20, halign: 'center' },
+    {
+      header: 'Cód. Prov.',
+      dataKey: 'codigoProveedor',
+      name: 'codigoProveedor',
+      width: 20,
+      halign: 'left',
+    },
+    { header: 'Proveedor', dataKey: 'proveedor', name: 'proveedor', width: 35, halign: 'left' },
+    { header: 'Lote', dataKey: 'nombreIngreso', name: 'nombreIngreso', width: 25, halign: 'left' },
+    { header: 'Factura', dataKey: 'nFactura', name: 'nFactura', width: 18, halign: 'center' },
+    { header: 'Tipo', dataKey: 'tipoCompra', name: 'tipoCompra', width: 20, halign: 'center' },
+    { header: 'Almacén', dataKey: 'almacen', name: 'almacen', width: 20, halign: 'left' },
+    { header: 'Aut.', dataKey: 'autorizacion', name: 'autorizacion', width: 12, halign: 'center' },
+    { header: 'Estado', dataKey: 'estado', name: 'estadoIngreso', width: 15, halign: 'center' },
+    { header: 'Cant.', dataKey: 'cantidad', name: 'cantidad', width: 25, halign: 'right' },
+    {
+      header: `P. Unit. ${divisaActiva}`,
+      dataKey: 'precioUnitario',
+      name: 'precioUnitario',
+      width: 18,
+      halign: 'right',
+    },
+    {
+      header: `Total (${divisaActiva})`,
+      dataKey: 'total',
+      name: 'total',
+      width: 20,
+      halign: 'right',
+    },
   ]
+
+  // Filtrar columnas según las columnas visibles de la tabla
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    // Siempre incluir 'indice' (N°)
+    columns = allPossibleColumns.filter((c) => c.name === 'indice' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas
+    columns = allPossibleColumns
+  }
 
   const datos = [...compras]
     .map((item) => ({
@@ -5102,12 +5132,10 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
   )
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.total || 0), 0)
 
-  // datos.push({
-  //   cantidad: 'TOTAL GENERAL' + ` (${divisaActiva})`,
+  // Calcular el span para el total general basado en las columnas visibles
+  const precioUnitarioIndex = columns.findIndex((c) => c.dataKey === 'precioUnitario')
+  const spanTotal = precioUnitarioIndex !== -1 ? precioUnitarioIndex : columns.length
 
-  //   precioUnitario: decimas(totalPrecioUnitario),
-  //   total: decimas(totalGeneral),
-  // })
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
@@ -5115,41 +5143,17 @@ export function PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters) {
         { valor: totalPrecioUnitario, halign: 'right' },
         { valor: totalGeneral, halign: 'right' },
       ],
-      11,
+      spanTotal,
     ),
   )
 
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    fechaIngreso: { cellWidth: 20, halign: 'center' },
-    codigoProveedor: { cellWidth: 20, halign: 'left' },
-    proveedor: { cellWidth: 35, halign: 'left' },
-    nombreIngreso: { cellWidth: 25, halign: 'left' },
-    nFactura: { cellWidth: 18, halign: 'center' },
-    tipoCompra: { cellWidth: 20, halign: 'center' },
-    almacen: { cellWidth: 20, halign: 'left' },
-    cantidad: { cellWidth: 25, halign: 'right' },
-    precioUnitario: { cellWidth: 18, halign: 'right' },
-    total: { cellWidth: 20, halign: 'right' },
-    autorizacion: { cellWidth: 12, halign: 'center' },
-    estado: { cellWidth: 15, halign: 'center' },
-  }
-
-  const headerColumnStyles = {
-    indice: { halign: 'center' },
-    fechaIngreso: { halign: 'center' },
-    codigoProveedor: { halign: 'left' },
-    proveedor: { halign: 'left' },
-    nombreIngreso: { halign: 'left' },
-    nFactura: { halign: 'center' },
-    tipoCompra: { halign: 'center' },
-    almacen: { halign: 'left' },
-    cantidad: { halign: 'right' },
-    precioUnitario: { halign: 'right' },
-    total: { halign: 'right' },
-    autorizacion: { halign: 'center' },
-    estado: { halign: 'center' },
-  }
+  // Generar columnStyles dinámicamente desde el catálogo
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'REPORTE DE COMPRAS POR PRODUCTO',

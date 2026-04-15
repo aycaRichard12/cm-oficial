@@ -31,7 +31,8 @@
       <!-- Table Section -->
       <q-card-section>
         <BaseFilterableTable
-          id='reporteTabla'
+          id="reporteTabla"
+          ref="miTabla"
           title="Listado de Compras del Producto"
           :rows="compras"
           :columns="columnas"
@@ -89,7 +90,7 @@
           <template v-slot:body-cell-acciones="props">
             <q-td :props="props">
               <q-btn
-                id='previsualizarPdf'
+                id="previsualizarPdf"
                 flat
                 round
                 dense
@@ -142,6 +143,7 @@ const fechaInicio = ref(null)
 const fechaFin = ref(null)
 const productoSeleccionado = ref(null)
 const selectedIdIngreso = ref(null)
+const miTabla = ref(null)
 
 // Table configuration
 const arrayHeaders = [
@@ -303,7 +305,16 @@ const handleExportarPDF = () => {
     productosOptions.value.find((p) => p.idProducto === productoSeleccionado.value)
       ?.nombreProducto || 'Producto'
 
-  const doc = generarPDF(compras.value, nombreProducto, fechaInicio.value, fechaFin.value)
+  // Obtener las columnas visibles de la tabla
+  const visibleColumnsFromTable = miTabla.value?.obtenerColumnasVisibles() || []
+
+  const doc = generarPDF(
+    compras.value,
+    nombreProducto,
+    fechaInicio.value,
+    fechaFin.value,
+    visibleColumnsFromTable,
+  )
   if (doc) {
     openPdfPreview(doc)
   }
