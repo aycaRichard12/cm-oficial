@@ -4958,18 +4958,42 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
   return docResult
 }
 
-export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
+export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters, visibleColumnsFromTable = []) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
-  const columns = [
-    { header: 'N°', dataKey: 'indice' },
-    { header: 'Fecha', dataKey: 'fechaIngreso' },
-    { header: 'Proveedor', dataKey: 'proveedor' },
-    { header: 'Factura', dataKey: 'nFactura' },
-    { header: 'Almacen', dataKey: 'nombreAlmacen' },
-    { header: 'Estado', dataKey: 'estado' },
-    { header: `Total (${divisaActiva})`, dataKey: 'totalIngreso' },
+  // Catálogo completo de columnas posibles
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'indice', name: 'num', width: 10, halign: 'center' },
+    { header: 'Fecha', dataKey: 'fechaIngreso', name: 'fechaIngreso', width: 25, halign: 'center' },
+    { header: 'Proveedor', dataKey: 'proveedor', name: 'proveedor', width: 50, halign: 'left' },
+    { header: 'Factura', dataKey: 'nFactura', name: 'nFactura', width: 20, halign: 'center' },
+    {
+      header: 'Almacen',
+      dataKey: 'nombreAlmacen',
+      name: 'nombreAlmacen',
+      width: 35,
+      halign: 'left',
+    },
+    { header: 'Estado', dataKey: 'estado', name: 'estado', width: 20, halign: 'center' },
+    {
+      header: `Total (${divisaActiva})`,
+      dataKey: 'totalIngreso',
+      name: 'totalIngreso',
+      width: 36,
+      halign: 'right',
+    },
   ]
+
+  // Filtrar columnas según las columnas visibles de la tabla
+  let columns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    // Siempre incluir 'num' (índice)
+    columns = allPossibleColumns.filter((c) => c.name === 'num' || visibleNames.has(c.name))
+  } else {
+    // Sin información de columnas visibles → mostrar todas
+    columns = allPossibleColumns
+  }
 
   const datos = compras.map((item, index) => ({
     indice: index + 1,
@@ -4983,37 +5007,25 @@ export function PDF_REPORTE_COMPRAS_GENERAL(compras, filters) {
 
   const totalGeneral = compras.reduce((sum, item) => sum + parseFloat(item.totalIngreso || 0), 0)
 
-  // datos.push({
-  //   nombreAlmacen: 'TOTAL GENERAL (' + divisaActiva + ')',
-  //   totalIngreso: decimas(totalGeneral),
-  // })
+  // Calcular el span para el total general basado en las columnas visibles
+  const totalIngresoIndex = columns.findIndex((c) => c.dataKey === 'totalIngreso')
+  const spanTotal = totalIngresoIndex !== -1 ? totalIngresoIndex : columns.length
+
   datos.push(
     crearFilaTotalGeneral(
       `TOTAL GENERAL (${divisaActiva})`,
       [{ valor: totalGeneral, halign: 'right' }],
-      6,
+      spanTotal,
     ),
   )
 
-  const columnStyles = {
-    indice: { cellWidth: 10, halign: 'center' },
-    fechaIngreso: { cellWidth: 25, halign: 'center' },
-    proveedor: { cellWidth: 50, halign: 'left' },
-    nFactura: { cellWidth: 20, halign: 'center' },
-    nombreAlmacen: { cellWidth: 35, halign: 'left' },
-    totalIngreso: { cellWidth: 36, halign: 'right' },
-    estado: { cellWidth: 20, halign: 'center' },
-  }
-
-  const headerColumnStyles = {
-    indice: { halign: 'center' },
-    fechaIngreso: { halign: 'center' },
-    proveedor: { halign: 'left' },
-    nFactura: { halign: 'center' },
-    nombreAlmacen: { halign: 'left' },
-    totalIngreso: { halign: 'right' },
-    estado: { halign: 'center' },
-  }
+  // Generar columnStyles dinámicamente desde el catálogo
+  const columnStyles = {}
+  const headerColumnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = { cellWidth: col.width, halign: col.halign }
+    headerColumnStyles[col.dataKey] = { cellWidth: col.width, halign: 'center' }
+  })
 
   const Izquierda = {
     titulo: 'REPORTE DE COMPRAS POR PROVEEDOR',
