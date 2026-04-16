@@ -1250,7 +1250,6 @@ watch(
 
 const guardarCodigosEnVenta = (codigos) => {
   CodigosUnicosSeleccionados.value = codigos
-  console.log('Códigos únicos seleccionados:', CodigosUnicosSeleccionados.value)
   cantidadCO.value = codigos.length
 }
 
@@ -1343,6 +1342,7 @@ const carritoCO = reactive({
   periodo: null,
   idfirma: null,
   codigosUnicos: [], // Para productos únicos
+  cajabanco: null,
 })
 console.log(idfirma.value)
 const RegistrarFirma = () => {
@@ -1682,6 +1682,7 @@ async function listaAlmacenes() {
   try {
     const response = await api.get(endpoint)
     const resultado = response.data
+    console.log(resultado)
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
@@ -2150,8 +2151,6 @@ async function enviarDatos() {
 
   carritoCO.tipoOperacion = tipoOperacion.value?.value
 
-  console.log(carritoCO)
-  console.log(pagosDivididos.value)
   if (pagosDivididos.value.length > 0) {
     console.log('entro')
     carritoCO.pagosDivididos = pagosDivididos.value
@@ -2170,7 +2169,16 @@ async function enviarDatos() {
   carritoCO.ipv = Number(pv.value)
   carritoCO.idalmacen = filtroAlmacenCO.value
   carritoCO.tipopago = carritoCO.credito ? 'credito' : CONSTANTES.tipopago
-  // ref([{ metodoPago: null, monto: 0, porcentaje: 0 }])
+  carritoCO.cajabanco = idcajaBancoSeleccionada.value
+  carritoCO.idcliente = idclienteCO.value
+  carritoCO.md5_em = idempresa
+  carritoCO.almacen = almacenesOptions.value.find(
+    (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
+  ).almacen //filtroAlmacenCO.value
+  console.log(carritoCO.almacen)
+  console.log(carritoCO.cajabanco)
+  console.log(carritoCO.cajabanco)
+
   const datosFormulario = new FormData()
   datosFormulario.append('ver', 'registrarCotizacion')
   datosFormulario.append('filtroALmacen', filtroAlmacenCO.value)
@@ -2179,7 +2187,9 @@ async function enviarDatos() {
   datosFormulario.append('idsucursal', idsucursalCOS.value)
   datosFormulario.append('listaProductos', JSON.stringify(carritoCO)) // Enviar el objeto completo del carrito
   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
+
   console.log(carritoCO)
+
   $q.loading.show({
     message: 'Registrando cotización...',
   })
@@ -2193,7 +2203,7 @@ async function enviarDatos() {
     console.log(JSON.stringify(datosJson, null, 2))
     const response = await api.post(``, datosFormulario)
     const data = response.data
-    console.log('Datos recibidos:', response.data)
+    console.log('Datos recibidos:', response)
 
     if (data.estado === 'exito') {
       resetFormulario()
