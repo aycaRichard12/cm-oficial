@@ -79,7 +79,31 @@
                     outlined
                   />
                 </div>
-
+                <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+                  <label
+                    for="cajaBanco"
+                    class="text-weight-bold text-grey-9 q-mb-sm block"
+                    style="font-size: 13px; text-transform: uppercase"
+                    >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                  >
+                  <q-select
+                    v-model="formulario.idcaja_banco"
+                    :options="listaCajaBancos"
+                    id="cajaBanco"
+                    dense
+                    outlined
+                    bg-color="white"
+                    emit-value
+                    map-options
+                    class="premium-input"
+                    hide-bottom-space
+                    :rules="[(val) => !!val || 'Campo requerido']"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="account_balance" color="positive" />
+                    </template>
+                  </q-select>
+                </div>
                 <div class="col-12 flex justify-start q-mt-md">
                   <q-btn
                     id="btnregistrarformextravio"
@@ -377,7 +401,7 @@
 <script setup>
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
-import { api } from 'boot/axios'
+import { api, apiCt } from 'boot/axios'
 import { date } from 'quasar'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -386,7 +410,7 @@ import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { PDFextrabiosRobos } from 'src/utils/pdfReportGenerator'
 import { PDFComprovanteExtravio } from 'src/utils/pdfReportGenerator'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
-
+const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
 const lote = ref(true)
@@ -522,7 +546,12 @@ const cargarRobos = async () => {
 
 const registrarRobo = async () => {
   try {
+    console.log(formulario.value)
+    formulario.value.nombrealmacen =
+      almacenesOptions.value.find((a) => a.value === formulario.value.almacen)?.label || ''
+    formulario.value.idempresa = idempresa
     const formData = objectToFormData(formulario.value)
+
     for (let [k, v] of formData.entries()) {
       console.log(`${k}: ${v}`)
     }
@@ -953,7 +982,20 @@ function handleKeydown(e) {
     mostrarFormulario.value = false
   }
 }
+async function listarcajasbanco() {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
+    listaCajaBancos.value = response.data.map((item) => ({
+      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      value: item.idcaja_bancos,
+    }))
+    console.log(listaCajaBancos.value)
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+  }
+}
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
 })
@@ -965,6 +1007,7 @@ onMounted(() => {
   cargarAlmacenes()
 
   cargarRobos()
+  listarcajasbanco()
 })
 </script>
 
