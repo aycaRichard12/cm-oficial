@@ -81,7 +81,12 @@
                 </div>
 
                 <div class="col-12 flex justify-start q-mt-md">
-                  <q-btn id="btnregistrarformextravio" type="submit" label="Registrar" color="primary" />
+                  <q-btn
+                    id="btnregistrarformextravio"
+                    type="submit"
+                    label="Registrar"
+                    color="primary"
+                  />
                   <q-btn flat label="Cancelar" color="negative" @click="cancelarRegistro" />
                 </div>
               </q-form>
@@ -308,7 +313,14 @@
             </div>
           </q-form>
 
-          <q-table id="tabladetalleextravioproductos" :rows="detalleRobo" :columns="columnasDetalle" row-key="id" flat bordered>
+          <q-table
+            id="tabladetalleextravioproductos"
+            :rows="detalleRobo"
+            :columns="columnasDetalle"
+            row-key="id"
+            flat
+            bordered
+          >
             <template v-slot:body-cell-acciones="props">
               <q-td :props="props">
                 <div class="q-gutter-sm">

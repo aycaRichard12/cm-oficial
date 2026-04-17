@@ -26,7 +26,8 @@ import {
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import imageCompression from 'browser-image-compression'
 import { useCurrencyStore } from 'src/stores/currencyStore'
-
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const idempresa = idempresa_md5()
 // ─────────────────────────────────────────────
 // Constantes
 // ─────────────────────────────────────────────
@@ -89,6 +90,7 @@ function formularioInicial() {
     imagenConvertida: null,
     urlpdf: '',
     tipoArchivo: '', // 'image' o 'pdf'
+    idcajaBancoSeleccionada: 0,
   }
 }
 
@@ -151,9 +153,7 @@ export function useCuentasxCobrar() {
 
     // 2. Filtro adicional por almacén seleccionado en el select
     if (filtroAlmacen.value && Number(filtroAlmacen.value.value) !== 0) {
-      datos = datos.filter(
-        (item) => Number(item.idalmacen) === Number(filtroAlmacen.value.value),
-      )
+      datos = datos.filter((item) => Number(item.idalmacen) === Number(filtroAlmacen.value.value))
     }
 
     // 3. Filtro por tipo
@@ -165,7 +165,10 @@ export function useCuentasxCobrar() {
   })
 
   const totalCobrado = computed(() =>
-    detallesCobros.value.reduce((totalAcc, item) => totalAcc + parseFloat(item.total || item.monto || 0), 0),
+    detallesCobros.value.reduce(
+      (totalAcc, item) => totalAcc + parseFloat(item.total || item.monto || 0),
+      0,
+    ),
   )
 
   const opcionesTipo = OPCIONES_TIPO
@@ -289,22 +292,19 @@ export function useCuentasxCobrar() {
   // ── Lógica del formulario de cobro ────────
 
   function cargarFormulario(dato) {
+    console.log(dato)
     const cuotasPendientes = parseFloat(dato.ncuotas) - parseFloat(dato.cuotaspagas || 0)
-    
+
     // Default to 1 quota if there are quotas left.
     const defaultNumCobros = 1
     const saldo = parseFloat(dato.saldo || 0)
     const valorCuota = parseFloat(dato.valorcuota || 0)
-    
+
     // If only 1 quota is left, totalCobro is exactly the remaining balance
     const isSingleQuotaRemaining = cuotasPendientes === 1
-    const totalCobro = isSingleQuotaRemaining 
-      ? saldo 
-      : (defaultNumCobros * valorCuota)
+    const totalCobro = isSingleQuotaRemaining ? saldo : defaultNumCobros * valorCuota
 
-    const saldoPorCobrar = isSingleQuotaRemaining 
-      ? 0 
-      : (saldo - totalCobro)
+    const saldoPorCobrar = isSingleQuotaRemaining ? 0 : saldo - totalCobro
 
     formulario.value = {
       ...formularioInicial(),
@@ -317,7 +317,8 @@ export function useCuentasxCobrar() {
       valorCuota: decimas(valorCuota),
       numeroCobros: defaultNumCobros,
       totalCobro: decimas(redondear(totalCobro)),
-      saldoPorCobrar: decimas(redondear(saldoPorCobrar))
+      saldoPorCobrar: decimas(redondear(saldoPorCobrar)),
+      idcajaBancoSeleccionada: 0,
     }
 
     mostrarForm.value = true
@@ -358,7 +359,10 @@ export function useCuentasxCobrar() {
       formulario.value.totalCobro = '0.00'
       formulario.value.numeroCobros = 0
       formulario.value.saldoPorCobrar = '0.00'
-      $q.notify({ type: 'warning', message: 'El monto ingresado no puede ser mayor al saldo pendiente' })
+      $q.notify({
+        type: 'warning',
+        message: 'El monto ingresado no puede ser mayor al saldo pendiente',
+      })
 
       if (formulario.value.cuotasPendientes === 1) {
         formulario.value.totalCobro = formulario.value.saldoPendiente
@@ -401,7 +405,7 @@ export function useCuentasxCobrar() {
 
     try {
       isCompressing.value = true
-      
+
       const options = {
         maxSizeMB: 1,
         maxWidthOrHeight: 1280,
@@ -411,11 +415,11 @@ export function useCuentasxCobrar() {
       }
 
       const compressedBlob = await imageCompression(file, options)
-      
-      const newFileName = file.name.replace(/\.[^/.]+$/, "") + '.jpg'
+
+      const newFileName = file.name.replace(/\.[^/.]+$/, '') + '.jpg'
       const compressedFile = new File([compressedBlob], newFileName, {
         type: 'image/jpeg',
-        lastModified: Date.now()
+        lastModified: Date.now(),
       })
 
       formulario.value.imagenConvertida = compressedFile
@@ -435,8 +439,12 @@ export function useCuentasxCobrar() {
   }
 
   async function registrarCobro(onSuccess) {
+    console.log(formulario.value)
     if (parseFloat(formulario.value.saldoPorCobrar) < 0) {
-      $q.notify({ type: 'negative', message: 'No se calculó el saldo por cobrar, inténtelo nuevamente' })
+      $q.notify({
+        type: 'negative',
+        message: 'No se calculó el saldo por cobrar, inténtelo nuevamente',
+      })
       return
     }
 
@@ -452,14 +460,14 @@ export function useCuentasxCobrar() {
         formDataPDF.append('ver', 'uploadRecibo')
 
         const resPDF = await api.post('', formDataPDF)
-        
+
         if (resPDF.data.estado === 'exito') {
           // Extraemos solo la parte relativa del link: "uploads/recibos/..."
           // El servidor puede devolver dominios distintos, así que buscamos desde "uploads/"
           const rutaCompleta = resPDF.data.ruta_recibo
           const indexUploads = rutaCompleta.indexOf('uploads/')
           linkPdfSubido = indexUploads !== -1 ? rutaCompleta.substring(indexUploads) : rutaCompleta
-          
+
           console.log('PDF subido. Ruta relativa extraída:', linkPdfSubido)
         } else {
           throw new Error('No se pudo subir el PDF al servidor: ' + resPDF.data.mensaje)
@@ -474,9 +482,11 @@ export function useCuentasxCobrar() {
         total: formulario.value.totalCobro,
         saldo: formulario.value.saldoPorCobrar,
         fecha: formulario.value.fecha,
-        // Las imágenes se envían directo, los PDFs envían el link relativo
-        imagen: formulario.value.tipoArchivo === 'image' ? (formulario.value.imagenConvertida ?? '') : '',
+        idcaja_banco: formulario.value.idcajaBancoSeleccionada,
+        imagen:
+          formulario.value.tipoArchivo === 'image' ? (formulario.value.imagenConvertida ?? '') : '',
         urlpdf: linkPdfSubido,
+        idempresa: idempresa,
       }
 
       const datos = objectToFormData(dataForForm)
@@ -487,7 +497,7 @@ export function useCuentasxCobrar() {
 
       const response = await api.post(``, datos)
       const data = response.data
-      console.log("Respuesta servidor:", data)
+      console.log('Respuesta servidor:', data)
 
       if (data.estado === 'exito') {
         $q.notify({ type: 'positive', message: 'Cobro registrado correctamente' })
@@ -518,7 +528,7 @@ export function useCuentasxCobrar() {
     try {
       const response = await api.get(`listadetallecobros/${dato.id}`)
       const data = response.data
-      console.log("detalle", data)
+      console.log('detalle', data)
 
       if (data.estado === 'error') throw new Error(data.error)
 
@@ -526,7 +536,11 @@ export function useCuentasxCobrar() {
         ...item,
         numero: index + 1,
         // Construimos la URL completa usando VITE_API_URL (api.defaults.baseURL) + la ruta guadada
-        imagen: item.urlpdf ? `${api.defaults.baseURL}${item.urlpdf}` : (item.imagen ? `${api.defaults.baseURL}${item.imagen}` : null),
+        imagen: item.urlpdf
+          ? `${api.defaults.baseURL}${item.urlpdf}`
+          : item.imagen
+            ? `${api.defaults.baseURL}${item.imagen}`
+            : null,
       }))
 
       vistaActiva.value = 'detalles'
