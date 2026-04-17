@@ -87,25 +87,38 @@ const editUnit = (item) => {
 const confirmDelete = (item) => {
   $q.dialog({
     title: 'Confirmar',
-    message: `¿Eliminar Estado "${item.nombre}"?`,
-    cancel: true,
+    message: `¿Eliminar Característica "${item.nombre}"?`,
     persistent: true,
+    ok: { label: 'Eliminar', color: 'negative' },
+    cancel: { label: 'Cancelar', flat: true },
   }).onOk(async () => {
     try {
-      const response = await api.get(`eliminarCaracteristicaProducto/${item.id}/`) // Cambia a tu ruta real
-      console.log(response)
-      if (response.data.estado === 'exito') {
-        loadRows()
+      const response = await api.get(`eliminarCaracteristicaProducto/${item.id}/`)
+      const res = response.data
+
+      const esExito = res.estado === 'exito' || (Array.isArray(res) && res[0] === 'exito')
+      const mensaje = res.mensaje || (Array.isArray(res) ? res[1] : null) || 'Procesado'
+
+      if (esExito) {
         $q.notify({
           type: 'positive',
-          message: response.data.mensaje,
+          message: mensaje,
+        })
+        loadRows()
+      } else {
+        $q.notify({
+          type: 'warning',
+          message: mensaje,
+          caption: 'La característica podría estar en uso por algún producto.',
+          icon: 'warning',
+          timeout: 5000,
         })
       }
     } catch (error) {
-      console.error('Error al cargar datos:', error)
+      console.error('Error al eliminar:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: 'No se pudo eliminar el registro',
       })
     }
   })

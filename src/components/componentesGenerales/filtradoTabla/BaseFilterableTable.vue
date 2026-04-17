@@ -150,7 +150,7 @@ console.log(props.rows)
 const emit = defineEmits(['column-filter-changed'])
 defineExpose({
   obtenerDatosFiltrados: () => filteredData.value,
-  obtenerColumnasVisibles: () => visibleColumns.value,
+  obtenerColumnasVisibles: () => visibleColumns.value.map((col) => ({ name: col.name })),
   getActiveFiltersReport,
   getSearchText: () => localSearch.value,
 })

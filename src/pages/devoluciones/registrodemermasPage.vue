@@ -173,8 +173,33 @@
                   <label for="descripcion">Descripción</label>
                   <q-input v-model="formData.descripcion" dense outlined id="descripcion" />
                 </div>
+                <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+                  <label
+                    for="cajaBanco"
+                    class="text-weight-bold text-grey-9 q-mb-sm block"
+                    style="font-size: 12px; text-transform: uppercase"
+                    >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                  >
+                  <q-select
+                    v-model="formData.idcaja_banco"
+                    :options="listaCajaBancos"
+                    id="cajaBanco"
+                    dense
+                    outlined
+                    bg-color="white"
+                    emit-value
+                    map-options
+                    class="premium-input"
+                    hide-bottom-space
+                    :rules="[(val) => !!val || 'Campo requerido']"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="account_balance" color="positive" />
+                    </template>
+                  </q-select>
+                </div>
 
-                <div class="q-mt-md">
+                <div class="col-12 q-mt-md">
                   <q-btn
                     id="btnguardarformmerma"
                     type="submit"
@@ -312,8 +337,14 @@
                   @filter="filterlotes"
                 />
               </div>
+
               <div class="col-md-2">
-                <q-btn id="btnanadirdetallemerma" type="submit" color="primary" class="btn-res q-mt-lg">
+                <q-btn
+                  id="btnanadirdetallemerma"
+                  type="submit"
+                  color="primary"
+                  class="btn-res q-mt-lg"
+                >
                   <q-icon name="save" class="icono" />
                   <span class="texto">{{ detailEditMode ? 'Actualizar' : 'Cargar' }}</span>
                 </q-btn>
@@ -380,7 +411,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { api } from 'boot/axios'
+import { api, apiCt } from 'boot/axios'
 // import { useMenuStore } from 'src/layouts/permitidos'
 import { useMenuStore } from 'src/stores/permitidos'
 import {
@@ -396,7 +427,7 @@ import { PDFreporteMermas } from 'src/utils/pdfReportGenerator'
 import { PDFComprovanteMerma } from 'src/utils/pdfReportGenerator'
 
 const lote = ref(true)
-
+const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
 const pdfData = ref(null)
@@ -718,7 +749,9 @@ const resetDetailForm = () => {
 const submitForm = async () => {
   try {
     //const endpoint = editMode.value ? 'actualizarmerma' : 'registrarmerma'
-
+    formData.value.nombrealmacen =
+      almacenOptions.value.find((a) => a.value === formData.value.almacen)?.label || ''
+    formData.value.idempresa = idempresa
     const formulario = objectToFormData(formData.value)
     if (editMode.value) {
       formulario.append('ver', 'actualizarmerma')
@@ -726,15 +759,21 @@ const submitForm = async () => {
       formulario.append('ver', 'registrarmerma')
       formulario.append('idusuario', idusuario)
     }
-    for (let [v, k] of formulario.entries()) {
-      console.log(`${v}:${k}`)
-    }
+
     const response = await api.post('', formulario)
     console.log(response.data)
-    $q.notify({
-      type: 'positive',
-      message: response.data.mensaje,
-    })
+    const data = response.data[0]
+    if (data.estado === 'exito') {
+      $q.notify({
+        type: 'positive',
+        message: data.mensaje,
+      })
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: data.mensaje || 'Error desconocido',
+      })
+    }
 
     selectedWarehouse.value = response.data.almacenorigen
     loadTableData()
@@ -752,6 +791,10 @@ const submitForm = async () => {
 const submitDetailForm = async () => {
   try {
     //const endpoint = detailEditMode.value ? 'actualizarDetallemerma' : 'registrarDetallemerma'
+
+    // formulario.value.nombrealmacen =
+    //   almacenesOptions.value.find((a) => a.value === formulario.value.almacen)?.label || ''
+
     const formulario = objectToFormData(detailForm.value)
 
     //formulario.append('compra', detailForm.value.compra || null)
@@ -1098,6 +1141,20 @@ function handleKeydown(e) {
     collapseVisible.value = false
   }
 }
+async function listarcajasbanco() {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
+
+    listaCajaBancos.value = response.data.map((item) => ({
+      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      value: item.idcaja_bancos,
+    }))
+    console.log(listaCajaBancos.value)
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+  }
+}
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
@@ -1109,7 +1166,7 @@ onBeforeUnmount(() => {
 onMounted(async () => {
   await loadUserData()
   await loadTableData()
-
+  await listarcajasbanco()
   // Establecer fecha actual por defecto
 
   const storedMd5 = idusuario_md5()

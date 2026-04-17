@@ -31,7 +31,7 @@
       <label for="obs">Observaciones (Opcional)</label>
       <q-input v-model="form.observaciones" id="obs" type="textarea" autogrow dense outlined="" />
     </div>
-    <div class="col-12">
+    <div class="col-12 col-md-6">
       <label for="imagen">Comprobante (Opcional, máx 5MB)</label>
       <q-file
         v-model="form.comprobanteFile"
@@ -56,6 +56,31 @@
       </q-file>
     </div>
 
+    <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+      <label
+        for="cajaBanco"
+        class="text-weight-bold text-grey-9 q-mb-sm block"
+        style="font-size: 13px; text-transform: uppercase"
+        >Seleccione Caja o Banco <span class="text-negative">*</span></label
+      >
+      <q-select
+        v-model="form.cajabanco"
+        :options="listaCajaBancos"
+        id="cajaBanco"
+        dense
+        outlined
+        bg-color="white"
+        emit-value
+        map-options
+        class="premium-input"
+        hide-bottom-space
+        :rules="[(val) => !!val || 'Campo requerido']"
+      >
+        <template v-slot:prepend>
+          <q-icon name="account_balance" color="positive" />
+        </template>
+      </q-select>
+    </div>
     <q-slide-transition>
       <div v-if="resultado.comprobante_path">
         <q-banner inline-actions class="text-white bg-green-8 q-mt-md">
@@ -69,7 +94,6 @@
         </q-banner>
       </div>
     </q-slide-transition>
-
     <div class="q-mt-lg">
       <q-btn label="Registrar Pago" type="submit" color="primary" :loading="loading" />
       <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
@@ -78,11 +102,13 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
-import { api } from 'src/boot/axios'
+import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { api, apiCt } from 'src/boot/axios'
+const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
+const listaCajaBancos = ref([])
 // Se asume una instancia de axios pre-configurada, pero puedes usar axios directamente.
 
 const props = defineProps({
@@ -132,10 +158,13 @@ const onSubmit = async () => {
 
   // 1. Construir FormData
   const formData = new FormData()
+  console.log(form)
   formData.append('ver', 'RegistrarPagos')
   formData.append('monto_pagado', form.monto_pagado)
   formData.append('usuario_id', form.usuario_id)
   formData.append('id_cuota', form.id_cuota)
+  formData.append('cajabanco', form.cajabanco)
+  formData.append('idempresa', idempresa)
 
   if (form.referencia) {
     formData.append('referencia', form.referencia)
@@ -147,9 +176,6 @@ const onSubmit = async () => {
     formData.append('comprobante', form.comprobanteFile)
   }
 
-  for (let [x, k] of formData.entries()) {
-    console.log(`${x}:${k}`)
-  }
   try {
     // 2. Enviar petición POST
 
@@ -184,6 +210,23 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
+async function listarcajasbanco() {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
+
+    listaCajaBancos.value = response.data.map((item) => ({
+      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      value: item.idcaja_bancos,
+    }))
+    console.log(listaCajaBancos.value)
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+  }
+}
+onMounted(() => {
+  listarcajasbanco()
+})
 </script>
 
 <style scoped>

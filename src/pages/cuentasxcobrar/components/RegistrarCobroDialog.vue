@@ -117,7 +117,12 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer text-primary">
                     <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="localFormulario.fecha" mask="YYYY-MM-DD" today-btn @update:model-value="onFieldUpdate">
+                      <q-date
+                        v-model="localFormulario.fecha"
+                        mask="YYYY-MM-DD"
+                        today-btn
+                        @update:model-value="onFieldUpdate"
+                      >
                         <div class="row items-center justify-end">
                           <q-btn v-close-popup label="Cerrar" color="primary" flat />
                         </div>
@@ -139,9 +144,7 @@
                 step="1"
                 dense
                 outlined
-                :rules="[
-                  (val) => !!val || 'Campo requerido'
-                ]"
+                :rules="[(val) => !!val || 'Campo requerido']"
                 :disable="localFormulario.cuotasPendientes === 1"
                 :hint="
                   localFormulario.cuotasPendientes > 1
@@ -173,7 +176,12 @@
                 ]"
                 :disable="localFormulario.cuotasPendientes === 1"
                 :hint="`Saldo disponible: ${localFormulario.saldoPendiente} ${divisa}`"
-                @update:model-value="() => { onFieldUpdate(); $emit('calcular-numero-cobros') }"
+                @update:model-value="
+                  () => {
+                    onFieldUpdate()
+                    $emit('calcular-numero-cobros')
+                  }
+                "
               >
                 <template v-slot:append>
                   <span class="text-weight-bold text-grey-7">{{ divisa }}</span>
@@ -210,6 +218,32 @@
                   <small class="text-caption">{{ divisa }}</small>
                 </div>
               </q-card>
+            </div>
+            <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+              <label
+                for="cajaBanco"
+                class="text-weight-bold text-grey-9 q-mb-sm block"
+                style="font-size: 13px; text-transform: uppercase"
+                >Seleccione Caja o Banco <span class="text-negative">*</span></label
+              >
+              <q-select
+                v-model="localFormulario.idcajaBancoSeleccionada"
+                :options="listaCajaBancos"
+                id="cajaBanco"
+                dense
+                outlined
+                bg-color="white"
+                emit-value
+                map-options
+                class="premium-input"
+                hide-bottom-space
+                :rules="[(val) => !!val || 'Campo requerido']"
+                @update:model-value="onFieldUpdate"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="account_balance" color="positive" />
+                </template>
+              </q-select>
             </div>
 
             <div class="col-12">
@@ -286,15 +320,18 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, reactive } from 'vue'
+import { computed, ref, watch, reactive, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-
+import { apiCt } from 'src/boot/axios'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const idempresa = idempresa_md5()
 const props = defineProps({
   modelValue: Boolean,
   formulario: Object,
   divisa: String,
   isCompressing: Boolean,
 })
+const listaCajaBancos = ref([])
 
 const emit = defineEmits([
   'update:modelValue',
@@ -307,7 +344,20 @@ const emit = defineEmits([
 ])
 
 const localFormulario = reactive({ ...(props.formulario || {}) })
+async function listarcajasbanco() {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
+    listaCajaBancos.value = response.data.map((item) => ({
+      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      value: item.idcaja_bancos,
+    }))
+    console.log(listaCajaBancos.value)
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+  }
+}
 // keep local copy in sync when parent updates the prop
 watch(
   () => props.formulario,
@@ -348,7 +398,7 @@ function onNumeroCobrosInput(val) {
     emit('calcular-totales')
     return
   }
-  
+
   let validVal = Math.floor(Number(val))
   let maximo = localFormulario.cuotasPendientes
 
@@ -359,7 +409,7 @@ function onNumeroCobrosInput(val) {
   }
 
   localFormulario.numeroCobros = validVal
-  
+
   onFieldUpdate()
   emit('calcular-totales')
 }
@@ -382,6 +432,7 @@ function cerrar() {
 
 function guardar() {
   // Same here, avoid JSON.stringify to not destroy File objects
+  console.log('Formulario a enviar:', localFormulario)
   emit('submit', { ...localFormulario })
 }
 
@@ -390,5 +441,9 @@ watch(model, (abierto) => {
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = null
   }
+})
+
+onMounted(() => {
+  listarcajasbanco()
 })
 </script>

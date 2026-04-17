@@ -1,4 +1,4 @@
-const contenidousuario = JSON.parse(localStorage.getItem('yofinanciero'))
+const contenidousuario = JSON.parse(localStorage.getItem('mistersofts-cm'))
 let idempresa
 let idusuario
 if (contenidousuario) {

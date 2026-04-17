@@ -156,6 +156,18 @@
     <!-- Sección: Selección de productos -->
 
     <div class="row q-col-gutter-x-md q-col-gutter-y-sm items-start">
+      <div
+        class="col-12 col-md-2 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
+      >
+        <q-checkbox
+          v-if="esProductoUnico"
+          v-model="registrarComoProductoUnico"
+          label="Producto Único"
+          color="primary"
+          class="q-mr-md"
+        >
+        </q-checkbox>
+      </div>
       <div class="col-12 col-md-4" id="productoCotizacion">
         <label for="producto" class="text-weight-medium">Producto o Servicio*</label>
         <q-select
@@ -180,18 +192,6 @@
             </q-item>
           </template>
         </q-select>
-      </div>
-      <div
-        class="col-12 col-md-2 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
-      >
-        <q-checkbox
-          v-if="esProductoUnico"
-          v-model="registrarComoProductoUnico"
-          label="Producto Único"
-          color="primary"
-          class="q-mr-md"
-        >
-        </q-checkbox>
       </div>
 
       <UniqueProductSelector
@@ -271,84 +271,125 @@
         flat
         bordered
         hide-bottom
+        class="my-custom-table shadow-1"
         :pagination="{ rowsPerPage: 0 }"
         title="Resumen de Cotización"
       >
-        <template v-slot:body-cell-descripcion="props">
-          <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
-            <!-- Descripción principal -->
-            <div>{{ props.row.descripcion }}</div>
+        <template v-slot:body="props">
+          <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
+            <q-td auto-width>
+              <q-btn
+                v-if="props.row.codigosUnicos?.length > 0"
+                size="sm"
+                color="primary"
+                flat
+                round
+                @click="props.expand = !props.expand"
+                :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              />
+            </q-td>
 
-            <!-- Descripción adicional editable debajo -->
-            <div
-              style="
-                margin-top: 4px;
-                font-size: 0.9em;
-                color: #555;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <q-popup-edit v-model="props.row.descripcionAdicional" v-slot="scope">
-                <label for="desAdicional">Añadir Descripción Adicional</label>
-                <q-input
-                  v-model="scope.value"
-                  outlined
-                  dense
-                  id="desAdicional"
-                  autofocus
-                  type="text"
-                  @keyup.enter="validarDescripcion(scope, props.row)"
-                  @keyup.esc="scope.cancel"
-                />
-              </q-popup-edit>
-              <span style="margin-left: 4px">{{ props.row.descripcionAdicional }}</span>
-              <q-icon name="edit" size="16px" color="primary" class="q-ml-xs" />
-            </div>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-cantidad="props">
-          <q-td :props="props" class="text-right">
-            {{ props.row.cantidad }}
-          </q-td>
-        </template>
+            <q-td key="num" :props="props" class="text-left">
+              <q-chip label-slot dense>
+                {{ props.row.num }}
+              </q-chip>
+            </q-td>
+            <q-td key="codigo" :props="props" class="text-left">
+              <q-chip outline color="primary" label-slot dense>
+                {{ props.row.codigo }}
+              </q-chip>
+            </q-td>
 
-        <template v-slot:body-cell-precio="props">
-          <q-td :props="props" class="text-right">
-            {{ decimas(props.row.precio) }}{{ ' ' + divisaActiva.tipo }}
-          </q-td>
-        </template>
+            <q-td key="descripcion" :props="props" style="vertical-align: top">
+              <div class="text-weight-bold">{{ props.row.descripcion }}</div>
 
-        <template v-slot:body-cell-total="props">
-          <q-td :props="props" class="text-right">
-            {{ decimas(props.row.cantidad * props.row.precio) }} {{ ' ' + divisaActiva.tipo }}
-          </q-td>
-        </template>
+              <div
+                class="flex items-center text-grey-8 cursor-pointer"
+                style="font-size: 0.9em; margin-top: 4px"
+              >
+                <q-icon name="edit" size="14px" color="primary" class="q-mr-xs" />
+                <span>{{ props.row.descripcionAdicional || 'Añadir nota...' }}</span>
 
-        <template v-slot:body-cell-options="props">
-          <q-td :props="props" class="text-center">
-            <q-btn
-              icon="delete"
-              color="negative"
-              flat
-              round
-              size="sm"
-              @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
-            />
-          </q-td>
+                <q-popup-edit
+                  v-model="props.row.descripcionAdicional"
+                  v-slot="scope"
+                  buttons
+                  label-set="Guardar"
+                  label-cancel="Cancelar"
+                >
+                  <q-input
+                    v-model="scope.value"
+                    outlined
+                    dense
+                    autofocus
+                    counter
+                    @keyup.enter="validarDescripcion(scope, props.row)"
+                  />
+                </q-popup-edit>
+              </div>
+            </q-td>
+
+            <q-td key="cantidad" :props="props" class="text-right">
+              <q-badge color="grey-8" label-slot>
+                {{ props.row.cantidad }}
+              </q-badge>
+            </q-td>
+
+            <q-td key="precio" :props="props" class="text-right">
+              {{ decimas(props.row.precio) }}
+              <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
+            </q-td>
+
+            <q-td key="total" :props="props" class="text-right text-weight-bolder text-primary">
+              {{ decimas(props.row.cantidad * props.row.precio) }}
+              <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
+            </q-td>
+
+            <q-td key="options" :props="props" class="text-center">
+              <q-btn
+                icon="delete"
+                color="negative"
+                flat
+                round
+                dense
+                size="sm"
+                @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
+              >
+                <q-tooltip>Quitar producto</q-tooltip>
+              </q-btn>
+            </q-td>
+          </q-tr>
+
+          <q-tr v-show="props.expand" :props="props" class="expanded-row">
+            <q-td colspan="100%" class="q-pa-lg">
+              <TableCodigosUnicos
+                v-model="props.row.codigosUnicos"
+                :parent-row="props.row"
+                :can-delete="true"
+                :can-edit="true"
+                :api-mode="false"
+                @update-parent-quantity="
+                  (nuevaCant) => {
+                    props.row.cantidad = nuevaCant
+                    calcularTotalesCarrito()
+                  }
+                "
+              />
+            </q-td>
+          </q-tr>
         </template>
 
         <template v-slot:bottom-row>
-          <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold">Sub Total:</q-td>
-            <q-td class="text-right"
-              >{{ decimas(carritoCO.subtotal) }} {{ ' ' + divisaActiva.tipo }}</q-td
-            >
-            <q-td></q-td>
+          <q-tr class="bg-grey-2">
+            <q-td colspan="6" class="text-right text-weight-bold">Sub Total:</q-td>
+            <q-td class="text-right text-weight-bold">
+              {{ decimas(carritoCO.subtotal) }} {{ divisaActiva.tipo }}
+            </q-td>
+            <q-td />
           </q-tr>
+
           <q-tr id="descuentoCotizacion">
-            <q-td colspan="5" class="text-right text-weight-bold">Descuento:</q-td>
+            <q-td colspan="6" class="text-right text-weight-bold">Descuento:</q-td>
             <q-td class="text-right">
               <q-input
                 v-model.number="carritoCO.descuento"
@@ -356,22 +397,25 @@
                 min="0"
                 :max="carritoCO.subtotal"
                 @change="aplicarDescuento"
-                style="width: 100px"
-                class="text-right"
+                dense
+                outlined
+                input-class="text-right"
+                style="max-width: 120px; margin-left: auto"
               >
                 <template v-slot:append>
                   <span class="text-caption text-grey-7">{{ divisaActiva.tipo }}</span>
                 </template>
               </q-input>
             </q-td>
-            <q-td></q-td>
+            <q-td />
           </q-tr>
-          <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold">Total:</q-td>
-            <q-td class="text-right text-weight-bold text-primary">
-              {{ decimas(carritoCO.ventatotal) }} {{ ' ' + divisaActiva.tipo }}
+
+          <q-tr class="bg-primary text-white">
+            <q-td colspan="6" class="text-right text-weight-bold">TOTAL GENERAL:</q-td>
+            <q-td class="text-right text-weight-bolder text-subtitle1">
+              {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
             </q-td>
-            <q-td></q-td>
+            <q-td />
           </q-tr>
         </template>
       </q-table>
@@ -727,13 +771,14 @@ import { redondear, normalizeText, decimas, validarUsuario } from 'src/composabl
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-const showAddModal = ref(false)
 import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
 import ModalfirmaPage from './ModalfirmaPage.vue'
 import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+const showAddModal = ref(false)
 const esProductoUnico = ref(false)
 const registrarComoProductoUnico = ref(false)
 const idempresa = idempresa_md5()
@@ -753,6 +798,7 @@ watch(
 const guardarCodigosEnVenta = (codigos) => {
   CodigosUnicosSeleccionados.value = codigos
   console.log('Códigos únicos seleccionados:', CodigosUnicosSeleccionados.value)
+  cantidadCO.value = codigos.length
 }
 
 const modalfirmaActivo = ref(false)
@@ -944,6 +990,8 @@ const permitirStockvacio = () => {
 }
 // Columnas para la tabla del carrito
 const carritoColumns = [
+  { name: 'exp', label: '', align: 'left' },
+
   { name: 'num', label: 'N°', align: 'left', field: 'num' },
   { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
   { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
@@ -1536,6 +1584,7 @@ async function anadirProductoACarrito() {
       Number(selectedProduct.value.stock) < Number(cantidadCO.value)
         ? 2
         : 1,
+    codigosUnicos: [...CodigosUnicosSeleccionados.value],
   }
   carritoCO.idusuario = idusuario
   carritoCO.idempresa = idempresa_md5()

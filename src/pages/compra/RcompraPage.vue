@@ -113,6 +113,7 @@ const registroActual = ref({
   codigo: generarCodigo(),
   nombre: 'CMP-',
   tipoRegistro: 2,
+  nombrealmacen: '',
 })
 const showFormEdit = ref(false)
 const formularioDetalleCompra = ref({ ver: 'registrarDetalleCompra' })
@@ -179,10 +180,7 @@ async function eliminarCompra(compra) {
 async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
   try {
     const formData = objectToFormData(data)
-    for (let [k, v] of formData.entries()) {
-      console.log(`${k}: ${v}`)
-    }
-    console.log(endpoint, formData)
+
     console.log(data)
     const response = await api.post('', formData)
     console.log(response.data)
@@ -384,7 +382,7 @@ async function autorizarCompra(compra) {
       if (verificar.data.length > 0) {
         const point = `actualizarEstadoCompra/${compra.id}/1/${compra.idpedido}/${compra.idalmacen}`
         const response = await api.get(point)
-        console.log(response)
+        console.log(response.data)
         if (response.data.estado === 'error') {
           $q.notify({ type: 'negative', message: response.data.message })
         } else {

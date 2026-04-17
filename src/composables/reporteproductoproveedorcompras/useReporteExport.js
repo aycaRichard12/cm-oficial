@@ -39,13 +39,16 @@ export function useReporteExport() {
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Compras')
 
-    XLSX.writeFile(
-      workbook,
-      `Reporte_Compras_${nombreProducto}_${fechaInicio}_${fechaFin}.xlsx`,
-    )
+    XLSX.writeFile(workbook, `Reporte_Compras_${nombreProducto}_${fechaInicio}_${fechaFin}.xlsx`)
   }
 
-  const generarPDF = (compras, nombreProducto, fechaInicio, fechaFin) => {
+  const generarPDF = (
+    compras,
+    nombreProducto,
+    fechaInicio,
+    fechaFin,
+    visibleColumnsFromTable = [],
+  ) => {
     if (!compras || compras.length === 0) return null
 
     const filters = {
@@ -54,7 +57,7 @@ export function useReporteExport() {
       fechaFin,
     }
 
-    return PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters)
+    return PDF_REPORTE_COMPRAS_PRODUCTO(compras, filters, visibleColumnsFromTable)
   }
 
   return {

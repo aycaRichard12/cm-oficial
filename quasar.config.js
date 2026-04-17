@@ -12,7 +12,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios', 'error-handler', 'driver', 'pusher'],
+    boot: ['dev-autologin', 'i18n', 'axios', 'error-handler', 'driver', 'pusher'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -56,7 +56,7 @@ export default defineConfig((ctx) => {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
-      publicPath: '/app/cmv1/',
+      publicPath: '/app/cm/',
       vitePlugins: [
         // Plugin simple: vite-svg-loader
         svgLoader(),

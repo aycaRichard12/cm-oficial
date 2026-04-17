@@ -224,7 +224,11 @@ const ocultarTabs = () => {
   tabsVisible.value = false
 }
 const irdashboard = () => {
-  window.location.href = '/app/dashboard'
+  localStorage.removeItem('mistersofts-cm')
+  localStorage.removeItem('mistersofts-cmmenu')
+  localStorage.removeItem('puedeIniciarsesion')
+  sessionStorage.setItem('logoutIntencional', 'true')
+  window.location.replace('login')
 }
 const router = useRouter()
 const route = useRoute()
@@ -432,7 +436,7 @@ onMounted(async () => {
     }
   }
 
-  const userData = loadData('yofinanciero')
+  const userData = loadData('mistersofts-cm')
   if (userData[0]) {
     nombreUsuario.value = userData[0].nombre || 'Usuario'
     cargo.value = userData[0].cargo || 'Sin cargo'

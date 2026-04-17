@@ -427,23 +427,29 @@ function handleVerReporte() {
   const datosFinales = tableRef.value
     ? tableRef.value.obtenerDatosFiltrados()
     : datosFiltrados.value
+
   if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
       message: 'No se ha generado ningún reporte o el reporte está vacío.',
       position: 'top',
     })
-  } else {
-    const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFinales, {
-      fechaInicio: fechaInicio.value,
-      fechaFin: fechaFin.value,
-      almacen: almacenSeleccionadoTexto.value,
-      usuario: validarUsuario()[0],
-    })
-    console.log(doc)
-    pdfData.value = doc.output('dataurlstring')
-    mostrarModal.value = true
+    return
   }
+
+  // Capturar las columnas actualmente visibles en la tabla
+  const columnasDeLaTabla = tableRef.value?.obtenerColumnasVisibles() ?? []
+
+  const doc = PDF_REPORTE_CAMPANAS_RESUMEN_VENTAS(datosFinales, {
+    fechaInicio: fechaInicio.value,
+    fechaFin: fechaFin.value,
+    almacen: almacenSeleccionadoTexto.value,
+    usuario: validarUsuario()[0],
+    visibleColumnsFromTable: columnasDeLaTabla,
+  })
+
+  pdfData.value = doc.output('dataurlstring')
+  mostrarModal.value = true
 }
 
 /**
