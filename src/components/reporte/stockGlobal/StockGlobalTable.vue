@@ -1,6 +1,7 @@
 <template>
   <q-card v-if="rows.length" class="q-mt-md">
     <BaseFilterableTable
+      ref="baseTableRef"
       title="Stock De Productos"
       :rows="rows"
       :columns="visibleColumns"
@@ -13,8 +14,15 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+
+const baseTableRef = ref(null)
+
+defineExpose({
+  obtenerColumnasVisibles: () => baseTableRef.value?.obtenerColumnasVisibles() || [],
+  obtenerDatosFiltrados: () => baseTableRef.value?.obtenerDatosFiltrados() || []
+})
 
 const props = defineProps({
   rows: {

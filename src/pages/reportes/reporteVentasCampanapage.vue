@@ -17,9 +17,8 @@
         <q-form @submit.prevent="handleGenerarReporte">
           <div class="row q-col-gutter-md">
             <!-- Campaña -->
-            <div class="col-12 col-md-4"  id="filtroSelectCampana">
+            <div class="col-12 col-md-4" id="filtroSelectCampana">
               <q-select
-                
                 v-model="campanaSeleccionada"
                 :options="opcionesCampanas"
                 label="Campaña *"
@@ -38,10 +37,9 @@
             </div>
 
             <!-- Fecha Inicial -->
-            <div class="col-12 col-md-4"    id="fechaIni">
+            <div class="col-12 col-md-4" id="fechaIni">
               <q-input
                 v-model="fechaInicio"
-             
                 type="date"
                 label="Fecha Inicial *"
                 outlined
@@ -59,7 +57,6 @@
             <div class="col-12 col-md-4" id="fechaFin">
               <q-input
                 v-model="fechaFin"
-            
                 type="date"
                 label="Fecha Final *"
                 outlined
@@ -169,11 +166,17 @@ const campanaSeleccionadaTexto = computed(() => {
   return selected ? selected.label : ''
 })
 
-
-
 // --- Columnas de la tabla (coinciden con la respuesta real de la API) ---
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'center', sortable: false, style: 'width: 50px', datatype: 'number'},
+  {
+    name: 'n',
+    label: 'N°',
+    field: 'n',
+    align: 'center',
+    sortable: false,
+    style: 'width: 50px',
+    datatype: 'number',
+  },
   {
     name: 'fecha',
     label: 'Fecha',
@@ -186,7 +189,7 @@ const columnasTabla = [
     label: 'N° Factura',
     field: 'nfactura',
     align: 'center',
-    
+
     format: (val) => (val === 0 ? '-' : val),
   },
   {
@@ -194,14 +197,12 @@ const columnasTabla = [
     label: 'Almacén',
     field: 'almacenNombre',
     align: 'left',
-    
   },
   {
     name: 'producto',
     label: 'Producto',
     field: 'productoNombre',
     align: 'left',
-    
   },
   { name: 'codigo', label: 'Código', field: 'productoCodigo', align: 'left' },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
@@ -210,7 +211,7 @@ const columnasTabla = [
     label: 'P. Original',
     field: 'precioOriginal',
     align: 'right',
-    
+
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -218,7 +219,7 @@ const columnasTabla = [
     label: 'P. Campaña',
     field: 'precioCampana',
     align: 'right',
-    
+
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -226,7 +227,7 @@ const columnasTabla = [
     label: 'Subtot. Original',
     field: 'subtotalOriginal',
     align: 'right',
-    
+
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -234,7 +235,7 @@ const columnasTabla = [
     label: 'Subtot. Campaña',
     field: 'subtotalCampana',
     align: 'right',
-    
+
     format: (val) => (Number(val) || 0).toFixed(2),
   },
   {
@@ -242,13 +243,33 @@ const columnasTabla = [
     label: 'Descuento',
     field: 'descuento',
     align: 'right',
-    
+
     format: (val) => (Number(val) || 0).toFixed(2),
   },
 ]
 
-const arrayHeaders = ['n', 'fecha', 'nfactura', 'almacen', 'producto', 'codigo', 'cantidad', 'precioOriginal' , 'precioCampana', 'subtotalOriginal', 'subtotalCampana', 'descuento']
-const sumColumns = ['cantidad', 'precioOriginal', 'precioCampana', 'subtotalOriginal', 'subtotalCampana', 'descuento']
+const arrayHeaders = [
+  'n',
+  'fecha',
+  'nfactura',
+  'almacen',
+  'producto',
+  'codigo',
+  'cantidad',
+  'precioOriginal',
+  'precioCampana',
+  'subtotalOriginal',
+  'subtotalCampana',
+  'descuento',
+]
+const sumColumns = [
+  'cantidad',
+  'precioOriginal',
+  'precioCampana',
+  'subtotalOriginal',
+  'subtotalCampana',
+  'descuento',
+]
 // --- Funciones ---
 
 /**
@@ -405,8 +426,10 @@ async function handleGenerarReporte() {
  * Maneja el botón "Vista previa del Reporte".
  */
 function handleVerReporte() {
-  const datosFinales = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
-  
+  const datosFinales = tableRef.value
+    ? tableRef.value.obtenerDatosFiltrados()
+    : datosFiltrados.value
+
   if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
@@ -415,11 +438,16 @@ function handleVerReporte() {
     })
     return
   }
+
+  // Capturar las columnas actualmente visibles en la tabla
+  const columnasDeLaTabla = tableRef.value?.obtenerColumnasVisibles() ?? []
+
   const doc = PDF_REPORTE_CAMPANAS_VENTAS(datosFinales, {
     fechaInicio: fechaInicio.value,
     fechaFin: fechaFin.value,
     campana: campanaSeleccionadaTexto.value,
     usuario: validarUsuario()[0],
+    visibleColumnsFromTable: columnasDeLaTabla,
   })
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
