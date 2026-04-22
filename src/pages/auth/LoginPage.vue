@@ -3,7 +3,68 @@
     <q-page-container>
       <q-page class="window-height window-width row no-wrap overflow-hidden">
         <!-- Left Side: Form -->
-        <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
+ 
+
+        <!-- Right Side: Image/Branding -->
+        <div
+          class="col-0 col-md-7 flex flex-center relative-position overflow-hidden"
+          style="background: linear-gradient(135deg, #004d40 0%, #00251a 100%)"
+        >
+          <div class="absolute-full">
+            <q-img
+              src="~assets/fondou.jpg"
+              class="full-height full-width"
+              fit="cover"
+              style="opacity: 0.3; mix-blend-mode: overlay"
+            />
+          </div>
+
+          <!-- Decoratve Circles/Effects -->
+          <div class="absolute-center" style="width: 100%; height: 100%; pointer-events: none">
+            <div
+              class="bg-teal-6"
+              style="
+                position: absolute;
+                top: -10%;
+                right: -10%;
+                width: 400px;
+                height: 400px;
+                border-radius: 50%;
+                opacity: 0.1;
+                filter: blur(50px);
+              "
+            ></div>
+            <div
+              class="bg-secondary"
+              style="
+                position: absolute;
+                bottom: -10%;
+                left: -10%;
+                width: 500px;
+                height: 500px;
+                border-radius: 50%;
+                opacity: 0.1;
+                filter: blur(60px);
+              "
+            ></div>
+          </div>
+
+          <div class="text-center text-white relative-position q-pa-xl" style="z-index: 10">
+            <q-icon
+              name="business"
+              size="100px"
+              color="white"
+              class="q-mb-md"
+              style="opacity: 0.9"
+            />
+            <div class="text-h3 text-weight-bold q-mb-md">Gestión Comercial</div>
+            <div class="text-h6 text-grey-4" style="max-width: 500px; margin: 0 auto">
+              Administra tus ventas, compras e inventarios de manera eficiente y sencilla.
+            </div>
+          </div>
+        </div>
+
+               <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
           <div class="q-pa-xl full-width" style="max-width: 480px">
             <div class="text-center q-mb-xl">
               <q-img
@@ -80,9 +141,10 @@
                 class="full-width q-mt-lg"
                 size="lg"
                 unelevated
-                :loading="loading"
                 style="border-radius: 8px"
               />
+
+
 
               <div class="relative-position q-my-lg">
                 <q-separator />
@@ -94,7 +156,7 @@
               <div class="text-center q-mt-md text-body2 text-grey-8">
                 ¿No tienes una cuenta?
                 <a
-                  href="https://mistersofts.com/app/crearcuenta"
+                  href="https://mistersofts.com/app/em/"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-weight-bold text-primary"
@@ -103,66 +165,21 @@
                   Regístrate
                 </a>
               </div>
+                            <div v-if="deferredPrompt" class="text-center q-mt-sm">
+                <q-btn
+                  outline
+                  dense
+                  no-caps
+                  color="grey-5"
+                  text-color="grey-8"
+                  icon="get_app"
+                  label="Instalar aplicación"
+                  @click="installApp"
+                  class="text-caption text-weight-medium q-px-sm"
+                  style="border-radius: 6px"
+                />
+              </div>
             </q-form>
-          </div>
-        </div>
-
-        <!-- Right Side: Image/Branding -->
-        <div
-          class="col-0 col-md-7 flex flex-center relative-position overflow-hidden"
-          style="background: linear-gradient(135deg, #004d40 0%, #00251a 100%)"
-        >
-          <div class="absolute-full">
-            <q-img
-              src="~assets/fondou.jpg"
-              class="full-height full-width"
-              fit="cover"
-              style="opacity: 0.3; mix-blend-mode: overlay"
-            />
-          </div>
-
-          <!-- Decoratve Circles/Effects -->
-          <div class="absolute-center" style="width: 100%; height: 100%; pointer-events: none">
-            <div
-              class="bg-teal-6"
-              style="
-                position: absolute;
-                top: -10%;
-                right: -10%;
-                width: 400px;
-                height: 400px;
-                border-radius: 50%;
-                opacity: 0.1;
-                filter: blur(50px);
-              "
-            ></div>
-            <div
-              class="bg-secondary"
-              style="
-                position: absolute;
-                bottom: -10%;
-                left: -10%;
-                width: 500px;
-                height: 500px;
-                border-radius: 50%;
-                opacity: 0.1;
-                filter: blur(60px);
-              "
-            ></div>
-          </div>
-
-          <div class="text-center text-white relative-position q-pa-xl" style="z-index: 10">
-            <q-icon
-              name="business"
-              size="100px"
-              color="white"
-              class="q-mb-md"
-              style="opacity: 0.9"
-            />
-            <div class="text-h3 text-weight-bold q-mb-md">Gestión Comercial</div>
-            <div class="text-h6 text-grey-4" style="max-width: 500px; margin: 0 auto">
-              Administra tus ventas, compras e inventarios de manera eficiente y sencilla.
-            </div>
           </div>
         </div>
       </q-page>
@@ -171,7 +188,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
@@ -180,6 +197,42 @@ const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
+const deferredPrompt = ref(null)
+
+const handleInstallPrompt = () => {
+  if (window.deferredPromptEvent) {
+    deferredPrompt.value = window.deferredPromptEvent
+  }
+}
+
+onMounted(() => {
+  // Verificar si ya se disparó antes de montar el componente
+  if (window.deferredPromptEvent) {
+    deferredPrompt.value = window.deferredPromptEvent
+  }
+  // Escuchar por si se dispara después
+  window.addEventListener('pwa-install-available', handleInstallPrompt)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    deferredPrompt.value = e
+  })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pwa-install-available', handleInstallPrompt)
+})
+
+const installApp = async () => {
+  if (deferredPrompt.value) {
+    deferredPrompt.value.prompt()
+    const { outcome } = await deferredPrompt.value.userChoice
+    if (outcome === 'accepted') {
+      console.log('App instalada')
+    }
+    deferredPrompt.value = null
+    window.deferredPromptEvent = null
+  }
+}
 
 const router = useRouter()
 const $q = useQuasar()
