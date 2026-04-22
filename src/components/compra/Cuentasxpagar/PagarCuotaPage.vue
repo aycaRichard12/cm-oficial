@@ -215,7 +215,7 @@ async function listarcajasbanco() {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta,
       value: item.idcaja_bancos,
     }))
     console.log(listaCajaBancos.value)

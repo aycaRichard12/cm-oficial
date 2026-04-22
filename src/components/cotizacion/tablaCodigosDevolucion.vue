@@ -1,247 +1,175 @@
 <template>
   <div class="detail-panel q-pa-none rounded-borders overflow-hidden">
-    <div class="panel-header row items-center q-px-lg q-py-md bg-grey-1">
+    <div class="panel-header row items-center q-px-lg q-py-md">
       <div class="row items-center">
-        <q-avatar size="32px" color="primary" text-color="white">
+        <q-avatar size="32px" class="bg-primary" text-color="white">
           <q-icon :name="icon" size="20px" />
         </q-avatar>
-        <div class="q-ml-md">
+        <div>
           <div class="text-subtitle1 text-weight-medium">{{ title }}</div>
-          <div class="text-caption text-grey-7">ID Proceso Padre: {{ idpadre }}</div>
+          <div class="text-caption text-grey-7">Gestión de productos devueltos</div>
         </div>
       </div>
       <q-space />
-      <q-badge outline color="primary" :label="`${modelValue.length} items en tabla`" />
+      <q-badge outline color="primary" :label="`${modelValue.length} registros`" />
     </div>
 
     <div class="q-px-lg q-pb-lg q-pt-sm">
-      <div v-if="apiMode" class="q-mb-lg bg-blue-1 q-pa-md rounded-borders border-dashed">
-        <div class="text-caption q-mb-sm text-weight-bold text-primary">
-          Registrar Nuevo Movimiento de Producto
-        </div>
-        <div class="row q-col-gutter-sm items-end">
-          <div class="col-12 col-sm-6">
-            <q-select
-              v-model="productoSeleccionado"
-              :options="opcionesProductos"
-              label="Seleccionar Producto Único"
-              dense
-              outlined
-              bg-color="white"
-              emit-value
-              map-options
-              option-label="serie"
-              option-value="id"
-              :rules="[(val) => !!val || 'Requerido']"
-              hide-bottom-space
-            >
-              <template v-slot:no-option>
-                <q-item
-                  ><q-item-section class="text-grey"
-                    >No hay productos disponibles</q-item-section
-                  ></q-item
-                >
-              </template>
-            </q-select>
-          </div>
-          <div class="col-auto">
-            <q-checkbox
-              v-model="nuevoEsMerma"
-              label="¿Es Merma?"
-              color="orange"
-              dense
-              class="q-pb-sm"
-            />
-          </div>
-          <div class="col-grow text-right">
-            <q-btn
-              color="primary"
-              label="Registrar"
-              icon="add"
-              class="full-width"
-              :disable="!productoSeleccionado"
-              @click="ejecutarRegistro"
-            />
-          </div>
-        </div>
-      </div>
-
       <q-markup-table flat bordered separator="cell" class="modern-table">
         <thead>
           <tr class="bg-grey-2">
-            <th style="width: 60px">N°</th>
-            <th>Código / Serie</th>
-            <th style="width: 100px">Estado</th>
-            <th class="text-center" style="width: 120px">Acciones</th>
+            <th style="width: 50px">N°</th>
+            <th class="text-left">Código de Identificación</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">¿Es Merma?</th>
+            <th v-if="canDelete" style="width: 80px" class="text-center">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(sub, index) in modelValue" :key="sub.id">
-            <td class="text-center">{{ index + 1 }}</td>
+          <tr v-for="(sub, index) in modelValue" :key="sub.id_devolucion_producto_unico">
+            <td class="text-center">{{ String(index + 1).padStart(2, '0') }}</td>
+
             <td class="text-left">
-              <div v-if="editandoId !== sub.id" class="row items-center">
-                <q-icon name="fingerprint" color="primary" size="xs" class="q-mr-xs" />
-                {{ sub.serie }}
-              </div>
-              <q-input
-                v-else
-                v-model="tempSerie"
+              <q-icon name="fingerprint" color="grey-4" size="18px" class="q-mr-sm" />
+              <span class="text-weight-medium">{{ sub.serie }}</span>
+            </td>
+
+            <td class="text-center">
+              <q-badge :color="sub.estado === 'Vendido' ? 'orange' : 'blue'" label>
+                {{ sub.estado }}
+              </q-badge>
+            </td>
+
+            <td class="text-center">
+              <q-checkbox
+                v-model="sub.es_merma"
+                :true-value="1"
+                :false-value="0"
+                color="negative"
+                @update:model-value="(val) => toggleMerma(sub, val)"
+              >
+                <q-tooltip>Marcar como pérdida/dañado</q-tooltip>
+              </q-checkbox>
+            </td>
+
+            <td v-if="canDelete" class="text-center">
+              <q-btn
+                flat
+                round
                 dense
-                outlined
-                autofocus
-                @keyup.enter="confirmarEdicion(sub)"
-              />
+                color="negative"
+                icon="delete_outline"
+                size="sm"
+                @click="gestionarEliminacion(sub)"
+              >
+                <q-tooltip>Eliminar de la devolución</q-tooltip>
+              </q-btn>
             </td>
-            <td class="text-center">
-              <q-badge
-                :color="sub.es_merma ? 'orange' : 'green'"
-                :label="sub.es_merma ? 'MERMA' : 'OK'"
-              />
-            </td>
-            <td class="text-center">
-              <div class="row q-gutter-xs justify-center">
-                <q-btn
-                  flat
-                  round
-                  dense
-                  color="primary"
-                  icon="edit"
-                  size="sm"
-                  @click="iniciarEdicion(sub)"
-                />
-                <q-btn
-                  flat
-                  round
-                  dense
-                  color="negative"
-                  icon="delete"
-                  size="sm"
-                  @click="ejecutarEliminacion(sub)"
-                />
-              </div>
-            </td>
-          </tr>
-          <tr v-if="modelValue.length === 0">
-            <td colspan="4" class="text-center text-grey q-pa-md">No hay registros asociados.</td>
           </tr>
         </tbody>
       </q-markup-table>
     </div>
   </div>
+
+  <div class="premium-footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <q-icon name="info" size="14px" color="grey-6" class="q-mr-xs" />
+        <span class="text-caption text-grey-6">
+          Los productos marcados como merma no retornarán al stock disponible.
+        </span>
+      </div>
+      <div class="footer-stats">
+        <div class="stat-item">
+          <q-icon name="warning" size="14px" color="negative" class="q-mr-xs" />
+          <span class="text-caption">
+            {{ modelValue.filter((s) => s.es_merma === 1).length }} Mermas
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
 
 const props = defineProps({
-  modelValue: { type: Array, required: true }, // Los datos de la tabla
-  idpadre: { type: [Number, String], required: true }, // El ID que enviaremos a la API
-  opcionesProductos: { type: Array, default: () => [] }, // Viene del padre para el Select
-  title: { type: String, default: 'Gestión de Devoluciones' },
-  apiMode: { type: Boolean, default: true },
-  icon: { type: String, default: 'inventory_2' },
+  modelValue: { type: Array, required: true },
+  parentRow: { type: Object, required: true },
+  title: { type: String, default: 'Desglose de Identificadores' },
+  canDelete: { type: Boolean, default: true },
+  icon: { type: String, default: 'assignment_return' },
 })
 
-const emit = defineEmits(['update:modelValue', 'registro-exitoso'])
+const emit = defineEmits(['update:modelValue', 'update-parent-quantity'])
 
-// Estados Locales
-const productoSeleccionado = ref(null)
-const nuevoEsMerma = ref(false)
-const editandoId = ref(null)
-const tempSerie = ref('')
-
-// --- ACCIÓN: REGISTRAR ---
-async function ejecutarRegistro() {
+/**
+ * ACTUALIZAR MERMA EN API
+ * @param {Object} sub - El objeto del producto único
+ * @param {Number} valor - 1 o 0
+ */
+async function toggleMerma(sub, valor) {
   try {
-    $q.loading.show()
-    const formData = new FormData()
-    formData.append('ver', 'registrar') // Acción según tu API
-    formData.append('id_padre', props.idpadre)
-    formData.append('id_producto_unico', productoSeleccionado.value)
-    formData.append('es_merma', nuevoEsMerma.value ? 1 : 0)
-
-    const response = await api.post('', formData)
-
+    const response = await api.get(`actulizarEsmerma/${sub.id_devolucion_producto_unico}`)
+    console.log('Respuesta de actualización de merma:', response.data)
     if (response.data.estado === 'exito') {
-      // Actualizamos la tabla con el nuevo item que debería devolver la API
-      const nuevaLista = [...props.modelValue, response.data.item]
-      emit('update:modelValue', nuevaLista)
-
-      // Limpiar formulario
-      productoSeleccionado.value.ref = null
-      nuevoEsMerma.value = false
-      $q.notify({ type: 'positive', message: 'Registrado correctamente' })
+      $q.notify({
+        type: valor === 1 ? 'warning' : 'positive',
+        message: valor === 1 ? 'Producto marcado como merma' : 'Producto restaurado',
+        timeout: 1000,
+      })
+    } else {
+      // Si falla en servidor, revertimos el cambio localmente
+      sub.es_merma = valor === 1 ? 0 : 1
+      $q.notify({ type: 'negative', message: 'No se pudo actualizar el estado' })
     }
-  } catch (e) {
-    console.error(e)
-    $q.notify({ type: 'negative', message: 'Error al registrar' })
-  } finally {
-    $q.loading.hide()
+  } catch (error) {
+    sub.es_merma = valor === 1 ? 0 : 1
+    console.error('Error al cambiar merma', error)
   }
 }
 
-// --- ACCIÓN: ELIMINAR ---
-async function ejecutarEliminacion(sub) {
+/**
+ * GESTIONAR ELIMINACIÓN
+ */
+const gestionarEliminacion = (sub) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Eliminar este registro?',
+    title: 'Confirmar eliminación',
+    message: `¿Deseas quitar el código ${sub.serie} de esta devolución?`,
     cancel: true,
+    ok: { color: 'negative', label: 'Eliminar' },
+    persistent: true,
   }).onOk(async () => {
-    try {
-      $q.loading.show()
-      const formData = new FormData()
-      formData.append('ver', 'eliminar')
-      formData.append('id', sub.id)
-
-      const response = await api.post('', formData)
-      if (response.data.estado === 'exito') {
-        const nuevaLista = props.modelValue.filter((i) => i.id !== sub.id)
-        emit('update:modelValue', nuevaLista)
-        $q.notify({ type: 'positive', message: 'Eliminado' })
-      }
-    } catch (e) {
-      console.error(e)
-      $q.notify({ type: 'negative', message: 'Error al eliminar' })
-    } finally {
-      $q.loading.hide()
-    }
+    await eliminarSubCodigoAPI(sub)
   })
 }
 
-// --- ACCIÓN: EDITAR ---
-function iniciarEdicion(sub) {
-  editandoId.value = sub.id
-  tempSerie.value = sub.serie
-}
-
-async function confirmarEdicion(sub) {
-  if (tempSerie.value === sub.serie) {
-    editandoId.value = null
-    return
-  }
-
+async function eliminarSubCodigoAPI(sub) {
   try {
-    const formData = new FormData()
-    formData.append('ver', 'editar')
-    formData.append('id', sub.id)
-    formData.append('serie', tempSerie.value)
+    $q.loading.show()
+    // Usamos el ID específico de la relación de devolución para eliminar
+    const response = await api.get(
+      `eliminarDevolucioneProductoUnico/${sub.id_devolucion_producto_unico}`,
+    )
 
-    const response = await api.post('', formData)
     if (response.data.estado === 'exito') {
-      const nuevaLista = props.modelValue.map((i) =>
-        i.id === sub.id ? { ...i, serie: tempSerie.value } : i,
+      const nuevaLista = props.modelValue.filter(
+        (i) => i.id_devolucion_producto_unico !== sub.id_devolucion_producto_unico,
       )
       emit('update:modelValue', nuevaLista)
-      editandoId.value = null
-      $q.notify({ type: 'positive', message: 'Actualizado' })
+      emit('update-parent-quantity', nuevaLista.length)
+
+      $q.notify({ type: 'positive', message: 'Registro eliminado correctamente' })
     }
-  } catch (e) {
-    console.error(e)
-    $q.notify({ type: 'negative', message: 'Error al editar' })
+  } catch (error) {
+    console.error('Error al eliminar el registro', error)
+    $q.notify({ type: 'negative', message: 'Error al eliminar el registro' })
+  } finally {
+    $q.loading.hide()
   }
 }
 </script>

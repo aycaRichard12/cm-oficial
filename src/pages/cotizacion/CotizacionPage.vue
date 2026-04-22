@@ -1630,19 +1630,29 @@ const cargarMetodoPagoFactura = async () => {
   }
 }
 async function leyendaActiva() {
-  const endpoint = `listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`
-  console.log(endpoint)
+  let endpoint = null
+
+  if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
+    endpoint = `listaLeyendaFactura/${idempresa}/${token}/${tipoFactura}`
+  } else {
+    leyendaFacturaActiva.id = 0
+    leyendaFacturaActiva.codigosin = 0
+    return
+  }
+
   try {
-    const response = await api.get(endpoint)
-    const resultado = response.data
-    console.log(resultado)
-    if (resultado[0] === 'error') {
-      console.error(resultado.error)
-    } else {
-      let use = resultado.filter((u) => u.estado === 1)
-      if (use.length > 0) {
-        leyendaFacturaActiva.id = use[0].id || 0
-        leyendaFacturaActiva.codigosin = use[0].leyendasin.codigo || 0
+    if (endpoint != null) {
+      const response = await api.get(endpoint)
+      const resultado = response.data
+      console.log(resultado)
+      if (resultado[0] === 'error') {
+        console.error(resultado.error)
+      } else {
+        let use = resultado.filter((u) => u.estado === 1)
+        if (use.length > 0) {
+          leyendaFacturaActiva.id = use[0].id || 0
+          leyendaFacturaActiva.codigosin = use[0].leyendasin.codigo || 0
+        }
       }
     }
   } catch (error) {
@@ -1651,7 +1661,13 @@ async function leyendaActiva() {
 }
 
 async function divisaEmonedaActiva() {
-  const endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+  let endpoint = ``
+  if (token && tipoFactura && getTipoFactura(true) && getToken(true)) {
+    endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+  } else {
+    endpoint = `listaDivisa/${idempresa}`
+  }
+
   console.log(endpoint)
   try {
     const response = await api.get(endpoint)

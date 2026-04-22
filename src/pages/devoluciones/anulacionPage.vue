@@ -205,7 +205,7 @@ const cargarConfiguracion = async () => {
     ]
 
     // Cargar tipos de venta
-    if (token) {
+    if (token && tipoFactura && getToken(true) && getTipoFactura(true)) {
       const enpoint = `listaLeyendaSIN/tiposector/${token}/${tipoFactura}`
       const tiposResponse = await api.get(enpoint)
       const codigosPermitidos = [0, 1, 2, 3]

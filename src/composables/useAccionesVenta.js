@@ -135,7 +135,7 @@ export function useAccionesVenta() {
       formData.append('tipo_dev', tipo_devolucion.value)
 
       const response = await api.post('', formData)
-
+      console.log(response)
       if (response.data.estado === 100) {
         $q.notify({ type: 'positive', message: 'Devolución registrada correctamente' })
         if (callbackSuccess) callbackSuccess(response.data.id)

@@ -1,0 +1,136 @@
+{
+    ver: 'registrarCierre',
+    idusuario: 'eb160de1de89d9058fcb0b968dbbbd68',
+    idempresa: 'c0c7c76d30bd3dcaefc96f40275bdc0a',
+    fechaInicio: '2025-04-18',
+    fechaFin: '2026-04-18',
+    puntoVenta: '58',
+    caja: [
+      {
+        campo: 'ingresos',
+        sistema: 15617,
+        totalContado: '15617.00',
+        diferencia: 0
+      },
+      {
+        campo: 'egresos',
+        sistema: 7265346.3999967575,
+        totalContado: '7265346.40',
+        diferencia: 0
+      },
+      {
+        campo: 'anulados',
+        sistema: 6590,
+        totalContado: '6590.00',
+        diferencia: 0
+      },
+      {
+        campo: 'cotizaciones',
+        sistema: 537989,
+        totalContado: '537989.00',
+        diferencia: 0
+      }
+    ],
+    totalesPorMetodo: Array(6) [
+      {
+        metodo: 1,
+        label: 'Cheque',
+        totalSistema: 0,
+        totalContado: '0.00',
+        diferencia: 0
+      },
+      {
+        metodo: 7,
+        label: 'Efectivo',
+        totalSistema: 1132,
+        totalContado: '1132.00',
+        diferencia: 0
+      },
+      {
+        metodo: 12,
+        label: 'vale',
+        totalSistema: 0,
+        totalContado: '0.00',
+        diferencia: 0
+      },
+      {
+        metodo: 14,
+        label: 'tarjeta',
+        totalSistema: 0,
+        totalContado: '0.00',
+        diferencia: 0
+      },
+      {
+        metodo: 16,
+        label: 'QR',
+        totalSistema: 0,
+        totalContado: '0.00',
+        diferencia: 0
+      },
+      {
+        metodo: 21,
+        label: 'Transferencia',
+        totalSistema: 2034,
+        totalContado: '2034.00',
+        diferencia: 0
+      }
+    ],
+    totalesPorMetodoCotizacion: Array(6) [
+      {
+        metodo: 1,
+        label: 'Cheque',
+        totalSistema: 97004.6,
+        totalContado: '97004.60',
+        diferencia: 0
+      },
+      {
+        metodo: 7,
+        label: 'Efectivo',
+        totalSistema: 87658.4,
+        totalContado: '87658.40',
+        diferencia: 0
+      },
+      {
+        metodo: 12,
+        label: 'vale',
+        totalSistema: 213912,
+        totalContado: '213912.00',
+        diferencia: 0
+      },
+      {
+        metodo: 14,
+        label: 'tarjeta',
+        totalSistema: 2940,
+        totalContado: '2940.00',
+        diferencia: 0
+      },
+      {
+        metodo: 16,
+        label: 'QR',
+        totalSistema: 17340,
+        totalContado: '17340.00',
+        diferencia: 0
+      },
+      {
+        metodo: 21,
+        label: 'Transferencia',
+        totalSistema: 1646,
+        totalContado: '1646.00',
+        diferencia: 0
+      }
+    ],
+    denominaciones: Array(11) [
+      { valor: 200, cantidad: 0, label: 'Billetes de 200' },
+      { valor: 100, cantidad: 0, label: 'Billetes de 100' },
+      { valor: 50, cantidad: 0, label: 'Billetes de 50' },
+      { valor: 20, cantidad: 0, label: 'Billetes de 20' },
+      { valor: 10, cantidad: 0, label: 'Billetes de 10' },
+      { valor: 5, cantidad: 0, label: 'Monedas de 5' },
+      { valor: 2, cantidad: 0, label: 'Monedas de 2' },
+      { valor: 1, cantidad: 0, label: 'Monedas de 1' },
+      { valor: 0.5, cantidad: 0, label: 'Monedas de 0.5' },
+      { valor: 0.2, cantidad: 0, label: 'Monedas de 0.2' },
+      { valor: 0.1, cantidad: 0, label: 'Monedas de 0.1' }
+    ],
+    observacion: ''
+  }

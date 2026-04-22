@@ -366,7 +366,7 @@
                 v-model="props.row.codigosUnicos"
                 :parent-row="props.row"
                 :can-delete="true"
-                :can-edit="true"
+                :can-edit="false"
                 :api-mode="false"
                 @update-parent-quantity="
                   (nuevaCant) => {

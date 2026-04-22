@@ -7,9 +7,13 @@ import { idempresa_md5 } from './FuncionesGenerales'
 
 export function useDivisa() {
   const idempresa = idempresa_md5()
-  const tipoFactura = getTipoFactura()
-  const token = getToken()
-  
+  let tipoFactura = ''
+  let token = ''
+  if (getTipoFactura(true) && getToken(true)) {
+    tipoFactura = getTipoFactura()
+    token = getToken()
+  }
+
   const divisa = ref(null)
   const loading = ref(false)
   const error = ref(null)
@@ -22,7 +26,7 @@ export function useDivisa() {
       const endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
       console.log(endpoint)
       const response = await api.get(endpoint)
-
+      console.log(response)
       // Procesamiento completo como en tu versión original
       const data = response.data?.data || response.data
       console.log(data)

@@ -48,3 +48,10 @@ pyLimpiarCarpetaAssets.py
 pySubirDistAlServidor.py
 pySubirApi.py
 upload_dist.bat
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
