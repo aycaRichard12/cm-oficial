@@ -4,6 +4,46 @@ function getUsuarioData() {
   return JSON.parse(localStorage.getItem('mistersofts-cm'))
 }
 
+export function generarCodigo() {
+  const fecha = new Date()
+
+  // Fecha y hora compacta: YYMMDDHHMMSS
+  const tiempo =
+    String(fecha.getFullYear()).slice(-2) +
+    String(fecha.getMonth() + 1).padStart(2, '0') +
+    String(fecha.getDate()).padStart(2, '0') +
+    String(fecha.getHours()).padStart(2, '0') +
+    String(fecha.getMinutes()).padStart(2, '0') +
+    String(fecha.getSeconds()).padStart(2, '0')
+
+  // Letras permitidas
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+  // Función para generar letras aleatorias
+  const generarLetras = (cantidad) => {
+    let resultado = ''
+
+    for (let i = 0; i < cantidad; i++) {
+      resultado += letras[Math.floor(Math.random() * letras.length)]
+    }
+
+    return resultado
+  }
+
+  // Letras al inicio y al final
+  const inicio = generarLetras(2)
+  const final = generarLetras(2)
+
+  // Parte numérica aleatoria
+  const random = Math.floor(Math.random() * 100)
+    .toString()
+    .padStart(2, '0')
+
+  // Código final
+  const codigo = `${inicio}${tiempo}${random}${final}`
+
+  return codigo
+}
 export function idempresa_md5() {
   const contenidousuario = getUsuarioData()
   if (contenidousuario) {

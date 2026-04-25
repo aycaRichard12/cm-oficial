@@ -53,6 +53,7 @@
               class="premium-input text-weight-medium"
               hide-bottom-space
               :rules="[(val) => !!val || 'Campo requerido']"
+              @update:model-value="seleccionarPedido"
             >
               <template v-slot:prepend>
                 <q-icon name="receipt_long" color="primary" />
@@ -336,6 +337,7 @@ import { ref, watch, computed } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 const $q = useQuasar()
 const idempresa = idempresa_md5()
 const conPEdido = ref(true)
@@ -378,7 +380,19 @@ const onSubmit = () => {
 
   emit('submit', localData.value)
 }
-
+const seleccionarPedido = () => {
+  const pedidoSeleccionado = pedidos.value.find(
+    (pedido) => Number(pedido.value) === Number(localData.value.pedido),
+  )
+  console.log('Pedido seleccionado:', pedidoSeleccionado)
+  if (pedidoSeleccionado) {
+    const idAlmacen = Number(pedidoSeleccionado.idalmacen)
+    const almacenObj = props.almacenes.find((a) => Number(a.value) === idAlmacen)
+    localData.value.almacen = almacenObj || null
+  } else {
+    localData.value.almacen = null
+  }
+}
 const verificar = () => {
   const tipo = localData.value.tipoRegistro
   //console.log(tipo)
@@ -400,7 +414,7 @@ async function cargarPedidos() {
     //console.log('IDs de almacenes:', idAlmacenes)
 
     const response = await api.get(`listaPedido/${idempresa}`)
-    //console.log('Respuesta API pedidos:', response.data)
+    console.log('Respuesta API pedidos:', response.data)
     //console.log('Total pedidos recibidos:', response.data.length)
 
     const filtrados = response.data.filter((item) => {
@@ -431,7 +445,8 @@ async function cargarPedidos() {
 
     PedidosAlmacen.value = filtrados
     pedidos.value = filtrados.map((item) => ({
-      label: `${item.almacen} - ${item.observacion || 'Sin observación'}`,
+      label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+      idalmacen: item.idalmacen,
       value: item.id,
     }))
     //console.log('Pedidos formateados para select:', pedidos.value)
@@ -490,7 +505,9 @@ watch(
   (newVal) => {
     const pedido = PedidosAlmacen.value.find((obj) => obj.id == newVal)
     if (pedido) {
-      localData.value.almacen = pedido.idalmacen
+      const idAlmacen = Number(pedido.idalmacen)
+      const almacenObj = props.almacenes.find((a) => Number(a.value) === idAlmacen)
+      localData.value.almacen = almacenObj || null
     }
     console.log('Almacén asignado:', localData.value.almacen)
   },
@@ -509,6 +526,7 @@ watch(
   },
 )
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

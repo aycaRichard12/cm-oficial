@@ -48,7 +48,7 @@
         <label for="almacen">Filtrar por Almacén</label>
         <q-select id="almacen" dense outlined v-model="almacen" :options="almacenes" clearable />
       </div> -->
-      <!-- 
+      <!--
       <div class="col-12 col-md-3">
         <label for="cliente">Filtrar por razón social</label>
         <q-input

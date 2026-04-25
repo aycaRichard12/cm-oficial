@@ -611,9 +611,7 @@ const filterClientes = (val, update) => {
 }
 
 const branchOptions = computed(() => {
-  return formData.value.cliente
-    ? branches.value.filter((b) => b.clientId === formData.value.cliente.value)
-    : []
+  return formData.value.cliente ? branches.value : []
 })
 const typeDocOptions = computed(() => {
   return typeDoc.value || []
@@ -749,7 +747,7 @@ const actualizarSucursales = async (clientId) => {
     }))
 
     // Buscar el objeto cliente completo para cargar sus datos
-    const clientObj = clients.value.find((c) => c.value === clientId)
+    const clientObj = clients.value.find((c) => c.value == clientId)
     if (clientObj) {
       cargarDatosCliente(clientObj)
     }
@@ -892,6 +890,7 @@ watch(
 const onSubmit = async () => {
   let loadingShown = false
   try {
+    console.log('Submitting form with data:', formData.value)
     const cartData = JSON.parse(localStorage.getItem('carrito') || '{}')
     const {
       cliente,
@@ -959,7 +958,7 @@ const onSubmit = async () => {
     form.append('tipoventa', CONSTANTES.tipoventa)
     form.append('idusuario', CONSTANTES.idusuario)
     form.append('idempresa', CONSTANTES.idempresa)
-    form.append('idcliente', cliente.value)
+    form.append('idcliente', cliente)
     form.append('sucursal', sucursal.value)
     form.append('tipodoc', tipodoc.value)
     form.append('nrodoc', nroDoc)
@@ -974,6 +973,10 @@ const onSubmit = async () => {
     form.append('tipopago', credito ? 'credito' : CONSTANTES.tipopago)
     form.append('periodopersonalizado', plazoPersonalizado)
     form.append('jsonDetalles', JSON.stringify(cartData))
+
+    // for (const [key, value] of form.entries()) {
+    //   console.log(key, value)
+    // }
 
     const jsonObject = Object.fromEntries(form.entries())
 
@@ -1103,18 +1106,24 @@ const logError = (type, error, context = {}) => {
 // ====================== UTILIDADES ======================
 const resetForm = () => {
   formData.value = {
+    variablePago: 'directo',
     cliente: null,
     sucursal: null,
     fecha: new Date().toISOString().slice(0, 10),
     canal: null,
     credito: false,
+    tipopago: 'contado',
+    metodoPago: null,
+    puntoventa: null,
     cantidadPagos: 0,
     montoPagos: 0,
     periodo: null,
     plazoPersonalizado: 0,
     fechaLimite: '',
-    tipoDocumento: null,
-    numeroDocumento: '',
+    nroDoc: '',
+    idcanal: null,
+    tipodoc: null,
+    pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
   }
   localStorage.removeItem('carrito')
 }
