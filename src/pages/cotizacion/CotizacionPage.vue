@@ -1711,7 +1711,7 @@ async function listaCategoria() {
   cargarPuntoVentas()
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
-  const endpoint = `listaCategoriaPrecio/${idempresa}`
+  const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
   try {
     const response = await api.get(endpoint)
     const resultado = response.data

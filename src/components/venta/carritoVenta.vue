@@ -737,7 +737,7 @@ async function cargarCategoriasPrecio() {
       categoriaPrecioSeleccionada.value = null
       categoriasPrecio.value = []
 
-      const endpoint = `/listaCategoriaPrecio/${usuario.value.empresa.idempresa}`
+      const endpoint = `/listarCategoriaPrecioVenta/${usuario.value.empresa.idempresa}`
       const { data } = await api.get(endpoint)
 
       if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
