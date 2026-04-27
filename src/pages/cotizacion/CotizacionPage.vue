@@ -378,6 +378,7 @@
               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
               required
               outlined
+              :readonly="!permisosStore.tienePermiso('editarprecioventa')"
               dense
               bg-color="white"
               hide-bottom-space
@@ -1216,6 +1217,9 @@ import ModalfirmaPage from './ModalfirmaPage.vue'
 import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+const permisosStore = useOperacionesPermitidas()
+
 const showAddModal = ref(false)
 const esProductoUnico = ref(false)
 const registrarComoProductoUnico = ref(false)
@@ -2442,6 +2446,8 @@ onMounted(async () => {
   await listaProductosDisponibles() // Cargar productos inicialmente
   await cargarLeyendasCotizacion() // Cargar leyendas para el comprobante
   await cargarMetodoPagoFactura()
+  await permisosStore.cargarPermisos()
+
   calcularTotalesCarrito() // Recalcular si hay carrito guardado en localStorage
   listarcajasbanco()
 })

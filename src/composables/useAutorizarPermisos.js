@@ -42,6 +42,7 @@ export function useAutorizarPermisos(emit) {
     { titulo: 'Registrar Compras', codigo: 'registrarcompra', icon: 'receipt' },
     { titulo: 'Edición de Inventario Externo', codigo: 'inventarioexterno', icon: 'edit_location' },
     { titulo: 'Anular Compras de Forma Directa', codigo: 'anularcompradirecta', icon: 'delete_sweep' },
+    { titulo: 'Editar Precio de Venta', codigo: 'editarprecioventa', icon: 'paid' },
   ]
 
   // Computados

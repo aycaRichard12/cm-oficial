@@ -33,7 +33,9 @@
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-4" id="origenVenta">
-              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block">Origen de venta</label>
+              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Origen de venta</label
+              >
               <q-select
                 v-model="almacenSeleccionado"
                 :options="almacenes"
@@ -51,7 +53,9 @@
             </div>
 
             <div class="col-12 col-md-4" id="categoriaPrecio">
-              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block">Categoría de precio</label>
+              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Categoría de precio</label
+              >
               <q-select
                 v-model="categoriaPrecioSeleccionada"
                 :options="categoriasPrecio"
@@ -71,7 +75,9 @@
             </div>
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
               <div class="flex items-center justify-between q-mb-sm">
-                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none">Categorías con Campaña</label>
+                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none"
+                  >Categorías con Campaña</label
+                >
                 <q-checkbox v-model="mostrarCategoriasCampania" dense>
                   <template v-slot:default>
                     <label class="text-emerald" style="font-size: 13px">{{
@@ -115,7 +121,9 @@
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-10" id="buscarProductoVenta">
-              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block">Buscar producto (código o descripción)</label>
+              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Buscar producto (código o descripción)</label
+              >
               <q-select
                 v-model="productoSeleccionado"
                 :options="productosFiltrados"
@@ -163,7 +171,16 @@
                 :src="imagen + productoSeleccionado?.originalData?.imagen || null"
                 @click="mostrarGrande = true"
                 fit="contain"
-                style="width: 100%; max-width: 140px; height: 110px; cursor: pointer; border-radius: 8px; border: 1px solid #e0e0e0; padding: 4px; margin-top: 28px;"
+                style="
+                  width: 100%;
+                  max-width: 140px;
+                  height: 110px;
+                  cursor: pointer;
+                  border-radius: 8px;
+                  border: 1px solid #e0e0e0;
+                  padding: 4px;
+                  margin-top: 28px;
+                "
                 spinner-color="primary"
               >
                 <template v-slot:error>
@@ -196,7 +213,9 @@
 
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
-              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block">Stock disponible</label>
+              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Stock disponible</label
+              >
               <q-input
                 v-model="productoSeleccionado.originalData.stock"
                 id="stockdisponible"
@@ -209,7 +228,9 @@
             </div>
 
             <div class="col-12 col-sm-3" id="cantidadVenta">
-              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block">Cantidad</label>
+              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Cantidad</label
+              >
               <q-input
                 v-model.number="cantidad"
                 id="cantidad"
@@ -225,7 +246,9 @@
             </div>
 
             <div class="col-12 col-sm-3" id="precioVenta">
-              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block">Precio unitario</label>
+              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Precio unitario</label
+              >
               <q-input
                 v-model="precioUnitario"
                 id="precio"
@@ -233,6 +256,7 @@
                 :rules="[(val) => val > 0 || 'Ingrese precio válido']"
                 outlined
                 dense
+                :readonly="!permisosStore.tienePermiso('editarprecioventa')"
                 type="number"
               >
               </q-input>
@@ -254,7 +278,10 @@
         </div>
       </div>
 
-      <div class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2" style="border-radius: 8px; border: 1px solid #e0e0e0;">
+      <div
+        class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2"
+        style="border-radius: 8px; border: 1px solid #e0e0e0"
+      >
         <div class="text-subtitle2 q-ml-sm text-weight-bold text-grey-8">Venta sin stock</div>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
@@ -407,7 +434,11 @@ import { peticionGET } from 'src/composables/peticionesFetch.js'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+
 const { consumirPermiso } = useSolicitudes()
+const permisosStore = useOperacionesPermitidas()
+
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
@@ -1299,7 +1330,7 @@ onMounted(async () => {
   try {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
-
+    await permisosStore.cargarPermisos()
     if (!currencyStore.divisa) {
       console.error('No se pudo cargar la divisa')
       return
