@@ -3,7 +3,6 @@
     <q-page-container>
       <q-page class="window-height window-width row no-wrap overflow-hidden">
         <!-- Left Side: Form -->
- 
 
         <!-- Right Side: Image/Branding -->
         <div
@@ -64,7 +63,7 @@
           </div>
         </div>
 
-               <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
+        <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
           <div class="q-pa-xl full-width" style="max-width: 480px">
             <div class="text-center q-mb-xl">
               <q-img
@@ -144,8 +143,6 @@
                 style="border-radius: 8px"
               />
 
-
-
               <div class="relative-position q-my-lg">
                 <q-separator />
                 <div class="absolute-center bg-white q-px-md text-grey-7 text-caption">
@@ -165,7 +162,7 @@
                   Regístrate
                 </a>
               </div>
-                            <div v-if="deferredPrompt" class="text-center q-mt-sm">
+              <div v-if="deferredPrompt" class="text-center q-mt-sm">
                 <q-btn
                   outline
                   dense
@@ -270,10 +267,21 @@ const login = async () => {
       res.data.length > 0 &&
       res.data[0].ok === 'success'
     ) {
+      console.log('Respuesta del servidor:', res.data)
       const userData = [{ ...res.data[0] }]
       const rawMenu = res.data[0].menu || []
       const modulo = res.data[0].modulo || ''
       const idusuario = res.data[0].idusuario || ''
+      if (rawMenu.length === 0) {
+        $q.notify({
+          color: 'warning',
+          textColor: 'white',
+          icon: 'warning',
+          message: 'No se encontraron permisos asignados para este usuario.',
+          position: 'top',
+        })
+        return
+      }
 
       // Transformar menu: añadir "usuario" y asegurarnos que los codigos
       // de los submenús terminan con el idusuario real.

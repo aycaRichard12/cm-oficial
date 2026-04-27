@@ -66,6 +66,7 @@
           <q-td class="text-right">{{ formatearNumero(sumatorias.descuento) }}</q-td>
           <q-td class="text-right">{{ formatearNumero(sumatorias.totalcosto) }}</q-td>
           <q-td class="text-right">{{ formatearNumero(sumatorias.totalventa) }}</q-td>
+          <q-td class="text-right">{{ formatearNumero(sumatorias.utilidad) }}</q-td>
           <q-td colspan="13"></q-td>
         </q-tr>
       </template>
@@ -88,13 +89,13 @@ defineProps({
   formatearFecha: Function,
   formatearNumero: Function,
   decimas: Function,
-  redondear: Function
+  redondear: Function,
 })
 
 const localTableRef = ref(null)
 
 // Exponer obtenerDatosFiltrados delegando en la tabla base
 defineExpose({
-  obtenerDatosFiltrados: () => localTableRef.value?.obtenerDatosFiltrados() || []
+  obtenerDatosFiltrados: () => localTableRef.value?.obtenerDatosFiltrados() || [],
 })
 </script>

@@ -283,8 +283,10 @@ async function listarcajasbanco() {
     console.log(response.data)
 
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta,
       value: item.idcaja_bancos,
+      codigo: item.codigo, // Guardamos el código por separado
+      nombre: item.tipo_cuenta, // Guardamos el nombre por separado
     }))
     console.log(listaCajaBancos.value)
   } catch (error) {

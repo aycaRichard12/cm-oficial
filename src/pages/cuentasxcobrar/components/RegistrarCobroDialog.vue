@@ -226,22 +226,40 @@
                 style="font-size: 13px; text-transform: uppercase"
                 >Seleccione Caja o Banco <span class="text-negative">*</span></label
               >
+
               <q-select
                 v-model="localFormulario.idcajaBancoSeleccionada"
                 :options="listaCajaBancos"
                 id="cajaBanco"
                 dense
                 outlined
-                bg-color="white"
                 emit-value
                 map-options
                 class="premium-input"
-                hide-bottom-space
                 :rules="[(val) => !!val || 'Campo requerido']"
-                @update:model-value="onFieldUpdate"
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="positive" />
+                </template>
+
+                <template v-slot:selected-item="scope">
+                  <div v-if="scope.opt" class="q-py-xs">
+                    <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+                    <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                  </div>
+                </template>
+
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>
+                        <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                      </q-item-label>
+                      <q-item-label caption>
+                        {{ scope.opt.nombre }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
                 </template>
               </q-select>
             </div>
@@ -349,8 +367,10 @@ async function listarcajasbanco() {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta,
       value: item.idcaja_bancos,
+      codigo: item.codigo, // Guardamos el código por separado
+      nombre: item.tipo_cuenta, // Guardamos el nombre por separado
     }))
     console.log(listaCajaBancos.value)
   } catch (error) {

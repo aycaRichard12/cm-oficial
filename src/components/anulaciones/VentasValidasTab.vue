@@ -89,6 +89,7 @@ const columnasBusqueda = [
   { value: 10, label: 'Dscto' },
   { value: 11, label: 'Monto' },
   { value: 12, label: 'Estado' },
+  { value: 12, label: 'Tipo' },
 ]
 
 const columnas = [
@@ -135,6 +136,7 @@ const columnas = [
   { name: 'descuento', label: 'Dscto', field: 'descuento', align: 'right', dataType: 'number' },
   { name: 'montototal', label: 'Monto', field: 'montototal', align: 'right', dataType: 'number' },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
+  { name: 'tipo', label: 'Tipo', field: 'tipo', align: 'left', dataType: 'text' },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
   { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
 ]
@@ -153,6 +155,7 @@ const arrayHeaders = [
   'descuento',
   'montototal',
   'estado',
+  'tipo',
 ]
 
 const summationHeaders = ['total', 'descuento', 'montototal']

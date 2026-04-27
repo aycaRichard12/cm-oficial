@@ -122,6 +122,7 @@ async function toggleMerma(sub, valor) {
         message: valor === 1 ? 'Producto marcado como merma' : 'Producto restaurado',
         timeout: 1000,
       })
+      emit('update-parent-quantity', props.modelValue.length)
     } else {
       // Si falla en servidor, revertimos el cambio localmente
       sub.es_merma = valor === 1 ? 0 : 1
@@ -155,13 +156,10 @@ async function eliminarSubCodigoAPI(sub) {
     const response = await api.get(
       `eliminarDevolucioneProductoUnico/${sub.id_devolucion_producto_unico}`,
     )
+    //console.log('Respuesta al eliminar sub-código:', response.data)
 
-    if (response.data.estado === 'exito') {
-      const nuevaLista = props.modelValue.filter(
-        (i) => i.id_devolucion_producto_unico !== sub.id_devolucion_producto_unico,
-      )
-      emit('update:modelValue', nuevaLista)
-      emit('update-parent-quantity', nuevaLista.length)
+    if (response.data.estado === 'success') {
+      emit('update-parent-quantity', props.modelValue.length)
 
       $q.notify({ type: 'positive', message: 'Registro eliminado correctamente' })
     }

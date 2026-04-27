@@ -707,22 +707,28 @@
     </q-card>
 
     <!-- Diálogo: metodo de pago -->
-    <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)">
+    <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
       <q-card
-        class="responsive-dialog shadow-10"
-        style="min-width: 500px; max-width: 750px; border-radius: 16px; overflow: hidden"
+        class="responsive-dialog shadow-10 column no-wrap"
+        style="
+          min-width: 500px;
+          max-width: 750px;
+          max-height: 90vh;
+          border-radius: 16px;
+          overflow: hidden;
+        "
       >
         <q-card-section
-          class="bg-primary text-white q-py-md flex justify-between items-center"
-          style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%)"
+          class="bg-primary text-white q-py-md flex justify-between items-center shrink-0"
+          style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
         >
           <div class="flex items-center">
             <div class="bg-white q-pa-xs rounded-borders q-mr-md shadow-1">
               <q-icon name="payments" class="text-primary" size="24px" />
             </div>
-            <span class="text-h6 text-weight-bold" style="font-family: 'Inter', sans-serif"
-              >Método de Pago</span
-            >
+            <span class="text-h6 text-weight-bold" style="font-family: 'Inter', sans-serif">
+              Método de Pago
+            </span>
           </div>
           <q-btn
             icon="close"
@@ -735,7 +741,7 @@
           />
         </q-card-section>
 
-        <q-card-section class="q-pt-xl q-pb-lg bg-grey-1">
+        <q-card-section class="col scroll q-pa-lg bg-grey-1">
           <div class="row justify-center q-mb-xl">
             <q-btn-toggle
               v-model="carritoCO.credito"
@@ -755,7 +761,6 @@
             />
           </div>
 
-          <!-- SECCIÓN EFECTIVO -->
           <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
             <div
               class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
@@ -771,29 +776,26 @@
                 color="positive"
                 label="Pago Único"
                 class="text-weight-bolder text-subtitle2"
-              >
-              </q-radio>
+              />
               <q-radio
                 v-model="variablePago"
                 val="dividido"
                 color="orange-8"
                 label="Pago Dividido"
                 class="text-weight-bolder text-subtitle2"
-              >
-              </q-radio>
+              />
             </div>
 
             <div v-if="variablePago === 'directo'" class="row q-col-gutter-lg q-pt-sm">
               <div class="col-12">
                 <label
-                  for="metodopago"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                  >Método de pago <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
                 >
+                  Método de pago <span class="text-negative">*</span>
+                </label>
                 <q-select
                   v-model="metodoPago"
-                  id="metodopago"
                   dense
                   outlined
                   bg-color="white"
@@ -819,7 +821,7 @@
               >
                 <div class="col-12 col-md-5">
                   <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
-                    >Método <span class="text-negative">*</span></label
+                    >Método *</label
                   >
                   <q-select
                     v-model="payment.metodoPago"
@@ -840,8 +842,6 @@
                   <q-input
                     v-model="payment.monto"
                     type="number"
-                    min="0"
-                    step="0.01"
                     dense
                     outlined
                     bg-color="grey-1"
@@ -857,9 +857,6 @@
                   <q-input
                     v-model="payment.porcentaje"
                     type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
                     dense
                     outlined
                     bg-color="grey-1"
@@ -912,42 +909,60 @@
                   </div>
                   <div>
                     <span class="text-grey-8 text-caption uppercase block">Monto Restante:</span>
-                    <span class="text-h6">{{ remainingAmount.toFixed(2) }}</span>
+                    <span class="text-h6" :class="remainingAmount < 0 ? 'text-negative' : ''">
+                      {{ remainingAmount.toFixed(2) }}
+                    </span>
                   </div>
                 </div>
               </q-banner>
             </div>
-            <div
-              v-if="!carritoCO.credito"
-              class="col-12 col-md-6 animate__animated animate__zoomIn"
-            >
+
+            <div class="col-12 q-mt-lg animate__animated animate__zoomIn">
               <label
-                for="cajaBanco"
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase"
-                >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                style="font-size: 13px"
               >
+                Seleccione Caja o Banco <span class="text-negative">*</span>
+              </label>
+
               <q-select
                 v-model="idcajaBancoSeleccionada"
                 :options="listaCajaBancos"
                 id="cajaBanco"
                 dense
                 outlined
-                bg-color="white"
                 emit-value
                 map-options
                 class="premium-input"
-                hide-bottom-space
                 :rules="[(val) => !!val || 'Campo requerido']"
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="positive" />
                 </template>
+
+                <template v-slot:selected-item="scope">
+                  <div v-if="scope.opt" class="q-py-xs">
+                    <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+                    <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                  </div>
+                </template>
+
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>
+                        <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                      </q-item-label>
+                      <q-item-label caption>
+                        {{ scope.opt.nombre }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
               </q-select>
             </div>
           </div>
 
-          <!-- SECCIÓN CRÉDITO -->
           <div v-else class="animate__animated animate__fadeIn">
             <div
               class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
@@ -955,87 +970,65 @@
             >
               MODALIDAD: CRÉDITO
             </div>
-            <div class="row q-col-gutter-lg q-px-sm">
+            <div class="row q-col-gutter-lg">
               <div class="col-12 col-md-6">
                 <label
-                  for="cantidadpagos"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase"
-                  >Cantidad de pagos <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
+                  >Cantidad de pagos *</label
                 >
                 <q-input
                   v-model="carritoCO.cantidadPagos"
-                  id="cantidadpagos"
                   type="number"
                   min="1"
                   dense
                   outlined
-                  bg-color="white"
-                  class="premium-input"
                   @update:model-value="(calculatePayments(), calculateDueDate())"
                   :rules="[(val) => !!val || 'Requerido']"
                 >
-                  <template v-slot:prepend>
-                    <div class="bg-blue-1 q-pa-xs rounded-borders">
-                      <q-icon name="format_list_numbered" color="primary" />
-                    </div>
-                  </template>
+                  <template v-slot:prepend
+                    ><q-icon name="format_list_numbered" color="primary"
+                  /></template>
                 </q-input>
               </div>
 
               <div class="col-12 col-md-6">
                 <label
-                  for="montopago"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase"
-                  >Monto por pago <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
+                  >Monto por pago *</label
                 >
                 <q-input
                   v-model="carritoCO.montoPagos"
-                  id="montopago"
                   dense
                   outlined
                   readonly
                   class="bg-grey-2"
                   input-class="text-weight-bolder text-primary text-subtitle1"
                 >
-                  <template v-slot:prepend>
-                    <q-icon name="paid" color="grey-6" />
-                  </template>
+                  <template v-slot:prepend><q-icon name="paid" color="grey-6" /></template>
                   <template v-slot:append>
-                    <span class="text-subtitle2 text-grey-7 text-weight-bold">{{
-                      divisaActiva.tipo
-                    }}</span>
+                    <span class="text-subtitle2 text-grey-7">{{ divisaActiva.tipo }}</span>
                   </template>
                 </q-input>
               </div>
 
               <div class="col-12 col-md-6">
                 <label
-                  for="periodo"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase"
-                  >Frecuencia <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
+                  >Frecuencia *</label
                 >
                 <q-select
                   v-model="carritoCO.periodo"
-                  id="periodo"
                   dense
                   outlined
-                  bg-color="white"
-                  class="premium-input"
                   :options="periodOptions"
-                  option-label="label"
-                  option-value="value"
                   emit-value
                   map-options
                   @update:model-value="calculateDueDate"
                 >
-                  <template v-slot:prepend>
-                    <div class="bg-blue-1 q-pa-xs rounded-borders">
-                      <q-icon name="event_repeat" color="primary" />
-                    </div>
-                  </template>
+                  <template v-slot:prepend><q-icon name="event_repeat" color="primary" /></template>
                 </q-select>
               </div>
 
@@ -1044,49 +1037,41 @@
                 class="col-12 col-md-6 animate__animated animate__fadeIn"
               >
                 <label
-                  for="plazopersonalizada"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase"
-                  >Plazo total (días) <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
+                  >Plazo total (días) *</label
                 >
                 <q-input
                   v-model="carritoCO.plazoPersonalizado"
-                  id="plazopersonalizada"
                   type="number"
-                  min="0"
                   dense
                   outlined
-                  bg-color="white"
-                  class="premium-input"
                   @update:model-value="calculateDueDate"
                   :rules="[(val) => !!val || 'Requerido']"
                 >
-                  <template v-slot:prepend>
-                    <q-icon name="edit_calendar" color="primary" />
-                  </template>
+                  <template v-slot:prepend
+                    ><q-icon name="edit_calendar" color="primary"
+                  /></template>
                 </q-input>
               </div>
 
               <div class="col-12 col-md-6">
                 <label
-                  for="fechalimite"
-                  class="text-weight-bold text-grey-9 q-mb-sm block"
-                  style="font-size: 13px; text-transform: uppercase"
-                  >Fecha límite <span class="text-negative">*</span></label
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  style="font-size: 13px"
+                  >Fecha límite *</label
                 >
                 <q-input
                   v-model="carritoCO.fechaLimite"
-                  id="fechalimite"
                   dense
                   outlined
                   type="date"
                   readonly
                   class="bg-grey-2"
-                  input-class="text-weight-bold text-grey-9 text-subtitle2"
                 >
-                  <template v-slot:prepend>
-                    <q-icon name="event_available" color="grey-6" />
-                  </template>
+                  <template v-slot:prepend
+                    ><q-icon name="event_available" color="grey-6"
+                  /></template>
                 </q-input>
               </div>
             </div>
@@ -1095,13 +1080,13 @@
 
         <q-separator />
 
-        <q-card-actions align="right" class="q-pa-lg bg-white">
+        <q-card-actions align="right" class="q-pa-lg bg-white shrink-0 shadow-up-1">
           <q-btn
             flat
             label="Cancelar"
             color="grey-8"
             v-close-popup
-            class="q-px-md text-weight-bold text-subtitle2"
+            class="q-px-md text-weight-bold"
           />
           <q-btn
             unelevated
@@ -1115,12 +1100,14 @@
               background: linear-gradient(45deg, #1976d2, #42a5f5);
             "
             @click="enviarDatos"
-            :disable="variablePago === 'dividido' && remainingAmount !== 0"
+            :disable="
+              (variablePago === 'dividido' && remainingAmount !== 0) ||
+              (!carritoCO.credito && !idcajaBancoSeleccionada)
+            "
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
-
     <!-- Diálogo: Vista previa PDF -->
     <q-dialog
       v-model="mostrarModal"
@@ -2433,8 +2420,10 @@ async function listarcajasbanco() {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta,
       value: item.idcaja_bancos,
+      codigo: item.codigo, // Guardamos el código por separado
+      nombre: item.tipo_cuenta, // Guardamos el nombre por separado
     }))
     console.log(listaCajaBancos.value)
   } catch (error) {
@@ -2633,5 +2622,26 @@ onMounted(async () => {
 .q-btn {
   text-transform: none;
   letter-spacing: 0.3px;
+}
+.responsive-dialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-input :deep(.q-field__control) {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Estilo para que la barra de scroll sea más discreta en navegadores webkit */
+.scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 </style>

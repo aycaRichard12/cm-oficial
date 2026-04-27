@@ -1,18 +1,27 @@
 <template>
-  <q-form @submit.prevent="onSubmit" class="q-pa-lg bg-white" style="border-radius: 12px;">
-    
+  <q-form @submit.prevent="onSubmit" class="q-pa-lg bg-white" style="border-radius: 12px">
     <div class="row q-col-gutter-lg">
-      
       <!-- SECCION 1: Configuración de Registro -->
       <div class="col-12">
-        <div class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center" style="letter-spacing: 0.5px; text-transform: uppercase;">
+        <div
+          class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
+          style="letter-spacing: 0.5px; text-transform: uppercase"
+        >
           <q-icon name="settings" size="20px" class="q-mr-sm" />
           Configuración Principal
         </div>
-        
-        <div class="row q-col-gutter-md items-center bg-grey-1 q-pa-md rounded-borders" style="border: 1px solid #e0e0e0;">
+
+        <div
+          class="row q-col-gutter-md items-center bg-grey-1 q-pa-md rounded-borders"
+          style="border: 1px solid #e0e0e0"
+        >
           <div class="col-12 col-md-4">
-            <label for="tipo" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Tipo de registro <span class="text-negative">*</span></label>
+            <label
+              for="tipo"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Tipo de registro <span class="text-negative">*</span></label
+            >
             <q-toggle
               v-model="isIngresoConPedido"
               label="Ingreso con pedido"
@@ -20,13 +29,18 @@
               dense
               id="tipo"
               class="text-weight-medium bg-white q-pa-xs rounded-borders shadow-1"
-              style="border: 1px solid #e0e0e0; width: 100%;"
+              style="border: 1px solid #e0e0e0; width: 100%"
             />
           </div>
 
           <!-- Mostrar select de pedido si es Ingreso con Pedido -->
           <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido">
-            <label for="pedido" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Pedido Asociado <span class="text-negative">*</span></label>
+            <label
+              for="pedido"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Pedido Asociado <span class="text-negative">*</span></label
+            >
             <q-select
               v-model="localData.pedido"
               :options="pedidos"
@@ -48,7 +62,12 @@
 
           <!-- Mostrar almacén si es Ingreso sin Pedido (Directo) -->
           <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido === false">
-            <label for="almacen" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Almacén de Destino <span class="text-negative">*</span></label>
+            <label
+              for="almacen"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Almacén de Destino <span class="text-negative">*</span></label
+            >
             <q-select
               v-model="localData.almacen"
               :options="props.almacenes"
@@ -71,14 +90,22 @@
 
       <!-- SECCION 2: Detalles Técnicos -->
       <div class="col-12 q-mt-md">
-        <div class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center" style="letter-spacing: 0.5px; text-transform: uppercase;">
+        <div
+          class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
+          style="letter-spacing: 0.5px; text-transform: uppercase"
+        >
           <q-icon name="inventory_2" size="20px" class="q-mr-sm" />
           Detalles de la Compra
         </div>
-        
+
         <div class="row q-col-gutter-lg">
           <div class="col-12 col-md-6">
-            <label for="nombre" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Nombre <span class="text-negative">*</span></label>
+            <label
+              for="nombre"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Nombre <span class="text-negative">*</span></label
+            >
             <q-input
               v-model="localData.nombre"
               id="nombre"
@@ -96,7 +123,12 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <label for="codigo" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Código <span class="text-negative">*</span></label>
+            <label
+              for="codigo"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Código <span class="text-negative">*</span></label
+            >
             <q-input
               v-model="localData.codigo"
               id="codigo"
@@ -114,7 +146,12 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <label for="provedor" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Proveedor <span class="text-negative">*</span></label>
+            <label
+              for="provedor"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Proveedor <span class="text-negative">*</span></label
+            >
             <q-select
               v-model="localData.proveedor"
               :options="filteredProveedores"
@@ -145,14 +182,19 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <label for="factura" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Nro. Factura <span class="text-grey-5">(Opcional)</span></label>
-            <q-input 
-              v-model="localData.factura" 
-              id="factura" 
-              dense 
+            <label
+              for="factura"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Nro. Factura <span class="text-grey-5">(Opcional)</span></label
+            >
+            <q-input
+              v-model="localData.factura"
+              id="factura"
+              dense
               outlined
               bg-color="white"
-              class="premium-input" 
+              class="premium-input"
               hide-bottom-space
             >
               <template v-slot:prepend>
@@ -165,14 +207,32 @@
 
       <!-- SECCION 3: Metodos de Pago -->
       <div class="col-12 q-mt-md">
-        <div class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center" style="letter-spacing: 0.5px; text-transform: uppercase;">
+        <div
+          class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
+          style="letter-spacing: 0.5px; text-transform: uppercase"
+        >
           <q-icon name="payments" size="20px" class="q-mr-sm" />
           Condiciones de Pago
         </div>
 
-        <div class="row q-col-gutter-lg q-pa-md bg-blue-50 rounded-borders" style="border: 1px dashed #90CAF9;">
-          <div class="col-12" :class="{'col-md-6': localData.tipocompra === 2, 'col-md-12': localData.tipocompra !== 2}" style="transition: all 0.3s ease;">
-            <label for="tipocompra" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Tipo de Compra <span class="text-negative">*</span></label>
+        <div
+          class="row q-col-gutter-lg q-pa-md bg-blue-50 rounded-borders"
+          style="border: 1px dashed #90caf9"
+        >
+          <div
+            class="col-12"
+            :class="{
+              'col-md-6': localData.tipocompra === 2,
+              'col-md-12': localData.tipocompra !== 2,
+            }"
+            style="transition: all 0.3s ease"
+          >
+            <label
+              for="tipocompra"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Tipo de Compra <span class="text-negative">*</span></label
+            >
             <q-select
               v-model="localData.tipocompra"
               :options="tiposCompra"
@@ -186,57 +246,87 @@
               hide-bottom-space
               :rules="[(val) => !!val || 'Campo requerido']"
             >
-               <template v-slot:prepend>
+              <template v-slot:prepend>
                 <q-icon name="account_balance_wallet" color="primary" />
               </template>
             </q-select>
           </div>
 
-          <div class="col-12 col-md-6 animate__animated animate__zoomIn" v-if="localData.tipocompra === 2">
-            <label for="cajaBanco" class="text-weight-bold text-grey-9 q-mb-sm block" style="font-size: 13px; text-transform: uppercase;">Seleccione Caja o Banco <span class="text-negative">*</span></label>
+          <div
+            class="col-12 col-md-6 animate__animated animate__zoomIn"
+            v-if="localData.tipocompra === 2"
+          >
+            <label
+              for="cajaBanco"
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase"
+              >Seleccione Caja o Banco <span class="text-negative">*</span></label
+            >
+
             <q-select
               v-model="localData.cajabanco"
               :options="props.cajaBancos"
               id="cajaBanco"
               dense
               outlined
-              bg-color="white"
               emit-value
               map-options
               class="premium-input"
-              hide-bottom-space
               :rules="[(val) => !!val || 'Campo requerido']"
             >
               <template v-slot:prepend>
                 <q-icon name="account_balance" color="positive" />
               </template>
+
+              <template v-slot:selected-item="scope">
+                <div v-if="scope.opt" class="q-py-xs">
+                  <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+                  <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                </div>
+              </template>
+
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label>
+                      <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ scope.opt.nombre }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
             </q-select>
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- ACCIONES -->
     <q-separator class="q-my-lg bg-grey-3" />
     <div class="row justify-end q-gutter-x-sm">
-      <q-btn 
-        label="Cancelar" 
-        icon="close" 
-        flat 
-        color="grey-8" 
-        @click="$emit('cancel')" 
-        class="q-px-lg text-weight-bold" 
-        style="border-radius: 8px;" 
+      <q-btn
+        label="Cancelar"
+        icon="close"
+        flat
+        color="grey-8"
+        @click="$emit('cancel')"
+        class="q-px-lg text-weight-bold"
+        style="border-radius: 8px"
       />
-      <q-btn 
-        label="Guardar Información" 
-        icon="save" 
-        type="submit" 
-        color="primary" 
-        unelevated 
-        class="q-px-xl text-weight-bolder shadow-3" 
-        style="border-radius: 8px; background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%); letter-spacing: 0.5px;" 
+      <q-btn
+        label="Guardar Información"
+        icon="save"
+        type="submit"
+        color="primary"
+        unelevated
+        class="q-px-xl text-weight-bolder shadow-3"
+        style="
+          border-radius: 8px;
+          background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+          letter-spacing: 0.5px;
+        "
       />
     </div>
   </q-form>
@@ -421,7 +511,6 @@ watch(
 )
 </script>
 
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -430,11 +519,13 @@ watch(
 }
 
 .premium-input {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .premium-input:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 :deep(.q-field--outlined .q-field__control) {

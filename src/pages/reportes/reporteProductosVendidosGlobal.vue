@@ -253,7 +253,7 @@ const arrayHeaders = [
   'tipoprecio',
 ]
 
-const sumColumns = ['cantidad', 'importe', 'descuento', 'totalcosto', 'totalventa']
+const sumColumns = ['cantidad', 'importe', 'descuento', 'totalcosto', 'totalventa', 'utilidad']
 
 onMounted(() => {
   // Cargar lista inicial de almacenes si se desea, aunque el composable ya lo maneja

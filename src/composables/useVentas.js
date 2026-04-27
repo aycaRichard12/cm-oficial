@@ -15,6 +15,7 @@ export function useVentas() {
       const idempresa = usuario?.empresa?.idempresa
 
       const response = await api.get(`listaVentas/${idempresa}`)
+      console.log(response.data)
 
       if (response.data.estado === 'error') {
         throw new Error(response.data.error)

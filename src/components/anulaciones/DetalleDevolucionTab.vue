@@ -143,7 +143,9 @@ import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import tablaCodigosDevolucion from '../cotizacion/tablaCodigosDevolucion.vue'
-
+import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const idusuario = idusuario_md5()
+const idempresa = idempresa_md5()
 const props = defineProps({
   idDevolucion: { type: [Number, String], default: null },
 })
@@ -194,7 +196,7 @@ const listarDatosDetalleDevolucion = async (id) => {
   loading.value = true
 
   try {
-    const response = await api.get(`listadetalledevolicion/${id}`)
+    const response = await api.get(`listadetalledevolicion/${id}/${idempresa}`)
     console.log('Respuesta del API:', response.data)
     if (response.data.estado === 'error') {
       throw new Error(response.data.error)
@@ -313,20 +315,21 @@ const confirmarAutorizarDevolucion = () => {
 
 const autorizarDevolucion = async () => {
   try {
-    //const usuarioResponse = validarUsuario()
-    //const usuario = usuarioResponse[0]
-    //const idusuario = usuario?.idusuario
+    // const usuarioResponse = validarUsuario()
+    // const usuario = usuarioResponse[0]
+    // const idusuario = usuario?.idusuario
+    console.log('Autorizando devolución...' + props.idDevolucion)
 
     $q.loading.show({ message: 'Autorizando devolución...' })
 
-    // const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
-
-    // if (response.data.estado === 100) {
-    //   $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
-    //   emit('finalizado')
-    // } else {
-    //   throw new Error(response.data.error || 'Error al autorizar devolución')
-    // }
+    const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
+    console.log('Respuesta del API al autorizar devolución:', response.data)
+    if (response.data.estado === 100) {
+      $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
+      emit('finalizado')
+    } else {
+      throw new Error(response.data.error || 'Error al autorizar devolución')
+    }
   } catch (error) {
     console.error('Error al autorizar devolución:', error)
     $q.notify({ type: 'negative', message: 'Error al autorizar devolución' })

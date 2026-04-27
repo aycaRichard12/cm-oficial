@@ -177,6 +177,7 @@ export function useAccionesVenta() {
   }
 
   const verificarEstadoCotizacion = async (idcotizacion) => {
+    console.log(idcotizacion)
     try {
       $q.loading.show({ message: 'Validando estado ...' })
 

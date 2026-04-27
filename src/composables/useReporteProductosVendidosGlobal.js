@@ -142,7 +142,7 @@ export function useReporteProductosVendidosGlobal() {
   const generarReporte = async () => {
     try {
       cargando.value = true
-      
+
       // Limpiar filtros al generar un nuevo reporte
       almacenSeleccionado.value = 0
       clienteSeleccionado.value = null
@@ -151,6 +151,7 @@ export function useReporteProductosVendidosGlobal() {
       const contenidousuario = validarUsuario()
       const idempresa = contenidousuario[0]?.empresa?.idempresa
       const point = `reporteventasporproductosglobal/${idempresa}/${fechaInicial.value}/${fechaFinal.value}`
+      console.log(point)
       const response = await api.get(point)
 
       if (response.data && Array.isArray(response.data)) {
@@ -189,11 +190,17 @@ export function useReporteProductosVendidosGlobal() {
       temp = temp.filter((item) => String(item.idalmacen) === idStr)
     }
     if (clienteSeleccionado.value) {
-      const idCliente = typeof clienteSeleccionado.value === 'object' ? clienteSeleccionado.value.value : clienteSeleccionado.value
+      const idCliente =
+        typeof clienteSeleccionado.value === 'object'
+          ? clienteSeleccionado.value.value
+          : clienteSeleccionado.value
       temp = temp.filter((item) => String(item.idclienteve) === String(idCliente))
     }
     if (sucursalSeleccionada.value) {
-      const idSucursal = typeof sucursalSeleccionada.value === 'object' ? sucursalSeleccionada.value.value : sucursalSeleccionada.value
+      const idSucursal =
+        typeof sucursalSeleccionada.value === 'object'
+          ? sucursalSeleccionada.value.value
+          : sucursalSeleccionada.value
       temp = temp.filter((item) => String(item.idsucursalve) === String(idSucursal))
     }
     datosFiltrados.value = temp
@@ -222,9 +229,10 @@ export function useReporteProductosVendidosGlobal() {
         acc.descuento += parseFloat(item.descuento) || 0
         acc.totalcosto += parseFloat(item.totalcosto) || 0
         acc.totalventa += parseFloat(item.totalventa) || 0
+        acc.utilidad += parseFloat(item.utilidad) || 0
         return acc
       },
-      { cantidad: 0, importe: 0, descuento: 0, totalcosto: 0, totalventa: 0 },
+      { cantidad: 0, importe: 0, descuento: 0, totalcosto: 0, totalventa: 0, utilidad: 0 },
     )
   })
 

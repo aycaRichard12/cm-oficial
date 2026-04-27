@@ -276,6 +276,7 @@ const autorizarDevolucion = async () => {
     //const usuarioResponse = validarUsuario()
     //const usuario = usuarioResponse[0]
     //const idusuario = usuario?.idusuario
+    console.log('ID de devolución a autorizar:', props.idDevolucion)
 
     $q.loading.show({ message: 'Autorizando devolución...' })
 
