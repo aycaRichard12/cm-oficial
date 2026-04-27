@@ -207,7 +207,7 @@ const handleSave = async (payload) => {
       }
       $q.notify({
         color: 'positive',
-        message: 'Permisos estadísticos asignados con éxito',
+        message: 'Permisos asignados con éxito',
       })
     } 
     // Es una petición singular (Operaciones menú principal)
