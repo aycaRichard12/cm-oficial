@@ -120,9 +120,27 @@
       <div class="my-card q-mb-md">
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-10" id="buscarProductoVenta">
+            <div class="col-12 col-md-3" id="barcodeVenta">
+              <label for="barcode" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Código de barras</label
+              >
+              <q-input
+                v-model="barcodeInput"
+                id="barcode"
+                outlined
+                dense
+                @keyup.enter="buscarPorCodigoBarra"
+                placeholder="Escanee o ingrese código"
+                :disable="!categoriaPrecioSeleccionada"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="qr_code_scanner" color="primary" />
+                </template>
+              </q-input>
+            </div>
+            <div class="col-12 col-md-7" id="buscarProductoVenta">
               <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block"
-                >Buscar producto (código o descripción)</label
+                >Buscar producto (descripción)</label
               >
               <q-select
                 v-model="productoSeleccionado"
@@ -503,6 +521,7 @@ const categoriaPrecioSeleccionada = ref(null)
 const categoriaCampaniaSeleccionada = ref(null)
 const mostrarCategoriasCampania = ref(false)
 const productoSeleccionado = ref(null)
+const barcodeInput = ref('')
 const cantidad = ref(1)
 const precioUnitario = ref(0)
 const descuento = ref(0)
@@ -1075,6 +1094,7 @@ async function cargarProductosDisponibles() {
       return {
         label: `${producto.codigo} - ${producto.descripcion}`,
         value: producto.id,
+        codigobarra: producto.codigobarra,
         originalData: {
           ...producto,
           precio: precioFinal, // Usar precio de campaña si existe, sino precio normal
@@ -1104,8 +1124,10 @@ function filtrarProductos(val, update) {
       productosFiltrados.value = productos.value
     } else {
       const searchTerm = val.toLowerCase()
-      productosFiltrados.value = productos.value.filter((v) =>
-        v.label.toLowerCase().includes(searchTerm),
+      productosFiltrados.value = productos.value.filter(
+        (v) =>
+          v.label.toLowerCase().includes(searchTerm) ||
+          v.codigobarra.toLowerCase().includes(searchTerm),
       )
     }
   })
@@ -1118,6 +1140,39 @@ function seleccionarProducto(producto) {
   }
 
   precioUnitario.value = producto.originalData.precio || 0
+}
+
+/**
+ * Busca un producto por código de barras o código interno y lo selecciona.
+ */
+function buscarPorCodigoBarra() {
+  if (!barcodeInput.value) return
+
+  const codigo = barcodeInput.value.trim()
+  const encontrado = productos.value.find(
+    (p) => (p.codigobarra && p.codigobarra === codigo) || p.originalData.codigo === codigo,
+  )
+
+  if (encontrado) {
+    productoSeleccionado.value = encontrado
+    seleccionarProducto(encontrado)
+
+    // Limpiamos el input para el siguiente escaneo
+    barcodeInput.value = ''
+
+    $q.notify({
+      type: 'positive',
+      message: `Producto seleccionado: ${encontrado.label}`,
+      timeout: 1000,
+      position: 'top',
+    })
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: 'No se encontró el código: ' + codigo,
+      position: 'top',
+    })
+  }
 }
 function decimas(saldo) {
   var saldocondecimas = parseFloat(saldo).toFixed(2)
