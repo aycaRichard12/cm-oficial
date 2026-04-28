@@ -39,6 +39,7 @@
                   option-label="label"
                   option-value="value"
                   use-input
+                  emit-value
                   map-options
                   dense
                   outlined
@@ -732,57 +733,58 @@ const cargarPuntoVentas = async () => {
     showError('Error al cargar clientes', error)
   }
 }
-const actualizarSucursales = async (cliente) => {
-  console.log(cliente)
-  if (!cliente) return
+const actualizarSucursales = async (clientId) => {
+  console.log('actualizarSucursales clientId:', clientId)
+  if (!clientId) {
+    branches.value = []
+    formData.value.sucursal = null
+    return
+  }
   try {
-    console.log(`listaSucursal/${cliente.value}`)
-    const { data } = await api.get(`listaSucursal/${cliente.value}`)
+    const { data } = await api.get(`listaSucursal/${clientId}`)
     branches.value = data.map((sucursal) => ({
       label: sucursal.nombre,
       value: sucursal.id,
-      clientId: cliente.value,
+      clientId: clientId,
     }))
-    cargarDatosCliente(cliente)
+
+    // Buscar el objeto cliente completo para cargar sus datos
+    const clientObj = clients.value.find((c) => c.value === clientId)
+    if (clientObj) {
+      cargarDatosCliente(clientObj)
+    }
+
     formData.value.sucursal = branches.value[0] || null
   } catch (error) {
     showError('Error al cargar sucursales', error)
   }
 }
 const cargarDatosCliente = (client) => {
+  console.log('cargarDatosCliente client:', client)
   const datos = JSON.parse(localStorage.getItem('carrito'))
+  if (!client || !client.originalData) return
+
   formData.value.nroDoc = client.originalData.nit
-  formData.value.canal = salesChannels.value.filter(
-    (u) => u.value == Number(client.originalData.idcanal),
-  )[0]
+  formData.value.canal = salesChannels.value.find(
+    (u) => Number(u.value) === Number(client.originalData.idcanal),
+  )
 
-  console.log(Number(client.originalData.idcanal))
-  console.log(salesChannels.value[0]?.value)
-  console.log(formData.value.canal)
-  console.log(client.originalData.textotipodocumento)
-  console.log(formData.value.nroDoc)
-
-  typeDoc.value = typeDoc.value = [
+  typeDoc.value = [
     {
       value: client.originalData.tipodocumento,
       label: client.originalData.textotipodocumento,
     },
   ]
-  //elegirUnCliente(option.id, inputid, selectSuc, inputidS, listaS, classOptionsS, option.textotipodocumento, option.tipodocumento, option.nit, option.nombre, option.codigo, option.telefono, option.direccion, option.pais, option.idcanal, inputd,classOptions );
-  console.log(typeDoc.value)
   formData.value.tipodoc = typeDoc.value[0] || null
-  console.log(formData.value.tipodoc)
 
-  console.log(formData.value.puntoventa)
-  console.log(formData.value.metodoPago)
   if (datos) {
     datos.listaFactura.nombreRazonSocial = client.originalData.nombre
     datos.listaFactura.codigoCliente = client.originalData.codigo
     datos.listaFactura.numeroDocumento = client.originalData.nit
     datos.listaFactura.codigoTipoDocumentoIdentidad = client.originalData.tipodocumento
     datos.listaFactura.telefonoCliente = client.originalData.telefono
-    datos.listaFactura.codigoPuntoVenta = formData.value.puntoventa.value
-    datos.listaFactura.codigoMetodoPago = formData.value.metodoPago.value
+    datos.listaFactura.codigoPuntoVenta = formData.value.puntoventa?.value || 0
+    datos.listaFactura.codigoMetodoPago = formData.value.metodoPago?.id || 0
     localStorage.setItem('carrito', JSON.stringify(datos))
   }
 }
