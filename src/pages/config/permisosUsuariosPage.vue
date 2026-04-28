@@ -26,7 +26,7 @@
     <!-- Form Section -->
     <div class="row q-mb-md">
       <div class="col-12">
-        <q-card flat class=" shadow-2 rounded-borders">
+        <q-card flat class="shadow-2 rounded-borders">
           <q-card-section class="q-pa-md">
             <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
           </q-card-section>
@@ -46,6 +46,11 @@
               :array-headers="['usuario', 'nombreCompleto', 'codigo', 'operacion', 'estado']"
               row-key="id"
             >
+              <template v-slot:body-cell-num="props">
+                <q-td :props="props">
+                  {{ props.pageIndex + 1 }}
+                </q-td>
+              </template>
               <template v-slot:body-cell-estado="props">
                 <q-td :props="props">
                   <q-badge
@@ -70,7 +75,8 @@
                       size="sm"
                     >
                       <q-tooltip class="bg-grey-8 text-body2">
-                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }} Operación
+                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }}
+                        Operación
                       </q-tooltip>
                     </q-btn>
                     <q-btn
@@ -111,60 +117,60 @@ const usuarioSesion = getUsuario() // Devuelve el nombre completo (string)
 
 // Definición de columnas para la tabla
 const columns = [
-  { 
-    name: 'id', 
-    align: 'left', 
-    label: 'N°', 
-    field: 'id', 
+  {
+    name: 'num',
+    align: 'left',
+    label: 'N°',
+    field: 'num',
     sortable: true,
-    dataType: 'number'
+    dataType: 'number',
   },
-  { 
-    name: 'usuario', 
-    align: 'left', 
-    label: 'Usuario', 
-    field: 'usuario', 
+  {
+    name: 'usuario',
+    align: 'left',
+    label: 'Usuario',
+    field: 'usuario',
     sortable: true,
-    dataType: 'text'
+    dataType: 'text',
   },
-  { 
-    name: 'nombreCompleto', 
-    align: 'left', 
-    label: 'Nombre Completo', 
-    field: 'nombreCompleto', 
+  {
+    name: 'nombreCompleto',
+    align: 'left',
+    label: 'Nombre Completo',
+    field: 'nombreCompleto',
     sortable: true,
-    dataType: 'text'
+    dataType: 'text',
   },
-  { 
-    name: 'codigo', 
-    align: 'left', 
-    label: 'Código', 
-    field: 'codigo', 
+  {
+    name: 'codigo',
+    align: 'left',
+    label: 'Código',
+    field: 'codigo',
     sortable: true,
-    dataType: 'text'
+    dataType: 'text',
   },
-  { 
-    name: 'operacion', 
-    align: 'left', 
-    label: 'Operación', 
+  {
+    name: 'operacion',
+    align: 'left',
+    label: 'Operación',
     field: 'operacion',
     sortable: true,
-    dataType: 'text'
+    dataType: 'text',
   },
-  { 
-    name: 'estado', 
-    align: 'center', 
-    label: 'Estado', 
+  {
+    name: 'estado',
+    align: 'center',
+    label: 'Estado',
     field: 'estado',
     sortable: true,
-    dataType: 'text'
+    dataType: 'text',
   },
-  { 
-    name: 'acciones', 
-    align: 'center', 
-    label: 'Acciones', 
+  {
+    name: 'acciones',
+    align: 'center',
+    label: 'Acciones',
     field: 'acciones',
-    sortable: false
+    sortable: false,
   },
 ]
 
@@ -174,14 +180,13 @@ const fetchOperaciones = async () => {
   try {
     const data = await api.get(`listarOperaciones/${IDMD5}`)
     const response = data.data
-    console.log('operaciones que pueden hacer creo ',response)
-    operaciones.value = response.data.map((obj, index) => {
+    console.log('operaciones que pueden hacer creo ', response)
+    operaciones.value = response.data.map((obj) => {
       const userPermiso = obj.usuario?.[0] || {}
       return {
-       ...obj,
-       id: index + 1,
-       usuario: userPermiso.usuario || 'N/A',
-       nombreCompleto: usuarioSesion
+        ...obj,
+        usuario: userPermiso.usuario || 'N/A',
+        nombreCompleto: usuarioSesion,
       }
     })
   } catch (error) {
@@ -209,7 +214,7 @@ const handleSave = async (payload) => {
         color: 'positive',
         message: 'Permisos asignados con éxito',
       })
-    } 
+    }
     // Es una petición singular (Operaciones menú principal)
     else {
       const isUpdate = !!payload.id
