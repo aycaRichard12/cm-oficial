@@ -933,6 +933,25 @@ export function PDFreporteCreditos(
   }
   console.log(reportData)
   // Mapeo de datos
+  const totales = reportData.reduce(
+    (acc, row) => {
+      acc.totalventa += Number(row.totalventa || 0)
+      acc.totalcobrado += Number(row.totalcobrado || 0)
+      acc.saldo += Number(row.saldo || 0)
+      acc.totalatrasado += Number(row.totalatrasado || 0)
+      acc.totalanulado += Number(row.totalanulado || 0)
+      acc.moradias += Number(row.moradias || 0)
+      return acc
+    },
+    {
+      totalventa: 0,
+      totalcobrado: 0,
+      saldo: 0,
+      totalatrasado: 0,
+      totalanulado: 0,
+      moradias: 0,
+    },
+  )
   const datos = reportData.map((row) => ({
     idventa: row.idventa,
     idcredito: row.idcredito,
@@ -957,6 +976,14 @@ export function PDFreporteCreditos(
     cuotaspagadas: row.cuotaspagadas,
     idsucursal: row.idsucursal,
   }))
+  datos.push({
+    totalventa: Number(totales.totalventa).toFixed(2),
+    totalcobrado: Number(totales.totalcobrado).toFixed(2),
+    saldo: Number(totales.saldo).toFixed(2),
+    totalatrasado: Number(totales.totalatrasado).toFixed(2),
+    totalanulado: Number(totales.totalanulado).toFixed(2),
+    moradias: Number(totales.moradias).toFixed(2),
+  })
 
   const columnStyles = {
     numero: { cellWidth: 10, halign: 'center' },
