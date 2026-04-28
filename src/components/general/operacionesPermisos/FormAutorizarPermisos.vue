@@ -3,9 +3,7 @@
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-avatar color="primary" text-color="white" icon="admin_panel_settings" />
-      <div class="text-h6 text-weight-bold text-grey-8 q-ml-sm">
-        Gestionar Permiso
-      </div>
+      <div class="text-h6 text-weight-bold text-grey-8 q-ml-sm">Gestionar Permiso</div>
     </div>
 
     <!-- Tabs -->
@@ -25,7 +23,7 @@
     <q-separator class="q-my-md" />
 
     <!-- Form -->
-    <q-form @submit="submitForm" class="q-gutter-md q-mb-md">
+    <q-form @submit="submitForm" class="q-gutter-md">
       <div class="row q-col-gutter-md">
         <!-- Usuario -->
         <div class="col-12">
@@ -40,6 +38,7 @@
             fill-input
             hide-selected
             input-debounce="0"
+            clearable
             @filter="filterUsuarios"
             :rules="[(val) => !!val || 'Seleccione un usuario']"
             label="Usuario para asignar permisos"
@@ -57,16 +56,37 @@
       <div v-show="tipoPermiso === 'operacion'" class="q-mt-md">
         <div class="row items-center q-mb-sm">
           <div class="text-subtitle2 text-weight-bold text-primary">Operaciones de Sistema</div>
-          <q-spinner-dots v-if="cargandoPermisosActuales" color="primary" size="1em" class="q-ml-sm" />
-          <q-badge v-else-if="form.usuarioSeleccionado" color="primary" label="Autorizado" outline class="q-ml-sm">
+          <q-spinner-dots
+            v-if="cargandoPermisosActuales"
+            color="primary"
+            size="1em"
+            class="q-ml-sm"
+          />
+          <q-badge
+            v-else-if="form.usuarioSeleccionado"
+            color="primary"
+            label="Autorizado"
+            outline
+            class="q-ml-sm"
+          >
             {{ cantidadOperacionesAsignadas }} activos
           </q-badge>
         </div>
 
         <q-list bordered separator class="rounded-borders bg-white">
-          <q-item v-for="opt in operacionesOpciones" :key="opt.value" tag="label" v-ripple class="q-py-sm">
+          <q-item
+            v-for="opt in operacionesOpciones"
+            :key="opt.value"
+            tag="label"
+            v-ripple
+            class="q-py-sm"
+          >
             <q-item-section avatar>
-              <q-checkbox v-model="form.operacionesSeleccionadas" :val="opt.value" color="primary" />
+              <q-checkbox
+                v-model="form.operacionesSeleccionadas"
+                :val="opt.value"
+                color="primary"
+              />
             </q-item-section>
             <q-item-section avatar>
               <q-icon :name="opt.icon || 'settings'" color="grey-7" size="sm" />
@@ -77,8 +97,15 @@
             </q-item-section>
           </q-item>
         </q-list>
-        
-        <div v-if="tipoPermiso === 'operacion' && form.operacionesSeleccionadas.length === 0 && form.usuarioSeleccionado" class="text-negative text-caption q-mt-sm">
+
+        <div
+          v-if="
+            tipoPermiso === 'operacion' &&
+            form.operacionesSeleccionadas.length === 0 &&
+            form.usuarioSeleccionado
+          "
+          class="text-negative text-caption q-mt-sm"
+        >
           Falta seleccionar al menos una operación.
         </div>
       </div>
@@ -86,15 +113,34 @@
       <!-- Graficos -->
       <div v-show="tipoPermiso === 'graficos'" class="q-mt-md">
         <div class="row items-center q-mb-sm">
-          <div class="text-subtitle2 text-weight-bold text-primary">Visualizaciones del Dashboard</div>
-          <q-spinner-dots v-if="cargandoPermisosActuales" color="primary" size="1em" class="q-ml-sm" />
-          <q-badge v-else-if="form.usuarioSeleccionado" color="primary" label="Autorizado" outline class="q-ml-sm">
+          <div class="text-subtitle2 text-weight-bold text-primary">
+            Visualizaciones del Dashboard
+          </div>
+          <q-spinner-dots
+            v-if="cargandoPermisosActuales"
+            color="primary"
+            size="1em"
+            class="q-ml-sm"
+          />
+          <q-badge
+            v-else-if="form.usuarioSeleccionado"
+            color="primary"
+            label="Autorizado"
+            outline
+            class="q-ml-sm"
+          >
             {{ cantidadGraficosAsignados }} activos
           </q-badge>
         </div>
 
         <q-list bordered separator class="rounded-borders bg-white">
-          <q-item v-for="opt in graficosOpciones" :key="opt.value" tag="label" v-ripple class="q-py-sm">
+          <q-item
+            v-for="opt in graficosOpciones"
+            :key="opt.value"
+            tag="label"
+            v-ripple
+            class="q-py-sm"
+          >
             <q-item-section avatar>
               <q-checkbox v-model="form.graficosSeleccionados" :val="opt.value" color="primary" />
             </q-item-section>
@@ -107,16 +153,30 @@
             </q-item-section>
           </q-item>
         </q-list>
-        
-        <div v-if="tipoPermiso === 'graficos' && form.graficosSeleccionados.length === 0 && form.usuarioSeleccionado" class="text-negative text-caption q-mt-sm">
+
+        <div
+          v-if="
+            tipoPermiso === 'graficos' &&
+            form.graficosSeleccionados.length === 0 &&
+            form.usuarioSeleccionado
+          "
+          class="text-negative text-caption q-mt-sm"
+        >
           Falta seleccionar al menos un gráfico.
         </div>
       </div>
 
       <q-separator class="q-my-lg" />
 
-      <div class="row justify-between items-center q-pb-sm">
-        <q-btn flat icon="refresh" label="Limpiar Selección" color="grey-7" @click="resetForm" class="rounded-borders" />
+      <div class="row justify-between items-center">
+        <q-btn
+          flat
+          icon="refresh"
+          label="Limpiar Selección"
+          color="grey-7"
+          @click="resetForm"
+          class="rounded-borders"
+        />
         <q-btn
           label="Guardar Permisos"
           type="submit"
@@ -132,7 +192,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useAutorizarPermisos } from 'src/composables/useAutorizarPermisos'
 
 defineProps(['loading'])
@@ -155,14 +215,28 @@ const {
   submitForm,
   resetForm,
   filterUsuarios,
-  allMenus
+  allMenus,
 } = useAutorizarPermisos(emit)
 
+// Emitir el cambio de tipo para filtrar la tabla en el padre
+watch(tipoPermiso, (nuevoTipo) => {
+  emit('tipo-cambiado', nuevoTipo)
+})
+
+// Emitir el cambio de usuario para filtrar la tabla en el padre
+watch(
+  () => form.value.usuarioSeleccionado,
+  (nuevoUsuario) => {
+    emit('usuario-cambiado', nuevoUsuario)
+  },
+)
 
 onMounted(() => {
   const mappedMenus = menusReferencia.map((menu) => ({ label: menu.titulo, value: menu.codigo }))
   allMenus.value = mappedMenus
   menuOptions.value = mappedMenus
   loadUsuarios()
+  // Emitir el tipo inicial
+  emit('tipo-cambiado', tipoPermiso.value)
 })
 </script>

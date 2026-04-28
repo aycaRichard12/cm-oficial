@@ -24,7 +24,7 @@ export function useAutorizarPermisos(emit) {
     menuSeleccionado: null,
     usuarioSeleccionado: null,
     graficosSeleccionados: [],
-    operacionesSeleccionadas: []
+    operacionesSeleccionadas: [],
   })
 
   // Configuración estática (SRP: Definida fuera o inyectada)
@@ -41,7 +41,11 @@ export function useAutorizarPermisos(emit) {
     { titulo: 'Generar Pedidos Provedores', codigo: 'generarpedido', icon: 'shopping_cart' },
     { titulo: 'Registrar Compras', codigo: 'registrarcompra', icon: 'receipt' },
     { titulo: 'Edición de Inventario Externo', codigo: 'inventarioexterno', icon: 'edit_location' },
-    { titulo: 'Anular Compras de Forma Directa', codigo: 'anularcompradirecta', icon: 'delete_sweep' },
+    {
+      titulo: 'Anular Compras de Forma Directa',
+      codigo: 'anularcompradirecta',
+      icon: 'delete_sweep',
+    },
     { titulo: 'Editar Precio de Venta', codigo: 'editarprecioventa', icon: 'paid' },
   ]
 
@@ -51,18 +55,22 @@ export function useAutorizarPermisos(emit) {
   })
 
   const cantidadGraficosAsignados = computed(() => {
-    return permisosActualesUsuario.value.filter(p => p.codigo.startsWith('db_') && Number(p.estado) === 1).length
+    return permisosActualesUsuario.value.filter(
+      (p) => p.codigo.startsWith('db_') && Number(p.estado) === 1,
+    ).length
   })
 
   const cantidadOperacionesAsignadas = computed(() => {
-    return permisosActualesUsuario.value.filter(p => !p.codigo.startsWith('db_') && Number(p.estado) === 1).length
+    return permisosActualesUsuario.value.filter(
+      (p) => !p.codigo.startsWith('db_') && Number(p.estado) === 1,
+    ).length
   })
 
   const operacionesOpciones = computed(() => {
-    return menusReferencia.map(m => ({
+    return menusReferencia.map((m) => ({
       label: m.titulo,
       value: m.codigo,
-      icon: m.icon
+      icon: m.icon,
     }))
   })
 
@@ -70,6 +78,7 @@ export function useAutorizarPermisos(emit) {
   async function loadUsuarios() {
     try {
       const response = await api.get(`usuariosConfiguracion/${idempresa}`)
+      console.log(response.data)
       usuarios.value = response.data.map((item) => ({
         label: item.usuario,
         value: item.idusuario || item.id,
@@ -88,31 +97,35 @@ export function useAutorizarPermisos(emit) {
       form.value.operacionesSeleccionadas = []
       return
     }
-    
+
     cargandoPermisosActuales.value = true
     try {
       const { data: response } = await api.get(`listarOperaciones/${idempresa}`)
       if (response?.data && Array.isArray(response.data)) {
-        const usuarioObj = allUsuarios.value.find(u => u.value === idUsuario)
+        const usuarioObj = allUsuarios.value.find((u) => u.value === idUsuario)
         const nombreBuscado = usuarioObj?.label
-        
-        const misPermisos = response.data.filter(it => {
+
+        const misPermisos = response.data.filter((it) => {
           const matchesID = it.idusuario == idUsuario
           const nombreEnRegistro = it.usuario?.[0]?.usuario || ''
           return matchesID || (nombreBuscado && nombreEnRegistro === nombreBuscado)
         })
-        
+
         permisosActualesUsuario.value = misPermisos
-        
+
         // Cargar gráficos seleccionados
         form.value.graficosSeleccionados = misPermisos
-          .filter(p => Number(p.estado) === 1 && graficosOpciones.some(opt => opt.value === p.codigo))
-          .map(p => p.codigo)
+          .filter(
+            (p) => Number(p.estado) === 1 && graficosOpciones.some((opt) => opt.value === p.codigo),
+          )
+          .map((p) => p.codigo)
 
         // Cargar operaciones seleccionadas
         form.value.operacionesSeleccionadas = misPermisos
-          .filter(p => Number(p.estado) === 1 && menusReferencia.some(opt => opt.codigo === p.codigo))
-          .map(p => p.codigo)
+          .filter(
+            (p) => Number(p.estado) === 1 && menusReferencia.some((opt) => opt.codigo === p.codigo),
+          )
+          .map((p) => p.codigo)
       }
     } catch (error) {
       console.error(error)
@@ -133,19 +146,19 @@ export function useAutorizarPermisos(emit) {
   }
 
   function procesarEnvioOperacion(usuario) {
-    const operacionesNuevas = form.value.operacionesSeleccionadas.filter(codigo => 
-      !permisosActualesUsuario.value.some(p => p.codigo === codigo)
+    const operacionesNuevas = form.value.operacionesSeleccionadas.filter(
+      (codigo) => !permisosActualesUsuario.value.some((p) => p.codigo === codigo),
     )
 
     if (operacionesNuevas.length === 0) {
       return $q.notify({ type: 'info', message: 'Nada nuevo que asignar.' })
     }
-    
-    const payload = operacionesNuevas.map(codigo => ({
+
+    const payload = operacionesNuevas.map((codigo) => ({
       id: null,
       codigo,
-      operacion: menusReferencia.find(m => m.codigo === codigo).titulo,
-      idusuario: usuario.value
+      operacion: menusReferencia.find((m) => m.codigo === codigo).titulo,
+      idusuario: usuario.value,
     }))
 
     emit('on-submit', payload)
@@ -154,19 +167,19 @@ export function useAutorizarPermisos(emit) {
   }
 
   function procesarEnvioGraficos(usuario) {
-    const graficosNuevos = form.value.graficosSeleccionados.filter(codigo => 
-      !permisosActualesUsuario.value.some(p => p.codigo === codigo)
+    const graficosNuevos = form.value.graficosSeleccionados.filter(
+      (codigo) => !permisosActualesUsuario.value.some((p) => p.codigo === codigo),
     )
 
     if (graficosNuevos.length === 0) {
       return $q.notify({ type: 'info', message: 'Nada nuevo que asignar.' })
     }
-    
-    const payload = graficosNuevos.map(codigo => ({
+
+    const payload = graficosNuevos.map((codigo) => ({
       id: null,
       codigo,
-      operacion: graficosOpciones.find(g => g.value === codigo).label,
-      idusuario: usuario.value
+      operacion: graficosOpciones.find((g) => g.value === codigo).label,
+      idusuario: usuario.value,
     }))
 
     emit('on-submit', payload)
@@ -175,7 +188,15 @@ export function useAutorizarPermisos(emit) {
   }
 
   function resetForm() {
-    form.value = { id: null, codigo: '', operacion: '', menuSeleccionado: null, usuarioSeleccionado: null, graficosSeleccionados: [], operacionesSeleccionadas: [] }
+    form.value = {
+      id: null,
+      codigo: '',
+      operacion: '',
+      menuSeleccionado: null,
+      usuarioSeleccionado: null,
+      graficosSeleccionados: [],
+      operacionesSeleccionadas: [],
+    }
     permisosActualesUsuario.value = []
   }
 
@@ -212,7 +233,6 @@ export function useAutorizarPermisos(emit) {
     resetForm,
     filterUsuarios,
     filterMenus,
-    allMenus
+    allMenus,
   }
 }
-
