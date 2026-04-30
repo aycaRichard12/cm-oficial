@@ -1218,7 +1218,9 @@ import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vu
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+
 const permisosStore = useOperacionesPermitidas()
+console.log(permisosStore.tienePermiso('editarprecioventa'))
 
 const showAddModal = ref(false)
 const esProductoUnico = ref(false)
@@ -1775,18 +1777,25 @@ async function listaProductosDisponibles() {
   const endpoint = `listaProductosDisponiblesVenta/${idempresa}`
   try {
     const response = await api.get(endpoint)
+    console.log(response.data)
     const resultado = response.data
     if (resultado[0] === 'error') {
       console.error(resultado.error)
       productosDisponibles.value = []
     } else {
-      let use = resultado.datos.filter((u) => u.idporcentaje === idporcentajeventa.value)
+      console.log(idporcentajeventa.value)
+      console.log(idporcentajeventa.value)
+      let use = resultado.datos.filter(
+        (u) => Number(u.idporcentaje) === Number(idporcentajeventa.value),
+      )
+      console.log(use)
       // Filtrar productos que ya están en el carrito
       if (carritoCO.listaProductos.length > 0) {
         use = use.filter(
           (u) => !carritoCO.listaProductos.some((cp) => cp.idproductoalmacen === u.id),
         )
       }
+      console.log(use)
       productosDisponibles.value = use.map((p) => ({
         ...p,
         display: `${p.codigo} - ${p.descripcion}`,

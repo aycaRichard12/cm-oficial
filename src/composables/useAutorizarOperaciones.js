@@ -42,7 +42,7 @@ export const useOperacionesPermitidas = defineStore('permitidos', {
         console.log('Respuesta de listarOperaciones:', response)
         const data = response.data
         this.operacionesPermitidas = data.data.filter(
-          (item) => item.idusuario === idusuario && item.estado === 1,
+          (item) => item.md5 === idusuario && item.estado === 1,
         )
 
         this.cargado = true
