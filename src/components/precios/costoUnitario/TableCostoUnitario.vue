@@ -208,6 +208,7 @@ const columnas = [
 // Filtro combinado por búsqueda y almacén
 const filtrados = computed(() => {
   const almacenId = filtroAlmacen.value
+  console.log(almacenId)
   const searchTerm = filter.value ? filter.value.toLowerCase() : ''
 
   console.log('🏪 Almacén seleccionado (ID):', almacenId)

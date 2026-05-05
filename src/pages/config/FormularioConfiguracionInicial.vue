@@ -95,6 +95,7 @@ import { objectToFormData, idempresa_md5, validarUsuario } from 'src/composables
 import { getIdRubro } from 'src/composables/FuncionesG'
 
 const idrubro = getIdRubro()
+console.log('ID Rubro:', idrubro)
 const idempresa = idempresa_md5()
 const $q = useQuasar()
 const router = useRouter()

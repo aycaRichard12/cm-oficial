@@ -918,7 +918,10 @@
               </q-banner>
             </div>
 
-            <div class="col-12 q-mt-lg animate__animated animate__zoomIn">
+            <div
+              class="col-12 q-mt-lg animate__animated animate__zoomIn"
+              v-if="listaCajaBancos.length > 0"
+            >
               <label
                 class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
                 style="font-size: 13px"
@@ -1101,10 +1104,7 @@
               background: linear-gradient(45deg, #1976d2, #42a5f5);
             "
             @click="enviarDatos"
-            :disable="
-              (variablePago === 'dividido' && remainingAmount !== 0) ||
-              (!carritoCO.credito && !idcajaBancoSeleccionada)
-            "
+            :disable="variablePago === 'dividido' && remainingAmount !== 0"
           />
         </q-card-actions>
       </q-card>

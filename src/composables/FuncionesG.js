@@ -51,7 +51,7 @@ export function getfechaCodigo() {
 export function getIdRubro(situacion = null) {
   //idtn
   const contenidousuario = validarUsuario()
-  const rubro = contenidousuario?.[0]?.empresa?.idtn
+  const rubro = contenidousuario[0].empresa.idnt
   const esVacio = validarDatoVacio(rubro)
   if (situacion) {
     return !esVacio

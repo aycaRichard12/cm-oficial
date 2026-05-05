@@ -79,7 +79,10 @@
                     outlined
                   />
                 </div>
-                <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+                <div
+                  class="col-12 col-md-6 animate__animated animate__zoomIn"
+                  v-if="listaCajaBancos && listaCajaBancos.length > 0"
+                >
                   <label
                     for="cajaBanco"
                     class="text-weight-bold text-grey-9 q-mb-sm block"
@@ -1005,7 +1008,11 @@ function handleKeydown(e) {
 async function listarcajasbanco() {
   try {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
-
+    console.log(response.data)
+    if (response.data.length === 0) {
+      $q.notify({ type: 'warning', message: 'No hay cajas o bancos registrados' })
+      return
+    }
     listaCajaBancos.value = response.data.map((item) => ({
       label: item.codigo + ' ' + item.tipo_cuenta, // Fallback
       value: item.idcaja_bancos,
@@ -1025,11 +1032,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
 // Inicialización
-onMounted(() => {
-  cargarAlmacenes()
+onMounted(async () => {
+  await cargarAlmacenes()
 
-  cargarRobos()
-  listarcajasbanco()
+  await cargarRobos()
+  await listarcajasbanco()
 })
 </script>
 

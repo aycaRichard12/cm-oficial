@@ -251,10 +251,9 @@
               </template>
             </q-select>
           </div>
-
           <div
             class="col-12 col-md-6 animate__animated animate__zoomIn"
-            v-if="localData.tipocompra === 2"
+            v-if="localData.tipocompra === 2 && props.cajaBancos.length > 0"
           >
             <label
               for="cajaBanco"

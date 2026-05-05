@@ -56,7 +56,10 @@
       </q-file>
     </div>
 
-    <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+    <div
+      class="col-12 col-md-6 animate__animated animate__zoomIn"
+      v-if="listaCajaBancos && listaCajaBancos.length > 0"
+    >
       <label
         for="cajaBanco"
         class="text-weight-bold text-grey-9 q-mb-sm block"
