@@ -24,6 +24,7 @@
       :almacenes="listaAlmacenes"
       :loading="cargando"
       @edit="abrirFormularioEditar"
+      @reload="loadRows"
     />
 
     <RegistrarAlmacenDialog
