@@ -123,12 +123,12 @@
           <q-td colspan="100%">
             <div class="q-pa-md bg-grey-2">
               <tablaCodigosDevolucion
-                v-model="detallesProducto"
-                :parent-row="selectedProduct"
-                :api-mode="true"
-                :can-edit="true"
+                v-model="props.row.codigos_unicos"
+                :parent-row="props.row"
                 :can-delete="true"
-                @update-parent-quantity="actualizarCantidadPadre"
+                :can-edit="true"
+                :api-mode="true"
+                @update-parent-quantity="actulizarDatos"
               />
             </div>
           </q-td>
@@ -143,23 +143,13 @@ import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import tablaCodigosDevolucion from '../cotizacion/tablaCodigosDevolucion.vue'
-
+import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const idusuario = idusuario_md5()
+const idempresa = idempresa_md5()
 const props = defineProps({
   idDevolucion: { type: [Number, String], default: null },
 })
-const detallesProducto = ref([])
-const selectedProduct = ref({
-  id: 101,
-  nombre: 'Laptop Dell XPS',
-  cantidad: 2, // Cantidad actual en la lista
-  cantidad_limite: 5, // Máximo permitido para registrar
-})
-const actualizarCantidadPadre = (nuevaCantidad) => {
-  selectedProduct.value.cantidad = nuevaCantidad
-  console.log(`La nueva cantidad del padre es: ${nuevaCantidad}`)
-
-  // Aquí podrías disparar una petición API extra para guardar la cantidad del padre si fuera necesario
-}
+//const detallesProducto = ref([])
 
 const emit = defineEmits(['volver', 'finalizado'])
 
@@ -206,7 +196,8 @@ const listarDatosDetalleDevolucion = async (id) => {
   loading.value = true
 
   try {
-    const response = await api.get(`listadetalledevolicion/${id}`)
+    const response = await api.get(`listadetalledevolicion/${id}/${idempresa}`)
+    console.log('Respuesta del API:', response.data)
     if (response.data.estado === 'error') {
       throw new Error(response.data.error)
     }
@@ -324,26 +315,32 @@ const confirmarAutorizarDevolucion = () => {
 
 const autorizarDevolucion = async () => {
   try {
-    //const usuarioResponse = validarUsuario()
-    //const usuario = usuarioResponse[0]
-    //const idusuario = usuario?.idusuario
+    // const usuarioResponse = validarUsuario()
+    // const usuario = usuarioResponse[0]
+    // const idusuario = usuario?.idusuario
+    console.log('Autorizando devolución...' + props.idDevolucion)
 
     $q.loading.show({ message: 'Autorizando devolución...' })
 
-    // const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
-
-    // if (response.data.estado === 100) {
-    //   $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
-    //   emit('finalizado')
-    // } else {
-    //   throw new Error(response.data.error || 'Error al autorizar devolución')
-    // }
+    const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
+    console.log('Respuesta del API al autorizar devolución:', response.data)
+    if (response.data.estado === 100) {
+      $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
+      emit('finalizado')
+    } else {
+      throw new Error(response.data.error || 'Error al autorizar devolución')
+    }
   } catch (error) {
     console.error('Error al autorizar devolución:', error)
     $q.notify({ type: 'negative', message: 'Error al autorizar devolución' })
   } finally {
     $q.loading.hide()
   }
+}
+
+const actulizarDatos = async () => {
+  console.log('Actualizando datos desde tablaCodigosDevolucion...')
+  await listarDatosDetalleDevolucion(props.idDevolucion)
 }
 
 watch(

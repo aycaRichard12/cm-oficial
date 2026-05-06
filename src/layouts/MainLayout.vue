@@ -475,7 +475,7 @@ onMounted(async () => {
   })
 
   await permisosStore.cargarPermisos()
-  console.log('Permisos cargados en MainLayout.vue:', permisosStore.permisos)
+  console.log('Permisos cargados en MainLayout.vue:', permisosStore.operacionesPermitidas)
   // const tempInitPusher = (id) => console.log('ID en modo local:', id)
 
   // const idusuario = idusuario_md5() // Verifica si esto falla solo

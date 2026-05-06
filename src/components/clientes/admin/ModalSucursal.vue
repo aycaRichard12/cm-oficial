@@ -1,69 +1,108 @@
 <template>
-  <q-card class="q-pa-md">
-    <q-card-section>
-      <div class="row items-center q-col-gutter-md">
-        <div class="col-12 col-md-8 text-h6">Sucursales</div>
+  <q-card class="q-pa-md" style="min-width: 350px; max-width: 900px; width: 100%">
+    <q-card-section class="row items-center q-pb-none">
+      <div class="text-h6 text-primary">
+        <q-icon name="store" class="q-mr-sm" />
+        Sucursales
       </div>
+      <q-space />
+      <q-btn
+        v-if="modelValue.id"
+        label="Nueva Sucursal"
+        icon="add"
+        flat
+        color="primary"
+        @click="resetForm"
+        class="q-mr-sm"
+      />
+      <q-btn icon="close" flat round dense v-close-popup @click="$emit('cancel')" />
     </q-card-section>
 
-    <q-form @submit.prevent="onSubmit" class="q-gutter-md">
-      <q-input
-        :model-value="modelValue.nombre"
-        @update:model-value="(val) => updateModelValue('nombre', val)"
-        label="Nombre *"
-        outlined
-        class="col-md-4"
-      />
-      <q-input
-        :model-value="modelValue.telefono"
-        @update:model-value="(val) => updateModelValue('telefono', val)"
-        label="Teléfono"
-        outlined
-        class="col-md-2"
-      />
-      <q-input
-        :model-value="modelValue.direccion"
-        @update:model-value="(val) => updateModelValue('direccion', val)"
-        label="Dirección"
-        outlined
-        class="col-md-4"
-      />
-      <q-card-actions align="right">
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn label="Guardar" type="submit" color="primary" />
-      </q-card-actions>
-    </q-form>
+    <q-card-section>
+      <q-form @submit.prevent="onSubmit" class="q-gutter-y-md">
+        <div class="row q-col-gutter-md">
+          <q-input
+            :model-value="modelValue.nombre"
+            @update:model-value="(val) => updateModelValue('nombre', val)"
+            label="Nombre *"
+            outlined
+            dense
+            class="col-12 col-md-4"
+            :rules="[(val) => (val && val.length > 0) || 'El nombre es requerido']"
+            lazy-rules
+          />
+          <q-input
+            :model-value="modelValue.telefono"
+            @update:model-value="(val) => updateModelValue('telefono', val)"
+            label="Teléfono"
+            outlined
+            dense
+            class="col-12 col-md-3"
+          />
+          <q-input
+            :model-value="modelValue.direccion"
+            @update:model-value="(val) => updateModelValue('direccion', val)"
+            label="Dirección"
+            outlined
+            dense
+            class="col-12 col-md-5"
+          />
+        </div>
 
-    <q-table
-      class="q-mt-md"
-      :rows="processedRows"
-      :columns="columns"
-      row-key="id"
-      flat
-      bordered
-      wrap-cells
-    >
-      <template v-slot:body-cell-opciones="props">
-        <q-td :props="props" class="text-nowrap">
+        <div class="row justify-end q-mt-sm">
           <q-btn
-            icon="edit"
+            :label="modelValue.id ? 'Actualizar Sucursal' : 'Guardar Sucursal'"
+            type="submit"
             color="primary"
-            size="sm"
-            dense
-            flat
-            @click="editarSucursal(props.row)"
+            :loading="loading"
+            icon="save"
           />
-          <q-btn
-            icon="delete"
-            color="negative"
-            size="sm"
-            dense
-            flat
-            @click="eliminarSucursal(props.row)"
-          />
-        </q-td>
-      </template>
-    </q-table>
+        </div>
+      </q-form>
+    </q-card-section>
+
+    <q-separator class="q-my-md" />
+
+    <q-card-section class="q-pa-none">
+      <q-table
+        :rows="processedRows"
+        :columns="columns"
+        row-key="id"
+        flat
+        bordered
+        dense
+        wrap-cells
+        :loading="loading"
+        no-data-label="No hay sucursales registradas"
+      >
+        <template v-slot:body-cell-opciones="props">
+          <q-td :props="props" class="text-nowrap">
+            <q-btn
+              icon="edit"
+              color="primary"
+              size="sm"
+              dense
+              flat
+              round
+              @click="editarSucursal(props.row)"
+            >
+              <q-tooltip>Editar sucursal</q-tooltip>
+            </q-btn>
+            <q-btn
+              icon="delete"
+              color="negative"
+              size="sm"
+              dense
+              flat
+              round
+              @click="eliminarSucursal(props.row)"
+            >
+              <q-tooltip>Eliminar sucursal</q-tooltip>
+            </q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -94,15 +133,25 @@ const updateModelValue = (field, value) => {
   })
 }
 
+const resetForm = () => {
+  emit('update:modelValue', {
+    ver: 'registrarSucursal',
+    nombre: '',
+    telefono: '',
+    direccion: '',
+    idcliente: props.modelValue.idcliente,
+  })
+}
+
 const onSubmit = () => {
   emit('submit', props.modelValue)
 }
 
 const columns = [
   { name: 'id', label: 'N°', field: (row) => row.numero, align: 'center' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'center' },
+  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left' },
   { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'center' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'center' },
+  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left' },
   { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
 ]
 
@@ -117,7 +166,7 @@ function editarSucursal(sucursal) {
   emit('edit', sucursal)
 }
 
-function eliminarSucursal(sucursalId) {
-  emit('delete', sucursalId)
+function eliminarSucursal(sucursal) {
+  emit('delete', sucursal)
 }
 </script>

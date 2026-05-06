@@ -87,6 +87,7 @@
                   id="tipodoc"
                   dense
                   outlined
+                  readonly
                   :options="typeDocOptions"
                   option-label="label"
                   option-value="value"
@@ -103,6 +104,7 @@
                   v-model="formData.nroDoc"
                   id="nroDoc"
                   dense
+                  readonly
                   outlined
                   type="number"
                   :rules="[(val) => !!val || 'Campo Obligatorio']"
@@ -115,7 +117,15 @@
               </div>
               <div class="col-12 col-md-3">
                 <label for="fecha">Fecha*</label>
-                <q-input v-model="formData.fecha" id="fecha" dense outlined type="date" required>
+                <q-input
+                  v-model="formData.fecha"
+                  id="fecha"
+                  dense
+                  readonly
+                  outlined
+                  type="date"
+                  required
+                >
                   <template v-slot:prepend>
                     <q-icon name="event" color="blue" />
                   </template>

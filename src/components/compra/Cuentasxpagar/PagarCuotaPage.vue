@@ -56,7 +56,10 @@
       </q-file>
     </div>
 
-    <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+    <div
+      class="col-12 col-md-6 animate__animated animate__zoomIn"
+      v-if="listaCajaBancos && listaCajaBancos.length > 0"
+    >
       <label
         for="cajaBanco"
         class="text-weight-bold text-grey-9 q-mb-sm block"
@@ -215,7 +218,7 @@ async function listarcajasbanco() {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta,
       value: item.idcaja_bancos,
     }))
     console.log(listaCajaBancos.value)

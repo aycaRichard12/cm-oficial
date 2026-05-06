@@ -12,8 +12,10 @@
       </div>
     </div>
 
-    <q-dialog v-model="showForm" persistent :full-width="$q.screen.lt.md">
-      <q-card :style="$q.screen.lt.md ? 'width: 100%; max-width: 100%' : 'width: 860px; max-width: 90vw'">
+    <q-dialog v-model="showForm" :full-width="$q.screen.lt.md">
+      <q-card
+        :style="$q.screen.lt.md ? 'width: 100%; max-width: 100%' : 'width: 860px; max-width: 90vw'"
+      >
         <q-card-section class="bg-primary text-h6 text-white row items-center justify-between">
           <div>
             <q-icon name="local_shipping" class="q-mr-sm" />

@@ -93,7 +93,13 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
-
+      proxy: {
+        '/api': {
+          target: 'http://mistersofts.com/app/ct/api',
+          changeOrigin: true,
+          pathRewrite: { '^/api': '' },
+        },
+      },
       open: true, // opens browser window automatically
     },
 

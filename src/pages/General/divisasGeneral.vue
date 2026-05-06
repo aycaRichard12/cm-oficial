@@ -88,7 +88,12 @@ const guardarDivisa = async (data) => {
 //=======================================Tabla
 async function loadRows() {
   try {
-    const point = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+    let point
+    if (getTipoFactura(true) && getToken(true) && tipoFactura && token) {
+      point = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
+    } else {
+      point = `listaDivisa/${idempresa}`
+    }
     const response = await api.get(`${point}`) // Cambia a tu ruta real
     listaDivisas.value = response.data
   } catch (error) {

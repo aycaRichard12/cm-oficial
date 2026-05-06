@@ -79,7 +79,10 @@
                     outlined
                   />
                 </div>
-                <div class="col-12 col-md-6 animate__animated animate__zoomIn">
+                <div
+                  class="col-12 col-md-6 animate__animated animate__zoomIn"
+                  v-if="listaCajaBancos && listaCajaBancos.length > 0"
+                >
                   <label
                     for="cajaBanco"
                     class="text-weight-bold text-grey-9 q-mb-sm block"
@@ -92,15 +95,35 @@
                     id="cajaBanco"
                     dense
                     outlined
-                    bg-color="white"
                     emit-value
                     map-options
                     class="premium-input"
-                    hide-bottom-space
                     :rules="[(val) => !!val || 'Campo requerido']"
                   >
                     <template v-slot:prepend>
                       <q-icon name="account_balance" color="positive" />
+                    </template>
+
+                    <template v-slot:selected-item="scope">
+                      <div v-if="scope.opt" class="q-py-xs">
+                        <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+                        <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                      </div>
+                    </template>
+
+                    <template v-slot:option="scope">
+                      <q-item v-bind="scope.itemProps">
+                        <q-item-section>
+                          <q-item-label>
+                            <span class="text-weight-bolder text-grey-9">{{
+                              scope.opt.codigo
+                            }}</span>
+                          </q-item-label>
+                          <q-item-label caption>
+                            {{ scope.opt.nombre }}
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item>
                     </template>
                   </q-select>
                 </div>
@@ -985,10 +1008,16 @@ function handleKeydown(e) {
 async function listarcajasbanco() {
   try {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
-
+    console.log(response.data)
+    if (response.data.length === 0) {
+      $q.notify({ type: 'warning', message: 'No hay cajas o bancos registrados' })
+      return
+    }
     listaCajaBancos.value = response.data.map((item) => ({
-      label: item.codigo_cuenta + ' ' + item.codigo + ' ' + item.glosa,
+      label: item.codigo + ' ' + item.tipo_cuenta, // Fallback
       value: item.idcaja_bancos,
+      codigo: item.codigo, // Guardamos el código por separado
+      nombre: item.tipo_cuenta, // Guardamos el nombre por separado
     }))
     console.log(listaCajaBancos.value)
   } catch (error) {
@@ -1003,11 +1032,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
 // Inicialización
-onMounted(() => {
-  cargarAlmacenes()
+onMounted(async () => {
+  await cargarAlmacenes()
 
-  cargarRobos()
-  listarcajasbanco()
+  await cargarRobos()
+  await listarcajasbanco()
 })
 </script>
 

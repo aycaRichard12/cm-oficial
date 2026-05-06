@@ -205,7 +205,7 @@ const cargarConfiguracion = async () => {
     ]
 
     // Cargar tipos de venta
-    if (token) {
+    if (token && tipoFactura && getToken(true) && getTipoFactura(true)) {
       const enpoint = `listaLeyendaSIN/tiposector/${token}/${tipoFactura}`
       const tiposResponse = await api.get(enpoint)
       const codigosPermitidos = [0, 1, 2, 3]
@@ -251,10 +251,11 @@ const cargarConfiguracion = async () => {
 // --- Action Handling ---
 
 const handleAccion = (row) => {
+  console.log('Acción seleccionada para fila:', row)
   const value = row.accionSeleccionada
   const dataValue = row.id // id in table
   const TipoVenta = Number(row.tipoventa)
-  const idventa = Number(row.idventa) // sometimes present
+  const idventa = Number(row.id) // sometimes present
   const tipo = row.tipo
 
   if (value == 1) {
@@ -284,6 +285,7 @@ const handleAccion = (row) => {
       if (tipo == 'cotizacion') {
         verificarEstadoCotizacion(dataValue)
       } else {
+        console.log('Tipo desconocido para cotización:', idventa)
         verificarEstadoCotizacion(idventa)
       }
     } else {
@@ -333,9 +335,9 @@ const onDevolucionFinalizada = async () => {
 // --- PDF Logic ---
 
 const generarComprobantePDF = async (row) => {
+  console.log('Generando PDF para fila:', row)
   // Keep this logic here as it depends on pdf util imports
-  let id =
-    Number(row.tipoventa) === -1 ? (row.tipo === 'cotizacion' ? row.id : row.idventa) : row.id
+  let id = Number(row.tipoventa) === -1 ? (row.tipo === 'cotizacion' ? row.id : row.id) : row.id
 
   try {
     const idempresa = idempresa_md5()

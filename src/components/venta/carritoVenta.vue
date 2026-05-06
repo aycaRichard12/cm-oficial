@@ -33,7 +33,9 @@
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-4" id="origenVenta">
-              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block">Origen de venta</label>
+              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Origen de venta</label
+              >
               <q-select
                 v-model="almacenSeleccionado"
                 :options="almacenes"
@@ -51,7 +53,9 @@
             </div>
 
             <div class="col-12 col-md-4" id="categoriaPrecio">
-              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block">Categoría de precio</label>
+              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Categoría de precio</label
+              >
               <q-select
                 v-model="categoriaPrecioSeleccionada"
                 :options="categoriasPrecio"
@@ -71,7 +75,9 @@
             </div>
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
               <div class="flex items-center justify-between q-mb-sm">
-                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none">Categorías con Campaña</label>
+                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none"
+                  >Categorías con Campaña</label
+                >
                 <q-checkbox v-model="mostrarCategoriasCampania" dense>
                   <template v-slot:default>
                     <label class="text-emerald" style="font-size: 13px">{{
@@ -114,8 +120,28 @@
       <div class="my-card q-mb-md">
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-10" id="buscarProductoVenta">
-              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block">Buscar producto (código o descripción)</label>
+            <div class="col-12 col-md-3" id="barcodeVenta">
+              <label for="barcode" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Código de barras</label
+              >
+              <q-input
+                v-model="barcodeInput"
+                id="barcode"
+                outlined
+                dense
+                @keyup.enter="buscarPorCodigoBarra"
+                placeholder="Escanee o ingrese código"
+                :disable="!categoriaPrecioSeleccionada"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="qr_code_scanner" color="primary" />
+                </template>
+              </q-input>
+            </div>
+            <div class="col-12 col-md-7" id="buscarProductoVenta">
+              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Buscar producto (descripción)</label
+              >
               <q-select
                 v-model="productoSeleccionado"
                 :options="productosFiltrados"
@@ -163,7 +189,16 @@
                 :src="imagen + productoSeleccionado?.originalData?.imagen || null"
                 @click="mostrarGrande = true"
                 fit="contain"
-                style="width: 100%; max-width: 140px; height: 110px; cursor: pointer; border-radius: 8px; border: 1px solid #e0e0e0; padding: 4px; margin-top: 28px;"
+                style="
+                  width: 100%;
+                  max-width: 140px;
+                  height: 110px;
+                  cursor: pointer;
+                  border-radius: 8px;
+                  border: 1px solid #e0e0e0;
+                  padding: 4px;
+                  margin-top: 28px;
+                "
                 spinner-color="primary"
               >
                 <template v-slot:error>
@@ -196,7 +231,9 @@
 
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
-              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block">Stock disponible</label>
+              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Stock disponible</label
+              >
               <q-input
                 v-model="productoSeleccionado.originalData.stock"
                 id="stockdisponible"
@@ -209,7 +246,9 @@
             </div>
 
             <div class="col-12 col-sm-3" id="cantidadVenta">
-              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block">Cantidad</label>
+              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Cantidad</label
+              >
               <q-input
                 v-model.number="cantidad"
                 id="cantidad"
@@ -225,7 +264,9 @@
             </div>
 
             <div class="col-12 col-sm-3" id="precioVenta">
-              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block">Precio unitario</label>
+              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block"
+                >Precio unitario</label
+              >
               <q-input
                 v-model="precioUnitario"
                 id="precio"
@@ -233,6 +274,7 @@
                 :rules="[(val) => val > 0 || 'Ingrese precio válido']"
                 outlined
                 dense
+                :readonly="!permisosStore.tienePermiso('editarprecioventa')"
                 type="number"
               >
               </q-input>
@@ -254,7 +296,10 @@
         </div>
       </div>
 
-      <div class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2" style="border-radius: 8px; border: 1px solid #e0e0e0;">
+      <div
+        class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2"
+        style="border-radius: 8px; border: 1px solid #e0e0e0"
+      >
         <div class="text-subtitle2 q-ml-sm text-weight-bold text-grey-8">Venta sin stock</div>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
@@ -407,7 +452,11 @@ import { peticionGET } from 'src/composables/peticionesFetch.js'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
+import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+
 const { consumirPermiso } = useSolicitudes()
+const permisosStore = useOperacionesPermitidas()
+
 const currencyStore = useCurrencyStore()
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
@@ -472,6 +521,7 @@ const categoriaPrecioSeleccionada = ref(null)
 const categoriaCampaniaSeleccionada = ref(null)
 const mostrarCategoriasCampania = ref(false)
 const productoSeleccionado = ref(null)
+const barcodeInput = ref('')
 const cantidad = ref(1)
 const precioUnitario = ref(0)
 const descuento = ref(0)
@@ -706,8 +756,10 @@ async function cargarCategoriasPrecio() {
       categoriaPrecioSeleccionada.value = null
       categoriasPrecio.value = []
 
-      const endpoint = `/listaCategoriaPrecio/${usuario.value.empresa.idempresa}`
+      const endpoint = `listarCategoriaPrecioVenta/${usuario.value.empresa.idempresa}`
+      console.log(endpoint)
       const { data } = await api.get(endpoint)
+      console.log('Respuesta de categorías de precio:', data)
 
       if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
 
@@ -1044,6 +1096,7 @@ async function cargarProductosDisponibles() {
       return {
         label: `${producto.codigo} - ${producto.descripcion}`,
         value: producto.id,
+        codigobarra: producto.codigobarra,
         originalData: {
           ...producto,
           precio: precioFinal, // Usar precio de campaña si existe, sino precio normal
@@ -1073,8 +1126,10 @@ function filtrarProductos(val, update) {
       productosFiltrados.value = productos.value
     } else {
       const searchTerm = val.toLowerCase()
-      productosFiltrados.value = productos.value.filter((v) =>
-        v.label.toLowerCase().includes(searchTerm),
+      productosFiltrados.value = productos.value.filter(
+        (v) =>
+          v.label.toLowerCase().includes(searchTerm) ||
+          v.codigobarra.toLowerCase().includes(searchTerm),
       )
     }
   })
@@ -1087,6 +1142,39 @@ function seleccionarProducto(producto) {
   }
 
   precioUnitario.value = producto.originalData.precio || 0
+}
+
+/**
+ * Busca un producto por código de barras o código interno y lo selecciona.
+ */
+function buscarPorCodigoBarra() {
+  if (!barcodeInput.value) return
+
+  const codigo = barcodeInput.value.trim()
+  const encontrado = productos.value.find(
+    (p) => (p.codigobarra && p.codigobarra === codigo) || p.originalData.codigo === codigo,
+  )
+
+  if (encontrado) {
+    productoSeleccionado.value = encontrado
+    seleccionarProducto(encontrado)
+
+    // Limpiamos el input para el siguiente escaneo
+    barcodeInput.value = ''
+
+    $q.notify({
+      type: 'positive',
+      message: `Producto seleccionado: ${encontrado.label}`,
+      timeout: 1000,
+      position: 'top',
+    })
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: 'No se encontró el código: ' + codigo,
+      position: 'top',
+    })
+  }
 }
 function decimas(saldo) {
   var saldocondecimas = parseFloat(saldo).toFixed(2)
@@ -1299,7 +1387,7 @@ onMounted(async () => {
   try {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
-
+    await permisosStore.cargarPermisos()
     if (!currencyStore.divisa) {
       console.error('No se pudo cargar la divisa')
       return

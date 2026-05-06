@@ -240,6 +240,7 @@ import { useCurrencyStore } from 'src/stores/currencyStore'
 import { decimas, redondear, obtenerFechaActualDato } from 'src/composables/FuncionesG'
 // import { validarUsuario } from 'src/composables/FuncionesG'
 const currencyStore = useCurrencyStore()
+console.log(currencyStore)
 const idusuario = idusuario_md5()
 const idempresa = idempresa_md5()
 const $q = useQuasar()
@@ -288,12 +289,12 @@ const observacion = ref('')
 
 //const isCajaAbierta = computed(() => cajaStore.isCajaAbierta)
 
+const emit = defineEmits(['success'])
+
 const formatCurrency = (value) => {
-  console.log('Formatting value:', currencyStore.divisa)
-  const { simbolo, locale, current } = currencyStore.divisa // Asume que el store proporciona tanto el símbolo como el código de la moneda
+  if (!currencyStore.divisa) return `$ ${value?.toFixed(2) || '0.00'}`
+  const { simbolo, locale, current } = currencyStore.divisa
   if (typeof value !== 'number') return `${simbolo} 0.00`
-  // Utiliza `codigo` para el `currency` y el `simbolo` para el formato si es necesario,
-  // pero `toLocaleString` con el código ya debería manejar el símbolo.
   return value.toLocaleString(`${locale}`, { style: 'currency', currency: `${current}` })
 }
 
@@ -303,13 +304,13 @@ const calcularTotalesArqueo = () => {
 }
 
 const calcularDiferenciaConcepto = (metodo) => {
-  metodo.diferencia = metodo.totalContado - metodo.totalSistema
-  diferenciaConceptoTotal.value = totalesPorMetodo.reduce((sum, m) => sum + m.diferencia, 0)
+  metodo.diferencia = (metodo.totalContado || 0) - (metodo.totalSistema || 0)
+  diferenciaConceptoTotal.value = totalesPorMetodo.reduce((sum, m) => sum + (m.diferencia || 0), 0)
 }
 const calcularDiferenciaConceptoCotizacion = (metodo) => {
-  metodo.diferencia = metodo.totalContado - metodo.totalSistema
+  metodo.diferencia = (metodo.totalContado || 0) - (metodo.totalSistema || 0)
   diferenciaConceptoTotal.value = totalesPorMetodoCotizacion.reduce(
-    (sum, m) => sum + m.diferencia,
+    (sum, m) => sum + (m.diferencia || 0),
     0,
   )
 }
@@ -345,148 +346,159 @@ const crear_formato_cierre = () => {
 //     console.error('Error cargando canales:', error)
 //   }
 // }
-onMounted(() => {
-  cargarPuntosDeVenta()
-  crear_formato_cierre()
+onMounted(async () => {
+  await currencyStore.cargarDivisaActiva()
+
+  if (!currencyStore.divisa) {
+    console.error('No se pudo cargar la divisa')
+    return
+  }
+  await cargarPuntosDeVenta()
+  await crear_formato_cierre()
 })
 const cargarPuntosDeVenta = async () => {
-  // Simulación de la API GET /api/caja/puntos-venta
-  const response = await api.get(`puntosVentaUsuario/${idusuario}`)
-  console.log('Puntos de Venta Response:', response.data)
-  setTimeout(() => {
+  try {
+    const response = await api.get(`puntosVentaUsuario/${idusuario}`)
+    console.log('Puntos de Venta Response:', response.data)
     puntosVenta.value = response.data.map((pv) => ({
       label: pv.nombre,
       value: pv.idpunto_venta,
     }))
-    model_puntoVenta.value = puntosVenta.value[0]
-  }, 500)
+    if (puntosVenta.value.length > 0) {
+      model_puntoVenta.value = puntosVenta.value[0]
+    }
+  } catch (error) {
+    console.error('Error al cargar puntos de venta:', error)
+    $q.notify({ type: 'negative', message: 'Error al cargar los puntos de venta.' })
+  }
 }
 
-const cargarDatosIniciales = () => {
-  isLoading.value = true
-  // Simulación de la API GET /api/caja/datos-cierre
-  setTimeout(async () => {
-    const dataFicticia = {
-      totalSistemaArqueo: 0,
-      totalesPorMetodo: [
-        { metodo: 'efectivo', label: 'Efectivo', totalSistema: 0 },
-        { metodo: 'qr', label: 'QR', totalSistema: 0 },
-        { metodo: 'transferencia', label: 'Transferencia', totalSistema: 0 },
-        { metodo: 'debito', label: 'Débito', totalSistema: 0 },
-        { metodo: 'credito', label: 'Crédito', totalSistema: 0 },
-        { metodo: 'venta-credito', label: 'Venta a Crédito', totalSistema: 0 },
-      ],
-      arqueo_x_cotizacion: [
-        { metodo: 'cotizacion-1', label: 'Cotización 1', monto: 0 },
-        { metodo: 'cotizacion-2', label: 'Cotización 2', monto: 0 },
-      ],
-      arqueo_x_pv: [
-        { id: 'efectivo', metodo: 'Efectivo', monto: 0 },
-        { id: 'tarjeta', metodo: 'Tarjeta', monto: 0 },
-      ],
-      ingresos: 0,
-      egresos: 0,
-      anuladas: 0,
-      cotizaciones: 0,
-    }
-    const puntoventa = model_puntoVenta.value
-    if (!puntoventa) {
-      $q.notify({ type: 'negative', message: 'Debe seleccionar un punto de venta.' })
-      isLoading.value = false
-      return
-    }
+const cargarDatosIniciales = async () => {
+  const puntoventa = model_puntoVenta.value
+  if (!puntoventa) {
+    $q.notify({ type: 'negative', message: 'Debe seleccionar un punto de venta.' })
+    return
+  }
 
+  isLoading.value = true
+  try {
     const point = `arqueoPuntoVenta/${fechaini.value}/${fechafin.value}/${puntoventa.value}/${idempresa}`
     console.log('Fetching data from:', point)
     const response = await api.get(point)
     console.log('Response:', response.data)
-    const data = response.data || dataFicticia
-    totalSistemaArqueo.value = dataFicticia.totalSistemaArqueo
-    const cotizacion = response.data.arqueo_x_cotizacion || []
-    const ventas = response.data.arqueo_x_pv || []
 
-    // ** Corrección importante aquí **
-    // Se transforma la data del API en el formato que el template espera
+    const data = response.data || {}
+    totalSistemaArqueo.value = data.totalSistemaArqueo || 0
+    const cotizacion = data.arqueo_x_cotizacion || []
+    const ventas = data.arqueo_x_pv || []
+
     datos.value = [
       {
         campo: 'ingresos',
-        sistema: data.ingresos,
-        totalContado: decimas(redondear(parseFloat(data.ingresos))),
+        sistema: parseFloat(data.ingresos || 0),
+        totalContado: decimas(redondear(parseFloat(data.ingresos || 0))),
         diferencia: 0,
       },
       {
         campo: 'egresos',
-        sistema: data.egresos,
-        totalContado: decimas(redondear(parseFloat(data.egresos))),
+        sistema: parseFloat(data.egresos || 0),
+        totalContado: decimas(redondear(parseFloat(data.egresos || 0))),
         diferencia: 0,
       },
       {
         campo: 'anulados',
-        sistema: data.anuladas,
-        totalContado: decimas(redondear(parseFloat(data.anuladas))),
+        sistema: parseFloat(data.anuladas || 0),
+        totalContado: decimas(redondear(parseFloat(data.anuladas || 0))),
         diferencia: 0,
       },
       {
         campo: 'cotizaciones',
-        sistema: data.cotizaciones,
-        totalContado: decimas(redondear(parseFloat(data.cotizaciones))),
+        sistema: parseFloat(data.cotizaciones || 0),
+        totalContado: decimas(redondear(parseFloat(data.cotizaciones || 0))),
         diferencia: 0,
       },
     ]
 
-    totalesPorMetodo.splice(
-      0,
-      ventas.length,
-      ...ventas.map((m) => ({
+    totalesPorMetodo.splice(0, totalesPorMetodo.length)
+    ventas.forEach((m) => {
+      totalesPorMetodo.push({
         metodo: m.id,
         label: m.metodo,
         totalSistema: m.monto,
         totalContado: decimas(redondear(parseFloat(m.monto))),
         diferencia: 0,
-      })),
-    )
-    totalesPorMetodoCotizacion.splice(
-      0,
-      cotizacion.length,
-      ...cotizacion.map((m) => ({
-        metodo: m.id,
-        label: m.metodo,
-        totalSistema: m.monto,
-        totalContado: decimas(redondear(parseFloat(m.monto))),
-        diferencia: 0,
-      })),
-    )
+      })
+    })
 
+    totalesPorMetodoCotizacion.splice(0, totalesPorMetodoCotizacion.length)
+    cotizacion.forEach((m) => {
+      totalesPorMetodoCotizacion.push({
+        metodo: m.id,
+        label: m.metodo,
+        totalSistema: m.monto,
+        totalContado: decimas(redondear(parseFloat(m.monto))),
+        diferencia: 0,
+      })
+    })
+
+    calcularTotalesArqueo()
+  } catch (error) {
+    console.error('Error al cargar datos iniciales:', error)
+    $q.notify({ type: 'negative', message: 'Error al cargar los datos del arqueo.' })
+  } finally {
     isLoading.value = false
-  }, 1000)
+  }
 }
 
 const validarYEnviar = async () => {
   const puntoventa = model_puntoVenta.value
-  const cierre = {
-    ver: 'registrarCierre',
-    idusuario: idusuario,
-    idempresa: idempresa,
-    fechaInicio: fechaini.value,
-    fechaFin: fechafin.value,
-    puntoVenta: puntoventa.value,
-    caja: toRaw(datos.value),
-    totalesPorMetodo: toRaw(totalesPorMetodo),
-    totalesPorMetodoCotizacion: toRaw(totalesPorMetodoCotizacion),
-    denominaciones: toRaw(denominaciones),
-    observacion: observacion.value,
+  if (!puntoventa) {
+    $q.notify({ type: 'negative', message: 'Debe seleccionar un punto de venta.' })
+    return
   }
-  console.log('Cierre de Caja:', cierre)
 
-  const response = await api.post('', cierre)
-  const data = response.data
-  console.log('Response from cierreCaja:', data)
   if (diferenciaArqueo.value !== 0 && !observacion.value) {
     $q.notify({
       type: 'negative',
       message: 'Debe ingresar una observación si hay diferencia en el arqueo.',
     })
     return
+  }
+
+  isLoading.value = true
+  try {
+    const cierre = {
+      ver: 'registrarCierre',
+      idusuario: idusuario,
+      idempresa: idempresa,
+      fechaInicio: fechaini.value,
+      fechaFin: fechafin.value,
+      puntoVenta: puntoventa.value,
+      caja: toRaw(datos.value),
+      totalesPorMetodo: toRaw(totalesPorMetodo),
+      totalesPorMetodoCotizacion: toRaw(totalesPorMetodoCotizacion),
+      denominaciones: toRaw(denominaciones),
+      observacion: observacion.value,
+    }
+    console.log('Cierre de Caja:', cierre)
+
+    const response = await api.post('', cierre)
+    console.log('Response from cierreCaja:', response.data)
+
+    if (response.data.estado === 'exito') {
+      $q.notify({ type: 'positive', message: 'Cierre de caja registrado exitosamente.' })
+      emit('success')
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: response.data.mensaje || 'Error al registrar el cierre de caja.',
+      })
+    }
+  } catch (error) {
+    console.error('Error al registrar cierre:', error)
+    $q.notify({ type: 'negative', message: 'Error de conexión al registrar el cierre.' })
+  } finally {
+    isLoading.value = false
   }
 }
 

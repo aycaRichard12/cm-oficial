@@ -190,7 +190,7 @@ import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperacione
 import { useAnulacionCompra } from 'src/composables/compra/useAnulacionCompra'
 
 const permisosStore = useOperacionesPermitidas()
-console.log('Permisos cargados en TableCompra.vue:', permisosStore.permisos)
+console.log('Permisos cargados en TableCompra.vue:', permisosStore.operacionesPermitidas)
 const { anularCompraDirecta } = useAnulacionCompra()
 const divisaActiva = useCurrencyStore()
 const $q = useQuasar()

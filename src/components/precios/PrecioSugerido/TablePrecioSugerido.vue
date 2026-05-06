@@ -265,9 +265,7 @@ watch(
         const allData = response.data
         // Find first warehouse that has categories
         const almacenConDatos = nuevosAlmacenes.find((alm) =>
-          allData.some(
-            (u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(alm.value),
-          ),
+          allData.some((u) => Number(u.estado) == 1 && Number(u.idalmacen) == Number(alm.value)),
         )
 
         if (almacenConDatos) {

@@ -1,20 +1,16 @@
 <template>
-  <q-page padding>
+  <q-page padding class="q-pt-sm">
     <!-- Header Section -->
-    <div class="row q-mb-md">
+    <div class="row q-mb-sm">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-2 rounded-borders">
-          <q-card-section class="q-pa-md">
+        <q-card flat class="bg-white shadow-1 rounded-borders">
+          <q-card-section class="q-pa-sm q-px-md">
             <div class="row items-center">
-              <q-icon name="security" color="primary" size="3rem" class="q-mr-md" />
+              <q-icon name="security" color="primary" size="2.5rem" class="q-mr-md" />
               <div>
-                <div class="text-h4 text-weight-bold text-primary">Permisos de Usuarios</div>
-                <div class="text-subtitle1 text-grey-7 q-mt-xs">
-                  Gestiona las operaciones y niveles de autorización para los usuarios del sistema
-                </div>
-                <div v-if="usuarioSesion" class="text-caption text-grey-6 q-mt-xs">
-                  <q-icon name="person_outline" size="xs" color="grey-7" class="q-mr-xs" />
-                  Sesión iniciada como: <span class="text-weight-medium">{{ usuarioSesion }}</span>
+                <div class="text-h5 text-weight-bold text-primary">Permisos de Usuarios</div>
+                <div class="text-subtitle2 text-grey-7">
+                  Gestiona las operaciones y niveles de autorización
                 </div>
               </div>
             </div>
@@ -24,11 +20,16 @@
     </div>
 
     <!-- Form Section -->
-    <div class="row q-mb-md">
+    <div class="row q-mb-sm">
       <div class="col-12">
-        <q-card flat class=" shadow-2 rounded-borders">
-          <q-card-section class="q-pa-md">
-            <form-autorizar-permisos :loading="loading" @on-submit="handleSave" />
+        <q-card flat class="shadow-1 rounded-borders">
+          <q-card-section class="q-pa-sm">
+            <form-autorizar-permisos
+              :loading="loading"
+              @on-submit="handleSave"
+              @tipo-cambiado="handleTipoCambiado"
+              @usuario-cambiado="handleUsuarioCambiado"
+            />
           </q-card-section>
         </q-card>
       </div>
@@ -37,15 +38,23 @@
     <!-- Table Section -->
     <div class="row">
       <div class="col-12">
-        <q-card flat class="shadow-2 rounded-borders">
-          <q-card-section class="q-pa-md">
+        <q-card flat class="shadow-1 rounded-borders">
+          <q-card-section class="q-pa-sm">
             <base-filterable-table
-              title="Operaciones Registradas"
-              :rows="operaciones"
-              :columns="columns"
-              :array-headers="['usuario', 'nombreCompleto', 'codigo', 'operacion', 'estado']"
+              :title="
+                tipoFiltro === 'operacion' ? 'Operaciones Registradas' : 'Gráficos Autorizados'
+              "
+              :rows="operacionesFiltradas"
+              :columns="dynamicColumns"
+              :array-headers="dynamicHeaders"
               row-key="id"
+              no-data-label="No hay permisos registrados"
             >
+              <template v-slot:body-cell-num="props">
+                <q-td :props="props">
+                  {{ props.pageIndex + 1 }}
+                </q-td>
+              </template>
               <template v-slot:body-cell-estado="props">
                 <q-td :props="props">
                   <q-badge
@@ -59,7 +68,7 @@
 
               <template v-slot:body-cell-acciones="props">
                 <q-td :props="props">
-                  <div class="row q-gutter-xs no-wrap">
+                  <div class="row q-gutter-xs no-wrap justify-center">
                     <q-btn
                       :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
                       dense
@@ -70,7 +79,7 @@
                       size="sm"
                     >
                       <q-tooltip class="bg-grey-8 text-body2">
-                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }} Operación
+                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }}
                       </q-tooltip>
                     </q-btn>
                     <q-btn
@@ -82,7 +91,7 @@
                       @click="handleDelete(props.row.id_operacion)"
                       size="sm"
                     >
-                      <q-tooltip class="bg-grey-8 text-body2">Eliminar Permiso</q-tooltip>
+                      <q-tooltip class="bg-grey-8 text-body2">Eliminar</q-tooltip>
                     </q-btn>
                   </div>
                 </q-td>
@@ -96,77 +105,124 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 import FormAutorizarPermisos from 'src/components/general/operacionesPermisos/FormAutorizarPermisos.vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { idempresa_md5, getUsuario } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 
 const $q = useQuasar()
 const operaciones = ref([])
 const loading = ref(false)
 const IDMD5 = idempresa_md5()
-const usuarioSesion = getUsuario() // Devuelve el nombre completo (string)
+const tipoFiltro = ref('operacion')
+const usuarioSeleccionado = ref(null)
 
-// Definición de columnas para la tabla
-const columns = [
-  { 
-    name: 'id', 
-    align: 'left', 
-    label: 'N°', 
-    field: 'id', 
-    sortable: true,
-    dataType: 'number'
-  },
-  { 
-    name: 'usuario', 
-    align: 'left', 
-    label: 'Usuario', 
-    field: 'usuario', 
-    sortable: true,
-    dataType: 'text'
-  },
-  { 
-    name: 'nombreCompleto', 
-    align: 'left', 
-    label: 'Nombre Completo', 
-    field: 'nombreCompleto', 
-    sortable: true,
-    dataType: 'text'
-  },
-  { 
-    name: 'codigo', 
-    align: 'left', 
-    label: 'Código', 
-    field: 'codigo', 
-    sortable: true,
-    dataType: 'text'
-  },
-  { 
-    name: 'operacion', 
-    align: 'left', 
-    label: 'Operación', 
-    field: 'operacion',
-    sortable: true,
-    dataType: 'text'
-  },
-  { 
-    name: 'estado', 
-    align: 'center', 
-    label: 'Estado', 
-    field: 'estado',
-    sortable: true,
-    dataType: 'text'
-  },
-  { 
-    name: 'acciones', 
-    align: 'center', 
-    label: 'Acciones', 
-    field: 'acciones',
-    sortable: false
-  },
-]
+// Filtrar operaciones según la pestaña seleccionada y el usuario seleccionado
+// En permisosUsuariosPage.vue
+const operacionesFiltradas = computed(() => {
+  let filtradas = operaciones.value
+  console.log(operaciones.value)
+
+  if (usuarioSeleccionado.value) {
+    // Normalizamos el valor seleccionado a String
+    const idBusqueda = String(usuarioSeleccionado.value)
+
+    filtradas = filtradas.filter((op) => {
+      // Intentamos obtener el ID del usuario de varias formas posibles según tu API
+      const idEnRegistro = op.idusuario || op.usuario?.[0]?.idusuario || op.usuario?.[0]?.id
+
+      // Comparamos convirtiendo ambos a String para evitar errores de tipo (int vs string)
+      const matchesID = String(idEnRegistro) === idBusqueda
+
+      // Opcional: Comparar por nombre de usuario si el ID falla
+      const matchesUsername =
+        op.usuario && String(op.usuario).toLowerCase() === idBusqueda.toLowerCase()
+
+      return matchesID || matchesUsername
+    })
+  }
+
+  // Mantener el filtrado por tipo (Operaciones vs Gráficos)
+  if (tipoFiltro.value === 'graficos') {
+    return filtradas.filter((op) => op.codigo && String(op.codigo).startsWith('db_'))
+  }
+  return filtradas.filter((op) => op.codigo && !String(op.codigo).startsWith('db_'))
+})
+
+const handleTipoCambiado = (tipo) => {
+  tipoFiltro.value = tipo
+}
+
+const handleUsuarioCambiado = (idUsuario) => {
+  console.log('Usuario seleccionado en el padre:', idUsuario)
+  usuarioSeleccionado.value = idUsuario || null // Asegura que si es undefined pase a null
+}
+
+// Columnas dinámicas: Oculta la columna usuario si ya hay un usuario seleccionado
+const dynamicColumns = computed(() => {
+  const cols = [
+    {
+      name: 'num',
+      align: 'left',
+      label: 'N°',
+      field: 'num',
+      sortable: true,
+      dataType: 'number',
+    },
+    {
+      name: 'codigo',
+      align: 'left',
+      label: 'Código',
+      field: 'codigo',
+      sortable: true,
+      dataType: 'text',
+    },
+    {
+      name: 'operacion',
+      align: 'left',
+      label: 'Operación/Gráfico',
+      field: 'operacion',
+      sortable: true,
+      dataType: 'text',
+    },
+    {
+      name: 'estado',
+      align: 'center',
+      label: 'Estado',
+      field: 'estado',
+      sortable: true,
+      dataType: 'text',
+    },
+    {
+      name: 'acciones',
+      align: 'center',
+      label: 'Acciones',
+      field: 'acciones',
+      sortable: false,
+    },
+  ]
+
+  if (!usuarioSeleccionado.value) {
+    cols.splice(1, 0, {
+      name: 'usuario',
+      align: 'left',
+      label: 'Usuario',
+      field: 'usuario',
+      sortable: true,
+      dataType: 'text',
+    })
+  }
+
+  return cols
+})
+
+const dynamicHeaders = computed(() => {
+  return usuarioSeleccionado.value
+    ? ['codigo', 'operacion', 'estado']
+    : ['usuario', 'codigo', 'operacion', 'estado']
+})
 
 // Obtener Operaciones
 const fetchOperaciones = async () => {
@@ -174,14 +230,19 @@ const fetchOperaciones = async () => {
   try {
     const data = await api.get(`listarOperaciones/${IDMD5}`)
     const response = data.data
-    console.log('operaciones que pueden hacer creo ',response)
-    operaciones.value = response.data.map((obj, index) => {
-      const userPermiso = obj.usuario?.[0] || {}
+    // En permisosUsuariosPage.vue -> fetchOperaciones
+    operaciones.value = (response.data || []).map((obj) => {
+      // Extraemos los datos del usuario que vienen en un array por parte de la API
+      const datosUser = Array.isArray(obj.usuario) ? obj.usuario[0] : obj.usuario || {}
+
       return {
-       ...obj,
-       id: index + 1,
-       usuario: userPermiso.usuario || 'N/A',
-       nombreCompleto: usuarioSesion
+        ...obj,
+        // Forzamos que idusuario esté disponible en el primer nivel
+        idusuario: obj.idusuario || datosUser.idusuario || datosUser.id,
+        usuario: datosUser.usuario || 'Sin Usuario',
+        nombreCompleto: datosUser.nombre
+          ? `${datosUser.nombre} ${datosUser.apellido || ''}`
+          : 'N/A',
       }
     })
   } catch (error) {
@@ -207,9 +268,9 @@ const handleSave = async (payload) => {
       }
       $q.notify({
         color: 'positive',
-        message: 'Permisos estadísticos asignados con éxito',
+        message: 'Permisos asignados con éxito',
       })
-    } 
+    }
     // Es una petición singular (Operaciones menú principal)
     else {
       const isUpdate = !!payload.id

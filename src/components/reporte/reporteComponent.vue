@@ -7,7 +7,11 @@
 
     <template v-else>
       <!-- Menú de navegación táctil y responsive -->
-      <div v-if="hasAnyPermission" class="q-mb-md" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1)">
+      <div
+        v-if="hasAnyPermission"
+        class="q-mb-md"
+        style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)"
+      >
         <q-tabs
           v-model="visibleChart"
           dense
@@ -74,8 +78,15 @@ const loadingPermisos = ref(true)
 const visibleChart = ref('')
 
 const hasAnyPermission = computed(() => {
-  return permClientes.value || permCategoria.value || permPreferido.value || 
-         permMonetario.value || permMayorVenta.value || permAlmacen.value || permTodos.value
+  return (
+    permClientes.value ||
+    permCategoria.value ||
+    permPreferido.value ||
+    permMonetario.value ||
+    permMayorVenta.value ||
+    permAlmacen.value ||
+    permTodos.value
+  )
 })
 
 onMounted(async () => {
@@ -83,28 +94,26 @@ onMounted(async () => {
   try {
     const IDMD5 = idempresa_md5()
     const idUsuarioMD5 = idusuario_md5()
-    
+
     console.log('ID Usuario MD5:', idUsuarioMD5)
-    
+
     // Consultamos la API fresca para no depender del store congelado en login
     const { data: response } = await api.get(`listarOperaciones/${IDMD5}`)
     console.log('Respuesta listarOperaciones:', response)
-    
+
     if (response?.data && Array.isArray(response.data)) {
       console.log('Muestra de datos crudos (primeros 2):', response.data.slice(0, 2))
-      
+
       // Filtrar por ID de usuario y estado activo
-      const rawPerms = response.data.filter(
-        item => {
-          // Usamos == para permitir comparación de string vs number si fuera el caso
-          return item.idusuario == idUsuarioMD5 && Number(item.estado) === 1
-        }
-      )
-      
+      const rawPerms = response.data.filter((item) => {
+        // Usamos == para permitir comparación de string vs number si fuera el caso
+        return item.md5 == idUsuarioMD5 && Number(item.estado) === 1
+      })
+
       console.log('Permisos filtrados para el usuario:', rawPerms)
-      const permsObj = rawPerms.map(p => p.codigo)
+      const permsObj = rawPerms.map((p) => p.codigo)
       console.log('Codigos de permisos encontrados:', permsObj)
-      
+
       permClientes.value = permsObj.includes('db_clientes')
       permCategoria.value = permsObj.includes('db_categoria')
       permPreferido.value = permsObj.includes('db_preferido')
@@ -117,7 +126,7 @@ onMounted(async () => {
     console.error('Error procesando permisos de cuadros:', error)
   } finally {
     loadingPermisos.value = false
-    
+
     console.log('Estado final de permisos:', {
       clientes: permClientes.value,
       categoria: permCategoria.value,
@@ -125,7 +134,7 @@ onMounted(async () => {
       monetario: permMonetario.value,
       mayorVenta: permMayorVenta.value,
       almacen: permAlmacen.value,
-      todos: permTodos.value
+      todos: permTodos.value,
     })
 
     // Autoseleccionar la pestaña principal a la que tenga acceso
@@ -136,7 +145,7 @@ onMounted(async () => {
     else if (permMayorVenta.value) visibleChart.value = 'mayor_venta'
     else if (permAlmacen.value) visibleChart.value = 'almacen'
     else if (permTodos.value) visibleChart.value = 'todos'
-    
+
     console.log('Pestaña visible seleccionada:', visibleChart.value)
   }
 })

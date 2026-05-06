@@ -27,6 +27,16 @@
         <!-- Action Buttons -->
         <div class="col-12 col-sm-6 col-md-8 row justify-end q-gutter-x-sm">
           <q-btn
+            outline
+            color="green"
+            icon="upload"
+            label="Importar Excel"
+            no-caps
+            @click="mostrarImportarExcel = true"
+            id="importarExcel"
+          />
+
+          <q-btn
             color="secondary"
             id="reportedepreciosbase"
             to="/reportedepreciosbase"
@@ -142,6 +152,9 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Modal Importar Excel -->
+    <ImportarPreciosBase v-model="mostrarImportarExcel" @done="$emit('reload')" />
   </q-card>
 </template>
 
@@ -150,10 +163,14 @@ import { ref, computed, watch } from 'vue'
 
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { PDF_REPORTE_COSTO_UNITARIO_X_ALMACEN } from 'src/utils/pdfReportGenerator'
+import ImportarPreciosBase from './ImportarPreciosBase.vue'
+
 const currencyStore = useCurrencyStore()
 console.log(currencyStore)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
+const mostrarImportarExcel = ref(false)
+
 const props = defineProps({
   rows: {
     type: Array,
@@ -169,7 +186,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['add', 'edit'])
+const emit = defineEmits(['add', 'edit', 'reload'])
 
 const filtroAlmacen = ref(null)
 const filter = ref('')
@@ -208,6 +225,7 @@ const columnas = [
 // Filtro combinado por búsqueda y almacén
 const filtrados = computed(() => {
   const almacenId = filtroAlmacen.value
+  console.log(almacenId)
   const searchTerm = filter.value ? filter.value.toLowerCase() : ''
 
   console.log('🏪 Almacén seleccionado (ID):', almacenId)
