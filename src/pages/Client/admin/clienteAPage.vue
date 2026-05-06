@@ -86,10 +86,11 @@
       @addToList="abrirModal"
     ></table-cliente>
     <div>
-      <q-dialog v-model="mostrarModalSucursal" persistent>
+      <q-dialog v-model="mostrarModalSucursal">
         <sucursal-form
           v-model="sucursalSeleccionada"
           :rows="listaSucursales"
+          :loading="loadingSucursal"
           @submit="guardarSucursal"
           @cancel="cerrarModal"
           @edit="editSucursal"
@@ -332,6 +333,7 @@ async function eliminarCliente(client) {
 const mostrarModalSucursal = ref(false)
 const listaSucursales = ref([])
 const sucursalSeleccionada = ref({})
+const loadingSucursal = ref(false)
 
 const getSucursal = async (client) => {
   try {
@@ -366,42 +368,44 @@ const cerrarModal = () => {
 
 const guardarSucursal = async (sucursal) => {
   const formData = objectToFormData(sucursal)
-  for (let [k, v] of formData.entries()) {
-    console.log(`${k}: ${v}`)
-  }
-  let response
-
+  loadingSucursal.value = true
   try {
+    let response
     if (sucursal.id) {
-      console.log(sucursal.id)
       response = await api.post(``, formData)
     } else {
-      console.log(sucursal)
       response = await api.post('', formData)
     }
-    console.log(response)
+
     if (response.data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || 'Sucursal guardada correctamente',
       })
-      loadRows()
-      showForm.value = false
+      getSucursal(sucursal.idcliente)
+      // Reset form for next entry
+      sucursalSeleccionada.value = {
+        ver: 'registrarSucursal',
+        nombre: '',
+        telefono: '',
+        direccion: '',
+        idcliente: sucursal.idcliente,
+      }
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || 'Hubo un problema al guardar la sucursal',
       })
     }
   } catch (error) {
-    console.error('Error al guardar cliente:', error)
+    console.error('Error al guardar sucursal:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar el cliente',
+      message: 'No se pudo guardar la sucursal',
     })
+  } finally {
+    loadingSucursal.value = false
   }
-
-  mostrarModalSucursal.value = false
 }
 
 const editSucursal = (sucursal) => {
@@ -412,6 +416,7 @@ const editSucursal = (sucursal) => {
     nombre: sucursal.nombre,
     telefono: sucursal.telefono,
     direccion: sucursal.direccion,
+    idcliente: sucursal.idcliente,
   }
   console.log(sucursalSeleccionada.value)
 }
