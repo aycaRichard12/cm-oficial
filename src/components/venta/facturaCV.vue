@@ -77,57 +77,7 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-12 col-md-4">
-                <label for="tipodoc">Tipo de documento tributario*</label>
-                <q-select
-                  v-model="formData.tipodoc"
-                  id="tipodoc"
-                  dense
-                  outlined
-                  readonly
-                  :options="typeDocOptions"
-                  option-label="label"
-                  option-value="value"
-                  :disable="!formData.cliente"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="description" color="blue" />
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-12 col-md-4">
-                <label for="docTri">Nro. documento tributario*</label>
-                <q-input
-                  v-model="formData.nroDoc"
-                  id="docTri"
-                  dense
-                  outlined
-                  readonly
-                  type="number"
-                  :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  :disable="!formData.cliente"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="numbers" color="blue" />
-                  </template>
-                </q-input>
-              </div>
-              <div class="col-12 col-md-4">
-                <label for="fecha">Fecha*</label>
-                <q-input
-                  v-model="formData.fecha"
-                  id="fecha"
-                  type="date"
-                  required
-                  readonly
-                  dense
-                  outlined
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="event" color="blue" />
-                  </template>
-                </q-input>
-              </div>
+
               <div class="col-12 col-md-4">
                 <label for="puntoventa">Punto de venta*</label>
                 <q-select
@@ -166,6 +116,37 @@
 
               <div class="col-12 col-md-4 q-mt-lg">
                 <q-btn color="blue" icon="person_add" @click="RegistrarCliente"> </q-btn>
+              </div>
+            </div>
+
+            <!-- Sección de Datos Automáticos (No Editables) -->
+            <div class="q-mt-md q-pa-md bg-grey-2 rounded-borders border-blue-grey-2 shadow-1">
+              <div class="text-subtitle2 text-primary q-mb-sm flex items-center">
+                <q-icon name="auto_fix_high" class="q-mr-sm" />
+                Información de Facturación (Automática)
+              </div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Tipo de documento tributario*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="description" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.tipodoc?.label || '---' }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Nro. documento tributario*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="numbers" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.nroDoc || '---' }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Fecha*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="event" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.fecha || '---' }}
+                  </div>
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -425,19 +406,11 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="fechalimite">Fecha límite*</label>
-                <q-input
-                  v-model="formData.fechaLimite"
-                  id="fechalimite"
-                  dense
-                  outlined
-                  type="date"
-                  :disable="true"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="event_available" color="purple" />
-                  </template>
-                </q-input>
+                <div class="text-caption text-grey-8">Fecha límite*</div>
+                <div class="text-subtitle2 text-weight-bold flex items-center">
+                  <q-icon name="event_available" color="purple" class="q-mr-sm" size="20px" />
+                  {{ formData.fechaLimite ? cambiarFormatoFecha(formData.fechaLimite) : '---' }}
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -465,6 +438,7 @@ import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import MyRegistrationForm from '../clientes/admin/modalClienteForm.vue'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { obtenerHoraISO8601, decimas } from 'src/composables/FuncionesG'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
 leyendaActiva.cargarLeyendaActivo()
@@ -503,7 +477,7 @@ const formData = ref({
   variablePago: 'directo',
   cliente: null,
   sucursal: null,
-  fecha: new Date().toISOString().slice(0, 10),
+  fecha: cambiarFormatoFecha(new Date().toISOString().slice(0, 10)),
   canal: null,
   credito: false,
   tipopago: 'contado',
