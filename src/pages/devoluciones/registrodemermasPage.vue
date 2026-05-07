@@ -436,7 +436,6 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'boot/axios'
 // import { useMenuStore } from 'src/layouts/permitidos'
-import { useMenuStore } from 'src/stores/permitidos'
 import {
   cambiarFormatoFecha,
   obtenerFechaActualDato,
@@ -452,18 +451,14 @@ import { PDFComprovanteMerma } from 'src/utils/pdfReportGenerator'
 const lote = ref(true)
 const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
-console.log(lectura, escritura, editar, eliminar)
+console.log(lectura)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const warehouses = useAlmacenStore()
-console.log(warehouses)
 const productosDisponibles = ref([])
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const $q = useQuasar()
-const menuStore = useMenuStore()
-const permisosMap = menuStore.obtenerMenuPrincipal
-console.log(permisosMap['registrarventa-eb160de1de89d9058fcb0b968dbbbd68']) // "1111"
 
 // Estado del componente78
 const showMainForm = ref(false)
@@ -597,29 +592,21 @@ const loadUserData = async () => {
   }
 }
 
-// const loadWarehouses = async () => {
-//   try {
-//     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
-//     warehouses.value = response.data.map((warehouse) => ({
-//       value: warehouse.idalmacen,
-//       label: warehouse.almacen,
-//     }))
-//   } catch (error) {
-//     console.error('Error al cargar almacenes:', error)
-//     $q.notify({
-//       type: 'negative',
-//       message: 'Error al cargar almacenes',
-//     })
-//   }
-// }
 const almacenOptions = computed(() => {
-  const options = [{ label: 'Todos los almacenes', value: 0 }]
-  console.log(warehouses.almacenesResponsable)
-  console.log(warehouses.almacenes)
-  warehouses.almacenesResponsable.forEach((almacen) => {
-    options.push({ label: almacen.almacen, value: Number(almacen.idalmacen) })
-  })
-  return options
+  const lista = warehouses.almacenesResponsable || []
+
+  // Mapeamos los almacenes a su formato de opción { label, value }
+  const opcionesMapeadas = lista.map((almacen) => ({
+    label: almacen.almacen,
+    value: Number(almacen.idalmacen),
+  }))
+
+  // Si hay más de uno, añadimos la opción "Todos" al principio
+  if (opcionesMapeadas.length > 1) {
+    return [{ label: 'Todos los almacenes', value: 0 }, ...opcionesMapeadas]
+  }
+
+  return opcionesMapeadas
 })
 
 watch(
@@ -627,7 +614,7 @@ watch(
   (nuevasOpciones) => {
     console.log(nuevasOpciones)
     if (nuevasOpciones.length > 0 && !selectedWarehouse.value) {
-      selectedWarehouse.value = nuevasOpciones[0]
+      selectedWarehouse.value = nuevasOpciones[0].value
     }
   },
   { immediate: true },
@@ -635,7 +622,7 @@ watch(
 const loadTableData = async () => {
   loading.value = true
   try {
-    const response = await api.get(`listamerma/${idempresa}`)
+    const response = await api.get(`listamerma/${idempresa}/${idusuario}`)
     tableData.value = response.data
     console.log(response.data)
   } catch (error) {

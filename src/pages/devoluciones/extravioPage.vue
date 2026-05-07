@@ -531,26 +531,40 @@ const paginacion = ref({
 const cargarAlmacenes = async () => {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
-    almacenesOptions.value = response.data
+
+    // 1. Filtramos y mapeamos primero
+    const almacenesFiltrados = response.data
       .filter((a) => a.idusuario === idusuario)
       .map((a) => ({
         label: a.almacen,
-        value: a.idalmacen,
+        value: Number(a.idalmacen), // Aseguramos que sea número si es necesario
       }))
-    almacenesOptions.value.unshift({ label: 'Todos Los Almacenes', value: 0 })
-    idAlmacenFiltro.value = almacenesOptions.value[0].value
+
+    // 2. Aplicamos la lógica condicional
+    if (almacenesFiltrados.length > 1) {
+      // Si hay más de uno, agregamos "Todos" al inicio
+      almacenesOptions.value = [{ label: 'Todos Los Almacenes', value: 0 }, ...almacenesFiltrados]
+    } else {
+      // Si hay uno o ninguno, usamos solo los filtrados
+      almacenesOptions.value = almacenesFiltrados
+    }
+
+    // 3. Selección automática del primer valor disponible
+    if (almacenesOptions.value.length > 0) {
+      idAlmacenFiltro.value = almacenesOptions.value[0].value
+    }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar almacenes',
+      message: 'No se pudieron cargar los almacenes',
     })
   }
 }
 
 const cargarRobos = async () => {
   try {
-    const response = await api.get(`listarobo/${idempresa}`)
+    const response = await api.get(`listarobo/${idempresa}/${idusuario}`)
     console.log(response)
     console.log(idAlmacenFiltro.value)
     datosTabla.value = response.data.filter((r) => {
