@@ -960,20 +960,20 @@ const onSubmit = async () => {
     //  Enviar al backend
     console.log('Datos enviados al backend:', jsonObject)
 
-    // const response = await api.post('', form, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // })
-
-    const response = {
-      data: {
-        estado: 'exito',
-        datosFactura: {
-          urlEmizor: 'https://example.com/factura.pdf',
-        },
+    const response = await api.post('', form, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    }
+    })
+
+    // const response = {
+    //   data: {
+    //     estado: 'exito',
+    //     datosFactura: {
+    //       urlEmizor: 'https://example.com/factura.pdf',
+    //     },
+    //   },
+    // }
 
     console.log('Respuesta de la API:', response)
     if (!response.data || response.data.estado !== 'exito') {
