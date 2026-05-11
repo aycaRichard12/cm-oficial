@@ -144,7 +144,7 @@
                   <div class="text-caption text-grey-8">Fecha*</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="event" color="blue" class="q-mr-sm" size="20px" />
-                    {{ formData.fecha || '---' }}
+                    {{ cambiarFormatoFecha(formData.fecha) || '---' }}
                   </div>
                 </div>
               </div>
@@ -477,7 +477,7 @@ const formData = ref({
   variablePago: 'directo',
   cliente: null,
   sucursal: null,
-  fecha: cambiarFormatoFecha(new Date().toISOString().slice(0, 10)),
+  fecha: new Date().toISOString().slice(0, 10),
   canal: null,
   credito: false,
   tipopago: 'contado',
@@ -959,11 +959,21 @@ const onSubmit = async () => {
     json.jsonDetalles = cartData
     //  Enviar al backend
     console.log('Datos enviados al backend:', jsonObject)
-    const response = await api.post('', form, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+
+    // const response = await api.post('', form, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // })
+
+    const response = {
+      data: {
+        estado: 'exito',
+        datosFactura: {
+          urlEmizor: 'https://example.com/factura.pdf',
+        },
       },
-    })
+    }
 
     console.log('Respuesta de la API:', response)
     if (!response.data || response.data.estado !== 'exito') {
