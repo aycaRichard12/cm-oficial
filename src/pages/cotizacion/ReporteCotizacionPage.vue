@@ -50,73 +50,13 @@
 
     <q-separator class="q-my-lg" />
 
-    <!-- <q-form>
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
-          <label for="almacen">Almacén*</label>
-          <q-select
-            v-model="almacenSeleccionado"
-            :options="almacenesOptions"
-            id="almacen"
-            emit-value
-            map-options
-            option-value="idalmacen"
-            option-label="almacen"
-            outlined
-            dense
-            :disable="!datosOriginales || datosOriginales.length === 0"
-          />
-        </div>
-
-        <div class="col-12 col-md-3">
-          <label for="cliente">Razón Social *</label>
-          <q-select
-            use-input=""
-            v-model="clienteSearchTerm"
-            id="cliente"
-            outlined
-            dense
-            autocomplete="on"
-            clearable
-            @focus="showClienteDropdown = true"
-            hide-selected
-            fill-input
-          >
-            <template v-slot:append>
-              <q-icon name="arrow_drop_down" />
-            </template>
-          </q-select>
-
-          <q-card
-            v-if="showClienteDropdown && filteredClientes.length > 0"
-            class="q-mt-xs"
-            style="position: absolute; z-index: 10; width: 100%"
-          >
-            <q-list bordered separator>
-              <q-item
-                v-for="clienteOption in filteredClientes"
-                :key="clienteOption.id"
-                clickable
-                v-ripple
-                @click="seleccionarCliente(clienteOption)"
-              >
-                <q-item-section>
-                  {{ clienteOption.codigo }} - {{ clienteOption.nombre }} -
-                  {{ clienteOption.nombrecomercial }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
-      </div>
-    </q-form> -->
-
     <TableReporteCotizacion
       id="tablareportecotizacion"
       ref="refHijo"
       :rows="datosFiltrados"
       @generarComprobantePDF="generarComprobantePDF"
       @facturarVenta="facturarVenta"
+      @editarCotizacion="abrirModalEdicion"
     />
 
     <q-loading :showing="loading" />
@@ -126,6 +66,13 @@
         @venta-registrada="closeModalFactura"
       />
     </modal-r>
+    <q-dialog v-model="showEditModal" persistent>
+      <ModalEditarCotizacion
+        v-if="showEditModal"
+        :id-cotizacion="idCotizacionAEditar"
+        @saved="alGuardarEdicion"
+      />
+    </q-dialog>
     <q-dialog v-model="showPdfModal" full-width full-height>
       <q-card class="q-pa-none" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
@@ -167,6 +114,21 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
+import ModalEditarCotizacion from './ModalEditarCotizacion.vue'
+
+const showEditModal = ref(false)
+const idCotizacionAEditar = ref(null)
+
+const abrirModalEdicion = (id) => {
+  idCotizacionAEditar.value = id
+  showEditModal.value = true
+}
+
+const alGuardarEdicion = () => {
+  showEditModal.value = false
+  generarReporte()
+}
+
 const tipoFactura = getTipoFactura()
 console.log(tipoFactura)
 const pdfData = ref(null)

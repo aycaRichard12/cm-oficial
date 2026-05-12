@@ -193,6 +193,17 @@ export function dibujarCuerpoTabla(
         if (columnStyles[key]) {
           Object.assign(data.cell.styles, columnStyles[key])
         }
+
+        // Soporte para texto en negrita mediante etiquetas <b>
+        if (Array.isArray(data.cell.text)) {
+          data.cell.text.forEach((text, i) => {
+            if (typeof text === 'string' && text.includes('<b>')) {
+              data.cell.text[i] = text.replace(/<b>/g, '').replace(/<\/b>/g, '')
+              data.cell.styles.fontStyle = 'bold'
+            }
+          })
+        }
+
         // Aplicar altura minima dinamicamente solo si existe la imagen en esta fila
         if (key === 'imagen' && data.row.raw && data.row.raw.rawImagenBase64) {
           data.cell.styles.minCellHeight = 25

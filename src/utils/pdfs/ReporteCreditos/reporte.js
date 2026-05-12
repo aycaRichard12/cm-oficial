@@ -94,12 +94,12 @@ export function PDFreporteCreditosA(
     idsucursal: row.idsucursal,
   }))
   datos.push({
-    totalventa: Number(totales.totalventa).toFixed(2),
-    totalcobrado: Number(totales.totalcobrado).toFixed(2),
-    saldo: Number(totales.saldo).toFixed(2),
-    totalatrasado: Number(totales.totalatrasado).toFixed(2),
-    totalanulado: Number(totales.totalanulado).toFixed(2),
-    moradias: Number(totales.moradias).toFixed(2),
+    totalventa: `<b>${Number(totales.totalventa).toFixed(2)}</b>`,
+    totalcobrado: `<b>${Number(totales.totalcobrado).toFixed(2)}</b>`,
+    saldo: `<b>${Number(totales.saldo).toFixed(2)}</b>`,
+    totalatrasado: `<b>${Number(totales.totalatrasado).toFixed(2)}</b>`,
+    totalanulado: `<b>${Number(totales.totalanulado).toFixed(2)}</b>`,
+    moradias: `<b>${Number(totales.moradias).toFixed(2)}</b>`,
   })
 
   const columnStyles = {
