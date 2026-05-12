@@ -299,7 +299,7 @@
 
       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
         <div class="row q-col-gutter-lg items-end">
-          <div class="col-12 col-md-6" id="productoCotizacion">
+          <div class="col-12 col-md-4" id="productoCotizacion">
             <div class="flex justify-between items-center q-mb-sm">
               <label
                 class="text-weight-bold text-grey-9 block"
@@ -340,6 +340,30 @@
                 </q-item>
               </template>
             </q-select>
+          </div>
+
+          <div class="col-12 col-md-2" id="stockCotizacion">
+            <label
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+              for="stock"
+              >Stock Actual</label
+            >
+            <q-input
+              id="stock"
+              v-model="cantidaddisponibleCO"
+              readonly
+              outlined
+              dense
+              bg-color="grey-2"
+              hide-bottom-space
+              class="premium-input text-center"
+              placeholder="0"
+            >
+              <template v-slot:prepend>
+                <q-icon name="inventory_2" size="xs" color="grey-7" />
+              </template>
+            </q-input>
           </div>
 
           <div class="col-12 col-md-2" id="cantidadCotizacion">
