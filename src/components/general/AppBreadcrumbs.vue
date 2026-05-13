@@ -161,9 +161,9 @@ onMounted(scrollToActive)
   }
 
   &.bc-active {
-    color: white;
+    color: #f2c037;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 152, 0, 0.1);
     pointer-events: none;
   }
 }

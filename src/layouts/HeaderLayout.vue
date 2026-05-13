@@ -1,5 +1,5 @@
 <template>
-  <q-header class="bg-primary text-white" elevated>
+  <q-header class="bg-primary text-white">
     <q-toolbar class="row no-wrap items-center">
       <div class="col-auto">
         <q-btn
@@ -59,7 +59,7 @@
           :key="tab.codigo + '-' + tab.permiso"
           :name="tab.codigo"
           @click="$emit('navigate-to-tab', tab)"
-          class="tab-styled q-ma-xs"
+          :class="['tab-styled q-ma-xs', { 'active-orange': internalCurrentTab === tab.codigo }]"
         >
           <div class="row items-center no-wrap">
             <q-icon :name="tab.icono" size="18px" class="q-mr-xs" />
@@ -73,7 +73,7 @@
           no-caps
           label="Reportes"
           icon="bar_chart"
-          class="tab-styled q-ma-xs text-white"
+          :class="['tab-styled q-ma-xs text-white', { 'active-yellow': isReportActive }]"
           style="min-height: 36px"
         >
           <q-list style="min-width: 200px">
@@ -84,7 +84,7 @@
               v-close-popup
               @click="$emit('navigate-to-tab', tab)"
               :active="internalCurrentTab === tab.codigo"
-              active-class="bg-teal-1 text-primary text-weight-bold"
+              active-class="bg-yellow-1 text-yellow-9 text-weight-bold"
             >
               <q-item-section avatar>
                 <q-icon :name="tab.icono" />
@@ -131,6 +131,10 @@ const internalCurrentTab = computed({
   get: () => props.currentTab,
   set: (val) => emit('update:currentTab', val),
 })
+
+const isReportActive = computed(() => {
+  return props.activeTabsReportes.some((tab) => tab.codigo === internalCurrentTab.value)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -140,11 +144,15 @@ const internalCurrentTab = computed({
   color: white;
   min-height: 40px;
   text-transform: none;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-1px);
     filter: brightness(1.1);
+  }
+
+  &.active-orange {
+    color: #f2c037 !important;
   }
 }
 
