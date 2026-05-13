@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" v-if="!showEditModal">
     <q-form @submit="generarReporte">
       <div class="titulo" id="reportecotizaciones">Reporte Cotizaciones</div>
       <div class="row flex justify-center q-col-gutter-x-md">
@@ -66,13 +66,7 @@
         @venta-registrada="closeModalFactura"
       />
     </modal-r>
-    <q-dialog v-model="showEditModal" persistent>
-      <ModalEditarCotizacion
-        v-if="showEditModal"
-        :id-cotizacion="idCotizacionAEditar"
-        @saved="alGuardarEdicion"
-      />
-    </q-dialog>
+
     <q-dialog v-model="showPdfModal" full-width full-height>
       <q-card class="q-pa-none" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
@@ -92,6 +86,13 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+  </q-page>
+  <q-page class="q-pa-md" v-else>
+    <EditarCotizacion
+      v-if="showEditModal"
+      :id-cotizacion="idCotizacionAEditar"
+      @saved="alGuardarEdicion"
+    />
   </q-page>
 </template>
 
@@ -114,8 +115,7 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
-import ModalEditarCotizacion from './ModalEditarCotizacion.vue'
-
+import EditarCotizacion from './EditarCotizacion.vue'
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
 

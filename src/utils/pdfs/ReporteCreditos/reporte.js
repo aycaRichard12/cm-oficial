@@ -93,14 +93,33 @@ export function PDFreporteCreditosA(
     cuotaspagadas: row.cuotaspagadas,
     idsucursal: row.idsucursal,
   }))
-  datos.push({
+  // Definir columnas que tienen sumatorias
+  // const totalKeys = [
+  //   'totalventa',
+  //   'totalcobrado',
+  //   'saldo',
+  //   'totalatrasado',
+  //   'totalanulado',
+  //   'moradias',
+  // ]
+
+  const rowTotales = {
     totalventa: `<b>${Number(totales.totalventa).toFixed(2)}</b>`,
     totalcobrado: `<b>${Number(totales.totalcobrado).toFixed(2)}</b>`,
     saldo: `<b>${Number(totales.saldo).toFixed(2)}</b>`,
     totalatrasado: `<b>${Number(totales.totalatrasado).toFixed(2)}</b>`,
     totalanulado: `<b>${Number(totales.totalanulado).toFixed(2)}</b>`,
     moradias: `<b>${Number(totales.moradias).toFixed(2)}</b>`,
-  })
+  }
+
+  // Buscar la última columna visible que NO sea de totales para poner el label
+  // const nonTotalColumns = columns.filter((c) => !totalKeys.includes(c.dataKey))
+  // if (nonTotalColumns.length > 0) {
+  //   const lastNonTotalCol = nonTotalColumns[nonTotalColumns.length - 1]
+  //   rowTotales[lastNonTotalCol.dataKey] = '<b>TOTAL GENERAL</b>'
+  // }
+
+  datos.push(rowTotales)
 
   const columnStyles = {
     numero: { cellWidth: 10, halign: 'center' },
