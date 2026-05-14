@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpr lff">
+  <q-layout view="lHh lpr lff" class="bg-fondo">
     <HeaderLayout
       v-model:current-tab="currentTab"
       :tabs-visible="tabsVisible"
@@ -10,39 +10,33 @@
       @iniciar-guia="IniciarGuia"
       @irdashboard="irdashboard"
       @navigate-to-tab="navigateToTab"
+      @acultarTabs="ocultarTabs"
     />
 
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-white" style="position: fixed">
       <div>
         <router-link to="/" @click="ocultarTabs">
-          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 150px">
-            <div class="absolute-bottom bg-transparent">
-              <q-avatar size="56px" class="q-mb-sm">
-                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-              </q-avatar>
-              <div class="text-weight-bold">{{ nombreUsuario }}</div>
-              <div>{{ cargo }}</div>
+          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 65px">
+            <div class="absolute-full flex flex-left bg-transparent">
+              <div class="logo-area">
+                <div class="row items-center justify-center q-gutter-sm">
+                  <div class="logo-badge">
+                    <q-img src="favicon.ico" width="26px" height="26px" />
+                  </div>
+
+                  <div class="column items-center">
+                    <div class="logo-name">MisterSofts</div>
+                    <div class="logo-sub">COMERCIAL</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </q-img>
         </router-link>
       </div>
       <q-scroll-area
-        style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
+        style="height: calc(100% - 65px); margin-top: 65px; border-right: 1px solid #ddd"
       >
-        <div class="row flex justify-between">
-          <q-btn
-            label="Inicio"
-            icon="home"
-            to="/"
-            flat
-            unelevated
-            color="primary"
-            class="menu-header"
-            expand-icon-class="text-grey-6"
-            header-class="text-weight-medium text-grey-9"
-            @click="ocultarTabs"
-          />
-        </div>
         <q-list padding="">
           <div
             v-for="menu in items.filter((i) => i.codigo !== 'opcionesocultas')"
@@ -400,5 +394,42 @@ const toggleLeftDrawer = () => {
   background-color: #f2c037;
   color: #1976d2;
   font-weight: bold;
+}
+.logo-area {
+  flex-shrink: 0;
+}
+.logo-area {
+  flex-shrink: 0;
+}
+
+.logo-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(242, 192, 55, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(242, 192, 55, 0.1);
+}
+
+.logo-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.logo-sub {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ddd209;
+  opacity: 0.9;
+  line-height: 1.4;
 }
 </style>

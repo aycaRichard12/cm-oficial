@@ -3,16 +3,20 @@
     <div class="breadcrumb-scroller" ref="scrollContainer">
       <q-breadcrumbs class="text-white" gutter="xs">
         <template v-slot:separator>
-          <q-icon size="1.2em" name="chevron_right" color="white" class="separator-icon" />
+          <q-icon size="1em" name="chevron_right" color="white" class="separator-icon" />
         </template>
 
-        <q-breadcrumbs-el label="Inicio" icon="home" to="/" class="bc-link" />
+        <q-breadcrumbs-el
+          label="Inicio"
+          icon="home"
+          class="bc-link cursor-pointer"
+          @click="goToHome"
+        />
 
         <q-breadcrumbs-el
           v-for="(crumb, index) in breadcrumbs"
           :key="index"
           :label="crumb.label"
-          :icon="crumb.icon"
           :to="crumb.to"
           :class="['bc-link', { 'bc-active': crumb.active }]"
         />
@@ -23,13 +27,16 @@
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useMenuStore } from 'src/stores/permitidos'
 import { PAGINAS, PAGINAS_SELECT, PAGINAS_ICONS } from 'src/stores/paginas'
 
+const router = useRouter()
 const route = useRoute()
 const menuStore = useMenuStore()
 const scrollContainer = ref(null)
+
+const emit = defineEmits(['ocultartabs'])
 
 const MENU_ICONS = {
   configuraciones: 'settings',
@@ -42,6 +49,14 @@ const MENU_ICONS = {
   clientes: 'people',
   proveedores: 'local_shipping',
   pedidos: 'assignment',
+}
+const goToHome = () => {
+  // 1. Emitir tu evento
+  console.log('Emitiendo evento ocultartabs')
+  emit('ocultartabs')
+
+  // 2. Navegar programáticamente
+  router.push('/')
 }
 
 const breadcrumbs = computed(() => {

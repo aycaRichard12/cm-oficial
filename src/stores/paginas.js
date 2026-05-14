@@ -11,8 +11,7 @@ export const PAGINAS = Object.freeze({
     'unidaddeproducto',
     'caracteristicadeproducto',
     'parametrosdeobsolescencia',
-        'configuracionproductounico',
-
+    'configuracionproductounico',
   ]),
   configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
   configuracionIntegracionExterna: Object.freeze([
@@ -76,6 +75,7 @@ export const PAGINAS_ICONS = Object.freeze({
   divisas: 'attach_money',
   leyendaproforma: 'description',
   configuracionproductounico: 'description',
+  tipokardex: 'inventory_2',
 
   // Íconos para los submenús de Configuración de Producto
   categoriadeproducto: 'category',
@@ -88,10 +88,20 @@ export const PAGINAS_ICONS = Object.freeze({
   tiposdeclientes: 'groups',
   canalesdeventa: 'shopping_cart',
 
+  //iconos para integracion Externa
+  generartokensapis: 'api',
+  servicios: 'miscellaneous_services',
+  credencialesservicio: 'vpn_key',
+
+  //configuracion facturacion
+  leyendasdefacturas: 'receipt_long',
+  metodosdepagodefacturas: 'payments',
+
   // Íconos para los submenús de Administración Creación
   registraralmacen: 'storefront',
   registrarpuntodeventa: 'local_mall',
   registrarproductos: 'playlist_add',
+  registrarcategoriaprecio: 'local_offer',
 
   // Íconos para los submenús de Administración Asignación
   asignaralmacen: 'assignment_return',
@@ -102,6 +112,11 @@ export const PAGINAS_ICONS = Object.freeze({
   costounitario: 'attach_money',
   categoriasdeprecio: 'price_check',
   preciossugeridos: 'request_quote',
+
+  //autorizaciones
+  autorizarventassinstock: 'rule',
+  anularcompra: 'cancel',
+  permisosusuario: 'admin_panel_settings',
 
   // Íconos para los submenús de Registro de Ventas
   registrarventaoculto: 'shopping_basket',
@@ -114,7 +129,6 @@ export const PAGINAS_ICONS = Object.freeze({
 
   // Íconos para los submenús de Contingencias
   registraranulaciones: 'cancel',
-  registrodeextravios: 'help_outline',
   registrodemermas: 'remove_shopping_cart',
 
   // Íconos para los submenús de Cuentas por Cobrar
@@ -157,6 +171,9 @@ export const PAGINAS_ICONS = Object.freeze({
   indicesrotacion: 'rotate_right',
   reportedecaducidaddeproductos: 'event_busy',
   reporteinventarioexterior: 'inventory',
+
+  //extravio
+  registrodeextravios: 'report_problem',
 })
 export const PAGINAS_SELECT = Object.freeze({
   registrarventa: Object.freeze([

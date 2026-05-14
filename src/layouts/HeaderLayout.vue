@@ -13,7 +13,7 @@
       </div>
 
       <div class="col row items-center q-px-sm gt-xs" style="min-width: 0">
-        <AppBreadcrumbs />
+        <AppBreadcrumbs @ocultartabs="emit('acultarTabs')" />
       </div>
 
       <div class="col-auto row items-center no-wrap q-gutter-x-sm">
@@ -150,10 +150,13 @@
           :name="tab.codigo"
           @click="$emit('navigate-to-tab', tab)"
           :class="['tab-styled q-ma-xs', { 'active-orange': internalCurrentTab === tab.codigo }]"
+          class="btn-res"
         >
-          <div class="row items-center no-wrap">
-            <q-icon :name="tab.icono" size="18px" class="q-mr-xs" />
-            <span class="text-caption text-weight-bold">{{ tab.titulo.split('-')[2] }}</span>
+          <div class="row items-center justify-center no-wrap">
+            <q-icon :name="tab.icono" size="18px" class="q-mr-xs icono q-mt-md" />
+            <span class="text-caption text-weight-bold texto q-mt-md">{{
+              tab.titulo.split('-')[2]
+            }}</span>
           </div>
         </q-tab>
 
@@ -163,7 +166,7 @@
           no-caps
           label="Reportes"
           icon="bar_chart"
-          :class="['tab-styled q-ma-xs text-white', { 'active-yellow': isReportActive }]"
+          :class="['tab-styled q-ma-xs text-white ', { 'active-yellow': isReportActive }]"
           style="min-height: 36px"
         >
           <q-list style="min-width: 200px">
@@ -218,6 +221,7 @@ const emit = defineEmits([
   'irdashboard',
   'navigate-to-tab',
   'update:currentTab',
+  'acultarTabs',
 ])
 
 const internalCurrentTab = computed({
@@ -252,6 +256,7 @@ onMounted(async () => {
   min-height: 40px;
   text-transform: none;
   transition: all 0.3s ease;
+  padding: 0 8px; /* Controla el espacio lateral */
 
   &:hover {
     transform: translateY(-1px);
