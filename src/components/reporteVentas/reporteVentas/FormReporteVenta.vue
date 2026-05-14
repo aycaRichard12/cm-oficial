@@ -43,148 +43,7 @@
         @click="exportXLSX"
       />
     </div>
-    <div class="row q-col-gutter-x-md q-ma-sm">
-      <!-- <div class="col-12 col-md-2">
-        <label for="almacen">Filtrar por Almacén</label>
-        <q-select id="almacen" dense outlined v-model="almacen" :options="almacenes" clearable />
-      </div> -->
-      <!--
-      <div class="col-12 col-md-3">
-        <label for="cliente">Filtrar por razón social</label>
-        <q-input
-          v-model="clienteBusqueda"
-          id="cliente"
-          dense
-          outlined
-          @click="dialogClientes = true"
-          readonly
-          clearable
-        >
-          <template v-if="clienteSeleccionadoId" v-slot:append>
-            <q-btn
-              dense
-              flat
-              round
-              icon="close"
-              color="negative"
-              size="sm"
-              @click.stop="clearCliente"
-            />
-          </template>
-        </q-input>
-        <q-dialog v-model="dialogClientes">
-          <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
-              <q-input
-                v-model="clienteFilter"
-                label="Filtrar clientes..."
-                dense
-                class="col-grow"
-                autofocus
-              />
-              <q-btn flat round icon="close" v-close-popup />
-            </q-card-section>
 
-            <q-card-section style="max-height: 70vh" class="scroll">
-              <q-list bordered separator>
-                <q-item
-                  v-for="cliente in clientesFiltrados"
-                  :key="cliente.value"
-                  clickable
-                  @click="selectCliente(cliente)"
-                  :active="cliente.value === clienteSeleccionadoId"
-                  active-class="bg-blue-1 text-primary"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ cliente.label }}</q-item-label>
-                    <q-item-label caption>ID: {{ cliente.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </div>
-
-      <div class="col-12 col-md-2">
-        <label for="sucursal">Filtrar por sucursal del cliente</label>
-        <q-input
-          v-model="sucursalBusqueda"
-          id="sucursal"
-          dense
-          outlined
-          @click="dialogSucursal = true"
-          readonly
-          clearable
-        >
-          <template v-if="SucursalSelecionadoId" v-slot:append>
-            <q-btn
-              dense
-              flat
-              round
-              icon="close"
-              color="negative"
-              size="sm"
-              @click="clearSucursal"
-              class="q-mr-xs"
-            />
-          </template>
-        </q-input>
-        <q-dialog v-model="dialogSucursal">
-          <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
-              <q-input
-                v-model="sucursalFilter"
-                label="Filtrar clientes..."
-                dense
-                class="col-grow"
-                autofocus
-              />
-              <q-btn flat round icon="close" v-close-popup />
-            </q-card-section>
-
-            <q-card-section style="max-height: 70vh" class="scroll">
-              <q-list bordered separator>
-                <q-item
-                  v-for="sucursal in sucursalesFilter"
-                  :key="sucursal.value"
-                  clickable
-                  @click="selectSucursal(sucursal)"
-                  :active="sucursal.value === sucursalFilter"
-                  active-class="bg-blue-1 text-primary"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ sucursal.label }}</q-item-label>
-                    <q-item-label caption>ID: {{ sucursal.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </div> -->
-
-      <!-- <div class="col-12 col-md-2">
-        <label for="canal">Filtrar por canal de venta</label>
-        <q-select id="canal" dense outlined="" v-model="canal" :options="canales" clearable />
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label for="tipopago">Filtrar por tipo de pago</label>
-        <q-select
-          id="tipopago"
-          dense
-          outlined=""
-          v-model="tipopago"
-          :options="[
-            { label: 'todo', value: '0' },
-            { label: 'A crédito', value: 'credito' },
-            { label: 'Al contado', value: 'contado' },
-          ]"
-          clearable
-        />
-      </div> -->
-    </div>
     <TableReporteVentas
       id="tablareporteventas"
       ref="refHijo"
@@ -616,6 +475,7 @@ const getDetalleVenta = async (id) => {
   try {
     const response = await api.get(`detallesVenta/${id}/${idempresa}`) // Cambia a tu ruta real
     console.log(response.data)
+    console.log('Detalle de venta obtenido:', response)
     detalleVenta.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -627,7 +487,6 @@ const getDetalleVenta = async (id) => {
 }
 
 function imprimirReporte() {
-  console.log(detalleVenta.value)
   const doc = PDFComprovanteVenta(detalleVenta)
 
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
@@ -670,9 +529,9 @@ const onSubmit = async () => {
     const response = await api.get(`reporteventas/${idusuario}/${fechai.value}/${fechaf.value}`) // Cambia a tu ruta real
     const datos = response.data
     console.log(datos)
-    const filtrados = datos.filter((obj) => Number(obj.estado) == 1)
-    rows.value = filtrados.map((obj, index) => ({
+    rows.value = datos.map((obj, index) => ({
       cliente: obj.cliente,
+      vendedor: obj.vendedor,
       tipoventa: tipo[Number(obj.tipoventa)],
       tv: Number(obj.tipoventa),
       tipopago: obj.tipopago,

@@ -249,6 +249,14 @@ const columnas = [
     sortable: true,
   },
   {
+    name: 'nombreComercial',
+    label: 'Nombre Comercial',
+    align: 'left',
+    field: 'nombreComercial',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
     name: 'sucursal',
     label: 'Sucursal',
     align: 'left',
@@ -331,6 +339,7 @@ const ArrayHeaders = [
   'fecha',
   'almacen',
   'cliente',
+  'nombreComercial',
   'sucursal',
   'monto',
   'descuento',

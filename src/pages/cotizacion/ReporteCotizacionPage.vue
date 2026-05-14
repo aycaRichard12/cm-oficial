@@ -335,6 +335,7 @@ const generarReporte = async () => {
         idcotizacion: p.idcotizacion,
         fecha: cambiarFormatoFecha(p.fecha),
         cliente: p.cliente,
+        nombreComercial: p.nombreComercial,
         monto: Number(p.cotizaciontotal),
         descuento: Number(p.descuento),
         idalmacen: p.idalmacen,
