@@ -185,7 +185,7 @@
     </div>
     <q-table
       id="tableCredito"
-      title="Reporte ventas"
+      title="Reporte de Ventas"
       :rows="filteredCompra"
       :columns="columnas"
       row-key="id"

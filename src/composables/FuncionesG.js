@@ -13,6 +13,16 @@ export function obtenerHora() {
   return `${horas}:${minutos}:${segundos}`
 }
 
+export function obtenerFechaHoy() {
+  const hoy = new Date()
+
+  const dia = String(hoy.getDate()).padStart(2, '0')
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0')
+  const anio = hoy.getFullYear()
+
+  return `${dia}/${mes}/${anio}` // Retorna "15/05/2026"
+}
+
 export function obtenerFechaHoraNumerica() {
   const ahora = new Date()
 

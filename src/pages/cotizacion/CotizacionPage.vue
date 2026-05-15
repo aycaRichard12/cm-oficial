@@ -192,7 +192,26 @@
               </q-select>
               <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
             </div>
+            <div class="col-8 col-md-6">
+              <label for="canalVenta">Canal de venta*</label>
+              <q-select
+                v-model="canalventa"
+                id="canalVenta"
+                dense
+                outlined
+                :options="salesChannels"
+                option-label="label"
+                option-value="value"
+                required
+                :rules="[(val) => !!val || 'Seleccione un canal']"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="point_of_sale" color="blue" />
+                </template>
+              </q-select>
+            </div>
           </div>
+
           <ModalfirmaPage
             v-model="modalfirmaActivo"
             :id-entidad="selectedClient"
@@ -1292,6 +1311,8 @@ const idporcentajeventa = ref(0)
 const divisaActiva = reactive({ id: 0, nombre: '', tipo: '', codigosin: 0 })
 const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se usa en este formulario, se mantiene por original
 const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
+const canalventa = ref(null)
+const salesChannels = ref([])
 
 // Tipo de operación: cotizacion o venta
 const tipoOperacion = ref({ value: 2, label: 'Cotización Normal' })
@@ -1594,6 +1615,20 @@ const remainingAmount = computed(() => {
 
 const addPaymentMethod = () => {
   pagosDivididos.value.push({ metodoPago: null, monto: 0, porcentaje: 0 })
+}
+
+const cargarCanales = async () => {
+  try {
+    const respuesta = await validarUsuario()
+    const idempresa = respuesta[0]?.empresa?.idempresa
+    const response = await api.get(`listaCanalVenta/${idempresa}`)
+    salesChannels.value = response.data.map((item) => ({
+      label: item.canal,
+      value: item.id,
+    }))
+  } catch (error) {
+    console.error('Error cargando canales:', error)
+  }
 }
 
 const removePaymentMethod = (index) => {
@@ -2480,6 +2515,7 @@ onMounted(async () => {
   await cargarLeyendasCotizacion() // Cargar leyendas para el comprobante
   await cargarMetodoPagoFactura()
   await permisosStore.cargarPermisos()
+  await cargarCanales()
 
   calcularTotalesCarrito() // Recalcular si hay carrito guardado en localStorage
   listarcajasbanco()

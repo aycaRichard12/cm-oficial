@@ -34,7 +34,7 @@
           </div>
 
           <!-- Mostrar select de pedido si es Ingreso con Pedido -->
-          <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido">
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido">
             <label
               for="pedido"
               class="text-weight-bold text-grey-9 q-mb-sm block"
@@ -43,10 +43,15 @@
             >
             <q-select
               v-model="localData.pedido"
-              :options="pedidos"
+              :options="filteredPedidos"
               id="pedido"
               emit-value
               map-options
+              use-input
+              fill-input
+              hide-selected
+              input-debounce="0"
+              @filter="filterFnPedidos"
               dense
               outlined
               bg-color="white"
@@ -58,11 +63,16 @@
               <template v-slot:prepend>
                 <q-icon name="receipt_long" color="primary" />
               </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey text-italic"> No hay resultados </q-item-section>
+                </q-item>
+              </template>
             </q-select>
           </div>
 
           <!-- Mostrar almacén si es Ingreso sin Pedido (Directo) -->
-          <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido === false">
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido === false">
             <label
               for="almacen"
               class="text-weight-bold text-grey-9 q-mb-sm block"
@@ -85,6 +95,18 @@
                 <q-icon name="warehouse" color="primary" />
               </template>
             </q-select>
+          </div>
+
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn">
+            <label for="fecha">Fecha*</label>
+            <q-input
+              v-model="localData.fecha"
+              type="date"
+              id="fecha"
+              outlined
+              dense
+              bg-color="white"
+            />
           </div>
         </div>
       </div>
@@ -333,11 +355,12 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
-import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG'
+const filteredPedidos = ref([])
 const $q = useQuasar()
 const idempresa = idempresa_md5()
 const conPEdido = ref(true)
@@ -380,6 +403,22 @@ const onSubmit = () => {
 
   emit('submit', localData.value)
 }
+
+// 3. NUEVO: Función encargada de filtrar los pedidos según lo que escriba el usuario
+function filterFnPedidos(val, update) {
+  if (val === '') {
+    update(() => {
+      filteredPedidos.value = [...pedidos.value]
+    })
+    return
+  }
+
+  update(() => {
+    const needle = val.toLowerCase()
+    // Busca coincidencias en el label (Almacén, código, fecha, observación)
+    filteredPedidos.value = pedidos.value.filter((v) => v.label.toLowerCase().includes(needle))
+  })
+}
 const seleccionarPedido = () => {
   const pedidoSeleccionado = pedidos.value.find(
     (pedido) => Number(pedido.value) === Number(localData.value.pedido),
@@ -398,58 +437,99 @@ const verificar = () => {
   //console.log(tipo)
   conPEdido.value = tipo == 1
 }
-async function cargarPedidos() {
-  // console.log('=== CARGANDO PEDIDOS ===')
-  // console.log('props.almacenes:', props.almacenes)
-  // console.log('props.almacenes.length:', props.almacenes?.length)
+// async function cargarPedidos() {
+//   // console.log('=== CARGANDO PEDIDOS ===')
+//   // console.log('props.almacenes:', props.almacenes)
+//   // console.log('props.almacenes.length:', props.almacenes?.length)
 
+//   if (!props.almacenes || props.almacenes.length === 0) {
+//     console.warn('No hay almacenes disponibles para cargar pedidos')
+//     pedidos.value = []
+//     return
+//   }
+
+//   try {
+//     const idAlmacenes = props.almacenes.map((obj) => obj.value)
+//     //console.log('IDs de almacenes:', idAlmacenes)
+
+//     const response = await api.get(`listaPedido/${idempresa}`)
+//     console.log('Respuesta API pedidos:', response.data)
+//     //console.log('Total pedidos recibidos:', response.data.length)
+
+//     const filtrados = response.data.filter((item) => {
+//       // Convert to number for comparison since API returns strings
+//       const idAlmacenNum = Number(item.idalmacen)
+//       const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
+//       const cumpleEstado = Number(item.estado) == 2 // Pendiente
+//       const cumpleAutorizacion = Number(item.autorizacion) == 1 // Autorizado
+//       const cumpleTipoPedido = Number(item.tipopedido) == 1 // Solo pedidos de compra
+
+//       console.log(`Pedido ${item.id}:`, {
+//         idalmacen: item.idalmacen,
+//         idAlmacenNum,
+//         cumpleAlmacen,
+//         estado: item.estado,
+//         cumpleEstado,
+//         autorizacion: item.autorizacion,
+//         cumpleAutorizacion,
+//         tipopedido: item.tipopedido,
+//         cumpleTipoPedido,
+//         pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido,
+//       })
+
+//       return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
+//     })
+
+//     // console.log('Pedidos filtrados:', filtrados)
+
+//     PedidosAlmacen.value = filtrados
+//     pedidos.value = filtrados.map((item) => ({
+//       label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+//       idalmacen: item.idalmacen,
+//       value: item.id,
+//     }))
+//     //console.log('Pedidos formateados para select:', pedidos.value)
+//   } catch (error) {
+//     console.error('Error al cargar datos:', error)
+//     $q.notify({
+//       type: 'negative',
+//       message: 'No se pudieron cargar los Pedidos',
+//     })
+//   }
+// }
+async function cargarPedidos() {
   if (!props.almacenes || props.almacenes.length === 0) {
     console.warn('No hay almacenes disponibles para cargar pedidos')
     pedidos.value = []
+    filteredPedidos.value = [] // También limpiar los filtrados
     return
   }
 
   try {
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
-    //console.log('IDs de almacenes:', idAlmacenes)
-
     const response = await api.get(`listaPedido/${idempresa}`)
-    console.log('Respuesta API pedidos:', response.data)
-    //console.log('Total pedidos recibidos:', response.data.length)
 
     const filtrados = response.data.filter((item) => {
-      // Convert to number for comparison since API returns strings
       const idAlmacenNum = Number(item.idalmacen)
       const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
-      const cumpleEstado = Number(item.estado) == 2 // Pendiente
-      const cumpleAutorizacion = Number(item.autorizacion) == 1 // Autorizado
-      const cumpleTipoPedido = Number(item.tipopedido) == 1 // Solo pedidos de compra
-
-      console.log(`Pedido ${item.id}:`, {
-        idalmacen: item.idalmacen,
-        idAlmacenNum,
-        cumpleAlmacen,
-        estado: item.estado,
-        cumpleEstado,
-        autorizacion: item.autorizacion,
-        cumpleAutorizacion,
-        tipopedido: item.tipopedido,
-        cumpleTipoPedido,
-        pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido,
-      })
+      const cumpleEstado = Number(item.estado) == 2
+      const cumpleAutorizacion = Number(item.autorizacion) == 1
+      const cumpleTipoPedido = Number(item.tipopedido) == 1
 
       return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
     })
 
-    // console.log('Pedidos filtrados:', filtrados)
-
     PedidosAlmacen.value = filtrados
+
+    // Mapeamos los datos originales
     pedidos.value = filtrados.map((item) => ({
       label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
       idalmacen: item.idalmacen,
       value: item.id,
     }))
-    //console.log('Pedidos formateados para select:', pedidos.value)
+
+    // 2. NUEVO: Inicializar la lista reactiva que usa el q-select con todos los pedidos cargados
+    filteredPedidos.value = [...pedidos.value]
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -492,7 +572,6 @@ watch(
 watch(
   () => conPEdido.value,
   (newVal) => {
-    console.log('Watch conPEdido triggered:', newVal)
     if (newVal && props.almacenes && props.almacenes.length > 0) {
       cargarPedidos()
     }
@@ -525,8 +604,14 @@ watch(
     }
   },
 )
+onMounted(() => {
+  verificar()
+  if (props.almacenes && props.almacenes.length > 0) {
+    cargarPedidos()
+  }
+  localData.value.fecha = obtenerFechaActualDato()
+})
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="titulo" id="tituloreporteventas">Reporte Ventas</div>
+    <div class="titulo" id="tituloreporteventas">Reporte de Ventas</div>
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
         <div class="col-12 col-md-3" id="fechaini">

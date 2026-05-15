@@ -248,18 +248,13 @@ async function loadmedidas() {
 }
 
 const handleSubmit = async (data) => {
-  console.log('=== PAGE HANDLESUBMIT DEBUG ===')
-  console.log('Received data from form:', data)
-  console.log('data.categoria:', data.categoria)
-  console.log('data.subcategoria:', data.subcategoria)
-  
   const formData = objectToFormData(data)
-  
+
   console.log('=== FormData entries ===')
-  for (let [k, v] of formData.entries()) {
-    console.log(`${k}: ${v}`)
-  }
-  
+  // for (let [k, v] of formData.entries()) {
+  //   console.log(`${k}: ${v}`)
+  // }
+
   try {
     if (isEditing.value) {
       const response = await api.post(``, formData)
@@ -305,12 +300,13 @@ const editUnit = async (row) => {
   console.log('API Response:', response.data)
   const item = response.data.datos
   console.log('Item data:', item)
-  
+
   // Handle subcategoria - it might be missing, null, 0, or empty string
-  const subcategoriaValue = item.idsubcategoria && item.idsubcategoria !== '0' && item.idsubcategoria !== 0 
-    ? item.idsubcategoria 
-    : null
-  
+  const subcategoriaValue =
+    item.idsubcategoria && item.idsubcategoria !== '0' && item.idsubcategoria !== 0
+      ? item.idsubcategoria
+      : null
+
   formData.value = {
     ver: 'editarProducto',
     id: item.id,
@@ -327,11 +323,13 @@ const editUnit = async (row) => {
     caracteristica: item.caracteristica && item.caracteristica !== '0' ? item.caracteristica : '',
     vista: imagen + item.imagen,
     imagen: item.imagen,
-    codigosin: tipoFactura && item.productosin && item.productosin[0] ? item.productosin[0].codigo : '',
+    codigosin:
+      tipoFactura && item.productosin && item.productosin[0] ? item.productosin[0].codigo : '',
     unidadsin: tipoFactura && item.unidadsin && item.unidadsin[0] ? item.unidadsin[0].codigo : '',
-    codigoNandina: tipoFactura && item.codigonandina && item.codigonandina !== '0' ? item.codigonandina : '',
+    codigoNandina:
+      tipoFactura && item.codigonandina && item.codigonandina !== '0' ? item.codigonandina : '',
   }
-  
+
   console.log('FormData to load:', formData.value)
   loadsubcategorias(item.idcategoria)
   isEditing.value = true
@@ -383,10 +381,18 @@ const handleImport = async (data) => {
   for (const item of data) {
     try {
       // Mapear nombres a IDs
-      const cat = categorias.value.find(c => c.label.toLowerCase() === item.categoria_nombre?.toLowerCase())
-      const unit = unidades.value.find(u => u.label.toLowerCase().includes(item.unidad_nombre?.toLowerCase()))
-      const state = estados.value.find(e => e.label.toLowerCase() === item.estado_nombre?.toLowerCase())
-      const measure = medidas.value.find(m => m.label.toLowerCase() === item.medida_nombre?.toLowerCase())
+      const cat = categorias.value.find(
+        (c) => c.label.toLowerCase() === item.categoria_nombre?.toLowerCase(),
+      )
+      const unit = unidades.value.find((u) =>
+        u.label.toLowerCase().includes(item.unidad_nombre?.toLowerCase()),
+      )
+      const state = estados.value.find(
+        (e) => e.label.toLowerCase() === item.estado_nombre?.toLowerCase(),
+      )
+      const measure = medidas.value.find(
+        (m) => m.label.toLowerCase() === item.medida_nombre?.toLowerCase(),
+      )
 
       const payload = {
         ver: 'registrarProducto',
@@ -397,9 +403,9 @@ const handleImport = async (data) => {
         codigobarras: item.codigobarras || '',
         categoria: cat ? cat.value : null,
         subcategoria: null, // No tenemos mapeo de subcat directo sin contexto de cat en Excel por ahora
-        estadoproductos: state ? state.value : (estados.value[0]?.value || null),
-        unidad: unit ? unit.value : (unidades.value[0]?.value || null),
-        medida: measure ? measure.value : (medidas.value[0]?.value || null),
+        estadoproductos: state ? state.value : estados.value[0]?.value || null,
+        unidad: unit ? unit.value : unidades.value[0]?.value || null,
+        medida: measure ? measure.value : medidas.value[0]?.value || null,
         caracteristica: item.caracteristica || '',
         codigonandina: item.codigonandina || '',
       }
@@ -407,7 +413,7 @@ const handleImport = async (data) => {
       console.log('Bulk Import saving:', payload)
       const fData = objectToFormData(payload)
       const response = await api.post(``, fData)
-      
+
       if (response.data.estado === 'exito') {
         successCount++
       } else {
@@ -425,7 +431,7 @@ const handleImport = async (data) => {
     type: successCount > 0 ? 'positive' : 'negative',
     message: `Importación finalizada. Éxito: ${successCount}, Errores: ${errorCount}`,
     position: 'center',
-    timeout: 5000
+    timeout: 5000,
   })
 
   loadRows()
