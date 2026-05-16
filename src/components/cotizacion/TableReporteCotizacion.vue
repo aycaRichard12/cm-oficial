@@ -242,7 +242,7 @@ const columnas = [
   },
   {
     name: 'cliente',
-    label: 'Cliente',
+    label: 'Razón Social',
     align: 'left',
     field: 'cliente',
     dataType: 'text',

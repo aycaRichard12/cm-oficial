@@ -50,9 +50,33 @@
     </template>
     <template #body-cell-acciones="props">
       <q-td align="center">
-        <q-btn-dropdown color="grey-7" flat dense round dropdown-icon="more_vert" no-icon-animation>
+        <q-btn
+          id="btnverdetalle"
+          size="sm"
+          icon="visibility"
+          flat
+          @click="$emit('verDetalle', props.row)"
+        />
+        <q-btn
+          size="sm"
+          icon="email"
+          flat
+          color="primary"
+          @click="$emit('crearMensaje', props.row)"
+          class="q-ml-sm"
+          id="btncrearmensaje"
+        />
+        <q-btn-dropdown
+          color="grey-7"
+          flat
+          dense
+          round
+          dropdown-icon="more_vert"
+          no-icon-animation
+          v-if="props.row.tv >= 1"
+        >
           <q-list style="min-width: 180px">
-            <q-item clickable v-close-popup @click="$emit('verDetalle', props.row)">
+            <!-- <q-item clickable v-close-popup @click="$emit('verDetalle', props.row)">
               <q-item-section avatar>
                 <q-icon name="visibility" size="xs" />
               </q-item-section>
@@ -64,7 +88,7 @@
                 <q-icon name="email" color="primary" size="xs" />
               </q-item-section>
               <q-item-section>Enviar mensaje</q-item-section>
-            </q-item>
+            </q-item> -->
 
             <template v-if="props.row.tv >= 1">
               <q-separator />
@@ -139,7 +163,7 @@ const columnas = [
   { name: 'fecha', label: 'Fecha', field: 'fecha', dataType: 'date', align: 'left' },
   { name: 'almacen', label: 'Almacen', field: 'almacen', dataType: 'text', align: 'left' },
 
-  { name: 'cliente', label: 'Cliente', field: 'cliente', dataType: 'text', align: 'left' },
+  { name: 'cliente', label: 'Razón Social', field: 'cliente', dataType: 'text', align: 'left' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', dataType: 'text', align: 'left' },
   {
     name: 'tipoventa',
