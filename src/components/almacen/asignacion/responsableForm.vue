@@ -31,12 +31,7 @@
 
       <q-card-actions class="flex justify-end">
         <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn
-          label="Aprobar"
-          type="submit"
-          color="primary"
-          :disable="!formData.usuario"
-        />
+        <q-btn label="Aprobar" type="submit" color="primary" :disable="!formData.usuario" />
       </q-card-actions>
     </q-form>
   </q-card>

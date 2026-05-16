@@ -63,7 +63,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['edit', 'delete', 'refresh', 'update:pagination'])
-console.log(props.columns)
+//console.log(props.columns)
 // Usamos una copia local para la paginación
 const localPagination = ref({ ...props.pagination })
 

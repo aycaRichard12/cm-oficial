@@ -161,7 +161,7 @@ defineEmits([
 const columnas = [
   { name: 'nro', label: 'N°', field: 'nro', align: 'left' },
   { name: 'fecha', label: 'Fecha', field: 'fecha', dataType: 'date', align: 'left' },
-  { name: 'almacen', label: 'Almacen', field: 'almacen', dataType: 'text', align: 'left' },
+  { name: 'almacen', label: 'Almacén', field: 'almacen', dataType: 'text', align: 'left' },
 
   { name: 'cliente', label: 'Razón Social', field: 'cliente', dataType: 'text', align: 'left' },
   { name: 'sucursal', label: 'Sucursal', field: 'sucursal', dataType: 'text', align: 'left' },

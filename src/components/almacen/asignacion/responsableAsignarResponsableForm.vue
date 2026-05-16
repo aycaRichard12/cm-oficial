@@ -80,7 +80,7 @@ const props = defineProps({
   },
 })
 
-console.log(props.responsableNombre.usuario)
+//console.log(props.responsableNombre.usuario)
 const localData = ref({ ...props.modelValue })
 
 watch(

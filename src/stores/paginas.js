@@ -153,7 +153,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reportestockdeproductosindividual: 'inventory',
   reporteproveedorcompras: 'bar_chart',
   reporteproductoproveedorcompras: 'receipt_long',
-  //campañas
+
   crearcampanas: 'campaign',
   reportedecampanas: 'summarize',
   reportedeventasporcampanas: 'sell',

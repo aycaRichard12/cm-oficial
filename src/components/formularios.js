@@ -5,7 +5,7 @@ if (contenidousuario) {
   idempresa = contenidousuario[0]?.empresa?.idempresa
   idusuario = contenidousuario[0]?.idusuario
 } else {
-  console.log('Los elementos no existen en localStorage')
+  //console.log('Los elementos no existen en localStorage')
   window.location.assign('../../vapp/')
 }
 

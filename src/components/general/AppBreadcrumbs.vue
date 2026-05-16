@@ -77,6 +77,8 @@ const breadcrumbs = computed(() => {
   if (!groupCode) {
     for (const [key, value] of Object.entries(PAGINAS_SELECT)) {
       if (value.includes(path)) {
+        // console.log('Encontrado en PAGINAS_SELECT:', key, value)
+        // console.log('Path actual:', path)
         groupCode = key
         break
       }
@@ -84,8 +86,10 @@ const breadcrumbs = computed(() => {
   }
 
   if (groupCode) {
+    //console.log('Group code encontrado:', groupCode)
     for (const menu of menuStore.menuPrincipal) {
       const submenu = menu.submenu.find((s) => s.codigo.startsWith(groupCode))
+      //console.log(submenu)
       if (submenu) {
         // Menu segment
         segments.push({
@@ -107,11 +111,13 @@ const breadcrumbs = computed(() => {
 
   // Current page
   const matchingPage =
-    menuStore.todos.find((p) => p.codigo.startsWith(path)) ||
-    menuStore.permitidos.find((p) => p.codigo.startsWith(path))
-
+    menuStore.permitidos.find((p) => p.codigo.startsWith(path + '-')) ||
+    menuStore.todos.find((p) => p.codigo.startsWith(path))
+  // console.log(menuStore.permitidos)
+  // console.log('Matching page:', matchingPage, 'for path:', path)
+  // console.log(path)
   const pageLabel = route.meta?.title || (matchingPage ? matchingPage.titulo : path)
-
+  //console.log('Page label:', pageLabel)
   segments.push({
     label:
       typeof pageLabel === 'string' && pageLabel.includes('-')
