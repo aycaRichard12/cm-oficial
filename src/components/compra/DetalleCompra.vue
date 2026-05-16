@@ -94,42 +94,21 @@
 
         <!-- Detalles de Stock y Unidad -->
         <div class="col-xs-12 col-sm-12 col-md-7" v-if="!esModoEdicion">
-          <div class="row q-col-gutter-md">
+          <div class="row q-col-gutter-md q-mt-none">
+            <!-- Stock Actual -->
             <div class="col-xs-6 col-md-6">
-              <q-input
-                v-model="detalleForm.stockActual"
-                readonly
-                dense
-                filled
-                type="number"
-                bg-color="grey-2"
-                label="Stock Actual"
-                class="full-width"
-                stack-label
-                text-color="grey-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="inventory_2" size="xs" color="grey-7" />
-                </template>
-              </q-input>
+              <label class="row items-center text-weight-medium text-grey-9">
+                <q-icon name="inventory_2" size="xs" color="grey-7" class="q-mr-sm" />
+                <span>Stock Actual: {{ detalleForm.stockActual }}</span>
+              </label>
             </div>
+
+            <!-- Unidad -->
             <div class="col-xs-6 col-md-6">
-              <q-input
-                v-model="detalleForm.unidad"
-                type="text"
-                dense
-                filled
-                readonly
-                bg-color="grey-2"
-                label="Unidad"
-                class="full-width"
-                stack-label
-                text-color="grey-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="straighten" size="xs" color="grey-7" />
-                </template>
-              </q-input>
+              <label class="row items-center text-weight-medium text-grey-9">
+                <q-icon name="straighten" size="xs" color="grey-7" class="q-mr-sm" />
+                <span style="text-align: left">Unidad: {{ detalleForm.unidad }}</span>
+              </label>
             </div>
           </div>
         </div>
