@@ -148,11 +148,11 @@ export const PAGINAS_ICONS = Object.freeze({
   autorizarcompra: 'shopping_bag',
   //compras
   registrarcompra: 'add_shopping_cart',
-  reporteproductoscomprados: 'receipt_long',
-  reportedecompras: '../../icons/repCompra.svg',
-  reportestockdeproductosindividual: 'inventory',
+  reporteproductoscomprados: 'icons/komrA01.svg',
+  reportedecompras: 'icons/repCompra.svg',
+  reportestockdeproductosindividual: 'icons/if5pC01.svg',
   reporteproveedorcompras: 'bar_chart',
-  reporteproductoproveedorcompras: 'receipt_long',
+  reporteproductoproveedorcompras: 'icons/gyOvw01.svg',
 
   crearcampanas: 'campaign',
   reportedecampanas: 'summarize',

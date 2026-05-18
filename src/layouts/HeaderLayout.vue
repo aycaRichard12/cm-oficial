@@ -153,9 +153,8 @@
           class="btn-res"
         >
           <div class="row items-center justify-center no-wrap">
-            <q-icon :name="tab.icono" size="18px" class="q-mr-xs icono q-mt-md" />
             <q-icon
-              v-if="!tab.icono.startsWith('../')"
+              v-if="!tab.icono.includes('.svg')"
               :name="tab.icono"
               size="18px"
               class="q-mr-xs icono q-mt-md"
@@ -187,7 +186,14 @@
               active-class="bg-yellow-1 text-yellow-9 text-weight-bold"
             >
               <q-item-section avatar>
-                <q-icon :name="tab.icono" />
+                <!-- <q-icon :name="tab.icono" /> -->
+                <q-icon
+                  v-if="!tab.icono.includes('.svg')"
+                  :name="tab.icono"
+                  size="18px"
+                  class="q-mr-xs icono q-mt-md"
+                />
+                <img v-else :src="tab.icono" width="35" height="35" class="q-mr-xs q-mt-md" />
               </q-item-section>
               <q-item-section>{{ tab.titulo.split('-')[2] }}</q-item-section>
             </q-item>
