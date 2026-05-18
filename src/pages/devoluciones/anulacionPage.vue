@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" v-if="!showEditarCotizacionNormal">
     <!-- Contenedor principal con tabs -->
     <q-tabs v-model="tab" align="left" class="text-primary" id="anulacionpagetabs">
       <q-tab id="tabvalidas" name="validas" label="Válidas" />
@@ -106,6 +106,13 @@
       @reiniciar="forzarReinicioCarrito"
     />
   </q-page>
+  <q-page class="q-pa-md" v-else>
+    <EditarCotizacion
+      v-if="showEditarCotizacionNormal"
+      :id-cotizacion="idCotizacionAEditar"
+      @saved="alGuardarEdicion"
+    />
+  </q-page>
 </template>
 
 <script setup>
@@ -129,6 +136,15 @@ import MotivoAnulacionDialog from 'src/components/anulaciones/MotivoAnulacionDia
 import MotivoDevolucionDialog from 'src/components/anulaciones/MotivoDevolucionDialog.vue'
 import PdfViewerDialog from 'src/components/anulaciones/PdfViewerDialog.vue'
 import RegistrarNotaCreditoDebito from 'src/pages/NotasCreditoDebito/RegistrarNotaCreditoDebito.vue'
+import EditarCotizacion from '../cotizacion/EditarCotizacion.vue'
+
+const showEditarCotizacionNormal = ref(false)
+const idCotizacionAEditar = ref(null)
+
+const abrirModalEdicion = (id) => {
+  idCotizacionAEditar.value = id
+  showEditarCotizacionNormal.value = true
+}
 
 const $q = useQuasar()
 
@@ -290,6 +306,13 @@ const handleAccion = (row) => {
       }
     } else {
       verificarEstadoFactura(row.cuf)
+    }
+  } else if (value == 4) {
+    // Editar (solo para cotización normal)
+    if (TipoVenta == -1 && tipo === 'NOR') {
+      // Lógica para editar cotización normal
+      console.log(tipo, TipoVenta, idventa)
+      abrirModalEdicion(idventa)
     }
   }
 }

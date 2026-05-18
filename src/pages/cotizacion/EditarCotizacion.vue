@@ -1247,6 +1247,7 @@ const props = defineProps({
     required: true,
   },
 })
+console.log('ID de Cotización recibido:', props.idCotizacion)
 const emit = defineEmits(['saved', 'reiniciar'])
 
 const permisosStore = useOperacionesPermitidas()
