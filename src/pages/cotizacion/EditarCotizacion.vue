@@ -2477,36 +2477,103 @@ async function listarcajasbanco() {
 }
 
 const loadData = async () => {
-  const respDet = await api.get(`detallesCotizacion/${props.idCotizacion}/${idempresa}`)
-  const data = respDet.data
-  console.log('Detalles de Cotización:', data)
+  if (!props.idCotizacion) return
 
-  if (data && data.length > 0) {
-    const info = data[0]
-    const { cotizacion, cliente, almacen, divisa, detalle } = info
-    console.log(cotizacion, cliente, almacen, divisa, detalle)
+  $q.loading.show({
+    message: 'Cargando datos de la cotización...',
+    spinnerColor: 'primary',
+  })
 
-    filtroAlmacenCO.value = null // Se reestablecerá por la lógica de listaAlmacenes
-    filtroCategoriaCO.value = null
-    idclienteCO.value = ''
-    selectedClient.value = null
-    idsucursalCOS.value = ''
-    selectedSucursal.value = null
-    resetProductoInputs()
+  try {
+    const respDet = await api.get(`detallesCotizacion/${props.idCotizacion}/${idempresa}`)
+    const data = respDet.data
+    console.log('Detalles de Cotización:', data)
 
-    // Limpiar carrito
-    carritoECO.ventatotal = 0
-    carritoECO.subtotal = 0
-    carritoECO.descuento = 0
-    carritoECO.listaProductos = []
-    localStorage.removeItem('carritoECO')
-    carritoECO.metodoPago = 0
-    carritoECO.pagosDivididos = []
-    pagosDivididos.value = []
+    if (data && data.length > 0) {
+      const info = data[0]
+      const { cotizacion, cliente, almacen, detalle } = info
 
-    // Recargar listas dependientes si es necesario
-    listaAlmacenes()
-    listaCLientes()
+      // 1. Limpiar el estado del carrito y formularios de productos
+      resetProductoInputs()
+      carritoECO.listaProductos = []
+      carritoECO.descuento = 0
+      localStorage.removeItem('carritoECO')
+
+      // 2. Poblado de datos de la cotización
+      fecha.value = cotizacion.fecha || obtenerFechaActualDato()
+      tipoOperacion.value =
+        optionOperacion.value.find((o) => Number(o.value) === Number(cotizacion.condicion)) ||
+        optionOperacion.value[0]
+
+      // 3. Almacén y dependencias (Punto de Venta y Categorías)
+      filtroAlmacenCO.value = Number(almacen.idalmacen)
+      await listaCategoria() // Gatilla la carga de categorías y puntos de venta
+      puntoVenta.value = Number(cotizacion.idpv)
+
+      // 4. Cliente y Sucursal
+      if (clientesOptions.value.length === 0) await listaCLientes()
+
+      const clientObj = clientesOptions.value.find(
+        (c) => Number(c.id) === Number(cliente.idcliente),
+      )
+      if (clientObj) {
+        selectedClient.value = clientObj
+        idclienteCO.value = clientObj.id
+
+        await selectSucursal(clientObj.id)
+        const sucursalObj = sucursalesOptions.value.find(
+          (s) => Number(s.id) === Number(cliente.idsucursal),
+        )
+        if (sucursalObj) {
+          selectedSucursal.value = sucursalObj
+          idsucursalCOS.value = sucursalObj.id
+        }
+      }
+
+      // 5. Poblar carrito con el detalle recibido
+      if (detalle && Array.isArray(detalle)) {
+        carritoECO.listaProductos = detalle.map((item, index) => ({
+          num: index + 1,
+          idproductoalmacen: item.idproductoalmacen,
+          cantidad: parseFloat(item.cantidad),
+          precio: parseFloat(item.precio),
+          idstock: item.idstock,
+          idporcentaje: item.categoria,
+          candiponible: parseFloat(item.disponible),
+          descripcion: item.producto,
+          descripcionAdicional: item.descripcionAdicional || '',
+          codigo: item.codigoProducto,
+          despachado:
+            parseFloat(item.disponible) === 0 ||
+            parseFloat(item.disponible) < parseFloat(item.cantidad)
+              ? 2
+              : 1,
+          codigosUnicos: [],
+        }))
+
+        // Sincronizar categoría de precio si hay items
+        if (detalle.length > 0) {
+          filtroCategoriaCO.value = Number(detalle[0].categoria)
+        }
+      }
+
+      // 6. Cálculos de totales y descuentos
+      carritoECO.descuento = parseFloat(cotizacion.descuento) || 0
+      calcularTotalesCarrito()
+
+      // 7. Persistencia
+      localStorage.setItem('carritoECO', JSON.stringify(carritoECO))
+
+      console.log('Cotización cargada y mapeada correctamente')
+    }
+  } catch (error) {
+    console.error('Error al cargar la cotización:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Hubo un error al recuperar los datos de la cotización.',
+    })
+  } finally {
+    $q.loading.hide()
   }
 }
 // --- Inicialización ---
