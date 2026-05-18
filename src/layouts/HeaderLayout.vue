@@ -155,7 +155,7 @@
           <div class="row items-center justify-center no-wrap">
             <q-icon :name="tab.icono" size="18px" class="q-mr-xs icono q-mt-md" />
             <q-icon
-              v-if="!tab.icono.startsWith('http')"
+              v-if="!tab.icono.startsWith('../')"
               :name="tab.icono"
               size="18px"
               class="q-mr-xs icono q-mt-md"
