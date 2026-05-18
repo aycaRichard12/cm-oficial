@@ -154,6 +154,13 @@
         >
           <div class="row items-center justify-center no-wrap">
             <q-icon :name="tab.icono" size="18px" class="q-mr-xs icono q-mt-md" />
+            <q-icon
+              v-if="!tab.icono.startsWith('http')"
+              :name="tab.icono"
+              size="18px"
+              class="q-mr-xs icono q-mt-md"
+            />
+            <img v-else :src="tab.icono" width="18" height="18" class="q-mr-xs q-mt-md" />
             <span class="text-caption text-weight-bold texto q-mt-md">{{
               tab.titulo.split('-')[2]
             }}</span>
