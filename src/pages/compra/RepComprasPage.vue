@@ -99,7 +99,7 @@ import { date } from 'quasar'
 import * as XLSX from 'xlsx'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
-import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
+import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfs/Detalle_Compra/reporte'
 const { detalleCompra, loadingDetalle, fetchDetalleCompra } = useReporteProveedorCompras()
 const showPdfDialog = ref(false)
 const pdfUrl = ref(null)
