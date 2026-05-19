@@ -1315,9 +1315,9 @@ const canalventa = ref(null)
 const salesChannels = ref([])
 
 // Tipo de operación: cotizacion o venta
-const tipoOperacion = ref({ value: 2, label: 'Cotización Normal' })
+const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
 const optionOperacion = ref([
-  { value: 2, label: 'Cotización Normal' },
+  { value: 0, label: 'Cotización Normal' },
   { value: 1, label: 'Cotización Preferencial' },
 ])
 
@@ -1586,7 +1586,7 @@ watch(selectedProduct, (newVal) => {
 const cotizacion_proforma = async () => {
   console.log(tipoOperacion.value)
   const tipo_cotz = tipoOperacion.value
-  if (Number(tipo_cotz.value) == 2) {
+  if (Number(tipo_cotz.value) == 0) {
     await enviarDatos()
   } else {
     modalmetodopago.value = true
@@ -2250,9 +2250,9 @@ async function enviarDatos() {
   carritoCO.almacen = almacenesOptions.value.find(
     (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
   ).almacen //filtroAlmacenCO.value
-  console.log(carritoCO.almacen)
-  console.log(carritoCO.cajabanco)
-  console.log(carritoCO.cajabanco)
+  // console.log(carritoCO.almacen)
+  // console.log(carritoCO.cajabanco)
+  // console.log(carritoCO.cajabanco)
 
   const datosFormulario = new FormData()
   datosFormulario.append('ver', 'registrarCotizacion')
@@ -2263,7 +2263,8 @@ async function enviarDatos() {
   datosFormulario.append('listaProductos', JSON.stringify(carritoCO)) // Enviar el objeto completo del carrito
   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
 
-  console.log(carritoCO)
+  console.log(tipoOperacion.value?.value)
+  // console.log(carritoCO)
 
   $q.loading.show({
     message: 'Registrando cotización...',
@@ -2271,11 +2272,11 @@ async function enviarDatos() {
   try {
     // Asumo que tu backend espera 'listaProductos' como un JSON string.
     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
-    const datosJson = {}
-    datosFormulario.forEach((valor, clave) => {
-      datosJson[clave] = valor
-    })
-    console.log(JSON.stringify(datosJson, null, 2))
+    //const datosJson = {}
+    // datosFormulario.forEach((valor, clave) => {
+    //   datosJson[clave] = valor
+    // })
+    //console.log(JSON.stringify(datosJson, null, 2))
     const response = await api.post(``, datosFormulario)
     const data = response.data
     console.log('Datos recibidos:', response)

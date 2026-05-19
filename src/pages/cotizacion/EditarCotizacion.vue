@@ -1303,7 +1303,7 @@ const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
 // Tipo de operación: cotizacion o venta
 const tipoOperacion = ref({ value: 2, label: 'Cotización Normal' })
 const optionOperacion = ref([
-  { value: 2, label: 'Cotización Normal' },
+  { value: 0, label: 'Cotización Normal' },
   { value: 1, label: 'Cotización Preferencial' },
 ])
 
