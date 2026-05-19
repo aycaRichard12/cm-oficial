@@ -79,6 +79,7 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
+                readonly
               />
             </div>
             <div class="col-12 col-md-3" id="fechaCotizacion">
@@ -1227,7 +1228,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
-import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
+//import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -1570,13 +1571,7 @@ watch(selectedProduct, (newVal) => {
 })
 
 const cotizacion_proforma = async () => {
-  console.log(tipoOperacion.value)
-  const tipo_cotz = tipoOperacion.value
-  if (Number(tipo_cotz.value) == 2) {
-    await enviarDatos()
-  } else {
-    modalmetodopago.value = true
-  }
+  await enviarDatos()
 }
 
 // ======================== TIpo de pago combinado =================
@@ -1741,7 +1736,7 @@ watch(filtroAlmacenCO, (newVal) => {
   listaCategoria()
 })
 async function listaCategoria() {
-  cargarPuntoVentas()
+  await cargarPuntoVentas()
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
@@ -2166,7 +2161,8 @@ function resetProductoInputs() {
 // --- Envío de Datos ---
 
 async function enviarDatos() {
-  modalmetodopago.value = false
+  if (!props.idCotizacion) return
+
   const isValid = await cotizacionFormRef.value.validate()
   if (!isValid) {
     $q.notify({
@@ -2227,13 +2223,15 @@ async function enviarDatos() {
   console.log(carritoECO.cajabanco)
 
   const datosFormulario = new FormData()
-  datosFormulario.append('ver', 'registrarCotizacion')
+  datosFormulario.append('ver', 'editarCotizacion')
   datosFormulario.append('filtroALmacen', filtroAlmacenCO.value)
   datosFormulario.append('filtroCategoria', filtroCategoriaCO.value)
   datosFormulario.append('idcliente', idclienteCO.value)
   datosFormulario.append('idsucursal', idsucursalCOS.value)
-  datosFormulario.append('listaProductos', JSON.stringify(carritoECO)) // Enviar el objeto completo del carrito
   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
+  datosFormulario.append('id', props.idCotizacion)
+  datosFormulario.append('listaProductos', JSON.stringify(carritoECO)) // Enviar el objeto completo del carrito
+  // Añadir el tipo de operación
 
   console.log(carritoECO)
 
@@ -2247,33 +2245,33 @@ async function enviarDatos() {
     datosFormulario.forEach((valor, clave) => {
       datosJson[clave] = valor
     })
-    console.log(JSON.stringify(datosJson, null, 2))
-    const response = await api.post(``, datosFormulario)
-    const data = response.data
-    console.log('Datos recibidos:', response)
+    console.log(datosJson)
+    // const response = await api.post(``, datosFormulario)
+    // const data = response.data
+    // console.log('Datos recibidos:', response)
     emit('saved')
-    if (data.estado === 'exito') {
-      resetFormulario()
-      $q.notify({
-        type: 'positive',
-        message: 'Cotización realizada exitosamente.',
-      })
-      cotizacionFormRef.value.resetValidation() // Resetear validación
+    // if (data.estado === 'exito') {
+    //   resetFormulario()
+    //   $q.notify({
+    //     type: 'positive',
+    //     message: 'Cotización realizada exitosamente.',
+    //   })
+    //   cotizacionFormRef.value.resetValidation() // Resetear validación
 
-      $q.dialog({
-        title: 'Cotización Exitosa',
-        message: 'Su comprobante está listo. ¿Desea verlo?',
-        cancel: true,
-        persistent: true,
-      }).onOk(() => {
-        generarComprobante(data.id)
-      })
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: data.mensaje || 'Error al registrar la cotización.',
-      })
-    }
+    //   $q.dialog({
+    //     title: 'Cotización Exitosa',
+    //     message: 'Su comprobante está listo. ¿Desea verlo?',
+    //     cancel: true,
+    //     persistent: true,
+    //   }).onOk(() => {
+    //     generarComprobante(data.id)
+    //   })
+    // } else {
+    //   $q.notify({
+    //     type: 'negative',
+    //     message: data.mensaje || 'Error al registrar la cotización.',
+    //   })
+    // }
   } catch (error) {
     console.error('Error al realizar la solicitud:', error)
     $q.notify({
@@ -2314,61 +2312,61 @@ function resetFormulario() {
 // async function enviarCorreo(id) {
 //   console.log(id)
 // }
-function open(pos, idcot, data) {
-  position.value = pos
-  dialog.value = true
-  idcliente.value = idcot
-  detallesCotizacion.value = data
-  console.log(idcliente.value, detallesCotizacion.value)
+// function open(pos, idcot, data) {
+//   position.value = pos
+//   dialog.value = true
+//   idcliente.value = idcot
+//   detallesCotizacion.value = data
+//   console.log(idcliente.value, detallesCotizacion.value)
 
-  return new Promise((resolve) => {
-    resolver = resolve
-  })
-}
-async function generarComprobante(id) {
-  // Después que el usuario confirma el primer diálogo
+//   return new Promise((resolve) => {
+//     resolver = resolve
+//   })
+// }
+// async function generarComprobante(id) {
+//   // Después que el usuario confirma el primer diálogo
 
-  const contenidousuario = await getUserData()
-  const idempresa = contenidousuario?.empresa?.idempresa
-  console.log(idempresa)
-  if (!idempresa) {
-    $q.notify({
-      type: 'negative',
-      message: 'Error: No se pudo obtener la empresa para el comprobante.',
-    })
-    return
-  }
+//   const contenidousuario = await getUserData()
+//   const idempresa = contenidousuario?.empresa?.idempresa
+//   console.log(idempresa)
+//   if (!idempresa) {
+//     $q.notify({
+//       type: 'negative',
+//       message: 'Error: No se pudo obtener la empresa para el comprobante.',
+//     })
+//     return
+//   }
 
-  $q.loading.show({
-    message: 'Generando comprobante...',
-  })
+//   $q.loading.show({
+//     message: 'Generando comprobante...',
+//   })
 
-  try {
-    const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
-    const data = response.data
-    console.log('Comprobante Data:', response)
+//   try {
+//     const response = await api.get(`detallesCotizacion/${id}/${idempresa}`)
+//     const data = response.data
+//     console.log('Comprobante Data:', response)
 
-    if (data[0] === 'error') {
-      console.error(data.error)
-      $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
-    } else {
-      // Cargar leyendas si no están cargadas
-      if (leyendasCotizacion.value.length === 0) {
-        await cargarLeyendasCotizacion()
-      }
-      const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      mostrarModal.value = true
-      console.log(data[0]?.cliente.idcliente, data)
-      open('right', data[0]?.cliente.idcliente, data)
-    }
-  } catch (error) {
-    console.error('Error al generar comprobante:', error)
-    $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
-  } finally {
-    $q.loading.hide()
-  }
-}
+//     if (data[0] === 'error') {
+//       console.error(data.error)
+//       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+//     } else {
+//       // Cargar leyendas si no están cargadas
+//       if (leyendasCotizacion.value.length === 0) {
+//         await cargarLeyendasCotizacion()
+//       }
+//       const doc = await generarPdfCotizacion(data)
+//       pdfData.value = doc.output('dataurlstring')
+//       mostrarModal.value = true
+//       console.log(data[0]?.cliente.idcliente, data)
+//       open('right', data[0]?.cliente.idcliente, data)
+//     }
+//   } catch (error) {
+//     console.error('Error al generar comprobante:', error)
+//     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+//   } finally {
+//     $q.loading.hide()
+//   }
+// }
 const confirmar = (idcliente, data) => {
   resolver?.(true)
   //JSON.parse(JSON.stringify(detalleVenta.value))
@@ -2489,7 +2487,7 @@ const loadData = async () => {
     const data = respDet.data
     console.log('Detalles de Cotización:', data)
 
-    if (data && data.length > 0) {
+    if (data && Array.isArray(data) && data.length > 0) {
       const info = data[0]
       const { cotizacion, cliente, almacen, detalle } = info
 
@@ -2500,65 +2498,84 @@ const loadData = async () => {
       localStorage.removeItem('carritoECO')
 
       // 2. Poblado de datos de la cotización
-      fecha.value = cotizacion.fecha || obtenerFechaActualDato()
-      tipoOperacion.value =
-        optionOperacion.value.find((o) => Number(o.value) === Number(cotizacion.condicion)) ||
-        optionOperacion.value[0]
+      if (cotizacion) {
+        fecha.value = cotizacion.fecha || obtenerFechaActualDato()
+
+        // Asignar tipoOperacion priorizando el campo tipoOperacion de la API
+        const opValue =
+          cotizacion.tipoOperacion !== null && cotizacion.tipoOperacion !== undefined
+            ? Number(cotizacion.tipoOperacion)
+            : Number(cotizacion.condicion)
+
+        tipoOperacion.value =
+          optionOperacion.value.find((o) => Number(o.value) === opValue) || optionOperacion.value[0]
+      }
 
       // 3. Almacén y dependencias (Punto de Venta y Categorías)
-      filtroAlmacenCO.value = Number(almacen.idalmacen)
-      await listaCategoria() // Gatilla la carga de categorías y puntos de venta
-      puntoVenta.value = Number(cotizacion.idpv)
+      if (almacen && almacen.idalmacen) {
+        filtroAlmacenCO.value = Number(almacen.idalmacen)
+        await listaCategoria() // Gatilla la carga de categorías y puntos de venta
+
+        if (cotizacion && cotizacion.idpv) {
+          puntoVenta.value = Number(cotizacion.idpv)
+        }
+      }
 
       // 4. Cliente y Sucursal
-      if (clientesOptions.value.length === 0) await listaCLientes()
+      if (cliente && cliente.idcliente) {
+        if (clientesOptions.value.length === 0) await listaCLientes()
 
-      const clientObj = clientesOptions.value.find(
-        (c) => Number(c.id) === Number(cliente.idcliente),
-      )
-      if (clientObj) {
-        selectedClient.value = clientObj
-        idclienteCO.value = clientObj.id
-
-        await selectSucursal(clientObj.id)
-        const sucursalObj = sucursalesOptions.value.find(
-          (s) => Number(s.id) === Number(cliente.idsucursal),
+        const clientObj = clientesOptions.value.find(
+          (c) => Number(c.id) === Number(cliente.idcliente),
         )
-        if (sucursalObj) {
-          selectedSucursal.value = sucursalObj
-          idsucursalCOS.value = sucursalObj.id
+        if (clientObj) {
+          selectedClient.value = clientObj
+          idclienteCO.value = clientObj.id
+
+          await selectSucursal(clientObj.id)
+          const sucursalObj = sucursalesOptions.value.find(
+            (s) => Number(s.id) === Number(cliente.idsucursal),
+          )
+          if (sucursalObj) {
+            selectedSucursal.value = sucursalObj
+            idsucursalCOS.value = sucursalObj.id
+          }
         }
       }
 
       // 5. Poblar carrito con el detalle recibido
-      if (detalle && Array.isArray(detalle)) {
-        carritoECO.listaProductos = detalle.map((item, index) => ({
-          num: index + 1,
-          idproductoalmacen: item.idproductoalmacen,
-          cantidad: parseFloat(item.cantidad),
-          precio: parseFloat(item.precio),
-          idstock: item.idstock,
-          idporcentaje: item.categoria,
-          candiponible: parseFloat(item.disponible),
-          descripcion: item.producto,
-          descripcionAdicional: item.descripcionAdicional || '',
-          codigo: item.codigoProducto,
-          despachado:
-            parseFloat(item.disponible) === 0 ||
-            parseFloat(item.disponible) < parseFloat(item.cantidad)
-              ? 2
-              : 1,
-          codigosUnicos: [],
-        }))
+      if (Array.isArray(detalle)) {
+        carritoECO.listaProductos = detalle.map((item, index) => {
+          const cantidad = parseFloat(item.cantidad) || 0
+          const disponible = parseFloat(item.disponible) || 0
+
+          return {
+            num: index + 1,
+            iddetalle: item.id,
+            idproductoalmacen: item.idproductoalmacen,
+            cantidad: cantidad,
+            precio: parseFloat(item.precio) || 0,
+            idstock: item.idstock,
+            idporcentaje: item.categoria,
+            candiponible: disponible,
+            descripcion: item.descripcion || 'Sin descripción',
+            descripcionAdicional: item.descripcionAdicional || '',
+            codigo: item.codigoProducto || '',
+            despachado: disponible === 0 || disponible < cantidad ? 2 : 1,
+            codigosUnicos: Array.isArray(item.codigosUnicos) ? item.codigosUnicos : [],
+          }
+        })
 
         // Sincronizar categoría de precio si hay items
-        if (detalle.length > 0) {
+        if (detalle.length > 0 && detalle[0].categoria) {
           filtroCategoriaCO.value = Number(detalle[0].categoria)
         }
       }
 
       // 6. Cálculos de totales y descuentos
-      carritoECO.descuento = parseFloat(cotizacion.descuento) || 0
+      if (cotizacion) {
+        carritoECO.descuento = parseFloat(cotizacion.descuento) || 0
+      }
       calcularTotalesCarrito()
 
       // 7. Persistencia
