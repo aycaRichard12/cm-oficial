@@ -132,7 +132,7 @@
           >
             <q-tooltip>Ver Comprobante</q-tooltip>
           </q-btn>
-          <q-btn
+          <!-- <q-btn
             id="btneditarcotizacion"
             v-if="props.row.estadoResumido === 'NOR'"
             icon="edit"
@@ -143,7 +143,7 @@
             @click="$emit('editarCotizacion', props.row.idcotizacion)"
           >
             <q-tooltip>Editar Cotización</q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn
             id="btnfacturarcotizacion"
             v-if="

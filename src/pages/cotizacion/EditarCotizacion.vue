@@ -1228,13 +1228,9 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
-//import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-import { PDFenviarComprobanteCorreo } from 'src/utils/pdfReportGenerator'
-import { objectToFormData } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, idusuario_md5, objectToFormData } from 'src/composables/FuncionesGenerales'
 import { getToken, getTipoFactura } from 'src/composables/FuncionesG'
 import ModalfirmaPage from './ModalfirmaPage.vue'
 import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
@@ -1281,7 +1277,7 @@ const guardarCodigosEnVenta = (codigos) => {
 const modalfirmaActivo = ref(false)
 const token = getToken()
 const tipoFactura = getTipoFactura()
-const fecha = ref(obtenerFechaActualDato())
+const fecha = ref(null)
 const variablePago = ref('directo')
 const modalmetodopago = ref(false)
 const pdfData = ref(null)
@@ -1350,6 +1346,10 @@ const metodosPagos = ref([])
 const metodoPago = ref(null)
 const permitirStock = ref(false)
 const idfirma = ref(null)
+
+const originalCotizacion = ref(null)
+const originalDetalle = ref([])
+
 const carritoECO = reactive({
   ver: 'editarCotizacion',
   id_cotizacion: props.idCotizacion,
@@ -1364,7 +1364,7 @@ const carritoECO = reactive({
   pagosDivididos: [],
   metodoPago: 0,
   variablePago: '',
-  fecha: fecha.value,
+  fecha: null,
   credito: false,
   periodo: null,
   idfirma: null,
@@ -1443,9 +1443,9 @@ const calculateDueDate = () => {
     carritoECO.fechaLimite = '' // Corregido
   }
 }
-const CONSTANTES = {
-  tipopago: 'contado',
-}
+// const CONSTANTES = {
+//   tipopago: 'contado',
+// }
 
 // premitir stock
 const permitirStockvacio = () => {
@@ -2158,6 +2158,106 @@ function resetProductoInputs() {
   idproductoalmacenCO.value = ''
 }
 
+function prepararPayload() {
+  const payload = {
+    cotizacion: {
+      id_cotizacion: props.idCotizacion,
+      fecha_cotizacion: fecha.value,
+      monto_total: carritoECO.ventatotal,
+      descuento: carritoECO.descuento,
+      cliente_id_cliente: idclienteCO.value,
+      divisas_id_divisas: divisaActiva.id,
+      id_usuario: idusuario_md5(),
+      idsucursal: idsucursalCOS.value,
+      estado: originalCotizacion.value?.estado || 0,
+      idpv: puntoVenta.value?.value || puntoVenta.value,
+      idcanal: originalCotizacion.value?.idcanal || null,
+      num: originalCotizacion.value?.num || null,
+      id_almacen: filtroAlmacenCO.value,
+      condicion: tipoOperacion.value?.value,
+      fecha_registro: originalCotizacion.value?.fecha_registro || null,
+    },
+    detalle_cotizacion: {
+      antiguos: [],
+      nuevos: [],
+      eliminados: [],
+    },
+  }
+
+  // 1. Detectar detalles eliminados
+  originalDetalle.value.forEach((orig) => {
+    const stillExists = carritoECO.listaProductos.find(
+      (p) => Number(p.iddetalle) === Number(orig.id),
+    )
+    if (!stillExists) {
+      payload.detalle_cotizacion.eliminados.push({ id_detalle_cotizacion: orig.id })
+    }
+  })
+
+  // 2. Clasificar actuales entre antiguos y nuevos
+  carritoECO.listaProductos.forEach((prod) => {
+    if (prod.iddetalle) {
+      // Registro Antiguo
+      const origItem = originalDetalle.value.find((o) => Number(o.id) === Number(prod.iddetalle))
+
+      const itemAntiguo = {
+        id_detalle_cotizacion: prod.iddetalle,
+        cantidad: prod.cantidad,
+        precio: prod.precio,
+        productos_almacen_id_productos_almacen: prod.idproductoalmacen,
+        descripcionAdicional: prod.descripcionAdicional,
+        categoria: prod.idporcentaje,
+        codigosUnicos: {
+          antiguos: [],
+          eliminados: [],
+        },
+      }
+
+      // Detectar cambios en códigos únicos para este detalle antiguo
+      const currentCodes = prod.codigosUnicos || []
+      const originalCodes = Array.isArray(origItem?.codigosUnicos) ? origItem.codigosUnicos : []
+
+      // Códigos que siguen presentes (pueden ser antiguos con idhistorial o "nuevos" agregados al editar)
+      currentCodes.forEach((code) => {
+        itemAntiguo.codigosUnicos.antiguos.push({
+          id: code.id,
+          serie: code.serie || code.codigo_unico,
+          estado: code.estado,
+          idhistorial: code.idhistorial || null,
+        })
+      })
+
+      // Códigos eliminados (estaban en el original pero ya no están en la lista actual)
+      originalCodes.forEach((origCode) => {
+        const stillInList = currentCodes.find((c) => Number(c.id) === Number(origCode.id))
+        if (!stillInList && (origCode.idhistorial || origCode.id_historial)) {
+          itemAntiguo.codigosUnicos.eliminados.push({
+            idhistorial: origCode.idhistorial || origCode.id_historial,
+          })
+        }
+      })
+
+      payload.detalle_cotizacion.antiguos.push(itemAntiguo)
+    } else {
+      // Registro Nuevo
+      payload.detalle_cotizacion.nuevos.push({
+        cantidad: prod.cantidad,
+        productos_almacen_id_productos_almacen: prod.idproductoalmacen,
+        precio: prod.precio,
+        descripcionAdicional: prod.descripcionAdicional,
+        categoria: prod.idporcentaje,
+        codigosUnicos: (prod.codigosUnicos || []).map((code) => ({
+          id: code.id,
+          serie: code.serie || code.codigo_unico,
+          estado: code.estado,
+        })),
+      })
+    }
+  })
+
+  return payload
+}
+
 // --- Envío de Datos ---
 
 async function enviarDatos() {
@@ -2172,7 +2272,7 @@ async function enviarDatos() {
     })
     return
   }
-  //localStorage
+
   const isValidCliente = await formClientes.value.validate()
   if (!isValidCliente) {
     $q.notify({
@@ -2192,86 +2292,47 @@ async function enviarDatos() {
     return
   }
 
-  carritoECO.tipoOperacion = tipoOperacion.value?.value
+  // Preparar el payload estructurado
+  const payload = prepararPayload()
 
-  if (pagosDivididos.value.length > 0) {
-    console.log('entro')
-    carritoECO.pagosDivididos = pagosDivididos.value
-    carritoECO.variablePago = 'dividido'
-  } else {
-    console.log('entro')
-    carritoECO.variablePago = 'dividido'
-    const pago = {
-      metodoPago: metodoPago.value,
-      monto: carritoECO.ventatotal,
-      porcentaje: 100,
-    }
-    carritoECO.pagosDivididos.push(pago)
+  // Añadir información adicional de pago y firma al objeto cotizacion si es necesario
+  // (Opcional, dependiendo de si el backend procesa estos campos)
+  payload.cotizacion.idfirma = carritoECO.idfirma
+  payload.cotizacion.cajabanco = idcajaBancoSeleccionada.value
+  payload.cotizacion.tipopago = carritoECO.credito ? 'credito' : 'contado'
+  payload['ver'] = 'editarCotizacion'
+  if (carritoECO.credito) {
+    payload.cotizacion.cantidadPagos = carritoECO.cantidadPagos
+    payload.cotizacion.periodo = carritoECO.periodo
+    payload.cotizacion.fechaLimite = carritoECO.fechaLimite
   }
-  const pv = puntoVenta.value
-  carritoECO.ipv = Number(pv.value)
-  carritoECO.idalmacen = filtroAlmacenCO.value
-  carritoECO.tipopago = carritoECO.credito ? 'credito' : CONSTANTES.tipopago
-  carritoECO.cajabanco = idcajaBancoSeleccionada.value
-  carritoECO.idcliente = idclienteCO.value
-  carritoECO.md5_em = idempresa
-  carritoECO.almacen = almacenesOptions.value.find(
-    (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
-  ).almacen //filtroAlmacenCO.value
-  console.log(carritoECO.almacen)
-  console.log(carritoECO.cajabanco)
-  console.log(carritoECO.cajabanco)
 
-  const datosFormulario = new FormData()
-  datosFormulario.append('ver', 'editarCotizacion')
-  datosFormulario.append('filtroALmacen', filtroAlmacenCO.value)
-  datosFormulario.append('filtroCategoria', filtroCategoriaCO.value)
-  datosFormulario.append('idcliente', idclienteCO.value)
-  datosFormulario.append('idsucursal', idsucursalCOS.value)
-  datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
-  datosFormulario.append('id', props.idCotizacion)
-  datosFormulario.append('listaProductos', JSON.stringify(carritoECO)) // Enviar el objeto completo del carrito
-  // Añadir el tipo de operación
-
-  console.log(carritoECO)
+  console.log('Payload estructurado para el backend:', payload)
 
   $q.loading.show({
-    message: 'Registrando cotización...',
+    message: 'Actualizando cotización...',
   })
-  try {
-    // Asumo que tu backend espera 'listaProductos' como un JSON string.
-    datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
-    const datosJson = {}
-    datosFormulario.forEach((valor, clave) => {
-      datosJson[clave] = valor
-    })
-    console.log(datosJson)
-    // const response = await api.post(``, datosFormulario)
-    // const data = response.data
-    // console.log('Datos recibidos:', response)
-    emit('saved')
-    // if (data.estado === 'exito') {
-    //   resetFormulario()
-    //   $q.notify({
-    //     type: 'positive',
-    //     message: 'Cotización realizada exitosamente.',
-    //   })
-    //   cotizacionFormRef.value.resetValidation() // Resetear validación
 
-    //   $q.dialog({
-    //     title: 'Cotización Exitosa',
-    //     message: 'Su comprobante está listo. ¿Desea verlo?',
-    //     cancel: true,
-    //     persistent: true,
-    //   }).onOk(() => {
-    //     generarComprobante(data.id)
-    //   })
-    // } else {
-    //   $q.notify({
-    //     type: 'negative',
-    //     message: data.mensaje || 'Error al registrar la cotización.',
-    //   })
-    // }
+  try {
+    // Se envía el payload estructurado directamente como JSON
+    // Ajustar el endpoint según la configuración de tu API (ej: 'actualizarCotizacion' o props.idCotizacion)
+    const response = await api.post('', payload)
+    const data = response.data
+    console.log('Respuesta del backend:', data)
+
+    if (data.estado === 'ok') {
+      $q.notify({
+        type: 'positive',
+        message: 'Cotización actualizada exitosamente.',
+      })
+      emit('saved')
+      // resetFormulario() // Opcional dependiendo de si quieres cerrar o mantener la vista
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: data.mensaje || 'Error al actualizar la cotización.',
+      })
+    }
   } catch (error) {
     console.error('Error al realizar la solicitud:', error)
     $q.notify({
@@ -2372,7 +2433,6 @@ const confirmar = (idcliente, data) => {
   //JSON.parse(JSON.stringify(detalleVenta.value))
   const detalle = JSON.parse(JSON.stringify(data))
   console.log('Confirmado', idcliente, detalle)
-  PDFenviarComprobanteCorreo(idcliente, detalle, $q)
   dialog.value = false
 }
 
@@ -2491,6 +2551,10 @@ const loadData = async () => {
       const info = data[0]
       const { cotizacion, cliente, almacen, detalle } = info
 
+      // Guardar estado original para detección de cambios al enviar
+      originalCotizacion.value = JSON.parse(JSON.stringify(cotizacion))
+      originalDetalle.value = JSON.parse(JSON.stringify(detalle))
+
       // 1. Limpiar el estado del carrito y formularios de productos
       resetProductoInputs()
       carritoECO.listaProductos = []
@@ -2499,7 +2563,7 @@ const loadData = async () => {
 
       // 2. Poblado de datos de la cotización
       if (cotizacion) {
-        fecha.value = cotizacion.fecha || obtenerFechaActualDato()
+        fecha.value = cotizacion.fecha
 
         // Asignar tipoOperacion priorizando el campo tipoOperacion de la API
         const opValue =
@@ -2558,11 +2622,16 @@ const loadData = async () => {
             idstock: item.idstock,
             idporcentaje: item.categoria,
             candiponible: disponible,
-            descripcion: item.descripcion || 'Sin descripción',
+            descripcion: item.producto || 'Sin descripción',
             descripcionAdicional: item.descripcionAdicional || '',
             codigo: item.codigoProducto || '',
             despachado: disponible === 0 || disponible < cantidad ? 2 : 1,
-            codigosUnicos: Array.isArray(item.codigosUnicos) ? item.codigosUnicos : [],
+            codigosUnicos: Array.isArray(item.codigosUnicos)
+              ? item.codigosUnicos.map((c) => ({
+                  ...c,
+                  serie: c.serie || c.codigo_unico, // Normalizar nombre del campo de serie
+                }))
+              : [],
           }
         })
 
