@@ -1,9 +1,0 @@
-librerias para utilizar en quasar me permita añadir firmas  dibujando en pantalla desde celular y poder insertarlas o subir una imagen al poder dibujar poder convertirlo en png o jpg y enviarlo ala api como file la imagen 
-
-
-
-
-G:\quasar\dess\comercial\cm-oficial\src\pages\cotizacion\ModalEditarCotizacion.vue primero dividir en dos seccion de datos del cliente y configuracion donde ira la fecha de la cotizacion ,el cliente , la sucursal,  el almacen , la categoria de precio, y punto de venta.
-en la segunda seccion añadir productos, stock actual, cantidad, precio unitario 
-
-la funcionalidad al seleccionar un cliente se debe filtrar la sucursal correspondiente al cliente y mostrar el primero un cliente puede tener varias sucursales, tambien al seleccionar almacen se debe filtrar la categoria y punto de venta y seleccionar el primero , tambien se debe filtrar los productos que pertences a ese almacen ya que son muchos 
