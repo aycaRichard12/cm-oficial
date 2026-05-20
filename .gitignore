@@ -55,3 +55,4 @@ upload_dist.bat
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/a.py
