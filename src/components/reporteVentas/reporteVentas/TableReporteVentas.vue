@@ -49,7 +49,7 @@
       </q-td>
     </template>
     <template #body-cell-acciones="props">
-      <q-td align="center">
+      <q-td align="center" :props="props">
         <q-btn
           id="btnverdetalle"
           size="sm"
@@ -185,7 +185,13 @@ const columnas = [
   { name: 'total', label: 'Total', field: 'total', align: 'right', dataType: 'number' },
   { name: 'descuento', label: 'Dscto.', field: 'descuento', align: 'right', dataType: 'number' },
   { name: 'ventatotal', label: 'Monto', field: 'ventatotal', align: 'right', dataType: 'number' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  {
+    name: 'acciones',
+    label: 'Acciones',
+    field: 'acciones',
+    align: 'center',
+    sortable: false,
+  },
 ]
 
 // Headers para la tabla filtrable (copiado del archivo original)
