@@ -582,8 +582,11 @@ function cargarPDF() {
   mostrarPDF.value = true
 }
 
-onMounted(() => {
-  listaAlmacenes()
+onMounted(async () => {
+  await listaAlmacenes()
+  if (almacenes.value.length > 0) {
+    almacenR.value = almacenes.value[0].idalmacen
+  }
   listaProductosDisponibles()
 })
 </script>
