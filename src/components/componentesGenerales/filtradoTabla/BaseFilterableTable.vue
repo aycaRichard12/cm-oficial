@@ -14,7 +14,10 @@
       <q-th
         :props="props"
         class="cursor-pointer text-left no-sort-icon"
-        style="white-space: normal; vertical-align: top"
+        :style="[
+          { 'white-space': 'normal', 'vertical-align': 'top' },
+          props.col.headerStyle || {},
+        ]"
       >
         <div class="flex items-start no-wrap">
           <span class="flex items-center text-weight-bold q-pr-sm">
