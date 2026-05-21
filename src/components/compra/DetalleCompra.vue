@@ -264,7 +264,6 @@
                     placeholder="0.00"
                     class="full-width q-mb-md"
                     stack-label
-                    hint="Registro exclusivo para Stock"
                   >
                     <template v-slot:prepend>
                       <q-icon name="lock" size="xs" color="orange-7" />
