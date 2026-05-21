@@ -74,7 +74,13 @@
             </div>
           </div>
           <div class="row q-mt-md justify-center">
-            <q-btn id="btngenerarreportekardex" type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
+            <q-btn
+              id="btngenerarreportekardex"
+              type="submit"
+              label="Generar reporte"
+              color="primary"
+              class="q-mr-sm"
+            />
             <q-btn
               id="btnvistapreviakardex"
               v-if="datosFiltrados.length > 0"
@@ -262,7 +268,7 @@ const columns = [
 
 // Computed
 const almacenesOptions = computed(() => {
-  return [{ almacen: 'Todos los almacenes', idalmacen: 0 }, ...almacenes.value]
+  return [...almacenes.value]
 })
 
 const almacenLabel = computed(() => {
@@ -329,7 +335,7 @@ async function listaAlmacenes() {
 async function listaProductosDisponibles() {
   try {
     const idempresa = usuario.empresa.idempresa
-    const endpoint = `listaProductoAlmacen/${idempresa}`
+    const endpoint = `listarProductoAlmacenKardex/${idempresa}`
     const response = await api.get(endpoint)
     const data = response.data
     if (data && data.length > 0) {
