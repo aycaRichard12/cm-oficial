@@ -722,16 +722,30 @@
       </q-table>
 
       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
-        <div class="row justify-end items-center q-gutter-x-lg">
+        <div class="row justify-end items-center q-gutter-x-md">
+          <!-- Botón Cancelar -->
+          <q-btn
+            flat
+            color="negative"
+            icon="close"
+            label="Cancelar"
+            @click="$emit('cancelarregistro')"
+            class="q-px-md"
+            style="border-radius: 100px; font-weight: 500"
+          />
+
+          <!-- Botón Firma del Cliente -->
           <q-btn
             outline
             color="primary"
-            icon="draw"
-            @click="RegistrarFirma"
+            icon="edit_note"
             label="Firma del Cliente"
-            class="q-px-lg bg-white shadow-1"
-            style="border-radius: 8px; font-weight: 600"
+            @click="RegistrarFirma"
+            class="q-px-lg bg-white"
+            style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
           />
+
+          <!-- Botón Registrar Cotización -->
           <q-btn
             label="Registrar Cotización"
             color="primary"
@@ -739,11 +753,13 @@
             size="lg"
             :disable="carritoCO.listaProductos.length === 0"
             @click="cotizacion_proforma"
-            class="q-px-xl text-weight-bolder shadow-4"
-            style="
-              border-radius: 12px;
-              background: linear-gradient(45deg, #1976d2, #42a5f5);
-              transition: transform 0.2s;
+            class="q-px-xl text-weight-bolder"
+            :class="{ 'gradient-btn': carritoCO.listaProductos.length > 0 }"
+            style="border-radius: 40px; transition: all 0.2s ease"
+            :style="
+              carritoCO.listaProductos.length === 0
+                ? 'border-radius: 40px'
+                : 'background: linear-gradient(135deg, #1976d2, #1565c0); box-shadow: 0 4px 12px rgba(25,118,210,0.3); border-radius: 40px'
             "
           />
         </div>
@@ -1159,6 +1175,7 @@
       full-height
       transition-show="scale"
       transition-hide="scale"
+      @hide="emit('reiniciar')"
     >
       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
@@ -1458,7 +1475,7 @@ const CONSTANTES = {
   tipopago: 'contado',
 }
 console.log(CONSTANTES.tipopago)
-const emit = defineEmits(['reiniciar'])
+const emit = defineEmits(['reiniciar', 'cancelarregistro'])
 
 // premitir stock
 const permitirStockvacio = () => {
@@ -2294,9 +2311,13 @@ async function enviarDatos() {
         message: 'Su comprobante está listo. ¿Desea verlo?',
         cancel: true,
         persistent: true,
-      }).onOk(() => {
-        generarComprobante(data.id)
       })
+        .onOk(() => {
+          generarComprobante(data.id)
+        })
+        .onCancel(() => {
+          emit('reiniciar')
+        })
     } else {
       $q.notify({
         type: 'negative',
@@ -2380,6 +2401,7 @@ async function generarComprobante(id) {
     if (data[0] === 'error') {
       console.error(data.error)
       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+      emit('reiniciar')
     } else {
       // Cargar leyendas si no están cargadas
       if (leyendasCotizacion.value.length === 0) {
@@ -2394,6 +2416,7 @@ async function generarComprobante(id) {
   } catch (error) {
     console.error('Error al generar comprobante:', error)
     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+    emit('reiniciar')
   } finally {
     $q.loading.hide()
   }
@@ -2524,6 +2547,14 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+.gradient-btn {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+.gradient-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+}
 /* Puedes mover tus estilos relacionados con el comprobante y otros aquí */
 .invoice {
   font-family: 'Arial', sans-serif;

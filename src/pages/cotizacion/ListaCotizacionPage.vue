@@ -1,6 +1,15 @@
 <template>
   <q-page class="q-pa-md" v-if="!showEditModal">
-    <q-btn color="primary" icon="check" label="PDF" @click="cargarPDF" />
+    <div class="q-pa-md row justify-between">
+      <q-btn
+        color="primary"
+        icon="add"
+        label="Registrar Cotización"
+        @click="$emit('registrarcotizacion')"
+      />
+      <q-btn color="primary" icon="check" label="PDF" @click="cargarPDF" />
+    </div>
+
     <TableCotizacionPrincipal
       id="tablareportecotizacion"
       ref="refHijo"
@@ -39,6 +48,13 @@
     </q-dialog>
   </q-page>
   <q-page class="q-pa-md" v-else>
+    <q-btn
+      flat
+      color="primary"
+      icon="arrow_back"
+      label="Volver a la lista"
+      @click="showEditModal = false"
+    />
     <EditarCotizacion
       v-if="showEditModal"
       :id-cotizacion="idCotizacionAEditar"
@@ -62,7 +78,7 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
 import TableCotizacionPrincipal from 'src/components/cotizacion/TableCotizacionPrincipal.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
-
+defineEmits(['registrarcotizacion', 'reiniciar'])
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
 

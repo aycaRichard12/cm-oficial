@@ -35,25 +35,6 @@
         </div>
 
         <!-- Toggle Venta sin Stock incorporado al header para ahorrar espacio y lucir elegante -->
-        <div
-          class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2"
-          style="border-radius: 20px"
-          id="ventaSinStockCotizacion"
-        >
-          <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
-          <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
-          <q-btn
-            :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
-            dense
-            flat
-            :color="permitirStock ? 'positive' : 'grey'"
-            size="md"
-            :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
-            @click="permitirStockvacio()"
-            class="q-pa-none"
-            style="transition: all 0.3s"
-          />
-        </div>
       </q-card-section>
 
       <q-card-section class="q-pa-lg">
@@ -1448,24 +1429,7 @@ const calculateDueDate = () => {
 // }
 
 // premitir stock
-const permitirStockvacio = () => {
-  permitirStock.value = !permitirStock.value
 
-  if (!permitirStock.value) {
-    const datos = JSON.parse(localStorage.getItem('carritoECO')) || {}
-
-    console.log(datos)
-    const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
-    console.log(productos)
-
-    const carrito = Array.isArray(carritoECO.value) && carritoECO.value.length > 0
-    console.log(carrito)
-
-    if (carrito || productos) {
-      emit('reiniciar')
-    }
-  }
-}
 // Columnas para la tabla del carrito
 const carritoColumns = [
   { name: 'exp', label: '', align: 'left' },

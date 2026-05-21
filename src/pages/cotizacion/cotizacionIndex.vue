@@ -1,9 +1,26 @@
 <template>
   <div v-if="paginaRegistrarCotizacion">
-    <CotizacionPage :key="componenteKey" @reiniciar="reiniciar" />
+    <div class="q-pa-sm">
+      <q-btn
+        flat
+        color="primary"
+        icon="arrow_back"
+        label="Volver a la lista"
+        @click="paginaRegistrarCotizacion = false"
+      />
+    </div>
+    <CotizacionPage
+      :key="componenteKey"
+      @reiniciar="reiniciar"
+      @cancelarregistro="paginaRegistrarCotizacion = false"
+    />
   </div>
   <div v-else>
-    <ListaCotizacionPage :key="componenteKey" @reiniciar="reiniciar" />
+    <ListaCotizacionPage
+      :key="componenteKey"
+      @reiniciar="reiniciar"
+      @registrarcotizacion="paginaRegistrarCotizacion = true"
+    />
   </div>
 </template>
 
@@ -17,6 +34,7 @@ const componenteKey = ref(0)
 
 function reiniciar() {
   componenteKey.value++
+  paginaRegistrarCotizacion.value = false
   console.log(componenteKey.value)
 }
 </script>

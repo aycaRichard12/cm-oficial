@@ -1,7 +1,7 @@
 <template>
   <BaseFilterableTable
     ref="refHijo"
-    title="Reporte Cotización"
+    title="Cotizaciones"
     nombreColumnaTotales="estado"
     :rows="props.rows"
     :columns="columnas"
