@@ -167,7 +167,6 @@ const opcionesAccionSimple = [
 const opcionesAccionCotizacionNormal = [
   { label: 'Seleccione', value: '' },
   { label: 'Anulación', value: 1 },
-  { label: 'Editar', value: 4 },
   { label: 'Ver estado', value: 3 },
 ]
 

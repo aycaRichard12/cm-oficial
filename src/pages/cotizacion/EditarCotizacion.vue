@@ -1,299 +1,256 @@
 <template>
   <q-page class="q-pa-lg bg-fondo" style="min-height: 100vh">
     <!-- Encabezado de la Página -->
-    <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
-      <div class="col-12 flex items-center">
-        <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2" style="border-radius: 12px">
-          <q-icon name="request_quote" size="36px" color="primary" />
-        </div>
-        <div>
-          <h1
-            class="text-h4 text-weight-bolder q-my-none text-primary"
-            style="letter-spacing: -0.5px"
-          >
-            Editar de Cotización
-          </h1>
-          <div class="text-subtitle1 text-grey-7 q-mt-xs"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Primera Sección: Datos Generales (Card) -->
-    <q-card
-      class="my-card q-mb-xl shadow-3"
-      style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
-    >
-      <q-card-section
-        class="bg-primary text-white q-py-md q-px-lg flex justify-between items-center"
-        style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%)"
-      >
-        <div class="flex items-center">
-          <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
-          <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-            Datos del Cliente y Configuración
+    <div class="">
+      <!-- Modern Header Section -->
+      <div class="header-section q-mb-xl">
+        <div class="row items-center">
+          <div class="col">
+            <div class="flex items-center gap-3">
+              <div class="icon-wrapper bg-gradient-primary text-white">
+                <q-icon name="request_quote" size="28px" />
+              </div>
+              <div>
+                <h1 class="page-title text-grey-10">Editar Cotización</h1>
+                <div class="page-subtitle text-grey-6">Gestión y actualización de cotizaciones</div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Toggle Venta sin Stock incorporado al header para ahorrar espacio y lucir elegante -->
-      </q-card-section>
+      <!-- Main Card: Customer Data Section -->
+      <q-card class="data-card q-mb-xl" flat>
+        <q-card-section class="card-header">
+          <div class="flex items-center gap-2">
+            <q-icon name="manage_accounts" size="20px" class="text-white" />
+            <span class="card-header-title">Datos del Cliente y Configuración</span>
+          </div>
+        </q-card-section>
 
-      <q-card-section class="q-pa-lg">
-        <!-- Sección: Datos del cliente -->
-        <q-form ref="formClientes" class="q-mb-md">
-          <div class="row q-col-gutter-lg q-mb-md">
-            <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="tipooperacion"
-                >Tipo de Operación <span class="text-negative">*</span></label
-              >
-              <q-select
-                v-model="tipoOperacion"
-                :options="optionOperacion"
-                id="tipooperacion"
-                map-options
-                :rules="[(val) => !!val || 'Campo requerido']"
-                @update:model-value="handleTipoOperacionChange"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-                readonly
-              />
-            </div>
-            <div class="col-12 col-md-3" id="fechaCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="fecha"
-                >Fecha <span class="text-negative">*</span></label
-              >
-              <q-input
-                v-model="fecha"
-                id="fecha"
-                type="date"
-                map-options
-                :rules="[(val) => !!val || 'Campo requerido']"
-                @update:model-value="cambioFecha"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-              />
-            </div>
-            <div class="col-12 col-md-6" id="clienteCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="cliente"
-                >Cliente <span class="text-negative">*</span></label
-              >
-              <div class="row no-wrap">
+        <q-card-section class="card-content q-pa-xl">
+          <!-- Customer Data Form -->
+          <q-form ref="formClientes" class="customer-form">
+            <div class="row q-col-gutter-xl q-mb-xl">
+              <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
+                <div class="field-label">
+                  Tipo de Operación <span class="required-star">*</span>
+                </div>
                 <q-select
-                  class="col premium-input"
-                  v-model="selectedClient"
+                  v-model="tipoOperacion"
+                  :options="optionOperacion"
+                  id="tipooperacion"
+                  map-options
+                  :rules="[(val) => !!val || 'Campo requerido']"
+                  @update:model-value="handleTipoOperacionChange"
+                  outlined
+                  dense
+                  bg-color="white"
+                  hide-bottom-space
+                  class="saas-input"
+                  readonly
+                />
+              </div>
+
+              <div class="col-12 col-md-3" id="fechaCotizacion">
+                <div class="field-label">Fecha <span class="required-star">*</span></div>
+                <q-input
+                  v-model="fecha"
+                  id="fecha"
+                  type="date"
+                  :rules="[(val) => !!val || 'Campo requerido']"
+                  @update:model-value="cambioFecha"
+                  outlined
+                  dense
+                  bg-color="white"
+                  hide-bottom-space
+                  class="saas-input"
+                />
+              </div>
+
+              <div class="col-12 col-md-6" id="clienteCotizacion">
+                <div class="field-label">Cliente <span class="required-star">*</span></div>
+                <div class="row no-wrap items-start gap-2">
+                  <q-select
+                    class="col saas-input"
+                    v-model="selectedClient"
+                    use-input
+                    hide-selected
+                    fill-input
+                    input-debounce="0"
+                    id="cliente"
+                    :options="filteredClients"
+                    @filter="filterClient"
+                    @input-value="setClientInputValue"
+                    @update:model-value="elegirUnCliente"
+                    option-value="id"
+                    option-label="display"
+                    :rules="[(val) => !!val || 'Campo requerido']"
+                    outlined
+                    dense
+                    bg-color="white"
+                    hide-bottom-space
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">No hay resultados</q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+
+                  <div id="botonRegistrarCliente">
+                    <q-btn
+                      color="primary"
+                      unelevated
+                      class="icon-btn"
+                      icon="person_add"
+                      @click="RegistrarCliente"
+                    >
+                      <q-tooltip class="tooltip-custom"> Registrar Nuevo Cliente </q-tooltip>
+                    </q-btn>
+                  </div>
+                </div>
+                <input type="hidden" v-model="idclienteCO" name="idcliente" />
+              </div>
+            </div>
+
+            <div class="row q-col-gutter-xl">
+              <div class="col-12 col-md-6" id="sucursalCotizacion">
+                <div class="field-label">Sucursal <span class="required-star">*</span></div>
+                <q-select
+                  v-model="selectedSucursal"
                   use-input
                   hide-selected
                   fill-input
                   input-debounce="0"
-                  id="cliente"
-                  :options="filteredClients"
-                  @filter="filterClient"
-                  @input-value="setClientInputValue"
-                  @update:model-value="elegirUnCliente"
+                  id="sucursal"
+                  :options="filteredSucursales"
+                  @filter="filterSucursal"
+                  @input-value="setSucursalInputValue"
+                  @update:model-value="elegirUnaSucursal"
                   option-value="id"
-                  option-label="display"
+                  option-label="nombre"
                   :rules="[(val) => !!val || 'Campo requerido']"
                   outlined
                   dense
                   bg-color="white"
                   hide-bottom-space
+                  class="saas-input"
                 >
                   <template v-slot:no-option>
                     <q-item>
-                      <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                      <q-item-section class="text-grey">No hay resultados</q-item-section>
                     </q-item>
                   </template>
                 </q-select>
-                <div class="q-ml-md" id="botonRegistrarCliente">
-                  <q-btn
-                    color="primary"
-                    unelevated
-                    class="full-height shadow-2"
-                    style="border-radius: 8px; width: 44px"
-                    icon="person_add"
-                    @click="RegistrarCliente"
-                  >
-                    <q-tooltip class="bg-primary text-caption shadow-4"
-                      >Registrar Nuevo Cliente</q-tooltip
-                    >
-                  </q-btn>
-                </div>
+                <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
               </div>
-              <input type="hidden" v-model="idclienteCO" name="idcliente" />
             </div>
-          </div>
-          <div class="row q-col-gutter-lg">
-            <div class="col-12 col-md-6" id="sucursalCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="sucursal"
-                >Sucursal <span class="text-negative">*</span></label
-              >
-              <q-select
-                v-model="selectedSucursal"
-                use-input
-                hide-selected
-                fill-input
-                input-debounce="0"
-                id="sucursal"
-                :options="filteredSucursales"
-                @filter="filterSucursal"
-                @input-value="setSucursalInputValue"
-                @update:model-value="elegirUnaSucursal"
-                option-value="id"
-                option-label="nombre"
-                :rules="[(val) => !!val || 'Campo requerido']"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey"> No hay resultados </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-              <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
-            </div>
-          </div>
-          <ModalfirmaPage
-            v-model="modalfirmaActivo"
-            :id-entidad="selectedClient"
-            tipo-operacion="CLIENTE"
-            @onSuccess="alTerminarFirma"
-            @onError="alFallarFirma"
-          />
-        </q-form>
 
-        <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
+            <ModalfirmaPage
+              v-model="modalfirmaActivo"
+              :id-entidad="selectedClient"
+              tipo-operacion="CLIENTE"
+              @onSuccess="alTerminarFirma"
+              @onError="alFallarFirma"
+            />
+          </q-form>
 
-        <!-- Sección: Configuración inicial -->
-        <q-form ref="cotizacionFormRef">
-          <div class="row q-col-gutter-lg">
-            <div class="col-12 col-md-4" id="almacenCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="almacen"
-                >Almacén origen <span class="text-negative">*</span></label
-              >
-              <q-select
-                v-model="filtroAlmacenCO"
-                :options="almacenesOptions"
-                id="almacen"
-                emit-value
-                map-options
-                option-value="idalmacen"
-                option-label="almacen"
-                :rules="[(val) => !!val || 'Campo requerido']"
-                @update:model-value="listaCategoria"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-              />
+          <q-separator class="section-divider q-my-xl" />
+
+          <!-- Initial Configuration Section -->
+          <q-form ref="cotizacionFormRef">
+            <div class="row q-col-gutter-xl">
+              <div class="col-12 col-md-4" id="almacenCotizacion">
+                <div class="field-label">Almacén origen <span class="required-star">*</span></div>
+                <q-select
+                  v-model="filtroAlmacenCO"
+                  :options="almacenesOptions"
+                  id="almacen"
+                  emit-value
+                  map-options
+                  option-value="idalmacen"
+                  option-label="almacen"
+                  :rules="[(val) => !!val || 'Campo requerido']"
+                  @update:model-value="listaCategoria"
+                  outlined
+                  dense
+                  bg-color="white"
+                  hide-bottom-space
+                  class="saas-input"
+                />
+              </div>
+
+              <div class="col-12 col-md-4" id="categoriaCotizacion">
+                <div class="field-label">
+                  Categoría de precio <span class="required-star">*</span>
+                </div>
+                <q-select
+                  v-model="filtroCategoriaCO"
+                  :options="categoriasOptions"
+                  id="categoria"
+                  emit-value
+                  map-options
+                  option-value="id"
+                  option-label="nombre"
+                  :rules="[(val) => !!val || 'Campo requerido']"
+                  outlined
+                  dense
+                  bg-color="white"
+                  hide-bottom-space
+                  class="saas-input"
+                />
+              </div>
+
+              <div class="col-12 col-md-4" id="puntoVentaCotizacion">
+                <div class="field-label">Punto Venta <span class="required-star">*</span></div>
+                <q-select
+                  v-model="puntoVenta"
+                  :options="puntosVenta"
+                  id="puntoventa"
+                  emit-value
+                  map-options
+                  option-value="value"
+                  option-label="label"
+                  :rules="[(val) => !!val || 'Campo requerido']"
+                  outlined
+                  dense
+                  bg-color="white"
+                  hide-bottom-space
+                  class="saas-input"
+                />
+              </div>
             </div>
-            <div class="col-12 col-md-4" id="categoriaCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="categoria"
-                >Categoría de precio <span class="text-negative">*</span></label
-              >
-              <q-select
-                v-model="filtroCategoriaCO"
-                :options="categoriasOptions"
-                id="categoria"
-                emit-value
-                map-options
-                option-value="id"
-                option-label="nombre"
-                :rules="[(val) => !!val || 'Campo requerido']"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-              />
-            </div>
-            <div class="col-12 col-md-4" id="puntoVentaCotizacion">
-              <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="puntoventa"
-                >Punto Venta <span class="text-negative">*</span></label
-              >
-              <q-select
-                v-model="puntoVenta"
-                :options="puntosVenta"
-                id="puntoventa"
-                emit-value
-                map-options
-                option-value="value"
-                option-label="label"
-                :rules="[(val) => !!val || 'Campo requerido']"
-                outlined
-                dense
-                bg-color="white"
-                hide-bottom-space
-                class="premium-input"
-              />
-            </div>
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </div>
 
     <!-- Segunda Sección: Añadir Productos -->
-    <q-card
-      class="my-card q-mb-xl shadow-3"
-      style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.05)"
-    >
-      <q-card-section
-        class="bg-secondary text-white q-py-md q-px-lg flex items-center"
-        style="background: linear-gradient(135deg, #26a69a 0%, #00897b 100%)"
-      >
-        <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
-        <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-          Añadir Productos
+    <q-card class="products-card" flat>
+      <!-- Header Section -->
+      <q-card-section class="card-header">
+        <div class="flex items-center gap-2">
+          <q-icon name="shopping_cart_checkout" size="20px" class="text-white" />
+          <span class="card-header-title">Añadir Productos</span>
         </div>
       </q-card-section>
 
-      <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
+      <!-- Product Selection Section -->
+      <q-card-section class="card-content bg-white">
         <div class="row q-col-gutter-lg items-end">
           <div class="col-12 col-md-4" id="productoCotizacion">
-            <div class="flex justify-between items-center q-mb-sm">
-              <label
-                class="text-weight-bold text-grey-9 block"
-                style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-                for="producto"
-                >Producto o Servicio <span class="text-negative">*</span></label
-              >
+            <div class="flex justify-between items-center q-mb-xs">
+              <div class="field-label">
+                Producto o Servicio <span class="required-star">*</span>
+              </div>
               <q-checkbox
                 v-if="esProductoUnico"
                 v-model="registrarComoProductoUnico"
                 size="xs"
                 label="Producto Único"
                 color="secondary"
-                class="text-caption text-weight-bold text-secondary q-mb-none"
+                class="unique-checkbox"
               />
             </div>
             <q-select
@@ -309,50 +266,40 @@
               outlined
               dense
               bg-color="white"
-              class="premium-input"
+              class="saas-input"
               @filter="filterProduct"
               @input-value="setProductInputValue"
               @update:model-value="elegirUnProducto"
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey-6">No hay resultados</q-item-section>
                 </q-item>
               </template>
             </q-select>
           </div>
 
           <div class="col-12 col-md-2" id="stockCotizacion">
-            <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-              for="stock"
-              >Stock Actual</label
-            >
+            <div class="field-label">Stock Actual</div>
             <q-input
               id="stock"
               v-model="cantidaddisponibleCO"
               readonly
               outlined
               dense
-              bg-color="grey-2"
+              bg-color="grey-1"
               hide-bottom-space
-              class="premium-input text-center"
+              class="stock-input"
               placeholder="0"
             >
               <template v-slot:prepend>
-                <q-icon name="inventory_2" size="xs" color="grey-7" />
+                <q-icon name="inventory_2" size="18px" color="grey-6" />
               </template>
             </q-input>
           </div>
 
           <div class="col-12 col-md-2" id="cantidadCotizacion">
-            <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-              for="cantidad"
-              >Cantidad <span class="text-negative">*</span></label
-            >
+            <div class="field-label">Cantidad <span class="required-star">*</span></div>
             <q-input
               id="cantidad"
               v-model.number="cantidadCO"
@@ -364,17 +311,12 @@
               dense
               bg-color="white"
               hide-bottom-space
-              class="premium-input text-center"
+              class="saas-input text-center"
             />
           </div>
 
           <div class="col-12 col-md-3" id="precioCotizacion">
-            <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
-              for="precio"
-              >Precio unitario <span class="text-negative">*</span></label
-            >
+            <div class="field-label">Precio unitario <span class="required-star">*</span></div>
             <q-input
               id="precio"
               v-model.number="precioCO"
@@ -386,13 +328,10 @@
               dense
               bg-color="white"
               hide-bottom-space
-              class="premium-input"
+              class="saas-input"
             >
               <template v-slot:append>
-                <div
-                  class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders"
-                  style="height: 28px; line-height: 28px"
-                >
+                <div class="currency-badge">
                   {{ divisaActiva.tipo }}
                 </div>
               </template>
@@ -404,17 +343,11 @@
               icon="add_shopping_cart"
               color="secondary"
               unelevated
-              class="full-width shadow-3"
-              style="border-radius: 12px; height: 40px; transition: all 0.3s"
+              class="add-button full-width"
               :disable="!canAddProduct"
               @click="anadirProductoACarrito"
             >
-              <q-tooltip
-                class="bg-secondary text-subtitle2 shadow-4"
-                anchor="top middle"
-                self="bottom middle"
-                >Añadir al carrito</q-tooltip
-              >
+              <q-tooltip class="tooltip-secondary"> Añadir al carrito </q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -424,23 +357,19 @@
           :is-unique="esProductoUnico && registrarComoProductoUnico"
           :cantidad-requerida="cantidadCO"
           @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
-          class="q-mt-md"
+          class="q-mt-lg"
         />
       </q-card-section>
 
-      <!-- Tercera Sección: Resumen de cotización (Table inside the same parent or separate) -->
-      <q-card-section
-        class="bg-white q-py-sm q-px-lg flex items-center justify-between"
-        style="border-bottom: 1px solid #e0e0e0"
-      >
-        <div class="flex items-center text-primary">
-          <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
-          <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-            Resumen de Cotización
-          </div>
+      <!-- Summary Section Header -->
+      <q-card-section class="summary-header">
+        <div class="flex items-center gap-2">
+          <q-icon name="receipt_long" size="18px" class="text-primary" />
+          <span class="summary-title">Resumen de Cotización</span>
         </div>
       </q-card-section>
 
+      <!-- Products Table -->
       <q-table
         id="tablaResumenCotizacion"
         :rows="carritoECO.listaProductos"
@@ -448,16 +377,12 @@
         row-key="idproductoalmacen"
         flat
         hide-bottom
-        class="custom-table q-pt-md"
-        table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
+        class="products-table"
+        table-header-class="table-header"
         :pagination="{ rowsPerPage: 0 }"
       >
         <template v-slot:body="props">
-          <q-tr
-            :props="props"
-            :class="props.expand ? 'bg-blue-50' : 'hover-row'"
-            style="transition: background 0.3s"
-          >
+          <q-tr :props="props" :class="props.expand ? 'expanded-row-active' : 'table-row'">
             <q-td auto-width>
               <q-btn
                 v-if="props.row.codigosUnicos?.length > 0"
@@ -465,109 +390,60 @@
                 color="primary"
                 flat
                 round
+                dense
                 @click="props.expand = !props.expand"
                 :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                class="expand-btn"
               />
             </q-td>
 
             <q-td key="num" :props="props" class="text-left">
-              <q-chip
-                color="grey-2"
-                text-color="grey-9"
-                label-slot
-                dense
-                square
-                style="border-radius: 6px; border: 1px solid #e0e0e0"
-              >
-                <span class="text-weight-bolder">{{ props.row.num }}</span>
-              </q-chip>
-            </q-td>
-            <q-td key="codigo" :props="props" class="text-left">
-              <q-chip
-                outline
-                color="primary"
-                label-slot
-                dense
-                square
-                style="border-radius: 6px; font-weight: 600"
-              >
-                {{ props.row.codigo }}
-              </q-chip>
+              <q-badge class="num-badge" :label="props.row.num" />
             </q-td>
 
-            <q-td key="descripcion" :props="props" style="vertical-align: middle">
-              <div
-                class="text-weight-bolder text-grey-10 text-subtitle2"
-                style="font-family: 'Inter', sans-serif"
-              >
+            <q-td key="codigo" :props="props" class="text-left">
+              <q-badge outline color="primary" class="code-badge" :label="props.row.codigo" />
+            </q-td>
+
+            <q-td key="descripcion" :props="props">
+              <div class="product-description">
                 {{ props.row.descripcion }}
               </div>
-
-              <div
-                class="flex items-center text-primary cursor-pointer q-mt-xs"
-                style="
-                  font-size: 0.85em;
-                  padding: 4px 10px;
-                  background: rgba(25, 118, 210, 0.08);
-                  border-radius: 6px;
-                  display: inline-flex;
-                  border: 1px dashed rgba(25, 118, 210, 0.3);
-                  transition: all 0.2s;
-                "
-                v-ripple
-              >
-                <q-icon name="edit_note" size="16px" class="q-mr-xs" />
-                <span class="text-weight-medium">{{
-                  props.row.descripcionAdicional || 'Añadir nota adicional...'
-                }}</span>
-
-                <q-popup-edit
-                  v-model="props.row.descripcionAdicional"
-                  v-slot="scope"
-                  buttons
-                  label-set="Guardar"
-                  label-cancel="Cancelar"
-                >
-                  <q-input
-                    v-model="scope.value"
-                    outlined
-                    dense
-                    autofocus
-                    counter
-                    @keyup.enter="validarDescripcion(scope, props.row)"
-                  />
-                </q-popup-edit>
+              <div class="additional-note" v-ripple @click="openNoteEditor(props.row)">
+                <q-icon name="edit_note" size="14px" />
+                <span>{{ props.row.descripcionAdicional || 'Añadir nota adicional...' }}</span>
               </div>
+              <q-popup-edit
+                v-model="props.row.descripcionAdicional"
+                v-slot="scope"
+                buttons
+                label-set="Guardar"
+                label-cancel="Cancelar"
+                @show="editingRow = props.row"
+              >
+                <q-input
+                  v-model="scope.value"
+                  outlined
+                  dense
+                  autofocus
+                  counter
+                  @keyup.enter="validarDescripcion(scope, props.row)"
+                />
+              </q-popup-edit>
             </q-td>
 
             <q-td key="cantidad" :props="props" class="text-right">
-              <q-badge
-                color="secondary"
-                text-color="white"
-                label-slot
-                class="q-px-md q-py-xs text-weight-bolder text-subtitle2 shadow-1"
-                style="border-radius: 8px"
-              >
-                {{ props.row.cantidad }}
-              </q-badge>
+              <q-badge class="quantity-badge" :label="props.row.cantidad" />
             </q-td>
 
-            <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
-              {{ decimas(props.row.precio) }}
-              <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-                divisaActiva.tipo
-              }}</span>
+            <q-td key="precio" :props="props" class="text-right">
+              <span class="price-value">{{ decimas(props.row.precio) }}</span>
+              <span class="currency-symbol">{{ divisaActiva.tipo }}</span>
             </q-td>
 
-            <q-td
-              key="total"
-              :props="props"
-              class="text-right text-weight-bolder text-primary text-subtitle1"
-            >
-              {{ decimas(props.row.cantidad * props.row.precio) }}
-              <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
-                divisaActiva.tipo
-              }}</span>
+            <q-td key="total" :props="props" class="text-right">
+              <span class="total-value">{{ decimas(props.row.cantidad * props.row.precio) }}</span>
+              <span class="currency-symbol">{{ divisaActiva.tipo }}</span>
             </q-td>
 
             <q-td key="options" :props="props" class="text-center">
@@ -579,17 +455,15 @@
                 dense
                 size="sm"
                 @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
-                class="hover-shake"
+                class="delete-btn"
               >
-                <q-tooltip class="bg-negative text-weight-medium shadow-3"
-                  >Quitar producto</q-tooltip
-                >
+                <q-tooltip class="tooltip-negative">Quitar producto</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
 
-          <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
-            <q-td colspan="100%" class="q-pa-lg">
+          <q-tr v-show="props.expand" :props="props" class="expanded-row">
+            <q-td colspan="100%" class="q-pa-md">
               <TableCodigosUnicos
                 v-model="props.row.codigosUnicos"
                 :parent-row="props.row"
@@ -608,29 +482,17 @@
         </template>
 
         <template v-slot:bottom-row>
-          <q-tr class="bg-grey-1">
-            <q-td
-              colspan="6"
-              class="text-right text-subtitle2 text-grey-8"
-              style="letter-spacing: 0.5px"
-              >SUBTOTAL:</q-td
-            >
-            <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
+          <q-tr class="summary-row subtotal">
+            <q-td colspan="6" class="text-right summary-label">SUBTOTAL:</q-td>
+            <q-td class="text-right summary-value">
               {{ decimas(carritoECO.subtotal) }}
-              <span class="text-caption text-grey-6 text-weight-medium">{{
-                divisaActiva.tipo
-              }}</span>
+              <span class="currency-symbol">{{ divisaActiva.tipo }}</span>
             </q-td>
             <q-td />
           </q-tr>
 
-          <q-tr class="bg-grey-1" id="descuentoCotizacion">
-            <q-td
-              colspan="6"
-              class="text-right text-subtitle2 text-grey-8"
-              style="vertical-align: middle; letter-spacing: 0.5px"
-              >DESCUENTO:</q-td
-            >
+          <q-tr class="summary-row discount" id="descuentoCotizacion">
+            <q-td colspan="6" class="text-right summary-label">DESCUENTO:</q-td>
             <q-td class="text-right">
               <q-input
                 v-model.number="carritoECO.descuento"
@@ -641,15 +503,11 @@
                 dense
                 outlined
                 bg-color="white"
+                class="discount-input"
                 input-class="text-right text-weight-bolder text-negative"
-                style="max-width: 140px; margin-left: auto"
-                class="premium-input"
               >
                 <template v-slot:append>
-                  <div
-                    class="bg-negative text-white text-weight-bold text-caption q-px-sm rounded-borders"
-                    style="height: 24px; line-height: 24px"
-                  >
+                  <div class="discount-badge">
                     {{ divisaActiva.tipo }}
                   </div>
                 </template>
@@ -658,40 +516,28 @@
             <q-td />
           </q-tr>
 
-          <q-tr
-            class="bg-primary text-white"
-            style="background: linear-gradient(90deg, #1976d2 0%, #1e88e5 100%)"
-          >
-            <q-td
-              colspan="6"
-              class="text-right text-h6 text-weight-bolder text-uppercase"
-              style="letter-spacing: 1px"
-              >TOTAL GENERAL:</q-td
-            >
-            <q-td
-              class="text-right text-h5 text-weight-bolder"
-              style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2)"
-            >
+          <q-tr class="summary-row total">
+            <q-td colspan="6" class="text-right total-label">TOTAL GENERAL:</q-td>
+            <q-td class="text-right total-amount">
               {{ decimas(carritoECO.ventatotal) }}
-              <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
-                divisaActiva.tipo
-              }}</span>
+              <span class="total-currency">{{ divisaActiva.tipo }}</span>
             </q-td>
             <q-td />
           </q-tr>
         </template>
       </q-table>
 
-      <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
-        <div class="row justify-end items-center q-gutter-x-lg">
+      <!-- Action Buttons -->
+      <q-card-section class="action-section">
+        <div class="row justify-end items-center q-gutter-md">
+          <q-btn label="Cancelar" color="red" outline @click="$emit('cancelarEdicion')" />
           <q-btn
             outline
             color="primary"
             icon="draw"
             @click="RegistrarFirma"
             label="Firma del Cliente"
-            class="q-px-lg bg-white shadow-1"
-            style="border-radius: 8px; font-weight: 600"
+            class="action-btn-outline"
           />
           <q-btn
             label="Guardar Cotización"
@@ -700,12 +546,7 @@
             size="lg"
             :disable="carritoECO.listaProductos.length === 0"
             @click="cotizacion_proforma"
-            class="q-px-xl text-weight-bolder shadow-4"
-            style="
-              border-radius: 12px;
-              background: linear-gradient(45deg, #1976d2, #42a5f5);
-              transition: transform 0.2s;
-            "
+            class="action-btn-primary"
           />
         </div>
       </q-card-section>
@@ -1226,7 +1067,7 @@ const props = defineProps({
   },
 })
 console.log('ID de Cotización recibido:', props.idCotizacion)
-const emit = defineEmits(['saved', 'reiniciar'])
+const emit = defineEmits(['saved', 'reiniciar', 'cancelarEdicion'])
 
 const permisosStore = useOperacionesPermitidas()
 console.log(permisosStore.tienePermiso('editarprecioventa'))
@@ -2841,5 +2682,694 @@ onMounted(async () => {
 }
 .scroll::-webkit-scrollbar-track {
   background: #f1f1f1;
+}
+.saas-cotizacion-editor {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.header-section {
+  animation: fadeInDown 0.5s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* Card Styles */
+.data-card {
+  border-radius: 20px;
+  background: white;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.data-card:hover {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #0b6d5d 0%, #004d40 100%);
+  padding: 16px 32px;
+  border-bottom: none;
+}
+
+.card-header-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.card-content {
+  padding: 32px;
+}
+
+/* Form Elements */
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.saas-input {
+  width: 100%;
+}
+
+.saas-input :deep(.q-field__control) {
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.saas-input :deep(.q-field__control:hover) {
+  border-color: #1976d2;
+}
+
+.saas-input :deep(.q-field__control--focused) {
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.saas-input :deep(.q-field__native) {
+  font-size: 14px;
+}
+
+.icon-btn {
+  height: 40px;
+  width: 44px;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+}
+
+/* Separator */
+.section-divider {
+  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 50%, #e2e8f0 100%);
+  height: 1px;
+}
+
+/* Tooltip */
+.tooltip-custom {
+  background: #1e293b;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+
+/* Utility Classes */
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .saas-cotizacion-editor {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .icon-wrapper q-icon {
+    font-size: 22px;
+  }
+
+  .card-content {
+    padding: 20px;
+  }
+
+  .card-header {
+    padding: 14px 20px;
+  }
+
+  .field-label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .saas-cotizacion-editor {
+    padding: 12px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+
+  .card-content {
+    padding: 16px;
+  }
+}
+
+/* Smooth Transitions */
+* {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Improved Focus States */
+:deep(.q-field__control:focus-within) {
+  border-color: #1976d2;
+}
+
+:deep(.q-btn:focus-visible) {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+.products-card {
+  border-radius: 20px;
+  background: white;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+/* Header Styles */
+.card-header {
+  background: linear-gradient(135deg, #047a67 0%, #004d40 100%);
+  padding: 16px 24px;
+}
+
+.card-header-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Content Section */
+.card-content {
+  padding: 24px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.unique-checkbox {
+  margin-bottom: 0;
+}
+
+/* Input Styles */
+.saas-input,
+.stock-input {
+  width: 100%;
+}
+
+.saas-input :deep(.q-field__control),
+.stock-input :deep(.q-field__control) {
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.saas-input :deep(.q-field__control:hover) {
+  border-color: #26a69a;
+}
+
+.saas-input :deep(.q-field__control--focused) {
+  box-shadow: 0 0 0 2px rgba(38, 166, 154, 0.1);
+}
+
+.stock-input :deep(.q-field__control) {
+  background-color: #f8fafc;
+}
+
+.currency-badge {
+  background: #e2e8f0;
+  color: #475569;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 0 8px;
+  border-radius: 6px;
+  height: 26px;
+  line-height: 26px;
+}
+
+/* Add Button */
+.add-button {
+  border-radius: 10px;
+  height: 40px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.add-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(38, 166, 154, 0.3);
+}
+
+/* Summary Header */
+.summary-header {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.summary-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+}
+
+/* Table Styles */
+.products-table {
+  background: white;
+}
+
+.products-table :deep(.q-table) {
+  font-family: inherit;
+}
+
+.table-header {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.table-row {
+  transition: background 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.table-row:hover {
+  background: #fafcff;
+}
+
+.expanded-row-active {
+  background: #f0f9ff;
+  border-bottom: 1px solid #e0f2fe;
+}
+
+/* Badge Styles */
+.num-badge {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.code-badge {
+  border: 1px solid #26a69a;
+  color: #26a69a;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.quantity-badge {
+  background: #26a69a;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Product Description */
+.product-description {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.additional-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px dashed rgba(59, 130, 246, 0.3);
+}
+
+.additional-note:hover {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Price and Total Styles */
+.price-value,
+.total-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.price-value {
+  color: #475569;
+}
+
+.total-value {
+  color: #3b82f6;
+}
+
+.currency-symbol {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: 3px;
+  font-weight: 400;
+}
+
+/* Summary Rows */
+.summary-row {
+  border-top: 1px solid #eef2f6;
+}
+
+.summary-row.subtotal td {
+  padding-top: 16px;
+}
+
+.summary-row.total td {
+  padding: 20px 0;
+}
+
+.summary-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.discount-input {
+  max-width: 140px;
+  margin-left: auto;
+}
+
+.discount-input :deep(.q-field__control) {
+  border-radius: 8px;
+}
+
+.discount-badge {
+  background: #ef4444;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 6px;
+  height: 22px;
+  line-height: 22px;
+}
+
+.total-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.total-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.total-currency {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 4px;
+  opacity: 0.9;
+}
+
+.summary-row.total {
+  background: linear-gradient(90deg, #1976d2 0%, #1e88e5 100%);
+  color: white;
+}
+
+/* Action Section */
+.action-section {
+  padding: 20px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #eef2f6;
+}
+
+.action-btn-outline {
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-btn-outline:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn-primary {
+  border-radius: 12px;
+  padding: 8px 20px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+.action-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.4);
+}
+
+.action-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Delete Button */
+.delete-btn {
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Expand Button */
+.expand-btn {
+  transition: transform 0.2s ease;
+}
+
+.expand-btn:hover {
+  transform: scale(1.1);
+}
+
+.expanded-row {
+  background: #f0f9ff;
+}
+
+/* Tooltips */
+.tooltip-secondary {
+  background: #26a69a;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+
+.tooltip-negative {
+  background: #ef4444;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+
+/* Utility Classes */
+.gap-2 {
+  gap: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-header {
+    padding: 12px 16px;
+  }
+
+  .card-content {
+    padding: 16px;
+  }
+
+  .summary-header {
+    padding: 12px 16px;
+  }
+
+  .action-section {
+    padding: 16px;
+  }
+
+  .action-btn-primary {
+    padding: 8px 20px;
+  }
+
+  .total-amount {
+    font-size: 18px;
+  }
+
+  .total-label {
+    font-size: 14px;
+  }
+
+  .product-description {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-content {
+    padding: 12px;
+  }
+
+  .action-section .row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .action-btn-outline,
+  .action-btn-primary {
+    width: 100%;
+  }
+
+  .discount-input {
+    max-width: 120px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.products-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Smooth Transitions */
+* {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus States */
+:deep(.q-field__control:focus-within) {
+  border-color: #26a69a;
+}
+
+:deep(.q-btn:focus-visible) {
+  outline: 2px solid #26a69a;
+  outline-offset: 2px;
+}
+
+/* Table Cell Alignment */
+:deep(.q-table td) {
+  padding: 12px 8px;
+}
+
+:deep(.q-table th) {
+  padding: 12px 8px;
 }
 </style>

@@ -59,6 +59,7 @@
       v-if="showEditModal"
       :id-cotizacion="idCotizacionAEditar"
       @saved="alGuardarEdicion"
+      @cancelar-edicion="showEditModal = false"
     />
   </q-page>
 </template>
@@ -78,7 +79,7 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
 import TableCotizacionPrincipal from 'src/components/cotizacion/TableCotizacionPrincipal.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
-defineEmits(['registrarcotizacion', 'reiniciar'])
+defineEmits(['registrarcotizacion', 'reiniciar', 'cancelarregistro'])
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
 
