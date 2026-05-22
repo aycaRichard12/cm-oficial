@@ -231,6 +231,7 @@ const iconos = ref({
   actualizacionescomercial: 'update',
   permisosusuario: 'security',
   configuracionIntegracionExterna: 'settings',
+  reporteProductoUnico: 'fact_check',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {

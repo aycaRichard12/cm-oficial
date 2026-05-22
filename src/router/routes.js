@@ -416,6 +416,10 @@ const routes = [
         path: '/configuracionproductounico',
         component: () => import('src/pages/productoUnico/ConfiguracionPage.vue'),
       },
+      {
+        path: '/reporteProductoUnico',
+        component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
+      },
     ],
   },
   {
