@@ -313,7 +313,23 @@
 </style>
 
 <script setup>
+/**
+ * Componente de formulario para gestionar almacenes
+ * Maneja la creación/edición de almacenes con datos de sucursales y tipos
+ * @module components/AlmacenForm
+ */
+
+// ==================== DEPENDENCIAS ====================
 import { ref, watch } from 'vue'
+
+// ==================== PROPS ====================
+/**
+ * Propiedades del componente
+ * @property {Boolean} isEditing - Controla si el formulario está en modo edición
+ * @property {Object} modelValue - Datos del almacén a editar (para v-model)
+ * @property {Array} tiposAlmacen - Lista de tipos disponibles para seleccionar
+ * @property {Array} sucursales - Lista de sucursales disponibles para asociar
+ */
 const props = defineProps({
   isEditing: Boolean,
   modelValue: Object,
@@ -327,18 +343,37 @@ const props = defineProps({
   },
 })
 
+// ==================== EVENTOS ====================
 const emit = defineEmits(['submit', 'cancel'])
 
+// ==================== ESTADO REACTIVO ====================
+/**
+ * Copia local reactiva de los datos del formulario
+ * Se inicializa con los valores de modelValue para permitir edición temporal
+ * Evita mutaciones directas de la prop (patrón de componente controlado)
+ */
 const localData = ref({ ...props.modelValue })
 
+// ==================== WATCHERS ====================
+/**
+ * Observa cambios en la prop modelValue (desde componente padre)
+ * Actualiza la copia local cuando el padre modifica los datos
+ * deep: true permite detectar cambios anidados dentro del objeto
+ */
 watch(
   () => props.modelValue,
   (val) => {
+    // Reemplaza el objeto completo para mantener reactividad
     localData.value = { ...val }
   },
   { deep: true },
 )
 
+// ==================== MANEJADORES DE FORMULARIO ====================
+/**
+ * Envía los datos actuales al componente padre
+ * Emite el objeto localData en lugar de modelValue para enviar cambios pendientes
+ */
 const handleSubmit = () => {
   emit('submit', localData.value)
 }

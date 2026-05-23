@@ -1,4 +1,5 @@
 <template>
+  <div class="titulo">Asignar Categoria</div>
   <!-- Encabezado de acciones -->
   <div class="row q-mt-lg q-gutter-md items-center">
     <!-- Columna: botones principales -->
@@ -7,7 +8,7 @@
         color="primary"
         class="btn-res"
         icon="add"
-        label="Agregar"
+        label="Nueva Asignación"
         no-caps
         @click="$emit('add')"
         id="btn-categoria-precios"
