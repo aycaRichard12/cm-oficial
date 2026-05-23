@@ -69,6 +69,7 @@
       <!-- Main Data Table -->
       <q-table
         v-else
+        title="Productos Únicos"
         :rows="productosFiltrados"
         :columns="columns"
         row-key="idproducto_unico"
@@ -253,7 +254,7 @@ const initialPagination = ref({
 
 // Columns Definitions tailored for a SaaS Look & Feel
 const columns = [
-  { name: 'index', label: '#', field: 'index', align: 'left', sortable: true },
+  { name: 'index', label: 'N°', field: 'index', align: 'left', sortable: true },
   {
     name: 'descripcion',
     label: 'Producto / Descripción',
@@ -398,16 +399,5 @@ onMounted(async () => {
 }
 .hover-row:hover {
   background-color: #f5f7fa !important;
-}
-.unique-products-table :deep(.q-table__card) {
-  box-shadow: none !important;
-}
-.unique-products-table :deep(thead tr th) {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background-color: #fafafa;
-  font-weight: 600;
-  color: #4c566a;
 }
 </style>
