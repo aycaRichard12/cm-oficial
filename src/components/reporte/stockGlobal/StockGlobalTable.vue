@@ -6,7 +6,7 @@
       :rows="rows"
       :columns="visibleColumns"
       :arrayHeaders="visibleHeaders"
-      :sumColumns="[ 'costototal']"
+      :sumColumns="['costototal', 'costototalventa']"
       row-key="id"
       nombreColumnaTotales="costounitario"
     />
@@ -21,7 +21,7 @@ const baseTableRef = ref(null)
 
 defineExpose({
   obtenerColumnasVisibles: () => baseTableRef.value?.obtenerColumnasVisibles() || [],
-  obtenerDatosFiltrados: () => baseTableRef.value?.obtenerDatosFiltrados() || []
+  obtenerDatosFiltrados: () => baseTableRef.value?.obtenerDatosFiltrados() || [],
 })
 
 const props = defineProps({
@@ -56,21 +56,21 @@ const visibleColumns = computed(() => {
       // If field is a function, we might not be able to easy check "value".
       // Let's assume field is string for checking.
       // If field is a function (like costototal), we need to resolve it.
-      
-      let val;
+
+      let val
       if (typeof col.field === 'function') {
-        val = col.field(row);
+        val = col.field(row)
       } else {
-        val = row[col.field];
+        val = row[col.field]
       }
-      
-      return val !== null && val !== undefined && val !== '';
+
+      return val !== null && val !== undefined && val !== ''
     })
   })
 })
 
 // Extract the names of the visible columns to pass as filterable headers
 const visibleHeaders = computed(() => {
-  return visibleColumns.value.map(col => col.name)
+  return visibleColumns.value.map((col) => col.name)
 })
 </script>

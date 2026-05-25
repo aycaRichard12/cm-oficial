@@ -118,15 +118,38 @@
 </template>
 
 <script setup>
+/**
+ * Componente de gestión de almacenes con tabla filtrable y generación de reportes PDF
+ * Extiende BaseFilterableTable para funcionalidades de filtrado, ordenamiento y exportación
+ * @module components/AlmacenesTable
+ */
+
+// ==================== DEPENDENCIAS ====================
 import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { PDFalmacenes } from 'src/utils/pdfReportGenerator'
 
+// ==================== PROPS ====================
+/**
+ * Propiedades del componente
+ * @property {Array} rows - Datos de almacenes a mostrar (requerido)
+ * @property {String} filterMode - Modo de filtrado: 'client' (cliente) o 'server' (servidor)
+ */
 const props = defineProps({
   rows: { type: Array, required: true, default: () => [] },
   filterMode: { type: String, default: 'client' },
 })
 
+// ==================== EVENTOS ====================
+/**
+ * Eventos emitidos por el componente
+ * @event add - Solicita agregar un nuevo almacén
+ * @event edit-item - Solicita editar un almacén existente
+ * @event delete-item - Solicita eliminar un almacén
+ * @event toggle-status - Solicita cambiar el estado (activo/inactivo) de un almacén
+ * @event mostrarReporte - Solicita mostrar reporte (alternativa al método interno)
+ * @event column-filter-changed - Notifica cambios en filtros de columnas
+ */
 defineEmits([
   'add',
   'edit-item',
@@ -136,28 +159,44 @@ defineEmits([
   'column-filter-changed',
 ])
 
-const pdfData = ref(null)
-const mostrarModal = ref(false)
-const search = ref('')
-const tableRef = ref(null)
+// ==================== ESTADO REACTIVO ====================
+const pdfData = ref(null) // Almacena el PDF generado como data URL
+const mostrarModal = ref(false) // Controla visibilidad del modal de vista previa PDF
+const search = ref('') // Término de búsqueda global (pasado a tabla base)
+const tableRef = ref(null) // Referencia al componente BaseFilterableTable
 
-// Exponer métodos para reportes externos si se requiere
+// ==================== API PÚBLICA (EXPOSE) ====================
+/**
+ * Expone métodos para que componentes padres puedan acceder a datos filtrados y columnas
+ * Útil para generación de reportes externos o exportación de datos
+ */
 defineExpose({
+  // Obtiene los datos actualmente filtrados en la tabla
   obtenerDatosFiltrados: () => tableRef.value?.obtenerDatosFiltrados() || [],
+  // Obtiene las columnas visibles según configuración del usuario
   obtenerColumnasVisibles: () => tableRef.value?.obtenerColumnasVisibles() || [],
 })
 
-// Pre-procesar las filas para que los valores anidados sean campos de nivel superior
-// Esto facilita el trabajo de BaseFilterableTable y ColumnFilter.
+// ==================== DATOS PROCESADOS (COMPUTED) ====================
+/**
+ * Preprocesa las filas para aplanar propiedades anidadas
+ * Esto permite que BaseFilterableTable y ColumnFilter funcionen con campos simples
+ * Convierte la primera sucursal en un campo 'sucursalValor' de nivel superior
+ */
 const decoratedRows = computed(() => {
   return props.rows.map((row) => ({
     ...row,
-    // Aplanamos el valor de la sucursal
+    // Toma el nombre de la primera sucursal si existe, si no muestra '-'
     sucursalValor: row.sucursales?.length ? row.sucursales[0].nombre : '-',
   }))
 })
 
-// Columnas con el nuevo prop 'dataType' y apuntando al campo aplanado
+// ==================== CONFIGURACIÓN DE COLUMNAS ====================
+/**
+ * Definición de columnas para la tabla filtrable
+ * dataType: tipo de datos para filtros específicos (text, number)
+ * defaultVisible: algunas columnas ocultas por defecto para mejorar UX
+ */
 const columnas = [
   { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left', dataType: 'text' },
   { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
@@ -167,7 +206,7 @@ const columnas = [
     field: 'direccion',
     align: 'left',
     dataType: 'text',
-    defaultVisible: false,
+    defaultVisible: false, // Oculto por defecto, el usuario puede mostrarlo
   },
   {
     name: 'telefono',
@@ -194,12 +233,16 @@ const columnas = [
   },
   { name: 'stockmin', label: 'Stock min', field: 'stockmin', dataType: 'number' },
   { name: 'stockmax', label: 'Stock max', field: 'stockmax', dataType: 'number' },
-  // Usar el campo aplanado para filtrado y orden
+  // Campo 'sucursal' utiliza el valor aplanado 'sucursalValor' para filtrado y orden
   { name: 'sucursal', label: 'Sucursal', field: 'sucursalValor', align: 'left', dataType: 'text' },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'center', dataType: 'number' },
   { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
 ]
 
+/**
+ * Lista de nombres de columnas que se incluirán en reportes y exportaciones
+ * Coincide con los campos relevantes para el negocio
+ */
 const ArrayHeaders = [
   'codigo',
   'nombre',
@@ -213,14 +256,24 @@ const ArrayHeaders = [
   'estado',
 ]
 
+// ==================== MÉTODOS PÚBLICOS ====================
+/**
+ * Genera un reporte PDF con los datos actualmente filtrados y las columnas visibles
+ * Obtiene datos y configuración de la tabla base, genera PDF y muestra modal de vista previa
+ */
 function mostrarReporte() {
+  // Obtiene los registros después de aplicar filtros (búsqueda y columnas)
   const data = tableRef.value?.obtenerDatosFiltrados() || []
+  // Obtiene qué columnas están visibles en la UI actualmente
   const visibleColumns = tableRef.value?.obtenerColumnasVisibles() || []
+  // Genera el documento PDF usando el generador especializado para almacenes
   const doc = PDFalmacenes({ rows: data, visibleColumnsFromTable: visibleColumns })
+  // Convierte el PDF a data URL para incrustar en un iframe o visualizador
   pdfData.value = doc.output('dataurlstring')
+  // Muestra el modal de previsualización
   mostrarModal.value = true
 }
 </script>
 <style>
-/* El estilo se mantiene en BaseFilterableTable para ser genérico */
+
 </style>
