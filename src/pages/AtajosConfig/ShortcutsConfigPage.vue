@@ -212,10 +212,10 @@ const saveShortcuts = async () => {
   }
 
   try {
-    // 1. Eliminar atajos actuales
-    // for (const shortcut of currentShortcuts.value) {
-    //   await api.get(`eliminarOperacion/${shortcut.id_operacion}`)
-    // }
+    //1. Eliminar atajos actuales
+    for (const shortcut of currentShortcuts.value) {
+      await api.get(`eliminarOperacion/${shortcut.id_operacion}`)
+    }
 
     //2. Crear nuevos atajos seleccionados
     for (const codigo of selectedShortcuts.value) {

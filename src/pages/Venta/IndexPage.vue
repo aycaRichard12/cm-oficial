@@ -1,16 +1,9 @@
 <template>
   <q-page class="q-pa-md q-pa-sm-lg">
-    <!-- Contenedor de cajas con lógica condicional -->
-    <div
-      class="row q-col-gutter-md q-mb-lg"
-      :class="{ 'no-wrap': isCompactMode }"
-      :style="isCompactMode ? 'overflow-x: auto; flex-wrap: nowrap;' : ''"
-    >
+    <!-- Cajas de navegación superiores (dinámicas según atajos/permisos) -->
+    <div class="row q-col-gutter-md q-mb-lg">
       <template v-for="box in finalTopBoxes" :key="box.id">
-        <div
-          :class="[isCompactMode ? 'col' : 'col-12 col-sm-6 col-md-3', box.colorClass]"
-          :id="box.cardId"
-        >
+        <div class="col-12 col-sm-6 col-md-3" :class="box.colorClass" :id="box.cardId">
           <q-card
             flat
             bordered
@@ -54,7 +47,7 @@
       </template>
     </div>
 
-    <!-- El resto del template se mantiene igual -->
+    <!-- Contenedor principal de vistas -->
     <div class="row q-col-gutter-md">
       <div
         :class="componenteActivo === VentaComponent ? 'col-12 col-md-8' : 'col-12'"
@@ -71,6 +64,7 @@
     </div>
   </q-page>
 </template>
+
 <script setup>
 import { ref, onMounted, shallowRef, markRaw, defineAsyncComponent, computed } from 'vue'
 import { useQuasar } from 'quasar'
@@ -90,7 +84,6 @@ import IconDefault from 'src/assets/icon-128.png'
 const $q = useQuasar()
 const componentContainer = ref(null)
 const IDMD5 = idempresa_md5()
-const isCompactMode = computed(() => finalTopBoxes.value.length >= 5)
 
 // Componentes base (carga diferida)
 const inicialComponent = defineAsyncComponent(() => import('components/welcome/welcomeComp.vue'))

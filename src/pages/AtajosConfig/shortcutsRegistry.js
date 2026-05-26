@@ -114,6 +114,17 @@ export const shortcutsRegistry = [
     permissionKey: 'kardex',
     routePath: '/kardex',
   },
+  {
+    id: 'reportstockglobal',
+    codigo: 'shortcut_reportstockglobal',
+    title: 'STOCK GLOBAL',
+    component: defineAsyncComponent(
+      () => import('src/pages/reportes/reporteStockDeProductosGlobal.vue'),
+    ),
+    icon: 'icons/en-stock.svg',
+    permissionKey: 'reportstockglobal',
+    routePath: '/reportestockdeproductosglobal',
+  },
 ]
 
 // Obtiene un atajo por su código
