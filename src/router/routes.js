@@ -385,6 +385,10 @@ const routes = [
         component: () => import('src/pages/config/permisosUsuariosPage.vue'),
       },
       {
+        path: '/atajosrapidos',
+        component: () => import('src/pages/AtajosConfig/ShortcutsConfigPage.vue'),
+      },
+      {
         path: '/reporteproveedorcompras',
         component: () => import('src/pages/proveedor/ReporteProveedorComprasPage.vue'),
       },

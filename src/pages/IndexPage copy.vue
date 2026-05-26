@@ -1,60 +1,74 @@
 <template>
-  <q-page class="q-pa-md">
-    <div class="row q-col-gutter-md q-mb-md">
+  <q-page class="q-pa-md q-pa-sm-lg">
+    <!-- Cajas de navegación superiores -->
+    <div class="row q-col-gutter-md q-mb-lg">
       <template v-for="box in orderedTopBoxes" :key="box.id">
-        <div class="col-xs-12 col-sm-6 col-md-3" :class="box.colorClass">
+        <div class="col-12 col-sm-6 col-md-3" :class="box.colorClass" :id="box.cardId">
           <q-card
             flat
-            dense
             bordered
-            class="full-height"
-            style="background: linear-gradient(to right, #219286, #044e49)"
-            :style="{ color: 'white' }"
+            class="full-height hover-card cursor-pointer q-pa-sm flex flex-center"
+            style="
+              background: linear-gradient(135deg, #219286 0%, #044e49 100%);
+              color: white;
+              border-radius: 12px;
+              transition: all 0.3s ease;
+            "
+            @click="cambiarComponente(box.id)"
           >
-            <q-item>
-              <!-- Eliminamos la prop :avatar ya que no estamos usando q-avatar directamente aquí -->
-              <q-item-section>
-                <template v-if="typeof box.iconComponent === 'string'">
-                  <div class="svg-icon-wrapper">
-                    <img :src="box.iconComponent" alt="icon" class="svg-icon" />
-                  </div>
-                </template>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label style="font-size: 10px">{{ box.title }}</q-item-label>
-                <q-item-label
-                  caption
-                  style="font-family: Arial, Helvetica, sans-serif; color: white; font-size: 12px"
-                >
-                  {{ box.subtitle }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item class="q-pt-none">
-              <q-item-section> </q-item-section>
-              <q-item-section>
-                <q-btn
-                  outline=""
-                  :style="{ color: componenteActivo === box.component ? '#f2c037' : 'white' }"
-                  label="Ir"
-                  @click="cambiarComponente(box.id)"
+            <!-- Fila Flex layout Mobile-First: Nunca permite que los items se quiebren o aplasten -->
+            <div class="row items-center no-wrap full-width" style="min-height: 55px">
+              <!-- Columna 1: Icono del Módulo -->
+              <div class="col-auto q-mr-md flex flex-center" style="width: 50px">
+                <img
+                  :src="box.iconComponent"
+                  style="max-width: 100%; max-height: 48px; object-fit: contain"
+                  alt="icon"
                 />
-              </q-item-section>
-            </q-item>
+              </div>
+
+              <!-- Columna 2: Textos truncados automáticamente si fuesen muy largos -->
+              <div class="col overflow-hidden">
+                <div
+                  class="text-subtitle2 text-weight-bold ellipsis text-uppercase"
+                  style="letter-spacing: 0.5px; opacity: 1"
+                >
+                  {{ box.title }}
+                </div>
+                <!-- <div class="text-caption ellipsis" style="font-size: 11px; opacity: 0.75">
+                  {{ box.subtitle || 'Acceder al módulo' }}
+                </div> -->
+              </div>
+
+              <!-- Columna 3: Icono Flecha/Check Ckecked -->
+              <div class="col-auto q-pl-sm">
+                <q-icon
+                  :name="componenteActivo === box.component ? 'check_circle' : 'chevron_right'"
+                  size="sm"
+                  :style="{
+                    color: componenteActivo === box.component ? '#f2c037' : 'rgba(255,255,255,0.7)',
+                  }"
+                />
+              </div>
+            </div>
           </q-card>
         </div>
       </template>
     </div>
-    <div class="row flex justify-start">
-      <q-btn icon="help_outline" color="blue" flat @click="iniciarGuia" />
-    </div>
-    <div class="row q-col-gutter-x-md">
-      <div class="col-xs-12 col-md-8" ref="componentContainer">
+
+    <!-- Contenedor principal de vistas (con q-col-gutter-md para gap vertical en móvil) -->
+    <div class="row q-col-gutter-md">
+      <div
+        :class="componenteActivo === VentaComponent ? 'col-12 col-md-8' : 'col-12'"
+        ref="componentContainer"
+        id="carrito"
+      >
         <component :is="componenteActivo" />
       </div>
-      <div class="col-xs-12 col-md-4" id="reportes-hoy">
-        <div class="full-height"><ReporteVentaInicio /></div>
+      <div v-if="componenteActivo === VentaComponent" class="col-12 col-md-4" id="reportes-hoy">
+        <div class="full-height">
+          <ReporteVentaInicio />
+        </div>
       </div>
     </div>
   </q-page>
@@ -64,19 +78,22 @@
 import { ref, onMounted, shallowRef, markRaw, defineAsyncComponent, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import ReporteVentaInicio from 'src/components/reporteVentas/ReporteVentaInicio.vue'
-import { driver } from 'driver.js'
-import 'driver.js/dist/driver.css'
+
 // Importar los SVGs directamente. Con vite-svg-loader, se importan como componentes Vue.
 import IconVentas from 'src/assets/Ventas.png'
 import IconPedidos from 'src/assets/Compras.png'
 import IconAdmin from 'src/assets/Productos.png'
 import IconReportes from 'src/assets/Reportes.png'
 import { verificarexistenciapagina } from 'src/composables/FuncionesG'
-
 const $q = useQuasar()
-console.log('Quasar in App.vue:', $q)
+//console.log('Quasar in App.vue:', $q)
 const componentContainer = ref(null)
 
+const inicialComponent = defineAsyncComponent({
+  loader: () => import('components/welcome/welcomeComp.vue'),
+  loadingComponent: { template: '<div>Cargando inicio...</div>' },
+  errorComponent: { template: '<div>Error al cargar inicio</div>' },
+})
 const PedidoComponent = defineAsyncComponent({
   loader: () => import('pages/compra/RcompraPage.vue'),
   loadingComponent: { template: '<div>Cargando pedidos...</div>' },
@@ -102,7 +119,10 @@ const componentsMap = {
   dashboard: ReporteComponent,
 }
 
-const componenteActivo = shallowRef(VentaComponent)
+const componenteActivo = shallowRef(inicialComponent)
+
+// Expose VentaComponent for template comparison
+defineExpose({ VentaComponent })
 
 const cambiarComponente = (id) => {
   const newComponent = componentsMap[id]
@@ -126,40 +146,50 @@ const dashboard = ref(null)
 const producto = ref(null)
 
 const contenidoUsuario = localStorage.getItem('mistersofts-cm')
-const contenidoMenus = JSON.parse(localStorage.getItem('mistersofts-cmmenu')) || []
+const contenidoMenus = JSON.parse(localStorage.getItem('mistersofts-cmmenu'))
 
 onMounted(() => {
   if (contenidoUsuario && contenidoMenus) {
     try {
       const parsedData = JSON.parse(contenidoUsuario)
       nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
+      dashboard.value = verificarexistenciapagina('dashboard')
 
       venta.value = verificarexistenciapagina('registrarventaoculto')
-      console.log(venta.value)
       compra.value = verificarexistenciapagina('registrarcompra')
-      dashboard.value = verificarexistenciapagina('dashboard')
       producto.value = verificarexistenciapagina('registrarproductos')
 
-      // Set initial component based on permissions
-      if (venta.value) {
+      // Set initial component based on permissions - Dashboard first
+      if (dashboard.value) {
+        cambiarComponente('dashboard')
+      } else if (venta.value) {
         cambiarComponente('venta')
       } else if (compra.value) {
         cambiarComponente('compra')
       } else if (producto.value) {
         cambiarComponente('producto')
-      } else if (dashboard.value) {
-        cambiarComponente('dashboard')
       }
     } catch (error) {
       console.error('Error al parsear los datos de localStorage:', error)
     }
   } else {
-    console.warn('No hay datos en localStorage para "mistersofts-cm" o "mistersofts-cmmenu".')
+    console.warn('No hay datos en localStorage para "mistersofts-cm" o "mistersofts-cmmenu"')
   }
 })
+//reportes-hoy
 
 const orderedTopBoxes = computed(() => {
   const boxes = []
+  if (dashboard.value)
+    boxes.push({
+      id: 'dashboard',
+      component: ReporteComponent,
+      data: dashboard.value,
+      iconComponent: IconReportes,
+      title: 'ESTADÍSTICAS',
+      subtitle: '',
+      cardId: 'reportes-card',
+    })
   if (venta.value)
     boxes.push({
       id: 'venta',
@@ -167,7 +197,7 @@ const orderedTopBoxes = computed(() => {
       data: venta.value,
       iconComponent: IconVentas,
       title: 'VENTAS',
-      subtitle: venta.value.titulo || 'Generar venta',
+      subtitle: ' ',
       cardId: 'venta-card',
     })
   if (compra.value)
@@ -177,7 +207,7 @@ const orderedTopBoxes = computed(() => {
       data: compra.value,
       iconComponent: IconPedidos,
       title: 'COMPRAS',
-      subtitle: 'Compras o Producción',
+      subtitle: '',
       cardId: 'compra-card',
     })
   if (producto.value)
@@ -187,149 +217,64 @@ const orderedTopBoxes = computed(() => {
       data: producto.value,
       iconComponent: IconAdmin,
       title: 'PRODUCTOS',
-      subtitle: 'Administración Productos',
+      subtitle: '',
       cardId: 'producto-card',
     })
-  if (dashboard.value)
-    boxes.push({
-      id: 'dashboard',
-      component: ReporteComponent,
-      data: dashboard.value,
-      iconComponent: IconReportes,
-      title: 'REPORTES',
-      subtitle: dashboard.value.titulo || 'Reportes',
-      cardId: 'reportes-card',
-    })
+
   return boxes
 })
-
-const driverObj = driver()
-
-const iniciarGuia = () => {
-  const steps = []
-  if (venta.value) {
-    steps.push({
-      element: '#venta-card',
-      popover: {
-        title: 'Módulo de Ventas',
-        description:
-          'Aquí puedes gestionar tus ventas y realizar nuevas transacciones. Haz clic para acceder.',
-        side: 'left',
-        align: 'start',
-      },
-    })
-  }
-  if (compra.value) {
-    steps.push({
-      element: '#compra-card',
-      popover: {
-        title: 'Módulo de Compras',
-        description:
-          'Consulta y administra todas tus compras de manera sencilla. Presiona el botón para ingresar.',
-        side: 'bottom',
-        align: 'start',
-      },
-    })
-  }
-  if (dashboard.value) {
-    steps.push({
-      element: '#reportes-card',
-      popover: {
-        title: 'Reportes y Estadísticas',
-        description: 'Accede a análisis detallados y estadísticas de rendimiento en tu negocio.',
-        side: 'bottom',
-        align: 'start',
-      },
-    })
-  }
-  if (producto.value) {
-    steps.push({
-      element: '#producto-card',
-      popover: {
-        title: 'Gestión de Productos',
-        description: 'Agrega, edita y organiza tus productos. ¡Optimiza tu catálogo aquí!',
-        side: 'bottom',
-        align: 'start',
-      },
-    })
-  }
-
-  steps.push({
-    element: '#venta',
-    popover: {
-      title: 'Carrito de Ventas',
-      description: 'Realiza la venta de tus productos fácilmente desde esta sección.',
-      side: 'bottom',
-      align: 'start',
-    },
-  })
-  steps.push({
-    element: '#reportes-hoy',
-    popover: {
-      title: 'Resumen de Reportes',
-      description:
-        'Visualiza rápidamente los reportes y métricas del día para mantener el control de tu negocio.',
-      side: 'bottom',
-      align: 'start',
-    },
-  })
-
-  driverObj.setSteps(steps)
-  driverObj.drive()
-}
 </script>
 
 <style scoped>
-/* ======= ESTILOS GENERALES (Flexbox-friendly) ======= */
+/* ======= ESTILOS GENERALES Y LAYOUT ======= */
 .q-page {
   overflow-x: hidden;
 }
 
-.box {
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  align-items: stretch;
-  min-width: 0;
-  overflow: hidden;
+/* CARDS DE NAVEGACION (MOBILE FIRST) */
+.hover-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 12px;
+}
+.hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
-.q-card {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
-}
-
-/* MODIFICACIÓN AQUÍ: Nuevos estilos para el contenedor del SVG */
-.svg-icon-wrapper {
-  width: 90px; /* Ancho deseado para el contenedor del SVG */
-  height: 60px; /* Alto deseado para el contenedor del SVG */
-  display: flex; /* Usar flexbox para centrar el SVG */
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  overflow: hidden; /* Asegurar que el SVG no se desborde del contenedor */
-  flex-shrink: 0; /* Evita que el contenedor se encoja */
-}
-
-/* Estilos para el SVG real dentro del contenedor */
-.svg-icon {
-  max-width: 100% !important; /* Forzar al SVG a ocupar el 100% del ancho del contenedor */
-  max-height: 100% !important; /* Forzar al SVG a ocupar el 100% del alto del contenedor */
-  display: block; /* Eliminar espacio extra debajo del SVG */
+/* Estado de los Menús */
+.card-activa {
+  background: linear-gradient(135deg, #1f8a7e 0%, #033f3a 100%);
   color: white;
-  /* El color se aplica a través de la prop `style` en el template,
-     pero si el SVG usa `currentColor`, este estilo lo afectará. */
+  border: 1px solid #1f8a7e;
+}
+.card-inactiva {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
 }
 
-/* Asegurar imágenes escalan (si aún se usan img dentro de q-avatar en otros lugares) */
-.q-avatar img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+/* Burbuja del Icono */
+.icon-bubble {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+@media (min-width: 600px) {
+  .icon-bubble {
+    width: 56px;
+    height: 56px;
+  }
 }
 
+.module-img {
+  max-width: 60%;
+  max-height: 60%;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+/* Evitar roturas de texto general */
 .q-item-label {
   word-break: break-word;
   overflow-wrap: break-word;
