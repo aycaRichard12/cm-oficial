@@ -255,15 +255,9 @@ onMounted(async () => {
 
       await fetchUserShortcuts()
 
-      // Seleccionar componente inicial según prioridad: dashboard > venta > compra > producto
-      if (dashboardPerm.value) {
-        cambiarComponente('dashboard')
-      } else if (ventaPerm.value) {
-        cambiarComponente('venta')
-      } else if (compraPerm.value) {
-        cambiarComponente('compra')
-      } else if (productoPerm.value) {
-        cambiarComponente('producto')
+      // Seleccionar componente inicial según el primer atajo disponible
+      if (finalTopBoxes.value.length > 0) {
+        cambiarComponente(finalTopBoxes.value[0].id)
       }
     } catch (error) {
       console.error('Error al parsear datos de localStorage:', error)
