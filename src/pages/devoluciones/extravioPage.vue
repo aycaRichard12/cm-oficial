@@ -832,7 +832,7 @@ const cambiarEstado = (row) => {
     try {
       console.log(row)
       const estado = Number(row.autorizacion) === 2 ? 1 : 2
-      const response = await api.get(`actualizarEstadorobo/${row.id}/${estado}`)
+      const response = await api.get(`actualizarEstadorobo/${row.id}/${estado}/${idusuario}`)
       console.log(response)
       $q.notify({
         type: 'positive',
@@ -1057,7 +1057,6 @@ const editarDetalle = async (idDetalle) => {
     console.log(detalle)
     console.log(productosOptions.value)
     console.log(productoSeleccionado)
-
     formularioDetalle.value = {
       id: detalle.id,
       idproductoalmacen: {
