@@ -161,20 +161,26 @@
           :columns="columnasTabla"
           row-key="id"
           :filter="filtroTabla"
-          :pagination="paginacion"
           flat
           bordered
+          dense
         >
           <template v-slot:body-cell-estado="props">
             <q-td :props="props">
               <q-btn
-                id="btncambiarestadoextravio"
-                v-if="Number(props.row.autorizacion) === 2 && editar"
-                :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
+                id="btnmostrardetalleextravio"
+                icon="shopping_cart"
+                color="primary"
                 dense
                 flat
-                :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
-                @click="cambiarEstado(props.row)"
+                @click="
+                  mostrarDetalle(
+                    props.row.id,
+                    props.row.idalmacen,
+                    props.row.autorizacion,
+                    props.row,
+                  )
+                "
               />
             </q-td>
           </template>
@@ -183,23 +189,8 @@
             <q-td :props="props">
               <div class="q-gutter-sm">
                 <q-btn
-                  id="btnmostrardetalleextravio"
-                  icon="shopping_cart"
-                  color="primary"
-                  dense
-                  flat
-                  @click="
-                    mostrarDetalle(
-                      props.row.id,
-                      props.row.idalmacen,
-                      props.row.autorizacion,
-                      props.row,
-                    )
-                  "
-                />
-                <q-btn
                   id="btneditarextravio"
-                  v-if="editar"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
                   icon="edit"
                   color="primary"
                   dense
@@ -209,12 +200,22 @@
 
                 <q-btn
                   id="btneliminarextravio"
-                  v-if="eliminar"
+                  v-if="Number(props.row.autorizacion) === 2 && eliminar"
                   icon="delete"
                   color="negative"
                   dense
                   flat
                   @click="eliminarRobo(props.row.id)"
+                />
+                <q-btn
+                  id="btncambiarestadoextravio"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
+                  :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
+                  dense
+                  flat
+                  :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
+                  @click="cambiarEstado(props.row)"
+                  title="Cambiar Estado"
                 />
                 <q-btn
                   id="btngenerarcomprobanteextravio"
@@ -635,7 +636,7 @@ const columnasTabla = [
   },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'autorizacion', align: 'center' },
+  { name: 'estado', label: 'Detalle', field: 'autorizacion', align: 'center' },
   { name: 'acciones', label: 'Acciones', align: 'center' },
 ]
 // data: [
@@ -672,9 +673,6 @@ const columnasDetalle = [
 ]
 
 // Paginación
-const paginacion = ref({
-  rowsPerPage: 10,
-})
 
 // Fecha actual formateada
 
@@ -824,8 +822,8 @@ const eliminarRobo = (id) => {
 
 const cambiarEstado = (row) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro de cambiar el estado?',
+    title: 'Confirmar Cambio de Estado',
+    message: '¿Autorizar Documento?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -834,10 +832,18 @@ const cambiarEstado = (row) => {
       const estado = Number(row.autorizacion) === 2 ? 1 : 2
       const response = await api.get(`actualizarEstadorobo/${row.id}/${estado}/${idusuario}`)
       console.log(response)
-      $q.notify({
-        type: 'positive',
-        message: response.data.mensaje,
-      })
+      if (response.data.estado === 'exito') {
+        $q.notify({
+          type: 'positive',
+          message: response.data.mensaje,
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: response.data.mensaje,
+        })
+      }
+
       cargarRobos()
     } catch (error) {
       console.error('Error al cambiar estado:', error)

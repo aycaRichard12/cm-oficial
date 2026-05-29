@@ -58,7 +58,6 @@
           row-key="id"
           :filter="filter"
           :loading="loading"
-          :pagination="pagination"
           dense
         >
           <template v-slot:top-right> </template>
@@ -666,13 +665,6 @@ const detailColumns = [
   { name: 'actions', label: 'Acciones', align: 'center' },
 ]
 
-const pagination = ref({
-  sortBy: 'fecha',
-  descending: true,
-  page: 1,
-  rowsPerPage: 10,
-})
-
 // Computed properties
 const filteredTableData = computed(() => {
   if (!selectedWarehouse.value) return tableData.value
@@ -1240,18 +1232,18 @@ const togglestatus = (row) => {
     try {
       const point = `actualizarEstadomerma/${row.id}/1/${idusuario}`
       const response = await api.get(point) // Cambia a tu ruta real
-      console.log(response.data)
-      if (response.data[0].estado === 'exito ') {
+      console.log(response)
+      if (response.data.estado === 'exito ') {
         await loadTableData()
 
         $q.notify({
           type: 'positive',
-          message: response.data[1],
+          message: response.data.mensaje,
         })
       } else {
         $q.notify({
           type: 'negative',
-          message: response.data[1],
+          message: response.data.mensaje || 'Error desconocido',
         })
       }
     } catch (error) {
