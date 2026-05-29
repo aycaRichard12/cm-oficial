@@ -747,7 +747,7 @@
 
           <!-- Botón Registrar Cotización -->
           <q-btn
-            label="Registrar Cotización"
+            label="Continuar"
             color="primary"
             icon="task_alt"
             size="lg"
