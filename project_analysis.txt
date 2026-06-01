@@ -1,5 +1,5 @@
 # Project Technical Analysis Report
-Generated on: 2026-05-23 15:55:04
+Generated on: 2026-06-01 15:01:53
 Project Path: `G:\quasar\dess\comercial\cm-oficial`
 
 ## Environment Information
@@ -20,15 +20,15 @@ develop
 ```
 ### Short Status
 ```
-M src/pages/reportes/reporteProductoUnico.vue
+
 ```
 ### Recent History (last 5 commits)
 ```
-bdee036 feat(precio): update CategoriaPrecioPage template to include primary background class
-ff227fd No veo ningún archivo adjunto. Sube el archivo con el git diff para generar el mensaje de commit.
-72b66da docs(almacen-asignacion): agregar documentacion y comentarios descriptivos en responsableform.vue
-8766307 Analiza el archivo adjunto que contiene el 'git diff' de mi proyecto. Genera un mensaje de commit profesional siguiendo estrictamente la convención de 'Conventional Commits'. REGLAS CRÍTICAS: 1. Responde ÚNICAMENTE con el texto del commit. No saludes, no uses markdown, no expliques nada. 2. Formato: tipo(alcance opcional): descripción corta en minúsculas.
-a978701 Analiza el archivo adjunto que contiene el 'git diff' de mi proyecto. Genera un mensaje de commit profesional siguiendo estrictamente la convención de 'Conventional Commits'. REGLAS CRÍTICAS: 1. Responde ÚNICAMENTE con el texto del commit. No saludes, no uses markdown, no expliques nada. 2. Formato: tipo(alcance opcional): descripción corta en minúsculas.
+40827b6 feat(reportes): optimiza filtros de fecha y corrige endpoints de consultas y productos asignados
+bc41c7a feat(CotizacionPage): change button label from "Registrar Cotización" to "Continuar"
+c53a5f9 feat(extravioPage): enhance detail display and state change functionality
+25bcd56 feat(mermas): add unique product handling and expandable detail rows
+1c8d788 feat(extravioPage): include user ID in state update API call
 ```
 ### Remote Repositories
 ```
@@ -73,6 +73,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   ├── apple-launch-2048x2732.png
 │   │   ├── apple-launch-750x1334.png
 │   │   ├── apple-launch-828x1792.png
+│   │   ├── en-stock.svg
 │   │   ├── favicon-128x128.png
 │   │   ├── favicon-16x16.png
 │   │   ├── favicon-32x32.png
@@ -163,6 +164,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── VentasTableActions.vue
 │   │   │   ├── VentasTableVerButtons.vue
 │   │   │   └── VentasValidasTab.vue
+│   │   ├── atajosConfig
 │   │   ├── canalVenta
 │   │   │   └── config
 │   │   │       ├── FormCanalVenta.vue
@@ -489,6 +491,9 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   ├── almacen
 │   │   │   ├── AalmacenPage.vue
 │   │   │   └── CalmacenPage.vue
+│   │   ├── AtajosConfig
+│   │   │   ├── ShortcutsConfigPage.vue
+│   │   │   └── shortcutsRegistry.js
 │   │   ├── auth
 │   │   │   └── LoginPage.vue
 │   │   ├── autorizaciones
@@ -568,7 +573,8 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── registrodemermasPage.vue
 │   │   │   ├── reporteExtravioPage.vue
 │   │   │   ├── reporteMermaPage.vue
-│   │   │   └── TableCodigosUnicosExtravio.vue
+│   │   │   ├── TableCodigosUnicosExtravio.vue
+│   │   │   └── TableCodigosUnicosMerma.vue
 │   │   ├── General
 │   │   │   ├── credencialesServicioPage.vue
 │   │   │   ├── divisasGeneral.vue
@@ -643,9 +649,9 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── ManualPage.vue
 │   │   │   └── token.txt
 │   │   ├── Venta
+│   │   │   ├── IndexPage.vue
 │   │   │   └── ReporteVentas.vue
 │   │   ├── ErrorNotFound.vue
-│   │   ├── IndexPage copy.vue
 │   │   └── IndexPage.vue
 │   ├── router
 │   │   ├── index.js
@@ -774,6 +780,8 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   │   └── reporte.js
 │   │   │   ├── ReporteCreditos
 │   │   │   │   └── reporte.js
+│   │   │   ├── StockProductoGlobal
+│   │   │   │   └── reporte.js
 │   │   │   └── dibujar.js
 │   │   ├── conosole.js
 │   │   ├── dialogs.js
@@ -814,6 +822,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 ├── package.json
 ├── playwright.config.js
 ├── postcss.config.js
+├── project_analysis.txt
 ├── pyCambiosHead.py
 ├── pyCherryPick.py
 ├── pygenrarreporte.py
@@ -899,7 +908,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 
 ## Stack and Configuration Detection
 ### Detected Frameworks
-Quasar, Vue
+Vue, Quasar
 ### Database / ORM
 *None detected.*
 ### Key Configuration Files

@@ -1,6 +1,7 @@
 <template>
   <div>
     <div>
+      <div class="titulo">Procesar Venta</div>
       <q-card class="my-card q-mb-md">
         <div
           class="bg-primary text-white q-py-lg q-bar--dense"
@@ -9,7 +10,7 @@
           <div class="col flex justify-start">
             <div class="text-weight-bold btn-res" style="font-size: 15px">
               <q-icon name="shopping_cart" size="15px" class="q-mr-sm icono" />
-              <span class="texto">Procesar Venta</span>
+              <!-- <span class="texto">Procesar Venta</span> -->
             </div>
           </div>
           <div class="col-auto" id="btnContinuar">
