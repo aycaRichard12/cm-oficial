@@ -126,7 +126,7 @@ const redirectToAssignment = () => {
 
 const getProductoAlmacen = async () => {
   try {
-    const response = await api.get(`listaProductoAlmacen/${idempresa}`) // ejemplo
+    const response = await api.get(`listarProductoAlmacenAsignados/${idempresa}`) // ejemplo
     console.log(response.data)
     productos.value = response.data
   } catch (error) {
