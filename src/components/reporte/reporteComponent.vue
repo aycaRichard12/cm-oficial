@@ -30,6 +30,8 @@
           <q-tab v-if="permMonetario" name="monetario" label="Monetario" icon="payments" />
           <!-- <q-tab v-if="permMayorVenta" name="mayor_venta" label="Evolución" icon="timeline" /> -->
           <q-tab v-if="permAlmacen" name="almacen" label="Almacén" icon="store" />
+
+          <q-tab v-if="true" name="inventario" label="Inventario" icon="dashboard" />
           <q-tab v-if="permTodos" name="todos" label="Todos" icon="dashboard" />
         </q-tabs>
       </div>
@@ -40,6 +42,7 @@
         <GCategoria v-if="showChart('categoria') && permCategoria" />
         <GpPreferido v-if="showChart('preferido') && permPreferido" class="q-my-md" />
         <GpMonetario v-if="showChart('monetario') && permMonetario" />
+        <DashboardVendedor v-if="showChart('inventario')" />
         <!-- <GpMayorVenta v-if="showChart('mayor_venta') && permMayorVenta" /> -->
         <GpAlmacen v-if="showChart('almacen') && permAlmacen" />
       </template>
@@ -64,6 +67,7 @@ import GpMonetario from './producto_monetario.vue'
 // import GpMayorVenta from './mayor_venta.vue'
 import GpAlmacen from './StockAlmacen.vue'
 import GpClientes from './fecha_venta_cliente.vue'
+import DashboardVendedor from 'src/pages/dashboard/DashboardVendedor.vue'
 
 // Verificación de Permisos
 const permClientes = ref(false)

@@ -1,0 +1,455 @@
+Actúa como un Arquitecto Frontend Senior especializado en Quasar Framework, Vue 3 Composition API, Pinia, ApexCharts, UX/UI empresarial y dashboards de alto rendimiento.
+
+### Contexto Técnico
+
+El proyecto ya cuenta con las siguientes tecnologías instaladas y deben aprovecharse al máximo:
+
+* Quasar Framework
+* Vue 3 Composition API
+* Pinia
+* Axios
+* ApexCharts
+* vue3-apexcharts
+* @vueuse/core
+* jsPDF
+* jsPDF-Autotable
+* XLSX
+* Pusher JS
+
+No agregar librerías innecesarias. Utilizar preferentemente las dependencias ya disponibles.
+
+---
+
+## Objetivo
+
+Diseñar e implementar un Dashboard Profesional para Vendedores enfocado en monitoreo de inventario y stock de productos mediante una API REST existente.
+
+El dashboard debe ser moderno, intuitivo, visualmente atractivo y permitir identificar rápidamente productos con stock crítico, bajo stock y productos agotados.
+
+Debe tener una apariencia similar a sistemas empresariales como:
+
+* Odoo
+* SAP Fiori
+* Salesforce
+* Power BI
+* ERP modernos
+
+---
+
+## Requerimientos Funcionales
+
+### 1. Dashboard Principal
+
+Crear una vista principal denominada:
+
+DashboardVendedor.vue
+
+con indicadores visuales de inventario.
+
+---
+
+### 2. KPIs Superiores
+
+Mostrar tarjetas estadísticas utilizando componentes Quasar (QCard):
+
+* Total de productos.
+* Productos disponibles.
+* Productos con stock bajo.
+* Productos con stock crítico.
+* Productos agotados.
+* Valor total del inventario.
+
+Cada KPI debe incluir:
+
+* Icono Material Design.
+* Color semántico.
+* Animaciones suaves.
+* Hover profesional.
+* Diseño responsive.
+
+Ejemplo de colores:
+
+* Verde → Disponible.
+* Amarillo → Bajo.
+* Naranja → Crítico.
+* Rojo → Agotado.
+* Azul → Total inventario.
+
+---
+
+### 3. Panel de Alertas Inteligentes
+
+Crear un módulo destacado utilizando:
+
+* QBanner
+* QList
+* QItem
+
+Mostrar:
+
+#### Stock Crítico
+
+Productos con menos de 5 unidades.
+
+Datos:
+
+* Código.
+* Nombre.
+* Stock actual.
+
+Color:
+
+* Rojo.
+
+---
+
+#### Stock Bajo
+
+Productos entre 5 y 15 unidades.
+
+Color:
+
+* Amarillo.
+
+---
+
+#### Productos Agotados
+
+Productos con stock igual a 0.
+
+Color:
+
+* Gris o rojo oscuro.
+
+---
+
+### 4. Tabla Profesional de Inventario
+
+Utilizar QTable con Virtual Scroll para soportar más de 10.000 registros.
+
+Columnas:
+
+* Código.
+* Producto.
+* Categoría.
+* Stock actual.
+* Stock mínimo.
+* Estado.
+* Precio.
+* Valor inventario.
+* Última actualización.
+
+Funciones:
+
+* Búsqueda instantánea.
+* Filtros por categoría.
+* Ordenamiento.
+* Paginación.
+* Virtual Scroll.
+* Exportación Excel (XLSX).
+* Exportación PDF (jsPDF + AutoTable).
+
+Mostrar badges de estado:
+
+* Disponible.
+* Bajo.
+* Crítico.
+* Agotado.
+
+Utilizar colores semánticos para facilitar la lectura.
+
+---
+
+### 5. Gráficos con ApexCharts
+
+Utilizar exclusivamente ApexCharts y vue3-apexcharts.
+
+#### Gráfico Donut
+
+Distribución de inventario:
+
+* Disponible.
+* Bajo.
+* Crítico.
+* Agotado.
+
+---
+
+#### Gráfico de Barras
+
+Top 10 productos con menor stock.
+
+---
+
+#### Gráfico de Barras
+
+Top 10 productos con mayor stock.
+
+---
+
+#### Gráfico por Categorías
+
+Cantidad de productos agrupados por categoría.
+
+---
+
+### 6. Actualización Automática
+
+Implementar actualización automática utilizando:
+
+@vueuse/core
+
+Ejemplo esperado:
+
+* Refresco cada 30 segundos.
+* Actualización automática al volver a la pestaña.
+* Indicador visual de última sincronización.
+
+---
+
+### 7. Tiempo Real
+
+Si la API ya dispone de eventos mediante Pusher:
+
+Implementar:
+
+* Actualización automática de KPIs.
+* Actualización de alertas.
+* Actualización de gráficos.
+* Actualización de tabla.
+
+Sin necesidad de refrescar la página.
+
+---
+
+### 8. Arquitectura
+
+Organizar el código de forma escalable:
+
+src/
+├── pages/
+│ └── DashboardVendedor.vue
+│
+├── components/dashboard/
+│ ├── DashboardStats.vue
+│ ├── StockAlerts.vue
+│ ├── InventoryTable.vue
+│ ├── InventoryCharts.vue
+│ └── TopProducts.vue
+│
+├── services/
+│ └── stockService.js
+│
+├── composables/
+│ └── useStock.js
+│
+├── stores/
+│ └── stockStore.js
+
+---
+
+### 9. Rendimiento
+
+Optimizar para:
+
+* Más de 10.000 productos.
+* Computed properties.
+* Lazy Loading.
+* Virtual Scroll.
+* Debounce en búsquedas.
+* Cache de consultas.
+* Componentes reutilizables.
+* Mínima duplicación de lógica.
+
+---
+
+### 10. UX/UI Profesional
+
+Implementar:
+
+* Diseño limpio y moderno.
+* Responsive para móvil, tablet y escritorio.
+* Dark Mode compatible.
+* Skeleton Loaders.
+* Empty States elegantes.
+* Tooltips informativos.
+* Transiciones suaves.
+* Indicadores visuales de prioridad.
+
+---
+
+### Entregables Esperados
+
+Generar:
+
+1. Arquitectura recomendada.
+2. Diseño visual del dashboard.
+3. Estructura de carpetas.
+4. Store Pinia completa.
+5. Servicio Axios para la API.
+6. Composable useStock.
+7. Componentes reutilizables.
+8. Configuración completa de ApexCharts.
+9. Exportación PDF y Excel.
+10. Estrategia de actualización automática y tiempo real.
+
+Antes de escribir código, analizar la estructura de la API disponible y proponer la mejor arquitectura para garantizar escalabilidad, mantenibilidad y rendimiento empresarial.
+
+las apis son las siguientes 
+
+async function cargarCategoriasPrecio() {
+  if (almacenSeleccionado.value) {
+    const idalmacen = Number(almacenSeleccionado.value)
+
+    try {
+      cargandoCategorias.value = true
+      categoriaPrecioSeleccionada.value = null
+
+      const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
+      const { data } = await api.get(endpoint)
+      console.log('categoriasPrecio', data)
+
+      if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
+
+      categoriasPrecio.value = data
+        .filter((item) => item.estado == 1 && item.idalmacen == idalmacen)
+        .map((item) => ({
+          label: item.nombre,
+          value: item.id,
+        }))
+
+      if (categoriasPrecio.value.length > 0) {
+        categoriaPrecioSeleccionada.value = categoriasPrecio.value[0].value
+
+        // Generar el reporte con los filtros por defecto
+        await generarReporte()
+      }
+    } catch (error) {
+      console.error('Error al cargar categorías:', error)
+      $q.notify({
+        type: 'negative',
+        message: 'Error al cargar las categorías de precio',
+      })
+    } finally {
+      cargandoCategorias.value = false
+    }
+  } else {
+    console.error('Almacén seleccionado es nulo, no se pueden cargar categorías.')
+  }
+}
+
+async function cargarAlmacenes() {
+  try {
+    const response = await api.get(`listaAlmacen/${idempresa}`)
+    console.log(response)
+    if (Array.isArray(response.data)) {
+      opcionesAlmacenes.value = response.data
+        .filter((almacen) => Number(almacen.estado) === 1)
+        .map((almacen) => ({
+          ...almacen,
+          label: almacen.nombre,
+          value: almacen.id,
+        }))
+    }
+
+    // Seleccionar el primer almacén por defecto
+    if (opcionesAlmacenes.value.length > 0) {
+      almacenSeleccionado.value = opcionesAlmacenes.value[0].id
+
+      // Cargar categorías para ese almacén (esto antes no se hacía automáticamente)
+      await cargarCategoriasPrecio()
+
+      // Una vez cargadas las categorías, seleccionar la primera
+      if (categoriasPrecio.value.length > 0) {
+        categoriaPrecioSeleccionada.value = categoriasPrecio.value[0].value
+
+        // Generar el reporte con los filtros por defecto
+        await generarReporte()
+      }
+    }
+  } catch (error) {
+    console.error('Error al cargar almacenes:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar la lista de almacenes',
+    })
+  }
+}
+
+async function generarReporte() {
+  if (!almacenSeleccionado.value) {
+    datosOriginales.value = []
+    datosFiltrados.value = []
+    // $q.notify({
+    //   type: 'warning',
+    //   message: 'Seleccione un almacén',
+    // })
+    return
+  }
+
+  try {
+    const point = `reporteproductoalmacen/${almacenSeleccionado.value}/${idempresa}/${fechaFin.value}`
+    const response = await api.get(`${point}`)
+    console.log('reporteStockDeProductosGlobal', response.data)
+
+    if (!Array.isArray(response.data)) {
+      datosOriginales.value = []
+    } else {
+      const data = response.data.filter((item) => {
+        console.log(categoriaPrecioSeleccionada.value)
+        console.log(item.idCategoriaPrecio)
+        if (categoriaPrecioSeleccionada.value) {
+          return Number(item.idCategoriaPrecio) === Number(categoriaPrecioSeleccionada.value)
+        }
+        return true
+      })
+      datosOriginales.value = data.map((item, index) => ({
+        id: item.id,
+        almacen: item.almacen,
+        codigo: item.codigo,
+        codigobarra: item.codigobarra,
+        precioSugerido: item.precioSugerido,
+        idCategoriaPrecio: item.idCategoriaPrecio,
+        CategoriaPrecio: item.CategoriaPrecio,
+        producto: item.producto,
+        descripcion: item.descripcion,
+        detalle: item.detalle,
+        unidad: item.unidad,
+        caracteristica: item.caracteristica,
+        stockminimo: item.stockminimo,
+        stock: item.stock,
+        fecha: item.fecha,
+        idalmacen: item.idalmacen,
+        medida: item.medida,
+        idproducto: item.idproducto,
+        estadoproducto: item.estadoproducto,
+        stockmaximo: item.stockmaximo,
+        idcategoria: item.idcategoria,
+        idsubcategoria: item.idsubcategoria,
+        categoria: item.categoria,
+        subcategoria: item.subcategoria,
+        costounitario: item.costounitario,
+        pais: item.pais,
+        numero: index + 1,
+        idstock: item.idstock ?? 0, // reemplaza null por 0
+        imagen: item.imagen && item.imagen !== 'undefined' ? item.imagen : '', // reemplaza 'undefined'
+        costototal: parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0),
+        costototalventa: parseFloat(item.precioSugerido || 0) * parseFloat(item.stock || 0),
+        estado: estadoTexto(item.estado),
+        estadoOriginal: item.estado, // Guardar el estado original para filtrado posterior
+      }))
+    }
+
+    filtrarYOrdenarDatos()
+
+    // Guardar nombre del almacén seleccionado
+    const almacen = opcionesAlmacenes.value.find((a) => a.id === almacenSeleccionado.value)
+    nombreAlmacenSeleccionado.value = almacen ? almacen.nombre : ''
+  } catch (error) {
+    console.error('Error al generar reporte:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al generar el reporte',
+    })
+  }
+}

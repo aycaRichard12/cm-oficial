@@ -296,13 +296,7 @@ const columnas = [
     align: 'left',
     datatype: 'text',
   },
-  {
-    name: 'pais',
-    label: 'País de Origen',
-    field: 'pais',
-    align: 'left',
-    datatype: 'text',
-  },
+
   {
     name: 'stock',
     label: 'Stock Disponible',
