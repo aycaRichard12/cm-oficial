@@ -268,11 +268,21 @@ const columnas = [
     align: 'left',
     datatype: 'text',
   },
+
   {
-    name: 'producto',
-    label: 'Producto',
-    field: 'producto',
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
     align: 'left',
+    style: 'min-width: 250px',
+    datatype: 'text',
+  },
+  {
+    name: 'unidad',
+    label: 'Unidad',
+    field: 'unidad',
+    align: 'left',
+
     datatype: 'text',
   },
   {
@@ -290,16 +300,9 @@ const columnas = [
     datatype: 'text',
   },
   {
-    name: 'descripcion',
-    label: 'Descripción',
-    field: 'descripcion',
-    align: 'left',
-    datatype: 'text',
-  },
-  {
-    name: 'unidad',
-    label: 'Unidad de Medida',
-    field: 'unidad',
+    name: 'pais',
+    label: 'País Origen',
+    field: 'pais',
     align: 'left',
     datatype: 'text',
   },
@@ -312,13 +315,7 @@ const columnas = [
     datatype: 'number',
     format: (val) => new Intl.NumberFormat('es-ES').format(val),
   },
-  {
-    name: 'estado',
-    label: 'Estado',
-    field: 'estado',
-    align: 'left',
-    datatype: 'text',
-  },
+
   {
     name: 'costounitario',
     label: `Costo Unitario (${divisaActiva})`,
@@ -477,7 +474,7 @@ async function generarReporte() {
         }
         return true
       })
-      datosOriginales.value = data.map((item, index) => ({
+      datosOriginales.value = data.map((item) => ({
         id: item.id,
         almacen: item.almacen,
         codigo: item.codigo,
@@ -504,7 +501,6 @@ async function generarReporte() {
         subcategoria: item.subcategoria,
         costounitario: item.costounitario,
         pais: item.pais,
-        numero: index + 1,
         idstock: item.idstock ?? 0, // reemplaza null por 0
         imagen: item.imagen && item.imagen !== 'undefined' ? item.imagen : '', // reemplaza 'undefined'
         costototal: parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0),
@@ -551,7 +547,10 @@ function filtrarYOrdenarDatos() {
     datos.sort((a, b) => parseFloat(b.stock || 0) - parseFloat(a.stock || 0))
   }
 
-  datosFiltrados.value = datos
+  datosFiltrados.value = datos.map((item, index) => ({
+    ...item,
+    numero: index + 1, // Recalcular número después de filtrar/ordenar
+  }))
 }
 
 async function mostrarVistaPrevia() {
