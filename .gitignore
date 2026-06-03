@@ -56,3 +56,4 @@ upload_dist.bat
 /playwright/.cache/
 /playwright/.auth/
 /a.py
+*.py
