@@ -83,6 +83,13 @@ const columnas = [
     dataType: 'date',
   },
   { name: 'cliente', label: 'Razon Social', field: 'cliente', align: 'left', dataType: 'text' },
+  {
+    name: 'nombreComercial',
+    label: 'Nombre Comercial',
+    field: 'nombreComercial',
+    align: 'left',
+    dataType: 'text',
+  },
   { name: 'factura', label: 'N° Factura', field: 'nfactura', align: 'center', dataType: 'number' },
 
   {
@@ -137,6 +144,7 @@ const ArrayHeaders = [
   'totalcobrado',
   'saldo',
   'estadoLabel',
+  'nombreComercial',
 ]
 const summationHeaders = ['ventatotal', 'totalcobrado', 'saldo']
 </script>

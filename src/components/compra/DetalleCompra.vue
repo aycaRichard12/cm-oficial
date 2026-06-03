@@ -162,31 +162,31 @@
                   </template>
                 </q-select>
 
-                <!-- Indicadores de stock y unidad -->
                 <div
                   v-if="detalleForm.idproductoalmacen"
                   class="stock-indicators row q-col-gutter-md"
                 >
                   <div class="col-6">
-                    <div class="flex items-center q-px-md q-py-sm bg-grey-50">
-                      <q-icon name="inventory_2" size="xs" color="primary" class="q-mr-sm" />
-                      <span class="text-caption text-grey-700 text-weight-medium"
-                        >Stock Actual:</span
-                      >
-                      <span class="text-weight-bold text-grey-900 q-ml-auto">{{
-                        detalleForm.stockActual
-                      }}</span>
+                    <div class="flex items-center q-px-md q-py-sm bg-blue-1 rounded-borders">
+                      <q-icon name="inventory_2" size="sm" color="primary" class="q-mr-sm" />
+                      <div class="column">
+                        <span class="text-caption text-primary text-weight-bold">STOCK ACTUAL</span>
+                        <span class="text-subtitle1 text-blue-10 text-weight-bolder">{{
+                          detalleForm.stockActual
+                        }}</span>
+                      </div>
                     </div>
                   </div>
+
                   <div class="col-6">
-                    <div class="flex items-center q-px-md q-py-sm bg-grey-50">
-                      <q-icon name="straighten" size="xs" color="primary" class="q-mr-sm" />
-                      <span class="text-caption text-grey-700 text-weight-medium"
-                        >Unidad de Medida:</span
-                      >
-                      <span class="text-weight-bold text-grey-900 q-ml-auto">{{
-                        detalleForm.unidad || '---'
-                      }}</span>
+                    <div class="flex items-center q-px-md q-py-sm bg-orange-1 rounded-borders">
+                      <q-icon name="straighten" size="sm" color="orange-8" class="q-mr-sm" />
+                      <div class="column">
+                        <span class="text-caption text-orange-9 text-weight-bold">UNIDAD</span>
+                        <span class="text-subtitle1 text-orange-10 text-weight-bolder">{{
+                          detalleForm.unidad || '---'
+                        }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
