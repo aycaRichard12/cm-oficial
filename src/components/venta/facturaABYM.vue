@@ -711,7 +711,7 @@ const cargarCanales = async () => {
   try {
     const respuesta = await validarUsuario()
     const idempresa = respuesta[0]?.empresa?.idempresa
-    const response = await api.get(`listaCanalVenta/${idempresa}`)
+    const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
     salesChannels.value = response.data.map((item) => ({
       label: item.canal,
       value: item.id,

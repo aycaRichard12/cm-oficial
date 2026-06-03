@@ -1,0 +1,28 @@
+Archivo | Contenido del Título
+--------------------------------------------------
+./src\components\compra\Cuentasxpagar\cuentasXpagarCompra.vue -> Reporte de Pagos
+./src\components\compra\Cuentasxpagar\transaccionesPague.vue -> Reporte de Pagos
+./src\components\pedidos\gestionPedidos.vue -> Autorizando Pedidos
+./src\components\pedidos\reportePedidos.vue -> Reporte Pedidos
+./src\components\precios\categoriaPrecio\TableCategoriaPrecio.vue -> Asignar Categoria
+./src\components\reporte\reporteProductosVendidosGlobal\ReporteProductosHeader.vue -> Reporte de Productos Vendidos
+./src\components\reporteVentas\NotasDebitoCredito.vue -> Notas de Credito/Debito
+./src\components\venta\carritoVenta.vue -> Procesar Venta
+./src\pages\almacen\AalmacenPage.vue -> Asignar Almacén
+./src\pages\autorizaciones\anularCompraPage.vue -> Solicitudes de Anulación de Compras
+./src\pages\autorizaciones\autComprasPage.vue -> Autorizando Compras
+./src\pages\autorizaciones\VentasPendientesPage.vue -> Ventas pendientes
+./src\pages\cierrecaja\cierresDeCaja.vue -> Cierres de caja
+./src\pages\compra\RcompraPage.vue -> Registrar Compras
+./src\pages\compra\RepComprasPage.vue -> Reporte Compras
+./src\pages\cotizacion\kardexPage.vue -> Kardex de Productos
+./src\pages\movimiento\reporteMovimientoPage.vue -> Reporte Movimientos
+./src\pages\pedidos\RpedidosPage.vue -> Pedidos
+./src\pages\precio\CategoriasPrecioPageNuevo.vue -> Categorías de Precio
+./src\pages\producto\AproductoPage.vue -> Asignar Producto
+./src\pages\reportes\caducidadProductos.vue -> Caducidad Producto
+./src\pages\reportes\detalleProductosComprados.vue -> Reporte Productos Comprados
+./src\pages\reportes\indicesRotacionPage.vue -> Índices de Rotación
+./src\pages\reportes\rotacionAlmacenPague.vue -> Reporte de Índice de Rotación por Almacén
+./src\pages\reportes\rotacionClientePage.vue -> Reporte de Índice de Rotación por Cliente
+./src\pages\reportes\rotacionGlobalPage.vue -> Reporte de Índice de Rotación Global
