@@ -1,6 +1,14 @@
 <template>
   <q-page>
-    <div class="titulo" id="tituloreporteventas">Reporte de Ventas</div>
+    <div id="tituloreporteventas" class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assessment" size="md" class="q-mr-sm" />
+          Reporte de Ventas
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte de Ventas</div>
+      </div>
+    </div>
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
         <div class="col-12 col-md-3" id="fechaini">

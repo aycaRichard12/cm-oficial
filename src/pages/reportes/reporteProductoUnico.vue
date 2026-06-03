@@ -3,10 +3,15 @@
     <!-- Header & Dashboard Summary Card -->
     <q-card flat bordered class="q-mb-md bg-white text-dark shadow-2 rounded-borders">
       <q-card-section class="row items-center justify-between q-gutter-sm">
-        <div>
-          <div class="text-h5 text-weight-bold text-primary">Productos Únicos</div>
-          <div class="text-caption text-grey-7">
-            Gestiona y rastrea el inventario único por número de serie y almacén.
+        <div class="row items-center justify-between q-mb-md q-ml-sm">
+          <div class="col-12 col-md-auto">
+            <div class="text-h5 text-primary text-weight-bold flex items-center">
+              <q-icon name="qr_code_2" size="md" class="q-mr-sm" />
+              Productos Únicos
+            </div>
+            <div class="text-subtitle2 text-grey-7 q-mt-xs">
+              Gestiona y rastrea el inventario único por número de serie y almacén.
+            </div>
           </div>
         </div>
 

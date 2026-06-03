@@ -1,7 +1,18 @@
 <template>
   <q-page class="q-ma-md">
     <div>
-      <div class="titulo">Autorizando Pedidos</div>
+      
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assignment" size="md" class="q-mr-sm" />
+          Autorizando Pedidos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Autorizando Pedidos
+        </div>
+      </div>
+    </div>
       <!-- Formulario principal -->
       <q-form @submit.prevent="onSubmit">
         <div class="row justify-center q-col-gutter-x-md" id='filtrosFechas'>

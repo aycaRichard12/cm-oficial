@@ -1,7 +1,18 @@
 <template>
   <div>
     <div>
-      <div class="titulo">Procesar Venta</div>
+      
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+          Procesar Venta
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Procesar Venta
+        </div>
+      </div>
+    </div>
       <q-card class="my-card q-mb-md">
         <div
           class="bg-primary text-white q-py-lg q-bar--dense"

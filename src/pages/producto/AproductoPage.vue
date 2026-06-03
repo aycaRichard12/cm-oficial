@@ -1,6 +1,17 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo">Asignar Producto</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="inventory" size="md" class="q-mr-sm" />
+          Asignar Producto
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Asignar Producto
+        </div>
+      </div>
+    </div>
     <div class="row q-col-gutter-md">
       <!-- Main Content Area -->
       <div class="col-12">

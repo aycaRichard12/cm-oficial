@@ -1,6 +1,14 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo" id="tituloreporteextravio">Reporte Extravio</div>
+    <div id="tituloreporteextravio" class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="warning" size="md" class="q-mr-sm" />
+          Reporte Extravío
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Extravío</div>
+      </div>
+    </div>
 
     <q-form @submit.prevent="generarReporte">
       <div class="row q-col-gutter-md flex justify-center">
@@ -30,7 +38,13 @@
       </div>
 
       <div class="row justify-center q-mt-md">
-        <q-btn id="btngenerarreporteextravio" label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+        <q-btn
+          id="btngenerarreporteextravio"
+          label="Generar Reporte"
+          type="submit"
+          color="primary"
+          class="q-mr-sm"
+        />
         <q-btn
           id="btnvistapreviareporteextravio"
           label="Vista Previa"
@@ -160,15 +174,11 @@ import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
-
-
-
 const idusuario = idusuario_md5()
 //pedf
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const tableRef = ref(null)
-
 
 //modal Extravio
 const modalDetalleExtravio = ref(false)
@@ -177,20 +187,31 @@ const columnsExtravio = [
   { name: 'index', label: 'N°', field: 'index', align: 'left', dataType: 'number' },
   { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'center', dataType: 'text' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left', dataType: 'text' },
-  { name: 'caracteristica', label: 'Característica', field: 'caracteristica', align: 'left', dataType: 'text' },
+  {
+    name: 'descripcion',
+    label: 'Descripción',
+    field: 'descripcion',
+    align: 'left',
+    dataType: 'text',
+  },
+  {
+    name: 'caracteristica',
+    label: 'Característica',
+    field: 'caracteristica',
+    align: 'left',
+    dataType: 'text',
+  },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', dataType: 'number' },
-  { name: 'codigolote', label: 'Código Lote', field: 'codigolote', align: 'center', dataType: 'text' },
+  {
+    name: 'codigolote',
+    label: 'Código Lote',
+    field: 'codigolote',
+    align: 'center',
+    dataType: 'text',
+  },
 ]
 
-const arrayHeaders = [
-  'numero',
-  'fecha',
-  'almacen',
-  'descripcion',
-  'autorizacion',
-]
-
+const arrayHeaders = ['numero', 'fecha', 'almacen', 'descripcion', 'autorizacion']
 
 const $q = useQuasar()
 const cargando = ref(false)

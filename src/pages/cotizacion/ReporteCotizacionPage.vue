@@ -1,7 +1,17 @@
 <template>
   <q-page class="q-pa-md" v-if="!showEditModal">
     <q-form @submit="generarReporte">
-      <div class="titulo" id="reportecotizaciones">Reporte Cotizaciones</div>
+      <div id="reportecotizaciones" class="row items-center justify-between q-mb-md q-ml-sm">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="assignment" size="md" class="q-mr-sm" />
+            Reporte Cotizaciones
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración de Reporte Cotizaciones
+          </div>
+        </div>
+      </div>
       <div class="row flex justify-center q-col-gutter-x-md">
         <div class="col-12 col-md-3" id="fechainicotizacion">
           <label for="fechaini">Fecha Inicial * {{ tipoFactura }}</label>

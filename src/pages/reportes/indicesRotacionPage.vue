@@ -1,6 +1,17 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo">Índices de Rotación</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="label" size="md" class="q-mr-sm" />
+          Índices de Rotación
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Índices de Rotación
+        </div>
+      </div>
+    </div>
 
     <q-card flat bordered>
       <q-tabs

@@ -1,6 +1,14 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo" id="tituloreportemerma">Reporte Merma</div>
+    <div id="tituloreporteextravio" class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="recycling" size="md" class="q-mr-sm" />
+          Reporte Merma
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Merma</div>
+      </div>
+    </div>
 
     <q-form @submit.prevent="generarReporte">
       <div class="row q-col-gutter-md flex justify-center">
@@ -30,7 +38,13 @@
       </div>
 
       <div class="row justify-center q-mt-md">
-        <q-btn id="btngenerarreportemerma" label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+        <q-btn
+          id="btngenerarreportemerma"
+          label="Generar Reporte"
+          type="submit"
+          color="primary"
+          class="q-mr-sm"
+        />
         <q-btn
           id="btnvistapreviareportemerma"
           label="Vista Previa"

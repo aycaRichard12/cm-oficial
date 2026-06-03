@@ -26,3 +26,34 @@ Archivo | Contenido del Título
 ./src\pages\reportes\rotacionAlmacenPague.vue -> Reporte de Índice de Rotación por Almacén
 ./src\pages\reportes\rotacionClientePage.vue -> Reporte de Índice de Rotación por Cliente
 ./src\pages\reportes\rotacionGlobalPage.vue -> Reporte de Índice de Rotación Global
+
+
+
+
+✅ Procesado: ./src/components/compra/Cuentasxpagar/cuentasXpagarCompra.vue
+✅ Procesado: ./src/components/compra/Cuentasxpagar/transaccionesPague.vue
+✅ Procesado: ./src/components/pedidos/gestionPedidos.vue
+✅ Procesado: ./src/components/pedidos/reportePedidos.vue
+✅ Procesado: ./src/components/precios/categoriaPrecio/TableCategoriaPrecio.vue
+✅ Procesado: ./src/components/reporte/reporteProductosVendidosGlobal/ReporteProductosHeader.vue
+✅ Procesado: ./src/components/reporteVentas/NotasDebitoCredito.vue
+✅ Procesado: ./src/components/venta/carritoVenta.vue
+✅ Procesado: ./src/pages/almacen/AalmacenPage.vue
+✅ Procesado: ./src/pages/autorizaciones/anularCompraPage.vue
+✅ Procesado: ./src/pages/autorizaciones/autComprasPage.vue
+✅ Procesado: ./src/pages/autorizaciones/VentasPendientesPage.vue
+✅ Procesado: ./src/pages/cierrecaja/cierresDeCaja.vue
+✅ Procesado: ./src/pages/compra/RcompraPage.vue
+✅ Procesado: ./src/pages/compra/RepComprasPage.vue
+✅ Procesado: ./src/pages/cotizacion/kardexPage.vue
+✅ Procesado: ./src/pages/movimiento/reporteMovimientoPage.vue
+✅ Procesado: ./src/pages/pedidos/RpedidosPage.vue
+✅ Procesado: ./src/pages/precio/CategoriasPrecioPageNuevo.vue
+✅ Procesado: ./src/pages/producto/AproductoPage.vue
+✅ Procesado: ./src/pages/reportes/caducidadProductos.vue
+✅ Procesado: ./src/pages/reportes/detalleProductosComprados.vue
+✅ Procesado: ./src/pages/reportes/indicesRotacionPage.vue
+✅ Procesado: ./src/pages/reportes/rotacionAlmacenPague.vue
+✅ Procesado: ./src/pages/reportes/rotacionClientePage.vue
+✅ Procesado: ./src/pages/reportes/rotacionGlobalPage.vue
+PS G:\quasar\dess\comercial\cm-oficial> 

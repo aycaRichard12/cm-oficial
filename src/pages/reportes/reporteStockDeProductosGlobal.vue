@@ -1,9 +1,16 @@
 <template>
   <q-page class="q-pa-md">
     <!-- Título mejorado -->
-    <div class="titulo flex items-center q-mb-md">
-      <q-icon name="inventory_2" size="32px" color="primary" class="q-mr-sm" />
-      <div class="text-h4 text-weight-bold text-primary">Stock Productos Global</div>
+    <div class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="inventory_2" size="md" class="q-mr-sm" />
+          Stock Productos Global
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración y consulta de inventario global
+        </div>
+      </div>
     </div>
     <q-separator class="q-mb-lg" />
 
