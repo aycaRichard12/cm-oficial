@@ -768,27 +768,18 @@
 
     <!-- Diálogo: método de pago -->
     <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
-      <q-card
-        class="responsive-dialog shadow-24 column no-wrap"
-        style="
-          min-width: 550px;
-          max-width: 800px;
-          max-height: 90vh;
-          border-radius: 20px;
-          overflow: hidden;
-        "
-      >
+      <q-card class="responsive-dialog shadow-24 column no-wrap">
         <!-- Header del Diálogo -->
         <q-card-section
-          class="bg-primary text-white q-py-lg flex justify-between items-center shrink-0"
+          class="bg-primary text-white q-py-md q-px-md q-px-sm-md flex justify-between items-center shrink-0"
           style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
         >
           <div class="flex items-center">
             <div
-              class="bg-white/20 q-pa-sm rounded-borders q-mr-md shadow-inner"
+              class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner"
               style="backdrop-filter: blur(8px); border-radius: 12px"
             >
-              <q-icon name="account_balance_wallet" class="text-white" size="28px" />
+              <q-icon name="account_balance_wallet" class="text-white" size="24px" />
             </div>
             <div>
               <div
@@ -797,7 +788,7 @@
               >
                 Método de Pago
               </div>
-              <div class="text-caption text-white/80 text-weight-medium">
+              <div class="text-caption text-white/80 text-weight-medium gt-xs">
                 Configure la modalidad y detalles del pago
               </div>
             </div>
@@ -813,9 +804,9 @@
           />
         </q-card-section>
 
-        <q-card-section class="col scroll q-pa-xl bg-grey-1">
+        <q-card-section class="col scroll q-pa-lg q-pa-sm-md bg-grey-1 content-section">
           <!-- Selector de Modalidad Principal -->
-          <div class="row justify-center" style="margin-bottom: 100px">
+          <div class="row justify-center q-mb-xl q-mb-md-sm">
             <q-btn-toggle
               v-model="carritoCO.credito"
               toggle-color="primary"
@@ -834,15 +825,21 @@
             >
               <!-- Custom Slots for perfect flex control -->
               <template v-slot:efectivo>
-                <div class="row no-wrap text-weight-bold" style="width: 100px">
-                  <q-icon name="payments" size="20px" class="" />
+                <div
+                  class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+                  style="padding: 4px 12px"
+                >
+                  <q-icon name="payments" size="18px" />
                   <span>Efectivo</span>
                 </div>
               </template>
 
               <template v-slot:credito>
-                <div class="row no-wrap text-weight-bold" style="width: 100px">
-                  <q-icon name="credit_score" size="20px" class="" />
+                <div
+                  class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+                  style="padding: 4px 12px"
+                >
+                  <q-icon name="credit_score" size="18px" />
                   <span>Crédito</span>
                 </div>
               </template>
@@ -1247,20 +1244,20 @@
         <q-separator />
 
         <!-- Acciones del Diálogo -->
-        <q-card-actions align="right" class="q-pa-lg bg-white shrink-0 shadow-up-1">
+        <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
           <q-btn
             flat
             label="Regresar"
             color="grey-8"
             v-close-popup
-            class="q-px-lg text-weight-bold rounded-pill"
+            class="q-px-md text-weight-bold rounded-pill"
           />
           <q-btn
             unelevated
             label="Confirmar Cotización"
             color="primary"
             icon="task_alt"
-            class="q-px-xl text-weight-bolder shadow-3 transition-all transform hover:scale-105"
+            class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"
             style="
               border-radius: 50px;
               height: 48px;
@@ -2791,9 +2788,60 @@ onMounted(async () => {
 /* Quitar el q-linear-progress si no es funcional aquí, o darle un propósito */
 /* .q-linear-progress { display: none; } */
 </style>
-\n
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Responsive dialog width */
+.responsive-dialog {
+  max-height: 90vh;
+  width: 95vw;
+  max-width: 95vw;
+  min-width: unset;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 601px) {
+  .responsive-dialog {
+    width: auto;
+    min-width: 550px;
+    max-width: 800px;
+    max-height: 90vh; /* mantenlo también aquí si quieres */
+    border-radius: 20px;
+  }
+}
+
+/* Padding responsive para el contenido */
+.content-section {
+  padding: 24px;
+}
+@media (max-width: 600px) {
+  .content-section {
+    padding: 16px !important;
+  }
+}
+
+/* Toggle más compacto en móviles */
+.custom-premium-toggle .q-btn {
+  line-height: 1.2 !important;
+  min-height: unset;
+  padding: 8px 12px;
+}
+@media (max-width: 600px) {
+  .custom-premium-toggle .q-btn {
+    min-height: 48px;
+    font-size: 14px;
+  }
+}
+
+/* Botón confirmar full width en móviles */
+@media (max-width: 600px) {
+  .full-width-xs {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
 
 .premium-input:hover {
   transform: translateY(-1px);
