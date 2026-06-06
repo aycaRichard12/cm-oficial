@@ -1068,7 +1068,7 @@ const props = defineProps({
 })
 console.log('ID de Cotización recibido:', props.idCotizacion)
 const emit = defineEmits(['saved', 'reiniciar', 'cancelarEdicion'])
-
+const idusuario = ref(idusuario_md5())
 const permisosStore = useOperacionesPermitidas()
 console.log(permisosStore.tienePermiso('editarprecioventa'))
 
@@ -1972,7 +1972,7 @@ function prepararPayload() {
       descuento: carritoECO.descuento,
       cliente_id_cliente: idclienteCO.value,
       divisas_id_divisas: divisaActiva.id,
-      id_usuario: idusuario_md5(),
+      id_usuario: idusuario.value,
       idsucursal: idsucursalCOS.value,
       estado: originalCotizacion.value?.estado || 0,
       idpv: puntoVenta.value?.value || puntoVenta.value,
@@ -2354,8 +2354,9 @@ const loadData = async () => {
 
     if (data && Array.isArray(data) && data.length > 0) {
       const info = data[0]
-      const { cotizacion, cliente, almacen, detalle } = info
-
+      const { cotizacion, cliente, almacen, detalle, usuario } = info
+      idusuario.value = usuario?.idusuario || null
+      console.log('ID Usuario:', idusuario.value)
       // Guardar estado original para detección de cambios al enviar
       originalCotizacion.value = JSON.parse(JSON.stringify(cotizacion))
       originalDetalle.value = JSON.parse(JSON.stringify(detalle))
@@ -2386,7 +2387,10 @@ const loadData = async () => {
         await listaCategoria() // Gatilla la carga de categorías y puntos de venta
 
         if (cotizacion && cotizacion.idpv) {
-          puntoVenta.value = Number(cotizacion.idpv)
+          const puntoDeVentaEncontrado = puntosVenta.value.find(
+            (pv) => Number(pv.value) === Number(cotizacion.idpv),
+          )
+          puntoVenta.value = puntoDeVentaEncontrado || null
         }
       }
 

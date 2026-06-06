@@ -497,6 +497,10 @@ const generarComprobantePDF = async (id) => {
     loading.value = false
   }
 }
+const alGuardarEdicion = () => {
+  showEditModal.value = false
+  generarReporte() // Refresh the report after editing
+}
 
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)

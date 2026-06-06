@@ -31,7 +31,7 @@
           <!-- <q-tab v-if="permMayorVenta" name="mayor_venta" label="Evolución" icon="timeline" /> -->
           <q-tab v-if="permAlmacen" name="almacen" label="Almacén" icon="store" />
 
-          <q-tab v-if="true" name="inventario" label="Inventario" icon="dashboard" />
+          <q-tab v-if="permInventario" name="inventario" label="Inventario" icon="dashboard" />
           <q-tab v-if="permTodos" name="todos" label="Todos" icon="dashboard" />
         </q-tabs>
       </div>
@@ -42,7 +42,7 @@
         <GCategoria v-if="showChart('categoria') && permCategoria" />
         <GpPreferido v-if="showChart('preferido') && permPreferido" class="q-my-md" />
         <GpMonetario v-if="showChart('monetario') && permMonetario" />
-        <DashboardVendedor v-if="showChart('inventario')" />
+        <DashboardVendedor v-if="showChart('inventario') && permInventario" />
         <!-- <GpMayorVenta v-if="showChart('mayor_venta') && permMayorVenta" /> -->
         <GpAlmacen v-if="showChart('almacen') && permAlmacen" />
       </template>
@@ -76,6 +76,7 @@ const permPreferido = ref(false)
 const permMonetario = ref(false)
 const permMayorVenta = ref(false)
 const permAlmacen = ref(false)
+const permInventario = ref(false)
 const permTodos = ref(false)
 
 const loadingPermisos = ref(true)
@@ -89,6 +90,7 @@ const hasAnyPermission = computed(() => {
     permMonetario.value ||
     permMayorVenta.value ||
     permAlmacen.value ||
+    permInventario.value ||
     permTodos.value
   )
 })
@@ -124,6 +126,7 @@ onMounted(async () => {
       permMonetario.value = permsObj.includes('db_monetario')
       permMayorVenta.value = permsObj.includes('db_mayor_venta')
       permAlmacen.value = permsObj.includes('db_almacen')
+      permInventario.value = permsObj.includes('db_inventario')
       permTodos.value = permsObj.includes('db_todos')
     }
   } catch (error) {
@@ -138,6 +141,7 @@ onMounted(async () => {
       monetario: permMonetario.value,
       mayorVenta: permMayorVenta.value,
       almacen: permAlmacen.value,
+      inventario: permInventario.value,
       todos: permTodos.value,
     })
 
@@ -148,6 +152,7 @@ onMounted(async () => {
     else if (permMonetario.value) visibleChart.value = 'monetario'
     else if (permMayorVenta.value) visibleChart.value = 'mayor_venta'
     else if (permAlmacen.value) visibleChart.value = 'almacen'
+    else if (permInventario.value) visibleChart.value = 'inventario'
     else if (permTodos.value) visibleChart.value = 'todos'
 
     console.log('Pestaña visible seleccionada:', visibleChart.value)
@@ -156,6 +161,7 @@ onMounted(async () => {
 
 // Función para mostrar / ocultar según el currentTab
 const showChart = (chartName) => {
+  console.log(chartName)
   return visibleChart.value === 'todos' || visibleChart.value === chartName
 }
 </script>
