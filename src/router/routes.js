@@ -1,6 +1,7 @@
 import { URL_APICM } from 'src/composables/services'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { peticionGET } from 'src/composables/peticionesFetch'
+import { QuickConsultPage } from 'src/modules/quick-consult'
 
 async function empresaRegistrada() {
   const contenidousuario = validarUsuario()
@@ -423,6 +424,11 @@ const routes = [
       {
         path: '/reporteProductoUnico',
         component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
+      },
+      {
+        path: '/quick-consult',
+        name: 'QuickConsult',
+        component: QuickConsultPage,
       },
     ],
   },

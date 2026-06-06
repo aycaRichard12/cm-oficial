@@ -1,5 +1,5 @@
 # Project Technical Analysis Report
-Generated on: 2026-06-01 15:01:53
+Generated on: 2026-06-06 05:43:05
 Project Path: `G:\quasar\dess\comercial\cm-oficial`
 
 ## Environment Information
@@ -20,15 +20,15 @@ develop
 ```
 ### Short Status
 ```
-
+M project_analysis.txt
 ```
 ### Recent History (last 5 commits)
 ```
-40827b6 feat(reportes): optimiza filtros de fecha y corrige endpoints de consultas y productos asignados
-bc41c7a feat(CotizacionPage): change button label from "Registrar Cotización" to "Continuar"
-c53a5f9 feat(extravioPage): enhance detail display and state change functionality
-25bcd56 feat(mermas): add unique product handling and expandable detail rows
-1c8d788 feat(extravioPage): include user ID in state update API call
+a365783 feat: add inventory permission handling and update related components for improved access control
+a043bf2 feat: improve payment method dialog UI and enhance responsiveness for better user experience
+eb9f9a0 feat: enhance DetalleCompra component UI and add 'Nombre Comercial' column to cuentasxcobrar table
+b82d2a7 feat: update product assignment and report components for improved state management and UI clarity
+357c198 Enhance page headers across multiple components and pages for improved UI consistency
 ```
 ### Remote Repositories
 ```
@@ -202,6 +202,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── SolicitudAnulacionDialog.vue
 │   │   │   └── TableCompra.vue
 │   │   ├── cotizacion
+│   │   │   ├── modalMetodoPagoCotizacion.vue
 │   │   │   ├── tablaCodigosDevolucion.vue
 │   │   │   ├── TableCodigosUnicos copy.vue
 │   │   │   ├── TableCodigosUnicos.vue
@@ -212,6 +213,19 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   │   └── ReporteCreditosTable.vue
 │   │   │   ├── CuentasPorCobrarForm.vue
 │   │   │   └── CuentasPorCobrarTable.vue
+│   │   ├── dasboardVendedor
+│   │   │   ├── components
+│   │   │   │   ├── DashboardStats.vue
+│   │   │   │   ├── InventoryCharts.vue
+│   │   │   │   ├── InventoryTable.vue
+│   │   │   │   └── StockAlerts.vue
+│   │   │   ├── composables
+│   │   │   │   └── useStock.js
+│   │   │   ├── services
+│   │   │   │   └── stockService.js
+│   │   │   ├── store
+│   │   │   │   └── stockStore.js
+│   │   │   └── utils
 │   │   ├── general
 │   │   │   ├── credencialesServicio
 │   │   │   │   ├── CredencialesServicioDialog.vue
@@ -542,6 +556,10 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── FormularioConfiguracionInicial.vue
 │   │   │   └── permisosUsuariosPage.vue
 │   │   ├── cotizacion
+│   │   │   ├── services
+│   │   │   │   ├── apiClient.js
+│   │   │   │   ├── clientService.js
+│   │   │   │   └── cotizacion.service.js
 │   │   │   ├── configuraciontipoKardexPage.vue
 │   │   │   ├── cotizacionIndex.vue
 │   │   │   ├── CotizacionPage.vue
@@ -567,6 +585,8 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   │   ├── reporteCuentasxCobrarPage.vue
 │   │   │   ├── ReporteCuentasXCobrarPeriodo.vue
 │   │   │   └── tablaCuentasxCobrar.vue
+│   │   ├── dashboard
+│   │   │   └── DashboardVendedor.vue
 │   │   ├── devoluciones
 │   │   │   ├── anulacionPage.vue
 │   │   │   ├── extravioPage.vue
@@ -662,6 +682,7 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 │   │   ├── venta
 │   │   │   └── carritoStore.js
 │   │   ├── caja.js
+│   │   ├── CarritoStoreCotizacion.js
 │   │   ├── cliente.js
 │   │   ├── compras.js
 │   │   ├── currencyStore.js
@@ -811,18 +832,22 @@ repoA	git@github.com:aycaRichard12/Ms_comercial.git (push)
 ├── .prettierrc.json
 ├── a.py
 ├── anulaciones_api.http
-├── cambios_actuales.txt
+├── buscarTitulosPRD.py
+├── cambiosTitulos.py
 ├── cherry_pick_history.json
 ├── eslint.config.js
 ├── especificacion_requerimiento_cotizaciones.md
 ├── index.html
 ├── jsconfig.json
+├── lista_titulos.txt
 ├── modulos.cls
 ├── package-lock.json
 ├── package.json
 ├── playwright.config.js
 ├── postcss.config.js
 ├── project_analysis.txt
+├── prompt_DasboardVendedor.txt
+├── promptPreVenta.txt
 ├── pyCambiosHead.py
 ├── pyCherryPick.py
 ├── pygenrarreporte.py
@@ -913,22 +938,3 @@ Vue, Quasar
 *None detected.*
 ### Key Configuration Files
 - Found `quasar.config.js` (Quasar)
-
-BasedeDatos           Tabla             ColumName
-u335921272_comercial1	detalles_pedidos	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_campañas	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_cotizacion	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_ingreso	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_invexterno	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_mermas	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_movimiento	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_nota_debito_credito	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_robo	productos_almacen_id_productos_almacen
-u335921272_comercial1	detalle_venta	productos_almacen_id_productos_almacen
-u335921272_comercial1	precio_base	productos_almacen_id_productos_almacen
-u335921272_comercial1	precio_sugerido	productos_almacen_id_productos_almacen
-u335921272_comercial1	productos_almacen	id_productos_almacen
-u335921272_comercial1	producto_unico	productos_almacen_id_productos_almacen
-u335921272_comercial1	saldos_iniciales_metodo	productos_almacen_id_productos_almacen
-u335921272_comercial1	stock	productos_almacen_id_productos_almacen
-u335921272_comercial1	ventas_no_despachadas	productos_almacen_id_productos_almacen
