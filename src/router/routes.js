@@ -5,7 +5,8 @@ import { QuickConsultPage } from 'src/modules/quick-consult'
 
 async function empresaRegistrada() {
   const contenidousuario = validarUsuario()
-  const idempresa = contenidousuario[0]?.empresa?.idempresa
+  const idempresa = contenidousuario?.[0]?.empresa?.idempresa
+  if (!idempresa) return true // O manejar como no registrado
   const endpoint = `${URL_APICM}api/empresaRegistrada/${idempresa}`
   console.log(endpoint)
 
@@ -269,7 +270,7 @@ const routes = [
         component: () => import('src/pages/reportes/reporteVentasCampanapage.vue'),
       },
       {
-        path: '/inventarioexterno',
+        path: '/registrarinventarioexterno',
         component: () => import('src/pages/inventarioExterior/inventarioExteriorPage.vue'),
       },
       {
@@ -439,7 +440,8 @@ const routes = [
   {
     path: '/login',
     beforeEnter: (to, from, next) => {
-      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+      const userData = localStorage.getItem('mistersofts-cm')
+      const isAuthenticated = userData && userData !== 'undefined' && userData !== 'null'
       if (isAuthenticated) {
         next('/')
       } else {

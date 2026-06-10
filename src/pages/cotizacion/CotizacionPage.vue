@@ -1733,7 +1733,7 @@ const cargarCanales = async () => {
   try {
     const respuesta = await validarUsuario()
     const idempresa = respuesta[0]?.empresa?.idempresa
-    const response = await api.get(`listaCanalVenta/${idempresa}`)
+    const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
     salesChannels.value = response.data.map((item) => ({
       label: item.canal,
       value: item.id,
@@ -2088,16 +2088,21 @@ function setClientInputValue(val) {
 }
 
 function elegirUnCliente(client) {
+  //console.log(client)
   if (client) {
     idclienteCO.value = client.id
     selectSucursal(client.id)
+    selectCanalVenta(client.idcanal)
   } else {
     idclienteCO.value = ''
     selectedSucursal.value = null
     idsucursalCOS.value = ''
   }
 }
-
+function selectCanalVenta(canalid) {
+  canalventa.value =
+    salesChannels.value.find((c) => c.value === canalid) || salesChannels.value[0] || null
+}
 function filterSucursal(val, update) {
   if (val === '') {
     update(() => {

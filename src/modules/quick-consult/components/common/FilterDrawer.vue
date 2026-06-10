@@ -1,147 +1,126 @@
+<!-- src/modules/quick-consult/components/common/FilterDrawer.vue -->
 <template>
-  <q-drawer
-    v-model="uiStore.isFilterDrawerOpen"
-    side="right"
-    overlay
-    bordered
-    class="bg-grey-1"
-    :width="300"
-  >
-    <div class="column full-height">
+  <q-dialog v-model="isOpen" position="bottom" full-width>
+    <q-card style="border-radius: 16px 16px 0 0">
       <q-toolbar class="bg-primary text-white">
-        <q-toolbar-title>Filtros</q-toolbar-title>
-        <q-btn flat round dense icon="close" @click="uiStore.setFilterDrawerOpen(false)" />
+        <q-toolbar-title>Filtros avanzados</q-toolbar-title>
+        <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
 
-      <div class="col scroll q-pa-md">
-        <!-- Búsqueda -->
-        <div class="q-mb-lg">
-          <div class="text-subtitle2 q-mb-xs">Búsqueda rápida</div>
-          <q-input
-            v-model="searchTerm"
-            placeholder="Nombre, código o barras..."
-            outlined
-            dense
-            clearable
-            @update:model-value="onFilterChange"
-          >
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-
-        <!-- Categorías -->
-        <div class="q-mb-lg">
+      <q-card-section class="q-gutter-md">
+        <!-- Filtro por categoría -->
+        <div>
           <div class="text-subtitle2 q-mb-xs">Categoría</div>
           <q-select
-            v-model="selectedCategory"
-            :options="categories"
-            outlined
+            v-model="localCategory"
+            :options="categoryOptions"
+            label="Seleccionar categoría"
             dense
+            outlined
             clearable
-            placeholder="Todas las categorías"
-            @update:model-value="onFilterChange"
+            emit-value
+            map-options
+            options-dense
           />
         </div>
 
-        <!-- Rango de Precios -->
-        <div class="q-mb-lg">
-          <div class="text-subtitle2 q-mb-sm">Rango de precio (BOB)</div>
+        <!-- Filtro por rango de precios -->
+        <div>
+          <div class="text-subtitle2 q-mb-xs">Rango de precio</div>
           <div class="row q-col-gutter-sm">
             <div class="col-6">
               <q-input
-                v-model.number="priceMin"
+                v-model.number="localMinPrice"
                 type="number"
-                label="Min"
-                outlined
+                label="Precio mínimo"
                 dense
-                @update:model-value="onFilterChange"
+                outlined
+                clearable
               />
             </div>
             <div class="col-6">
               <q-input
-                v-model.number="priceMax"
+                v-model.number="localMaxPrice"
                 type="number"
-                label="Max"
-                outlined
+                label="Precio máximo"
                 dense
-                @update:model-value="onFilterChange"
+                outlined
+                clearable
               />
             </div>
           </div>
         </div>
-      </div>
+      </q-card-section>
 
-      <q-separator />
-
-      <div class="q-pa-md bg-white">
-        <q-btn
-          label="Limpiar Filtros"
-          color="grey-7"
-          flat
-          class="full-width q-mb-sm"
-          @click="clearFilters"
-        />
-        <q-btn
-          label="Aplicar"
-          color="primary"
-          class="full-width"
-          @click="uiStore.setFilterDrawerOpen(false)"
-        />
-      </div>
-    </div>
-  </q-drawer>
+      <q-card-actions align="right" class="q-pa-md">
+        <q-btn flat label="Limpiar todo" @click="clearAll" color="negative" />
+        <q-btn flat label="Cancelar" v-close-popup />
+        <q-btn label="Aplicar" color="primary" @click="applyFilters" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useQuickConsultProductStore } from '../../stores/productStore'
 import { useQuickConsultUiStore } from '../../stores/uiStore'
 
 const productStore = useQuickConsultProductStore()
 const uiStore = useQuickConsultUiStore()
+const { selectedCategory, priceRange } = storeToRefs(productStore)
 
-const searchTerm = ref(productStore.searchTerm)
-const selectedCategory = ref(productStore.selectedCategory)
-const priceMin = ref(productStore.priceRange.min)
-const priceMax = ref(productStore.priceRange.max)
+// Estado local del formulario
+const localCategory = ref(selectedCategory.value)
+const localMinPrice = ref(priceRange.value.min)
+const localMaxPrice = ref(priceRange.value.max)
 
-// Obtener categorías únicas de los productos cargados
-const categories = computed(() => {
-  const cats = productStore.products
-    .map((p) => p.categoria)
-    .filter((c) => !!c)
-  return [...new Set(cats)].sort()
+// Opciones de categorías únicas desde los productos cargados
+const categoryOptions = computed(() => {
+  const cats = new Set()
+  productStore.products.forEach((p) => {
+    if (p.categoria) cats.add(p.categoria)
+  })
+  return Array.from(cats)
+    .sort()
+    .map((cat) => ({ label: cat, value: cat }))
 })
 
-// Sincronizar cambios de UI a Store
-const onFilterChange = () => {
-  productStore.setSearchTerm(searchTerm.value || '')
-  productStore.setCategory(selectedCategory.value)
-  productStore.setPriceRange(priceMin.value, priceMax.value)
+// Control de apertura/cierre
+const isOpen = computed({
+  get: () => uiStore.isFilterDrawerOpen,
+  set: (val) => uiStore.setFilterDrawerOpen(val),
+})
+
+// Aplicar filtros
+const applyFilters = () => {
+  productStore.setCategory(localCategory.value || null)
+  productStore.setPriceRange(localMinPrice.value || null, localMaxPrice.value || null)
+  uiStore.setFilterDrawerOpen(false)
 }
 
-// Limpiar filtros
-const clearFilters = () => {
-  searchTerm.value = ''
-  selectedCategory.value = null
-  priceMin.value = null
-  priceMax.value = null
+// Limpiar todos los filtros
+const clearAll = () => {
+  localCategory.value = null
+  localMinPrice.value = null
+  localMaxPrice.value = null
   productStore.clearFilters()
+  uiStore.setFilterDrawerOpen(false)
 }
 
-// Sincronizar desde el store (por si se limpian desde fuera)
-watch(() => productStore.searchTerm, (val) => { searchTerm.value = val })
-watch(() => productStore.selectedCategory, (val) => { selectedCategory.value = val })
-watch(() => productStore.priceRange, (val) => {
-  priceMin.value = val.min
-  priceMax.value = val.max
-}, { deep: true })
+// Sincronizar estado local cuando se abre el diálogo (para reflejar cambios externos)
+watch(isOpen, (open) => {
+  if (open) {
+    localCategory.value = selectedCategory.value
+    localMinPrice.value = priceRange.value.min
+    localMaxPrice.value = priceRange.value.max
+  }
+})
 </script>
 
 <style scoped>
-.scroll {
-  overflow-y: auto;
+.q-dialog__card {
+  max-height: 70vh;
 }
 </style>

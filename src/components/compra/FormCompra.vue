@@ -5,7 +5,7 @@
       <div class="col-12">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="settings" size="20px" class="q-mr-sm" />
           Configuración Principal
@@ -19,8 +19,8 @@
             <label
               for="tipo"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Tipo de registro <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Tipo de Registro <span class="text-negative">*</span></label
             >
             <q-toggle
               v-model="isIngresoConPedido"
@@ -38,7 +38,7 @@
             <label
               for="pedido"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Pedido Asociado <span class="text-negative">*</span></label
             >
             <q-select
@@ -76,7 +76,7 @@
             <label
               for="almacen"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Almacén de Destino <span class="text-negative">*</span></label
             >
             <q-select
@@ -115,7 +115,7 @@
       <div class="col-12 q-mt-md">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="inventory_2" size="20px" class="q-mr-sm" />
           Detalles de la Compra
@@ -126,7 +126,7 @@
             <label
               for="nombre"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Nombre <span class="text-negative">*</span></label
             >
             <q-input
@@ -149,7 +149,7 @@
             <label
               for="codigo"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Código <span class="text-negative">*</span></label
             >
             <q-input
@@ -172,7 +172,7 @@
             <label
               for="provedor"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Proveedor <span class="text-negative">*</span></label
             >
             <q-select
@@ -208,7 +208,7 @@
             <label
               for="factura"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Nro. Factura <span class="text-grey-5">(Opcional)</span></label
             >
             <q-input
@@ -232,7 +232,7 @@
       <div class="col-12 q-mt-md">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="payments" size="20px" class="q-mr-sm" />
           Condiciones de Pago
@@ -253,8 +253,8 @@
             <label
               for="tipocompra"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Tipo de Compra <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Forma de Pago <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.tipocompra"
@@ -281,8 +281,8 @@
             <label
               for="cajaBanco"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Seleccione Caja o Banco <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Seleccione Medio de Pago <span class="text-negative">*</span></label
             >
 
             <q-select

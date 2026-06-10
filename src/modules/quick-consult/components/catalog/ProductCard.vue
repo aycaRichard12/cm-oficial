@@ -2,7 +2,7 @@
   <div class="product-card q-pa-sm">
     <q-card class="my-card" flat bordered>
       <q-img
-        :src="product.imagen || 'https://placehold.co/400x300?text=Sin+Imagen'"
+        :src="imagen + product.imagen"
         :alt="product.descripcion"
         lazy-load
         spinner-color="primary"
@@ -54,6 +54,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { imagen } from 'src/boot/url'
 
 const props = defineProps({
   product: {

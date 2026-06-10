@@ -64,7 +64,7 @@ export const PAGINAS = Object.freeze({
   pedidos: Object.freeze(['generarpedido', 'reportedepedidos']),
   // ... (otros grupos con el mismo formato)
   inventarioexterno: Object.freeze([
-    'inventarioexterno',
+    'registrarinventarioexterno',
     // 'reportedeindicederotacion',
   ]),
   leyendasdefacturas: Object.freeze(['leyendasdefacturas', 'metodosdepagodefacturas']),

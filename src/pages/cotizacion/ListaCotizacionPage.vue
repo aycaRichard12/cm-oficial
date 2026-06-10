@@ -482,9 +482,45 @@ const generarComprobantePDF = async (id) => {
       Object.keys(comprobanteData).forEach((key) => delete comprobanteData[key])
     } else {
       Object.assign(comprobanteData, data[0]) // Assign properties to reactive object
+      // const doc = await generarPdfCotizacion(data)
+      // pdfData.value = doc.output('dataurlstring')
+      // showPdfModal.value = true
+
       const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      showPdfModal.value = true
+
+      const ua = navigator.userAgent
+      const esWindowsAntiguo =
+        ua.includes('Windows NT 6.1') || // Windows 7
+        ua.includes('Windows NT 6.2') || // Windows 8
+        ua.includes('Windows NT 6.3')
+
+      if (esWindowsAntiguo) {
+        $q.dialog({
+          title: 'PDF generado',
+          message:
+            'Su sistema puede no soportar la visualización integrada de PDF. ¿Qué desea hacer?',
+          cancel: {
+            label: 'Descargar',
+            color: 'secondary',
+          },
+          ok: {
+            label: 'Abrir en nueva ventana',
+            color: 'primary',
+          },
+          persistent: true,
+        })
+          .onOk(() => {
+            const blob = doc.output('blob')
+            const url = URL.createObjectURL(blob)
+            window.open(url, '_blank')
+          })
+          .onCancel(() => {
+            doc.save(`cotizacion_${id}.pdf`)
+          })
+      } else {
+        pdfData.value = doc.output('dataurlstring')
+        showPdfModal.value = true
+      }
     }
   } catch (error) {
     console.error('Error al generar comprobante PDF:', error)

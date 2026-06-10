@@ -216,14 +216,12 @@ export function generarCabeceraHTML(datos) {
 }
 
 export function validarUsuario() {
-  const contenidousuario = JSON.parse(localStorage.getItem('mistersofts-cm'))
-  if (contenidousuario) {
-    return contenidousuario
-  } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    localStorage.clear()
-    window.location.assign('../../app/')
+  try {
+    const data = localStorage.getItem('mistersofts-cm')
+    return data ? JSON.parse(data) : null
+  } catch (e) {
+    console.error('Error parseando datos de usuario:', e)
+    return null
   }
 }
 

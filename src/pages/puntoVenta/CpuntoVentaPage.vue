@@ -196,20 +196,21 @@ const handleSubmit = async (data) => {
     console.log(`${k}: ${v}`)
   }
   try {
-    if (isEditing.value) {
-      //mostrar datos que llegaron
-      console.log('datos que llegaron', data)
-      const response = await api.post(``, formData)
-      console.log('que cosa responde',response)
+    const response = await api.post(``, formData)
+    console.log(response)
+
+    if (response.data.estado === 'exito') {
+      $q.notify({
+        type: 'positive',
+        message: response.data.mensaje,
+      })
     } else {
-      console.log('entro a registrar')
-      const response = await api.post(``, formData)
-      console.log(response)
+      $q.notify({
+        type: 'negative',
+        message: response.data.mensaje,
+      })
     }
-    $q.notify({
-      type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
-    })
+
     await cargarPuntosPorTipo(tipoSeleccionado.value)
   } catch (error) {
     console.error('Error al guardar:', error)

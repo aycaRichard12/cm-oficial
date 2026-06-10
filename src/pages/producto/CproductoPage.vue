@@ -78,8 +78,12 @@ async function loadRows() {
   try {
     cargando.value = true
     const tipo = getTipoFactura()
-    const point = `listaProducto/${idempresa}/${token}/${tipo}`
-
+    let point = ``
+    if (token && tipo && getTipoFactura(true) && getToken(true)) {
+      point = `listaProducto/${idempresa}/${token}/${tipo}`
+    } else {
+      point = `listaProducto/${idempresa}/`
+    }
     console.log('Endpoint:', point)
     const response = await api.get(point)
     console.log('estos son los datos', response.data)
