@@ -1,90 +1,131 @@
 <!-- src/modules/quick-consult/pages/QuickConsultPage.vue -->
 <template>
   <q-page class="quick-consult-page">
-    <q-toolbar class="bg-primary text-white">
-      <q-toolbar-title>Consulta Rápida de Productos</q-toolbar-title>
-      <q-btn flat round dense icon="shopping_cart" @click="toggleCartSheet">
-        <q-badge
-          v-if="cartStore.totalItems > 0"
-          color="red"
-          floating
-          rounded
-          :label="cartStore.totalItems"
+    <!-- Header moderno con sombra y jerarquía -->
+    <div class="header-modern">
+      <div class="header-content">
+        <div class="header-logo-section">
+          <q-icon name="inventory_2" size="28px" class="header-icon" />
+          <div class="header-text">
+            <div class="header-title">Consulta Rápida de Productos</div>
+            <div class="header-subtitle">Gestión de inventario y ventas</div>
+          </div>
+        </div>
+        <q-btn flat round dense icon="shopping_cart" class="cart-button" @click="toggleCartSheet">
+          <q-badge
+            v-if="cartStore.totalItems > 0"
+            color="positive"
+            floating
+            rounded
+            :label="cartStore.totalItems"
+            class="cart-badge"
+          />
+        </q-btn>
+      </div>
+    </div>
+
+    <!-- Contenido principal con fondo corporativo -->
+    <div class="page-content">
+      <!-- Tarjeta de selectores -->
+      <div class="selector-wrapper">
+        <q-card class="selector-card" flat>
+          <q-card-section class="q-pa-md">
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-sm-6">
+                <q-select
+                  v-model="selectedWarehouse"
+                  :options="warehouses"
+                  label="Almacén"
+                  outlined
+                  dense
+                  bg-color="white"
+                  :loading="isLoadingWarehouses"
+                  @update:model-value="onWarehouseChange"
+                  class="custom-select"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="storefront" color="primary" />
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-select
+                  v-model="selectedCategory"
+                  :options="priceCategories"
+                  label="Categoría de Precio"
+                  outlined
+                  dense
+                  bg-color="white"
+                  :loading="isLoadingCategories"
+                  :disable="!selectedWarehouse"
+                  @update:model-value="onCategoryChange"
+                  class="custom-select"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="payments" color="primary" />
+                  </template>
+                </q-select>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- Barra de búsqueda -->
+      <div class="search-wrapper">
+        <SearchBar
+          v-model="productStore.searchTerm"
+          :results-count="productStore.filteredProducts.length"
+          :has-active-filters="productStore.hasActiveFilters"
+          @open-filter="openFilterDrawer"
+          @clear="handleClearSearch"
         />
-      </q-btn>
-    </q-toolbar>
+      </div>
 
-    <!-- Selectores de Almacén y Categoría de Precio -->
-    <div class="row q-col-gutter-sm q-pa-sm bg-grey-2">
-      <div class="col-12 col-sm-6">
-        <q-select
-          v-model="selectedWarehouse"
-          :options="warehouses"
-          label="Almacén"
-          outlined
-          dense
-          bg-color="white"
-          :loading="isLoadingWarehouses"
-          @update:model-value="onWarehouseChange"
+      <!-- Loading mejorado -->
+      <q-inner-loading
+        :showing="uiStore.isLoadingProducts || isLoadingWarehouses || isLoadingCategories"
+        label="Cargando productos..."
+        label-class="loading-label"
+        class="custom-loading"
+      />
+
+      <!-- Transición suave para estados -->
+      <transition name="fade" mode="out-in">
+        <div
+          v-if="!uiStore.isLoadingProducts && productStore.filteredProducts.length === 0"
+          class="empty-state"
         >
-          <template v-slot:prepend>
-            <q-icon name="storefront" />
-          </template>
-        </q-select>
-      </div>
-      <div class="col-12 col-sm-6">
-        <q-select
-          v-model="selectedCategory"
-          :options="priceCategories"
-          label="Categoría de Precio"
-          outlined
-          dense
-          bg-color="white"
-          :loading="isLoadingCategories"
-          :disable="!selectedWarehouse"
-          @update:model-value="onCategoryChange"
-        >
-          <template v-slot:prepend>
-            <q-icon name="payments" />
-          </template>
-        </q-select>
-      </div>
+          <div class="empty-icon-wrapper">
+            <q-icon name="search_off" size="80px" color="grey-4" />
+          </div>
+          <div class="empty-title">No se encontraron productos</div>
+          <div class="empty-description">
+            No hay productos que coincidan con los criterios de búsqueda o filtros
+          </div>
+          <q-btn
+            flat
+            color="primary"
+            label="Limpiar filtros"
+            @click="productStore.clearFilters()"
+            class="empty-button"
+            no-caps
+          />
+        </div>
+
+        <ProductList
+          v-else-if="!uiStore.isLoadingProducts"
+          :products="productStore.filteredProducts"
+          @add="handleAddToCart"
+          class="product-list-container"
+        />
+      </transition>
     </div>
 
-    <!-- Barra de búsqueda y filtros -->
-    <SearchBar
-      v-model="productStore.searchTerm"
-      :results-count="productStore.filteredProducts.length"
-      :has-active-filters="productStore.hasActiveFilters"
-      @open-filter="openFilterDrawer"
-      @clear="handleClearSearch"
-    />
-
-    <q-inner-loading
-      :showing="uiStore.isLoadingProducts || isLoadingWarehouses || isLoadingCategories"
-      label="Actualizando..."
-    />
-
-    <!-- Estado vacío o lista -->
-    <div
-      v-if="!uiStore.isLoadingProducts && productStore.filteredProducts.length === 0"
-      class="empty-state"
-    >
-      <q-icon name="inventory" size="4rem" color="grey-5" />
-      <div class="text-h6 text-grey-7">No hay productos que coincidan</div>
-      <div class="text-caption text-grey-6">Prueba con otros filtros o cambia la selección</div>
-      <q-btn flat color="primary" label="Limpiar filtros" @click="productStore.clearFilters()" />
-    </div>
-
-    <ProductList
-      v-else-if="!uiStore.isLoadingProducts"
-      :products="productStore.filteredProducts"
-      @add="handleAddToCart"
-      class="col"
-    />
-
-    <!-- Panel de filtros avanzados -->
+    <!-- Paneles flotantes -->
     <FilterDrawer />
+    <FloatingCartSummary />
+    <CartBottomSheet />
   </q-page>
 </template>
 
@@ -97,6 +138,8 @@ import { useQuickConsultUiStore } from '../stores/uiStore'
 import ProductList from '../components/catalog/ProductList.vue'
 import SearchBar from '../components/common/SearchBar.vue'
 import FilterDrawer from '../components/common/FilterDrawer.vue'
+import FloatingCartSummary from '../components/cart/FloatingCartSummary.vue'
+import CartBottomSheet from '../components/cart/CartBottomSheet.vue'
 import { fetchWarehouses, fetchPriceCategories } from '../services/api'
 import { validarUsuario } from 'src/composables/FuncionesG'
 
@@ -252,7 +295,7 @@ const handleAddToCart = (product) => {
 }
 
 const toggleCartSheet = () => {
-  $q.notify({ type: 'info', message: 'Carrito (próximamente)', position: 'top' })
+  uiStore.setCartSheetOpen(true)
 }
 
 onMounted(() => {
@@ -261,18 +304,321 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Variables y estilos base */
 .quick-consult-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #eeebe2;
+  position: relative;
 }
+
+/* Header moderno */
+.header-modern {
+  background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.header-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.cart-button {
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cart-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.cart-badge {
+  font-weight: 600;
+  font-size: 10px;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+/* Contenido principal */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Selector wrapper y tarjeta */
+.selector-wrapper {
+  margin-bottom: 24px;
+}
+
+.selector-card {
+  border-radius: 16px;
+  background: white;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selector-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.custom-select :deep(.q-field__control) {
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.custom-select :deep(.q-field__control:hover) {
+  border-color: #26a69a;
+}
+
+.custom-select :deep(.q-field__native) {
+  font-weight: 500;
+}
+
+/* Search wrapper */
+.search-wrapper {
+  margin-bottom: 24px;
+}
+
+/* Loading personalizado */
+.custom-loading :deep(.q-loading) {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.loading-label {
+  color: #004d40;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* Estado vacío moderno */
 .empty-state {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
+  padding: 48px 24px;
+  text-align: center;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  min-height: 400px;
+}
+
+.empty-icon-wrapper {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.empty-icon-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #004d40;
+  margin-bottom: 12px;
+}
+
+.empty-description {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-bottom: 32px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.empty-button {
+  padding: 8px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.empty-button:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 77, 64, 0.08);
+}
+
+/* Product list container */
+.product-list-container {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Animaciones */
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 16px;
+  }
+
+  .header-content {
+    padding: 12px 16px;
+  }
+
+  .header-title {
+    font-size: 1.2rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .header-icon {
+    font-size: 24px;
+  }
+
+  .selector-card {
+    border-radius: 12px;
+  }
+
+  .empty-state {
+    padding: 32px 16px;
+    min-height: 300px;
+  }
+
+  .empty-icon-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .empty-title {
+    font-size: 1.2rem;
+  }
+
+  .empty-description {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-logo-section {
+    gap: 10px;
+  }
+
+  .header-title {
+    font-size: 1rem;
+  }
+
+  .header-subtitle {
+    display: none;
+  }
+
+  .row.q-col-gutter-md {
+    margin: -8px;
+  }
+
+  .row.q-col-gutter-md > div {
+    padding: 8px;
+  }
+}
+
+/* Scrollbar personalizado */
+.page-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: #f0f0e8;
+  border-radius: 10px;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: #004d40;
+  border-radius: 10px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: #26a69a;
 }
 </style>
