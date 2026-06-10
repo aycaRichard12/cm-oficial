@@ -84,18 +84,3 @@
     transform: translateY(0);
   }
 }
-@media (max-width: 600px) {
-  .btn-res .texto {
-    display: none;
-  }
-  .btn-res .icono {
-    display: block;
-    margin-right: 0 !important; /* Quita el margen cuando no hay texto */
-  }
-  .titulo {
-    display: block;
-  }
-}
-.titulo {
-  display: none;
-} /*# sourceMappingURL=app.css.map */

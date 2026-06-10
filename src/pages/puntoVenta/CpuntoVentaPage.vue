@@ -1,5 +1,17 @@
 <template>
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para puntos de venta o cajas -->
+          <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+          Registrar Punto de Venta
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Alta de nuevas sucursales o terminales de venta
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">

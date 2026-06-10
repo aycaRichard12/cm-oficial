@@ -1,12 +1,15 @@
 <template>
   <q-page class="q-pa-md">
-    <div id="tituloreporteextravio" class="row items-center justify-between q-mb-md q-ml-sm">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
-          <q-icon name="warning" size="md" class="q-mr-sm" />
-          Reporte Extravío
+          <!-- Icono representativo para incidencias o reportes de pérdida -->
+          <q-icon name="report_problem" size="md" class="q-mr-sm" />
+          Reporte de Extravío
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Extravío</div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Registro y seguimiento de incidencias de pérdida de inventario
+        </div>
       </div>
     </div>
 

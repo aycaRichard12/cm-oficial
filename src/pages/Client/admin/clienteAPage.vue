@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row items-center justify-between q-mb-md q-ml-sm">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="group" size="md" class="q-mr-sm" />
