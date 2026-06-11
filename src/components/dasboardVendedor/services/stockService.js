@@ -1,12 +1,12 @@
 import { api } from 'boot/axios' // Ajusta según tu configuración de Quasar
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-
+//import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 const ID_EMPRESA = idempresa_md5()
-
+//const ID_USUARIO = idusuario_md5()
 export const stockService = {
   // Obtener lista de almacenes activos
   getAlmacenes() {
-    return api.get(`listaAlmacen/${ID_EMPRESA}`)
+    return api.get(`listaResponsableAlmacen/${ID_EMPRESA}`)
   },
 
   // Obtener categorías de precio por empresa

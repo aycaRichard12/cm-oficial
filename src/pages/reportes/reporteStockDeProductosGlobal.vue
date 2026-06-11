@@ -309,7 +309,7 @@ const columnas = [
 
   {
     name: 'stock',
-    label: 'Stock Disponible',
+    label: 'Stock',
     field: 'stock',
     align: 'right',
     datatype: 'number',
@@ -326,7 +326,7 @@ const columnas = [
   },
   {
     name: 'precioSugerido',
-    label: `Precio de Venta (${divisaActiva})`,
+    label: `Precio Unitario (${divisaActiva})`,
     field: 'precioSugerido',
     format: (val) => formatearDecimal(val),
     align: 'right',
@@ -334,7 +334,7 @@ const columnas = [
   },
   {
     name: 'costototal',
-    label: `Costo Total Inventario (${divisaActiva})`,
+    label: `Costo Total (${divisaActiva})`,
     align: 'right',
     field: 'costototal',
     datatype: 'number',
@@ -342,7 +342,7 @@ const columnas = [
   },
   {
     name: 'costototalventa',
-    label: `Valor Total Venta (${divisaActiva})`,
+    label: `Precio Total (${divisaActiva})`,
     align: 'right',
     field: 'costototalventa',
     datatype: 'number',

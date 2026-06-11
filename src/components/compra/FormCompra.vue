@@ -8,7 +8,7 @@
           style="letter-spacing: 0.5px"
         >
           <q-icon name="settings" size="20px" class="q-mr-sm" />
-          Configuración Principal
+          Definir parámetros iniciales
         </div>
 
         <div

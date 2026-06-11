@@ -1,11 +1,6 @@
 <!-- src/modules/quick-consult/components/cart/CartBottomSheet.vue -->
 <template>
-  <q-dialog
-    v-model="isOpen"
-    position="bottom"
-    full-width
-    class="cart-bottom-sheet"
-  >
+  <q-dialog v-model="isOpen" position="bottom" full-width class="cart-bottom-sheet">
     <q-card class="column no-wrap cart-card">
       <!-- Header -->
       <q-toolbar class="bg-primary text-white sticky-header">
@@ -29,9 +24,9 @@
                 spinner-color="primary"
               >
                 <template v-slot:error>
-                   <div class="full-height full-width flex flex-center bg-grey-3 text-grey-7">
-                     <q-icon name="inventory_2" size="sm" />
-                   </div>
+                  <div class="full-height full-width flex flex-center bg-grey-3 text-grey-7">
+                    <q-icon name="inventory_2" size="sm" />
+                  </div>
                 </template>
               </q-img>
             </q-item-section>
@@ -51,16 +46,16 @@
 
             <!-- Acciones y Stepper -->
             <q-item-section side class="column items-end justify-between q-gutter-y-sm">
-               <q-btn 
-                flat 
-                round 
-                dense 
-                color="negative" 
-                icon="delete" 
+              <q-btn
+                flat
+                round
+                dense
+                color="negative"
+                icon="delete"
                 size="sm"
                 @click="confirmRemove(item)"
               />
-              
+
               <div class="stepper-container row items-center no-wrap">
                 <q-btn
                   dense
@@ -93,7 +88,14 @@
           <q-icon name="shopping_cart_checkout" size="4rem" />
           <div class="text-h6 q-mt-md">Tu carrito está vacío</div>
           <p class="text-center">¡Agrega algunos productos para comenzar!</p>
-          <q-btn label="Explorar productos" color="primary" v-close-popup class="q-mt-md" rounded outline />
+          <q-btn
+            label="Explorar productos"
+            color="primary"
+            v-close-popup
+            class="q-mt-md"
+            rounded
+            outline
+          />
         </div>
       </q-card-section>
 
@@ -106,7 +108,9 @@
         </div>
         <div class="row justify-between items-center q-mb-md">
           <div class="text-weight-bold text-subtitle1">Total General:</div>
-          <div class="text-weight-bolder text-h6 text-primary">{{ formatPrice(cartStore.totalAmount) }}</div>
+          <div class="text-weight-bolder text-h6 text-primary">
+            {{ formatPrice(cartStore.totalAmount) }}
+          </div>
         </div>
 
         <div class="row q-col-gutter-sm">
@@ -130,6 +134,7 @@
               size="lg"
               rounded
               no-caps
+              @click="proceedToSale"
             />
           </div>
         </div>
@@ -145,6 +150,8 @@ import { useQuasar } from 'quasar'
 import { useQuickConsultCartStore } from '../../stores/cartStore'
 import { useQuickConsultUiStore } from '../../stores/uiStore'
 import { imagen as imagenUrl } from 'src/boot/url'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const $q = useQuasar()
 const cartStore = useQuickConsultCartStore()
@@ -152,7 +159,7 @@ const uiStore = useQuickConsultUiStore()
 
 const isOpen = computed({
   get: () => uiStore.isCartSheetOpen,
-  set: (val) => uiStore.setCartSheetOpen(val)
+  set: (val) => uiStore.setCartSheetOpen(val),
 })
 
 const formatPrice = (value) => {
@@ -184,8 +191,8 @@ const confirmRemove = (item) => {
     ok: {
       color: 'negative',
       label: 'Eliminar',
-      flat: true
-    }
+      flat: true,
+    },
   }).onOk(() => {
     cartStore.removeProduct(item.product.id)
   })
@@ -200,12 +207,65 @@ const confirmClearCart = () => {
     ok: {
       color: 'negative',
       label: 'Sí, vaciar todo',
-      flat: true
-    }
+      flat: true,
+    },
   }).onOk(() => {
     cartStore.clearCart()
     uiStore.setCartSheetOpen(false)
   })
+}
+
+const proceedToSale = async () => {
+  try {
+    // Obtener items en formato carritoVenta
+    const items = cartStore.getItemsForSale()
+    console.log('Items para venta:', items)
+    if (items.length === 0) {
+      $q.notify({ type: 'warning', message: 'No hay productos en el carrito' })
+      return
+    }
+
+    // Crear estructura de datos para localStorage (similar a carritoVenta)
+    const saleCart = {
+      listaProductos: items,
+      listaProductosFactura: items.map((item) => ({
+        codigoProducto: item.codigo,
+        codigoActividadSin: '',
+        codigoProductoSin: '',
+        descripcion: item.descripcion,
+        unidadMedida: '',
+        precioUnitario: item.precio,
+        subTotal: item.subtotal,
+        cantidad: item.cantidad,
+        numeroSerie: '',
+        montoDescuento: 0,
+        numeroImei: '',
+        codigoNandina: '',
+      })),
+      listaFactura: {},
+      subtotal: cartStore.totalAmount,
+      descuento: 0,
+      ventatotal: cartStore.totalAmount,
+      nropagos: 0,
+      valorpagos: 0,
+      idcampana: 0,
+    }
+
+    // Guardar en localStorage
+    localStorage.setItem('carrito', JSON.stringify(saleCart))
+
+    // Opcional: limpiar el carrito rápido (para no tener datos duplicados)
+    cartStore.clearCart()
+
+    // Navegar al componente de venta (ajustar ruta según tu proyecto)
+    // En proceedToSale, después de guardar el carrito
+    router.push('/registrarventaoculto?preserveCart=true')
+
+    $q.notify({ type: 'positive', message: 'Carrito transferido a venta' })
+  } catch (error) {
+    console.error('Error al transferir carrito:', error)
+    $q.notify({ type: 'negative', message: 'Error al procesar la venta' })
+  }
 }
 </script>
 

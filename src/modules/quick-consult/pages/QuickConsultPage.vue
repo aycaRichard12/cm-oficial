@@ -247,11 +247,12 @@ const loadProductsData = async () => {
     // Código de prueba para 1000 productos (opcional, remover en prod)
     if (import.meta.env.DEV && productStore.products.length > 0) {
       const baseProducts = [...productStore.products]
-      productStore.products = Array.from({ length: 1000 }, (_, i) => ({
-        ...baseProducts[i % baseProducts.length],
-        id: `test-${i}`,
-        descripcion: `${baseProducts[i % baseProducts.length].descripcion} (Copia ${i})`,
-      }))
+      // productStore.products = Array.from({ length: 1000 }, (_, i) => ({
+      //   ...baseProducts[i % baseProducts.length],
+      //   id: `test-${i}`,
+      //   descripcion: `${baseProducts[i % baseProducts.length].descripcion} (Copia ${i})`,
+      // }))
+      productStore.products = baseProducts
     }
   } catch (error) {
     console.error('Error al cargar productos:', error)
@@ -309,7 +310,7 @@ const openScanner = () => {
   if (!selectedWarehouse.value || !selectedCategory.value) {
     $q.notify({
       type: 'warning',
-      message: 'Selecciona almacén y categoría primero'
+      message: 'Selecciona almacén y categoría primero',
     })
     return
   }
@@ -318,7 +319,7 @@ const openScanner = () => {
 
 const handleBarcodeScan = (barcode) => {
   const product = productStore.findProductByBarcode(barcode)
-  
+
   if (product) {
     if (Number(product.stock) > 0) {
       cartStore.addProduct(product, 1)
@@ -328,14 +329,14 @@ const handleBarcodeScan = (barcode) => {
         message: `Producto encontrado: ${product.descripcion}`,
         caption: `Código: ${barcode}`,
         position: 'top',
-        timeout: 2000
+        timeout: 2000,
       })
     } else {
       $q.notify({
         type: 'warning',
         message: 'Producto sin stock',
         caption: product.descripcion,
-        position: 'top'
+        position: 'top',
       })
     }
   } else {
@@ -344,7 +345,7 @@ const handleBarcodeScan = (barcode) => {
       message: 'Producto no encontrado',
       caption: `Código: ${barcode}`,
       position: 'top',
-      timeout: 2000
+      timeout: 2000,
     })
   }
 }

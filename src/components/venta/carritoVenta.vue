@@ -462,6 +462,11 @@ import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import { useRoute } from 'vue-router'
+// ... otros imports
+
+const route = useRoute()
+const preserveCart = route.query.preserveCart === 'true'
 
 const { consumirPermiso } = useSolicitudes()
 const permisosStore = useOperacionesPermitidas()
@@ -1403,8 +1408,18 @@ onMounted(async () => {
     }
 
     // Limpiar y cargar todo
-    eliminarCarrito()
-    await crearCarritoVenta()
+    if (!preserveCart) {
+      // Solo limpiar y crear nuevo si no se pide preservar
+      eliminarCarrito()
+      console.log('Carrito eliminado para nueva sesión')
+      await crearCarritoVenta()
+    } else {
+      // Si se preserva, verificar que exista el carrito; si no, crearlo
+      if (!localStorage.getItem('carrito')) {
+        await crearCarritoVenta()
+      }
+      // No se limpia el carrito, se conservan los productos transferidos
+    }
     await cargarAlmacenes()
   } catch (error) {
     console.error('Error en inicialización:', error)

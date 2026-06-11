@@ -124,8 +124,14 @@ const datosFiltrados = computed(() => {
 
 const columnas = [
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', sortable: true },
+  {
+    name: 'descripcion',
+    label: 'Descripción Producto',
+    field: 'descripcion',
+    align: 'left',
+    sortable: true,
+  },
+
   { name: 'stock', label: 'Stock actual', field: 'stock', align: 'right', sortable: true },
   { name: 'stockminimo', label: 'Stock mínimo', field: 'stockminimo', align: 'right' },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },

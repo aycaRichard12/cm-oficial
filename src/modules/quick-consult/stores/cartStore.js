@@ -21,18 +21,19 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
    */
   function addProduct(product, quantity = 1) {
     if (!product || !product.id) return
-    
+
     const existing = itemsMap.value.get(product.id)
+    console.log(existing)
     if (existing) {
       // Re-establecemos el valor para asegurar reactividad profunda
-      itemsMap.value.set(product.id, { 
-        ...existing, 
-        quantity: existing.quantity + quantity 
+      itemsMap.value.set(product.id, {
+        ...existing,
+        quantity: existing.quantity + quantity,
       })
     } else {
-      itemsMap.value.set(product.id, { 
-        product: { ...product }, 
-        quantity 
+      itemsMap.value.set(product.id, {
+        product: { ...product },
+        quantity,
       })
     }
   }
@@ -45,12 +46,12 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
       removeProduct(productId)
       return
     }
-    
+
     const item = itemsMap.value.get(productId)
     if (item) {
-      itemsMap.value.set(productId, { 
-        ...item, 
-        quantity 
+      itemsMap.value.set(productId, {
+        ...item,
+        quantity,
       })
     }
   }
@@ -72,6 +73,26 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
     itemsMap.value = new Map()
   }
 
+  function getItemsForSale() {
+    console.log(itemsMap.value)
+    const saleItems = []
+    for (const [id, item] of itemsMap.value.entries()) {
+      saleItems.push({
+        idproductoalmacen: Number(id),
+        cantidad: item.quantity,
+        precio: item.price,
+        descripcion: item.name,
+        codigo: item.code,
+        idstock: item.stockId || null,
+        idporcentaje: item.percentageId || null,
+        subtotal: item.price * item.quantity,
+        datosAdicionales: item.additionalData || '',
+        despachado: item.stock > 0 ? 1 : 2, // 1 = con stock, 2 = sin stock
+      })
+    }
+    return saleItems
+  }
+
   return {
     itemsMap,
     itemList,
@@ -81,5 +102,6 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
     updateQuantity,
     removeProduct,
     clearCart,
+    getItemsForSale,
   }
 })

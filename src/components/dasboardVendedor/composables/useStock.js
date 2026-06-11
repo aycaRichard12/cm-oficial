@@ -8,19 +8,19 @@ export function useStock() {
   const alertasCriticas = computed(() =>
     store.productos
       .filter((p) => p.stock > 0 && p.stock < 5)
-      .map((p) => ({ codigo: p.codigo, nombre: p.producto, stock: p.stock })),
+      .map((p) => ({ codigo: p.codigo, nombre: p.descripcion, stock: p.stock })),
   )
 
   const alertasBajas = computed(() =>
     store.productos
       .filter((p) => p.stock >= 5 && p.stock <= 15)
-      .map((p) => ({ codigo: p.codigo, nombre: p.producto, stock: p.stock })),
+      .map((p) => ({ codigo: p.codigo, nombre: p.descripcion, stock: p.stock })),
   )
 
   const productosAgotadosLista = computed(() =>
     store.productos
       .filter((p) => p.stock === 0)
-      .map((p) => ({ codigo: p.codigo, nombre: p.producto, stock: 0 })),
+      .map((p) => ({ codigo: p.codigo, nombre: p.descripcion, stock: 0 })),
   )
 
   // Data para gráfico donut

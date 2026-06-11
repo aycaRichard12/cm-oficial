@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { stockService } from 'src/components/dasboardVendedor/services/stockService'
-
+import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+const ID_USUARIO = idusuario_md5()
 export const useStockStore = defineStore('stock', () => {
   // Estado
   const almacenes = ref([])
@@ -35,10 +36,12 @@ export const useStockStore = defineStore('stock', () => {
   // Acciones
   async function cargarAlmacenes() {
     try {
+      console.log(ID_USUARIO)
       const { data } = await stockService.getAlmacenes()
+      console.log(data)
       almacenes.value = data
-        .filter((a) => a.estado == 1)
-        .map((a) => ({ label: a.nombre, value: a.id, ...a }))
+        .filter((a) => a.idusuario == ID_USUARIO)
+        .map((a) => ({ label: a.almacen, value: a.idalmacen, ...a }))
 
       if (almacenes.value.length) {
         almacenSeleccionado.value = almacenes.value[0].value
