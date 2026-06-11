@@ -6,6 +6,7 @@ export const useQuickConsultUiStore = defineStore('quickConsultUi', () => {
   const isLoadingProducts = ref(false)
   const isCartSheetOpen = ref(false)
   const isFilterDrawerOpen = ref(false)
+  const isScannerOpen = ref(false)
 
   function setLoading(loading) {
     isLoadingProducts.value = loading
@@ -19,12 +20,18 @@ export const useQuickConsultUiStore = defineStore('quickConsultUi', () => {
     isFilterDrawerOpen.value = open
   }
 
+  function setScannerOpen(open) {
+    isScannerOpen.value = open
+  }
+
   return {
     isLoadingProducts,
     isCartSheetOpen,
     isFilterDrawerOpen,
+    isScannerOpen,
     setLoading,
     setCartSheetOpen,
     setFilterDrawerOpen,
+    setScannerOpen,
   }
 })

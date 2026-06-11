@@ -11,16 +11,21 @@
             <div class="header-subtitle">Gestión de inventario y ventas</div>
           </div>
         </div>
-        <q-btn flat round dense icon="shopping_cart" class="cart-button" @click="toggleCartSheet">
-          <q-badge
-            v-if="cartStore.totalItems > 0"
-            color="positive"
-            floating
-            rounded
-            :label="cartStore.totalItems"
-            class="cart-badge"
-          />
-        </q-btn>
+        <div class="row q-gutter-x-sm">
+          <q-btn flat round dense icon="qr_code_scanner" class="cart-button" @click="openScanner">
+            <q-tooltip>Escanear código</q-tooltip>
+          </q-btn>
+          <q-btn flat round dense icon="shopping_cart" class="cart-button" @click="toggleCartSheet">
+            <q-badge
+              v-if="cartStore.totalItems > 0"
+              color="positive"
+              floating
+              rounded
+              :label="cartStore.totalItems"
+              class="cart-badge"
+            />
+          </q-btn>
+        </div>
       </div>
     </div>
 
@@ -126,6 +131,7 @@
     <FilterDrawer />
     <FloatingCartSummary />
     <CartBottomSheet />
+    <BarcodeScanner @scan="handleBarcodeScan" />
   </q-page>
 </template>
 
@@ -140,6 +146,7 @@ import SearchBar from '../components/common/SearchBar.vue'
 import FilterDrawer from '../components/common/FilterDrawer.vue'
 import FloatingCartSummary from '../components/cart/FloatingCartSummary.vue'
 import CartBottomSheet from '../components/cart/CartBottomSheet.vue'
+import BarcodeScanner from '../components/barcode/BarcodeScanner.vue'
 import { fetchWarehouses, fetchPriceCategories } from '../services/api'
 import { validarUsuario } from 'src/composables/FuncionesG'
 
@@ -296,6 +303,50 @@ const handleAddToCart = (product) => {
 
 const toggleCartSheet = () => {
   uiStore.setCartSheetOpen(true)
+}
+
+const openScanner = () => {
+  if (!selectedWarehouse.value || !selectedCategory.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Selecciona almacén y categoría primero'
+    })
+    return
+  }
+  uiStore.setScannerOpen(true)
+}
+
+const handleBarcodeScan = (barcode) => {
+  const product = productStore.findProductByBarcode(barcode)
+  
+  if (product) {
+    if (Number(product.stock) > 0) {
+      cartStore.addProduct(product, 1)
+      uiStore.setScannerOpen(false)
+      $q.notify({
+        type: 'positive',
+        message: `Producto encontrado: ${product.descripcion}`,
+        caption: `Código: ${barcode}`,
+        position: 'top',
+        timeout: 2000
+      })
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: 'Producto sin stock',
+        caption: product.descripcion,
+        position: 'top'
+      })
+    }
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: 'Producto no encontrado',
+      caption: `Código: ${barcode}`,
+      position: 'top',
+      timeout: 2000
+    })
+  }
 }
 
 onMounted(() => {

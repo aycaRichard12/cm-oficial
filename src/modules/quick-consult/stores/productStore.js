@@ -21,7 +21,7 @@ export const useQuickConsultProductStore = defineStore('quickConsultProduct', ()
         (p) =>
           p.descripcion?.toLowerCase().includes(term) ||
           p.codigo?.toLowerCase().includes(term) ||
-          p.codigo_barras?.toLowerCase().includes(term),
+          p.codigobarra?.toLowerCase().includes(term),
       )
     }
 
@@ -94,6 +94,28 @@ export const useQuickConsultProductStore = defineStore('quickConsultProduct', ()
     priceRange.value = { min: null, max: null }
   }
 
+  /**
+   * Busca un producto por su código de barras (EAN-13, UPC, etc.)
+   * @param {string} barcode
+   * @returns {Object|null}
+   */
+  function findProductByBarcode(barcode) {
+    console.log(products.value)
+    console.log(barcode)
+    if (!barcode) return null
+    const normalizedCode = barcode.trim()
+    console.log(normalizedCode)
+    const producto =
+      products.value.find((p) => {
+        const pCode = String(p.codigobarra || '').trim()
+        console.log(pCode)
+        console.log(p)
+        return pCode === normalizedCode
+      }) || null
+    console.log(producto)
+    return producto
+  }
+
   return {
     products,
     searchTerm,
@@ -106,5 +128,6 @@ export const useQuickConsultProductStore = defineStore('quickConsultProduct', ()
     setCategory,
     setPriceRange,
     clearFilters,
+    findProductByBarcode,
   }
 })
