@@ -77,16 +77,40 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
     console.log(itemsMap.value)
     const saleItems = []
     for (const [id, item] of itemsMap.value.entries()) {
+      console.log(item)
       saleItems.push({
         idproductoalmacen: Number(id),
         cantidad: item.quantity,
-        precio: item.price,
-        descripcion: item.name,
-        codigo: item.code,
-        idstock: item.stockId || null,
-        idporcentaje: item.percentageId || null,
-        subtotal: item.price * item.quantity,
-        datosAdicionales: item.additionalData || '',
+        id: item.id,
+        almacen: item.almacen,
+        codigo: item.codigo,
+        codigobarra: item.codigobarra,
+        producto: item.producto,
+        descripcion: item.descripcion,
+        detalle: item.detalle,
+        unidad: item.unidad,
+        caracteristica: item.caracteristica,
+        stockminimo: item.stockminimo,
+        stock: item.stock,
+        fecha: item.fecha,
+        idalmacen: item.idalmacen,
+        estado: item.estado,
+        medida: item.medida,
+        categoria: item.categoria,
+        idproducto: item.idproducto,
+        estadoproducto: item.estadoproducto,
+        stockmaximo: item.stockmaximo,
+        imagen: item.imagen,
+        idstock: item.idstock,
+        idcategoriaprecio: item.idporcentaje,
+        tipo: item.tipo,
+        precio: item.precio,
+        codigosin: item.codigosin,
+        actividadsin: item.actividadsin,
+        unidadsin: item.unidadsin,
+        codigonandina: item.codigonandina,
+        precioOriginal: item.precioOriginal,
+        tienePrecioCampana: item.tienePrecioCampana,
         despachado: item.stock > 0 ? 1 : 2, // 1 = con stock, 2 = sin stock
       })
     }
