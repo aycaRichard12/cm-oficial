@@ -130,7 +130,7 @@
     <!-- Paneles flotantes -->
     <FilterDrawer />
     <FloatingCartSummary />
-    <CartBottomSheet />
+    <CartBottomSheet :warehouse="selectedWarehouse" :category="selectedCategory" />
     <BarcodeScanner @scan="handleBarcodeScan" />
   </q-page>
 </template>

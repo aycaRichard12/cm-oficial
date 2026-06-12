@@ -76,42 +76,44 @@ export const useQuickConsultCartStore = defineStore('quickConsultCart', () => {
   function getItemsForSale() {
     console.log(itemsMap.value)
     const saleItems = []
-    for (const [id, item] of itemsMap.value.entries()) {
-      console.log(item)
+    for (const [id, entry] of itemsMap.value.entries()) {
+      const p = entry.product
+      console.log('Mapping product for sale:', p)
       saleItems.push({
         idproductoalmacen: Number(id),
-        cantidad: item.quantity,
-        id: item.id,
-        almacen: item.almacen,
-        codigo: item.codigo,
-        codigobarra: item.codigobarra,
-        producto: item.producto,
-        descripcion: item.descripcion,
-        detalle: item.detalle,
-        unidad: item.unidad,
-        caracteristica: item.caracteristica,
-        stockminimo: item.stockminimo,
-        stock: item.stock,
-        fecha: item.fecha,
-        idalmacen: item.idalmacen,
-        estado: item.estado,
-        medida: item.medida,
-        categoria: item.categoria,
-        idproducto: item.idproducto,
-        estadoproducto: item.estadoproducto,
-        stockmaximo: item.stockmaximo,
-        imagen: item.imagen,
-        idstock: item.idstock,
-        idcategoriaprecio: item.idporcentaje,
-        tipo: item.tipo,
-        precio: item.precio,
-        codigosin: item.codigosin,
-        actividadsin: item.actividadsin,
-        unidadsin: item.unidadsin,
-        codigonandina: item.codigonandina,
-        precioOriginal: item.precioOriginal,
-        tienePrecioCampana: item.tienePrecioCampana,
-        despachado: item.stock > 0 ? 1 : 2, // 1 = con stock, 2 = sin stock
+        cantidad: entry.quantity,
+        id: p.id,
+        almacen: p.almacen,
+        codigo: p.codigo,
+        codigobarra: p.codigobarra,
+        producto: p.producto,
+        descripcion: p.descripcion,
+        detalle: p.detalle,
+        unidad: p.unidad,
+        caracteristica: p.caracteristica,
+        stockminimo: p.stockminimo,
+        stock: p.stock,
+        fecha: p.fecha,
+        idalmacen: p.idalmacen,
+        estado: p.estado,
+        medida: p.medida,
+        categoria: p.categoria,
+        idproducto: p.idproducto,
+        estadoproducto: p.estadoproducto,
+        stockmaximo: p.stockmaximo,
+        imagen: p.imagen,
+        idstock: p.idstock,
+        idcategoriaprecio: p.idporcentaje,
+        tipo: p.tipo,
+        precio: p.precio,
+        codigosin: p.codigosin,
+        actividadsin: p.actividadsin,
+        unidadsin: p.unidadsin,
+        codigonandina: p.codigonandina,
+        precioOriginal: p.precioOriginal,
+        tienePrecioCampana: p.tienePrecioCampana,
+        subtotal: Number(p.precio) * entry.quantity,
+        despachado: Number(p.stock) > 0 ? 1 : 2, // 1 = con stock, 2 = sin stock
       })
     }
     return saleItems

@@ -467,6 +467,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const preserveCart = route.query.preserveCart === 'true'
+const isInitializing = ref(false)
 
 const { consumirPermiso } = useSolicitudes()
 const permisosStore = useOperacionesPermitidas()
@@ -767,6 +768,9 @@ async function cargarCategoriasPrecio() {
     localStorage.setItem('carrito', JSON.stringify(datos))
     try {
       cargandoCategorias.value = true
+      // Preservamos el valor actual por si viene de una carga externa (Quick Consult)
+      const categoriaActual = categoriaPrecioSeleccionada.value
+
       categoriaPrecioSeleccionada.value = null
       categoriasPrecio.value = []
 
@@ -783,6 +787,12 @@ async function cargarCategoriasPrecio() {
           label: item.nombre,
           value: item.id,
         }))
+
+      // Si la categoría que teníamos sigue siendo válida para este almacén, la restauramos
+      if (categoriaActual && categoriasPrecio.value.some((c) => c.value == categoriaActual)) {
+        categoriaPrecioSeleccionada.value = categoriaActual
+      }
+
       reinicia()
     } catch (error) {
       console.error('Error al cargar categorías:', error)
@@ -1010,6 +1020,8 @@ watch(
 // Los otros dos `watch` ya no son necesarios.)
 
 function reinicia() {
+  if (isInitializing.value) return
+
   const datos = JSON.parse(localStorage.getItem('carrito')) || {}
 
   const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
@@ -1398,6 +1410,7 @@ async function consumirPermisoVentaSinStock(idalmacen) {
 
 // Inicialización $ currencyStore codigoActividadSin despachado
 onMounted(async () => {
+  isInitializing.value = true
   try {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
@@ -1407,8 +1420,45 @@ onMounted(async () => {
       return
     }
 
-    // Limpiar y cargar todo
-    if (!preserveCart) {
+    // Verificar si venimos de Quick Consult
+    const quickConsult = localStorage.getItem('quickConsult')
+    if (quickConsult) {
+      const data = JSON.parse(quickConsult)
+      console.log('Procesando datos de Quick Consult:', data)
+
+      // Restaurar estado local
+      if (data.almacen) {
+        almacenSeleccionado.value = data.almacen
+      }
+      if (data.categoria) {
+        categoriaPrecioSeleccionada.value = data.categoria.value
+      }
+      if (data.listaProductos) {
+        carritoPrueba.value = [...data.listaProductos]
+      }
+      if (data.descuento !== undefined) {
+        descuento.value = data.descuento
+      }
+
+      // Preparar el carrito principal con los datos importados
+      const contenidousuario = validarUsuario()
+      const token = contenidousuario[0]?.factura?.access_token
+      const tipo = contenidousuario[0]?.factura?.tipo
+
+      const mainCart = {
+        ...data,
+        idalmacen: data.almacen?.value || 0,
+        codigosinsucursal: data.almacen?.codigosin || null,
+        token,
+        tipo,
+        iddivisa: currencyStore.divisa.id || null,
+        pagosDivididos: [],
+        variablePago: 'dividido',
+      }
+
+      localStorage.setItem('carrito', JSON.stringify(mainCart))
+      localStorage.removeItem('quickConsult')
+    } else if (!preserveCart) {
       // Solo limpiar y crear nuevo si no se pide preservar
       eliminarCarrito()
       console.log('Carrito eliminado para nueva sesión')
@@ -1421,12 +1471,23 @@ onMounted(async () => {
       // No se limpia el carrito, se conservan los productos transferidos
     }
     await cargarAlmacenes()
+
+    // Si importamos de Quick Consult, cargar categorías y productos para la UI
+    if (almacenSeleccionado.value && categoriaPrecioSeleccionada.value) {
+      await cargarCategoriasPrecio()
+      await cargarProductosDisponibles()
+    }
   } catch (error) {
     console.error('Error en inicialización:', error)
     $q.notify({
       type: 'negative',
       message: 'Error al inicializar componente',
     })
+  } finally {
+    // Pequeño delay para asegurar que los watches iniciales se ignoren
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 500)
   }
 })
 </script>

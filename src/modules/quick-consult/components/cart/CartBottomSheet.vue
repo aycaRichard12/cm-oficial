@@ -153,6 +153,17 @@ import { imagen as imagenUrl } from 'src/boot/url'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
+const props = defineProps({
+  warehouse: {
+    type: Object,
+    default: null,
+  },
+  category: {
+    type: Object,
+    default: null,
+  },
+})
+
 const $q = useQuasar()
 const cartStore = useQuickConsultCartStore()
 const uiStore = useQuickConsultUiStore()
@@ -229,58 +240,39 @@ const proceedToSale = async () => {
     const saleCart = {
       listaProductos: items,
       listaProductosFactura: items.map((item) => ({
-        idproductoalmacen: item.idproductoalmacen,
-        cantidad: item.cantidad,
-        id: item.id,
-        almacen: item.almacen,
-        codigo: item.codigo,
-        codigobarra: item.codigobarra,
-        producto: item.producto,
+        codigoProducto: item.codigo,
+        codigoActividadSin: item.actividadsin,
+        codigoProductoSin: item.codigosin,
         descripcion: item.descripcion,
-        detalle: item.detalle,
-        unidad: item.unidad,
-        caracteristica: item.caracteristica,
-        stockminimo: item.stockminimo,
-        stock: item.stock,
-        fecha: item.fecha,
-        idalmacen: item.idalmacen,
-        estado: item.estado,
-        medida: item.medida,
-        categoria: item.categoria,
-        idproducto: item.idproducto,
-        estadoproducto: item.estadoproducto,
-        stockmaximo: item.stockmaximo,
-        imagen: item.imagen,
-        idstock: item.idstock,
-        idcategoriaprecio: item.idcategoriaprecio,
-        tipo: item.tipo,
-        precio: item.precio,
-        codigosin: item.codigosin,
-        actividadsin: item.actividadsin,
-        unidadsin: item.unidadsin,
-        codigonandina: item.codigonandina,
-        precioOriginal: item.precioOriginal,
-        tienePrecioCampana: item.tienePrecioCampana,
-        despachado: item.despachado,
+        unidadMedida: item.unidadsin,
+        precioUnitario: item.precio,
+        subTotal: (Number(item.cantidad) * Number(item.precio)).toFixed(2),
+        cantidad: item.cantidad,
+        numeroSerie: '',
+        montoDescuento: 0,
+        numeroImei: '',
+        codigoNandina: item.codigonandina,
       })),
       listaFactura: {},
-      subtotal: cartStore.totalAmount,
+      subtotal: cartStore.totalAmount.toFixed(2),
       descuento: 0,
-      ventatotal: cartStore.totalAmount,
+      ventatotal: cartStore.totalAmount.toFixed(2),
       nropagos: 0,
       valorpagos: 0,
       idcampana: 0,
+      // Información adicional para la transferencia
+      almacen: props.warehouse,
+      categoria: props.category,
     }
 
-    // Guardar en localStorage
-    localStorage.setItem('carrito', JSON.stringify(saleCart))
+    // Guardar en localStorage con la nueva llave
+    localStorage.setItem('quickConsult', JSON.stringify(saleCart))
 
-    // Opcional: limpiar el carrito rápido (para no tener datos duplicados)
+    // Limpiar el carrito rápido (para no tener datos duplicados)
     cartStore.clearCart()
 
-    // Navegar al componente de venta (ajustar ruta según tu proyecto)
-    // En proceedToSale, después de guardar el carrito
-    router.push('/registrarventaoculto?preserveCart=true')
+    // Navegar al componente de venta
+    router.push('/registrarventaoculto')
 
     $q.notify({ type: 'positive', message: 'Carrito transferido a venta' })
   } catch (error) {
