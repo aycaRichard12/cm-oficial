@@ -1387,6 +1387,7 @@ const showAddModal = ref(false)
 const esProductoUnico = ref(false)
 const registrarComoProductoUnico = ref(false)
 const idempresa = idempresa_md5()
+const isInitializing = ref(false)
 const CodigosUnicosSeleccionados = ref([])
 const { config } = useProductoConfig(idempresa)
 const listaCajaBancos = ref([])
@@ -1658,16 +1659,6 @@ const cambioFecha = () => {
   cotizacionFormRef.value?.resetValidation()
 }
 
-// Cargar carrito desde localStorage al inicio
-
-onMounted(() => {
-  localStorage.removeItem('carritoCO') // Limpiar localStorage al inicio
-  const storedCarrito = localStorage.getItem('carritoCO')
-  if (storedCarrito) {
-    Object.assign(carritoCO, JSON.parse(storedCarrito))
-  }
-})
-
 // Watcher para el filtro de almacén para recargar categorías
 watch(filtroAlmacenCO, (newVal) => {
   idalmacenfiltro.value = newVal
@@ -1867,7 +1858,9 @@ async function listaAlmacenes() {
       console.error(resultado.error)
     } else {
       almacenesOptions.value = resultado.filter((u) => u.idusuario === idusuario)
+      console.log(isInitializing.value)
       if (almacenesOptions.value.length > 0) {
+        console.log(isInitializing.value)
         filtroAlmacenCO.value = almacenesOptions.value[0].idalmacen // Seleccionar el primero por defecto
       }
     }
@@ -2623,20 +2616,84 @@ async function listarcajasbanco() {
 }
 // --- Inicialización ---
 onMounted(async () => {
-  localStorage.removeItem('carritoCO') // Limpiar localStorage al inicio
-  // Cargar datos iniciales
-  await divisaEmonedaActiva()
-  await leyendaActiva() // Aunque no se use directamente, la lógica original la carga.
-  await listaAlmacenes()
-  await listaCLientes()
-  await listaProductosDisponibles() // Cargar productos inicialmente
-  await cargarLeyendasCotizacion() // Cargar leyendas para el comprobante
-  await cargarMetodoPagoFactura()
-  await permisosStore.cargarPermisos()
-  await cargarCanales()
+  isInitializing.value = true
+  try {
+    // Cargar datos iniciales
+    await divisaEmonedaActiva()
+    await leyendaActiva()
+    await listaAlmacenes()
+    await listaCLientes()
+    await cargarLeyendasCotizacion()
+    await cargarMetodoPagoFactura()
+    await permisosStore.cargarPermisos()
+    await cargarCanales()
+    await listarcajasbanco()
 
-  calcularTotalesCarrito() // Recalcular si hay carrito guardado en localStorage
-  listarcajasbanco()
+    // Detectar si venimos de Quick Consult
+    const quickConsult = localStorage.getItem('quickConsult')
+    if (quickConsult) {
+      const data = JSON.parse(quickConsult)
+      console.log('Procesando datos de Quick Consult en CotizacionPage:', data)
+
+      if (data.destination === 'quotation') {
+        tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
+        const user = await getUserData()
+        carritoCO.idusuario = user?.idusuario
+        carritoCO.idempresa = idempresa
+        carritoCO.divisa = divisaActiva.id
+
+        // Restaurar almacén y categoría
+        if (data.almacen) {
+          filtroAlmacenCO.value = data.almacen.value
+          idalmacenfiltro.value = data.almacen.value
+        }
+        if (data.categoria) {
+          console.log(data.categoria)
+          filtroCategoriaCO.value = data.categoria.value
+          idporcentajeventa.value = data.categoria.value
+        }
+
+        // Cargar categorías del almacén seleccionado
+        await listaCategoria()
+
+        // Mapear productos al formato de CotizacionPage
+        if (data.listaProductos) {
+          carritoCO.listaProductos = data.listaProductos.map((p, index) => ({
+            num: index + 1,
+            idproductoalmacen: p.idproductoalmacen,
+            cantidad: p.cantidad,
+            precio: p.precio,
+            idstock: p.idstock,
+            idporcentaje: p.idporcentaje,
+            candiponible: p.stock,
+            descripcion: p.descripcion,
+            descripcionAdicional: p.descripcionAdicional || '',
+            codigo: p.codigo,
+            despachado: p.despachado,
+            codigosUnicos: p.codigosUnicos || [],
+          }))
+        }
+
+        calcularTotalesCarrito()
+        await listaProductosDisponibles()
+
+        localStorage.removeItem('quickConsult')
+        $q.notify({
+          type: 'positive',
+          message: 'Productos de Consulta Rápida cargados correctamente',
+        })
+      }
+    } else {
+      localStorage.removeItem('carritoCO') // Limpiar solo si no venimos de Quick Consult
+      await listaProductosDisponibles()
+    }
+  } catch (error) {
+    console.error('Error en inicialización de Cotización:', error)
+  } finally {
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 500)
+  }
 })
 </script>
 

@@ -1422,53 +1422,63 @@ onMounted(async () => {
 
     // Verificar si venimos de Quick Consult
     const quickConsult = localStorage.getItem('quickConsult')
+    let importedFromQuickConsult = false
+
     if (quickConsult) {
       const data = JSON.parse(quickConsult)
-      console.log('Procesando datos de Quick Consult:', data)
 
-      // Restaurar estado local
-      if (data.almacen) {
-        almacenSeleccionado.value = data.almacen
-      }
-      if (data.categoria) {
-        categoriaPrecioSeleccionada.value = data.categoria.value
-      }
-      if (data.listaProductos) {
-        carritoPrueba.value = [...data.listaProductos]
-      }
-      if (data.descuento !== undefined) {
-        descuento.value = data.descuento
-      }
+      if (data.destination === 'sale') {
+        console.log('Procesando datos de Quick Consult:', data)
+        importedFromQuickConsult = true
 
-      // Preparar el carrito principal con los datos importados
-      const contenidousuario = validarUsuario()
-      const token = contenidousuario[0]?.factura?.access_token
-      const tipo = contenidousuario[0]?.factura?.tipo
+        // Restaurar estado local
+        if (data.almacen) {
+          almacenSeleccionado.value = data.almacen
+        }
+        if (data.categoria) {
+          categoriaPrecioSeleccionada.value = data.categoria.value
+        }
+        if (data.listaProductos) {
+          carritoPrueba.value = [...data.listaProductos]
+        }
+        if (data.descuento !== undefined) {
+          descuento.value = data.descuento
+        }
 
-      const mainCart = {
-        ...data,
-        idalmacen: data.almacen?.value || 0,
-        codigosinsucursal: data.almacen?.codigosin || null,
-        token,
-        tipo,
-        iddivisa: currencyStore.divisa.id || null,
-        pagosDivididos: [],
-        variablePago: 'dividido',
+        // Preparar el carrito principal con los datos importados
+        const contenidousuario = validarUsuario()
+        const token = contenidousuario[0]?.factura?.access_token
+        const tipo = contenidousuario[0]?.factura?.tipo
+
+        const mainCart = {
+          ...data,
+          idalmacen: data.almacen?.value || 0,
+          codigosinsucursal: data.almacen?.codigosin || null,
+          token,
+          tipo,
+          iddivisa: currencyStore.divisa.id || null,
+          pagosDivididos: [],
+          variablePago: 'dividido',
+        }
+
+        localStorage.setItem('carrito', JSON.stringify(mainCart))
+        localStorage.removeItem('quickConsult')
       }
+    }
 
-      localStorage.setItem('carrito', JSON.stringify(mainCart))
-      localStorage.removeItem('quickConsult')
-    } else if (!preserveCart) {
-      // Solo limpiar y crear nuevo si no se pide preservar
-      eliminarCarrito()
-      console.log('Carrito eliminado para nueva sesión')
-      await crearCarritoVenta()
-    } else {
-      // Si se preserva, verificar que exista el carrito; si no, crearlo
-      if (!localStorage.getItem('carrito')) {
+    if (!importedFromQuickConsult) {
+      if (!preserveCart) {
+        // Solo limpiar y crear nuevo si no se pide preservar
+        eliminarCarrito()
+        console.log('Carrito eliminado para nueva sesión')
         await crearCarritoVenta()
+      } else {
+        // Si se preserva, verificar que exista el carrito; si no, crearlo
+        if (!localStorage.getItem('carrito')) {
+          await crearCarritoVenta()
+        }
+        // No se limpia el carrito, se conservan los productos transferidos
       }
-      // No se limpia el carrito, se conservan los productos transferidos
     }
     await cargarAlmacenes()
 

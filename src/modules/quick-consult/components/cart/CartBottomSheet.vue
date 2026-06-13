@@ -126,16 +126,36 @@
             />
           </div>
           <div class="col-8">
-            <q-btn
+            <q-btn-dropdown
               color="primary"
-              label="Cerrar y continuar"
-              v-close-popup
+              label="Procesar"
               class="full-width text-weight-bold"
               size="lg"
               rounded
               no-caps
-              @click="proceedToSale"
-            />
+              split
+              @click="proceedTo('sale')"
+            >
+              <q-list>
+                <q-item clickable v-close-popup @click="proceedTo('sale')">
+                  <q-item-section avatar>
+                    <q-icon name="point_of_sale" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Enviar a Venta</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-close-popup @click="proceedTo('quotation')">
+                  <q-item-section avatar>
+                    <q-icon name="request_quote" color="secondary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Enviar a Cotización</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
           </div>
         </div>
         <div class="safe-area-bottom" />
@@ -226,17 +246,17 @@ const confirmClearCart = () => {
   })
 }
 
-const proceedToSale = async () => {
+const proceedTo = async (destination) => {
   try {
     // Obtener items en formato carritoVenta
     const items = cartStore.getItemsForSale()
-    console.log('Items para venta:', items)
+    console.log(`Items para ${destination}:`, items)
     if (items.length === 0) {
       $q.notify({ type: 'warning', message: 'No hay productos en el carrito' })
       return
     }
 
-    // Crear estructura de datos para localStorage (similar a carritoVenta)
+    // Crear estructura de datos para localStorage
     const saleCart = {
       listaProductos: items,
       listaProductosFactura: items.map((item) => ({
@@ -263,6 +283,7 @@ const proceedToSale = async () => {
       // Información adicional para la transferencia
       almacen: props.warehouse,
       categoria: props.category,
+      destination: destination,
     }
 
     // Guardar en localStorage con la nueva llave
@@ -271,13 +292,20 @@ const proceedToSale = async () => {
     // Limpiar el carrito rápido (para no tener datos duplicados)
     cartStore.clearCart()
 
-    // Navegar al componente de venta
-    router.push('/registrarventaoculto')
+    // Navegar según el destino
+    if (destination === 'sale') {
+      router.push('/registrarventaoculto')
+    } else {
+      router.push('/registrarcotizacionoculto')
+    }
 
-    $q.notify({ type: 'positive', message: 'Carrito transferido a venta' })
+    $q.notify({
+      type: 'positive',
+      message: `Carrito transferido a ${destination === 'sale' ? 'venta' : 'cotización'}`,
+    })
   } catch (error) {
-    console.error('Error al transferir carrito:', error)
-    $q.notify({ type: 'negative', message: 'Error al procesar la venta' })
+    console.error(`Error al transferir carrito a ${destination}:`, error)
+    $q.notify({ type: 'negative', message: 'Error al procesar la transferencia' })
   }
 }
 </script>

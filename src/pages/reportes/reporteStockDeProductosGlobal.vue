@@ -225,7 +225,8 @@ import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalP
 const stockTableRef = ref(null)
 import { useCurrencyStore } from 'src/stores/currencyStore'
 
-const divisaActiva = useCurrencyStore().simbolo
+const divisaActiva = useCurrencyStore()
+console.log('Divisa activa en reporteStockDeProductosGlobal:', divisaActiva)
 const categoriasPrecio = ref([])
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -318,7 +319,7 @@ const columnas = [
 
   {
     name: 'costounitario',
-    label: `Costo Unitario (${divisaActiva})`,
+    label: `Costo Unitario (${divisaActiva.simbolo})`,
     field: 'costounitario',
     format: (val) => formatearDecimal(val),
     align: 'right',
@@ -326,7 +327,7 @@ const columnas = [
   },
   {
     name: 'precioSugerido',
-    label: `Precio Unitario (${divisaActiva})`,
+    label: `Precio Unitario (${divisaActiva.simbolo})`,
     field: 'precioSugerido',
     format: (val) => formatearDecimal(val),
     align: 'right',
@@ -334,7 +335,7 @@ const columnas = [
   },
   {
     name: 'costototal',
-    label: `Costo Total (${divisaActiva})`,
+    label: `Costo Total (${divisaActiva.simbolo})`,
     align: 'right',
     field: 'costototal',
     datatype: 'number',
@@ -342,7 +343,7 @@ const columnas = [
   },
   {
     name: 'costototalventa',
-    label: `Precio Total (${divisaActiva})`,
+    label: `Precio Total (${divisaActiva.simbolo})`,
     align: 'right',
     field: 'costototalventa',
     datatype: 'number',
@@ -366,8 +367,20 @@ const sumatoriaCostoTotal = computed(() => {
 })
 
 onMounted(async () => {
-  await cargarAlmacenes()
-  // await generarReporte()
+  try {
+    await divisaActiva.cargarDivisaActiva()
+    if (!divisaActiva.divisa) {
+      console.error('No se pudo cargar la divisa')
+      return
+    }
+    await cargarAlmacenes()
+  } catch (error) {
+    console.error('Error en onMounted:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error al cargar los datos iniciales',
+    })
+  }
 })
 async function cargarCategoriasPrecio() {
   if (almacenSeleccionado.value) {

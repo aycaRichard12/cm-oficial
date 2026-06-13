@@ -79,7 +79,7 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
 import TableCotizacionPrincipal from 'src/components/cotizacion/TableCotizacionPrincipal.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
-defineEmits(['registrarcotizacion', 'reiniciar', 'cancelarregistro'])
+const emit = defineEmits(['registrarcotizacion', 'reiniciar', 'cancelarregistro'])
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
 
@@ -541,6 +541,20 @@ const alGuardarEdicion = () => {
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)
   await generarReporte()
+
+  // Detectar datos de Quick Consult
+  const quickConsult = localStorage.getItem('quickConsult')
+  if (quickConsult) {
+    try {
+      const data = JSON.parse(quickConsult)
+      if (data.destination === 'quotation') {
+        console.log('Detectado Quick Consult para cotización, abriendo formulario...')
+        emit('registrarcotizacion')
+      }
+    } catch (e) {
+      console.error('Error al procesar Quick Consult en ListaCotizacionPage:', e)
+    }
+  }
 })
 </script>
 
