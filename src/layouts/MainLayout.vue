@@ -5,6 +5,7 @@
       :tabs-visible="tabsVisible"
       :active-tabs="activeTabs"
       :active-tabs-reportes="activeTabsReportes"
+      :active-tabs-reportesdetalle="activeTabsReportesdetalle"
       :permitido-notificaciones="permitidoNotificaciones"
       @toggle-left-drawer="toggleLeftDrawer"
       @iniciar-guia="IniciarGuia"
@@ -93,7 +94,7 @@
 import emitter from 'src/event-bus'
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT } from 'src/stores/paginas'
+import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
 import HeaderLayout from './HeaderLayout.vue'
 import NotificacionRecibidaDialog from 'src/components/pusher-notificaciones/NotificacionRecibidaDialog.vue'
@@ -137,6 +138,7 @@ const cargo = ref('Sin cargo')
 const items = ref([])
 const activeTabs = ref([])
 const activeTabsReportes = ref([])
+const activeTabsReportesdetalle = ref([])
 const currentTab = ref('')
 /// ================================================
 const permitidoNotificaciones = permisoNotificaciones()
@@ -238,8 +240,9 @@ const loadTabsForSubmenu = (submenuCodigo) => {
   console.log(submenuCodigo)
   const paginasSubmenu = PAGINAS[submenuCodigo] || []
   const paginas_reporte = PAGINAS_SELECT[submenuCodigo] || []
+  const paginas_config_detalle = GRUPO_PAGINAS_DETALLE[submenuCodigo] || []
   const usuario = menuStore.obtenerUsuario
-
+  activeTabsReportesdetalle.value = paginas_config_detalle
   activeTabsReportes.value = paginas_reporte
     .map((paginaCodigo) => {
       const codigoCompleto = `${paginaCodigo}-${usuario}`

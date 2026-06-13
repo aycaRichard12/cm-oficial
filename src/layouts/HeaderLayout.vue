@@ -170,8 +170,8 @@
           v-if="activeTabsReportes.length > 0"
           flat
           no-caps
-          label="Reportes"
-          icon="bar_chart"
+          :label="activeTabsReportesdetalle.label"
+          :icon="activeTabsReportesdetalle.icono"
           :class="['tab-styled q-ma-xs text-white ', { 'active-yellow': isReportActive }]"
           style="min-height: 36px"
         >
@@ -222,6 +222,10 @@ const props = defineProps({
     default: () => [],
   },
   activeTabsReportes: {
+    type: Array,
+    default: () => [],
+  },
+  activeTabsReportesdetalle: {
     type: Array,
     default: () => [],
   },

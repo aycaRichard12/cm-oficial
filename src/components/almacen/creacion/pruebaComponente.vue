@@ -145,6 +145,6 @@ const columns = [
 ]
 
 const descargarPDF = () => {
-  console.log('Exportando a PDF...')
+  //console.log('Exportando a PDF...')
 }
 </script>
