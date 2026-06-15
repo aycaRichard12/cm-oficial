@@ -96,7 +96,9 @@ const isCompactMode = computed(() => finalTopBoxes.value.length >= 5)
 const inicialComponent = defineAsyncComponent(() => import('components/welcome/welcomeComp.vue'))
 const PedidoComponent = defineAsyncComponent(() => import('pages/compra/RcompraPage.vue'))
 const CrearProductos = defineAsyncComponent(() => import('pages/producto/CproductoPage.vue'))
-const VentaComponent = defineAsyncComponent(() => import('src/components/venta/ventaComponent.vue'))
+const VentaComponent = defineAsyncComponent(
+  () => import('src/modules/quick-consult/pages/QuickConsultPage.vue'),
+)
 const ReporteComponent = defineAsyncComponent(
   () => import('src/components/reporte/reporteComponent.vue'),
 )
@@ -249,7 +251,7 @@ onMounted(async () => {
       nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
 
       dashboardPerm.value = verificarexistenciapagina('dashboard')
-      ventaPerm.value = verificarexistenciapagina('registrarventaoculto')
+      ventaPerm.value = verificarexistenciapagina('quickconsult')
       compraPerm.value = verificarexistenciapagina('registrarcompra')
       productoPerm.value = verificarexistenciapagina('registrarproductos')
 

@@ -427,7 +427,7 @@ const routes = [
         component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
       },
       {
-        path: '/quick-consult',
+        path: '/quickconsult',
         name: 'QuickConsult',
         component: QuickConsultPage,
       },

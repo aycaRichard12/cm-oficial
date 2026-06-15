@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card-container">
+  <div class="product-card-container bg-fondo">
     <q-card class="product-card" flat bordered>
       <!-- Imagen del producto con zoom, skeleton y placeholder de marca -->
       <div class="image-wrapper">

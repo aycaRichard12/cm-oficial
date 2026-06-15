@@ -30,7 +30,7 @@
     </div>
 
     <!-- Contenido principal con fondo corporativo -->
-    <div class="page-content">
+    <div class="page-content bg-fondo">
       <!-- Tarjeta de selectores -->
       <div class="selector-wrapper">
         <q-card class="selector-card" flat>
@@ -437,7 +437,7 @@ onMounted(() => {
   flex: 1;
   overflow-y: auto;
   padding: 20px 24px;
-  max-width: 1400px;
+  max-width: 100vw;
   margin: 0 auto;
   width: 100%;
 }
@@ -478,6 +478,7 @@ onMounted(() => {
 /* Search wrapper */
 .search-wrapper {
   margin-bottom: 24px;
+  border-radius: 12px;
 }
 
 /* Loading personalizado */
