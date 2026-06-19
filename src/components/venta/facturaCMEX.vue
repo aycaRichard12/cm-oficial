@@ -10,7 +10,7 @@
           @click="$emit('volver')"
           class="q-mr-sm"
         />
-        <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" />
+        <!-- <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" /> -->
       </div>
       <div class="col-12 col-md-8">
         <h4 class="q-ma-none text-primary" style="font-size: 20px">
@@ -871,6 +871,7 @@ async function crearFormularioFacturaExportacion() {
       emailCliente: correoPredeterminado,
       telefonoCliente: 0,
       extras: {
+        uniqueCode: '',
         facturaTicket: '',
       },
       codigoLeyenda: leyendaActiva.leyenda.codigosin,
@@ -1518,9 +1519,9 @@ const resetForm = () => {
   localStorage.removeItem('carrito')
 }
 
-const handleContinue = () => {
-  emit('continuar') // Esto activará el toggle en el padre
-}
+// const handleContinue = () => {
+//   emit('continuar') // Esto activará el toggle en el padre
+// }
 //=======================Cliente ====================
 const RegistrarCliente = () => {
   showAddModal.value = !showAddModal.value

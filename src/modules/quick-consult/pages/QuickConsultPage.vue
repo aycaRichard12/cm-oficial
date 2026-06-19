@@ -101,6 +101,7 @@
           v-if="!uiStore.isLoadingProducts && productStore.filteredProducts.length === 0"
           class="empty-state"
         >
+          {{ productStore.filteredProducts }}
           <div class="empty-icon-wrapper">
             <q-icon name="search_off" size="80px" color="grey-4" />
           </div>
@@ -181,6 +182,8 @@ const setupInitialData = async () => {
   isLoadingWarehouses.value = true
   try {
     const userData = validarUsuario()
+    console.log('👤 userData:', userData)
+
     const usuarioId = userData[0]?.idusuario
     const empresaId = userData[0]?.empresa?.idempresa
 
@@ -188,10 +191,13 @@ const setupInitialData = async () => {
 
     const data = await fetchWarehouses(usuarioId, empresaId)
     warehouses.value = data
+    console.log('🏢 warehouses obtenidos:', warehouses.value)
 
     // Selección automática del primero
     if (warehouses.value.length > 0) {
       selectedWarehouse.value = warehouses.value[0]
+      console.log('🏷️ selectedWarehouse asignado:', selectedWarehouse.value)
+
       // El watch se encargará de cargar las categorías
     }
   } catch (error) {
@@ -206,6 +212,8 @@ const setupInitialData = async () => {
  * 2. Lógica de Reactividad: Cargar categorías al cambiar almacén
  */
 const fetchCategoriesForWarehouse = async (almacenId) => {
+  console.log('🟡 fetchCategoriesForWarehouse con almacenId:', almacenId)
+
   isLoadingCategories.value = true
   try {
     const userData = validarUsuario()
@@ -213,14 +221,17 @@ const fetchCategoriesForWarehouse = async (almacenId) => {
 
     const categories = await fetchPriceCategories(empresaId, almacenId)
     priceCategories.value = categories
+    console.log('📂 priceCategories obtenidas:', priceCategories.value)
 
     // Selección automática de la primera categoría
     if (priceCategories.value.length > 0) {
       selectedCategory.value = priceCategories.value[0]
       // El watch se encargará de cargar los productos
+      console.log('🏷️ selectedCategory asignado:', selectedCategory.value)
     } else {
       selectedCategory.value = null
       productStore.products = [] // Limpiar productos si no hay categorías
+      console.warn('⚠️ No hay categorías para este almacén')
     }
   } catch (error) {
     console.error('Error al cargar categorías de precio:', error)
@@ -234,6 +245,10 @@ const fetchCategoriesForWarehouse = async (almacenId) => {
  * 3. Persistencia y Filtrado: Cargar productos al cambiar categoría
  */
 const loadProductsData = async () => {
+  const userData = validarUsuario()
+  console.log('👤 userData:', userData)
+
+  const empresaId = userData[0]?.empresa?.idempresa
   if (!selectedWarehouse.value || !selectedCategory.value) return
 
   uiStore.setLoading(true)
@@ -242,6 +257,7 @@ const loadProductsData = async () => {
       selectedWarehouse.value.value,
       selectedCategory.value.value,
       null, // campaignId opcional
+      empresaId,
     )
 
     // Código de prueba para 1000 productos (opcional, remover en prod)

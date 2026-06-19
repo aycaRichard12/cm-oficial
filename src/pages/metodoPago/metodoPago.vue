@@ -102,6 +102,7 @@
         class="q-ma-lg"
         @click="toggleForm"
       />
+      <q-btn color="primary" label="Sucursal" to="configurarsucursalsin" class="q-ma-lg" />
     </div>
 
     <q-table

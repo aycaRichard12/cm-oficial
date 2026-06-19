@@ -1,486 +1,65 @@
 {
-
-    almacenesResponsable: Array(6) [
-      {
-        id: 256,
-        idresponsable: 148,
-        idalmacen: 97,
-        almacen: 'Almacén - Real',
-        fecha: '2026-02-03',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 251,
-        idresponsable: 148,
-        idalmacen: 129,
-        almacen: 'almacén - pepe',
-        fecha: '2026-01-27',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 232,
-        idresponsable: 148,
-        idalmacen: 31,
-        almacen: 'Sacaba',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 231,
-        idresponsable: 148,
-        idalmacen: 33,
-        almacen: 'céntrál',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 210,
-        idresponsable: 148,
-        idalmacen: 18,
-        almacen: 'Almacén Fábrica',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 209,
-        idresponsable: 148,
-        idalmacen: 93,
-        almacen: 'Bodega Norte Quillacollo',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '98dce83da57b0395e163467c9dae521b',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      }
-    ],
-    almacenes: Array(6) [
-      {
-        id: 256,
-        idresponsable: 148,
-        idalmacen: 97,
-        almacen: 'Almacén - Real',
-        fecha: '2026-02-03',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 251,
-        idresponsable: 148,
-        idalmacen: 129,
-        almacen: 'almacén - pepe',
-        fecha: '2026-01-27',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 232,
-        idresponsable: 148,
-        idalmacen: 31,
-        almacen: 'Sacaba',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 231,
-        idresponsable: 148,
-        idalmacen: 33,
-        almacen: 'céntrál',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 210,
-        idresponsable: 148,
-        idalmacen: 18,
-        almacen: 'Almacén Fábrica',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 209,
-        idresponsable: 148,
-        idalmacen: 93,
-        almacen: 'Bodega Norte Quillacollo',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '98dce83da57b0395e163467c9dae521b',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      }
-    ],
-
-
-
-
-
-    1. Endpoint Principal: Reporte de Ventas por Campaña
-GET /api/reporteVentasCampanaDetallado/{idUsuario}/{fechaInicio}/{fechaFinal}/{idCampana?}
-Respuesta esperada:
-
-javascript
-[
-  {
-    // Información de la venta
-    idventa: number,
-    nfactura: string,
-    fechaventa: string,
-    
-    // Información de la campaña
-    idcampana: number,
-    nombrecampana: string,
-    porcentajedescuento: number,
-    
-    // Información del almacén
-    idalmacen: number,
-    almacen: string,
-    
-    // Información del producto
-    idproducto: number,
-    codigo: string,
-    descripcion: string,
-    
-    // Cantidades y precios
-    cantidad: number,
-    preciooriginal: number,        // Precio sin campaña
-    preciocampana: number,          // Precio con campaña
-    subtotaloriginal: number,       // cantidad * preciooriginal
-    subtotalcampana: number,        // cantidad * preciocampana
-    descuentocampana: number,       // subtotaloriginal - subtotalcampana
-    
-    // Categoría de precio
-    idcategoriaprecio: number,
-    nombrecategoria: string         // "Por Mayor", "Por Menor", etc.
-  }
-]
-2. Endpoint: Resumen de Productos por Campaña
-GET /api/reporteProductosCampana/{idCampana}/{fechaInicio}/{fechaFinal}
-Respuesta esperada:
-
-javascript
-[
-  {
-    idproducto: number,
-    codigo: string,
-    descripcion: string,
-    totalvendido: number,           // Cantidad total vendida
-    totalventas: number,             // Número de ventas
-    montooriginal: number,           // Monto sin descuento
-    montocampana: number,            // Monto con descuento
-    descuentototal: number,          // Pérdida por campaña
-    porcentajeahorro: number         // % de descuento promedio
-  }
-]
-3. Endpoint: Resumen General de Campaña
-GET /api/resumenCampana/{idCampana}/{fechaInicio}/{fechaFinal}
-Respuesta esperada:
-
-javascript
-{
-  idcampana: number,
-  nombre: string,
-  fechainicio: string,
-  fechafinal: string,
-  
-  // Totales
-  totalventas: number,              // Número de ventas
-  totalproductos: number,           // Productos diferentes vendidos
-  cantidadtotal: number,            // Unidades vendidas
-  
-  // Montos
-  montototaloriginal: number,       // Sin descuento
-  montototalcampana: number,        // Con descuento
-  descuentototalaplicado: number,   // Pérdida total
-  
-  // Por categoría
-  ventasporcategoria: [
+  "numeroFactura": 1,
+  "codigoTipoDocumentoIdentidad": 5,
+  "numeroDocumento": "12345678",
+  "nombreRazonSocial": "Juan Perez",
+  "codigoCliente": "CLI-001",
+  "codigoMetodoPago": 1,
+  "montoTotal": 150,
+  "montoTotalSujetoIva": 127.12,
+  "codigoMoneda": 1,
+  "montoTotalMoneda": 150,
+  "tipoCambio": 1,
+  "usuario": "admin",
+  "emailCliente": "juan.perez@email.com",
+  "codigoLeyenda": 1,
+  "extras": {
+    "uniqueCode": "ORD-2024-001"
+  },
+  "detalles": [
     {
-      idcategoriaprecio: number,
-      nombrecategoria: string,
-      totalventas: number,
-      montototal: number,
-      descuentototal: number
-    }
-  ],
-  
-  // Top productos
-  topproductos: [
-    {
-      codigo: string,
-      descripcion: string,
-      cantidadvendida: number,
-      montototal: number
+      "codigoProducto": "PROD-001",
+      "descripcion": "Producto de ejemplo",
+      "cantidad": 1,
+      "unidadMedida": 1,
+      "precioUnitario": 150,
+      "subTotal": 150
     }
   ]
 }
 
 
 
-{
-    "ver": "registroVenta",
-    "tipoventa": "1",
-    "idusuario": "a8f15eda80c50adb0e71943adc8015cf",
-    "idempresa": "ad61ab143223efbc24c7d2583be69251",
-    "idcliente": "2629",
-    "sucursal": "2024",
-    "tipodoc": "1",
-    "nrodoc": "1988156",
-    "fecha": "11/05/2026",
-    "puntoventa": "8",
-    "metodoPago": "1",
-    "canal": "4",
-    "tipopago": "contado",
-    "periodopersonalizado": "0",
-    "jsonDetalles": {
-        "listaProductos": [
-            {
-                "idproductoalmacen": "4328",
-                "cantidad": 1,
-                "precio": "108",
-                "idstock": "66733",
-                "idporcentaje": "193",
-                "candiponible": "6",
-                "descripcion": "Café Yungas, Molido, 400g",
-                "descripcionAdicional": "",
-                "codigo": "CYM-01",
-                "id": "4328",
-                "subtotal": 108,
-                "datosAdicionales": "23911--4-0901.21.20.00",
-                "despachado": 1
-            }
-        ],
-        "listaProductosFactura": [
-            {
-                "codigoProducto": "CYM-01",
-                "codigoActividadSin": "",
-                "codigoProductoSin": "23911",
-                "descripcion": "Café Yungas, Molido, 400g",
-                "unidadMedida": "4",
-                "precioUnitario": "108",
-                "subTotal": "108.00",
-                "cantidad": 1,
-                "numeroSerie": "",
-                "montoDescuento": 0,
-                "numeroImei": "",
-                "codigoNandina": "0901.21.20.00"
-            }
-        ],
-        "listaFactura": {
-            "numeroFactura": "",
-            "nombreRazonSocial": "FERNANDO SAUCEDO HERRERA",
-            "codigoPuntoVenta": "8",
-            "fechaEmision": "2026-05-11T15:37:19.358Z",
-            "cafc": "",
-            "codigoExcepcion": "",
-            "descuentoAdicional": "0.00",
-            "montoGiftCard": 0,
-            "codigoTipoDocumentoIdentidad": "1",
-            "numeroDocumento": "1988156",
-            "complemento": "",
-            "codigoCliente": "FA-740732",
-            "periodoFacturado": "",
-            "codigoLeyenda": 7488,
-            "codigoMetodoPago": 1,
-            "numeroTarjeta": "",
-            "montoTotal": "108.00",
-            "codigoMoneda": 1,
-            "montoTotalMoneda": "108.00",
-            "usuario": "soporte74",
-            "emailCliente": "factura@yofinanciero.com",
-            "telefonoCliente": "72111170",
-            "extras": {
-                "facturaTicket": ""
-            },
-            "montoTotalSujetoIva": "108.00",
-            "tipoCambio": 1,
-            "detalles": [
-                {
-                    "codigoProducto": "CYM-01",
-                    "codigoActividadSin": "",
-                    "codigoProductoSin": "23911",
-                    "descripcion": "Café Yungas, Molido, 400g",
-                    "unidadMedida": "4",
-                    "precioUnitario": "108",
-                    "subTotal": "108.00",
-                    "cantidad": 1,
-                    "numeroSerie": "",
-                    "montoDescuento": 0,
-                    "numeroImei": "",
-                    "codigoNandina": "0901.21.20.00"
-                }
-            ]
-        },
-        "idalmacen": 84,
-        "codigosinsucursal": "0",
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzMDAyMzIiLCJqdGkiOiJhNjM0NjIyMDdhOThkMDVjZDkzNWJkNDdiYjgwMzQ5MTgyZTIwODRmNWEyOTUxMGJiZGI5MTVhOTEyYTk3ZDM4ODg4MTRhY2ZlODE0MzgyMSIsImlhdCI6MTc1OTE1MzkzMywibmJmIjoxNzU5MTUzOTMzLCJleHAiOjE3OTA2ODk5MzMsInN1YiI6IiIsInNjb3BlcyI6W119.SBaYAQX50-0wa1UmHSCXabfoav9tBLLB_In9yt4IeJ7_hvopXc40E5Zh8UrHxzHPdgiQxODGSAg7WxVbFKqUc4IQzg1zhGsDDhmimJqJYPuwF-Y9mNMQHY3UM3QXSl5T0822Rf41YKBiDi3wku0BMoErIyupICG7ZiCnRqwlEs_hN-KZA23v0WT1eDstcivut6ahpKu3__XpDyf4taKIQEzYQTqOMbqN7FoupQTCTUn293U6a6UPG1ZG75-qnTsVr9poJuUii9395YWA9fhoqF09LLDZP2Qj_bsF2Oxv0PE_rlIJjUyo3NnrY_stgpbnvpASgFL_qQnQVWCHS80uEH4CsDnoB0p7yR0XrlQrGKVlCZtn-VUWH92E3PGDMCgaXMcJMZvjNdnlKOcKAGnrykpsFMQEl1057D_h29L2qep7X-A8xaHXurZAtXbkqKArFv75k4ID_YM4AN_QEeTi4FovijDYOEM4g4NJHyPi9QESD1y6Vp1yh7crFT9hPxVtBoPP3o4l0UkAGvrZRb5It2cu5dXpupvXQ0Y7HkWSZX-dcT_b9hLn7H0mTQZ5A2Cl8kIWTxX5v0-yENXfPvOfWeIdVG1YyQN_fwqMvfHOBGC5s4eMqSRWROcDhNkMVz0ET0TkoiO7X6gdW_DH2mWzQWDmHCRu6dC-_ew6cwNv7MQ",
-        "tipo": 2,
-        "iddivisa": 31,
-        "idcampana": 0,
-        "ventatotal": "108.00",
-        "subtotal": "108.00",
-        "descuento": "0.00",
-        "nropagos": 0,
-        "valorpagos": 0,
-        "dias": null,
-        "fechalimite": "",
-        "pagosDivididos": [
-            {
-                "metodoPago": {
-                    "label": "Contado",
-                    "id": 1,
-                    "value": "4"
-                },
-                "monto": "108.00",
-                "porcentaje": 100
-            }
-        ],
-        "variablePago": "dividido",
-        "subTotal": "108.00",
-        "puntoVenta": 64,
-        "puntoVentaSin": "8",
-        "idleyenda": "8"
-    }
-}
-
 
 
 {
-    "ver": "registroVenta",
-    "tipoventa": "1",
-    "idusuario": "a8f15eda80c50adb0e71943adc8015cf",
-    "idempresa": "ad61ab143223efbc24c7d2583be69251",
-    "idcliente": "2570",
-    "sucursal": "1926",
-    "tipodoc": "5",
-    "nrodoc": "1023055029",
-    "fecha": "11/05/2026",
-    "puntoventa": "8",
-    "metodoPago": "1",
-    "canal": "4",
-    "tipopago": "contado",
-    "periodopersonalizado": "0",
-    "jsonDetalles": {
-        "listaProductos": [
-            {
-                "idproductoalmacen": "4328",
-                "cantidad": 1,
-                "precio": "78",
-                "idstock": "66733",
-                "idporcentaje": "194",
-                "candiponible": "6",
-                "descripcion": "Café Yungas, Molido, 400g",
-                "descripcionAdicional": "",
-                "codigo": "CYM-01",
-                "id": "4328",
-                "subtotal": 78,
-                "datosAdicionales": "23911--4-0901.21.20.00",
-                "despachado": 1
-            }
-        ],
-        "listaProductosFactura": [
-            {
-                "codigoProducto": "CYM-01",
-                "codigoActividadSin": "",
-                "codigoProductoSin": "23911",
-                "descripcion": "Café Yungas, Molido, 400g",
-                "unidadMedida": "4",
-                "precioUnitario": "78",
-                "subTotal": "78.00",
-                "cantidad": 1,
-                "numeroSerie": "",
-                "montoDescuento": 0,
-                "numeroImei": "",
-                "codigoNandina": "0901.21.20.00"
-            }
-        ],
-        "listaFactura": {
-            "numeroFactura": "",
-            "nombreRazonSocial": "Centro Medico Quirurgico Boliviano Belga SRL",
-            "codigoPuntoVenta": "8",
-            "fechaEmision": "2026-05-11T15:40:50.037Z",
-            "cafc": "",
-            "codigoExcepcion": "",
-            "descuentoAdicional": "0.00",
-            "montoGiftCard": 0,
-            "codigoTipoDocumentoIdentidad": "5",
-            "numeroDocumento": "1023055029",
-            "complemento": "",
-            "codigoCliente": "CL-740728",
-            "periodoFacturado": "",
-            "codigoLeyenda": 7488,
-            "codigoMetodoPago": 1,
-            "numeroTarjeta": "",
-            "montoTotal": "78.00",
-            "codigoMoneda": 1,
-            "montoTotalMoneda": "78.00",
-            "usuario": "soporte74",
-            "emailCliente": "factura@yofinanciero.com",
-            "telefonoCliente": "",
-            "extras": {
-                "facturaTicket": ""
-            },
-            "montoTotalSujetoIva": "78.00",
-            "tipoCambio": 1,
-            "detalles": [
-                {
-                    "codigoProducto": "CYM-01",
-                    "codigoActividadSin": "",
-                    "codigoProductoSin": "23911",
-                    "descripcion": "Café Yungas, Molido, 400g",
-                    "unidadMedida": "4",
-                    "precioUnitario": "78",
-                    "subTotal": "78.00",
-                    "cantidad": 1,
-                    "numeroSerie": "",
-                    "montoDescuento": 0,
-                    "numeroImei": "",
-                    "codigoNandina": "0901.21.20.00"
-                }
-            ]
-        },
-        "idalmacen": 84,
-        "codigosinsucursal": "0",
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzMDAyMzIiLCJqdGkiOiJhNjM0NjIyMDdhOThkMDVjZDkzNWJkNDdiYjgwMzQ5MTgyZTIwODRmNWEyOTUxMGJiZGI5MTVhOTEyYTk3ZDM4ODg4MTRhY2ZlODE0MzgyMSIsImlhdCI6MTc1OTE1MzkzMywibmJmIjoxNzU5MTUzOTMzLCJleHAiOjE3OTA2ODk5MzMsInN1YiI6IiIsInNjb3BlcyI6W119.SBaYAQX50-0wa1UmHSCXabfoav9tBLLB_In9yt4IeJ7_hvopXc40E5Zh8UrHxzHPdgiQxODGSAg7WxVbFKqUc4IQzg1zhGsDDhmimJqJYPuwF-Y9mNMQHY3UM3QXSl5T0822Rf41YKBiDi3wku0BMoErIyupICG7ZiCnRqwlEs_hN-KZA23v0WT1eDstcivut6ahpKu3__XpDyf4taKIQEzYQTqOMbqN7FoupQTCTUn293U6a6UPG1ZG75-qnTsVr9poJuUii9395YWA9fhoqF09LLDZP2Qj_bsF2Oxv0PE_rlIJjUyo3NnrY_stgpbnvpASgFL_qQnQVWCHS80uEH4CsDnoB0p7yR0XrlQrGKVlCZtn-VUWH92E3PGDMCgaXMcJMZvjNdnlKOcKAGnrykpsFMQEl1057D_h29L2qep7X-A8xaHXurZAtXbkqKArFv75k4ID_YM4AN_QEeTi4FovijDYOEM4g4NJHyPi9QESD1y6Vp1yh7crFT9hPxVtBoPP3o4l0UkAGvrZRb5It2cu5dXpupvXQ0Y7HkWSZX-dcT_b9hLn7H0mTQZ5A2Cl8kIWTxX5v0-yENXfPvOfWeIdVG1YyQN_fwqMvfHOBGC5s4eMqSRWROcDhNkMVz0ET0TkoiO7X6gdW_DH2mWzQWDmHCRu6dC-_ew6cwNv7MQ",
-        "tipo": 2,
-        "iddivisa": 31,
-        "idcampana": 0,
-        "ventatotal": "78.00",
-        "subtotal": "78.00",
-        "descuento": "0.00",
-        "nropagos": 0,
-        "valorpagos": 0,
-        "dias": null,
-        "fechalimite": "",
-        "pagosDivididos": [
-            {
-                "metodoPago": {
-                    "label": "Contado",
-                    "id": 1,
-                    "value": "4"
-                },
-                "monto": "78.00",
-                "porcentaje": 100
-            }
-        ],
-        "variablePago": "dividido",
-        "subTotal": "78.00",
-        "puntoVenta": 64,
-        "puntoVentaSin": "8",
-        "idleyenda": "8"
+  "numeroFactura": 1,
+  "codigoTipoDocumentoIdentidad": 5,
+  "numeroDocumento": "12345678",
+  "nombreRazonSocial": "Juan Perez",
+  "codigoCliente": "CLI-001",
+  "codigoMetodoPago": 1,
+  "montoTotal": 5000,
+  "montoTotalSujetoIva": 4237.29,
+  "codigoMoneda": 1,
+  "montoTotalMoneda": 5000,
+  "tipoCambio": 1,
+  "montoTotalArrendamientoFinanciero": 5000,
+  "usuario": "admin",
+  "emailCliente": "juan.perez@email.com",
+  "descuentoAdicional": 0,
+  "extras": {
+    "uniqueCode": "ORD-2024-EF-001"
+  },
+  "detalles": [
+    {
+      "codigoProducto": "SERV-EF-001",
+      "descripcion": "Servicio financiero",
+      "cantidad": 1,
+      "unidadMedida": 58,
+      "precioUnitario": 5000,
+      "montoDescuento": 0,
+      "subTotal": 5000
     }
+  ]
 }

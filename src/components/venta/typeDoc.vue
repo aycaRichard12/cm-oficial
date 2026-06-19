@@ -87,6 +87,13 @@ const opciones = [
     icono: 'home_work',
     color: 'purple',
   },
+  {
+    codigo: 'facturaEF',
+    nombre: 'FACTURA DE ENTIDADES FINANCIERAS',
+    descripcion: 'Empresa que ofrece servicios financieros, bancarios y de financiamiento.',
+    icono: 'savings',
+    color: 'blue',
+  },
 ]
 </script>
 

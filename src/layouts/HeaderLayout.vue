@@ -160,9 +160,7 @@
               class="q-mr-xs icono q-mt-md"
             />
             <img v-else :src="tab.icono" width="18" height="18" class="q-mr-xs q-mt-md" />
-            <span class="text-caption text-weight-bold texto q-mt-md">{{
-              tab.titulo.split('-')[2]
-            }}</span>
+            <span class="text-caption text-weight-bold texto q-mt-md">{{ tab.titulo }}</span>
           </div>
         </q-tab>
 
@@ -195,7 +193,7 @@
                 />
                 <img v-else :src="tab.icono" width="35" height="35" class="q-mr-xs q-mt-md" />
               </q-item-section>
-              <q-item-section>{{ tab.titulo.split('-')[2] }}</q-item-section>
+              <q-item-section>{{ tab.titulo }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>

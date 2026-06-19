@@ -59,11 +59,11 @@ export async function fetchPriceCategories(empresaId, almacenId) {
  * @param {number|null} campaignId - ID de la campaña activa (opcional)
  * @returns {Promise<{data: Array}>}
  */
-export async function fetchProducts(almacenId, categoriaPrecioId, campaignId = null) {
+export async function fetchProducts(almacenId, categoriaPrecioId, campaignId = null, empresaId) {
   console.log(campaignId)
-  const endpoint = `/listaProductosDisponiblesVenta/${EMPRESA_ID}`
+  const endpoint = `/listaProductosDisponiblesVenta/${empresaId}`
   const { data } = await api.get(endpoint)
-
+  console.log(data)
   if (data[0] === 'error') {
     throw new Error(data.error || 'Error al cargar productos')
   }

@@ -6,10 +6,7 @@ const esTab = (codigo) => {
   if (!codigo) return false
   const base = codigo.split('-')[0]
   // Combinar todos los arrays de pestañas de ambos objetos
-  const todosLosTabs = [
-    ...Object.values(PAGINAS).flat(),
-    ...Object.values(PAGINAS_SELECT).flat(),
-  ]
+  const todosLosTabs = [...Object.values(PAGINAS).flat(), ...Object.values(PAGINAS_SELECT).flat()]
   return todosLosTabs.includes(base)
 }
 
@@ -64,8 +61,27 @@ export const useMenuStore = defineStore('menu', {
             const esOcultas = item.codigo === 'opcionesocultas' || bajoOcultas
 
             // Agregar prefijo "--" a los títulos de nivel 3
-            if (level === 3 && item.titulo && !item.titulo.startsWith('--')) {
-              item.titulo = `--${item.titulo}`
+            const prefijosReporte = [
+              'Rep. de',
+              'Reporte de',
+              'REPORTE',
+              'Reporte',
+              'Reportes',
+              'Rep.',
+            ]
+
+            if (level === 3 && item.titulo) {
+              // Recorremos cada prefijo para ver si está al inicio
+              for (const prefijo of prefijosReporte) {
+                if (item.titulo.startsWith(prefijo)) {
+                  // Cortamos el título desde la longitud del prefijo hacia adelante
+                  // y usamos trim() para quitar el espacio sobrante al principio
+                  item.titulo = item.titulo.substring(prefijo.length).trim()
+
+                  // Usamos 'break' para salir del bucle una vez eliminado el prefijo encontrado
+                  break
+                }
+              }
             }
 
             // 1. Agregar a 'todos' para búsquedas globales (existePagina, etc.)
@@ -79,9 +95,7 @@ export const useMenuStore = defineStore('menu', {
 
             // 2. Procesar permisos si existen
             if (item.permiso && typeof item.permiso === 'string') {
-              permisos[item.codigo] = item.permiso
-                .split('')
-                .map((u) => u === '1')
+              permisos[item.codigo] = item.permiso.split('').map((u) => u === '1')
             }
 
             // 3. Procesar submenús recursivamente

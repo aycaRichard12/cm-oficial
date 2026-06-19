@@ -34,6 +34,7 @@
       @delete-item="confirmDelete"
       @toggleStatus="toggleStatus"
       @importar="handleImport"
+      @delete-selected="eliminarProductosSeleccionados"
     />
   </q-page>
 </template>
@@ -351,6 +352,43 @@ const confirmDelete = (row) => {
   }).onOk(async () => {
     try {
       const response = await api.get(`eliminarProducto/${row.id}`) // Cambia a tu ruta real
+      console.log(response)
+      if (response.data.estado === 'exito') {
+        loadRows()
+        $q.notify({
+          type: 'positive',
+          message: response.data.mensaje,
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: response.data.mensaje,
+        })
+      }
+    } catch (error) {
+      console.error('Error al cargar datos:', error)
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudieron cargar los datos',
+      })
+    }
+  })
+}
+const eliminarProductosSeleccionados = (ids) => {
+  console.log(ids)
+
+  $q.dialog({
+    title: 'Confirmar',
+    message: `¿Eliminar Productos seleccionados?`,
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    try {
+      const data = {
+        ver: 'eliminarProductosMasivo',
+        ids: ids,
+      }
+      const response = await api.post(``, data) // Cambia a tu ruta real
       console.log(response)
       if (response.data.estado === 'exito') {
         loadRows()

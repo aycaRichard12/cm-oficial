@@ -2,7 +2,7 @@ import { URL_APICM } from 'src/composables/services'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { peticionGET } from 'src/composables/peticionesFetch'
 import { QuickConsultPage } from 'src/modules/quick-consult'
-
+import { configSucursalSinPage } from 'src/modules/configurarsucursalSin'
 async function empresaRegistrada() {
   const contenidousuario = validarUsuario()
   const idempresa = contenidousuario?.[0]?.empresa?.idempresa
@@ -153,10 +153,10 @@ const routes = [
         path: '/gestionPedido',
         component: () => import('src/pages/autorizaciones/GestionPedidoPage.vue'),
       },
-      {
-        path: '/registrarventa',
-        component: () => import('src/components/venta/ventaComponent.vue'),
-      },
+      // {
+      //   path: '/registrarventa',
+      //   component: () => import('src/components/venta/ventaComponent.vue'),
+      // },
       {
         path: '/registrarventaoculto',
         component: () => import('src/components/venta/ventaPage.vue'),
@@ -294,7 +294,7 @@ const routes = [
         component: () => import('src/pages/metodoPago/metodoPago.vue'),
       },
       {
-        path: '/leyendasdefacturas',
+        path: '/configleyendasdefacturas',
         component: () => import('src/pages/leyendaFactura/LeyendaFactura.vue'),
       },
       {
@@ -423,8 +423,17 @@ const routes = [
         component: () => import('src/pages/productoUnico/ConfiguracionPage.vue'),
       },
       {
+        path: '/configuracionclientealmacen',
+        component: () => import('src/modules/config/page/ClienteAlmacenPage.vue'),
+      },
+      {
         path: '/reporteProductoUnico',
         component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
+      },
+      {
+        path: '/configurarsucursalsin',
+        name: 'ConfigurarSucursalSin',
+        component: configSucursalSinPage,
       },
       {
         path: '/quickconsult',

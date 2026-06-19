@@ -66,7 +66,11 @@ export const PAGINAS = Object.freeze({
     'registrarinventarioexterno',
     // 'reportedeindicederotacion',
   ]),
-  leyendasdefacturas: Object.freeze(['leyendasdefacturas', 'metodosdepagodefacturas']),
+  leyendasdefacturas: Object.freeze([
+    'configleyendasdefacturas',
+    'metodosdepagodefacturas',
+    'configurarsucursalsin',
+  ]),
 })
 
 export const PAGINAS_ICONS = Object.freeze({
@@ -94,7 +98,7 @@ export const PAGINAS_ICONS = Object.freeze({
   credencialesservicio: 'vpn_key',
 
   //configuracion facturacion
-  leyendasdefacturas: 'receipt_long',
+  configleyendasdefacturas: 'receipt_long',
   metodosdepagodefacturas: 'payments',
 
   // Íconos para los submenús de Administración Creación

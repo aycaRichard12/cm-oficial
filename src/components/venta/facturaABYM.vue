@@ -11,7 +11,7 @@
             @click="$emit('volver')"
             class="q-mr-sm"
           />
-          <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" />
+          <!-- <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" /> -->
         </div>
         <div class="col-12 col-sm-8 text-center">
           <h4 class="q-ma-none text-primary" style="font-size: 20px">
@@ -614,6 +614,7 @@ async function crearFormularioFacturaAlquileres() {
       montoTotalSujetoIva: datos.ventatotal,
       codigoPuntoVenta: 0,
       extras: {
+        uniqueCode: '',
         facturaTicket: '',
       },
       detalles: datos.listaProductosFactura,
@@ -1159,9 +1160,9 @@ const resetForm = () => {
   localStorage.removeItem('carrito')
 }
 
-const handleContinue = () => {
-  emit('continuar') // Esto activará el toggle en el padre
-}
+// const handleContinue = () => {
+//   emit('continuar') // Esto activará el toggle en el padre
+// }
 //=======================Cliente ====================
 const RegistrarCliente = () => {
   showAddModal.value = !showAddModal.value

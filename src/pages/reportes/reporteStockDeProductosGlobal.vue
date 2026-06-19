@@ -373,6 +373,7 @@ onMounted(async () => {
       console.error('No se pudo cargar la divisa')
       return
     }
+    console.log('Divisa activa cargada:', divisaActiva.divisa)
     await cargarAlmacenes()
   } catch (error) {
     console.error('Error en onMounted:', error)
@@ -480,8 +481,6 @@ async function generarReporte() {
       datosOriginales.value = []
     } else {
       const data = response.data.filter((item) => {
-        console.log(categoriaPrecioSeleccionada.value)
-        console.log(item.idCategoriaPrecio)
         if (categoriaPrecioSeleccionada.value) {
           return Number(item.idCategoriaPrecio) === Number(categoriaPrecioSeleccionada.value)
         }

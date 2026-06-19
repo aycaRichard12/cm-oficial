@@ -1,3 +1,4 @@
+//src\components\producto\creacion\productoTable.vue
 <template>
   <div>
     <q-card flat class="q-mb-md">
@@ -11,21 +12,6 @@
         </div>
         <div class="col-12 col-md-8">
           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
-            <!-- <q-input
-              v-model="search"
-              placeholder="Buscar..."
-              dense
-              outlined
-              clearable
-              debounce="300"
-              bg-color="white"
-              style="min-width: 200px"
-              class="q-mr-sm"
-            >
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input> -->
             <q-btn
               unelevated
               outline
@@ -64,6 +50,20 @@
               accept=".xlsx, .xls"
               @change="onFileSelected"
             />
+            <q-btn
+              v-if="selectedRows.length > 0"
+              unelevated
+              color="negative"
+              icon="delete_sweep"
+              label="Eliminar seleccionados"
+              @click="eliminarSeleccionados"
+            />
+            <!-- Dentro de <q-card-section class="row items-center justify-between q-pb-none"> -->
+            <q-checkbox
+              v-model="selectAll"
+              label="Seleccionar todo"
+              :indeterminate="selectedRows.length > 0 && selectedRows.length < filteredRows.length"
+            />
           </div>
         </div>
       </q-card-section>
@@ -77,6 +77,7 @@
           :arrayHeaders="arrayHeaders"
           row-key="id"
           :loading="loading"
+          v-model:selected="selectedRows"
           flat
           bordered
         >
@@ -171,6 +172,7 @@ import {
 } from 'src/utils/XCLReportImport'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+const selectedRows = ref([])
 const $q = useQuasar()
 const fileInput = ref(null)
 
@@ -403,8 +405,28 @@ const emit = defineEmits([
   'toggle-status',
   'mostrarReporte',
   'importar',
+  'delete-selected',
 ])
+const eliminarSeleccionados = () => {
+  // emitir solo los IDs (o los objetos completos, según necesites)
+  const ids = selectedRows.value.map((row) => row.id) // ajusta si tu campo es id_productos
+  emit('delete-selected', ids)
+  // Opcional: limpiar selección
+  selectedRows.value = []
+}
 
+const selectAll = computed({
+  get() {
+    return selectedRows.value.length === filteredRows.value.length && filteredRows.value.length > 0
+  },
+  set(val) {
+    if (val) {
+      selectedRows.value = [...filteredRows.value]
+    } else {
+      selectedRows.value = []
+    }
+  },
+})
 const onFileSelected = async (event) => {
   const file = event.target.files[0]
   if (!file) return

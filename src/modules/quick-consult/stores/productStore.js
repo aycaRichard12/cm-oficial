@@ -51,9 +51,14 @@ export const useQuickConsultProductStore = defineStore('quickConsultProduct', ()
   })
 
   // Actions
-  async function loadProducts(almacenId, categoriaPrecioId, campaignId = null) {
+  async function loadProducts(almacenId, categoriaPrecioId, campaignId = null, empresaId) {
     try {
-      const { data: productosBase } = await fetchProducts(almacenId, categoriaPrecioId, campaignId)
+      const { data: productosBase } = await fetchProducts(
+        almacenId,
+        categoriaPrecioId,
+        campaignId,
+        empresaId,
+      )
 
       let preciosCampana = new Map()
       if (campaignId && categoriaPrecioId) {

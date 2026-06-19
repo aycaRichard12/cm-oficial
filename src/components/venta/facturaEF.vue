@@ -16,7 +16,7 @@
         <div class="col-12 col-sm-8 text-center">
           <h4 class="q-ma-none" style="font-size: 20px">
             <q-icon name="receipt" color="primary" class="q-mr-sm" />
-            FACTURA COMPRA-VENTA
+            FACTURA ENTIDADES-FINANCIERAS
           </h4>
         </div>
         <div></div>
@@ -128,7 +128,7 @@
               <div class="row q-col-gutter-md">
                 <div class="col-12 col-md-4">
                   <div class="text-caption text-grey-8">Tipo de documento tributario*</div>
-                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                  <div class="text-subtitle2 text-weight-bold flex items-center font-size-10">
                     <q-icon name="description" color="blue" class="q-mr-sm" size="20px" />
                     {{ formData.tipodoc?.label || '---' }}
                   </div>
@@ -441,10 +441,11 @@ import { obtenerHoraISO8601, decimas } from 'src/composables/FuncionesG'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 const divisaActiva = useCurrencyStore()
 const leyendaActiva = useCurrencyLeyenda()
+const tipoCambio = ref(1)
 leyendaActiva.cargarLeyendaActivo()
 
-console.log(divisaActiva)
-console.log(leyendaActiva)
+// console.log(divisaActiva)
+// console.log(leyendaActiva)
 // ====================== CONSTANTES Y UTILIDADES ======================
 const ERROR_TYPES = {
   QUASAR: 'QUASAR_NOT_AVAILABLE',
@@ -453,17 +454,24 @@ const ERROR_TYPES = {
   AUTH: 'AUTH_ERROR',
   UNKNOWN: 'UNKNOWN_ERROR',
 }
+
+const docunmentTypesMap = {
+  1: 'CI - CÉDULA DE IDENTIDAD',
+  2: 'CEX - CÉDULA DE IDENTIDAD DE EXTRANJERO',
+  3: 'PAS - PASAPORTE',
+  4: 'OD - OTRO DOCUMENTO DE IDENTIDAD',
+  5: 'NIT - NÚMERO DE IDENTIFICACIÓN TRIBUTARIA',
+}
 const correoPredeterminado = 'factura@yofinanciero.com'
 
 const CONSTANTES = {
   ver: 'registroVenta',
   idusuario: idusuario_md5(),
   idempresa: idempresa_md5(),
-  tipoventa: 1,
+  tipoventa: 4,
   tipopago: 'contado',
 }
 const showAddModal = ref(false)
-console.log(CONSTANTES)
 // ====================== QUASAR ======================
 const $q = useQuasar()
 if (!$q) {
@@ -501,42 +509,42 @@ async function crearFormularioFacturaCompraVenta() {
   try {
     const contenidousuario = validarUsuario()
     const usuario = contenidousuario[0]?.usuario
-
-    //cargar Divisa y leyenda
-
     const datos = JSON.parse(localStorage.getItem('carrito'))
-    console.log(divisaActiva.divisa.codigosin)
+    console.log(divisaActiva.divisa)
     const formulario = {
       numeroFactura: '',
-      nombreRazonSocial: '',
-      codigoPuntoVenta: 0,
-      fechaEmision: '',
-      cafc: '',
-      codigoExcepcion: '',
-      descuentoAdicional: datos.descuento,
-      montoGiftCard: 0,
       codigoTipoDocumentoIdentidad: 0,
       numeroDocumento: 0,
-      complemento: '',
+      nombreRazonSocial: '',
       codigoCliente: '',
-      periodoFacturado: '',
-      codigoLeyenda: leyendaActiva.leyenda.codigosin,
-
       codigoMetodoPago: 0,
-      numeroTarjeta: '',
       montoTotal: datos.ventatotal,
+      montoTotalSujetoIva: datos.ventatotal,
       codigoMoneda: divisaActiva.divisa.codigosin,
       montoTotalMoneda: datos.ventatotal,
+      tipoCambio: tipoCambio.value,
+      montoTotalArrendamientoFinanciero: datos.ventatotal,
       usuario: usuario,
       emailCliente: correoPredeterminado,
-      telefonoCliente: 0,
+      descuentoAdicional: datos.descuento,
       extras: {
         uniqueCode: '',
         facturaTicket: '',
       },
-      montoTotalSujetoIva: datos.ventatotal,
-      tipoCambio: 1,
       detalles: datos.listaProductosFactura,
+      codigoPuntoVenta: 0,
+      fechaEmision: '',
+      cafc: '',
+      codigoExcepcion: '',
+      montoGiftCard: 0,
+
+      complemento: '',
+      periodoFacturado: '',
+      codigoLeyenda: leyendaActiva.leyenda.codigosin,
+
+      numeroTarjeta: '',
+
+      telefonoCliente: 0,
     }
     datos.listaFactura = formulario
 
@@ -745,7 +753,7 @@ const cargarDatosCliente = (client) => {
   typeDoc.value = [
     {
       value: client.originalData.tipodocumento,
-      label: client.originalData.textotipodocumento,
+      label: docunmentTypesMap[client.originalData.tipodocumento] || 'Desconocido',
     },
   ]
   formData.value.tipodoc = typeDoc.value[0] || null
@@ -948,10 +956,6 @@ const onSubmit = async () => {
     form.append('tipopago', credito ? 'credito' : CONSTANTES.tipopago)
     form.append('periodopersonalizado', plazoPersonalizado)
     form.append('jsonDetalles', JSON.stringify(cartData))
-
-    // for (const [key, value] of form.entries()) {
-    //   console.log(key, value)
-    // }
 
     const jsonObject = Object.fromEntries(form.entries())
 
