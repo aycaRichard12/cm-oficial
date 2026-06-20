@@ -82,6 +82,7 @@
       :tipo-cliente-filter-options="tiposClientes"
       :canal-venta-filter-options="canalesVenta"
       :tipo-documento-filter-options="tiposDocumento"
+      :almacen-options="almacenes"
       @add="toggleForm"
       @importFromExcel="showImport = true"
       @edit="editUnit"

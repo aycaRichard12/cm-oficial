@@ -132,7 +132,7 @@ import { ref, computed, defineProps, defineEmits, watch } from 'vue'
 import ColumnFilter from './ColumnFilter.vue' // Asegúrate de que la ruta sea correcta
 
 const props = defineProps({
-  title: { type: String, default: 'Datos' },
+  title: { type: String, default: '' },
   nombreColumnaTotales: { type: String, default: 'nombreColumnaTotales' },
   rows: { type: Array, required: true },
   columns: { type: Array, required: true },

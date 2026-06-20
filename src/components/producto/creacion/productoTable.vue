@@ -51,7 +51,7 @@
               @change="onFileSelected"
             />
             <q-btn
-              v-if="selectedRows.length > 0"
+              v-if="selectedIds.size > 0"
               unelevated
               color="negative"
               icon="delete_sweep"
@@ -62,7 +62,7 @@
             <q-checkbox
               v-model="selectAll"
               label="Seleccionar todo"
-              :indeterminate="selectedRows.length > 0 && selectedRows.length < filteredRows.length"
+              :indeterminate="selectedIds.size > 0 && selectedIds.length < filteredRows.length"
             />
           </div>
         </div>
@@ -77,7 +77,6 @@
           :arrayHeaders="arrayHeaders"
           row-key="id"
           :loading="loading"
-          v-model:selected="selectedRows"
           flat
           bordered
         >
@@ -138,6 +137,15 @@
               <!-- <q-btn color="blue" text-color="black" label="" dense="" /> -->
             </q-td>
           </template>
+          <template v-slot:body-cell-seleccionar="props">
+            <q-td :props="props" auto-width>
+              <q-checkbox
+                :model-value="selectedIds.has(props.row.id)"
+                @update:model-value="(val) => toggleSeleccion(props.row.id, val)"
+                dense
+              />
+            </q-td>
+          </template>
         </BaseFilterableTable>
       </q-card-section>
     </q-card>
@@ -161,7 +169,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
@@ -172,7 +180,8 @@ import {
 } from 'src/utils/XCLReportImport'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
-const selectedRows = ref([])
+
+const selectedIds = ref(new Set())
 const $q = useQuasar()
 const fileInput = ref(null)
 
@@ -284,6 +293,14 @@ if (tipoFactura) {
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    {
+      name: 'seleccionar',
+      label: '',
+      field: 'seleccionar',
+      align: 'center',
+      sortable: false,
+      headerStyle: 'width: 50px',
+    },
   ]
 } else {
   columns = [
@@ -355,6 +372,14 @@ if (tipoFactura) {
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    {
+      name: 'seleccionar',
+      label: '',
+      field: 'seleccionar',
+      align: 'center',
+      sortable: false,
+      headerStyle: 'width: 50px',
+    },
   ]
 }
 
@@ -407,23 +432,38 @@ const emit = defineEmits([
   'importar',
   'delete-selected',
 ])
+
+const toggleSeleccion = (id, checked) => {
+  if (checked) {
+    selectedIds.value.add(id)
+  } else {
+    selectedIds.value.delete(id)
+  }
+  // Forzar reactividad de Set (en Vue 3 no siempre es necesario, pero mejor)
+  selectedIds.value = new Set(selectedIds.value)
+}
+
 const eliminarSeleccionados = () => {
-  // emitir solo los IDs (o los objetos completos, según necesites)
-  const ids = selectedRows.value.map((row) => row.id) // ajusta si tu campo es id_productos
+  if (selectedIds.value.size === 0) return
+  const ids = [...selectedIds.value]
   emit('delete-selected', ids)
-  // Opcional: limpiar selección
-  selectedRows.value = []
+  selectedIds.value = new Set() // limpiar selección
 }
 
 const selectAll = computed({
   get() {
-    return selectedRows.value.length === filteredRows.value.length && filteredRows.value.length > 0
+    return (
+      filteredRows.value.length > 0 &&
+      filteredRows.value.every((row) => selectedIds.value.has(row.id))
+    )
   },
   set(val) {
     if (val) {
-      selectedRows.value = [...filteredRows.value]
+      // Agregar todos los IDs visibles
+      const ids = filteredRows.value.map((row) => row.id)
+      selectedIds.value = new Set(ids)
     } else {
-      selectedRows.value = []
+      selectedIds.value = new Set()
     }
   },
 })
@@ -449,6 +489,12 @@ const onFileSelected = async (event) => {
     $q.loading.hide()
   }
 }
+watch(
+  () => props.rows,
+  () => {
+    selectedIds.value = new Set()
+  },
+)
 </script>
 <style>
 .text-truncate {

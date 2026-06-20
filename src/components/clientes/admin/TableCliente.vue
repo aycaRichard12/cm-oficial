@@ -56,7 +56,24 @@
         </div>
 
         <div class="row q-col-gutter-sm">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-3" v-if="soloAlmacen">
+            <q-select
+              outlined
+              dense
+              v-model="filtroAlmacen"
+              :options="almacenOptions"
+              label="Filtrar por Almacén"
+              id="canalventa"
+              option-label="label"
+              option-value="value"
+              emit-value
+              map-options
+              prepend-icon="warehouse"
+              placeholder="Almacén asignado"
+              ><template v-slot:prepend><q-icon name="storefront" /></template
+            ></q-select>
+          </div>
+          <div class="col-12 col-md-3">
             <q-select
               v-model="filtroTipoCliente"
               :options="tipoClienteFilterOptions"
@@ -69,7 +86,7 @@
               <template v-slot:prepend><q-icon name="category" /></template>
             </q-select>
           </div>
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-3">
             <q-select
               v-model="filtroCanalVenta"
               :options="canalVentaFilterOptions"
@@ -82,7 +99,7 @@
               <template v-slot:prepend><q-icon name="storefront" /></template>
             </q-select>
           </div>
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-3">
             <q-select
               v-model="filtroTipoDocumento"
               :options="tipoDocumentoFilterOptions"
@@ -196,7 +213,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import * as XLSX from 'xlsx-js-style'
+import { useClienteAlmacenConfig } from 'src/modules/config/composables/useClienteAlmacenConfig'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { PDF_REPORTE_CLIENTES } from 'src/utils/pdfReportGenerator'
+const idempresa = idempresa_md5()
+
+const { soloAlmacen } = useClienteAlmacenConfig(idempresa)
 
 const mostrarModal = ref(false)
 const pdfData = ref(null)
@@ -227,12 +249,18 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
+  almacenOptions: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
 })
 
 // Filtros
 const filtroTipoCliente = ref(null)
 const filtroCanalVenta = ref(null)
 const filtroTipoDocumento = ref(null)
+const filtroAlmacen = ref(null)
 
 // Alerta
 const alertMessage = ref('')

@@ -2,7 +2,7 @@
   <q-card class="client-form-card">
     <!-- Encabezado moderno con título e ícono -->
 
-    <q-form @submit.prevent="onSubmit">
+    <q-form @submit.prevent="onSubmit" :loading="loading">
       <!-- Sección: Información General -->
       <q-card-section class="q-pt-lg">
         <div class="section-title">
@@ -104,7 +104,7 @@
             />
           </div>
           <!-- Almacén -->
-          <div class="col-12 col-md-3">
+          <div class="col-12 col-md-3" v-if="soloAlmacen">
             <div class="field-label">Almacén <span class="text-red">*</span></div>
             <q-select
               outlined
@@ -116,7 +116,7 @@
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un canal']"
+              :rules="[(val) => !!val || 'Seleccione un Almacen']"
               prepend-icon="warehouse"
               placeholder="Almacén asignado"
             />
@@ -297,7 +297,9 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import { useClienteAlmacenConfig } from 'src/modules/config/composables/useClienteAlmacenConfig'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const idempresa = idempresa_md5()
 const props = defineProps({
   editing: Boolean,
   modalValue: Object,
@@ -309,7 +311,8 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 const localData = ref({ ...props.modalValue })
-
+const { soloAlmacen, loading } = useClienteAlmacenConfig(idempresa)
+console.log('Solo Almacén:', soloAlmacen)
 const onSubmit = () => {
   emit('submit', localData.value)
 }

@@ -13,7 +13,11 @@ export const PAGINAS = Object.freeze({
     'parametrosdeobsolescencia',
     'configuracionproductounico',
   ]),
-  configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
+  configuracioncliente: Object.freeze([
+    'tiposdeclientes',
+    'canalesdeventa',
+    'configuracionclientealmacen',
+  ]),
   configuracionIntegracionExterna: Object.freeze([
     'generartokensapis',
     'servicios',

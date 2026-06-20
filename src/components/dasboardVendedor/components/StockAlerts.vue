@@ -6,60 +6,62 @@
           <q-icon name="notifications_active" class="q-mr-md" />
           Alertas Inteligentes
         </div>
-        <q-badge
-          v-if="!sinAlertas"
-          :label="criticos.length + bajos.length + agotados.length"
-          color="red"
-        />
+        <q-badge v-if="!sinAlertas" :label="totalAlertas" color="red" />
         <q-badge v-else label="OK" color="green" />
       </div>
     </q-card-section>
+
     <q-card-section class="q-pa-none">
-      <q-list separator>
-        <!-- Crítico -->
-        <q-item v-for="item in criticos" :key="item.codigo" class="alert-item alert-critico">
+      <!-- Lista paginada -->
+      <q-list separator v-if="!sinAlertas">
+        <q-item
+          v-for="alerta in alertasPaginadas"
+          :key="alerta.codigo"
+          class="alert-item"
+          :class="{
+            'alert-critico': alerta.tipo === 'critico',
+            'alert-bajo': alerta.tipo === 'bajo',
+            'alert-agotado': alerta.tipo === 'agotado',
+          }"
+        >
           <q-item-section avatar>
-            <q-icon name="error_outline" color="red" size="28px" />
+            <q-icon
+              :name="
+                alerta.tipo === 'critico'
+                  ? 'error_outline'
+                  : alerta.tipo === 'bajo'
+                    ? 'warning_outline'
+                    : 'inventory_2'
+              "
+              :color="
+                alerta.tipo === 'critico' ? 'red' : alerta.tipo === 'bajo' ? 'orange' : 'dark'
+              "
+              size="28px"
+            />
           </q-item-section>
           <q-item-section>
-            <q-item-label lines="1" class="text-weight-bold">{{ item.nombre }}</q-item-label>
-            <q-item-label caption>Código: {{ item.codigo }} | Stock: {{ item.stock }}</q-item-label>
+            <q-item-label lines="1" class="text-weight-bold">{{ alerta.nombre }}</q-item-label>
+            <q-item-label caption>
+              Código: {{ alerta.codigo }} | Stock: {{ alerta.stock }}
+            </q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-badge color="red" label="Crítico" class="badge-alert" />
+            <q-badge
+              :color="
+                alerta.tipo === 'critico' ? 'red' : alerta.tipo === 'bajo' ? 'orange' : 'dark'
+              "
+              :label="
+                alerta.tipo === 'critico' ? 'Crítico' : alerta.tipo === 'bajo' ? 'Bajo' : 'Agotado'
+              "
+              class="badge-alert"
+            />
           </q-item-section>
         </q-item>
+      </q-list>
 
-        <!-- Bajo -->
-        <q-item v-for="item in bajos" :key="item.codigo" class="alert-item alert-bajo">
-          <q-item-section avatar>
-            <q-icon name="warning_outline" color="orange" size="28px" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label lines="1" class="text-weight-bold">{{ item.nombre }}</q-item-label>
-            <q-item-label caption>Código: {{ item.codigo }} | Stock: {{ item.stock }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-badge color="orange" label="Bajo" class="badge-alert" />
-          </q-item-section>
-        </q-item>
-
-        <!-- Agotados -->
-        <q-item v-for="item in agotados" :key="item.codigo" class="alert-item alert-agotado">
-          <q-item-section avatar>
-            <q-icon name="inventory_2" color="dark" size="28px" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label lines="1" class="text-weight-bold">{{ item.nombre }}</q-item-label>
-            <q-item-label caption>Código: {{ item.codigo }} | Stock: 0</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-badge color="dark" label="Agotado" class="badge-alert" />
-          </q-item-section>
-        </q-item>
-
-        <!-- Sin Alertas -->
-        <q-item v-if="sinAlertas" class="q-py-lg">
+      <!-- Mensaje sin alertas -->
+      <q-list v-else>
+        <q-item class="q-py-lg">
           <q-item-section class="text-center">
             <div class="text-center q-gutter-md">
               <q-icon name="check_circle" size="64px" color="green" />
@@ -71,24 +73,66 @@
           </q-item-section>
         </q-item>
       </q-list>
+
+      <!-- Paginación -->
+      <div v-if="totalPaginas > 1" class="flex justify-center q-py-md">
+        <q-pagination
+          v-model="paginaActual"
+          :max="totalPaginas"
+          :max-pages="6"
+          direction-links
+          color="primary"
+          active-color="primary"
+          flat
+          boundary-links
+        />
+      </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useStock } from '../composables/useStock'
 
 const { alertasCriticas, alertasBajas, productosAgotadosLista } = useStock()
-const criticos = computed(() => alertasCriticas.value)
-const bajos = computed(() => alertasBajas.value)
-const agotados = computed(() => productosAgotadosLista.value)
-const sinAlertas = computed(
-  () => criticos.value.length === 0 && bajos.value.length === 0 && agotados.value.length === 0,
-)
+
+// Unificar todas las alertas con un tipo para identificarlas
+const alertasUnificadas = computed(() => {
+  const criticas = alertasCriticas.value.map((a) => ({ ...a, tipo: 'critico' }))
+  const bajas = alertasBajas.value.map((a) => ({ ...a, tipo: 'bajo' }))
+  const agotadas = productosAgotadosLista.value.map((a) => ({ ...a, tipo: 'agotado', stock: 0 }))
+
+  // Orden: críticos primero, después bajos, después agotados (opcional)
+  return [...criticas, ...bajas, ...agotadas]
+})
+
+const totalAlertas = computed(() => alertasUnificadas.value.length)
+const sinAlertas = computed(() => totalAlertas.value === 0)
+
+// Paginación
+const paginaActual = ref(1)
+const itemsPorPagina = 5 // Ajustá este valor según prefieras
+
+const totalPaginas = computed(() => Math.ceil(totalAlertas.value / itemsPorPagina) || 1)
+
+const alertasPaginadas = computed(() => {
+  const inicio = (paginaActual.value - 1) * itemsPorPagina
+  return alertasUnificadas.value.slice(inicio, inicio + itemsPorPagina)
+})
+
+// Reiniciar página si cambia la cantidad total (ej. al filtrar)
+// Opcional: si querés que al cambiar los datos vuelva a la página 1
+import { watch } from 'vue'
+watch(totalAlertas, () => {
+  if (paginaActual.value > totalPaginas.value) {
+    paginaActual.value = 1
+  }
+})
 </script>
 
 <style scoped>
+/* Tus estilos se mantienen igual, solo se aplican dinámicamente */
 .alerts-card {
   border-radius: 12px;
   overflow: hidden;
