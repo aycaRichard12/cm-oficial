@@ -283,8 +283,9 @@ const vistaPrevia = () => {
     ...col,
     name: col.name === 'costo' ? 'costototal' : col.name,
   }))
+  const resultado = miTabla.value?.obtenerDatosFiltrados()
 
-  const doc = PDFreporteStockProductosIndividual(processedRows.value, mappedColumns)
+  const doc = PDFreporteStockProductosIndividual(resultado, mappedColumns)
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
@@ -314,8 +315,10 @@ function convertirImagenARutaBase64(url) {
   })
 }
 const prepararImagenes = async () => {
+  const resultadoFiltrado = ref(null)
+  resultadoFiltrado.value = miTabla.value?.obtenerDatosFiltrados()
   const productosConImagenes = await Promise.all(
-    processedRows.value.map(async (item) => {
+    resultadoFiltrado.value.map(async (item) => {
       try {
         console.log(`${imagen}${item.imagen}`)
         const base64 = await convertirImagenARutaBase64(`${imagen}${item.imagen}`)
@@ -332,7 +335,9 @@ const prepararImagenes = async () => {
 }
 
 const vistaCatalogo = async () => {
-  const doc = await PDF_vistaCatalogo(processedRows, almacenes, divisaActiva, form)
+  const resultadoFiltrado = ref(null)
+  resultadoFiltrado.value = miTabla.value?.obtenerDatosFiltrados()
+  const doc = await PDF_vistaCatalogo(resultadoFiltrado, almacenes, divisaActiva, form)
 
   pdfData.value = doc
   mostrarModal.value = true

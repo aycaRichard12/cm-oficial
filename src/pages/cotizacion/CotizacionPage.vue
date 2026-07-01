@@ -1392,6 +1392,8 @@ const CodigosUnicosSeleccionados = ref([])
 const { config } = useProductoConfig(idempresa)
 const listaCajaBancos = ref([])
 const idcajaBancoSeleccionada = ref(null)
+const soloAlmacen = ref(false)
+
 watch(
   () => config.value.idempresa,
   (nuevoValor) => {
@@ -1864,6 +1866,7 @@ async function listaAlmacenes() {
         filtroAlmacenCO.value = almacenesOptions.value[0].idalmacen // Seleccionar el primero por defecto
       }
     }
+    await listaCLientes()
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
   }
@@ -1985,16 +1988,33 @@ async function listaCLientes() {
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
-      clientesOptions.value = resultado.map((c) => ({
-        ...c,
-        display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
-      }))
+      if (soloAlmacen.value) {
+        console.log(soloAlmacen)
+        const allowedAlmacenIds = almacenesOptions.value.map((a) => a.idalmacen)
+
+        // Filtrar clientes: se muestran si no tienen almacén (globales) o si tienen al menos uno permitido
+        const clientesFiltrados = resultado.filter((c) => {
+          // Cliente sin almacenes → se muestra siempre
+          if (!c.almacenes || c.almacenes.length === 0) return true
+          // Cliente con al menos un almacén permitido
+          return c.almacenes.some((al) => allowedAlmacenIds.includes(al.idalmacen))
+        })
+
+        clientesOptions.value = clientesFiltrados.map((c) => ({
+          ...c,
+          display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+        }))
+      } else {
+        clientesOptions.value = resultado.map((c) => ({
+          ...c,
+          display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+        }))
+      }
     }
   } catch (error) {
     console.error('Error al cargar clientes:', error)
   }
 }
-
 async function selectSucursal(clientId) {
   if (!clientId) {
     sucursalesOptions.value = []
@@ -2093,8 +2113,9 @@ function elegirUnCliente(client) {
   }
 }
 function selectCanalVenta(canalid) {
-  canalventa.value =
-    salesChannels.value.find((c) => c.value === canalid) || salesChannels.value[0] || null
+  console.log(canalid)
+
+  canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalid)) || null
 }
 function filterSucursal(val, update) {
   if (val === '') {
@@ -2580,6 +2601,16 @@ const handleRecordCreated = async (newRecordData) => {
     })
   }
 }
+const fetchEstadoActual = async () => {
+  try {
+    const { data } = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
+    console.log(data)
+    // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
+    soloAlmacen.value = data.clientesAlmacen ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 watch(
   () => carritoCO.variablePago,
@@ -2619,10 +2650,11 @@ onMounted(async () => {
   isInitializing.value = true
   try {
     // Cargar datos iniciales
+    await fetchEstadoActual()
     await divisaEmonedaActiva()
     await leyendaActiva()
     await listaAlmacenes()
-    await listaCLientes()
+
     await cargarLeyendasCotizacion()
     await cargarMetodoPagoFactura()
     await permisosStore.cargarPermisos()

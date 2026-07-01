@@ -9,7 +9,7 @@ export function useSucursales(token) {
   const loading = ref(false)
   const error = ref(null)
 
-  // Relaciona cada sucursal pequeña con su sucursal grande (si existe)
+  // Relaciona cada sucursal empresa con su sucursal Sin (si existe)
   const mergedSucursales = computed(() =>
     smallSucursales.value.map((small) => {
       const big = bigSucursales.value.find((b) => b.codigoSucursal === small.codigosucursal)

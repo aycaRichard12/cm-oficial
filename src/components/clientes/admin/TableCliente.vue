@@ -121,10 +121,14 @@
       <q-icon name="info" size="sm" class="q-mr-sm" />
       {{ alertMessage }}
     </q-banner>
-
+    <!-- Después del q-banner y antes del q-table -->
+    <div class="row q-gutter-xs q-mb-sm">
+      <q-chip text-color="red" icon="code" dense> Sin almacén </q-chip>
+      <q-chip text-color="green" icon="code" dense> 1 almacén </q-chip>
+      <q-chip text-color="blue" icon="code" dense> Múltiples almacenes </q-chip>
+    </div>
     <!-- Tabla de clientes -->
     <q-table
-      title="Clientes"
       :rows="filteredClients"
       :columns="columns"
       row-key="id"
@@ -133,7 +137,28 @@
       class="sticky-header-table"
       id="tablaClientes"
     >
-      <template v-slot:top-right> </template>
+      <!-- Reemplaza el slot genérico o agrégalo justo después -->
+      <template v-slot:body-cell-codigo="props">
+        <q-td :props="props">
+          <q-chip
+            color="white"
+            :text-color="getCodigoColor(props.row.almacenes)"
+            dense
+            class="text-uppercase"
+          >
+            {{ props.value }}
+            <q-tooltip>
+              <span v-if="!props.row.almacenes || props.row.almacenes.length === 0">
+                Sin almacén
+              </span>
+              <span v-else-if="props.row.almacenes.length === 1">
+                Almacén: {{ props.row.almacenes[0].almacen }}
+              </span>
+              <span v-else> Múltiples almacenes ({{ props.row.almacenes.length }}) </span>
+            </q-tooltip>
+          </q-chip>
+        </q-td>
+      </template>
       <!-- Personalización de celdas para truncar texto -->
       <template v-slot:body-cell="props">
         <q-td :props="props">
@@ -211,11 +236,13 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx-js-style'
 import { useClienteAlmacenConfig } from 'src/modules/config/composables/useClienteAlmacenConfig'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { PDF_REPORTE_CLIENTES } from 'src/utils/pdfReportGenerator'
+import {} from 'vue'
+
 const idempresa = idempresa_md5()
 
 const { soloAlmacen } = useClienteAlmacenConfig(idempresa)
@@ -336,10 +363,21 @@ const filteredClients = computed(() => {
       !filtroTipoDocumento.value ||
       filtroTipoDocumento.value === 'Todos (Tipo Doc.)' ||
       client.textotipodocumento === filtroTipoDocumento.value
-    return matchesTipo && matchesCanal && matchesDocumento
+
+    const almacenes = client.almacenes || []
+    const matchesAlmacen =
+      !filtroAlmacen.value || // sin filtro seleccionado → mostrar todo
+      almacenes.length === 0 || // cliente sin almacén → mostrarlo siempre
+      almacenes.some((a) => a.idalmacen == filtroAlmacen.value) // tiene el almacén seleccionado
+
+    return matchesTipo && matchesCanal && matchesDocumento && matchesAlmacen
   })
 })
-
+function getCodigoColor(almacenes) {
+  if (!almacenes || almacenes.length === 0) return 'red'
+  if (almacenes.length === 1) return 'green'
+  return 'blue'
+}
 // Edición
 function editClient(client) {
   emit('edit', client)
@@ -450,6 +488,22 @@ function exportarClientesPDF() {
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
+// Cuando soloAlmacen se active y haya opciones, selecciona la primera
+watch(
+  [soloAlmacen, () => props.almacenOptions],
+  ([solo, options]) => {
+    if (solo && options && options.length > 0) {
+      // Si aún no hay filtro seleccionado, elige el primer almacén
+      if (!filtroAlmacen.value) {
+        filtroAlmacen.value = options[0].value
+      }
+    } else if (!solo) {
+      // Si se desactiva soloAlmacen, limpiamos el filtro para mostrar todos
+      filtroAlmacen.value = null
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped></style>

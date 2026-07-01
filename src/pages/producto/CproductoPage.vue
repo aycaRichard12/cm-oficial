@@ -28,6 +28,7 @@
     <producto-tabla
       :rows="productos"
       :loading="cargando"
+      :importing="importing"
       @add="toggleForm"
       @mostrarReporte="mostrarReporte"
       @edit-item="editUnit"
@@ -69,6 +70,8 @@ const $q = useQuasar()
 const isEditing = ref(false)
 const showForm = ref(false)
 const cargando = ref(false)
+const importing = ref(false)
+
 const formData = ref({
   ver: 'registrarProducto',
   idempresa: idempresa,
@@ -415,6 +418,7 @@ const eliminarProductosSeleccionados = (ids) => {
 const handleImport = async (data) => {
   let successCount = 0
   let errorCount = 0
+  importing.value = true
 
   $q.loading.show({
     message: 'Importando productos...',
@@ -455,7 +459,7 @@ const handleImport = async (data) => {
       console.log('Bulk Import saving:', payload)
       const fData = objectToFormData(payload)
       const response = await api.post(``, fData)
-
+      console.log(response.data)
       if (response.data.estado === 'exito') {
         successCount++
       } else {
@@ -467,7 +471,7 @@ const handleImport = async (data) => {
     }
   }
 
-  $q.loading.hide()
+  importing.value = false
 
   $q.notify({
     type: successCount > 0 ? 'positive' : 'negative',

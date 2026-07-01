@@ -35,6 +35,8 @@
               @click="$refs.fileInput.click()"
               icon="upload"
               label="Cargar Excel"
+              :loading="importing"
+              :disable="importing"
             />
             <q-btn
               unelevated
@@ -204,6 +206,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  importing: { type: Boolean, default: false },
 })
 
 let columns = []
@@ -472,27 +475,41 @@ const onFileSelected = async (event) => {
   if (!file) return
 
   try {
-    $q.loading.show({ message: 'Procesando archivo Excel...' })
+    $q.loading.show({ message: 'Leyendo archivo Excel...' })
     const data = await importarProductosDesdeExcel(file)
-    if (data && data.length > 0) {
-      emit('importar', data)
-    }
-    // Limpiar input
     event.target.value = ''
+
+    if (data && data.length > 0) {
+      // Actualizar mensaje con la cantidad de productos
+      const total = data.length
+      $q.loading.show({
+        message: `Importando ${total} producto${total !== 1 ? 's' : ''}...`,
+      })
+      // Emitir los datos; el padre debe poner importing=true (si no lo está) y luego false al finalizar
+      emit('importar', data)
+    } else {
+      // Si no hay datos, ocultar loading y notificar
+      $q.loading.hide()
+      $q.notify({ type: 'warning', message: 'El archivo no contiene productos válidos' })
+    }
   } catch (error) {
     console.error('Error al importar:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'Error al procesar el archivo Excel',
-    })
-  } finally {
     $q.loading.hide()
+    $q.notify({ type: 'negative', message: 'Error al procesar el archivo Excel' })
   }
 }
 watch(
   () => props.rows,
   () => {
     selectedIds.value = new Set()
+  },
+)
+watch(
+  () => props.importing,
+  (nuevo) => {
+    if (!nuevo) {
+      $q.loading.hide()
+    }
   },
 )
 </script>

@@ -16,7 +16,7 @@
 
       <div class="options-grid">
         <q-card
-          v-for="opcion in opciones"
+          v-for="opcion in opcionesFiltradas"
           :key="opcion.codigo"
           class="option-card"
           @click="$emit('seleccionar', opcion.codigo)"
@@ -52,6 +52,19 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { api } from 'src/boot/axios'
+import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+
+const token = ref(null)
+const tipo = ref(null)
+const documentos = ref([])
+const GetDocumentoSector = async () => {
+  const res = await api.get(`listaSucursalSin/tiposector/${token.value}/${tipo.value}/1`)
+  console.log('Documentos:', res.data)
+  const data = res.data
+  documentos.value = data.data
+}
 const emit = defineEmits(['continuar', 'seleccionar'])
 
 const handleContinue = () => {
@@ -67,6 +80,7 @@ const opciones = [
   //   color: 'complementary',
   // },
   {
+    codigoDocumentSector: 1,
     codigo: 'facturaCV',
     nombre: 'FACTURA COMPRA-VENTA',
     descripcion: 'Para transacciones comerciales locales',
@@ -74,6 +88,7 @@ const opciones = [
     color: 'green',
   },
   {
+    codigoDocumentSector: 3,
     codigo: 'facturaCMEX',
     nombre: 'FACTURA COMERCIAL DE EXPORTACIÓN',
     descripcion: 'Documentación para comercio exterior',
@@ -81,6 +96,7 @@ const opciones = [
     color: 'orange',
   },
   {
+    codigoDocumentSector: 2,
     codigo: 'facturaABYM',
     nombre: 'FACTURA DE ALQUILER',
     descripcion: 'Para arrendamiento de bienes inmuebles',
@@ -88,6 +104,7 @@ const opciones = [
     color: 'purple',
   },
   {
+    codigoDocumentSector: 15,
     codigo: 'facturaEF',
     nombre: 'FACTURA DE ENTIDADES FINANCIERAS',
     descripcion: 'Empresa que ofrece servicios financieros, bancarios y de financiamiento.',
@@ -95,6 +112,23 @@ const opciones = [
     color: 'blue',
   },
 ]
+const opcionesFiltradas = computed(() => {
+  // Extraemos un Set de los codigosDocumentSector devueltos por la API
+  const codigosAutorizados = new Set(
+    documentos.value.filter((doc) => doc.isActive === 1).map((doc) => doc.codigoDocumentSector),
+  )
+  // Filtramos el array original
+  return opciones.filter((op) => codigosAutorizados.has(op.codigoDocumentSector))
+})
+onMounted(async () => {
+  try {
+    token.value = getToken()
+    tipo.value = getTipoFactura()
+    await GetDocumentoSector()
+  } catch (error) {
+    console.error('Error al obtener códigos:', error)
+  }
+})
 </script>
 
 <style scoped>
