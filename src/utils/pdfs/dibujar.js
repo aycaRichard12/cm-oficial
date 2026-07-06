@@ -17,6 +17,7 @@ export function verificarTamanoPantallaYRedirigir(doc) {
   }
   return doc
 }
+//llasdjfhlaskjdfhlaskjdfhlaskjdfhlaskjdfhlaskjdfhlaskdjfhlaskjdfhalskdfj
 // Variables globales
 let logoBase64 = null
 let contenidousuario = null

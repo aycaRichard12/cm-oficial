@@ -298,7 +298,7 @@ const columnas = [
   },
   {
     name: 'monto',
-    label: 'Total a Pagar',
+    label: 'Total',
     align: 'right',
     field: 'monto',
     dataType: 'number',

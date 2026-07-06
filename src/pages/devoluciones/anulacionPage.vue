@@ -197,18 +197,22 @@ const cargarConfiguracion = async () => {
   try {
     // Cargar almacenes
     const almacenesResponse = await api.get(`listaResponsableAlmacen/${idempresa}`)
-    almacenesOptions.value = [
-      { value: 0, label: 'Seleccione un Almacén' },
-      ...almacenesResponse.data
-        .filter((u) => u.idusuario == idusuario)
-        .map((key) => ({ value: key.idalmacen, label: key.almacen })),
-    ]
+    const opciones = almacenesResponse.data
+      .filter((u) => u.idusuario == idusuario)
+      .map((u) => ({
+        value: u.idalmacen,
+        label: u.almacen,
+      }))
+
+    almacenesOptions.value =
+      opciones.length > 1 ? [{ value: 0, label: 'Seleccione un Almacén' }, ...opciones] : opciones
 
     // Cargar tipos de venta
     if (token && tipoFactura && getToken(true) && getTipoFactura(true)) {
       const enpoint = `listaLeyendaSIN/tiposector/${token}/${tipoFactura}`
       const tiposResponse = await api.get(enpoint)
-      const codigosPermitidos = [0, 1, 2, 3]
+      console.log('Tipos de venta obtenidos:', tiposResponse.data.data)
+      const codigosPermitidos = [0, 1, 2, 3, 15]
 
       const filtrarYEliminarDuplicados = (datos, codigosPermitidos) => {
         const codigosVistos = new Set()
@@ -228,6 +232,7 @@ const cargarConfiguracion = async () => {
         [...tiposResponse.data.data],
         codigosPermitidos,
       )
+      console.log(datosFiltrados)
 
       tiposVentaOptions.value = [
         { value: 0, label: 'comprobante de venta' },

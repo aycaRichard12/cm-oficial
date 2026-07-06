@@ -216,17 +216,12 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfs/StockProductoGlobal/reporte'
 
-// Importar componentes refactorizados
-// import StockGlobalParams from 'src/components/reporte/stockGlobal/StockGlobalParams.vue'
-// import StockGlobalFilters from 'src/components/reporte/stockGlobal/StockGlobalFilters.vue'
 import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
 import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
 
-const stockTableRef = ref(null)
 import { useCurrencyStore } from 'src/stores/currencyStore'
-
+const stockTableRef = ref(null)
 const divisaActiva = useCurrencyStore()
-console.log('Divisa activa en reporteStockDeProductosGlobal:', divisaActiva)
 const categoriasPrecio = ref([])
 const pdfData = ref(null)
 const mostrarModal = ref(false)

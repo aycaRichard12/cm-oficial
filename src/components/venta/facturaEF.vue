@@ -468,7 +468,7 @@ const CONSTANTES = {
   ver: 'registroVenta',
   idusuario: idusuario_md5(),
   idempresa: idempresa_md5(),
-  tipoventa: 4,
+  tipoventa: 15,
   tipopago: 'contado',
 }
 const showAddModal = ref(false)

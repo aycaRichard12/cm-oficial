@@ -27,6 +27,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        4: 'Factura Entidades Financieras',
         [-1]: 'Cotización de Venta',
       }
 
@@ -75,6 +76,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        4: 'Factura Entidades Financieras',
         [-1]: 'Cotización de Venta',
       }
 
@@ -121,6 +123,7 @@ export function useVentas() {
         2: 'Factura Alquileres',
         24: 'NOTA DE CRÉDITO-DÉBITO',
         3: 'Factura Comercial',
+        4: 'Factura Entidades Financieras',
         [-1]: 'Cotización de Venta',
       }
 
