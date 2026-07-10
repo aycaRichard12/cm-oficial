@@ -2,13 +2,15 @@
   <q-form @submit.prevent="$emit('generar')">
     <div class="row flex justify-center q-col-gutter-x-md">
       <div class="col-12 col-md-4" id="fechaini">
-        <label for="fechaini">Fecha Inicial*</label>
+        <label for="fechaini">Fecha InicialA*</label>
         <q-input
           outlined
           dense
           :model-value="fechaInicial"
           @update:model-value="$emit('update:fechaInicial', $event)"
           id="fechaini"
+          mask="##/##/####"
+          fill-mask
           :rules="[(val) => !!val || 'Campo obligatorio']"
         >
           <template v-slot:append>
@@ -17,7 +19,7 @@
                 <q-date
                   :model-value="fechaInicial"
                   @update:model-value="$emit('update:fechaInicial', $event)"
-                  mask="YYYY-MM-DD"
+                  mask="DD/MM/YYYY"
                 />
               </q-popup-proxy>
             </q-icon>
@@ -33,6 +35,8 @@
           :model-value="fechaFinal"
           @update:model-value="$emit('update:fechaFinal', $event)"
           id="fechafin"
+          mask="##/##/####"
+          fill-mask
           :rules="[
             (val) => !!val || 'Campo obligatorio',
             (val) => validarFechas(val) || 'Fecha final debe ser mayor o igual a la inicial',
@@ -44,7 +48,7 @@
                 <q-date
                   :model-value="fechaFinal"
                   @update:model-value="$emit('update:fechaFinal', $event)"
-                  mask="YYYY-MM-DD"
+                  mask="DD/MM/YYYY"
                 />
               </q-popup-proxy>
             </q-icon>
@@ -61,7 +65,7 @@
         @click="$emit('exportar')"
         :disable="disableExport"
         id="exportar"
-        />
+      />
     </div>
   </q-form>
 </template>

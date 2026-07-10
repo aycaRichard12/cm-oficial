@@ -151,29 +151,7 @@
         </div>
       </div>
     </q-form>
-
-    <q-table
-      id="tabladetalleproductos"
-      :rows="datosFiltrados"
-      :columns="columns"
-      row-key="index"
-      class="q-mt-lg"
-      flat
-      bordered
-      title="Reporte de Productos Vendidos"
-      no-data-label="No hay datos para mostrar. Genere un reporte."
-    >
-      <template v-slot:bottom-row>
-        <q-tr>
-          <q-td colspan="8" class="text-right text-bold">Sumatorias</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(cantidadTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(importeTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(descuentoTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(ventaTotal) }}</q-td>
-          <q-td colspan="13"></q-td>
-        </q-tr>
-      </template>
-    </q-table>
+    <tableProductosVendidos id="tablareportecotizacion" ref="refHijo" :rows="datosFiltrados" />
 
     <q-loading :showing="loading" />
   </q-page>
@@ -187,6 +165,7 @@ import * as funGeneral from 'src/composables/FuncionesG'
 import { URL_APICM } from 'src/composables/services'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import * as XLSX from 'xlsx'
+import tableProductosVendidos from 'src/components/ProductosVendidos/tableProductosVendidos.vue'
 // Importar XLSX si no está globalmente disponible
 // import * as XLSX from 'xlsx';
 
@@ -217,6 +196,8 @@ const tipoVentaMap = {
   1: 'Factura Compra-Venta',
   2: 'Factura Alquileres',
   3: 'Factura Comercial Exportación',
+  4: 'Cotizacion',
+  15: 'Factura de Entidades Financieras',
   24: 'Nota de Crédito-Débido',
 }
 
@@ -227,97 +208,8 @@ const usuarioInfo = computed(() => {
 })
 
 // Table columns for q-table
-const columns = [
-  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    align: 'right',
-    field: (row) => funGeneral.cambiarFormatoFecha(row.fecha),
-  },
-  { name: 'nrofactura', label: 'Nro. Doc.', align: 'right', field: 'nrofactura' },
-  {
-    name: 'tipoventa',
-    label: 'Tipo de Venta',
-    align: 'left',
-    field: (row) => tipoVentaMap[row.tipoventa] || row.tipoventa,
-  },
-  { name: 'codigo', label: 'Código Producto', align: 'left', field: 'codigo' },
-  { name: 'codigobarra', label: 'Código Barras', align: 'right', field: 'codigobarra' },
-  { name: 'descripcion', label: 'Descripción de Producto', align: 'left', field: 'descripcion' },
-  {
-    name: 'preciounitario',
-    label: 'Precio Unitario',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.preciounitario),
-  },
-  {
-    name: 'cantidad',
-    label: 'Cantidad',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.cantidad),
-  },
-  {
-    name: 'importe',
-    label: 'Importe',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.importe),
-  },
-  {
-    name: 'descuento',
-    label: 'Dscto.',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.descuento),
-  },
-  {
-    name: 'totalventa',
-    label: 'Venta Total',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.totalventa),
-  },
-  { name: 'tipopago', label: 'Tipo Pago', align: 'left', field: 'tipopago' },
-  { name: 'idusuario', label: 'Nombre de Usuario', align: 'left', field: 'idusuario' },
-  { name: 'sucursalc', label: 'Sucursal del Cliente', align: 'left', field: 'sucursalc' },
-  { name: 'almacen', label: 'Almacén Empresa', align: 'left', field: 'almacen' },
-  { name: 'cliente', label: 'Razón Social Empresa', align: 'left', field: 'cliente' },
-  { name: 'tipodocumento', label: 'Tipo Documento', align: 'left', field: 'tipodocumento' },
-  { name: 'nrodoc', label: 'Nro. Doc. Tributario', align: 'right', field: 'nrodoc' },
-  { name: 'nombrecomercial', label: 'Nombre Comercial', align: 'left', field: 'nombrecomercial' },
-  { name: 'unidad', label: 'Unidad', align: 'left', field: 'unidad' },
-  { name: 'categoria', label: 'Categoría', align: 'left', field: 'categoria' },
-  { name: 'subcategoria', label: 'Sub Categoría', align: 'left', field: 'subcategoria' },
-  { name: 'canal', label: 'Canal', align: 'left', field: 'canal' },
-  { name: 'tipoprecio', label: 'Tipo de Precio', align: 'left', field: 'tipoprecio' },
-]
 
 // Computed properties for totals
-const cantidadTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.cantidad)),
-    0,
-  )
-})
-
-const importeTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.importe)),
-    0,
-  )
-})
-
-const descuentoTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.descuento)),
-    0,
-  )
-})
-
-const ventaTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.totalventa)),
-    0,
-  )
-})
 
 const filteredClientes = computed(() => {
   if (!clienteSearchTerm.value) {

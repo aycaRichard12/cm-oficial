@@ -593,8 +593,6 @@ const onSolicitudEnviada = (datos) => {
   })
 }
 const validarDescripcion = async (scope, row) => {
-  console.log(scope.value)
-
   let carrito = JSON.parse(localStorage.getItem('carrito'))
 
   if (carrito && carrito.listaProductos) {
@@ -602,12 +600,20 @@ const validarDescripcion = async (scope, row) => {
       // Agregar o editar la descripción adicional
       if (Number(prod.id) == Number(row.idproductoalmacen)) {
         prod.descripcionAdicional = scope.value
+        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
+      }
+      return prod
+    })
+    carrito.listaProductosFactura = carrito.listaProductosFactura.map((prod) => {
+      // Agregar o editar la descripción adicional
+      if (String(prod.codigoProducto) == String(row.codigo)) {
+        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
       }
       return prod
     })
 
     localStorage.setItem('carrito', JSON.stringify(carrito))
-    console.log('Descripción adicional actualizada correctamente ')
+    //console.log('Descripción adicional actualizada correctamente ')
   } else {
     console.warn('No se encontró la lista de productos en el localStorage')
   }
@@ -1203,18 +1209,17 @@ function buscarPorCodigoBarra() {
   }
 }
 function decimas(saldo) {
-  var saldocondecimas = parseFloat(saldo).toFixed(2)
-  return saldocondecimas
+  return Number(parseFloat(saldo).toFixed(2)) // Devuelve tipo Number
 }
 function redondear(num) {
   if (typeof num != 'number') {
     return null
   }
   let signo = num >= 0 ? 1 : -1
-  return parseFloat(
-    (Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2),
-  )
+  return Number((Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2))
 }
+const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
+
 function agregarAlCarrito() {
   const datos = JSON.parse(localStorage.getItem('carrito'))
   datos.idalmacen = almacenSeleccionado.value?.value
@@ -1225,16 +1230,16 @@ function agregarAlCarrito() {
 
   const nuevoProducto = {
     idproductoalmacen: producto.id,
-    cantidad: cantidad.value,
-    precio: precioUnitario.value,
+    cantidad: Number(cantidad.value),
+    precio: formatear(precioUnitario.value),
     idstock: producto.idstock,
     idporcentaje: producto.idporcentaje,
-    candiponible: producto.stock,
+    candiponible: Number(producto.stock),
     descripcion: producto.descripcion,
     descripcionAdicional: '',
     codigo: producto.codigo,
-    id: producto.id,
-    subtotal: precioUnitario.value * cantidad.value,
+    id: Number(producto.id),
+    subtotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
     datosAdicionales: producto.datosAdicionales,
     despachado: Number(producto.stock) == 0 ? 2 : 1,
   }
@@ -1246,9 +1251,9 @@ function agregarAlCarrito() {
     codigoProductoSin: producto.codigosin,
     descripcion: producto.descripcion,
     unidadMedida: producto.unidadsin,
-    precioUnitario: precioUnitario.value,
+    precioUnitario: formatear(precioUnitario.value),
     subTotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
-    cantidad: cantidad.value,
+    cantidad: Number(cantidad.value),
     numeroSerie: '',
     montoDescuento: 0,
     numeroImei: '',

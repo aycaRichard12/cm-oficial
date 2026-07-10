@@ -1,18 +1,17 @@
 <template>
   <q-page padding>
     <div v-if="kardex">
-      
-    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
-      <div class="col-12 col-md-auto">
-        <div class="text-h5 text-primary text-weight-bold flex items-center">
-          <q-icon name="inventory" size="md" class="q-mr-sm" />
-          Kardex de Productos
-        </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Kardex de Productos
+      <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="inventory" size="md" class="q-mr-sm" />
+            Kardex de Productos
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración de Kardex de Productos
+          </div>
         </div>
       </div>
-    </div>
       <q-card-section>
         <q-form @submit="generarReporte">
           <div class="row q-col-gutter-x-lg flex justify-center">
@@ -73,6 +72,7 @@
                 option-value="id"
                 emit-value
                 map-options
+                clearable
                 @filter="filterProductos"
                 :rules="[(val) => !!val || 'Campo requerido']"
               >

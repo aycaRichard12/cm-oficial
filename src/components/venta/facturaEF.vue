@@ -505,6 +505,7 @@ const formData = ref({
     { metodoPago: null, monto: 0, porcentaje: 0 }, // Initial split payment method credito numeroDocumento
   ],
 })
+const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
 async function crearFormularioFacturaCompraVenta() {
   try {
     const contenidousuario = validarUsuario()
@@ -518,15 +519,15 @@ async function crearFormularioFacturaCompraVenta() {
       nombreRazonSocial: '',
       codigoCliente: '',
       codigoMetodoPago: 0,
-      montoTotal: datos.ventatotal,
-      montoTotalSujetoIva: datos.ventatotal,
+      montoTotal: formatear(datos.ventatotal),
+      montoTotalSujetoIva: formatear(datos.ventatotal),
       codigoMoneda: divisaActiva.divisa.codigosin,
-      montoTotalMoneda: datos.ventatotal,
+      montoTotalMoneda: formatear(datos.ventatotal),
       tipoCambio: tipoCambio.value,
-      montoTotalArrendamientoFinanciero: datos.ventatotal,
+      montoTotalArrendamientoFinanciero: 0,
       usuario: usuario,
       emailCliente: correoPredeterminado,
-      descuentoAdicional: datos.descuento,
+      descuentoAdicional: formatear(datos.descuento),
       extras: {
         uniqueCode: '',
         facturaTicket: '',

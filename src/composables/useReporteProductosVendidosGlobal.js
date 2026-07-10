@@ -4,7 +4,6 @@ import { date, useQuasar } from 'quasar'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { exportToXLSX_Reporte_Productos } from 'src/utils/XCLReportImport'
 import { decimas, redondear } from 'src/composables/FuncionesG'
-
 export function useReporteProductosVendidosGlobal() {
   const $q = useQuasar()
 
@@ -16,11 +15,12 @@ export function useReporteProductosVendidosGlobal() {
     2: 'Factura Alquileres',
     3: 'Factura Comercial Exportación',
     24: 'Nota de Crédito-Débito',
+    15: 'Factura de Entidades Financieras',
   }
 
   // --- Estado ---
-  const fechaInicial = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
-  const fechaFinal = ref(date.formatDate(Date.now(), 'YYYY-MM-DD'))
+  const fechaInicial = ref(date.formatDate(Date.now(), 'DD/MM/YYYY'))
+  const fechaFinal = ref(date.formatDate(Date.now(), 'DD/MM/YYYY'))
   const cargando = ref(false)
   const datosOriginales = ref([])
   const datosFiltrados = ref([])
@@ -137,7 +137,10 @@ export function useReporteProductosVendidosGlobal() {
       }
     })
   }
-
+  const formatearAFechaISO = (fechaDDMMYYYY) => {
+    const [dia, mes, anio] = fechaDDMMYYYY.split('/')
+    return `${anio}-${mes}-${dia}`
+  }
   // --- Lógica Principal: Generar Reporte ---
   const generarReporte = async () => {
     try {
@@ -150,7 +153,10 @@ export function useReporteProductosVendidosGlobal() {
 
       const contenidousuario = validarUsuario()
       const idempresa = contenidousuario[0]?.empresa?.idempresa
-      const point = `reporteventasporproductosglobal/${idempresa}/${fechaInicial.value}/${fechaFinal.value}`
+      const fechaIni = formatearAFechaISO(fechaInicial.value)
+      const fechaFin = formatearAFechaISO(fechaFinal.value)
+      const point = `reporteventasporproductosglobal/${idempresa}/${fechaIni}/${fechaFin}`
+
       console.log(point)
       const response = await api.get(point)
 

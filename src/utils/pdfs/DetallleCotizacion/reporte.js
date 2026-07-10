@@ -4,6 +4,8 @@ import { decimas } from 'src/composables/FuncionesG'
 import { dibujarCuerpoTabla } from '../dibujar'
 import { cargarFirmaBase64 } from 'src/composables/FuncionesG'
 import { redondear } from 'src/composables/FuncionesG'
+import { numeroALetras } from 'src/composables/FuncionesG'
+
 export async function generarPdfCotizacion(data) {
   console.log(data)
   const comprobanteData = []
@@ -58,6 +60,7 @@ export async function generarPdfCotizacion(data) {
   comprobanteData.subtotal = redondear(currentSubtotal)
   comprobanteData.montoTotal = redondear(currentSubtotal - cotizacionInfo.descuento)
   const detallePlano = comprobanteData
+  console.log(detallePlano)
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
@@ -75,6 +78,7 @@ export async function generarPdfCotizacion(data) {
     cantidad: decimas(item.cantidad),
     precio: decimas(item.precio),
     total: decimas(redondear(parseFloat(item.cantidad) * parseFloat(item.precio))),
+    descripcionAdicional: item.descripcionAdicional,
   }))
   const subtotal = detallePlano.detalle.reduce(
     (sum, dato) => sum + redondear(parseFloat(dato.cantidad) * parseFloat(dato.precio)),
@@ -83,13 +87,13 @@ export async function generarPdfCotizacion(data) {
   let montototal = decimas(redondear(parseFloat(subtotal) - parseFloat(detallePlano.descuento)))
 
   const descuento = decimas(detallePlano.descuento || 0)
-
+  const montoTexto = numeroALetras(montototal, divisaCotizacion.divisa)
   // Fila para Subtotal
   datos.push({ precio: 'SUBTOTAL', total: decimas(subtotal) })
   // Fila para Descuento
   datos.push({ precio: 'DESCUENTO', total: decimas(descuento) })
   // Fila para Monto Total
-  datos.push({ precio: 'MONTO TOTAL', total: decimas(montototal) })
+  datos.push({ precio: 'MONTO TOTAL', total: decimas(montototal), descripcion: montoTexto })
 
   const columnStyles = {
     indice: { cellWidth: 15, halign: 'center' },
@@ -151,6 +155,7 @@ export async function generarPdfCotizacion(data) {
     descripcionAdicional: 'descripcionAdicional',
     descripcion: 'descripcion',
   }
+  console.log(datos)
 
   dibujarCuerpoTabla(
     doc,
@@ -165,6 +170,7 @@ export async function generarPdfCotizacion(data) {
     null,
     extras,
     base64,
+    { columna: 'descripcion', campo: 'descripcionAdicional' },
   )
 
   // --- Lógica para el Watermark "Anulado" ---

@@ -132,6 +132,7 @@ export function dibujarCuerpoTabla(
   fechas = null,
   extras = null,
   firma = null,
+  añadirDescricionAdcional = null,
 ) {
   // Definición de estilos de columna específicos para este reporte (pueden generalizarse)
   let ultimaPaginaTabla = 0
@@ -169,9 +170,8 @@ export function dibujarCuerpoTabla(
       textColor: [0, 0, 0],
       fontSize: fontSize,
       halign: 'center',
-    }, // ❌ ELIMINADO: startY: 55, // Se elimina para usar margin.top en su lugar
+    },
 
-    // ✅ CORRECCIÓN: Definir el margen superior para reservar espacio para el encabezado
     margin: { top: 55, bottom: 20, left: marginLeft, right: marginLeft },
     tableWidth: allHaveFixed && sumWidths > 0 ? sumWidths : 'auto',
     theme: 'plain',
@@ -193,6 +193,32 @@ export function dibujarCuerpoTabla(
         // aplica los estilos personalizados del body por columna
         if (columnStyles[key]) {
           Object.assign(data.cell.styles, columnStyles[key])
+        }
+
+        if (añadirDescricionAdcional) {
+          // console.log('enero')
+          // Normalizar a array para manejar uno o varios objetos
+          const configs = Array.isArray(añadirDescricionAdcional)
+            ? añadirDescricionAdcional
+            : [añadirDescricionAdcional]
+
+          for (const cfg of configs) {
+            //console.log(cfg)
+            // Solo si la celda pertenece a la columna indicada y el registro tiene descripción
+            if (data.column.dataKey === cfg.columna && data.row.raw[cfg.campo]) {
+              const desc = data.row.raw[cfg.campo].toString().trim()
+              if (desc.length === 0) continue
+
+              // Texto original (puede venir como string o array)
+              const mainText = Array.isArray(data.cell.text)
+                ? data.cell.text.join('\n')
+                : data.cell.text
+              //console.log(mainText)
+              // Convertir a array de dos líneas (genera salto de línea en la celda)
+              data.cell.text = [mainText, '   ' + desc]
+              break // en este ejemplo solo una configuración por columna
+            }
+          }
         }
 
         // Soporte para texto en negrita mediante etiquetas <b>
@@ -246,6 +272,7 @@ export function dibujarCuerpoTabla(
 
         doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height)
       }
+
       ultimaPaginaTabla = data.table.pageNumber
     }, // ENCABEZADO Y PIE DE PÁGINA: Se dibuja en cada página.
 
@@ -430,32 +457,80 @@ function agregarEncabezadoInfo(
     doc.setFont(undefined, 'bold')
     doc.text(datosIzquierda.titulo + ':', 10, 33)
 
-    let y = 36
+    //let y = 36
 
     doc.setFontSize(8)
 
+    // datosIzquierda.campos.forEach((campo) => {
+    //   let x = 10
+
+    //   if (campo.label && campo.label.trim() !== '') {
+    //     // LABEL en negrilla
+    //     doc.setFont(undefined, 'bold')
+    //     doc.text(`${campo.label}:`, x, y)
+
+    //     // calcular ancho del label para continuar el texto
+    //     const anchoLabel = doc.getTextWidth(`${campo.label}: `)
+    //     x += anchoLabel
+
+    //     // VALOR normal
+    //     doc.setFont(undefined, 'normal')
+    //     doc.text(String(campo.valor), x, y)
+    //   } else {
+    //     // si no hay label, todo normal
+    //     doc.setFont(undefined, 'normal')
+    //     doc.text(String(campo.valor), x, y)
+    //   }
+
+    //   y += 3
+    // })
+    // Definir ancho máximo para el bloque izquierdo
+    const maxWidthLeft = 80 // ajusta según tu layout, por ejemplo, hasta la mitad de la página
+    let y = 36 // ya tienes una y desde donde empieza
+
     datosIzquierda.campos.forEach((campo) => {
       let x = 10
+      const fullText =
+        campo.label && campo.label.trim() !== ''
+          ? `${campo.label}: ${campo.valor}`
+          : String(campo.valor)
 
+      // Dividir texto si excede el ancho máximo
+      const lines = doc.splitTextToSize(fullText, maxWidthLeft)
+
+      // Dibujar primera línea con formato (label en negrita si existe)
       if (campo.label && campo.label.trim() !== '') {
-        // LABEL en negrilla
+        // Para la primera línea, queremos label en bold y el resto normal.
+        // Pero splitTextToSize no diferencia formato. Lo más simple es dibujar línea por línea
+        // con el mismo estilo después de la primera, o si se quiere label en bold en la primera línea,
+        // podemos dibujar manualmente la primera línea label+valor, y si hay overflow, el resto normal.
+        // Sin embargo, si el texto es muy largo, el label quedaría partido.
+        // Alternativa: dibujar label en bold y luego el valor normal en la misma línea si cabe,
+        // si no cabe, poner label en una línea y valor en siguientes.
+        // Aquí opto por una solución simple: todo normal, o si prefieres, puedes aplicar bold solo al label
+        // y luego manejar el overflow.
+        // Para simplificar, dibujamos las líneas con el estilo adecuado:
         doc.setFont(undefined, 'bold')
-        doc.text(`${campo.label}:`, x, y)
-
-        // calcular ancho del label para continuar el texto
-        const anchoLabel = doc.getTextWidth(`${campo.label}: `)
-        x += anchoLabel
-
-        // VALOR normal
+        doc.text(lines[0], x, y) // primera línea (label: comienzo del valor)
         doc.setFont(undefined, 'normal')
-        doc.text(String(campo.valor), x, y)
+        // resto de líneas en normal
+        for (let i = 1; i < lines.length; i++) {
+          y += 4 // interlineado
+          doc.text(lines[i], x, y)
+        }
       } else {
-        // si no hay label, todo normal
+        // sin label, todo normal
         doc.setFont(undefined, 'normal')
-        doc.text(String(campo.valor), x, y)
+        lines.forEach((line, index) => {
+          if (index === 0) {
+            doc.text(line, x, y)
+          } else {
+            y += 4
+            doc.text(line, x, y)
+          }
+        })
       }
-
-      y += 3
+      y += 4 // espacio después del campo completo
     })
   }
 

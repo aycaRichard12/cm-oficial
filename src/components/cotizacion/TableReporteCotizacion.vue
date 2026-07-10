@@ -202,7 +202,7 @@ const props = defineProps({
     default: () => [],
   },
 })
-console.log('Props recibidas en TableReporteCotizacion:', props.rows)
+//console.log('Props recibidas en TableReporteCotizacion:', props.rows)
 defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
 
 function getActiveFiltersReport() {
@@ -298,7 +298,7 @@ const columnas = [
   },
   {
     name: 'monto',
-    label: 'Total',
+    label: 'Total l',
     align: 'right',
     field: 'monto',
     dataType: 'number',

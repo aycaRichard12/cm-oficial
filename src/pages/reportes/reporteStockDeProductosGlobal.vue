@@ -48,8 +48,6 @@
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
-              option-label="nombre"
-              option-value="id"
               emit-value
               map-options
               label="Almacén*"
@@ -212,7 +210,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { PDFreporteStockProductosIndividual } from 'src/utils/pdfs/StockProductoGlobal/reporte'
 
@@ -237,6 +235,7 @@ const filtroEstado = ref(0)
 const ordenStock = ref(1)
 const nombreAlmacenSeleccionado = ref('')
 const idempresa = idempresa_md5()
+const idusuario = idusuario_md5()
 
 const opcionesEstado = [
   { label: 'Todos', value: 0 },
@@ -381,7 +380,7 @@ onMounted(async () => {
 async function cargarCategoriasPrecio() {
   if (almacenSeleccionado.value) {
     const idalmacen = Number(almacenSeleccionado.value)
-
+    console.log(idalmacen)
     try {
       cargandoCategorias.value = true
       categoriaPrecioSeleccionada.value = null
@@ -393,7 +392,7 @@ async function cargarCategoriasPrecio() {
       if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
 
       categoriasPrecio.value = data
-        .filter((item) => item.estado == 1 && item.idalmacen == idalmacen)
+        .filter((item) => item.estado == 1 && Number(item.idalmacen) == idalmacen)
         .map((item) => ({
           label: item.nombre,
           value: item.id,
@@ -405,6 +404,7 @@ async function cargarCategoriasPrecio() {
         // Generar el reporte con los filtros por defecto
         await generarReporte()
       }
+      await generarReporte()
     } catch (error) {
       console.error('Error al cargar categorías:', error)
       $q.notify({
@@ -420,21 +420,21 @@ async function cargarCategoriasPrecio() {
 }
 async function cargarAlmacenes() {
   try {
-    const response = await api.get(`listaAlmacen/${idempresa}`)
+    const response = await api.get(`listaResponsableAlmacenReportes/${idempresa}`)
     console.log(response)
     if (Array.isArray(response.data)) {
-      opcionesAlmacenes.value = response.data
-        .filter((almacen) => Number(almacen.estado) === 1)
-        .map((almacen) => ({
-          ...almacen,
-          label: almacen.nombre,
-          value: almacen.id,
-        }))
+      const filtrados = response.data.filter((obj) => obj.idusuario == idusuario)
+
+      opcionesAlmacenes.value = filtrados.map((item) => ({
+        label: item.almacen,
+        value: item.idalmacen,
+      }))
+      console.log('opcionesAlmacenes', opcionesAlmacenes.value)
     }
 
     // Seleccionar el primer almacén por defecto
     if (opcionesAlmacenes.value.length > 0) {
-      almacenSeleccionado.value = opcionesAlmacenes.value[0].id
+      almacenSeleccionado.value = opcionesAlmacenes.value[0].value
 
       // Cargar categorías para ese almacén (esto antes no se hacía automáticamente)
       await cargarCategoriasPrecio()
@@ -469,6 +469,7 @@ async function generarReporte() {
 
   try {
     const point = `reporteproductoalmacen/${almacenSeleccionado.value}/${idempresa}/${fechaFin.value}`
+    console.log(point)
     const response = await api.get(`${point}`)
     console.log('reporteStockDeProductosGlobal', response.data)
 
