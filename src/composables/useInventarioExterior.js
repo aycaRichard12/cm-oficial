@@ -86,7 +86,7 @@ export function useInventarioExterior() {
       return
     }
 
-    const endpoint = `listainventarioexterno/${idempresa}`
+    const endpoint = `listainventarioexterno/${idusuario}`
     try {
       const response = await api.get(endpoint)
       const resultado = response.data
@@ -308,14 +308,11 @@ export function useInventarioExterior() {
         formCollapse.value = true
         formData.value.latitud = row.latitud
         formData.value.longitud = row.longitud
-      
+
         // Note: consumer needs to call selectSucursal logic after this if needed,
         // or we handle it in the watcher inside the component or here.
-        console.log('resultado',resultado.datos)
+        console.log('resultado', resultado.datos)
         return resultado.datos.idcliente // Return client ID so component can trigger sucursal load
-
-
-
       } else {
         $q.notify({
           message: resultado.mensaje || 'Error al cargar datos para edición.',

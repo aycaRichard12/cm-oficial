@@ -10,12 +10,14 @@
               <q-icon name="star" color="primary" size="1.5rem" class="q-mr-sm" />
               <div class="text-h6 text-weight-medium">Productos Preferidos</div>
             </div>
-            <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block">
+            <div
+              class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block"
+            >
               <q-icon name="event" class="q-mr-xs" />
               <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
             </div>
           </div>
-          
+
           <!-- Filtros de Fecha -->
           <div class="col-12 col-md-auto">
             <div class="row q-col-gutter-sm items-center">
@@ -52,11 +54,11 @@
               </div>
 
               <div class="col-12 col-sm-auto flex items-center">
-                <q-btn 
-                  color="primary" 
-                  icon="search" 
-                  label="Consultar" 
-                  unelevated 
+                <q-btn
+                  color="primary"
+                  icon="search"
+                  label="Consultar"
+                  unelevated
                   :loading="loading"
                   @click="consultarFechas"
                   class="full-width"
@@ -69,11 +71,11 @@
 
       <!-- Sección Gráfico -->
       <q-card-section class="col-grow q-pt-none">
-        <div 
-          class="full-width" 
-          :style="{ 
+        <div
+          class="full-width"
+          :style="{
             minHeight: $q.screen.lt.md ? '350px' : '400px',
-            height: '100%'
+            height: '100%',
           }"
         >
           <VueApexCharts
@@ -90,18 +92,20 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
 import { useQuasar, date } from 'quasar'
 import { api } from 'src/boot/axios'
 
 const $q = useQuasar()
-const empresa = idempresa_md5()
-
+//const empresa = idempresa_md5()
+const idusuario = idusuario_md5()
 // Estado Fechas
 const timeStamp = Date.now()
 const fechaFin = ref(date.formatDate(timeStamp, 'DD/MM/YYYY'))
-const fechaInicio = ref(date.formatDate(date.subtractFromDate(timeStamp, { days: 30 }), 'DD/MM/YYYY'))
+const fechaInicio = ref(
+  date.formatDate(date.subtractFromDate(timeStamp, { days: 30 }), 'DD/MM/YYYY'),
+)
 
 const loading = ref(false)
 const rawDataAPI = ref([])
@@ -112,17 +116,19 @@ const consultarFechas = async () => {
   try {
     // Transformar DD/MM/YYYY a YYYY-MM-DD
     const [diaIni, mesIni, anioIni] = fechaInicio.value.split('/')
-    const inicioStr = `${anioIni}-${mesIni}-${diaIni}`
+    console.log(diaIni)
+    const inicioStr = `${anioIni}-${mesIni}-01`
 
     const [diaFin, mesFin, anioFin] = fechaFin.value.split('/')
     const finStr = `${anioFin}-${mesFin}-${diaFin}`
 
-    const endpoint = `/productos_preferidos/${empresa}/${inicioStr}/${finStr}`
+    const endpoint = `/productos_preferidos/${idusuario}/${inicioStr}/${finStr}`
+    console.log(endpoint)
     const { data } = await api.get(endpoint)
-    
+    console.log('Respuesta API:', data)
     // Asignación segura de respuesta
-    if (Array.isArray(data)) {
-      rawDataAPI.value = data
+    if (Array.isArray(data.data)) {
+      rawDataAPI.value = data.data
     } else if (data && Array.isArray(data.datos)) {
       rawDataAPI.value = data.datos
     } else {
@@ -155,7 +161,7 @@ const chartOptions = ref({
     type: 'bar',
     height: '100%',
     stacked: false,
-    toolbar: { 
+    toolbar: {
       show: true,
       tools: {
         download: true,
@@ -164,8 +170,8 @@ const chartOptions = ref({
         zoomin: true,
         zoomout: true,
         pan: true,
-        reset: true
-      }
+        reset: true,
+      },
     },
     animations: {
       enabled: true,
@@ -175,7 +181,7 @@ const chartOptions = ref({
   },
   title: {
     text: '', // Movido al layout superior HTML
-    align: 'center'
+    align: 'center',
   },
   plotOptions: {
     bar: {
@@ -207,8 +213,8 @@ const chartOptions = ref({
       style: {
         fontSize: '12px',
         fontWeight: 600,
-        color: '#263238'
-      }
+        color: '#263238',
+      },
     },
     labels: {
       rotate: -45,
@@ -227,12 +233,12 @@ const chartOptions = ref({
     tickPlacement: 'on',
   },
   yaxis: {
-    title: { 
+    title: {
       text: 'Unidades Vendidas',
       style: {
         fontSize: '12px',
         fontWeight: 600,
-      }
+      },
     },
     labels: {
       formatter: function (val) {
@@ -240,7 +246,7 @@ const chartOptions = ref({
       },
       style: {
         fontSize: '11px',
-      }
+      },
     },
   },
   tooltip: {
@@ -254,21 +260,32 @@ const chartOptions = ref({
     },
   },
   colors: [
-    '#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0',
-    '#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0',
+    '#008FFB',
+    '#00E396',
+    '#FEB019',
+    '#FF4560',
+    '#775DD0',
+    '#008FFB',
+    '#00E396',
+    '#FEB019',
+    '#FF4560',
+    '#775DD0',
   ],
   grid: {
     borderColor: '#e7e7e7',
     strokeDashArray: 4,
     xaxis: {
-      lines: { show: false }
+      lines: { show: false },
     },
     yaxis: {
-      lines: { show: true }
+      lines: { show: true },
     },
     padding: {
-      top: 0, right: 10, bottom: 0, left: 10
-    }
+      top: 0,
+      right: 10,
+      bottom: 0,
+      left: 10,
+    },
   },
   responsive: [
     {
@@ -309,7 +326,7 @@ const chartOptions = ref({
     verticalAlign: 'middle',
     style: {
       fontSize: '14px',
-    }
+    },
   },
 })
 
@@ -345,7 +362,7 @@ watch(
       },
       subtitle: {
         text: '', // Movido al layout superior HTML
-      }
+      },
     }
 
     series.value = [

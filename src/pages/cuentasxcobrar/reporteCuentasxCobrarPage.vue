@@ -194,7 +194,7 @@ import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import { cambiarFormatoFecha, decimas, redondear } from 'src/composables/FuncionesG'
 import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
-import { PDFreporteCreditos } from 'src/utils/pdfReportGenerator'
+import { PDFreporteCreditosA } from 'src/utils/pdfs/ReporteCreditos/reporte'
 import { exportToXLSX_Reporte_Creditos } from 'src/utils/XCLReportImport'
 import ReporteCreditosTable from 'src/components/cuentasxCobrar/Reportes/ReporteCreditosTable.vue'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
@@ -256,18 +256,41 @@ const cambiarTipoReporteLabel = () => {
   // Opcional: podrías limpiar la fecha de inicio al cambiar a "Al Corte" si lo deseas
 }
 const printFilteredTable = () => {
-  const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
-  const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
-  const doc = PDFreporteCreditos(data, startDate.value, endDate.value, null, null, visibleColumns)
+  $q.dialog({
+    title: 'Orientación del PDF',
+    message: 'Seleccione la orientación del reporte:',
+    options: {
+      type: 'radio',
+      model: 'landscape',
+      items: [
+        { label: 'Horizontal', value: 'landscape', color: 'primary' },
+        { label: 'Vertical', value: 'portrait', color: 'primary' },
+      ],
+    },
+    cancel: true,
+    persistent: true,
+  }).onOk((orientation) => {
+    const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
+    const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
+    const doc = PDFreporteCreditosA(
+      data,
+      startDate.value,
+      endDate.value,
+      null,
+      null,
+      visibleColumns,
+      orientation,
+    )
 
-  // Liberar URL anterior si existe
-  if (pdfData.value) {
-    URL.revokeObjectURL(pdfData.value)
-  }
+    // Liberar URL anterior si existe
+    if (pdfData.value) {
+      URL.revokeObjectURL(pdfData.value)
+    }
 
-  const blob = doc.output('blob')
-  pdfData.value = URL.createObjectURL(blob)
-  mostrarModal.value = true
+    const blob = doc.output('blob')
+    pdfData.value = URL.createObjectURL(blob)
+    mostrarModal.value = true
+  })
 }
 
 // Limpiar la URL de objeto al cerrar el modal o desmontar el componente

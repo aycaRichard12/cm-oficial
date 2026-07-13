@@ -10,7 +10,7 @@
           @click="$emit('volver')"
           class="q-mr-sm"
         />
-        <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" />
+        <!-- <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" /> -->
       </div>
       <div class="col-12 col-md-8">
         <h4 class="q-ma-none text-primary" style="font-size: 20px">
@@ -43,6 +43,7 @@
                   option-label="label"
                   option-value="value"
                   use-input
+                  emit-value
                   map-options
                   @filter="filterClientes"
                   @update:model-value="actualizarSucursales"
@@ -79,57 +80,6 @@
                     <q-icon name="location_city" color="blue" />
                   </template>
                 </q-select>
-              </div>
-              <div class="col-12 col-md-3">
-                <label for="tipodoc">Tipo de documento*</label>
-                <q-select
-                  v-model="formData.tipodoc"
-                  id="tipodoc"
-                  dense
-                  outlined
-                  readonly
-                  :options="typeDocOptions"
-                  option-label="label"
-                  option-value="value"
-                  :disable="!formData.cliente"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="description" color="blue" />
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-12 col-md-3">
-                <label for="nroDoc">Nro. documento*</label>
-                <q-input
-                  v-model="formData.nroDoc"
-                  id="nroDoc"
-                  dense
-                  readonly
-                  outlined
-                  type="number"
-                  :rules="[(val) => !!val || 'Campo Obligatorio']"
-                  :disable="!formData.cliente"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="numbers" color="blue" />
-                  </template>
-                </q-input>
-              </div>
-              <div class="col-12 col-md-3">
-                <label for="fecha">Fecha*</label>
-                <q-input
-                  v-model="formData.fecha"
-                  id="fecha"
-                  dense
-                  readonly
-                  outlined
-                  type="date"
-                  required
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="event" color="blue" />
-                  </template>
-                </q-input>
               </div>
               <div class="col-12 col-md-3">
                 <label for="canal">Canal de venta*</label>
@@ -276,6 +226,37 @@
                     <q-icon name="store" color="blue" />
                   </template>
                 </q-select>
+              </div>
+            </div>
+
+            <!-- Sección de Datos Automáticos (No Editables) -->
+            <div class="q-mt-md q-pa-md bg-grey-2 rounded-borders border-blue-grey-2 shadow-1">
+              <div class="text-subtitle2 text-primary q-mb-sm flex items-center">
+                <q-icon name="auto_fix_high" class="q-mr-sm" />
+                Información de Facturación (Automática)
+              </div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Tipo de documento*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="description" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.tipodoc?.label || '---' }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Nro. documento*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="numbers" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.nroDoc || '---' }}
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="text-caption text-grey-8">Fecha*</div>
+                  <div class="text-subtitle2 text-weight-bold flex items-center">
+                    <q-icon name="event" color="blue" class="q-mr-sm" size="20px" />
+                    {{ formData.fecha || '---' }}
+                  </div>
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -722,19 +703,11 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="fechalimite">Fecha límite*</label>
-                <q-input
-                  v-model="formData.fechaLimite"
-                  id="fechalimite"
-                  type="date"
-                  dense
-                  outlined
-                  :disable="true"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="event_available" color="red" />
-                  </template>
-                </q-input>
+                <div class="text-caption text-grey-8">Fecha límite*</div>
+                <div class="text-subtitle2 text-weight-bold flex items-center">
+                  <q-icon name="event_available" color="red" class="q-mr-sm" size="20px" />
+                  {{ formData.fechaLimite || '---' }}
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -898,6 +871,7 @@ async function crearFormularioFacturaExportacion() {
       emailCliente: correoPredeterminado,
       telefonoCliente: 0,
       extras: {
+        uniqueCode: '',
         facturaTicket: '',
       },
       codigoLeyenda: leyendaActiva.leyenda.codigosin,
@@ -969,7 +943,7 @@ const filterClientes = (val, update) => {
 }
 const branchOptions = computed(() => {
   return formData.value.cliente
-    ? branches.value.filter((b) => b.clientId === formData.value.cliente.value)
+    ? branches.value.filter((b) => b.clientId === formData.value.cliente)
     : []
 })
 const typeDocOptions = computed(() => {
@@ -1014,7 +988,7 @@ const cargarCanales = async () => {
   try {
     const respuesta = await validarUsuario()
     const idempresa = respuesta[0]?.empresa?.idempresa
-    const response = await api.get(`listaCanalVenta/${idempresa}`)
+    const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
     salesChannels.value = response.data.map((item) => ({
       label: item.canal,
       value: item.id,
@@ -1088,53 +1062,55 @@ const cargarPuntoVentas = async () => {
     showError('Error al cargar clientes', error)
   }
 }
-const actualizarSucursales = async (cliente) => {
-  console.log(cliente)
-  if (!cliente) return
+const actualizarSucursales = async (clientId) => {
+  console.log('actualizarSucursales clientId:', clientId)
+  if (!clientId) {
+    branches.value = []
+    formData.value.sucursal = null
+    return
+  }
   try {
-    console.log(`listaSucursal/${cliente.value}`)
-    const { data } = await api.get(`listaSucursal/${cliente.value}`)
+    console.log(`listaSucursal/${clientId}`)
+    const { data } = await api.get(`listaSucursal/${clientId}`)
     branches.value = data.map((sucursal) => ({
       label: sucursal.nombre,
       value: sucursal.id,
-      clientId: cliente.value,
+      clientId: clientId,
     }))
-    cargarDatosCliente(cliente)
+
+    // Buscar el objeto cliente completo para cargar sus datos
+    const clientObj = clients.value.find((c) => c.value == clientId)
+    if (clientObj) {
+      cargarDatosCliente(clientObj)
+    }
+
     formData.value.sucursal = branches.value[0] || null
   } catch (error) {
     showError('Error al cargar sucursales', error)
   }
 }
 const cargarDatosCliente = (client) => {
-  console.log(client.originalData)
+  console.log('cargarDatosCliente client:', client)
   const datos = JSON.parse(localStorage.getItem('carrito'))
-  formData.value.nroDoc = client.originalData.nit
-  formData.value.canal = salesChannels.value.filter(
-    (u) => u.value == Number(client.originalData.idcanal),
-  )[0]
+  if (!client || !client.originalData) return
 
-  typeDoc.value = typeDoc.value = [
+  formData.value.nroDoc = client.originalData.nit
+  formData.value.canal = salesChannels.value.find(
+    (u) => Number(u.value) === Number(client.originalData.idcanal),
+  )
+
+  typeDoc.value = [
     {
       value: client.originalData.tipodocumento,
       label: client.originalData.textotipodocumento,
     },
   ]
-  //elegirUnCliente(option.id, inputid, selectSuc, inputidS, listaS, classOptionsS, option.textotipodocumento, option.tipodocumento, option.nit, option.nombre, option.codigo, option.telefono, option.direccion, option.pais, option.idcanal, inputd,classOptions );
 
   formData.value.tipodoc = typeDoc.value[0] || null
   formData.value.direccion = client.originalData.direccion
   formData.value.lugardestino = client.originalData.pais
 
   if (datos) {
-    // datos.listaFactura.nombreRazonSocial = nombre;
-    // datos.listaFactura.codigoCliente = codigo;
-    // datos.listaFactura.numeroDocumento = nrodoc;
-    // datos.listaFactura.codigoTipoDocumentoIdentidad = idtipodoc;
-    // datos.listaFactura.telefonoCliente = telefono;
-    // datos.listaFactura.direccionComprador = direccion;
-    // datos.listaFactura.lugarDestino = pais;
-    // datos.listaFactura.codigoPuntoVenta = document.querySelector('#puntoventaVFE').value;
-    // datos.listaFactura.codigoMetodoPago = document.querySelector('#metodopagoVFE').value;
     datos.listaFactura.nombreRazonSocial = client.originalData.nombre
     datos.listaFactura.codigoCliente = client.originalData.codigo
     datos.listaFactura.numeroDocumento = client.originalData.nit
@@ -1143,8 +1119,8 @@ const cargarDatosCliente = (client) => {
     datos.listaFactura.direccionComprador = client.originalData.direccion
     datos.listaFactura.lugarDestino = client.originalData.pais
 
-    datos.listaFactura.codigoPuntoVenta = formData.value.puntoventa.value
-    datos.listaFactura.codigoMetodoPago = formData.value.metodoPago.value
+    datos.listaFactura.codigoPuntoVenta = formData.value.puntoventa?.value || 0
+    datos.listaFactura.codigoMetodoPago = formData.value.metodoPago?.value || 0
 
     localStorage.setItem('carrito', JSON.stringify(datos))
     if (Number(client.originalData.tipodocumento) == 5) {
@@ -1290,7 +1266,6 @@ const onSubmit = async () => {
 
       pagosDivididos = [],
       credito,
-      tipopago,
       variablePago,
       cantidadPagos,
       fechaLimite,
@@ -1299,8 +1274,7 @@ const onSubmit = async () => {
       plazoPersonalizado,
     } = formData.value
     console.log(credito)
-    console.log(tipopago)
-    console.log(cliente.value)
+    console.log(cliente)
     //Validaciones previas
     if (!cliente) throw { message: 'Debe seleccionar un cliente' }
     if (!sucursal || !sucursal.value) throw { message: 'Debe seleccionar una sucursal válida' }
@@ -1360,7 +1334,7 @@ const onSubmit = async () => {
     form.append('tipoventa', CONSTANTES.tipoventa)
     form.append('idusuario', CONSTANTES.idusuario)
     form.append('idempresa', CONSTANTES.idempresa)
-    form.append('idcliente', cliente.value)
+    form.append('idcliente', cliente)
     form.append('sucursal', sucursal.value)
     form.append('tipodoc', tipodoc.value)
     form.append('nrodoc', nroDoc)
@@ -1410,6 +1384,7 @@ const onSubmit = async () => {
     if (process.env.NODE_ENV === 'production') {
       console.log(json)
     }
+    //console.log('JSON enviado al backend:', json)
     const response = await api.post('', form, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -1544,9 +1519,9 @@ const resetForm = () => {
   localStorage.removeItem('carrito')
 }
 
-const handleContinue = () => {
-  emit('continuar') // Esto activará el toggle en el padre
-}
+// const handleContinue = () => {
+//   emit('continuar') // Esto activará el toggle en el padre
+// }
 //=======================Cliente ====================
 const RegistrarCliente = () => {
   showAddModal.value = !showAddModal.value

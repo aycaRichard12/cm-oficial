@@ -1,5 +1,16 @@
 <template>
   <q-page>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="recycling" size="md" class="q-mr-sm" />
+          Registrar Merma
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración y registro de productos perdidos o dañados
+        </div>
+      </div>
+    </div>
     <!-- Formulario Principal -->
     <div>
       <q-card-section>
@@ -58,7 +69,6 @@
           row-key="id"
           :filter="filter"
           :loading="loading"
-          :pagination="pagination"
           dense
         >
           <template v-slot:top-right> </template>
@@ -260,33 +270,55 @@
         <q-card-section>
           <q-form @submit="submitDetailForm" v-if="Number(currentDetailStatus) === 2 && escritura">
             <div class="row q-col-gutter-x-md">
-              <div class="col-12 col-md-6" id="productodetallemerma">
-                <label for="producto">Producto</label>
+              <div class="col-12 col-md-8" id="productodetallemerma">
+                <div class="row items-center">
+                  <div class="col-auto">
+                    <label for="producto" class="q-mr-md">Producto</label>
+                  </div>
+                  <div class="col-auto">
+                    <div v-if="esProductoUnico" class="unique-product-section">
+                      <q-checkbox
+                        v-model="registrarComoProductoUnico"
+                        label="Producto Único"
+                        color="primary"
+                        class="custom-checkbox text-weight-medium"
+                      >
+                        <template v-slot:label>
+                          <span class="text-grey-800">Producto Único</span>
+                        </template>
+                      </q-checkbox>
+                    </div>
+                  </div>
+                  <div class="col-12" id="productodetallemerma">
+                    <label for="producto">Producto</label>
 
-                <q-select
-                  v-model="detailForm.idproductoalmacen"
-                  :options="availableProducts"
-                  dense
-                  outlined
-                  id="producto"
-                  option-value="idproductoalmacen"
-                  option-label="label"
-                  emit-value
-                  map-options
-                  use-input
-                  clearable
-                  @update:model-value="selectProduct"
-                  @filter="filtrarProductos"
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        No hay productos disponibles
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
+                    <q-select
+                      v-model="detailForm.idproductoalmacen"
+                      :options="availableProducts"
+                      dense
+                      outlined
+                      id="producto"
+                      option-value="idproductoalmacen"
+                      option-label="label"
+                      emit-value
+                      map-options
+                      use-input
+                      clearable
+                      @update:model-value="selectProduct"
+                      @filter="filtrarProductos"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No hay productos disponibles
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                </div>
               </div>
+
               <div class="col-6 col-md-3" id="stockdetallemerma">
                 <label for="stock">Stock</label>
                 <q-input
@@ -309,8 +341,17 @@
                   outlined
                   required
                   @update:model-value="validateQuantity"
+                  :rules="[(val) => val <= detailForm.stock || 'Cantidad excede stock']"
                 />
               </div>
+
+              <UniqueProductSelector
+                :product-id="detailForm.idproductoalmacen"
+                :is-unique="esProductoUnico && registrarComoProductoUnico"
+                :cantidad-requerida="detailForm.cantidad"
+                @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
+                class="q-mt-md"
+              />
               <div class="col-12" id="btntogglelotedetallemerma">
                 <q-btn
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
@@ -382,26 +423,84 @@
             class="q-mt-md"
             :loading="detailLoading"
           >
-            <template v-slot:body-cell-actions="props">
-              <q-td :props="props">
-                <q-btn
-                  id="btneditardetallemerma"
-                  v-if="Number(currentDetailStatus) === 2 && editar"
-                  dense
-                  color="primary"
-                  icon="edit"
-                  class="q-mr-xs"
-                  @click="editDetailItem(props.row.id)"
-                />
-                <q-btn
-                  id="btneliminardetallemerma"
-                  v-if="Number(currentDetailStatus) === 2 && eliminar"
-                  dense
-                  color="negative"
-                  icon="delete"
-                  @click="deleteDetailItem(props.row)"
-                />
-              </q-td>
+            <template v-slot:body="props">
+              <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
+                <q-td auto-width>
+                  <q-btn
+                    v-if="props.row.productos_detallados?.length > 0"
+                    size="sm"
+                    color="primary"
+                    flat
+                    round
+                    @click="props.expand = !props.expand"
+                    :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                  >
+                    <q-tooltip>Ver detalles de códigos</q-tooltip>
+                  </q-btn>
+                </q-td>
+
+                <q-td key="numero" :props="props">
+                  {{ props.row.numero }}
+                </q-td>
+                <q-td key="codigolote" :props="props">
+                  <q-chip outline color="primary" label-slot dense>
+                    <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+                    {{ props.row.codigolote }}
+                  </q-chip>
+                </q-td>
+                <q-td key="codigo" :props="props">
+                  <q-chip outline color="primary" label-slot dense>
+                    <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+                    {{ props.row.codigo }}
+                  </q-chip>
+                </q-td>
+
+                <q-td key="descripcion" :props="props">
+                  <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+                </q-td>
+
+                <q-td key="cantidad" :props="props" class="text-right">
+                  <q-badge color="grey-8">{{ props.row.cantidad }}</q-badge>
+                </q-td>
+
+                <q-td key="actions" :props="props" align="center">
+                  <q-btn
+                    id="btneditardetallemerma"
+                    v-if="Number(currentDetailStatus) === 2 && editar"
+                    dense
+                    color="primary"
+                    icon="edit"
+                    class="q-mr-xs"
+                    @click="editDetailItem(props.row.id)"
+                  />
+
+                  <q-btn
+                    id="btneliminardetallemerma"
+                    v-if="Number(currentDetailStatus) === 2 && eliminar"
+                    dense
+                    color="negative"
+                    icon="delete"
+                    @click="deleteDetailItem(props.row)"
+                  />
+                </q-td>
+              </q-tr>
+
+              <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
+                <q-td colspan="100%" class="q-pa-lg">
+                  <TableCodigosUnicosMerma
+                    v-model="props.row.productos_detallados"
+                    :parent-row="props.row"
+                    :can-delete="Number(currentDetailStatus) === 2 && eliminar"
+                    :can-edit="false"
+                    :api-mode="true"
+                    @update-parent-quantity="
+                      (nuevaCant) => {
+                        props.row.cantidad = nuevaCant
+                      }
+                    "
+                  />
+                </q-td>
+              </q-tr>
             </template>
           </q-table>
         </q-card-section>
@@ -436,7 +535,6 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'boot/axios'
 // import { useMenuStore } from 'src/layouts/permitidos'
-import { useMenuStore } from 'src/stores/permitidos'
 import {
   cambiarFormatoFecha,
   obtenerFechaActualDato,
@@ -448,22 +546,41 @@ import { useAlmacenStore } from 'src/stores/listaResponsableAlmacen'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { PDFreporteMermas } from 'src/utils/pdfReportGenerator'
 import { PDFComprovanteMerma } from 'src/utils/pdfReportGenerator'
+import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+import TableCodigosUnicosMerma from './TableCodigosUnicosMerma.vue'
 
+const registrarComoProductoUnico = ref(false)
+const esProductoUnico = ref(false)
+//const idproductoalmacenCO = ref('')
+const CodigosUnicosSeleccionados = ref([])
+
+const idempresa = idempresa_md5()
+
+const { config } = useProductoConfig(idempresa)
+watch(
+  () => config.value.idempresa,
+  (nuevoValor) => {
+    if (nuevoValor) {
+      esProductoUnico.value = Boolean(config.value.productounico)
+    }
+  },
+  { deep: true },
+)
+const guardarCodigosEnVenta = (codigos) => {
+  CodigosUnicosSeleccionados.value = codigos
+  detailForm.value.cantidad = codigos.length
+}
 const lote = ref(true)
 const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
-console.log(lectura, escritura, editar, eliminar)
+console.log(lectura)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const warehouses = useAlmacenStore()
-console.log(warehouses)
 const productosDisponibles = ref([])
-const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const $q = useQuasar()
-const menuStore = useMenuStore()
-const permisosMap = menuStore.obtenerMenuPrincipal
-console.log(permisosMap['registrarventa-eb160de1de89d9058fcb0b968dbbbd68']) // "1111"
 
 // Estado del componente78
 const showMainForm = ref(false)
@@ -545,6 +662,7 @@ const columns = [
 ]
 
 const detailColumns = [
+  { name: 'exp', label: '', align: 'left' },
   {
     name: 'numero',
     label: 'N°',
@@ -557,13 +675,6 @@ const detailColumns = [
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
   { name: 'actions', label: 'Acciones', align: 'center' },
 ]
-
-const pagination = ref({
-  sortBy: 'fecha',
-  descending: true,
-  page: 1,
-  rowsPerPage: 10,
-})
 
 // Computed properties
 const filteredTableData = computed(() => {
@@ -597,29 +708,21 @@ const loadUserData = async () => {
   }
 }
 
-// const loadWarehouses = async () => {
-//   try {
-//     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
-//     warehouses.value = response.data.map((warehouse) => ({
-//       value: warehouse.idalmacen,
-//       label: warehouse.almacen,
-//     }))
-//   } catch (error) {
-//     console.error('Error al cargar almacenes:', error)
-//     $q.notify({
-//       type: 'negative',
-//       message: 'Error al cargar almacenes',
-//     })
-//   }
-// }
 const almacenOptions = computed(() => {
-  const options = [{ label: 'Todos los almacenes', value: 0 }]
-  console.log(warehouses.almacenesResponsable)
-  console.log(warehouses.almacenes)
-  warehouses.almacenesResponsable.forEach((almacen) => {
-    options.push({ label: almacen.almacen, value: Number(almacen.idalmacen) })
-  })
-  return options
+  const lista = warehouses.almacenesResponsable || []
+
+  // Mapeamos los almacenes a su formato de opción { label, value }
+  const opcionesMapeadas = lista.map((almacen) => ({
+    label: almacen.almacen,
+    value: Number(almacen.idalmacen),
+  }))
+
+  // Si hay más de uno, añadimos la opción "Todos" al principio
+  if (opcionesMapeadas.length > 1) {
+    return [{ label: 'Todos los almacenes', value: 0 }, ...opcionesMapeadas]
+  }
+
+  return opcionesMapeadas
 })
 
 watch(
@@ -627,7 +730,7 @@ watch(
   (nuevasOpciones) => {
     console.log(nuevasOpciones)
     if (nuevasOpciones.length > 0 && !selectedWarehouse.value) {
-      selectedWarehouse.value = nuevasOpciones[0]
+      selectedWarehouse.value = nuevasOpciones[0].value
     }
   },
   { immediate: true },
@@ -635,7 +738,7 @@ watch(
 const loadTableData = async () => {
   loading.value = true
   try {
-    const response = await api.get(`listamerma/${idempresa}`)
+    const response = await api.get(`listamerma/${idempresa}/${idusuario}`)
     tableData.value = response.data
     console.log(response.data)
   } catch (error) {
@@ -653,6 +756,7 @@ const loadDetailData = async (idMerma) => {
   detailLoading.value = true
   try {
     const response = await api.get(`listaDetallemerma/${idMerma}`)
+    console.log(response.data)
     detailData.value = response.data
   } catch (error) {
     console.error('Error al cargar detalles de merma:', error)
@@ -669,10 +773,12 @@ const loadAvailableProducts = async (idMerma, idAlmacen) => {
   console.log(idMerma, idAlmacen)
   try {
     const response = await api.get(`ListaProductosmerma/${idMerma}/${idAlmacen}`)
-    availableProducts.value = response.data.map((product) => ({
+    availableProducts.value = response.data.map((product, index) => ({
+      ...product,
       idproductoalmacen: Number(product.idproductoalmacen),
       label: `${product.codigo} - ${product.descripcion}`,
       stock: product.stock,
+      numero: index + 1,
     }))
 
     productosDisponibles.value = [...availableProducts.value]
@@ -812,25 +918,26 @@ const submitForm = async () => {
 }
 
 const submitDetailForm = async () => {
+  console.log(CodigosUnicosSeleccionados.value)
   try {
-    //const endpoint = detailEditMode.value ? 'actualizarDetallemerma' : 'registrarDetallemerma'
-
-    // formulario.value.nombrealmacen =
-    //   almacenesOptions.value.find((a) => a.value === formulario.value.almacen)?.label || ''
-
-    const formulario = objectToFormData(detailForm.value)
-
-    //formulario.append('compra', detailForm.value.compra || null)
-
+    const jsonData = {
+      id: detailForm.value.id,
+      idmerma: detailForm.value.idmerma,
+      idproductoalmacen: detailForm.value.idproductoalmacen,
+      cantidad: detailForm.value.cantidad,
+      compra: detailForm.value.compra,
+      CodigosUnicosSeleccionados: registrarComoProductoUnico.value
+        ? CodigosUnicosSeleccionados.value
+        : [],
+    }
     if (detailEditMode.value) {
-      formulario.append('ver', 'editarDetallemerma')
+      jsonData['ver'] = 'editarDetallemerma'
     } else {
-      formulario.append('ver', 'registrarDetallemerma')
+      jsonData['ver'] = 'registrarDetallemerma'
     }
-    for (let [v, k] of formulario.entries()) {
-      console.log(`${v}:${k}`)
-    }
-    const response = await api.post('', formulario)
+
+    console.log(jsonData)
+    const response = await api.post('', jsonData)
     console.log(response.data)
 
     $q.notify({
@@ -1134,20 +1241,20 @@ const togglestatus = (row) => {
     persistent: true,
   }).onOk(async () => {
     try {
-      const point = `actualizarEstadomerma/${row.id}/1`
+      const point = `actualizarEstadomerma/${row.id}/1/${idusuario}`
       const response = await api.get(point) // Cambia a tu ruta real
-      console.log(response.data)
-      if (response.data[0] === 'success') {
+      console.log(response)
+      if (response.data.estado === 'exito ') {
         await loadTableData()
 
         $q.notify({
           type: 'positive',
-          message: response.data[1],
+          message: response.data.mensaje,
         })
       } else {
         $q.notify({
           type: 'negative',
-          message: response.data[1],
+          message: response.data.mensaje || 'Error desconocido',
         })
       }
     } catch (error) {

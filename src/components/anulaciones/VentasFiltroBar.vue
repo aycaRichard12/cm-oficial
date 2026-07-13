@@ -53,7 +53,8 @@
 </template>
 
 <script setup>
-defineProps({
+import { watch } from 'vue'
+const props = defineProps({
   almacen: { type: Number, default: 0 },
   tipo: { type: Number, default: 0 },
   busqueda: { type: String, default: '' },
@@ -62,6 +63,15 @@ defineProps({
   tiposVentaOptions: { type: Array, default: () => [] },
   columnasBusqueda: { type: Array, default: () => [] },
 })
+const emit = defineEmits(['update:almacen', 'update:tipo', 'update:busqueda', 'update:columna'])
 
-defineEmits(['update:almacen', 'update:tipo', 'update:busqueda', 'update:columna'])
+watch(
+  () => props.almacenesOptions,
+  (opciones) => {
+    if (!opciones.length) return
+
+    emit('update:almacen', opciones.length > 1 ? 0 : opciones[0].value)
+  },
+  { immediate: true },
+)
 </script>

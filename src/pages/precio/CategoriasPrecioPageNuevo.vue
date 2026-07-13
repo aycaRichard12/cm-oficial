@@ -1,6 +1,17 @@
 <template>
   <q-page padding>
-    <div class="titulo">Categorías de Precio</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="price_change" size="md" class="q-mr-sm" />
+          Categorías de Precio
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Categorías de Precio
+        </div>
+      </div>
+    </div>
     <div class="q-pa-md">
       <div flat bordered>
         <div class="q-mb-md">

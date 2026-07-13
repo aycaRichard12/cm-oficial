@@ -1,144 +1,43 @@
 <template>
-  <q-layout view="lHh lpr lff">
-    <q-header class="bg-primary text-white">
-      <q-toolbar class="row flex justify-between">
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-        <div class="col-1 col-md-4">
-          <q-toolbar-title>
-            <q-avatar
-              v-if="typeof logo === 'string'"
-              style="width: 150px; height: 30px; border-radius: 0"
-            >
-              <img :src="logo" alt="icon" />
-            </q-avatar>
-          </q-toolbar-title>
-        </div>
-
-        <q-toolbar-title class="q-gutter-sm flex justify-end items-center" clearable>
-          <ComandoVoz />
-          <q-btn icon="help_outline" color="blue" flat @click="IniciarGuia" />
-
-          <notificacion-layout v-if="permitidoNotificaciones" />
-          <!-- <q-btn
-            flat
-            dense
-            icon="exit_to_app"
-            text-color="white"
-            label="Salir123"
-            @click="irdashboard"
-          /> -->
-          <q-btn
-            flat
-            dense
-            icon="exit_to_app"
-            text-color="white"
-            label="Salir"
-            @click="
-              // () => {
-              //   LocalStorage.remove('puedeIniciarsesion')
-              //   $router.push('/login')
-              // }
-              irdashboard
-            "
-          />
-        </q-toolbar-title>
-      </q-toolbar>
-
-      <transition>
-        <q-tabs
-          align="left"
-          v-model="currentTab"
-          v-show="tabsVisible"
-          style="background-color: #eeebe2"
-        >
-          <q-tab
-            v-for="tab in activeTabs"
-            :key="tab.codigo + '-' + tab.permiso"
-            :name="tab.codigo"
-            :id="tab.codigo"
-            @click="navigateToTab(tab)"
-            :class="{ 'text-weight-bold': currentTab === tab.codigo }"
-            style="background: linear-gradient(to right, #219286, #044e49); border-radius: 10px"
-            class="btn-res q-ma-sm texto-normal"
-          >
-            <q-icon :name="tab.icono" class="icono q-mt-lg" />
-            <span class="texto q-mt-lg">{{ tab.titulo.split('-')[2] }}</span>
-          </q-tab>
-          <q-tab
-            v-if="activeTabsReportes.length > 0"
-            class="q-ma-sm"
-            style="
-              background: linear-gradient(to right, #219286, #044e49);
-              border: 1px solid #ccc;
-              border-radius: 8px;
-              min-width: 180px;
-            "
-          >
-            <div class="row items-center justify-between q-px-sm">
-              <span class="text-white text-subtitle2">Reportes</span>
-              <q-icon name="arrow_drop_down" class="text-white" size="30px" />
-            </div>
-
-            <q-menu
-              anchor="bottom left"
-              self="top left"
-              transition-show="jump-down"
-              transition-hide="jump-up"
-            >
-              <q-list style="min-width: 200px; max-height: 250px; overflow-y: auto">
-                <q-item
-                  v-for="tab in activeTabsReportes"
-                  :key="tab.codigo"
-                  clickable
-                  v-ripple
-                  @click="navigateToTab(tab)"
-                  :class="{ 'text-weight-bold bg-grey-2': currentTab === tab.codigo }"
-                >
-                  <q-item-section avatar>
-                    <q-icon :name="tab.icono" />
-                  </q-item-section>
-                  <q-item-section>
-                    {{ tab.titulo.split('-')[2] }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-tab>
-        </q-tabs>
-      </transition>
-    </q-header>
+  <q-layout view="lHh lpr lff" class="bg-fondo">
+    <HeaderLayout
+      v-model:current-tab="currentTab"
+      :tabs-visible="tabsVisible"
+      :active-tabs="activeTabs"
+      :active-tabs-reportes="activeTabsReportes"
+      :active-tabs-reportesdetalle="activeTabsReportesdetalle"
+      :permitido-notificaciones="permitidoNotificaciones"
+      @toggle-left-drawer="toggleLeftDrawer"
+      @iniciar-guia="IniciarGuia"
+      @irdashboard="irdashboard"
+      @navigate-to-tab="navigateToTab"
+      @acultarTabs="ocultarTabs"
+    />
 
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-white" style="position: fixed">
       <div>
         <router-link to="/" @click="ocultarTabs">
-          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 150px">
-            <div class="absolute-bottom bg-transparent">
-              <q-avatar size="56px" class="q-mb-sm">
-                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-              </q-avatar>
-              <div class="text-weight-bold">{{ nombreUsuario }}</div>
-              <div>{{ cargo }}</div>
+          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 65px">
+            <div class="absolute-full flex flex-left bg-transparent">
+              <div class="logo-area">
+                <div class="row items-center justify-center q-gutter-sm">
+                  <div class="logo-badge">
+                    <q-img src="favicon.ico" width="26px" height="26px" />
+                  </div>
+
+                  <div class="column items-center">
+                    <div class="logo-name">MisterSofts</div>
+                    <div class="logo-sub">COMERCIAL</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </q-img>
         </router-link>
       </div>
       <q-scroll-area
-        style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
+        style="height: calc(100% - 65px); margin-top: 65px; border-right: 1px solid #ddd"
       >
-        <div class="row flex justify-between">
-          <q-btn
-            label="Inicio"
-            icon="home"
-            to="/"
-            flat
-            unelevated
-            color="primary"
-            class="menu-header"
-            expand-icon-class="text-grey-6"
-            header-class="text-weight-medium text-grey-9"
-            @click="ocultarTabs"
-          />
-        </div>
         <q-list padding="">
           <div
             v-for="menu in items.filter((i) => i.codigo !== 'opcionesocultas')"
@@ -195,14 +94,12 @@
 import emitter from 'src/event-bus'
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT } from 'src/stores/paginas'
+import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
-import logo from 'src/assets/IMAGOTIPO-02.png'
-import NotificacionLayout from './NotificacionLayout.vue'
+import HeaderLayout from './HeaderLayout.vue'
 import NotificacionRecibidaDialog from 'src/components/pusher-notificaciones/NotificacionRecibidaDialog.vue'
 import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
-import ComandoVoz from './ComandoVoz.vue'
 import { idempresa_md5, idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 import { usePusherStore } from 'src/stores/pusher-store'
 //import { useQuasar } from 'quasar'
@@ -241,6 +138,7 @@ const cargo = ref('Sin cargo')
 const items = ref([])
 const activeTabs = ref([])
 const activeTabsReportes = ref([])
+const activeTabsReportesdetalle = ref([])
 const currentTab = ref('')
 /// ================================================
 const permitidoNotificaciones = permisoNotificaciones()
@@ -335,14 +233,16 @@ const iconos = ref({
   actualizacionescomercial: 'update',
   permisosusuario: 'security',
   configuracionIntegracionExterna: 'settings',
+  reporteProductoUnico: 'fact_check',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {
   console.log(submenuCodigo)
   const paginasSubmenu = PAGINAS[submenuCodigo] || []
   const paginas_reporte = PAGINAS_SELECT[submenuCodigo] || []
+  const paginas_config_detalle = GRUPO_PAGINAS_DETALLE[submenuCodigo] || []
   const usuario = menuStore.obtenerUsuario
-
+  activeTabsReportesdetalle.value = paginas_config_detalle
   activeTabsReportes.value = paginas_reporte
     .map((paginaCodigo) => {
       const codigoCompleto = `${paginaCodigo}-${usuario}`
@@ -494,30 +394,46 @@ const toggleLeftDrawer = () => {
   color: white;
   background: #f2c037;
 }
-.q-tab--active {
-  color: var(--q-warning) !important;
-  font-weight: bold;
-}
 .submenu-activo {
   background-color: #f2c037;
   color: #1976d2;
   font-weight: bold;
 }
-
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: all 0.4s ease-out;
+.logo-area {
+  flex-shrink: 0;
+}
+.logo-area {
+  flex-shrink: 0;
 }
 
-.slide-down-enter-from,
-.slide-down-leave-to {
-  transform: translateY(-20px);
-  opacity: 0;
+.logo-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(242, 192, 55, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(242, 192, 55, 0.1);
 }
 
-.slide-down-enter-to,
-.slide-down-leave-from {
-  transform: translateY(0);
-  opacity: 1;
+.logo-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.logo-sub {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ddd209;
+  opacity: 0.9;
+  line-height: 1.4;
 }
 </style>

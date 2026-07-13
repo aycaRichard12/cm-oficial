@@ -2,10 +2,15 @@
   <q-page class="q-pa-md">
     <!-- titulo notable de la pagina  -->
     <!-- Título -->
-    <div class="q-mb-md">
-      <div class="text-h5 text-weight-bold titulo">Reporte Inventario Exterior</div>
-      <div class="text-subtitle text-grey-6">
-        En esta sección puedes generar un reporte de inventario exterior
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="lan" size="md" class="q-mr-sm" />
+          Reporte Inventario Exterior
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          En esta sección puedes generar un reporte de inventario exterior
+        </div>
       </div>
     </div>
 

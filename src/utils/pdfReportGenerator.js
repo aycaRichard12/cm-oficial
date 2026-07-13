@@ -2206,9 +2206,9 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
     { header: 'Fecha', dataKey: 'fecha' }, // Match actual field names from API
     { header: 'Cliente', dataKey: 'cliente' },
     { header: 'Comercial', dataKey: 'sucursal' },
-    { header: 'Monto', dataKey: 'monto' },
+    { header: 'Monto', dataKey: 'total_sumatorias' }, //total_sumatorias
     { header: 'Desc.', dataKey: 'descuento' },
-    { header: 'Total.', dataKey: 'total_sumatorias' },
+    { header: 'Total.', dataKey: 'monto' },
 
     // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
@@ -2232,14 +2232,14 @@ export function DPFReporteCotizacion(cotizaciones, almacen) {
   // value`
 
   const cotizaciontotal = datos.reduce((sum, u) => {
-    return decimas(parseFloat(sum) + parseFloat(u.monto))
+    return decimas(parseFloat(sum) + parseFloat(u.total_sumatorias))
   }, 0)
   console.log(cotizaciontotal)
   const descuento = datos.reduce((sum, u) => {
     return decimas(parseFloat(sum) + parseFloat(u.descuento))
   }, 0)
   const total = datos.reduce((sum, u) => {
-    return decimas(parseFloat(sum) + parseFloat(u.total_sumatorias))
+    return decimas(parseFloat(sum) + parseFloat(u.monto))
   }, 0)
 
   // console.log(total)

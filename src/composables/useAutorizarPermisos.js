@@ -34,6 +34,7 @@ export function useAutorizarPermisos(emit) {
     { label: 'Gráfico Preferidos', value: 'db_preferido', icon: 'star' },
     { label: 'Gráfico Monetario', value: 'db_monetario', icon: 'attach_money' },
     { label: 'Gráfico Almacén', value: 'db_almacen', icon: 'warehouse' },
+    { label: 'Gráfico Inventario', value: 'db_inventario', icon: 'warehouse' },
     { label: 'Vista Todos', value: 'db_todos', icon: 'visibility' },
   ]
 

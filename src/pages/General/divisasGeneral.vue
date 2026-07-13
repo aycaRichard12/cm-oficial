@@ -1,5 +1,16 @@
 <template>
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="currency_exchange" size="md" class="q-mr-sm" />
+          Gestión de Divisas
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración y configuración de tipos de cambio
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent class="responsive-dialog">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
@@ -52,17 +63,13 @@ const formData = ref({
 //=======================================Formulario
 const guardarDivisa = async (data) => {
   const formData = objectToFormData(data)
-  for (let [k, v] of formData.entries()) {
-    console.log(`${k}:${v}`)
-  }
+  // for (let [k, v] of formData.entries()) {
+  //   console.log(`${k}:${v}`)
+  // }
   try {
-    let response
-    if (isEditing.value) {
-      response = await api.post(``, formData)
-    } else {
-      response = await api.post(``, formData)
-    }
-    console.log(response)
+    let response = await api.post(``, formData)
+
+    //console.log(response)
     if (response.data.estado === 'exito') {
       loadRows()
 
@@ -73,14 +80,14 @@ const guardarDivisa = async (data) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el proveedor',
+        message: response.data.mensaje || 'Hubo un problema al guardar divisa',
       })
     }
   } catch (error) {
-    console.error('Error al guardar Proveedor: ', error)
+    console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar el Proveedor',
+      message: 'No se pudo guardar la divisa',
     })
   }
   toggleForm()

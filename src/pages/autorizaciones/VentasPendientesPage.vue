@@ -1,6 +1,17 @@
 <template>
   <q-page padding>
-    <div class="titulo">Ventas pendientes</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+          Ventas pendientes
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Ventas pendientes
+        </div>
+      </div>
+    </div>
     <!-- Filtros -->
     <q-card-section class="row q-col-gutter-md">
       <div class="col-xs-12 col-sm-4" id="filtrosAlmacen">

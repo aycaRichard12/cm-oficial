@@ -132,6 +132,18 @@
           >
             <q-tooltip>Ver Comprobante</q-tooltip>
           </q-btn>
+          <!-- <q-btn
+            id="btneditarcotizacion"
+            v-if="props.row.estadoResumido === 'NOR'"
+            icon="edit"
+            color="orange-8"
+            flat
+            round
+            dense
+            @click="$emit('editarCotizacion', props.row.idcotizacion)"
+          >
+            <q-tooltip>Editar Cotización</q-tooltip>
+          </q-btn> -->
           <q-btn
             id="btnfacturarcotizacion"
             v-if="
@@ -190,7 +202,7 @@ const props = defineProps({
     default: () => [],
   },
 })
-console.log('Props recibidas en TableReporteCotizacion:', props.rows)
+//console.log('Props recibidas en TableReporteCotizacion:', props.rows)
 defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
 
 function getActiveFiltersReport() {
@@ -230,9 +242,17 @@ const columnas = [
   },
   {
     name: 'cliente',
-    label: 'Cliente',
+    label: 'Razón Social',
     align: 'left',
     field: 'cliente',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'nombreComercial',
+    label: 'Nombre Comercial',
+    align: 'left',
+    field: 'nombreComercial',
     dataType: 'text',
     sortable: true,
   },
@@ -261,10 +281,10 @@ const columnas = [
     sortable: true,
   },
   {
-    name: 'monto',
-    label: 'Monto',
+    name: 'total_sumatorias',
+    label: 'Subtotal',
     align: 'right',
-    field: 'monto',
+    field: 'total_sumatorias',
     dataType: 'number',
     sortable: true,
   },
@@ -277,10 +297,10 @@ const columnas = [
     sortable: true,
   },
   {
-    name: 'total_sumatorias',
-    label: 'Total',
+    name: 'monto',
+    label: 'Total l',
     align: 'right',
-    field: 'total_sumatorias',
+    field: 'monto',
     dataType: 'number',
     sortable: true,
   },
@@ -319,6 +339,7 @@ const ArrayHeaders = [
   'fecha',
   'almacen',
   'cliente',
+  'nombreComercial',
   'sucursal',
   'monto',
   'descuento',

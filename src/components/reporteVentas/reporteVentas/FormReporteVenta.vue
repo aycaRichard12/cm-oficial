@@ -1,6 +1,14 @@
 <template>
   <q-page>
-    <div class="titulo" id="tituloreporteventas">Reporte Ventas</div>
+    <div id="tituloreporteventas" class="row items-center justify-between q-mb-md q-ml-sm">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assessment" size="md" class="q-mr-sm" />
+          Reporte de Ventas
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte de Ventas</div>
+      </div>
+    </div>
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
         <div class="col-12 col-md-3" id="fechaini">
@@ -43,148 +51,7 @@
         @click="exportXLSX"
       />
     </div>
-    <div class="row q-col-gutter-x-md q-ma-sm">
-      <!-- <div class="col-12 col-md-2">
-        <label for="almacen">Filtrar por Almacén</label>
-        <q-select id="almacen" dense outlined v-model="almacen" :options="almacenes" clearable />
-      </div> -->
-      <!-- 
-      <div class="col-12 col-md-3">
-        <label for="cliente">Filtrar por razón social</label>
-        <q-input
-          v-model="clienteBusqueda"
-          id="cliente"
-          dense
-          outlined
-          @click="dialogClientes = true"
-          readonly
-          clearable
-        >
-          <template v-if="clienteSeleccionadoId" v-slot:append>
-            <q-btn
-              dense
-              flat
-              round
-              icon="close"
-              color="negative"
-              size="sm"
-              @click.stop="clearCliente"
-            />
-          </template>
-        </q-input>
-        <q-dialog v-model="dialogClientes">
-          <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
-              <q-input
-                v-model="clienteFilter"
-                label="Filtrar clientes..."
-                dense
-                class="col-grow"
-                autofocus
-              />
-              <q-btn flat round icon="close" v-close-popup />
-            </q-card-section>
 
-            <q-card-section style="max-height: 70vh" class="scroll">
-              <q-list bordered separator>
-                <q-item
-                  v-for="cliente in clientesFiltrados"
-                  :key="cliente.value"
-                  clickable
-                  @click="selectCliente(cliente)"
-                  :active="cliente.value === clienteSeleccionadoId"
-                  active-class="bg-blue-1 text-primary"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ cliente.label }}</q-item-label>
-                    <q-item-label caption>ID: {{ cliente.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </div>
-
-      <div class="col-12 col-md-2">
-        <label for="sucursal">Filtrar por sucursal del cliente</label>
-        <q-input
-          v-model="sucursalBusqueda"
-          id="sucursal"
-          dense
-          outlined
-          @click="dialogSucursal = true"
-          readonly
-          clearable
-        >
-          <template v-if="SucursalSelecionadoId" v-slot:append>
-            <q-btn
-              dense
-              flat
-              round
-              icon="close"
-              color="negative"
-              size="sm"
-              @click="clearSucursal"
-              class="q-mr-xs"
-            />
-          </template>
-        </q-input>
-        <q-dialog v-model="dialogSucursal">
-          <q-card style="width: 80vw; max-width: 800px">
-            <q-card-section class="row items-center">
-              <q-input
-                v-model="sucursalFilter"
-                label="Filtrar clientes..."
-                dense
-                class="col-grow"
-                autofocus
-              />
-              <q-btn flat round icon="close" v-close-popup />
-            </q-card-section>
-
-            <q-card-section style="max-height: 70vh" class="scroll">
-              <q-list bordered separator>
-                <q-item
-                  v-for="sucursal in sucursalesFilter"
-                  :key="sucursal.value"
-                  clickable
-                  @click="selectSucursal(sucursal)"
-                  :active="sucursal.value === sucursalFilter"
-                  active-class="bg-blue-1 text-primary"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ sucursal.label }}</q-item-label>
-                    <q-item-label caption>ID: {{ sucursal.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </div> -->
-
-      <!-- <div class="col-12 col-md-2">
-        <label for="canal">Filtrar por canal de venta</label>
-        <q-select id="canal" dense outlined="" v-model="canal" :options="canales" clearable />
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label for="tipopago">Filtrar por tipo de pago</label>
-        <q-select
-          id="tipopago"
-          dense
-          outlined=""
-          v-model="tipopago"
-          :options="[
-            { label: 'todo', value: '0' },
-            { label: 'A crédito', value: 'credito' },
-            { label: 'Al contado', value: 'contado' },
-          ]"
-          clearable
-        />
-      </div> -->
-    </div>
     <TableReporteVentas
       id="tablareporteventas"
       ref="refHijo"
@@ -238,7 +105,7 @@ import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
-import { PDFComprovanteVenta } from 'src/utils/pdfReportGenerator'
+import { PDFComprovanteVenta } from 'src/utils/pdfs/DetalleVentaComprbante/reporte.js'
 import { PDFreporteVentasPeriodo } from 'src/utils/pdfReportGenerator'
 import { PDFenviarFacturaCorreo } from 'src/utils/pdfReportGenerator'
 import { exportTOXLSX_Reporte_Ventas } from 'src/utils/XCLReportImport'
@@ -288,23 +155,6 @@ const sucursal = ref('')
 const canal = ref(null)
 const tipopago = ref('')
 
-// Opciones select
-// const almacenes = ref([])
-// const canales = ref([])
-
-// Autocompletado
-// const dialogClientes = ref(false)
-// const clienteBusqueda = ref('')
-// const clienteFilter = ref('')
-//const clienteSeleccionadoId = ref(null)
-// const clientes = ref([])
-
-// const dialogSucursal = ref(false)
-// const sucursalBusqueda = ref('')
-// const sucursalFilter = ref('')
-//const SucursalSelecionadoId = ref(null)
-//const sucursales = ref([])
-
 const ventaSeleccionada = ref(null)
 const formularioNota = ref(0)
 const refHijo = ref(null)
@@ -313,92 +163,6 @@ const forzarReinicioCarrito = () => {
   ventaSeleccionada.value = null
   isVisibleNota.value = false // ⚠️ Esto reinicia el componente `carritoVenta`
 }
-// async function cargarAlmacenes() {
-//   try {
-//     const response = await api.get(`listaResponsableAlmacenReportes/${idempresa}`)
-//     const filtrados = response.data.filter((obj) => obj.idusuario == idusuario)
-//     almacenes.value = filtrados.map((item) => ({
-//       label: item.almacen,
-//       value: item.idalmacen,
-//     }))
-//   } catch (error) {
-//     console.error('Error al cargar almacenes:', error)
-//     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
-//   }
-// }
-// async function getSucursale() {
-//   console.log(clienteSeleccionadoId.value)
-//   try {
-//     const response = await api.get(`listaSucursal/${clienteSeleccionadoId.value}`)
-//     sucursales.value = response.data.map((cli) => ({
-//       value: cli.id,
-//       label: `${cli.nombre}`,
-//     }))
-//   } catch (error) {
-//     $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
-//   }
-// }
-// async function getClientes() {
-//   try {
-//     const response = await api.get(`listaCliente/${idempresa}`)
-//     clientes.value = response.data.map((cli) => ({
-//       value: cli.id,
-//       label: `${cli.codigo} - ${cli.nombre} - ${cli.nombrecomercial} - ${cli.ciudad} - ${cli.nit}`,
-//     }))
-//   } catch (error) {
-//     $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
-//   }
-// }
-// async function getCanalVenta() {
-//   try {
-//     const response = await api.get(`listaCanalVenta/${idempresa}`)
-//     canales.value = response.data.map((cli) => ({
-//       value: cli.id,
-//       label: `${cli.canal}`,
-//     }))
-//   } catch (error) {
-//     $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
-//   }
-// }
-// const clientesFiltrados = computed(() => {
-//   if (!clienteFilter.value) return clientes.value
-//   const search = clienteFilter.value.toLowerCase()
-//   return clientes.value.filter((c) => c.label.toLowerCase().includes(search))
-// })
-
-// const selectCliente = (cliente) => {
-//   clienteSeleccionadoId.value = cliente.value
-//   clienteBusqueda.value = cliente.label
-//   dialogClientes.value = false
-//   getSucursale()
-//   clearSucursal()
-// }
-
-// const clearCliente = () => {
-//   clienteSeleccionadoId.value = null
-//   clienteBusqueda.value = ''
-//   clearSucursal()
-// }
-
-// const sucursalesFilter = computed(() => {
-//   if (!sucursalFilter.value) return sucursales.value
-//   const search = sucursalFilter.value.toLowerCase()
-//   return sucursales.value.filter((c) => c.label.toLowerCase().includes(search))
-// })
-
-// const selectSucursal = (sucursal) => {
-//   SucursalSelecionadoId.value = sucursal.value
-//   sucursalBusqueda.value = sucursal.label
-//   dialogSucursal.value = false
-// }
-
-// const clearSucursal = () => {
-//   SucursalSelecionadoId.value = null
-//   sucursalBusqueda.value = ''
-// }
-
-// Datos de la tabla
-// DEFINICIÓN DE COLUMNAS ACTUALIZADA CON DATATYPE
 
 const rows = ref([])
 const detalleVenta = ref([])
@@ -426,129 +190,6 @@ const verDetalle = async (row) => {
   }
 }
 
-// const crearMensaje = async (row) => {
-//   console.log(row)
-//   try {
-//     const response = await api.get(`obtenerEmailCliente/${row.idcliente}`) // Cambia a tu ruta real
-//     const clientEmail = response.data.email
-//     let opciones = [{ label: 'Comprobante', value: 'comprobante' }]
-
-//     if (Number(row.tipoventa) !== 0) {
-//       opciones.push({ label: 'Factura', value: 'factura' })
-//     }
-//     $q.dialog({
-//       title: 'Seleccione una opción',
-//       message: `¿Qué desea enviar al correo "${clientEmail}"?`,
-//       options: {
-//         type: 'radio',
-//         model: null,
-//         items: opciones,
-//       },
-//       cancel: true,
-//       persistent: true,
-//     })
-//       .onOk(async (opcion) => {
-//         if (opcion === 'cancelar' || opcion === null) {
-//           $q.notify({ type: 'info', message: 'Operación cancelada' })
-//           return
-//         }
-
-//         console.log(`Elegiste: ${opcion}`)
-
-//         await getDetalleVenta(row.idventa)
-
-//         if (!detalleVenta.value) {
-//           $q.notify({
-//             type: 'negative',
-//             message: 'Venta sin items',
-//           })
-//           return
-//         }
-
-//         if (opcion === 'comprobante') {
-//           enviarComprobanteCorreo(row.idcliente)
-//         }
-
-//         if (opcion === 'factura') {
-//           enviarFacturaCorreo(row.idcliente, row.shortlink)
-//         }
-//       })
-//       .onCancel(() => {
-//         $q.notify({ type: 'info', message: 'Operación cancelada' })
-//       })
-//   } catch (error) {
-//     console.error('Error al cargar datos:', error)
-//     $q.notify({
-//       type: 'negative',
-//       message: 'No se pudieron cargar los datos',
-//     })
-//   }
-// }
-// const crearMensaje = async (row) => {
-//   try {
-//     const response = await api.get(`obtenerEmailCliente/${row.idcliente}`)
-//     let clientEmail = response.data.email ?? ''
-
-//     let opciones = [{ label: 'Comprobante', value: 'comprobante' }]
-
-//     if (Number(row.tipoventa) !== 0) {
-//       opciones.push({ label: 'Factura', value: 'factura' })
-//     }
-
-//     $q.dialog({
-//       title: 'Enviar documento',
-//       message: `
-//         <q-input v-model="email" filled type="email"
-//           label="Correo del cliente"
-//           placeholder="Ingrese el correo"
-//           :rules="[val => !!val || 'El correo es obligatorio']"
-//         />
-//       `,
-//       html: true,
-//       options: {
-//         type: 'radio',
-//         model: null,
-//         items: opciones,
-//       },
-//       cancel: true,
-//       persistent: true,
-//       component: {
-//         data() {
-//           return { email: clientEmail }
-//         },
-//       },
-//     }).onOk(async (opcion, dialogRef) => {
-//       const correoIngresado = dialogRef.scope.email
-
-//       if (!correoIngresado || correoIngresado.trim() === '') {
-//         return $q.notify({
-//           type: 'warning',
-//           message: 'Debe ingresar un correo válido',
-//         })
-//       }
-
-//       await getDetalleVenta(row.idVenta)
-
-//       if (!detalleVenta.value) {
-//         return $q.notify({
-//           type: 'negative',
-//           message: 'Venta sin items',
-//         })
-//       }
-
-//       if (opcion === 'comprobante') {
-//         enviarComprobanteCorreo(row.idcliente, correoIngresado)
-//       }
-
-//       if (opcion === 'factura') {
-//         enviarFacturaCorreo(row.idcliente, row.shortlink, correoIngresado)
-//       }
-//     })
-//   } catch (error) {
-//     console.error(error)
-//     $q.notify({ type: 'negative', message: 'No se pudo cargar datos' })
-//   }
-// }
 const crearMensaje = async (row) => {
   try {
     // 1. Limpia el valor antes de la llamada a la API (opcional, pero buena práctica)
@@ -616,6 +257,7 @@ const getDetalleVenta = async (id) => {
   try {
     const response = await api.get(`detallesVenta/${id}/${idempresa}`) // Cambia a tu ruta real
     console.log(response.data)
+    console.log('Detalle de venta obtenido:', response)
     detalleVenta.value = response.data
   } catch (error) {
     console.error('Error al cargar datos:', error)
@@ -627,7 +269,6 @@ const getDetalleVenta = async (id) => {
 }
 
 function imprimirReporte() {
-  console.log(detalleVenta.value)
   const doc = PDFComprovanteVenta(detalleVenta)
 
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
@@ -670,9 +311,9 @@ const onSubmit = async () => {
     const response = await api.get(`reporteventas/${idusuario}/${fechai.value}/${fechaf.value}`) // Cambia a tu ruta real
     const datos = response.data
     console.log(datos)
-    const filtrados = datos.filter((obj) => Number(obj.estado) == 1)
-    rows.value = filtrados.map((obj, index) => ({
+    rows.value = datos.map((obj, index) => ({
       cliente: obj.cliente,
+      vendedor: obj.vendedor,
       tipoventa: tipo[Number(obj.tipoventa)],
       tv: Number(obj.tipoventa),
       tipopago: obj.tipopago,

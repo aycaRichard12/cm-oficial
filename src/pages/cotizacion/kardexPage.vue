@@ -1,7 +1,17 @@
 <template>
   <q-page padding>
     <div v-if="kardex">
-      <div class="titulo">Kardex de Productos</div>
+      <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="inventory" size="md" class="q-mr-sm" />
+            Kardex de Productos
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración de Kardex de Productos
+          </div>
+        </div>
+      </div>
       <q-card-section>
         <q-form @submit="generarReporte">
           <div class="row q-col-gutter-x-lg flex justify-center">
@@ -62,6 +72,7 @@
                 option-value="id"
                 emit-value
                 map-options
+                clearable
                 @filter="filterProductos"
                 :rules="[(val) => !!val || 'Campo requerido']"
               >
@@ -74,7 +85,13 @@
             </div>
           </div>
           <div class="row q-mt-md justify-center">
-            <q-btn id="btngenerarreportekardex" type="submit" label="Generar reporte" color="primary" class="q-mr-sm" />
+            <q-btn
+              id="btngenerarreportekardex"
+              type="submit"
+              label="Generar reporte"
+              color="primary"
+              class="q-mr-sm"
+            />
             <q-btn
               id="btnvistapreviakardex"
               v-if="datosFiltrados.length > 0"
@@ -262,7 +279,7 @@ const columns = [
 
 // Computed
 const almacenesOptions = computed(() => {
-  return [{ almacen: 'Todos los almacenes', idalmacen: 0 }, ...almacenes.value]
+  return [...almacenes.value]
 })
 
 const almacenLabel = computed(() => {
@@ -329,7 +346,7 @@ async function listaAlmacenes() {
 async function listaProductosDisponibles() {
   try {
     const idempresa = usuario.empresa.idempresa
-    const endpoint = `listaProductoAlmacen/${idempresa}`
+    const endpoint = `listarProductoAlmacenKardex/${idempresa}`
     const response = await api.get(endpoint)
     const data = response.data
     if (data && data.length > 0) {
@@ -576,8 +593,11 @@ function cargarPDF() {
   mostrarPDF.value = true
 }
 
-onMounted(() => {
-  listaAlmacenes()
+onMounted(async () => {
+  await listaAlmacenes()
+  if (almacenes.value.length > 0) {
+    almacenR.value = almacenes.value[0].idalmacen
+  }
   listaProductosDisponibles()
 })
 </script>

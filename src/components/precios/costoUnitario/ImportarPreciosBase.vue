@@ -395,12 +395,13 @@ async function descargarPlantilla() {
         return acc
       }, {}),
     )
+    console.log(uniqueData)
 
     // 🔹 3. Formatear datos para Excel
     const formattedData = uniqueData.map((item) => ({
       ID_PA: item.ID_PA,
       Codigo: item.Codigo,
-      Producto: item.Producto,
+      Producto: item.descripcion,
       Almacen: item.Almacen,
       Precio_Actual: item.Precio_Actual,
       Nuevo_Precio: '', // columna editable
@@ -574,7 +575,7 @@ defineExpose({ resetFormImport })
 </script>
 <style scoped lang="scss">
 // ── Variables ──────────────────────────────────────────────────
-$primary: #1976d2;
+$primary: #004d40;
 $primary-soft: #e3f2fd;
 $border-color: #e0e0e0;
 $radius: 12px;
@@ -590,7 +591,7 @@ $radius-sm: 8px;
 
 // ── Header ─────────────────────────────────────────────────────
 .ipb-header {
-  background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+  background: linear-gradient(135deg, #004d40 0%, #054e2c 100%);
   padding: 18px 20px 16px;
 
   .ipb-title {

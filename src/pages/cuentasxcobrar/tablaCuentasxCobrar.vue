@@ -75,8 +75,6 @@ defineEmits(['cargarFormulario', 'mostrarDetalles', 'column-filter-changed'])
 // Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'cliente', label: 'Razon Social', field: 'cliente', align: 'left', dataType: 'text' },
-  { name: 'factura', label: 'N° Factura', field: 'nfactura', align: 'center', dataType: 'number' },
   {
     name: 'fecha',
     label: 'Fecha Crédito',
@@ -84,6 +82,16 @@ const columnas = [
     align: 'center',
     dataType: 'date',
   },
+  { name: 'cliente', label: 'Razon Social', field: 'cliente', align: 'left', dataType: 'text' },
+  {
+    name: 'nombreComercial',
+    label: 'Nombre Comercial',
+    field: 'nombreComercial',
+    align: 'left',
+    dataType: 'text',
+  },
+  { name: 'factura', label: 'N° Factura', field: 'nfactura', align: 'center', dataType: 'number' },
+
   {
     name: 'vencimiento',
     label: 'Vencimiento',
@@ -136,6 +144,7 @@ const ArrayHeaders = [
   'totalcobrado',
   'saldo',
   'estadoLabel',
+  'nombreComercial',
 ]
 const summationHeaders = ['ventatotal', 'totalcobrado', 'saldo']
 </script>

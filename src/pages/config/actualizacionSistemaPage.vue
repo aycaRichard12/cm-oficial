@@ -3,20 +3,24 @@
     <div class="row justify-center full-width">
       <div class="col-12 row items-center justify-between q-mb-xl">
         <!-- Título + Subtítulo -->
-        <div class="row items-center q-gutter-sm">
-          <q-icon name="history_edu" color="primary" size="3rem" />
-
-          <div>
-            <div class="text-h4 text-weight-bolder text-primary">Notas de la Versión</div>
-            <div class="text-subtitle2 text-grey-7">
+        <div class="row items-center justify-between q-mb-md q-ml-sm">
+          <div class="col-12 col-md-auto">
+            <div class="text-h5 text-primary text-weight-bold flex items-center">
+              <q-icon name="history_edu" size="md" class="q-mr-sm" />
+              Notas de la Versión
+            </div>
+            <div class="text-subtitle2 text-grey-7 q-mt-xs">
               Explora las últimas novedades del
-              <span class="text-primary text-weight-bold"> Sistema Comercial Mistersofts </span>
+              <span class="text-primary text-weight-bold">Sistema Comercial Mistersofts</span>
             </div>
           </div>
         </div>
 
         <!-- Navegación de versiones -->
-        <div class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm" id="navegadorVersiones">
+        <div
+          class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm"
+          id="navegadorVersiones"
+        >
           <q-btn
             v-for="version in versiones"
             :key="version.id"

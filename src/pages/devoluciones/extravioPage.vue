@@ -1,5 +1,16 @@
 <template>
   <q-page>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="warning_amber" size="md" class="q-mr-sm" />
+          Registrar Extravío
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración y registro de productos extraviados
+        </div>
+      </div>
+    </div>
     <!-- Formulario principal -->
     <div v-if="vistaPrincipal">
       <q-card-section>
@@ -161,20 +172,26 @@
           :columns="columnasTabla"
           row-key="id"
           :filter="filtroTabla"
-          :pagination="paginacion"
           flat
           bordered
+          dense
         >
           <template v-slot:body-cell-estado="props">
             <q-td :props="props">
               <q-btn
-                id="btncambiarestadoextravio"
-                v-if="Number(props.row.autorizacion) === 2 && editar"
-                :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
+                id="btnmostrardetalleextravio"
+                icon="shopping_cart"
+                color="primary"
                 dense
                 flat
-                :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
-                @click="cambiarEstado(props.row)"
+                @click="
+                  mostrarDetalle(
+                    props.row.id,
+                    props.row.idalmacen,
+                    props.row.autorizacion,
+                    props.row,
+                  )
+                "
               />
             </q-td>
           </template>
@@ -183,23 +200,8 @@
             <q-td :props="props">
               <div class="q-gutter-sm">
                 <q-btn
-                  id="btnmostrardetalleextravio"
-                  icon="shopping_cart"
-                  color="primary"
-                  dense
-                  flat
-                  @click="
-                    mostrarDetalle(
-                      props.row.id,
-                      props.row.idalmacen,
-                      props.row.autorizacion,
-                      props.row,
-                    )
-                  "
-                />
-                <q-btn
                   id="btneditarextravio"
-                  v-if="editar"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
                   icon="edit"
                   color="primary"
                   dense
@@ -209,12 +211,22 @@
 
                 <q-btn
                   id="btneliminarextravio"
-                  v-if="eliminar"
+                  v-if="Number(props.row.autorizacion) === 2 && eliminar"
                   icon="delete"
                   color="negative"
                   dense
                   flat
                   @click="eliminarRobo(props.row.id)"
+                />
+                <q-btn
+                  id="btncambiarestadoextravio"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
+                  :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
+                  dense
+                  flat
+                  :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
+                  @click="cambiarEstado(props.row)"
+                  title="Cambiar Estado"
                 />
                 <q-btn
                   id="btngenerarcomprobanteextravio"
@@ -244,30 +256,53 @@
           <q-form @submit="registrarDetalle" v-if="autorizadoRobo">
             <div class="row q-col-gutter-x-md">
               <div class="col-12 col-md-8" id="productodetalleextravio">
-                <label for="producto">Producto</label>
+                <div class="row items-center">
+                  <!-- Label y checkbox en la misma fila -->
+                  <div class="col-auto">
+                    <label for="producto" class="q-mr-md">Producto</label>
+                  </div>
 
-                <q-select
-                  v-model="formularioDetalle.idproductoalmacen"
-                  :options="productosOptions"
-                  id="producto"
-                  dense
-                  outlined
-                  option-value="id"
-                  option-label="label"
-                  emit-value
-                  map-options
-                  use-input
-                  input-debounce="300"
-                  clearable
-                  @filter="filtrarProductos"
-                  @update:model-value="cargarComprasLotes"
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey"> No hay resultados </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
+                  <div class="col-auto">
+                    <div v-if="esProductoUnico" class="unique-product-section">
+                      <q-checkbox
+                        v-model="registrarComoProductoUnico"
+                        label="Producto Único"
+                        color="primary"
+                        class="custom-checkbox text-weight-medium"
+                      >
+                        <template v-slot:label>
+                          <span class="text-grey-800">Producto Único</span>
+                        </template>
+                      </q-checkbox>
+                    </div>
+                  </div>
+
+                  <!-- Select debajo o al lado según necesites -->
+                  <div class="col-12">
+                    <q-select
+                      v-model="formularioDetalle.idproductoalmacen"
+                      :options="productosOptions"
+                      id="producto"
+                      dense
+                      outlined
+                      option-value="id"
+                      option-label="label"
+                      emit-value
+                      map-options
+                      use-input
+                      input-debounce="300"
+                      clearable
+                      @filter="filtrarProductos"
+                      @update:model-value="cargarComprasLotes"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                </div>
               </div>
               <div class="col-12 col-md-2" id="stockdetalleextravio">
                 <label for="stock">Stock</label>
@@ -291,6 +326,13 @@
                   :rules="[(val) => val <= formularioDetalle.stock || 'Cantidad excede stock']"
                 />
               </div>
+              <UniqueProductSelector
+                :product-id="formularioDetalle.idproductoalmacen"
+                :is-unique="esProductoUnico && registrarComoProductoUnico"
+                :cantidad-requerida="formularioDetalle.cantidad"
+                @update:selection="(codigos) => guardarCodigosEnVenta(codigos)"
+                class="q-mt-md"
+              />
               <div class="col-12" id="btntogglelotedetalleextravio">
                 <q-btn
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
@@ -368,7 +410,87 @@
             flat
             bordered
           >
-            <template v-slot:body-cell-acciones="props">
+            <template v-slot:body="props">
+              <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
+                <q-td auto-width>
+                  <q-btn
+                    v-if="props.row.productos_detallados?.length > 0"
+                    size="sm"
+                    color="primary"
+                    flat
+                    round
+                    @click="props.expand = !props.expand"
+                    :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                  >
+                    <q-tooltip>Ver detalles de códigos</q-tooltip>
+                  </q-btn>
+                </q-td>
+
+                <q-td key="numero" :props="props">
+                  {{ props.row.numero }}
+                </q-td>
+                <q-td key="codigolote" :props="props">
+                  <q-chip outline color="primary" label-slot dense>
+                    <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+                    {{ props.row.codigolote }}
+                  </q-chip>
+                </q-td>
+                <q-td key="codigo" :props="props">
+                  <q-chip outline color="primary" label-slot dense>
+                    <q-icon name="qr_code" size="xs" class="q-mr-xs" />
+                    {{ props.row.codigo }}
+                  </q-chip>
+                </q-td>
+
+                <q-td key="descripcion" :props="props">
+                  <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+                </q-td>
+
+                <q-td key="cantidad" :props="props" class="text-right">
+                  <q-badge color="grey-8">{{ props.row.cantidad }}</q-badge>
+                </q-td>
+
+                <q-td key="acciones" :props="props" align="center">
+                  <q-btn
+                    id="btneditardetalleextravio"
+                    v-if="editar"
+                    icon="edit"
+                    color="primary"
+                    dense
+                    flat
+                    @click="editarDetalle(props.row.id)"
+                  />
+
+                  <q-btn
+                    id="btneliminardetalleextravio"
+                    v-if="eliminar"
+                    icon="delete"
+                    color="negative"
+                    dense
+                    flat
+                    @click="eliminarDetalle(props.row.id)"
+                  />
+                </q-td>
+              </q-tr>
+
+              <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
+                <q-td colspan="100%" class="q-pa-lg">
+                  <TableCodigosUnicosExtravio
+                    v-model="props.row.productos_detallados"
+                    :parent-row="props.row"
+                    :can-delete="autorizadoRobo"
+                    :can-edit="false"
+                    :api-mode="true"
+                    @update-parent-quantity="
+                      (nuevaCant) => {
+                        props.row.cantidad = nuevaCant
+                      }
+                    "
+                  />
+                </q-td>
+              </q-tr>
+            </template>
+            <!-- <template v-slot:body-cell-acciones="props">
               <q-td :props="props">
                 <div class="q-gutter-sm">
                   <q-btn
@@ -392,7 +514,7 @@
                   />
                 </div>
               </q-td>
-            </template>
+            </template> -->
           </q-table>
         </q-card-section>
       </q-card>
@@ -433,16 +555,41 @@ import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { PDFextrabiosRobos } from 'src/utils/pdfReportGenerator'
 import { PDFComprovanteExtravio } from 'src/utils/pdfReportGenerator'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
+import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
+import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
+import TableCodigosUnicosExtravio from './TableCodigosUnicosExtravio.vue'
+const registrarComoProductoUnico = ref(false)
+const esProductoUnico = ref(false)
+//const idproductoalmacenCO = ref('')
+const CodigosUnicosSeleccionados = ref([])
+
+const idempresa = idempresa_md5()
+
+const { config } = useProductoConfig(idempresa)
+watch(
+  () => config.value.idempresa,
+  (nuevoValor) => {
+    if (nuevoValor) {
+      esProductoUnico.value = Boolean(config.value.productounico)
+    }
+  },
+  { deep: true },
+)
+const guardarCodigosEnVenta = (codigos) => {
+  CodigosUnicosSeleccionados.value = codigos
+
+  console.log('Códigos únicos seleccionados:', codigos)
+  formularioDetalle.value.cantidad = codigos.length
+}
 const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
-const lote = ref(true)
+const lote = ref(false)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 
 const $q = useQuasar()
 
-const idempresa = idempresa_md5()
 // Estados reactivos
 const idusuario = idusuario_md5()
 const vistaPrincipal = ref(true)
@@ -500,11 +647,29 @@ const columnasTabla = [
   },
   { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
   { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'autorizacion', align: 'center' },
+  { name: 'estado', label: 'Detalle', field: 'autorizacion', align: 'center' },
   { name: 'acciones', label: 'Acciones', align: 'center' },
 ]
+// data: [
+//       {
+//         id: 44,
+//         producto: 'Celular Samsung',
+//         codigo: '00001',
+//         descripcion: 'Samsung 5000',
+//         caracteristica: '',
+//         cantidad: 3,
+//         codigolote: null,
+//         productos_detallados: [
+//           { id: 3503, codigo: '00001-C-175-1', serie: '00001-C-175-1' },
+//           { id: 3504, codigo: '00001-C-175-2', serie: '00001-C-175-2' },
+//           { id: 4109, codigo: '00001-C-216-1', serie: '00001-C-216-1' }
+//         ],
+//         total_unicos: 3
+//       },
 
 const columnasDetalle = [
+  { name: 'exp', label: '', align: 'left' },
+
   {
     name: 'numero',
     label: 'N°',
@@ -519,9 +684,6 @@ const columnasDetalle = [
 ]
 
 // Paginación
-const paginacion = ref({
-  rowsPerPage: 10,
-})
 
 // Fecha actual formateada
 
@@ -531,26 +693,40 @@ const paginacion = ref({
 const cargarAlmacenes = async () => {
   try {
     const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
-    almacenesOptions.value = response.data
+
+    // 1. Filtramos y mapeamos primero
+    const almacenesFiltrados = response.data
       .filter((a) => a.idusuario === idusuario)
       .map((a) => ({
         label: a.almacen,
-        value: a.idalmacen,
+        value: Number(a.idalmacen), // Aseguramos que sea número si es necesario
       }))
-    almacenesOptions.value.unshift({ label: 'Todos Los Almacenes', value: 0 })
-    idAlmacenFiltro.value = almacenesOptions.value[0].value
+
+    // 2. Aplicamos la lógica condicional
+    if (almacenesFiltrados.length > 1) {
+      // Si hay más de uno, agregamos "Todos" al inicio
+      almacenesOptions.value = [{ label: 'Todos Los Almacenes', value: 0 }, ...almacenesFiltrados]
+    } else {
+      // Si hay uno o ninguno, usamos solo los filtrados
+      almacenesOptions.value = almacenesFiltrados
+    }
+
+    // 3. Selección automática del primer valor disponible
+    if (almacenesOptions.value.length > 0) {
+      idAlmacenFiltro.value = almacenesOptions.value[0].value
+    }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar almacenes',
+      message: 'No se pudieron cargar los almacenes',
     })
   }
 }
 
 const cargarRobos = async () => {
   try {
-    const response = await api.get(`listarobo/${idempresa}`)
+    const response = await api.get(`listarobo/${idempresa}/${idusuario}`)
     console.log(response)
     console.log(idAlmacenFiltro.value)
     datosTabla.value = response.data.filter((r) => {
@@ -657,20 +833,28 @@ const eliminarRobo = (id) => {
 
 const cambiarEstado = (row) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro de cambiar el estado?',
+    title: 'Confirmar Cambio de Estado',
+    message: '¿Autorizar Documento?',
     cancel: true,
     persistent: true,
   }).onOk(async () => {
     try {
       console.log(row)
       const estado = Number(row.autorizacion) === 2 ? 1 : 2
-      const response = await api.get(`actualizarEstadorobo/${row.id}/${estado}`)
+      const response = await api.get(`actualizarEstadorobo/${row.id}/${estado}/${idusuario}`)
       console.log(response)
-      $q.notify({
-        type: 'positive',
-        message: response.data.mensaje,
-      })
+      if (response.data.estado === 'exito') {
+        $q.notify({
+          type: 'positive',
+          message: response.data.mensaje,
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: response.data.mensaje,
+        })
+      }
+
       cargarRobos()
     } catch (error) {
       console.error('Error al cambiar estado:', error)
@@ -821,7 +1005,10 @@ const listarDetalleRobo = async (idRobo) => {
     console.log(idRobo)
     const response = await api.get(`listaDetallerobo/${idRobo}`)
     console.log(response)
-    detalleRobo.value = response.data
+    detalleRobo.value = response.data.map((obj, index) => ({
+      ...obj,
+      numero: index + 1,
+    }))
   } catch (error) {
     console.error('Error al listar detalle:', error)
     $q.notify({
@@ -845,7 +1032,20 @@ const registrarDetalle = async () => {
     for (let [k, v] of formdata.entries()) {
       console.log(`${k}: ${v}`)
     }
-    const response = await api.post('', formdata)
+    const jsonData = {
+      id: formularioDetalle.value.id,
+      idrobo: detalleActual.value.robo,
+      idproductoalmacen: formularioDetalle.value.idproductoalmacen,
+      cantidad: formularioDetalle.value.cantidad,
+      compra: formularioDetalle.value.compra || 0,
+      idusuario: idusuario,
+      CodigosUnicosSeleccionados: registrarComoProductoUnico.value
+        ? CodigosUnicosSeleccionados.value
+        : [],
+      ver: 'registrarDetallerobos',
+    }
+
+    const response = await api.post('', jsonData)
     console.log(response)
     $q.notify({
       type: 'positive',
@@ -874,7 +1074,6 @@ const editarDetalle = async (idDetalle) => {
     console.log(detalle)
     console.log(productosOptions.value)
     console.log(productoSeleccionado)
-
     formularioDetalle.value = {
       id: detalle.id,
       idproductoalmacen: {

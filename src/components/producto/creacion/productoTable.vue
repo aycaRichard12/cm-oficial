@@ -1,3 +1,4 @@
+//src\components\producto\creacion\productoTable.vue
 <template>
   <div>
     <q-card flat class="q-mb-md">
@@ -11,21 +12,6 @@
         </div>
         <div class="col-12 col-md-8">
           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
-            <!-- <q-input
-              v-model="search"
-              placeholder="Buscar..."
-              dense
-              outlined
-              clearable
-              debounce="300"
-              bg-color="white"
-              style="min-width: 200px"
-              class="q-mr-sm"
-            >
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input> -->
             <q-btn
               unelevated
               outline
@@ -49,6 +35,8 @@
               @click="$refs.fileInput.click()"
               icon="upload"
               label="Cargar Excel"
+              :loading="importing"
+              :disable="importing"
             />
             <q-btn
               unelevated
@@ -63,6 +51,20 @@
               style="display: none"
               accept=".xlsx, .xls"
               @change="onFileSelected"
+            />
+            <q-btn
+              v-if="selectedIds.size > 0"
+              unelevated
+              color="negative"
+              icon="delete_sweep"
+              label="Eliminar seleccionados"
+              @click="eliminarSeleccionados"
+            />
+            <!-- Dentro de <q-card-section class="row items-center justify-between q-pb-none"> -->
+            <q-checkbox
+              v-model="selectAll"
+              label="Seleccionar todo"
+              :indeterminate="selectedIds.size > 0 && selectedIds.length < filteredRows.length"
             />
           </div>
         </div>
@@ -137,6 +139,15 @@
               <!-- <q-btn color="blue" text-color="black" label="" dense="" /> -->
             </q-td>
           </template>
+          <template v-slot:body-cell-seleccionar="props">
+            <q-td :props="props" auto-width>
+              <q-checkbox
+                :model-value="selectedIds.has(props.row.id)"
+                @update:model-value="(val) => toggleSeleccion(props.row.id, val)"
+                dense
+              />
+            </q-td>
+          </template>
         </BaseFilterableTable>
       </q-card-section>
     </q-card>
@@ -160,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
@@ -171,6 +182,8 @@ import {
 } from 'src/utils/XCLReportImport'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+
+const selectedIds = ref(new Set())
 const $q = useQuasar()
 const fileInput = ref(null)
 
@@ -193,6 +206,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  importing: { type: Boolean, default: false },
 })
 
 let columns = []
@@ -282,6 +296,14 @@ if (tipoFactura) {
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    {
+      name: 'seleccionar',
+      label: '',
+      field: 'seleccionar',
+      align: 'center',
+      sortable: false,
+      headerStyle: 'width: 50px',
+    },
   ]
 } else {
   columns = [
@@ -353,6 +375,14 @@ if (tipoFactura) {
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
     { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    {
+      name: 'seleccionar',
+      label: '',
+      field: 'seleccionar',
+      align: 'center',
+      sortable: false,
+      headerStyle: 'width: 50px',
+    },
   ]
 }
 
@@ -403,30 +433,85 @@ const emit = defineEmits([
   'toggle-status',
   'mostrarReporte',
   'importar',
+  'delete-selected',
 ])
 
+const toggleSeleccion = (id, checked) => {
+  if (checked) {
+    selectedIds.value.add(id)
+  } else {
+    selectedIds.value.delete(id)
+  }
+  // Forzar reactividad de Set (en Vue 3 no siempre es necesario, pero mejor)
+  selectedIds.value = new Set(selectedIds.value)
+}
+
+const eliminarSeleccionados = () => {
+  if (selectedIds.value.size === 0) return
+  const ids = [...selectedIds.value]
+  emit('delete-selected', ids)
+  selectedIds.value = new Set() // limpiar selección
+}
+
+const selectAll = computed({
+  get() {
+    return (
+      filteredRows.value.length > 0 &&
+      filteredRows.value.every((row) => selectedIds.value.has(row.id))
+    )
+  },
+  set(val) {
+    if (val) {
+      // Agregar todos los IDs visibles
+      const ids = filteredRows.value.map((row) => row.id)
+      selectedIds.value = new Set(ids)
+    } else {
+      selectedIds.value = new Set()
+    }
+  },
+})
 const onFileSelected = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
   try {
-    $q.loading.show({ message: 'Procesando archivo Excel...' })
+    $q.loading.show({ message: 'Leyendo archivo Excel...' })
     const data = await importarProductosDesdeExcel(file)
-    if (data && data.length > 0) {
-      emit('importar', data)
-    }
-    // Limpiar input
     event.target.value = ''
+
+    if (data && data.length > 0) {
+      // Actualizar mensaje con la cantidad de productos
+      const total = data.length
+      $q.loading.show({
+        message: `Importando ${total} producto${total !== 1 ? 's' : ''}...`,
+      })
+      // Emitir los datos; el padre debe poner importing=true (si no lo está) y luego false al finalizar
+      emit('importar', data)
+    } else {
+      // Si no hay datos, ocultar loading y notificar
+      $q.loading.hide()
+      $q.notify({ type: 'warning', message: 'El archivo no contiene productos válidos' })
+    }
   } catch (error) {
     console.error('Error al importar:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'Error al procesar el archivo Excel',
-    })
-  } finally {
     $q.loading.hide()
+    $q.notify({ type: 'negative', message: 'Error al procesar el archivo Excel' })
   }
 }
+watch(
+  () => props.rows,
+  () => {
+    selectedIds.value = new Set()
+  },
+)
+watch(
+  () => props.importing,
+  (nuevo) => {
+    if (!nuevo) {
+      $q.loading.hide()
+    }
+  },
+)
 </script>
 <style>
 .text-truncate {

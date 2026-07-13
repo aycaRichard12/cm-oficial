@@ -14,7 +14,7 @@
       <q-th
         :props="props"
         class="cursor-pointer text-left no-sort-icon"
-        style="white-space: normal; vertical-align: top"
+        :style="[{ 'white-space': 'normal', 'vertical-align': 'top' }, props.col.headerStyle || {}]"
       >
         <div class="flex items-start no-wrap">
           <span class="flex items-center text-weight-bold q-pr-sm">
@@ -132,7 +132,7 @@ import { ref, computed, defineProps, defineEmits, watch } from 'vue'
 import ColumnFilter from './ColumnFilter.vue' // Asegúrate de que la ruta sea correcta
 
 const props = defineProps({
-  title: { type: String, default: 'Datos' },
+  title: { type: String, default: '' },
   nombreColumnaTotales: { type: String, default: 'nombreColumnaTotales' },
   rows: { type: Array, required: true },
   columns: { type: Array, required: true },
@@ -144,8 +144,8 @@ const props = defineProps({
   rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
 })
 
-console.log(props.sumColumns)
-console.log(props.rows)
+//console.log(props.sumColumns)
+//console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
 defineExpose({
@@ -191,15 +191,26 @@ const pagination = ref({
 
 const totales = computed(() => {
   const totals = {}
-  props.sumColumns.forEach((colName) => {
-    totals[colName] = filteredData.value.reduce((sum, row) => {
-      const value = parseFloat(row[colName])
+  const totalsRaw = {} // Para valores numéricos sin formato
 
-      return sum + (isNaN(value) ? 0 : value)
+  props.sumColumns.forEach((colName) => {
+    const sum = filteredData.value.reduce((accumulator, row) => {
+      const value = parseFloat(row[colName])
+      return accumulator + (isNaN(value) ? 0 : value)
     }, 0)
-    totals[colName] = Number(totals[colName].toFixed(2))
+
+    // Almacenar valor crudo (número)
+    totalsRaw[colName] = Number(sum.toFixed(2))
+
+    // Almacenar valor formateado para mostrar
+    totals[colName] = sum.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   })
-  console.log(totals)
+
+  //console.log('Totales crudos:', totalsRaw)
+  //console.log('Totales formateados:', totals)
   return totals
 })
 // Forzar cálculo inicial

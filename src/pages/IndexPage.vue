@@ -1,9 +1,16 @@
 <template>
   <q-page class="q-pa-md q-pa-sm-lg">
-    <!-- Cajas de navegación superiores -->
-    <div class="row q-col-gutter-md q-mb-lg">
-      <template v-for="box in orderedTopBoxes" :key="box.id">
-        <div class="col-12 col-sm-6 col-md-3" :class="box.colorClass" :id="box.cardId">
+    <!-- Contenedor de cajas con lógica condicional -->
+    <div
+      class="row q-col-gutter-md q-mb-lg"
+      :class="{ 'no-wrap': isCompactMode }"
+      :style="isCompactMode ? 'overflow-x: auto; flex-wrap: nowrap;' : ''"
+    >
+      <template v-for="box in finalTopBoxes" :key="box.id">
+        <div
+          :class="[isCompactMode ? 'col' : 'col-12 col-sm-6 col-md-3', box.colorClass]"
+          :id="box.cardId"
+        >
           <q-card
             flat
             bordered
@@ -16,9 +23,7 @@
             "
             @click="cambiarComponente(box.id)"
           >
-            <!-- Fila Flex layout Mobile-First: Nunca permite que los items se quiebren o aplasten -->
             <div class="row items-center no-wrap full-width" style="min-height: 55px">
-              <!-- Columna 1: Icono del Módulo -->
               <div class="col-auto q-mr-md flex flex-center" style="width: 50px">
                 <img
                   :src="box.iconComponent"
@@ -26,8 +31,6 @@
                   alt="icon"
                 />
               </div>
-
-              <!-- Columna 2: Textos truncados automáticamente si fuesen muy largos -->
               <div class="col overflow-hidden">
                 <div
                   class="text-subtitle2 text-weight-bold ellipsis text-uppercase"
@@ -35,12 +38,7 @@
                 >
                   {{ box.title }}
                 </div>
-                <!-- <div class="text-caption ellipsis" style="font-size: 11px; opacity: 0.75">
-                  {{ box.subtitle || 'Acceder al módulo' }}
-                </div> -->
               </div>
-
-              <!-- Columna 3: Icono Flecha/Check Ckecked -->
               <div class="col-auto q-pl-sm">
                 <q-icon
                   :name="componenteActivo === box.component ? 'check_circle' : 'chevron_right'"
@@ -56,7 +54,7 @@
       </template>
     </div>
 
-    <!-- Contenedor principal de vistas (con q-col-gutter-md para gap vertical en móvil) -->
+    <!-- El resto del template se mantiene igual -->
     <div class="row q-col-gutter-md">
       <div
         :class="componenteActivo === VentaComponent ? 'col-12 col-md-8' : 'col-12'"
@@ -73,45 +71,38 @@
     </div>
   </q-page>
 </template>
-
 <script setup>
 import { ref, onMounted, shallowRef, markRaw, defineAsyncComponent, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import ReporteVentaInicio from 'src/components/reporteVentas/ReporteVentaInicio.vue'
+import { verificarexistenciapagina } from 'src/composables/FuncionesG'
+import { api } from 'src/boot/axios'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { getShortcutByCodigo, shortcutsRegistry } from 'src/pages/AtajosConfig/shortcutsRegistry'
 
-// Importar los SVGs directamente. Con vite-svg-loader, se importan como componentes Vue.
+// Assets getShortcutByCodigo
 import IconVentas from 'src/assets/Ventas.png'
 import IconPedidos from 'src/assets/Compras.png'
 import IconAdmin from 'src/assets/Productos.png'
 import IconReportes from 'src/assets/Reportes.png'
-import { verificarexistenciapagina } from 'src/composables/FuncionesG'
-const $q = useQuasar()
-console.log('Quasar in App.vue:', $q)
-const componentContainer = ref(null)
+import IconDefault from 'src/assets/icon-128.png'
 
-const inicialComponent = defineAsyncComponent({
-  loader: () => import('components/welcome/welcomeComp.vue'),
-  loadingComponent: { template: '<div>Cargando inicio...</div>' },
-  errorComponent: { template: '<div>Error al cargar inicio</div>' },
-})
-const PedidoComponent = defineAsyncComponent({
-  loader: () => import('pages/compra/RcompraPage.vue'),
-  loadingComponent: { template: '<div>Cargando pedidos...</div>' },
-  errorComponent: { template: '<div>Error al cargar pedidos</div>' },
-})
-const CrearProductos = defineAsyncComponent({
-  loader: () => import('pages/producto/CproductoPage.vue'),
-  loadingComponent: { template: '<div>Cargando Productos...</div>' },
-  errorComponent: { template: '<div>Error al cargar Productos</div>' },
-})
-const VentaComponent = defineAsyncComponent({
-  loader: () => import('src/components/venta/ventaComponent.vue'),
-  loadingComponent: { template: '<div>Cargando ventas...</div>' },
-})
-const ReporteComponent = defineAsyncComponent({
-  loader: () => import('src/components/reporte/reporteComponent.vue'),
-  loadingComponent: { template: '<div>Cargando reportes...</div>' },
-})
+const $q = useQuasar()
+const componentContainer = ref(null)
+const IDMD5 = idempresa_md5()
+const isCompactMode = computed(() => finalTopBoxes.value.length >= 5)
+
+// Componentes base (carga diferida)
+const inicialComponent = defineAsyncComponent(() => import('components/welcome/welcomeComp.vue'))
+const PedidoComponent = defineAsyncComponent(() => import('pages/compra/RcompraPage.vue'))
+const CrearProductos = defineAsyncComponent(() => import('pages/producto/CproductoPage.vue'))
+const VentaComponent = defineAsyncComponent(
+  () => import('src/modules/quick-consult/pages/QuickConsultPage.vue'),
+)
+const ReporteComponent = defineAsyncComponent(
+  () => import('src/components/reporte/reporteComponent.vue'),
+)
+
 const componentsMap = {
   venta: VentaComponent,
   compra: PedidoComponent,
@@ -119,9 +110,17 @@ const componentsMap = {
   dashboard: ReporteComponent,
 }
 
-const componenteActivo = shallowRef(inicialComponent)
+// Registrar dinámicamente todos los atajos del registry
+shortcutsRegistry.forEach((shortcut) => {
+  if (!componentsMap[shortcut.id]) {
+    componentsMap[shortcut.id] = shortcut.component
+  }
+  if (!componentsMap[shortcut.codigo]) {
+    componentsMap[shortcut.codigo] = shortcut.component
+  }
+})
 
-// Expose VentaComponent for template comparison
+const componenteActivo = shallowRef(inicialComponent)
 defineExpose({ VentaComponent })
 
 const cambiarComponente = (id) => {
@@ -132,106 +131,148 @@ const cambiarComponente = (id) => {
       componentContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
-  // try {
-  //   componenteActivo.value = markRaw(componente)
-  // } catch (error) {
-  //   console.error('Error al cambiar componente:', error)
-  // }
 }
 
+// Datos de permisos del usuario
 const nombreUsuario = ref('')
-const venta = ref(null)
-const compra = ref(null)
-const dashboard = ref(null)
-const producto = ref(null)
+const ventaPerm = ref(false)
+const compraPerm = ref(false)
+const dashboardPerm = ref(false)
+const productoPerm = ref(false)
 
-const contenidoUsuario = localStorage.getItem('mistersofts-cm')
-const contenidoMenus = JSON.parse(localStorage.getItem('mistersofts-cmmenu'))
+// Atajos personalizados del usuario
+const userShortcuts = ref([])
 
-onMounted(() => {
+// Obtener atajos guardados del usuario actual
+const fetchUserShortcuts = async () => {
+  try {
+    const userData = JSON.parse(localStorage.getItem('mistersofts-cm') || '[]')
+    const userId = userData[0]?.idusuario
+    if (!userId) return
+
+    const { data } = await api.get(`listarOperaciones/${IDMD5}`)
+    const allOps = data.data || []
+    const shortcuts = allOps.filter(
+      (op) => op.codigo?.startsWith('shortcut_') && op.estado == 1 && op.md5 == userId,
+    )
+    userShortcuts.value = shortcuts
+  } catch (error) {
+    console.error('Error fetching shortcuts:', error)
+    userShortcuts.value = []
+  }
+}
+
+// Cajas por defecto (según permisos)
+const defaultBoxes = computed(() => {
+  const boxes = []
+  if (dashboardPerm.value) {
+    boxes.push({
+      id: 'dashboard',
+      component: ReporteComponent,
+      iconComponent: IconReportes,
+      title: 'ESTADÍSTICAS',
+      cardId: 'reportes-card',
+      colorClass: '',
+    })
+  }
+  if (ventaPerm.value) {
+    boxes.push({
+      id: 'venta',
+      component: VentaComponent,
+      iconComponent: IconVentas,
+      title: 'VENTAS',
+      cardId: 'venta-card',
+    })
+  }
+  if (compraPerm.value) {
+    boxes.push({
+      id: 'compra',
+      component: PedidoComponent,
+      iconComponent: IconPedidos,
+      title: 'COMPRAS',
+      cardId: 'compra-card',
+    })
+  }
+  if (productoPerm.value) {
+    boxes.push({
+      id: 'producto',
+      component: CrearProductos,
+      iconComponent: IconAdmin,
+      title: 'PRODUCTOS',
+      cardId: 'producto-card',
+    })
+  }
+  return boxes
+})
+
+// Construir cajas a partir de atajos personalizados
+const customShortcutBoxes = computed(() => {
+  return userShortcuts.value.slice(0, 5).map((shortcut) => {
+    console.log('Construyendo caja para atajo:', shortcut)
+    const registryItem = getShortcutByCodigo(shortcut.codigo)
+
+    return {
+      id: registryItem?.id || shortcut.codigo,
+      component: registryItem?.component || componentsMap[shortcut.codigo] || inicialComponent,
+      iconComponent: registryItem?.icon || IconDefault,
+      title: shortcut.operacion || registryItem?.title || 'Acceso directo',
+      cardId: `shortcut-${shortcut.id_operacion}`,
+      isCustom: true,
+    }
+  })
+})
+
+// Reglas de visualización
+const finalTopBoxes = computed(() => {
+  const customCount = userShortcuts.value.length
+
+  // Sin atajos configurados
+  if (customCount === 0) {
+    return defaultBoxes.value
+  }
+  // 1 atajo personalizado: default + ese atajo (máx 5)
+  else if (customCount === 1) {
+    const combined = [...defaultBoxes.value, ...customShortcutBoxes.value]
+    return combined.slice(0, 5)
+  }
+  // 2 o más atajos: solo los atajos (máx 5)
+  else {
+    return customShortcutBoxes.value.slice(0, 5)
+  }
+})
+
+onMounted(async () => {
+  const contenidoUsuario = localStorage.getItem('mistersofts-cm')
+  const contenidoMenus = JSON.parse(localStorage.getItem('mistersofts-cmmenu'))
+
   if (contenidoUsuario && contenidoMenus) {
     try {
       const parsedData = JSON.parse(contenidoUsuario)
       nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
-      dashboard.value = verificarexistenciapagina('dashboard')
 
-      venta.value = verificarexistenciapagina('registrarventaoculto')
-      compra.value = verificarexistenciapagina('registrarcompra')
-      producto.value = verificarexistenciapagina('registrarproductos')
+      dashboardPerm.value = verificarexistenciapagina('dashboard')
+      ventaPerm.value = verificarexistenciapagina('quickconsult')
+      compraPerm.value = verificarexistenciapagina('registrarcompra')
+      productoPerm.value = verificarexistenciapagina('registrarproductos')
 
-      // Set initial component based on permissions - Dashboard first
-      if (dashboard.value) {
-        cambiarComponente('dashboard')
-      } else if (venta.value) {
-        cambiarComponente('venta')
-      } else if (compra.value) {
-        cambiarComponente('compra')
-      } else if (producto.value) {
-        cambiarComponente('producto')
+      await fetchUserShortcuts()
+
+      // Seleccionar componente inicial según el primer atajo disponible
+      if (finalTopBoxes.value.length > 0) {
+        cambiarComponente(finalTopBoxes.value[0].id)
       }
     } catch (error) {
-      console.error('Error al parsear los datos de localStorage:', error)
+      console.error('Error al parsear datos de localStorage:', error)
     }
-  } else {
-    console.warn('No hay datos en localStorage para "mistersofts-cm" o "mistersofts-cmmenu"')
   }
-})
-//reportes-hoy
-
-const orderedTopBoxes = computed(() => {
-  const boxes = []
-  if (dashboard.value)
-    boxes.push({
-      id: 'dashboard',
-      component: ReporteComponent,
-      data: dashboard.value,
-      iconComponent: IconReportes,
-      title: 'ESTADÍSTICAS',
-      subtitle: '',
-      cardId: 'reportes-card',
-    })
-  if (venta.value)
-    boxes.push({
-      id: 'venta',
-      component: VentaComponent,
-      data: venta.value,
-      iconComponent: IconVentas,
-      title: 'VENTAS',
-      subtitle: ' ',
-      cardId: 'venta-card',
-    })
-  if (compra.value)
-    boxes.push({
-      id: 'compra',
-      component: PedidoComponent,
-      data: compra.value,
-      iconComponent: IconPedidos,
-      title: 'COMPRAS',
-      subtitle: '',
-      cardId: 'compra-card',
-    })
-  if (producto.value)
-    boxes.push({
-      id: 'producto',
-      component: CrearProductos,
-      data: producto.value,
-      iconComponent: IconAdmin,
-      title: 'PRODUCTOS',
-      subtitle: '',
-      cardId: 'producto-card',
-    })
-
-  return boxes
 })
 </script>
 
 <style scoped>
-/* ======= ESTILOS GENERALES Y LAYOUT ======= */
+/* Estilos existentes se mantienen */
 .q-page {
   overflow-x: hidden;
 }
-
-/* CARDS DE NAVEGACION (MOBILE FIRST) */
 .hover-card {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-radius: 12px;
@@ -239,45 +280,5 @@ const orderedTopBoxes = computed(() => {
 .hover-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Estado de los Menús */
-.card-activa {
-  background: linear-gradient(135deg, #1f8a7e 0%, #033f3a 100%);
-  color: white;
-  border: 1px solid #1f8a7e;
-}
-.card-inactiva {
-  background: #ffffff;
-  color: #333333;
-  border: 1px solid #e0e0e0;
-}
-
-/* Burbuja del Icono */
-.icon-bubble {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-@media (min-width: 600px) {
-  .icon-bubble {
-    width: 56px;
-    height: 56px;
-  }
-}
-
-.module-img {
-  max-width: 60%;
-  max-height: 60%;
-  object-fit: contain;
-  transition: all 0.3s ease;
-}
-
-/* Evitar roturas de texto general */
-.q-item-label {
-  word-break: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
 }
 </style>

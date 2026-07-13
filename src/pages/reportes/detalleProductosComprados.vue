@@ -1,8 +1,23 @@
 <template>
   <q-page padding>
-    <div class="titulo">Reporte Productos Comprados</div>
-    <q-form >
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center" id="filtroFechas">
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Reporte Productos Comprados
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Productos Comprados
+        </div>
+      </div>
+    </div>
+    <q-form>
+      <div
+        class="row q-col-gutter-md"
+        style="display: flex; justify-content: center"
+        id="filtroFechas"
+      >
         <div class="col-12 col-md-4">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
@@ -13,8 +28,19 @@
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="generarReporte"/>
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" id="exportarExcel"/>
+        <q-btn
+          color="primary"
+          label="Generar reporte"
+          @click="generarReporte"
+          class="q-mr-sm"
+          id="generarReporte"
+        />
+        <q-btn
+          color="secondary"
+          label="Exportar a Excel"
+          @click="exportarExcel"
+          id="exportarExcel"
+        />
       </div>
     </q-form>
 
@@ -241,10 +267,10 @@ const sumColumns = [
   'utilidad',
 ]
 
-
 async function generarReporte() {
   try {
     const point = `reportecomprasporproductos/${idusuario}/${startDate.value}/${endDate.value}`
+    console.log('Punto de API:', point)
     const response = await api.get(point)
     console.log(response)
     datosFiltrados.value = response.data.map((row) => ({
@@ -258,7 +284,9 @@ async function generarReporte() {
 }
 
 function exportarExcel() {
-  const dataToExport = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
+  const dataToExport = tableRef.value
+    ? tableRef.value.obtenerDatosFiltrados()
+    : datosFiltrados.value
   const worksheet = XLSX.utils.json_to_sheet(
     dataToExport.map((item) => ({
       Fecha: item.fecha_formateada,

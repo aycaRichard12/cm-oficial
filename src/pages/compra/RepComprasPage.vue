@@ -1,6 +1,17 @@
 <template>
   <q-page padding>
-    <div class="titulo">Reporte Compras</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Reporte Compras
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Compras
+        </div>
+      </div>
+    </div>
     <q-form>
       <div
         class="row q-col-gutter-md"
@@ -99,7 +110,7 @@ import { date } from 'quasar'
 import * as XLSX from 'xlsx'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
-import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
+import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfs/Detalle_Compra/reporte'
 const { detalleCompra, loadingDetalle, fetchDetalleCompra } = useReporteProveedorCompras()
 const showPdfDialog = ref(false)
 const pdfUrl = ref(null)

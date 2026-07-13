@@ -1,5 +1,17 @@
 <template>
   <q-page>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para segmentación o grupos de personas -->
+          <q-icon name="groups" size="md" class="q-mr-sm" />
+          Tipos de Clientes
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de clasificaciones y segmentos de clientes
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">

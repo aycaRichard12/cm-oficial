@@ -1,230 +1,65 @@
 {
-
-    almacenesResponsable: Array(6) [
-      {
-        id: 256,
-        idresponsable: 148,
-        idalmacen: 97,
-        almacen: 'Almacén - Real',
-        fecha: '2026-02-03',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 251,
-        idresponsable: 148,
-        idalmacen: 129,
-        almacen: 'almacén - pepe',
-        fecha: '2026-01-27',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 232,
-        idresponsable: 148,
-        idalmacen: 31,
-        almacen: 'Sacaba',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 231,
-        idresponsable: 148,
-        idalmacen: 33,
-        almacen: 'céntrál',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 210,
-        idresponsable: 148,
-        idalmacen: 18,
-        almacen: 'Almacén Fábrica',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 209,
-        idresponsable: 148,
-        idalmacen: 93,
-        almacen: 'Bodega Norte Quillacollo',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '98dce83da57b0395e163467c9dae521b',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      }
-    ],
-    almacenes: Array(6) [
-      {
-        id: 256,
-        idresponsable: 148,
-        idalmacen: 97,
-        almacen: 'Almacén - Real',
-        fecha: '2026-02-03',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'e2ef524fbf3d9fe611d5a8e90fefdc9c',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 251,
-        idresponsable: 148,
-        idalmacen: 129,
-        almacen: 'almacén - pepe',
-        fecha: '2026-01-27',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'd1f491a404d6854880943e5c3cd9ca25',
-        sucursales: [ { idsucursal: '38', nombre: 'Sucursal1', codigosin: '1' } ]
-      },
-      {
-        id: 232,
-        idresponsable: 148,
-        idalmacen: 31,
-        almacen: 'Sacaba',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: 'c16a5320fa475530d9583c34fd356ef5',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 231,
-        idresponsable: 148,
-        idalmacen: 33,
-        almacen: 'céntrál',
-        fecha: '2026-01-15',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '182be0c5cdcd5072bb1864cdee4d3d6e',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 210,
-        idresponsable: 148,
-        idalmacen: 18,
-        almacen: 'Almacén Fábrica',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '6f4922f45568161a8cdf4ad2299f6d23',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      },
-      {
-        id: 209,
-        idresponsable: 148,
-        idalmacen: 93,
-        almacen: 'Bodega Norte Quillacollo',
-        fecha: '2025-09-17',
-        idusuario: '03afdbd66e7929b125f8597834fa83a4',
-        idalmacenM: '98dce83da57b0395e163467c9dae521b',
-        sucursales: [ { idsucursal: '37', nombre: 'Sucursal0', codigosin: '0' } ]
-      }
-    ],
-
-
-
-
-
-    1. Endpoint Principal: Reporte de Ventas por Campaña
-GET /api/reporteVentasCampanaDetallado/{idUsuario}/{fechaInicio}/{fechaFinal}/{idCampana?}
-Respuesta esperada:
-
-javascript
-[
-  {
-    // Información de la venta
-    idventa: number,
-    nfactura: string,
-    fechaventa: string,
-    
-    // Información de la campaña
-    idcampana: number,
-    nombrecampana: string,
-    porcentajedescuento: number,
-    
-    // Información del almacén
-    idalmacen: number,
-    almacen: string,
-    
-    // Información del producto
-    idproducto: number,
-    codigo: string,
-    descripcion: string,
-    
-    // Cantidades y precios
-    cantidad: number,
-    preciooriginal: number,        // Precio sin campaña
-    preciocampana: number,          // Precio con campaña
-    subtotaloriginal: number,       // cantidad * preciooriginal
-    subtotalcampana: number,        // cantidad * preciocampana
-    descuentocampana: number,       // subtotaloriginal - subtotalcampana
-    
-    // Categoría de precio
-    idcategoriaprecio: number,
-    nombrecategoria: string         // "Por Mayor", "Por Menor", etc.
-  }
-]
-2. Endpoint: Resumen de Productos por Campaña
-GET /api/reporteProductosCampana/{idCampana}/{fechaInicio}/{fechaFinal}
-Respuesta esperada:
-
-javascript
-[
-  {
-    idproducto: number,
-    codigo: string,
-    descripcion: string,
-    totalvendido: number,           // Cantidad total vendida
-    totalventas: number,             // Número de ventas
-    montooriginal: number,           // Monto sin descuento
-    montocampana: number,            // Monto con descuento
-    descuentototal: number,          // Pérdida por campaña
-    porcentajeahorro: number         // % de descuento promedio
-  }
-]
-3. Endpoint: Resumen General de Campaña
-GET /api/resumenCampana/{idCampana}/{fechaInicio}/{fechaFinal}
-Respuesta esperada:
-
-javascript
-{
-  idcampana: number,
-  nombre: string,
-  fechainicio: string,
-  fechafinal: string,
-  
-  // Totales
-  totalventas: number,              // Número de ventas
-  totalproductos: number,           // Productos diferentes vendidos
-  cantidadtotal: number,            // Unidades vendidas
-  
-  // Montos
-  montototaloriginal: number,       // Sin descuento
-  montototalcampana: number,        // Con descuento
-  descuentototalaplicado: number,   // Pérdida total
-  
-  // Por categoría
-  ventasporcategoria: [
+  "numeroFactura": 1,
+  "codigoTipoDocumentoIdentidad": 5,
+  "numeroDocumento": "12345678",
+  "nombreRazonSocial": "Juan Perez",
+  "codigoCliente": "CLI-001",
+  "codigoMetodoPago": 1,
+  "montoTotal": 150,
+  "montoTotalSujetoIva": 127.12,
+  "codigoMoneda": 1,
+  "montoTotalMoneda": 150,
+  "tipoCambio": 1,
+  "usuario": "admin",
+  "emailCliente": "juan.perez@email.com",
+  "codigoLeyenda": 1,
+  "extras": {
+    "uniqueCode": "ORD-2024-001"
+  },
+  "detalles": [
     {
-      idcategoriaprecio: number,
-      nombrecategoria: string,
-      totalventas: number,
-      montototal: number,
-      descuentototal: number
+      "codigoProducto": "PROD-001",
+      "descripcion": "Producto de ejemplo",
+      "cantidad": 1,
+      "unidadMedida": 1,
+      "precioUnitario": 150,
+      "subTotal": 150
     }
-  ],
-  
-  // Top productos
-  topproductos: [
+  ]
+}
+
+
+
+
+
+{
+  "numeroFactura": 1,
+  "codigoTipoDocumentoIdentidad": 5,
+  "numeroDocumento": "12345678",
+  "nombreRazonSocial": "Juan Perez",
+  "codigoCliente": "CLI-001",
+  "codigoMetodoPago": 1,
+  "montoTotal": 5000,
+  "montoTotalSujetoIva": 4237.29,
+  "codigoMoneda": 1,
+  "montoTotalMoneda": 5000,
+  "tipoCambio": 1,
+  "montoTotalArrendamientoFinanciero": 5000,
+  "usuario": "admin",
+  "emailCliente": "juan.perez@email.com",
+  "descuentoAdicional": 0,
+  "extras": {
+    "uniqueCode": "ORD-2024-EF-001"
+  },
+  "detalles": [
     {
-      codigo: string,
-      descripcion: string,
-      cantidadvendida: number,
-      montototal: number
+      "codigoProducto": "SERV-EF-001",
+      "descripcion": "Servicio financiero",
+      "cantidad": 1,
+      "unidadMedida": 58,
+      "precioUnitario": 5000,
+      "montoDescuento": 0,
+      "subTotal": 5000
     }
   ]
 }

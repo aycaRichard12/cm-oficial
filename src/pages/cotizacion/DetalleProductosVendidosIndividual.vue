@@ -1,5 +1,16 @@
 <template>
   <q-page class="q-pa-md">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="inventory" size="md" class="q-mr-sm" />
+          Reporte Productos Vendidos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Productos Vendidos
+        </div>
+      </div>
+    </div>
     <q-form @submit="generarReporte">
       <div class="row justify-center q-col-gutter-x-md">
         <div class="col-12 col-md-3" id="fechainidetalleproductos">
@@ -140,29 +151,7 @@
         </div>
       </div>
     </q-form>
-
-    <q-table
-      id="tabladetalleproductos"
-      :rows="datosFiltrados"
-      :columns="columns"
-      row-key="index"
-      class="q-mt-lg"
-      flat
-      bordered
-      title="Reporte de Productos Vendidos"
-      no-data-label="No hay datos para mostrar. Genere un reporte."
-    >
-      <template v-slot:bottom-row>
-        <q-tr>
-          <q-td colspan="8" class="text-right text-bold">Sumatorias</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(cantidadTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(importeTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(descuentoTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(ventaTotal) }}</q-td>
-          <q-td colspan="13"></q-td>
-        </q-tr>
-      </template>
-    </q-table>
+    <tableProductosVendidos id="tablareportecotizacion" ref="refHijo" :rows="datosFiltrados" />
 
     <q-loading :showing="loading" />
   </q-page>
@@ -176,6 +165,7 @@ import * as funGeneral from 'src/composables/FuncionesG'
 import { URL_APICM } from 'src/composables/services'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import * as XLSX from 'xlsx'
+import tableProductosVendidos from 'src/components/ProductosVendidos/tableProductosVendidos.vue'
 // Importar XLSX si no está globalmente disponible
 // import * as XLSX from 'xlsx';
 
@@ -198,7 +188,8 @@ const sucursalSeleccionadaId = ref(null)
 const showClienteDropdown = ref(false)
 const showSucursalDropdown = ref(false)
 const loading = ref(false)
-
+const resultadoFiltrado = ref([])
+const refHijo = ref(null)
 const formularioExcel = reactive([])
 
 const tipoVentaMap = {
@@ -206,6 +197,8 @@ const tipoVentaMap = {
   1: 'Factura Compra-Venta',
   2: 'Factura Alquileres',
   3: 'Factura Comercial Exportación',
+  4: 'Cotizacion',
+  15: 'Factura de Entidades Financieras',
   24: 'Nota de Crédito-Débido',
 }
 
@@ -216,97 +209,8 @@ const usuarioInfo = computed(() => {
 })
 
 // Table columns for q-table
-const columns = [
-  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    align: 'right',
-    field: (row) => funGeneral.cambiarFormatoFecha(row.fecha),
-  },
-  { name: 'nrofactura', label: 'Nro. Doc.', align: 'right', field: 'nrofactura' },
-  {
-    name: 'tipoventa',
-    label: 'Tipo de Venta',
-    align: 'left',
-    field: (row) => tipoVentaMap[row.tipoventa] || row.tipoventa,
-  },
-  { name: 'codigo', label: 'Código Producto', align: 'left', field: 'codigo' },
-  { name: 'codigobarra', label: 'Código Barras', align: 'right', field: 'codigobarra' },
-  { name: 'descripcion', label: 'Descripción de Producto', align: 'left', field: 'descripcion' },
-  {
-    name: 'preciounitario',
-    label: 'Precio Unitario',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.preciounitario),
-  },
-  {
-    name: 'cantidad',
-    label: 'Cantidad',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.cantidad),
-  },
-  {
-    name: 'importe',
-    label: 'Importe',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.importe),
-  },
-  {
-    name: 'descuento',
-    label: 'Dscto.',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.descuento),
-  },
-  {
-    name: 'totalventa',
-    label: 'Venta Total',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.totalventa),
-  },
-  { name: 'tipopago', label: 'Tipo Pago', align: 'left', field: 'tipopago' },
-  { name: 'idusuario', label: 'Nombre de Usuario', align: 'left', field: 'idusuario' },
-  { name: 'sucursalc', label: 'Sucursal del Cliente', align: 'left', field: 'sucursalc' },
-  { name: 'almacen', label: 'Almacén Empresa', align: 'left', field: 'almacen' },
-  { name: 'cliente', label: 'Razón Social Empresa', align: 'left', field: 'cliente' },
-  { name: 'tipodocumento', label: 'Tipo Documento', align: 'left', field: 'tipodocumento' },
-  { name: 'nrodoc', label: 'Nro. Doc. Tributario', align: 'right', field: 'nrodoc' },
-  { name: 'nombrecomercial', label: 'Nombre Comercial', align: 'left', field: 'nombrecomercial' },
-  { name: 'unidad', label: 'Unidad', align: 'left', field: 'unidad' },
-  { name: 'categoria', label: 'Categoría', align: 'left', field: 'categoria' },
-  { name: 'subcategoria', label: 'Sub Categoría', align: 'left', field: 'subcategoria' },
-  { name: 'canal', label: 'Canal', align: 'left', field: 'canal' },
-  { name: 'tipoprecio', label: 'Tipo de Precio', align: 'left', field: 'tipoprecio' },
-]
 
 // Computed properties for totals
-const cantidadTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.cantidad)),
-    0,
-  )
-})
-
-const importeTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.importe)),
-    0,
-  )
-})
-
-const descuentoTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.descuento)),
-    0,
-  )
-})
-
-const ventaTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.totalventa)),
-    0,
-  )
-})
 
 const filteredClientes = computed(() => {
   if (!clienteSearchTerm.value) {
@@ -622,9 +526,11 @@ const exportarTablaAExcel = () => {
     return
   }
 
+  resultadoFiltrado.value = refHijo.value.obtenerDatos()
+
   // Prepare data for Excel
   formularioExcel.splice(0) // Clear previous data
-  datosFiltrados.value.forEach((key) => {
+  resultadoFiltrado.value.forEach((key) => {
     formularioExcel.push({
       Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
       'Nro. Doc.': key.nrofactura,

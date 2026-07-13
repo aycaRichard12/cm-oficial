@@ -11,10 +11,13 @@ export const PAGINAS = Object.freeze({
     'unidaddeproducto',
     'caracteristicadeproducto',
     'parametrosdeobsolescencia',
-        'configuracionproductounico',
-
+    'configuracionproductounico',
   ]),
-  configuracioncliente: Object.freeze(['tiposdeclientes', 'canalesdeventa']),
+  configuracioncliente: Object.freeze([
+    'tiposdeclientes',
+    'canalesdeventa',
+    'configuracionclientealmacen',
+  ]),
   configuracionIntegracionExterna: Object.freeze([
     'generartokensapis',
     'servicios',
@@ -64,10 +67,14 @@ export const PAGINAS = Object.freeze({
   pedidos: Object.freeze(['generarpedido', 'reportedepedidos']),
   // ... (otros grupos con el mismo formato)
   inventarioexterno: Object.freeze([
-    'inventarioexterno',
+    'registrarinventarioexterno',
     // 'reportedeindicederotacion',
   ]),
-  leyendasdefacturas: Object.freeze(['leyendasdefacturas', 'metodosdepagodefacturas']),
+  leyendasdefacturas: Object.freeze([
+    'configleyendasdefacturas',
+    'metodosdepagodefacturas',
+    'configurarsucursalsin',
+  ]),
 })
 
 export const PAGINAS_ICONS = Object.freeze({
@@ -76,6 +83,7 @@ export const PAGINAS_ICONS = Object.freeze({
   divisas: 'attach_money',
   leyendaproforma: 'description',
   configuracionproductounico: 'description',
+  tipokardex: 'inventory_2',
 
   // Íconos para los submenús de Configuración de Producto
   categoriadeproducto: 'category',
@@ -88,10 +96,20 @@ export const PAGINAS_ICONS = Object.freeze({
   tiposdeclientes: 'groups',
   canalesdeventa: 'shopping_cart',
 
+  //iconos para integracion Externa
+  generartokensapis: 'api',
+  servicios: 'miscellaneous_services',
+  credencialesservicio: 'vpn_key',
+
+  //configuracion facturacion
+  configleyendasdefacturas: 'receipt_long',
+  metodosdepagodefacturas: 'payments',
+
   // Íconos para los submenús de Administración Creación
   registraralmacen: 'storefront',
   registrarpuntodeventa: 'local_mall',
   registrarproductos: 'playlist_add',
+  registrarcategoriaprecio: 'local_offer',
 
   // Íconos para los submenús de Administración Asignación
   asignaralmacen: 'assignment_return',
@@ -102,6 +120,11 @@ export const PAGINAS_ICONS = Object.freeze({
   costounitario: 'attach_money',
   categoriasdeprecio: 'price_check',
   preciossugeridos: 'request_quote',
+
+  //autorizaciones
+  autorizarventassinstock: 'rule',
+  anularcompra: 'cancel',
+  permisosusuario: 'admin_panel_settings',
 
   // Íconos para los submenús de Registro de Ventas
   registrarventaoculto: 'shopping_basket',
@@ -114,7 +137,6 @@ export const PAGINAS_ICONS = Object.freeze({
 
   // Íconos para los submenús de Contingencias
   registraranulaciones: 'cancel',
-  registrodeextravios: 'help_outline',
   registrodemermas: 'remove_shopping_cart',
 
   // Íconos para los submenús de Cuentas por Cobrar
@@ -134,12 +156,12 @@ export const PAGINAS_ICONS = Object.freeze({
   autorizarcompra: 'shopping_bag',
   //compras
   registrarcompra: 'add_shopping_cart',
-  reporteproductoscomprados: 'receipt_long',
-  reportedecompras: 'bar_chart',
-  reportestockdeproductosindividual: 'inventory',
+  reporteproductoscomprados: 'icons/komrA01.svg',
+  reportedecompras: 'icons/repCompra.svg',
+  reportestockdeproductosindividual: 'icons/if5pC01.svg',
   reporteproveedorcompras: 'bar_chart',
-  reporteproductoproveedorcompras: 'receipt_long',
-  //campañas
+  reporteproductoproveedorcompras: 'icons/gyOvw01.svg',
+
   crearcampanas: 'campaign',
   reportedecampanas: 'summarize',
   reportedeventasporcampanas: 'sell',
@@ -157,8 +179,13 @@ export const PAGINAS_ICONS = Object.freeze({
   indicesrotacion: 'rotate_right',
   reportedecaducidaddeproductos: 'event_busy',
   reporteinventarioexterior: 'inventory',
+  atajosrapidos: 'bolt',
+
+  //extravio
+  registrodeextravios: 'report_problem',
 })
 export const PAGINAS_SELECT = Object.freeze({
+  configuraciongeneral: Object.freeze(['atajosrapidos']),
   registrarventa: Object.freeze([
     'reportedeventas',
     'reportedecotizacionesocultas',
@@ -193,6 +220,16 @@ export const PAGINAS_SELECT = Object.freeze({
     'reportedeventasporcampanas',
     'reporteVentasCampana',
   ]),
+})
+export const GRUPO_PAGINAS_DETALLE = Object.freeze({
+  configuraciongeneral: { label: 'Usuario', icono: 'settings' },
+  registrarventa: { label: 'Reportes', icono: 'bar_chart' },
+  cuentasporcobrar: { label: 'Reportes', icono: 'bar_chart' },
+  contingencias: { label: 'Reportes', icono: 'bar_chart' },
+  gestioncompra: { label: 'Reportes', icono: 'bar_chart' },
+  inventarioexterno: { label: 'Reportes', icono: 'bar_chart' },
+  campanas: { label: 'Reportes', icono: 'bar_chart' },
+  gestioncampanas: { label: 'Reportes', icono: 'bar_chart' },
 })
 /**
  * Helper para verificar si una clave existe en los atributos.

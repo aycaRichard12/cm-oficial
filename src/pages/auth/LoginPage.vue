@@ -234,8 +234,9 @@ const installApp = async () => {
 const router = useRouter()
 const $q = useQuasar()
 
-//si esta autentidcado redirigir a la pagina principal
-const isAuthenticated = localStorage.getItem('puedeIniciarsesion') !== null
+// Si hay sesión activa (fuente de verdad: mistersofts-cm), redirigir
+const userData = localStorage.getItem('mistersofts-cm')
+const isAuthenticated = userData && userData !== 'undefined' && userData !== 'null'
 
 if (isAuthenticated) {
   router.push('/')

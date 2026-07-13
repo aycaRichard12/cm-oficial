@@ -1,7 +1,17 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" v-if="!showEditModal">
     <q-form @submit="generarReporte">
-      <div class="titulo" id="reportecotizaciones">Reporte Cotizaciones</div>
+      <div id="reportecotizaciones" class="row items-center justify-between q-mb-md q-ml-sm">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="assignment" size="md" class="q-mr-sm" />
+            Reporte Cotizaciones
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración de Reporte Cotizaciones
+          </div>
+        </div>
+      </div>
       <div class="row flex justify-center q-col-gutter-x-md">
         <div class="col-12 col-md-3" id="fechainicotizacion">
           <label for="fechaini">Fecha Inicial * {{ tipoFactura }}</label>
@@ -50,73 +60,13 @@
 
     <q-separator class="q-my-lg" />
 
-    <!-- <q-form>
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
-          <label for="almacen">Almacén*</label>
-          <q-select
-            v-model="almacenSeleccionado"
-            :options="almacenesOptions"
-            id="almacen"
-            emit-value
-            map-options
-            option-value="idalmacen"
-            option-label="almacen"
-            outlined
-            dense
-            :disable="!datosOriginales || datosOriginales.length === 0"
-          />
-        </div>
-
-        <div class="col-12 col-md-3">
-          <label for="cliente">Razón Social *</label>
-          <q-select
-            use-input=""
-            v-model="clienteSearchTerm"
-            id="cliente"
-            outlined
-            dense
-            autocomplete="on"
-            clearable
-            @focus="showClienteDropdown = true"
-            hide-selected
-            fill-input
-          >
-            <template v-slot:append>
-              <q-icon name="arrow_drop_down" />
-            </template>
-          </q-select>
-
-          <q-card
-            v-if="showClienteDropdown && filteredClientes.length > 0"
-            class="q-mt-xs"
-            style="position: absolute; z-index: 10; width: 100%"
-          >
-            <q-list bordered separator>
-              <q-item
-                v-for="clienteOption in filteredClientes"
-                :key="clienteOption.id"
-                clickable
-                v-ripple
-                @click="seleccionarCliente(clienteOption)"
-              >
-                <q-item-section>
-                  {{ clienteOption.codigo }} - {{ clienteOption.nombre }} -
-                  {{ clienteOption.nombrecomercial }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
-      </div>
-    </q-form> -->
-
     <TableReporteCotizacion
       id="tablareportecotizacion"
       ref="refHijo"
       :rows="datosFiltrados"
       @generarComprobantePDF="generarComprobantePDF"
       @facturarVenta="facturarVenta"
+      @editarCotizacion="abrirModalEdicion"
     />
 
     <q-loading :showing="loading" />
@@ -126,6 +76,7 @@
         @venta-registrada="closeModalFactura"
       />
     </modal-r>
+
     <q-dialog v-model="showPdfModal" full-width full-height>
       <q-card class="q-pa-none" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
@@ -146,6 +97,13 @@
       </q-card>
     </q-dialog>
   </q-page>
+  <q-page class="q-pa-md" v-else>
+    <EditarCotizacion
+      v-if="showEditModal"
+      :id-cotizacion="idCotizacionAEditar"
+      @saved="alGuardarEdicion"
+    />
+  </q-page>
 </template>
 
 <script setup>
@@ -164,9 +122,23 @@ import FacturarCotizacion from './FacturarCotizacion.vue'
 import { api } from 'src/boot/axios'
 import { DPFReporteCotizacion } from 'src/utils/pdfReportGenerator'
 import { getTipoFactura } from 'src/composables/FuncionesG'
-import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
+import EditarCotizacion from './EditarCotizacion.vue'
+const showEditModal = ref(false)
+const idCotizacionAEditar = ref(null)
+
+const abrirModalEdicion = (id) => {
+  idCotizacionAEditar.value = id
+  showEditModal.value = true
+}
+
+const alGuardarEdicion = () => {
+  showEditModal.value = false
+  generarReporte()
+}
+
 const tipoFactura = getTipoFactura()
 console.log(tipoFactura)
 const pdfData = ref(null)
@@ -373,6 +345,7 @@ const generarReporte = async () => {
         idcotizacion: p.idcotizacion,
         fecha: cambiarFormatoFecha(p.fecha),
         cliente: p.cliente,
+        nombreComercial: p.nombreComercial,
         monto: Number(p.cotizaciontotal),
         descuento: Number(p.descuento),
         idalmacen: p.idalmacen,

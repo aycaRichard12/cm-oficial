@@ -1,3 +1,4 @@
+//src\stores\currencyStore.js
 import { defineStore } from 'pinia'
 import { useDivisa } from 'src/composables/useDivisa'
 import { useLeyenda } from 'src/composables/useLeyenda'

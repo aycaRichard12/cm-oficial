@@ -1,11 +1,17 @@
 <template>
   <q-page padding id="reporteDetalleVentas">
     <!-- Header -->
-    <div class="row items-center q-mb-md">
-      <q-icon name="point_of_sale" size="lg" color="primary" class="q-mr-sm" />
-      <div class="text-h5 text-primary text-weight-bold">Ventas Registradas en Campaña</div>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+          Ventas Registradas en Campaña
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Ventas Registradas en Campaña
+        </div>
+      </div>
     </div>
-
     <!-- Configuración del Reporte -->
     <q-card class="q-mb-lg shadow-2 rounded-borders">
       <q-card-section class="bg-primary text-white row items-center q-pb-sm">

@@ -1,6 +1,15 @@
 <template>
   <div>
     <div>
+      <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+            Procesar Venta
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Procesar Venta</div>
+        </div>
+      </div>
       <q-card class="my-card q-mb-md">
         <div
           class="bg-primary text-white q-py-lg q-bar--dense"
@@ -9,7 +18,7 @@
           <div class="col flex justify-start">
             <div class="text-weight-bold btn-res" style="font-size: 15px">
               <q-icon name="shopping_cart" size="15px" class="q-mr-sm icono" />
-              <span class="texto">Procesar Venta</span>
+              <!-- <span class="texto">Procesar Venta</span> -->
             </div>
           </div>
           <div class="col-auto" id="btnContinuar">
@@ -453,6 +462,12 @@ import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import { useRoute } from 'vue-router'
+// ... otros imports
+
+const route = useRoute()
+const preserveCart = route.query.preserveCart === 'true'
+const isInitializing = ref(false)
 
 const { consumirPermiso } = useSolicitudes()
 const permisosStore = useOperacionesPermitidas()
@@ -578,8 +593,6 @@ const onSolicitudEnviada = (datos) => {
   })
 }
 const validarDescripcion = async (scope, row) => {
-  console.log(scope.value)
-
   let carrito = JSON.parse(localStorage.getItem('carrito'))
 
   if (carrito && carrito.listaProductos) {
@@ -587,12 +600,20 @@ const validarDescripcion = async (scope, row) => {
       // Agregar o editar la descripción adicional
       if (Number(prod.id) == Number(row.idproductoalmacen)) {
         prod.descripcionAdicional = scope.value
+        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
+      }
+      return prod
+    })
+    carrito.listaProductosFactura = carrito.listaProductosFactura.map((prod) => {
+      // Agregar o editar la descripción adicional
+      if (String(prod.codigoProducto) == String(row.codigo)) {
+        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
       }
       return prod
     })
 
     localStorage.setItem('carrito', JSON.stringify(carrito))
-    console.log('Descripción adicional actualizada correctamente ')
+    //console.log('Descripción adicional actualizada correctamente ')
   } else {
     console.warn('No se encontró la lista de productos en el localStorage')
   }
@@ -708,7 +729,7 @@ const total = computed(() => {
 async function cargarAlmacenes() {
   try {
     cargandoAlmacenes.value = true
-    const endpoint = `/listaResponsableAlmacen/${usuario.value.empresa.idempresa}`
+    const endpoint = `/listaResponsableAlmacen/${idempresa}`
     const { data } = await api.get(endpoint)
 
     if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
@@ -753,10 +774,13 @@ async function cargarCategoriasPrecio() {
     localStorage.setItem('carrito', JSON.stringify(datos))
     try {
       cargandoCategorias.value = true
+      // Preservamos el valor actual por si viene de una carga externa (Quick Consult)
+      const categoriaActual = categoriaPrecioSeleccionada.value
+
       categoriaPrecioSeleccionada.value = null
       categoriasPrecio.value = []
 
-      const endpoint = `listarCategoriaPrecioVenta/${usuario.value.empresa.idempresa}`
+      const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
       console.log(endpoint)
       const { data } = await api.get(endpoint)
       console.log('Respuesta de categorías de precio:', data)
@@ -769,6 +793,12 @@ async function cargarCategoriasPrecio() {
           label: item.nombre,
           value: item.id,
         }))
+
+      // Si la categoría que teníamos sigue siendo válida para este almacén, la restauramos
+      if (categoriaActual && categoriasPrecio.value.some((c) => c.value == categoriaActual)) {
+        categoriaPrecioSeleccionada.value = categoriaActual
+      }
+
       reinicia()
     } catch (error) {
       console.error('Error al cargar categorías:', error)
@@ -791,7 +821,7 @@ async function cargarCampanasDisponibles() {
     if (!almacenSeleccionado.value) return
 
     const idalm = almacenSeleccionado.value?.value || almacenSeleccionado.value
-    const endpoint = `campanas/${usuario.value.empresa.idempresa}`
+    const endpoint = `campanas/${idempresa}`
     console.log('Cargando campañas para almacén:', idalm)
 
     const { data } = await api.get(endpoint)
@@ -996,6 +1026,8 @@ watch(
 // Los otros dos `watch` ya no son necesarios.)
 
 function reinicia() {
+  if (isInitializing.value) return
+
   const datos = JSON.parse(localStorage.getItem('carrito')) || {}
 
   const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
@@ -1061,7 +1093,7 @@ async function cargarProductosDisponibles() {
     const datosCarrito = datos
     const idporcentajeventa = categoriaPrecioSeleccionada.value
 
-    const endpoint = `/listaProductosDisponiblesVenta/${usuario.value.empresa.idempresa}`
+    const endpoint = `/listaProductosDisponiblesVenta/${idempresa}`
     const { data } = await api.get(endpoint)
     console.log(data)
 
@@ -1177,18 +1209,17 @@ function buscarPorCodigoBarra() {
   }
 }
 function decimas(saldo) {
-  var saldocondecimas = parseFloat(saldo).toFixed(2)
-  return saldocondecimas
+  return Number(parseFloat(saldo).toFixed(2)) // Devuelve tipo Number
 }
 function redondear(num) {
   if (typeof num != 'number') {
     return null
   }
   let signo = num >= 0 ? 1 : -1
-  return parseFloat(
-    (Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2),
-  )
+  return Number((Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2))
 }
+const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
+
 function agregarAlCarrito() {
   const datos = JSON.parse(localStorage.getItem('carrito'))
   datos.idalmacen = almacenSeleccionado.value?.value
@@ -1199,16 +1230,16 @@ function agregarAlCarrito() {
 
   const nuevoProducto = {
     idproductoalmacen: producto.id,
-    cantidad: cantidad.value,
-    precio: precioUnitario.value,
+    cantidad: Number(cantidad.value),
+    precio: formatear(precioUnitario.value),
     idstock: producto.idstock,
     idporcentaje: producto.idporcentaje,
-    candiponible: producto.stock,
+    candiponible: Number(producto.stock),
     descripcion: producto.descripcion,
     descripcionAdicional: '',
     codigo: producto.codigo,
-    id: producto.id,
-    subtotal: precioUnitario.value * cantidad.value,
+    id: Number(producto.id),
+    subtotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
     datosAdicionales: producto.datosAdicionales,
     despachado: Number(producto.stock) == 0 ? 2 : 1,
   }
@@ -1220,9 +1251,9 @@ function agregarAlCarrito() {
     codigoProductoSin: producto.codigosin,
     descripcion: producto.descripcion,
     unidadMedida: producto.unidadsin,
-    precioUnitario: precioUnitario.value,
+    precioUnitario: formatear(precioUnitario.value),
     subTotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
-    cantidad: cantidad.value,
+    cantidad: Number(cantidad.value),
     numeroSerie: '',
     montoDescuento: 0,
     numeroImei: '',
@@ -1384,6 +1415,7 @@ async function consumirPermisoVentaSinStock(idalmacen) {
 
 // Inicialización $ currencyStore codigoActividadSin despachado
 onMounted(async () => {
+  isInitializing.value = true
   try {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
@@ -1393,16 +1425,84 @@ onMounted(async () => {
       return
     }
 
-    // Limpiar y cargar todo
-    eliminarCarrito()
-    await crearCarritoVenta()
+    // Verificar si venimos de Quick Consult
+    const quickConsult = localStorage.getItem('quickConsult')
+    let importedFromQuickConsult = false
+
+    if (quickConsult) {
+      const data = JSON.parse(quickConsult)
+
+      if (data.destination === 'sale') {
+        console.log('Procesando datos de Quick Consult:', data)
+        importedFromQuickConsult = true
+
+        // Restaurar estado local
+        if (data.almacen) {
+          almacenSeleccionado.value = data.almacen
+        }
+        if (data.categoria) {
+          categoriaPrecioSeleccionada.value = data.categoria.value
+        }
+        if (data.listaProductos) {
+          carritoPrueba.value = [...data.listaProductos]
+        }
+        if (data.descuento !== undefined) {
+          descuento.value = data.descuento
+        }
+
+        // Preparar el carrito principal con los datos importados
+        const contenidousuario = validarUsuario()
+        const token = contenidousuario[0]?.factura?.access_token
+        const tipo = contenidousuario[0]?.factura?.tipo
+
+        const mainCart = {
+          ...data,
+          idalmacen: data.almacen?.value || 0,
+          codigosinsucursal: data.almacen?.codigosin || null,
+          token,
+          tipo,
+          iddivisa: currencyStore.divisa.id || null,
+          pagosDivididos: [],
+          variablePago: 'dividido',
+        }
+
+        localStorage.setItem('carrito', JSON.stringify(mainCart))
+        localStorage.removeItem('quickConsult')
+      }
+    }
+
+    if (!importedFromQuickConsult) {
+      if (!preserveCart) {
+        // Solo limpiar y crear nuevo si no se pide preservar
+        eliminarCarrito()
+        console.log('Carrito eliminado para nueva sesión')
+        await crearCarritoVenta()
+      } else {
+        // Si se preserva, verificar que exista el carrito; si no, crearlo
+        if (!localStorage.getItem('carrito')) {
+          await crearCarritoVenta()
+        }
+        // No se limpia el carrito, se conservan los productos transferidos
+      }
+    }
     await cargarAlmacenes()
+
+    // Si importamos de Quick Consult, cargar categorías y productos para la UI
+    if (almacenSeleccionado.value && categoriaPrecioSeleccionada.value) {
+      await cargarCategoriasPrecio()
+      await cargarProductosDisponibles()
+    }
   } catch (error) {
     console.error('Error en inicialización:', error)
     $q.notify({
       type: 'negative',
       message: 'Error al inicializar componente',
     })
+  } finally {
+    // Pequeño delay para asegurar que los watches iniciales se ignoren
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 500)
   }
 })
 </script>

@@ -5,10 +5,10 @@
       <div class="col-12">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="settings" size="20px" class="q-mr-sm" />
-          Configuración Principal
+          Definir parámetros iniciales
         </div>
 
         <div
@@ -19,8 +19,8 @@
             <label
               for="tipo"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Tipo de registro <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Tipo de Registro <span class="text-negative">*</span></label
             >
             <q-toggle
               v-model="isIngresoConPedido"
@@ -34,38 +34,49 @@
           </div>
 
           <!-- Mostrar select de pedido si es Ingreso con Pedido -->
-          <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido">
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido">
             <label
               for="pedido"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Pedido Asociado <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.pedido"
-              :options="pedidos"
+              :options="filteredPedidos"
               id="pedido"
               emit-value
               map-options
+              use-input
+              fill-input
+              hide-selected
+              input-debounce="0"
+              @filter="filterFnPedidos"
               dense
               outlined
               bg-color="white"
               class="premium-input text-weight-medium"
               hide-bottom-space
               :rules="[(val) => !!val || 'Campo requerido']"
+              @update:model-value="seleccionarPedido"
             >
               <template v-slot:prepend>
                 <q-icon name="receipt_long" color="primary" />
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey text-italic"> No hay resultados </q-item-section>
+                </q-item>
               </template>
             </q-select>
           </div>
 
           <!-- Mostrar almacén si es Ingreso sin Pedido (Directo) -->
-          <div class="col-12 col-md-8 animate__animated animate__fadeIn" v-if="conPEdido === false">
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido === false">
             <label
               for="almacen"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Almacén de Destino <span class="text-negative">*</span></label
             >
             <q-select
@@ -85,6 +96,18 @@
               </template>
             </q-select>
           </div>
+
+          <div class="col-12 col-md-4 animate__animated animate__fadeIn">
+            <label for="fecha">Fecha*</label>
+            <q-input
+              v-model="localData.fecha"
+              type="date"
+              id="fecha"
+              outlined
+              dense
+              bg-color="white"
+            />
+          </div>
         </div>
       </div>
 
@@ -92,7 +115,7 @@
       <div class="col-12 q-mt-md">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="inventory_2" size="20px" class="q-mr-sm" />
           Detalles de la Compra
@@ -103,7 +126,7 @@
             <label
               for="nombre"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Nombre <span class="text-negative">*</span></label
             >
             <q-input
@@ -126,7 +149,7 @@
             <label
               for="codigo"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Código <span class="text-negative">*</span></label
             >
             <q-input
@@ -149,7 +172,7 @@
             <label
               for="provedor"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Proveedor <span class="text-negative">*</span></label
             >
             <q-select
@@ -185,7 +208,7 @@
             <label
               for="factura"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
+              style="font-size: 13px"
               >Nro. Factura <span class="text-grey-5">(Opcional)</span></label
             >
             <q-input
@@ -209,7 +232,7 @@
       <div class="col-12 q-mt-md">
         <div
           class="text-subtitle2 text-primary text-weight-bold q-mb-md flex items-center"
-          style="letter-spacing: 0.5px; text-transform: uppercase"
+          style="letter-spacing: 0.5px"
         >
           <q-icon name="payments" size="20px" class="q-mr-sm" />
           Condiciones de Pago
@@ -230,8 +253,8 @@
             <label
               for="tipocompra"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Tipo de Compra <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Forma de Pago <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.tipocompra"
@@ -258,8 +281,8 @@
             <label
               for="cajaBanco"
               class="text-weight-bold text-grey-9 q-mb-sm block"
-              style="font-size: 13px; text-transform: uppercase"
-              >Seleccione Caja o Banco <span class="text-negative">*</span></label
+              style="font-size: 13px"
+              >Seleccione Medio de Pago <span class="text-negative">*</span></label
             >
 
             <q-select
@@ -332,10 +355,12 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
+import { cambiarFormatoFecha, obtenerFechaActualDato } from 'src/composables/FuncionesG'
+const filteredPedidos = ref([])
 const $q = useQuasar()
 const idempresa = idempresa_md5()
 const conPEdido = ref(true)
@@ -379,62 +404,132 @@ const onSubmit = () => {
   emit('submit', localData.value)
 }
 
+// 3. NUEVO: Función encargada de filtrar los pedidos según lo que escriba el usuario
+function filterFnPedidos(val, update) {
+  if (val === '') {
+    update(() => {
+      filteredPedidos.value = [...pedidos.value]
+    })
+    return
+  }
+
+  update(() => {
+    const needle = val.toLowerCase()
+    // Busca coincidencias en el label (Almacén, código, fecha, observación)
+    filteredPedidos.value = pedidos.value.filter((v) => v.label.toLowerCase().includes(needle))
+  })
+}
+const seleccionarPedido = () => {
+  const pedidoSeleccionado = pedidos.value.find(
+    (pedido) => Number(pedido.value) === Number(localData.value.pedido),
+  )
+  console.log('Pedido seleccionado:', pedidoSeleccionado)
+  if (pedidoSeleccionado) {
+    const idAlmacen = Number(pedidoSeleccionado.idalmacen)
+    const almacenObj = props.almacenes.find((a) => Number(a.value) === idAlmacen)
+    localData.value.almacen = almacenObj || null
+  } else {
+    localData.value.almacen = null
+  }
+}
 const verificar = () => {
   const tipo = localData.value.tipoRegistro
   //console.log(tipo)
   conPEdido.value = tipo == 1
 }
-async function cargarPedidos() {
-  // console.log('=== CARGANDO PEDIDOS ===')
-  // console.log('props.almacenes:', props.almacenes)
-  // console.log('props.almacenes.length:', props.almacenes?.length)
+// async function cargarPedidos() {
+//   // console.log('=== CARGANDO PEDIDOS ===')
+//   // console.log('props.almacenes:', props.almacenes)
+//   // console.log('props.almacenes.length:', props.almacenes?.length)
 
+//   if (!props.almacenes || props.almacenes.length === 0) {
+//     console.warn('No hay almacenes disponibles para cargar pedidos')
+//     pedidos.value = []
+//     return
+//   }
+
+//   try {
+//     const idAlmacenes = props.almacenes.map((obj) => obj.value)
+//     //console.log('IDs de almacenes:', idAlmacenes)
+
+//     const response = await api.get(`listaPedido/${idempresa}`)
+//     console.log('Respuesta API pedidos:', response.data)
+//     //console.log('Total pedidos recibidos:', response.data.length)
+
+//     const filtrados = response.data.filter((item) => {
+//       // Convert to number for comparison since API returns strings
+//       const idAlmacenNum = Number(item.idalmacen)
+//       const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
+//       const cumpleEstado = Number(item.estado) == 2 // Pendiente
+//       const cumpleAutorizacion = Number(item.autorizacion) == 1 // Autorizado
+//       const cumpleTipoPedido = Number(item.tipopedido) == 1 // Solo pedidos de compra
+
+//       console.log(`Pedido ${item.id}:`, {
+//         idalmacen: item.idalmacen,
+//         idAlmacenNum,
+//         cumpleAlmacen,
+//         estado: item.estado,
+//         cumpleEstado,
+//         autorizacion: item.autorizacion,
+//         cumpleAutorizacion,
+//         tipopedido: item.tipopedido,
+//         cumpleTipoPedido,
+//         pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido,
+//       })
+
+//       return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
+//     })
+
+//     // console.log('Pedidos filtrados:', filtrados)
+
+//     PedidosAlmacen.value = filtrados
+//     pedidos.value = filtrados.map((item) => ({
+//       label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+//       idalmacen: item.idalmacen,
+//       value: item.id,
+//     }))
+//     //console.log('Pedidos formateados para select:', pedidos.value)
+//   } catch (error) {
+//     console.error('Error al cargar datos:', error)
+//     $q.notify({
+//       type: 'negative',
+//       message: 'No se pudieron cargar los Pedidos',
+//     })
+//   }
+// }
+async function cargarPedidos() {
   if (!props.almacenes || props.almacenes.length === 0) {
     console.warn('No hay almacenes disponibles para cargar pedidos')
     pedidos.value = []
+    filteredPedidos.value = [] // También limpiar los filtrados
     return
   }
 
   try {
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
-    //console.log('IDs de almacenes:', idAlmacenes)
-
     const response = await api.get(`listaPedido/${idempresa}`)
-    //console.log('Respuesta API pedidos:', response.data)
-    //console.log('Total pedidos recibidos:', response.data.length)
 
     const filtrados = response.data.filter((item) => {
-      // Convert to number for comparison since API returns strings
       const idAlmacenNum = Number(item.idalmacen)
       const cumpleAlmacen = idAlmacenes.includes(idAlmacenNum)
-      const cumpleEstado = Number(item.estado) == 2 // Pendiente
-      const cumpleAutorizacion = Number(item.autorizacion) == 1 // Autorizado
-      const cumpleTipoPedido = Number(item.tipopedido) == 1 // Solo pedidos de compra
-
-      console.log(`Pedido ${item.id}:`, {
-        idalmacen: item.idalmacen,
-        idAlmacenNum,
-        cumpleAlmacen,
-        estado: item.estado,
-        cumpleEstado,
-        autorizacion: item.autorizacion,
-        cumpleAutorizacion,
-        tipopedido: item.tipopedido,
-        cumpleTipoPedido,
-        pasa: cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido,
-      })
+      const cumpleEstado = Number(item.estado) == 2
+      const cumpleAutorizacion = Number(item.autorizacion) == 1
+      const cumpleTipoPedido = Number(item.tipopedido) == 1
 
       return cumpleAlmacen && cumpleEstado && cumpleAutorizacion && cumpleTipoPedido
     })
 
-    // console.log('Pedidos filtrados:', filtrados)
-
     PedidosAlmacen.value = filtrados
+
+    // Mapeamos los datos originales
     pedidos.value = filtrados.map((item) => ({
-      label: `${item.almacen} - ${item.observacion || 'Sin observación'}`,
+      label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+      idalmacen: item.idalmacen,
       value: item.id,
     }))
-    //console.log('Pedidos formateados para select:', pedidos.value)
+
+    // 2. NUEVO: Inicializar la lista reactiva que usa el q-select con todos los pedidos cargados
+    filteredPedidos.value = [...pedidos.value]
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
@@ -477,7 +572,6 @@ watch(
 watch(
   () => conPEdido.value,
   (newVal) => {
-    console.log('Watch conPEdido triggered:', newVal)
     if (newVal && props.almacenes && props.almacenes.length > 0) {
       cargarPedidos()
     }
@@ -490,7 +584,9 @@ watch(
   (newVal) => {
     const pedido = PedidosAlmacen.value.find((obj) => obj.id == newVal)
     if (pedido) {
-      localData.value.almacen = pedido.idalmacen
+      const idAlmacen = Number(pedido.idalmacen)
+      const almacenObj = props.almacenes.find((a) => Number(a.value) === idAlmacen)
+      localData.value.almacen = almacenObj || null
     }
     console.log('Almacén asignado:', localData.value.almacen)
   },
@@ -508,6 +604,13 @@ watch(
     }
   },
 )
+onMounted(() => {
+  verificar()
+  if (props.almacenes && props.almacenes.length > 0) {
+    cargarPedidos()
+  }
+  localData.value.fecha = obtenerFechaActualDato()
+})
 </script>
 
 <style scoped>

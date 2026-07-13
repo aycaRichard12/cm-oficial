@@ -1,6 +1,17 @@
 <template>
   <q-page padding>
-    <div class="titulo">Solicitudes de Anulación de Compras</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Solicitudes de Anulación de Compras
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Solicitudes de Anulación de Compras
+        </div>
+      </div>
+    </div>
 
     <!-- Barra de filtros -->
     <div class="row items-center q-mb-md q-gutter-sm">
