@@ -519,7 +519,7 @@ const detalleForm = ref({
   descripcion: '',
   stockActual: 0,
   unidad: '',
-  productoUnico: false,
+  productoUnico: true,
   sinPrecio: false,
 })
 
@@ -683,7 +683,7 @@ function confirmarCantidadEspecial() {
 }
 async function onSubmit() {
   if (!formRef.value.validate()) return
-  if (!esModoEdicion.value && detalleForm.value.productoUnico) {
+  if (!esModoEdicion.value && detalleForm.value.productoUnico && productoUnico.value) {
     const confirmado = await confirmarCantidadEspecial()
     if (!confirmado) return
   }

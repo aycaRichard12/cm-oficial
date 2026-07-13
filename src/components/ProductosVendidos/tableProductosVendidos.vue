@@ -1,45 +1,64 @@
 <template>
-  <BaseFilterableTable
-    ref="refHijo"
-    title="Reporte Productos Vendidos"
-    nombreColumnaTotales="estado"
-    :rows="props.rows"
-    :columns="columnas"
-    :arrayHeaders="ArrayHeaders"
-    :sumColumns="summationHeaders"
-    row-key="id"
-    flat
-    bordered
-    class="q-ma-sm shadow-2 rounded-borders"
-  >
-    <!-- Columna: Tipo (Estado) -->
-    <template v-slot:body-cell-tipoDocumento="props">
-      <q-td :props="props" class="text-center">
-        {{ props.row.tipoDocumento || 'Desconocido' }}
-      </q-td>
-    </template>
-    <template v-slot:body-cell-descripcion="props">
-      <q-td :props="props" class="text-center">
-        {{ props.row.descripcion }}
-        <span v-if="props.row.descripcionAdicional">
-          <br />
-          <small class="text-weight-bold">{{ props.row.descripcionAdicional }}</small>
-        </span>
-      </q-td>
-    </template>
+  <div>
+    <!-- Selector de vista -->
+    <div class="row justify-end q-mb-sm">
+      <q-btn-toggle
+        v-model="tipoVista"
+        no-caps
+        unelevated
+        toggle-color="primary"
+        color="white"
+        text-color="primary"
+        :options="[
+          { label: 'Lista Compacta', value: 'compacta' },
+          { label: 'Lista Extensa', value: 'extensa' },
+        ]"
+      />
+    </div>
 
-    <!-- Columna: Estado de Cobro -->
+    <BaseFilterableTable
+      ref="refHijo"
+      title="Reporte Productos Vendidos"
+      nombreColumnaTotales="estado"
+      :rows="props.rows"
+      :columns="columnasMostrar"
+      :arrayHeaders="headersMostrar"
+      :sumColumns="summationHeaders"
+      row-key="id"
+      flat
+      bordered
+      class="q-ma-sm shadow-2 rounded-borders"
+    >
+      <!-- Columna: Tipo (Estado) -->
+      <template v-slot:body-cell-tipoDocumento="props">
+        <q-td :props="props" class="text-center">
+          {{ props.row.tipoDocumento || 'Desconocido' }}
+        </q-td>
+      </template>
 
-    <template v-slot:body-cell-total_sumatorias="props">
-      <q-td :props="props" class="text-right text-weight-bold">
-        {{ formatCurrency(props.row.total_sumatorias) }}
-      </q-td>
-    </template>
-  </BaseFilterableTable>
+      <!-- Descripción del producto -->
+      <template v-slot:body-cell-descripcion="props">
+        <q-td :props="props" class="text-center">
+          {{ props.row.descripcion }}
+          <span v-if="props.row.descripcionAdicional">
+            <br />
+            <small class="text-weight-bold">{{ props.row.descripcionAdicional }}</small>
+          </span>
+        </q-td>
+      </template>
+
+      <!-- Columna de totales al final -->
+      <template v-slot:body-cell-total_sumatorias="props">
+        <q-td :props="props" class="text-right text-weight-bold">
+          {{ formatCurrency(props.row.total_sumatorias) }}
+        </q-td>
+      </template>
+    </BaseFilterableTable>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const refHijo = ref(null)
@@ -52,27 +71,13 @@ const props = defineProps({
     default: () => [],
   },
 })
-//console.log('Props recibidas en TableReporteCotizacion:', props.rows)
-defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
 
-function getActiveFiltersReport() {
-  return refHijo.value.getActiveFiltersReport()
-}
+// Estado del selector de vista
+const tipoVista = ref('extensa') // por defecto Lista Extensa
 
-function ejecutarDesdePadre() {
-  const resultado = refHijo.value.obtenerDatosFiltrados()
-
-  console.log('Resultado recibido del hijo:', resultado)
-  return resultado
-}
-
-// Eventos que serán emitidos al componente padre
-defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
-
-// Mapeo de tipos de venta (copiado de la lógica del archivo original)
-
-// Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
-const columnas = [
+// ================== Definición de columnas ==================
+// Columnas para vista extensa (todas las originales)
+const columnasExtensas = [
   { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
   {
     name: 'fecha',
@@ -268,28 +273,159 @@ const columnas = [
   },
 ]
 
-// estado de cobro
-// 1: 'Activo',
-//   2: 'Finalizado',
-//   3: 'Atrasado',
-//   4: 'Anulado',
+// Columnas para vista compacta (sólo las 10 especificadas)
+const columnasCompactas = [
+  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    align: 'right',
+    field: 'fecha',
+    dataType: 'date',
+    soportable: true,
+  },
+  {
+    name: 'nrofactura',
+    label: 'N° Doc.',
+    align: 'right',
+    field: 'nrofactura',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'cliente',
+    label: 'Razón Social Empresa',
+    align: 'left',
+    field: 'cliente',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'codigo',
+    label: 'Código Producto',
+    align: 'left',
+    field: 'codigo',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'descripcion',
+    label: 'Descripción de Producto',
+    align: 'left',
+    field: 'descripcion',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
+    name: 'cantidad',
+    label: 'Cantidad',
+    align: 'right',
+    field: 'cantidad',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'preciounitario',
+    label: 'Precio Unitario',
+    align: 'right',
+    field: 'preciounitario',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'descuento',
+    label: 'Dscto.',
+    align: 'right',
+    field: 'descuento',
+    dataType: 'number',
+    sortable: true,
+  },
+  {
+    name: 'totalventa',
+    label: 'Venta Total',
+    align: 'right',
+    field: 'totalventa',
+    dataType: 'number',
+    sortable: true,
+  },
+]
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat('es-BO', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0)
-}
+// Columnas que se mostrarán en la tabla según el modo
+const columnasMostrar = computed(() =>
+  tipoVista.value === 'compacta' ? columnasCompactas : columnasExtensas,
+)
 
-// Headers para la tabla filtrable (copiado del archivo original)
-const ArrayHeaders = [
+// ================== Headers para filtros ==================
+// Headers para vista extensa (todos los originales)
+const headersExtensos = [
   'fecha',
   'nrofactura',
   'tipoDocumento',
   'codigo',
   'codigobarra',
   'descripcion',
+  'preciounitario',
+  'cantidad',
+  'importe',
+  'descuento',
+  'totalventa',
+  'tipopago',
+  'idusuario',
+  'sucursalc',
+  'almacen',
+  'cliente',
+  'tipodocumento',
+  'nrodoc',
+  'nombrecomercial',
+  'unidad',
+  'categoria',
+  'subcategoria',
+  'canal',
+  'tipoprecio',
 ]
 
+// Headers para vista compacta (sólo campos visibles, se omite 'nro' como en la original)
+const headersCompactos = [
+  'fecha',
+  'nrofactura',
+  'cliente',
+  'codigo',
+  'descripcion',
+  'cantidad',
+  'preciounitario',
+  'descuento',
+  'totalventa',
+]
+
+// Headers dinámicos
+const headersMostrar = computed(() =>
+  tipoVista.value === 'compacta' ? headersCompactos : headersExtensos,
+)
+
+// ================== Sumatorias ==================
 const summationHeaders = ['cantidad', 'importe', 'descuento', 'totalventa']
+
+// ================== Métodos expuestos ==================
+defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
+
+function getActiveFiltersReport() {
+  return refHijo.value.getActiveFiltersReport()
+}
+
+function ejecutarDesdePadre() {
+  const resultado = refHijo.value.obtenerDatosFiltrados()
+  console.log('Resultado recibido del hijo:', resultado)
+  return resultado
+}
+
+// Eventos emitidos
+defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
+
+// Formateo de moneda
+function formatCurrency(value) {
+  return new Intl.NumberFormat('es-BO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value) || 0)
+}
 </script>

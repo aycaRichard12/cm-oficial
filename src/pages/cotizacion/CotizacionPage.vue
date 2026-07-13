@@ -1381,11 +1381,11 @@ import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 
 const permisosStore = useOperacionesPermitidas()
-console.log(permisosStore.tienePermiso('editarprecioventa'))
+//console.log(permisosStore.tienePermiso('editarprecioventa'))
 
 const showAddModal = ref(false)
 const esProductoUnico = ref(false)
-const registrarComoProductoUnico = ref(false)
+const registrarComoProductoUnico = ref(true)
 const idempresa = idempresa_md5()
 const isInitializing = ref(false)
 const CodigosUnicosSeleccionados = ref([])

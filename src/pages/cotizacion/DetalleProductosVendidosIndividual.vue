@@ -188,7 +188,8 @@ const sucursalSeleccionadaId = ref(null)
 const showClienteDropdown = ref(false)
 const showSucursalDropdown = ref(false)
 const loading = ref(false)
-
+const resultadoFiltrado = ref([])
+const refHijo = ref(null)
 const formularioExcel = reactive([])
 
 const tipoVentaMap = {
@@ -525,9 +526,11 @@ const exportarTablaAExcel = () => {
     return
   }
 
+  resultadoFiltrado.value = refHijo.value.obtenerDatos()
+
   // Prepare data for Excel
   formularioExcel.splice(0) // Clear previous data
-  datosFiltrados.value.forEach((key) => {
+  resultadoFiltrado.value.forEach((key) => {
     formularioExcel.push({
       Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
       'Nro. Doc.': key.nrofactura,
