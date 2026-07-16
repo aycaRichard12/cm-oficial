@@ -3,16 +3,17 @@ import { validarUsuario } from 'src/composables/FuncionesG'
 import { peticionGET } from 'src/composables/peticionesFetch'
 import { QuickConsultPage } from 'src/modules/quick-consult'
 import { configSucursalSinPage } from 'src/modules/configurarsucursalSin'
+import { routes as utilidadesRoutes } from 'src/modules/ReportesUtilidades'
 async function empresaRegistrada() {
   const contenidousuario = validarUsuario()
   const idempresa = contenidousuario?.[0]?.empresa?.idempresa
   if (!idempresa) return true // O manejar como no registrado
   const endpoint = `${URL_APICM}api/empresaRegistrada/${idempresa}`
-  console.log(endpoint)
+  //console.log(endpoint)
 
   try {
     const resultado = await peticionGET(endpoint)
-    console.log(resultado)
+    //console.log(resultado)
     return resultado.estado !== 'error'
   } catch (error) {
     console.error('Error al consultar empresa:', error)
@@ -440,6 +441,7 @@ const routes = [
         name: 'QuickConsult',
         component: QuickConsultPage,
       },
+      ...utilidadesRoutes,
     ],
   },
   {

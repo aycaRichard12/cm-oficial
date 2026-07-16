@@ -212,7 +212,7 @@ function getActiveFiltersReport() {
 function ejecutarDesdePadre() {
   const resultado = refHijo.value.obtenerDatosFiltrados()
 
-  console.log('Resultado recibido del hijo:', resultado)
+  //console.log('Resultado recibido del hijo:', resultado)
   return resultado
 }
 

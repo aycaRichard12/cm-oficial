@@ -41,9 +41,15 @@ export function useReporteProductosVendidosGlobal() {
 
   const validarFechas = (fechaFin) => {
     if (!fechaInicial.value || !fechaFin) return true
-    return date.getDateDiff(fechaFin, fechaInicial.value, 'days') >= 0
-  }
 
+    const inicio = date.extractDate(fechaInicial.value, 'DD/MM/YYYY')
+    const fin = date.extractDate(fechaFin, 'DD/MM/YYYY')
+
+    // console.log(inicio)
+    // console.log(fin)
+
+    return date.getDateDiff(fin, inicio, 'days') >= 0
+  }
   // --- Cargas de Datos (Almacenes, Clientes, Sucursales) ---
   const cargarAlmacenes = async () => {
     try {

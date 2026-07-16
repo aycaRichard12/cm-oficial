@@ -318,6 +318,7 @@ const generarReporte = async () => {
         ...row,
         nro: index + 1,
       }))
+
       datosFiltrados.value = [...numerados] // Initialize with all data
       $q.notify({
         type: 'positive',
@@ -505,13 +506,28 @@ const filtrarYOrdenarDatos = () => {
   let tempDatos = [...datosOriginales.value]
 
   if (almacenSeleccionado.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idalmacen == almacenSeleccionado.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idalmacen) === Number(almacenSeleccionado.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   if (clienteSeleccionadoId.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idclienteve == clienteSeleccionadoId.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idclienteve) === Number(clienteSeleccionadoId.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   if (sucursalSeleccionadaId.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idsucursalve == sucursalSeleccionadaId.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idsucursalve) === Number(sucursalSeleccionadaId.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   datosFiltrados.value = tempDatos
 }
