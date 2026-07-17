@@ -318,6 +318,7 @@ const generarReporte = async () => {
         ...row,
         nro: index + 1,
       }))
+      console.log('Datos numerados:', numerados)
 
       datosFiltrados.value = [...numerados] // Initialize with all data
       $q.notify({
