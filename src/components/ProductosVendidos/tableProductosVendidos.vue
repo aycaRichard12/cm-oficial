@@ -1,7 +1,23 @@
 <template>
   <div>
+    <div class="row justify-left q-mb-sm"></div>
+
     <!-- Selector de vista -->
     <div class="row justify-end q-mb-sm">
+      <q-btn
+        id="btnexportarexcel"
+        label="Exportar a Excel"
+        icon="mdi-file-excel"
+        color="green"
+        @click="$emit('exportarexcel')"
+      />
+      <q-btn
+        v-if="tipoVista == 'compacta'"
+        label="PDF"
+        icon="mdi-file-pdf-box"
+        color="red"
+        @click="$emit('reportepdf')"
+      />
       <q-btn-toggle
         v-model="tipoVista"
         no-caps
@@ -406,7 +422,7 @@ const headersMostrar = computed(() =>
 const summationHeaders = ['cantidad', 'importe', 'descuento', 'totalventa']
 
 // ================== Métodos expuestos ==================
-defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
+defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport, tipoVista })
 
 function getActiveFiltersReport() {
   return refHijo.value.getActiveFiltersReport()
@@ -419,7 +435,7 @@ function ejecutarDesdePadre() {
 }
 
 // Eventos emitidos
-defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
+defineEmits(['reportepdf', 'exportarexcel'])
 
 // Formateo de moneda
 function formatCurrency(value) {

@@ -106,7 +106,7 @@ import { api } from 'src/boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { PDFComprovanteVenta } from 'src/utils/pdfs/DetalleVentaComprbante/reporte.js'
-import { PDFreporteVentasPeriodo } from 'src/utils/pdfReportGenerator'
+import { PDFreporteVentasPeriodo } from 'src/utils/pdfs/reporteVentasPeriodo/reporte.js'
 import { PDFenviarFacturaCorreo } from 'src/utils/pdfReportGenerator'
 import { exportTOXLSX_Reporte_Ventas } from 'src/utils/XCLReportImport'
 //import { getUsuario } from 'src/composables/FuncionesGenerales'
@@ -114,7 +114,12 @@ import RegistrarNotaCreditoDebito from 'src/pages/NotasCreditoDebito/RegistrarNo
 import { primerDiaDelMes, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import TableReporteVentas from './TableReporteVentas.vue'
 import EnviarCorreoDialog from './EnviarCorreoDialog.vue'
-import { getTipoFactura } from 'src/composables/FuncionesG'
+import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+import { obtenerDivisaActiva } from 'src/services/divisaService'
+// Cargar automáticamente al montar el componente
+
+const ID_EMPRESA = idempresa_md5()
+const divisa = ref(null)
 const dialogCorreo = ref(false)
 
 const emailCliente = ref('')
@@ -282,7 +287,13 @@ const vistaPrevia = () => {
     label: filterReporte.almacen,
     value: 0,
   }
-  const doc = PDFreporteVentasPeriodo(resultadoFiltrado, almacen)
+  const doc = PDFreporteVentasPeriodo(
+    resultadoFiltrado,
+    almacen,
+    fechai.value,
+    fechaf.value,
+    divisa.value?.simbolo ?? '$',
+  )
 
   pdfData.value = doc.output('dataurlstring') // muestra el pdf en un modal
   mostrarModal.value = true
@@ -372,7 +383,23 @@ function abrirModal(venta) {
   ventaSeleccionada.value = venta
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    let tipoFactura = ''
+    let token = ''
+    if (getTipoFactura(true) && getToken(true)) {
+      tipoFactura = getTipoFactura()
+      token = getToken()
+    }
+    divisa.value = await obtenerDivisaActiva(ID_EMPRESA, token, tipoFactura)
+    console.log('Divisa activa:', divisa.value)
+  } catch (error) {
+    console.error('Error al obtener divisa activa:', error)
+    $q.notify({
+      type: 'warning',
+      message: 'No se pudo cargar la divisa activa. Usando configuración por defecto.',
+    })
+  }
   //cargarAlmacenes()
   //getClientes()
   //getCanalVenta()

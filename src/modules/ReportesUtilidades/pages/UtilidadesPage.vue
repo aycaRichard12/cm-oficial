@@ -28,6 +28,19 @@
     <div class="q-my-md">
       <q-btn color="primary" label="Ver Detalle" @click="obtenerReporte" />
     </div>
+    <div class="q-my-md">
+      <q-tabs
+        v-model="tipoReporte"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+      >
+        <q-tab name="detalle" label="Detalle" />
+        <q-tab name="grafico" label="Gráfico" />
+      </q-tabs>
+    </div>
 
     <div class="q-mt-md">
       <TablaReporte
@@ -43,6 +56,15 @@
         @descargar-p-d-f="descargarPDF"
       />
 
+      <tablaGrafico
+        v-if="tipoReporte === 'grafico' && graficoData.length"
+        title="Ventas por periodo"
+        :rows="graficoData"
+        :columns="graficoColumns"
+        row-key="periodo"
+        :rowsPerPage="30"
+      />
+
       <div v-if="errorMensaje" class="text-negative q-mt-md">
         {{ errorMensaje }}
       </div>
@@ -53,10 +75,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { useReporteVentas, detalleColumns } from '../composables/useReporteVentas'
+import { useReporteVentas } from '../composables/useReporteVentas'
 import FiltrosReporte from '../components/FiltrosReporte.vue'
 import ResumenCards from '../components/ResumenCards.vue'
 import TablaReporte from '../components/TablaReporte.vue'
+import tablaGrafico from '../components/tablaGrafico.vue'
 import { PDFreporteUtilidadesProductos } from 'src/utils/pdfs/utilidades/reporte'
 import { exportToXLSX_Reporte_Utilidades } from 'src/utils/XCLReportImport'
 
@@ -65,9 +88,12 @@ const $q = useQuasar()
 $q.iconSet.currency = 'AA'
 
 const getSelectedLabels = () => {
-  const selectedAlmacen = listaAlmacenes.value.find((item) => item.value === form.almacen_id)?.label || null
-  const selectedCliente = listaClientes.value.find((item) => item.value === form.cliente_id)?.label || null
-  const selectedCampana = listaCampanas.value.find((item) => item.value === form.campana_id)?.label || null
+  const selectedAlmacen =
+    listaAlmacenes.value.find((item) => item.value === form.almacen_id)?.label || null
+  const selectedCliente =
+    listaClientes.value.find((item) => item.value === form.cliente_id)?.label || null
+  const selectedCampana =
+    listaCampanas.value.find((item) => item.value === form.campana_id)?.label || null
 
   let selectedCategoria = null
   for (const cat of listaCategoriaProductos.value) {
@@ -89,7 +115,8 @@ const getSelectedLabels = () => {
 const descargarPDF = () => {
   const datos = refHijo.value.obtenerDatos()
   console.log(datos)
-  const { selectedAlmacen, selectedCliente, selectedCampana, selectedCategoria } = getSelectedLabels()
+  const { selectedAlmacen, selectedCliente, selectedCampana, selectedCategoria } =
+    getSelectedLabels()
   const doc = PDFreporteUtilidadesProductos(
     datos,
     form.fecha_inicio,
@@ -108,7 +135,8 @@ const descargarPDF = () => {
 
 const descargarExcel = () => {
   const datos = refHijo.value.obtenerDatos()
-  const { selectedAlmacen, selectedCliente, selectedCampana, selectedCategoria } = getSelectedLabels()
+  const { selectedAlmacen, selectedCliente, selectedCampana, selectedCategoria } =
+    getSelectedLabels()
   exportToXLSX_Reporte_Utilidades(
     datos,
     form.fecha_inicio,
@@ -139,8 +167,10 @@ const {
   tipoReporte,
   resumenData,
   detalleData,
-
+  graficoData,
   divisa,
+  detalleColumns,
+
   obtenerReporte,
   obtenerResumen,
   init,

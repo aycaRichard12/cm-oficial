@@ -2,10 +2,6 @@
 import { api } from 'boot/axios'
 
 export async function obtenerDivisaActiva(idempresa, token, tipoFactura) {
-  if (!tipoFactura || !token) {
-    throw new Error('Faltan credenciales')
-  }
-
   const endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
   const response = await api.get(endpoint)
   const data = response.data?.data || response.data

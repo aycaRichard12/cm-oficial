@@ -29,6 +29,12 @@ const routes = [
   {
     path: '/',
     beforeEnter: async (to, from, next) => {
+      // Excepción: la ruta /factura no necesita autenticación ni configuración
+      if (to.path === '/factura') {
+        next('/factura')
+        return
+      }
+
       // 1. Verificar Autenticación
       const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
@@ -460,6 +466,13 @@ const routes = [
       }
     },
     component: () => import('pages/auth/LoginPage.vue'),
+  },
+  {
+    path: '/factura/:i/:e',
+
+    name: 'pdfFactura',
+
+    component: () => import('src/pages/GenerarPDFQR/FacturaQrPage.vue'),
   },
   // Always leave this as last one,
   // but you can also remove it reportedecompras registrarventa

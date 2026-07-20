@@ -6,8 +6,7 @@ import { Platform } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import { cargarLogoBase64 } from 'src/composables/FuncionesG'
-// import { getComercialImagenProducto } from 'src/composables/FuncionesG'
-// import { convertirAMayusculas } from 'src/composables/FuncionesG'
+
 import { obtenerHora } from 'src/composables/FuncionesG'
 export function verificarTamanoPantallaYRedirigir(doc) {
   if (Platform.is.mobile || window.innerWidth < 768) {
@@ -355,25 +354,25 @@ function agregarEncabezado(doc) {
   //Datos Izquierda
   doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
-  doc.text(nombreEmpresa, 10, 10)
+  doc.text(nombreEmpresa || '', 10, 10)
 
   doc.setFontSize(8)
   doc.setFont(undefined, 'normal')
-  doc.text(direccionEmpresa, 10, 13)
-  doc.text(estado, 10, 16)
-  doc.text(ciudad, 10, 19)
-  doc.text(pais, 10, 22)
+  doc.text(direccionEmpresa || '', 10, 13)
+  doc.text(estado || '', 10, 16)
+  doc.text(ciudad || '', 10, 19)
+  doc.text(pais || '', 10, 22)
   //Datos Derecho
   doc.setFontSize(9)
   doc.setFont(undefined, 'bold')
-  doc.text('NIT:' + nit, pageWidth - 10, 10, { align: 'right' })
+  doc.text('NIT:' + (nit || ''), pageWidth - 10, 10, { align: 'right' })
 
   doc.setFontSize(8)
   doc.setFont(undefined, 'normal')
-  doc.text('Telf.: ' + telefono, pageWidth - 10, 13, { align: 'right' })
-  doc.text('Cel.: ' + celular, pageWidth - 10, 16, { align: 'right' })
-  doc.text(email, pageWidth - 10, 19, { align: 'right' })
-  doc.text(web, pageWidth - 10, 22, { align: 'right' })
+  doc.text('Telf.: ' + (telefono || ''), pageWidth - 10, 13, { align: 'right' })
+  doc.text('Cel.: ' + (celular || ''), pageWidth - 10, 16, { align: 'right' })
+  doc.text(email || '', pageWidth - 10, 19, { align: 'right' })
+  doc.text(web || '', pageWidth - 10, 22, { align: 'right' })
 
   doc.setDrawColor(0)
   doc.setLineWidth(0.2)
