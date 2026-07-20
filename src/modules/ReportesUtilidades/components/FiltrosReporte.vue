@@ -176,7 +176,7 @@
             <q-select
               :model-value="form.granularidad"
               @update:model-value="(val) => updateField('granularidad', val)"
-              :options="['dia', 'semana', 'mes']"
+              :options="['dia', 'semana', 'mes', 'anual']"
               label="Agrupar por"
               emit-value
               outlined

@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useReporteVentas } from '../composables/useReporteVentas'
 import FiltrosReporte from '../components/FiltrosReporte.vue'
@@ -170,11 +170,17 @@ const {
   graficoData,
   divisa,
   detalleColumns,
-
+  graficoColumns,
   obtenerReporte,
   obtenerResumen,
   init,
 } = useReporteVentas()
+
+watch(tipoReporte, (newVal, oldVal) => {
+  if (resumenData.value && newVal !== oldVal) {
+    obtenerReporte()
+  }
+})
 const actualizarFormulario = (newForm) => {
   Object.assign(form, newForm)
 }
