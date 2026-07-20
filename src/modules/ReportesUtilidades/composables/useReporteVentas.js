@@ -280,7 +280,6 @@ export function useReporteVentas() {
 
   async function obtenerReporte() {
     errorMensaje.value = ''
-    resumenData.value = null
     detalleData.value = []
     graficoData.value = []
 
