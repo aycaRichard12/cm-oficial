@@ -244,7 +244,7 @@
                     color="negative"
                     label="Cancelar"
                     class="q-ml-sm"
-                    @click="resetForm"
+                    @click="toggleCollapse"
                   />
                 </div>
               </q-form>
@@ -891,7 +891,7 @@ const submitForm = async () => {
 
     const response = await api.post('', formulario)
     console.log(response.data)
-    const data = response.data[0]
+    const data = response.data
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
@@ -1243,18 +1243,20 @@ const togglestatus = (row) => {
     try {
       const point = `actualizarEstadomerma/${row.id}/1/${idusuario}`
       const response = await api.get(point) // Cambia a tu ruta real
-      console.log(response)
-      if (response.data.estado === 'exito ') {
+      //console.log(response)
+      const data = response.data
+      //console.log(data.estado)
+      if (data.estado === 'exito') {
         await loadTableData()
 
         $q.notify({
           type: 'positive',
-          message: response.data.mensaje,
+          message: data.mensaje,
         })
       } else {
         $q.notify({
           type: 'negative',
-          message: response.data.mensaje || 'Error desconocido',
+          message: data.mensaje || 'Error desconocido',
         })
       }
     } catch (error) {
