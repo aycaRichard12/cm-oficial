@@ -43,6 +43,13 @@ export function createDetalleColumns(simboloDivisa) {
       sortable: true,
     },
     {
+      name: 'origen',
+      label: 'Tipo',
+      field: 'origen',
+      align: 'left',
+      sortable: true,
+    },
+    {
       name: 'categoria_precio',
       label: 'Categoría Precio',
       field: 'categoria_precio',
@@ -314,6 +321,7 @@ export function useReporteVentas() {
           detalleData.value = data.data
         } else if (tipoReporte.value === 'grafico') {
           graficoData.value = data.data
+          console.log(graficoData.value)
         }
       } else {
         errorMensaje.value = data.mensaje || 'Error al obtener el reporte.'

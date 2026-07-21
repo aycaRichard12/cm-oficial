@@ -87,7 +87,13 @@ defineProps({
   rowsPerPage: { type: Number, default: 15 },
 })
 
-const ArrayHeaders = ['codigo_producto', 'nombre_producto', 'categoria', 'categoria_precio']
+const ArrayHeaders = [
+  'codigo_producto',
+  'nombre_producto',
+  'categoria',
+  'origen',
+  'categoria_precio',
+]
 
 const summationHeaders = [
   'cantidad_vendida',

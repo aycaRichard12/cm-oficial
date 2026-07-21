@@ -55,12 +55,12 @@
         @descargar-excel="descargarExcel"
         @descargar-p-d-f="descargarPDF"
       />
-
       <tablaGrafico
-        v-if="tipoReporte === 'grafico' && graficoData.length"
+        v-if="tipoReporte === 'grafico' && graficoData"
         title="Ventas por periodo"
         :rows="graficoData"
         :columns="graficoColumns"
+        :divisa="divisa"
         row-key="periodo"
         :rowsPerPage="30"
       />

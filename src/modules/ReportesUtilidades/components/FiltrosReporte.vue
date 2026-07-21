@@ -173,11 +173,12 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md-4" v-if="mostrarGranularidad">
+            <label for="granularidad">Agrupar por</label>
             <q-select
               :model-value="form.granularidad"
               @update:model-value="(val) => updateField('granularidad', val)"
               :options="['dia', 'semana', 'mes', 'anual']"
-              label="Agrupar por"
+              id="granularidad"
               emit-value
               outlined
               dense
