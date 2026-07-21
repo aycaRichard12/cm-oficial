@@ -57,7 +57,7 @@
       <q-td :props="props" class="text-nowrap">
         <q-btn
           v-if="tipoFactura"
-          icon="check"
+          icon="cloud_sync"
           color="primary"
           flat=""
           @click="abrirModal(props.row)"
