@@ -230,15 +230,24 @@ function buildSectionData(label, rows) {
           zoom: true,
           zoomin: true,
           zoomout: true,
-          pan: false,
+          pan: true,
           reset: true,
         },
       },
-      // ✅ Nuevo: configuración de zoom
       zoom: {
         enabled: true,
-        type: 'x', // Zoom horizontal; usa 'xy' para ambos ejes
-        autoScaleYaxis: true, // Ajusta automáticamente el eje Y al hacer zoom en X
+        type: 'x',
+        autoScaleYaxis: true,
+        zoomedArea: {
+          fill: { color: '#90CAF9', opacity: 0.4 },
+          stroke: { color: '#1565C0', opacity: 0.6, width: 1 },
+        },
+      },
+      selection: {
+        enabled: true,
+        type: 'x',
+        fill: { color: '#24292e', opacity: 0.1 },
+        stroke: { width: 1, color: '#24292e', opacity: 0.3 },
       },
       animations: {
         enabled: true,
