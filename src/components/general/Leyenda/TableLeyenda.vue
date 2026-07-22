@@ -3,15 +3,14 @@
   <div>
     <div class="flex justify-between">
       <q-btn
-        id="add"
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
         title="Registrar Leyenda"
+        id="add"
       >
         <q-icon name="add" class="icono" />
-
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
       <div>
         <label for="buscar">Buscar...</label>

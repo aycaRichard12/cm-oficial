@@ -5,14 +5,10 @@
       <q-card-section class="q-pa-md">
         <div class="row q-col-gutter-sm items-center justify-between q-mb-sm">
           <div class="col-12 col-md-auto row q-gutter-sm">
-            <q-btn
-              unelevated
-              color="primary"
-              @click="$emit('add')"
-              icon="add"
-              label="Agregar"
-              id="registrarCliente"
-            />
+            <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Cliente">
+              <q-icon name="add" class="icono" />
+              <span class="texto"> <q-icon name="add" /> Nuevo </span>
+            </q-btn>
             <q-btn
               outline
               color="green"

@@ -3,11 +3,16 @@
     <div class="q-pa-md row justify-between">
       <q-btn
         color="primary"
-        icon="add"
-        label="Registrar Cotización"
+        class="btn-res"
         @click="$emit('registrarcotizacion')"
-      />
-      <q-btn color="primary" icon="check" label="PDF" @click="cargarPDF" />
+        no-caps
+        id="btnNuevaCompra"
+        title="Registrar Cotización"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto"> <q-icon name="add" />Registrar Cotización</span>
+      </q-btn>
+      <q-btn color="negative" icon="mdi-file-pdf-box" label="PDF" @click="cargarPDF" outline />
     </div>
 
     <TableCotizacionPrincipal

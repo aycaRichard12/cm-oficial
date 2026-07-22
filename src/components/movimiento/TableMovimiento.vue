@@ -11,13 +11,16 @@
           <div>
             <q-btn
               color="primary"
-              label="Agregar Nuevo"
-              icon="add"
               unelevated
               @click="$emit('addRecord')"
               class="btn-res"
               id="btnAgregarNuevoMovimiento"
-            />
+            >
+              <q-icon name="add" class="icono" />
+              <span class="texto">
+                <q-icon name="add" />{{ collapseVisible ? 'Cancelar Registro' : 'Nuevo' }}</span
+              >
+            </q-btn>
           </div>
         </div>
       </q-card-section>
@@ -392,7 +395,7 @@ const filteredRows = computed(() => {
       indice: indice + 1,
     }))
   }
-  
+
   // Access the ID safely from selectedFilterStore which comes from filterStores (value/label pair)
   const storeId = selectedFilterStore.value.value || selectedFilterStore.value.id
 
@@ -460,11 +463,14 @@ const verDetalle = async (row) => {
     const contenidousuario = validarUsuario()
     const usuario = contenidousuario[0]
     const idempresa = usuario.empresa.idempresa
-    
+
     // Obtener los detalles del movimiento
     const detallePedido = await api.get(`comprobanteMovimiento/${row.id}/${idempresa}`)
-    console.log('a qui que esta llegando',detallePedido)
-  console.log('ruta donde sea hace la peticion', `${api}/comprobanteMovimiento/${row.id}/${idempresa}`)
+    console.log('a qui que esta llegando', detallePedido)
+    console.log(
+      'ruta donde sea hace la peticion',
+      `${api}/comprobanteMovimiento/${row.id}/${idempresa}`,
+    )
     if (detallePedido.data) {
       // Generar el PDF usando la función centralizada
       const doc = PDFComprobanteMovimiento(detallePedido.data)
@@ -476,7 +482,6 @@ const verDetalle = async (row) => {
         message: 'No se encontraron detalles para este movimiento.',
       })
     }
-
   } catch (error) {
     // This catches errors re-thrown from the store (e.g., network errors)
     console.error('Error al obtener el movimiento:', error)

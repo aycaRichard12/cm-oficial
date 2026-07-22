@@ -17,11 +17,18 @@
         <div class="row q-col-gutter-x-md q-mb-md">
           <div class="col-12 flex justify-start">
             <q-btn
-              id="btnnuevoextravio"
               color="primary"
-              :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo'"
+              class="btn-res"
               @click="toggleFormulario"
-            />
+              no-caps
+              id="btnnuevoextravio"
+              title="Registrar Extravio"
+            >
+              <q-icon name="add" class="icono" />
+              <span class="texto">
+                <q-icon name="add" />{{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}</span
+              >
+            </q-btn>
           </div>
         </div>
 
@@ -42,13 +49,13 @@
           </div>
           <div class="col-12 col-md-4">
             <q-btn
-              id="btnpdfextravio"
-              color="info"
-              @click="generarPDF"
+              color="negative"
               :disable="datosTabla.length === 0"
+              @click="generarPDF"
+              outline
               class="btn-res q-mt-lg"
             >
-              <q-icon name="picture_as_pdf" class="icono" />
+              <q-icon name="mdi-file-pdf-box" class="icono" />
               <span class="texto">Vista Previa PDF</span>
             </q-btn>
           </div>

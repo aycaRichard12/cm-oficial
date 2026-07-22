@@ -10,18 +10,19 @@
         </div>
         <div class="col-auto">
           <q-btn
-            id="nuevaCampana"
-            unelevated
             color="primary"
-            icon="add"
-            label="Nueva Campaña"
             @click="
               () => {
                 resetearFormulario()
                 formularioActivo = true
               }
             "
-          />
+            class="btn-res"
+            title="Registrar Campaña"
+          >
+            <q-icon name="add" class="icono" />
+            <span class="texto"> <q-icon name="add" /> Nuevo</span>
+          </q-btn>
         </div>
       </q-card-section>
       <q-card-section
@@ -42,7 +43,7 @@
             ></q-select>
           </div>
           <div class="col-12 col-md-4" id="filtroBusqueda">
-            <q-input  v-model="busqueda" label="Buscar campaña..." outlined dense clearable
+            <q-input v-model="busqueda" label="Buscar campaña..." outlined dense clearable
               ><template v-slot:prepend><q-icon name="search" /></template
             ></q-input>
           </div></div

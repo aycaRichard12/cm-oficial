@@ -3,14 +3,10 @@
     <q-card flat class="q-mb-md" id="filtrosProveedores">
       <q-card-section class="q-pa-md row q-col-gutter-sm items-center justify-between">
         <div class="col-12 col-md-auto row q-gutter-sm">
-          <q-btn
-            unelevated
-            color="primary"
-            @click="$emit('add')"
-            icon="add"
-            label="Agregar"
-            id="agregarProveedor"
-          />
+          <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Proveedor">
+            <q-icon name="add" class="icono" />
+            <span class="texto"> <q-icon name="add" /> Nuevo </span>
+          </q-btn>
           <q-btn
             outline
             color="green"

@@ -1,8 +1,14 @@
 <template>
   <div class="flex justify-between">
-    <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="nuevaAsignacion">
+    <q-btn
+      color="primary"
+      @click="$emit('add')"
+      class="btn-res q-mt-lg"
+      id="nuevaAsignacion"
+      title="Asignar Almacen"
+    >
       <q-icon name="add" class="icono" />
-      <span class="texto">Nueva Asignación</span>
+      <span class="texto"> <q-icon name="add" /> Nueva Asignación</span>
     </q-btn>
     <div id="buscarAsignacion">
       <label for="buscar">Buscar...</label>

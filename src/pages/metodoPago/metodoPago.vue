@@ -97,12 +97,17 @@
     </q-dialog>
     <div class="row">
       <q-btn
-        :label="showForm ? 'Cancelar Registro' : 'Nuevo'"
         color="primary"
-        class="q-ma-lg"
         @click="toggleForm"
-      />
-      <q-btn color="primary" label="Sucursal" to="configurarsucursalsin" class="q-ma-lg" />
+        class="btn-res q-ma-lg"
+        id="agregarCanalDeVenta"
+        title="Registrar Leyenda"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto">
+          <q-icon name="add" /> {{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}
+        </span>
+      </q-btn>
     </div>
 
     <q-table

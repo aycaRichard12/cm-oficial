@@ -1,16 +1,13 @@
 <template>
-  
-    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
-      <div class="col-12 col-md-auto">
-        <div class="text-h5 text-primary text-weight-bold flex items-center">
-          <q-icon name="label" size="md" class="q-mr-sm" />
-          Asignar Categoria
-        </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Asignar Categoria
-        </div>
+  <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+    <div class="col-12 col-md-auto">
+      <div class="text-h5 text-primary text-weight-bold flex items-center">
+        <q-icon name="label" size="md" class="q-mr-sm" />
+        Asignar Categoria
       </div>
+      <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Asignar Categoria</div>
     </div>
+  </div>
   <!-- Encabezado de acciones -->
   <div class="row q-mt-lg q-gutter-md items-center">
     <!-- Columna: botones principales -->
@@ -18,12 +15,14 @@
       <q-btn
         color="primary"
         class="btn-res"
-        icon="add"
-        label="Nueva Asignación"
         no-caps
         @click="$emit('add')"
         id="btn-categoria-precios"
-      />
+        title="Asignar Catgoria Precio"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto"> <q-icon name="add" /> Nueva Asignación</span>
+      </q-btn>
 
       <q-btn
         color="secondary"

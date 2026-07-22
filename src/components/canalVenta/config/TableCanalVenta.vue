@@ -1,9 +1,15 @@
 <template>
   <div class="q-pa-md">
     <div class="flex justify-between">
-      <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="agregarCanalDeVenta">
+      <q-btn
+        color="primary"
+        @click="$emit('add')"
+        class="btn-res q-mt-lg"
+        id="agregarCanalDeVenta"
+        title="Registrar Canal Venta"
+      >
         <q-icon name="add" class="icono" />
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
 
       <!-- <div class="col flex items-center justify-end">

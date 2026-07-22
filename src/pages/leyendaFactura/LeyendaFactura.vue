@@ -74,13 +74,26 @@
     </q-dialog>
 
     <div class="row">
-      <q-btn
+      <!-- <q-btn
         v-if="privilegios[1] === 1"
         :label="mostrarFormulario ? 'Cancelar Registro' : 'Nuevo'"
         color="primary"
         @click="toggleFormulario"
         class="q-ma-lg"
-      />
+      /> -->
+      <q-btn
+        v-if="privilegios[1] === 1"
+        color="primary"
+        @click="toggleFormulario"
+        class="btn-res q-mt-lg"
+        id="agregarCanalDeVenta"
+        title="Registrar Leyenda"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto">
+          <q-icon name="add" /> {{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}
+        </span>
+      </q-btn>
     </div>
 
     <q-card>

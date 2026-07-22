@@ -9,7 +9,7 @@
         id="agregarAlmacen"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
       <q-btn color="info" outline @click="mostrarReporte" class="btn-res q-mt-lg">
         <q-icon name="picture_as_pdf" class="icono" />
@@ -274,6 +274,4 @@ function mostrarReporte() {
   mostrarModal.value = true
 }
 </script>
-<style>
-
-</style>
+<style></style>

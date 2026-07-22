@@ -1,8 +1,14 @@
 <template>
   <div class="row flex justify-between">
     <div id="btnNuevo">
-      <q-btn color="primary" @click="$emit('toggleForm')" class="btn-res q-mt-lg">
-        <q-icon name="save" class="icono" />
+      <q-btn
+        color="primary"
+        @click="$emit('toggleForm')"
+        class="btn-res q-mt-lg"
+        title="Registrar Inventario Exterior"
+        id="add"
+      >
+        <q-icon name="add" class="icono" />
         <span class="texto">{{ formCollapse ? 'Cancelar Registro' : 'Nuevo' }}</span>
       </q-btn>
     </div>

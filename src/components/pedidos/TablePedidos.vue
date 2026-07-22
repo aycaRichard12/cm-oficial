@@ -3,9 +3,15 @@
     <!-- Cabecera -->
     <div class="row q-col-gutter-x-md">
       <div class="col-6 flex justify-start">
-        <q-btn color="primary" @click="$emit('add')" class="btn-res" id="btnAgregar">
+        <q-btn
+          color="primary"
+          @click="$emit('add')"
+          class="btn-res"
+          id="btnAgregar"
+          title="Registrar Pedido"
+        >
           <q-icon name="add" class="icono" />
-          <span class="texto">Nuevo</span>
+          <span class="texto"> <q-icon name="add" />Nuevo</span>
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">
@@ -93,7 +99,7 @@
         <q-td :props="props">
           <template v-if="/\.pdf$/i.test(props.row.ruta)">
             <q-btn
-            id="btnVerPDF"
+              id="btnVerPDF"
               color="primary"
               icon="picture_as_pdf"
               label="Ver PDF"
@@ -120,7 +126,7 @@
       <template v-slot:body-cell-detalle="props">
         <q-td>
           <q-btn
-          id="btnVerDetalle"
+            id="btnVerDetalle"
             color="primary"
             label=""
             icon="shopping_cart"
@@ -134,8 +140,22 @@
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-nowrap">
           <div v-if="Number(props.row.autorizacion) === 2">
-            <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" id="btnEditar"/>
-            <q-btn icon="delete" color="negative" dense flat @click="$emit('delete', props.row)" id="btnEliminar"/>
+            <q-btn
+              icon="edit"
+              color="primary"
+              dense
+              flat
+              @click="$emit('edit', props.row)"
+              id="btnEditar"
+            />
+            <q-btn
+              icon="delete"
+              color="negative"
+              dense
+              flat
+              @click="$emit('delete', props.row)"
+              id="btnEliminar"
+            />
             <q-btn
               id="autorizar"
               v-if="permisosStore.tienePermiso('generarpedido')"
@@ -165,7 +185,7 @@
                 flat
                 @click="subirBaucher(props.row)"
                 id="btnSubirBaucher"
-                    />
+              />
             </template>
           </div>
           <div v-else>
@@ -177,7 +197,7 @@
                 flat
                 @click="subirBaucher(props.row)"
                 id="btnSubirBaucher"
-                        />
+              />
             </div>
           </div>
         </q-td>

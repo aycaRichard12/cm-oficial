@@ -2,7 +2,16 @@
   <div>
     <div class="row items-center justify-between q-mb-md">
       <div>
-        <q-btn label="Nuevo" color="primary" @click="$emit('add')" id="add" />
+        <q-btn
+          color="primary"
+          @click="$emit('add')"
+          class="btn-res q-mt-lg"
+          title="registrar Tipo Almacén"
+          id="add"
+        >
+          <q-icon name="add" class="icono" />
+          <span class="texto"> <q-icon name="add" /> Nuevo </span>
+        </q-btn>
       </div>
     </div>
 

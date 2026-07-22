@@ -17,11 +17,18 @@
         <!-- Filtros -->
         <div class="row">
           <q-btn
-            id="btnnuevamerma"
             color="primary"
-            :label="collapseVisible ? 'Cancelar Registro' : 'Nuevo'"
+            class="btn-res"
             @click="toggleCollapse"
-          />
+            no-caps
+            id="btnnuevamerma"
+            title="Registrar Merma"
+          >
+            <q-icon name="add" class="icono" />
+            <span class="texto">
+              <q-icon name="add" />{{ collapseVisible ? 'Cancelar Registro' : 'Nuevo' }}</span
+            >
+          </q-btn>
         </div>
         <div class="row q-col-gutter-x-md q-mb-md">
           <div class="col-12 col-md-3" id="filtroalmacenmerma">
@@ -39,12 +46,13 @@
           <div class="col-6 col-md-4 flex justify-start">
             <q-btn
               id="btnpdfmerma"
-              color="info"
+              color="negative"
               @click="generatePDF"
               :disable="!tableData.length"
               class="btn-res q-mt-lg"
+              outline
             >
-              <q-icon name="picture_as_pdf" class="icono" />
+              <q-icon name="mdi-file-pdf-box" class="icono" />
               <span class="texto">Vista Previa PDF</span>
             </q-btn>
           </div>

@@ -1,5 +1,5 @@
 <template>
-  <q-page >
+  <q-page>
     <div class="row justify-center q-py-md">
       <div class="col-12 col-lg-10">
         <q-card class="shadow-3 rounded-borders">
@@ -25,16 +25,17 @@
                     <q-icon name="search" color="grey-7" />
                   </template>
                 </q-input>
+
                 <q-btn
-                  id="btnNuevoServicio"
                   color="primary"
-                  icon="add"
-                  label="Nuevo"
-                  no-caps
-                  unelevated
-                  class="rounded-borders"
                   @click="handleCreate"
-                />
+                  class="btn-res"
+                  id="agregarservicio"
+                  title="Registrar Servicio"
+                >
+                  <q-icon name="add" class="icono" />
+                  <span class="texto"> <q-icon name="add" /> Nuevo </span>
+                </q-btn>
               </div>
             </div>
           </q-card-section>
@@ -149,7 +150,6 @@
 
         <q-card-section class="q-pa-md">
           <q-form @submit="submitForm" class="q-gutter-y-md">
-            
             <div class="row q-col-gutter-md">
               <div class="col-12 col-sm-6">
                 <q-input
@@ -176,7 +176,8 @@
                   @input="formatSlug"
                   :rules="[
                     (val) => !!val || 'Requerido',
-                    (val) => /^[a-z0-9_]+$/.test(val) || 'Solo minúsculas, números y guiones bajos (_)'
+                    (val) =>
+                      /^[a-z0-9_]+$/.test(val) || 'Solo minúsculas, números y guiones bajos (_)',
                   ]"
                 >
                   <template v-slot:prepend>
@@ -200,14 +201,7 @@
               </template>
             </q-input>
 
-            <q-input
-              v-model="form.email"
-              label="Email"
-              outlined
-              dense
-              color="primary"
-              type="email"
-            >
+            <q-input v-model="form.email" label="Email" outlined dense color="primary" type="email">
               <template v-slot:prepend>
                 <q-icon name="email" color="grey-6" />
               </template>
@@ -238,7 +232,15 @@
                 <q-icon :name="form.icono || 'help_outline'" color="primary" />
               </template>
               <template v-slot:append>
-                <q-btn flat round size="sm" icon="open_in_new" type="a" href="https://fonts.google.com/icons" target="_blank">
+                <q-btn
+                  flat
+                  round
+                  size="sm"
+                  icon="open_in_new"
+                  type="a"
+                  href="https://fonts.google.com/icons"
+                  target="_blank"
+                >
                   <q-tooltip>Buscar iconos</q-tooltip>
                 </q-btn>
               </template>
@@ -304,9 +306,29 @@ const columns = [
   { name: 'id', align: 'left', label: '#', field: 'id', sortable: true, style: 'width: 60px' },
   { name: 'icono', align: 'center', label: 'Icono', field: 'icono', style: 'width: 70px' },
   { name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true },
-  { name: 'nombre', align: 'left', label: 'Nombre', field: 'nombre', sortable: true, classes: 'text-weight-bold text-grey-9' },
-  { name: 'slug', align: 'left', label: 'Slug', field: 'slug', sortable: true, classes: 'text-caption text-grey-7' },
-  { name: 'documentacion', align: 'center', label: 'Documentación', field: 'documentacion', sortable: true },
+  {
+    name: 'nombre',
+    align: 'left',
+    label: 'Nombre',
+    field: 'nombre',
+    sortable: true,
+    classes: 'text-weight-bold text-grey-9',
+  },
+  {
+    name: 'slug',
+    align: 'left',
+    label: 'Slug',
+    field: 'slug',
+    sortable: true,
+    classes: 'text-caption text-grey-7',
+  },
+  {
+    name: 'documentacion',
+    align: 'center',
+    label: 'Documentación',
+    field: 'documentacion',
+    sortable: true,
+  },
   {
     name: 'descripcion',
     align: 'left',
@@ -337,7 +359,7 @@ const fetchServices = async () => {
     $q.notify({
       type: 'negative',
       message: 'No se pudo cargar la lista de servicios',
-      icon: 'report_problem'
+      icon: 'report_problem',
     })
   } finally {
     loading.value = false
@@ -384,21 +406,21 @@ const toggleStatus = async (row) => {
   try {
     // endpoint: /services/cambiarEstadoServicio/{estado}/{id}
     await api.get(`services/cambiarEstadoServicio/${nuevoEstado}/${row.id}`)
-    
+
     // Actualizamos el estado localmente para feedback inmediato
     row.estado = nuevoEstado
-    
+
     $q.notify({
       type: 'positive',
       message: `Estado actualizado a ${nuevoEstado == 1 ? 'Activo' : 'Inactivo'}`,
-      icon: 'check_circle'
+      icon: 'check_circle',
     })
   } catch (error) {
     console.error('Error al cambiar estado:', error)
     $q.notify({
       type: 'negative',
       message: 'No se pudo actualizar el estado',
-      icon: 'error'
+      icon: 'error',
     })
     // Revertir cambio en caso de error
     fetchServices()
@@ -471,7 +493,7 @@ const handleDelete = (row) => {
       $q.notify({
         type: 'negative',
         message: 'No se pudo eliminar el servicio',
-        icon: 'error'
+        icon: 'error',
       })
     } finally {
       loading.value = false

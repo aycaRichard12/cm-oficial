@@ -7,6 +7,7 @@
         icon="arrow_back"
         label="Volver a la lista"
         @click="paginaRegistrarCotizacion = false"
+        class="btn-res"
       />
     </div>
     <CotizacionPage

@@ -38,13 +38,10 @@
               :loading="importing"
               :disable="importing"
             />
-            <q-btn
-              unelevated
-              color="primary"
-              @click="$emit('add')"
-              icon="add"
-              label="Agregar Producto"
-            />
+            <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Producto">
+              <q-icon name="add" class="icono" />
+              <span class="texto"> <q-icon name="add" /> Nuevo </span>
+            </q-btn>
             <input
               type="file"
               ref="fileInput"

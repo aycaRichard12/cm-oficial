@@ -4,11 +4,11 @@
       color="primary"
       @click="$emit('add')"
       class="btn-res q-mt-lg"
-      title="Registrar Caracteristica"
-      id="agregarCaracteristica"
+      title="Registrar Característica"
+      id="add"
     >
       <q-icon name="add" class="icono" />
-      <span class="texto">Nuevo</span>
+      <span class="texto"> <q-icon name="add" /> Nuevo </span>
     </q-btn>
 
     <!-- <div class="col flex items-center justify-end">
