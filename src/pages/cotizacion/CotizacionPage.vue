@@ -1366,7 +1366,7 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
-import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte.js'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
