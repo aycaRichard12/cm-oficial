@@ -17,15 +17,15 @@
               outline
               color="indigo"
               @click="exportarDatos"
-              icon="file_download"
-              label="Descargar Catálogo"
+              icon="mdi-file-excel"
+              label="Descargar Excel"
             />
             <q-btn
               unelevated
               outline
               color="positive"
               @click="exportarFormato"
-              icon="download"
+              icon="mdi-file-download-outline"
               label="Descargar Formato"
             />
             <q-btn
@@ -33,7 +33,7 @@
               outline
               color="secondary"
               @click="$refs.fileInput.click()"
-              icon="upload"
+              icon="mdi-file-upload-outline"
               label="Cargar Excel"
               :loading="importing"
               :disable="importing"

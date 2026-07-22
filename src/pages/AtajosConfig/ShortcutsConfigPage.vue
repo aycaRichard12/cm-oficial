@@ -42,6 +42,7 @@
                   :max-values="5"
                   hint="Máximo 5 atajos"
                   @update:model-value="validateLimit"
+                  @remove="onRemoveShortcut"
                 >
                   <template v-slot:option="{ itemProps, opt, selected }">
                     <q-item v-bind="itemProps">
@@ -267,7 +268,54 @@ const deleteShortcut = async (idOperacion) => {
     }
   })
 }
+// Manejar eliminación de un chip
+const onRemoveShortcut = async (codigo) => {
+  console.log(codigo)
+  // Buscar si el atajo ya está guardado en la BD (aparece en la tabla)
+  const existing = currentShortcuts.value.find((s) => s.codigo === codigo.value)
 
+  // Si no existe en la tabla, solo se quitó del select; no hay nada que hacer
+  if (!existing) {
+    return
+  }
+
+  // Mostrar diálogo de confirmación
+  $q.dialog({
+    title: 'Confirmar',
+    message: `¿Eliminar el atajo "${existing.operacion}"?`,
+    cancel: true,
+    persistent: true,
+  })
+    .onOk(async () => {
+      loading.value = true
+      try {
+        await api.get(`eliminarOperacion/${existing.id_operacion}`)
+        $q.notify({ color: 'positive', message: 'Atajo eliminado correctamente' })
+
+        // Remover de la tabla local
+        const idx = currentShortcuts.value.findIndex(
+          (s) => s.id_operacion === existing.id_operacion,
+        )
+        if (idx > -1) currentShortcuts.value.splice(idx, 1)
+
+        // El modelo selectedShortcuts ya fue actualizado automáticamente por Quasar
+        // (ya no contiene el código), pero nos aseguramos por si acaso
+        const selIdx = selectedShortcuts.value.indexOf(codigo)
+        if (selIdx > -1) selectedShortcuts.value.splice(selIdx, 1)
+      } catch (error) {
+        console.error(error)
+        $q.notify({ color: 'negative', message: 'Error al eliminar atajo' })
+        // Revertir eliminación del chip en caso de error
+        selectedShortcuts.value.push(codigo)
+      } finally {
+        loading.value = false
+      }
+    })
+    .onCancel(() => {
+      // Si el usuario cancela, restaurar el chip en el select
+      selectedShortcuts.value.push(codigo.value)
+    })
+}
 onMounted(() => {
   fetchUserShortcuts()
 })
