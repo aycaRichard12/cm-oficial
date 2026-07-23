@@ -1,13 +1,14 @@
 // src/modules/pdf/services/ReportDataService.js
-import { validarUsuario } from 'src/composables/FuncionesGenerales'
+import { validarUsuario } from 'src/composables/FuncionesG'
 import { cargarLogoBase64 } from 'src/composables/FuncionesG'
 
 export class ReportDataService {
   async getUserData() {
-    const [contenido] = validarUsuario() // validarUsuario retorna array
-    if (!contenido?.empresa) {
-      throw new Error('Datos de empresa no disponibles')
+    const userData = validarUsuario() // retorna array o null
+    if (!userData || !Array.isArray(userData) || !userData[0]?.empresa) {
+      throw new Error('Datos de empresa no disponibles. Verifique su sesión.')
     }
+    const [contenido] = userData
     const empresa = contenido.empresa
     const logoBase64 = await cargarLogoBase64(empresa.logo)
 

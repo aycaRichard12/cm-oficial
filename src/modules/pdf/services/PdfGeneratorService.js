@@ -10,7 +10,7 @@ export class PdfGeneratorService {
 
   async generateReport(options) {
     const { columns, datos, titulo, columnStyles, headerColumnStyles } = options
-    const userData = await this.dataService.getUserData()
+    const userData = options.userData || (await this.dataService.getUserData())
 
     const docBuilder = new PdfDocumentBuilder(userData)
     docBuilder.addEncabezado()

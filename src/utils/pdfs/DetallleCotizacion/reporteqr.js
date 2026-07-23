@@ -1,6 +1,6 @@
 import { PdfGeneratorService } from 'src/modules/pdf/services/PdfGeneratorService'
 import { verificarTamanoPantallaYRedirigir } from 'src/modules/pdf/utils/screenUtils'
-import { cargarFirmaBase64, decimas, redondear, numeroALetras } from 'src/composables/FuncionesG'
+import { cargarLogoBase64, cargarFirmaBase64, decimas, redondear, numeroALetras } from 'src/composables/FuncionesG'
 
 /**
  * Genera el PDF de una cotización a partir de los datos recibidos.
@@ -18,6 +18,7 @@ export async function generarPdfCotizacion(data) {
   // 2. Generar PDF mediante el servicio
   const pdfService = new PdfGeneratorService()
   const doc = await pdfService.generateReport({
+    userData: reportData.userData,
     columns: reportData.columns,
     datos: reportData.datos,
     titulo: 'COTIZACIÓN',
@@ -49,7 +50,29 @@ export async function generarPdfCotizacion(data) {
  * @returns {Object} Datos estructurados para PdfGeneratorService
  */
 async function prepararDatosCotizacion(cot) {
-  const { usuario, cliente, cotizacion, divisa, almacen, detalle } = cot
+  const { usuario, cliente, cotizacion, divisa, almacen, detalle, empresa } = cot
+
+  // --- Cargar logo y preparar datos de la empresa para encabezado (sin depender de sesión) ---
+  let logoBase64 = ''
+  if (empresa?.logo) {
+    logoBase64 = await cargarLogoBase64(empresa.logo)
+  }
+
+  const userData = {
+    logoBase64,
+    nombreEmpresa: empresa?.nombre || '',
+    direccionEmpresa: empresa?.direccion || '',
+    encargadoNombre: usuario?.usuario || usuario?.nombre || '',
+    cargo: usuario?.cargo || '',
+    pais: empresa?.opais || '',
+    estado: empresa?.oestado || '',
+    ciudad: empresa?.ociudad || '',
+    nit: empresa?.nit || '',
+    telefono: empresa?.telefono || '',
+    celular: empresa?.ocelular || '',
+    email: empresa?.email || '',
+    web: empresa?.ositioweb || '',
+  }
 
   // --- Procesar detalle de productos ---
   const d = detalle.map((item) => ({
@@ -139,6 +162,7 @@ async function prepararDatosCotizacion(cot) {
   }
 
   return {
+    userData,
     columns,
     datos,
     columnStyles,
