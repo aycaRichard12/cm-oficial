@@ -122,7 +122,7 @@ import FacturarCotizacion from './FacturarCotizacion.vue'
 import { api } from 'src/boot/axios'
 import { DPFReporteCotizacion } from 'src/utils/pdfReportGenerator'
 import { getTipoFactura } from 'src/composables/FuncionesG'
-import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
@@ -541,9 +541,9 @@ const generarComprobantePDF = async (id) => {
 
   try {
     const endpoint = `detallesCotizacion/${id}/${idempresa}`
-    console.log(endpoint)
+    //console.log(endpoint)
     const response = await api.get(endpoint)
-    console.log(response)
+    //console.log(response)
     const data = response.data
 
     if (data[0] === 'error') {

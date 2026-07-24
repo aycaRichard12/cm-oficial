@@ -26,7 +26,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
-import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteQR'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import { api } from 'src/boot/axios'
 
 const route = useRoute()

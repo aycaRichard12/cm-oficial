@@ -1,6 +1,13 @@
 import { PdfGeneratorService } from 'src/modules/pdf/services/PdfGeneratorService'
 import { verificarTamanoPantallaYRedirigir } from 'src/modules/pdf/utils/screenUtils'
-import { cargarLogoBase64, cargarFirmaBase64, decimas, redondear, numeroALetras } from 'src/composables/FuncionesG'
+import {
+  cargarLogoBase64,
+  cargarFirmaBase64,
+  decimas,
+  redondear,
+  numeroALetras,
+} from 'src/composables/FuncionesG'
+import QRCode from 'qrcode'
 
 /**
  * Genera el PDF de una cotización a partir de los datos recibidos.
@@ -32,13 +39,23 @@ export async function generarPdfCotizacion(data) {
     añadirDescricionAdcional: { columna: 'descripcion', campo: 'descripcionAdicional' },
   })
 
-  // 3. Aplicar marca de agua si la cotización está anulada (condición == 2)
+  // 3. Pegar el QR en el PDF (ubicación inferior izquierda)
+  if (reportData.base64Qr) {
+    const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY : 200
+    const x = 14
+    const y = finalY + 10
+    const ancho = 25
+    const alto = 25
+    doc.addImage(reportData.base64Qr, 'PNG', x, y, ancho, alto)
+  }
+
+  // 4. Aplicar marca de agua si la cotización está anulada (condición == 2)
   const condicion = cotizacion.cotizacion.condicion
   if (condicion == 2) {
     aplicarMarcaAnulado(doc)
   }
 
-  // 4. Verificar tamaño de pantalla y redirigir si es necesario
+  // 5. Verificar tamaño de pantalla y redirigir si es necesario
   const docResult = verificarTamanoPantallaYRedirigir(doc)
   if (!docResult) return
   return docResult
@@ -72,6 +89,24 @@ async function prepararDatosCotizacion(cot) {
     celular: empresa?.ocelular || '',
     email: empresa?.email || '',
     web: empresa?.ositioweb || '',
+  }
+
+  // --- Generar código QR con la URL del .env, ID y MD5 ---
+  let base64Qr = ''
+  try {
+    const baseUrl = import.meta.env.VITE_QR || ''
+    const idCotizacion = cotizacion.id
+    const md5Empresa = empresa?.md5 || ''
+
+    const urlQr = `${baseUrl}${idCotizacion}/${md5Empresa}`
+
+    base64Qr = await QRCode.toDataURL(urlQr, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      width: 200,
+    })
+  } catch (error) {
+    console.error('Error al generar el código QR:', error)
   }
 
   // --- Procesar detalle de productos ---
@@ -171,6 +206,7 @@ async function prepararDatosCotizacion(cot) {
     datosDerecho,
     extras,
     base64Firma,
+    base64Qr,
   }
 }
 
