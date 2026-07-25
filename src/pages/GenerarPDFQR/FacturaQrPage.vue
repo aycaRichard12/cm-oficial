@@ -1,25 +1,32 @@
 <template>
   <div class="pdf-container">
-    <!-- Indicador de carga mientras se genera el PDF -->
     <div v-if="loading" class="loading">
       <q-spinner color="primary" size="3em" />
       <p>Generando comprobante...</p>
     </div>
 
-    <!-- Mensaje de error si falla -->
     <div v-else-if="error" class="error-message">
       <q-icon name="error" color="negative" size="2em" />
       <p>{{ error }}</p>
     </div>
 
-    <!-- Visor del PDF -->
+    <!-- Visor solo en escritorio -->
     <iframe
-      v-else-if="pdfUrl"
+      v-else-if="!isMobile && pdfUrl"
       :src="pdfUrl"
       class="pdf-viewer"
       frameborder="0"
       title="Comprobante PDF"
     ></iframe>
+
+    <!-- Mensaje para móviles (la apertura/descarga ya se intentó) -->
+    <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+      <q-icon name="check_circle" color="positive" size="2em" />
+      <p>Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.</p>
+      <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+        Descargar comprobante
+      </a>
+    </div>
   </div>
 </template>
 
@@ -33,9 +40,11 @@ const route = useRoute()
 const id = route.params.i
 const empresa = route.params.e
 
-const pdfUrl = ref(null)
+const pdfUrl = ref(null) // para el iframe de escritorio
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 const loading = ref(false)
 const error = ref(null)
+const isMobile = ref(false)
 
 const generarComprobantePDF = async () => {
   loading.value = true
@@ -48,18 +57,29 @@ const generarComprobantePDF = async () => {
 
     if (data[0] === 'error') {
       error.value = data.error || 'Error desconocido al obtener los datos.'
+      return
+    }
+
+    const resultado = await generarPdfCotizacion(data)
+    if (!resultado || !resultado.doc) {
+      error.value = 'No se pudo generar el PDF.'
+      return
+    }
+
+    // Limpiar blob anterior
+    if (pdfUrl.value) {
+      URL.revokeObjectURL(pdfUrl.value)
+      pdfUrl.value = null
+    }
+
+    if (isMobile.value) {
+      // En móvil, la función ya intentó abrir/descargar.
+      // Solo guardamos la URL para el enlace manual.
+      mobileFallbackUrl.value = resultado.mobileBlobUrl
     } else {
-      const doc = await generarPdfCotizacion(data)
-      if (doc) {
-        const pdfBlob = doc.output('blob')
-        // Revocar URL anterior si existe
-        if (pdfUrl.value) {
-          URL.revokeObjectURL(pdfUrl.value)
-        }
-        pdfUrl.value = URL.createObjectURL(pdfBlob)
-      } else {
-        error.value = 'No se pudo generar el PDF.'
-      }
+      // Escritorio: crear blob para el iframe
+      const pdfBlob = resultado.doc.output('blob')
+      pdfUrl.value = URL.createObjectURL(pdfBlob)
     }
   } catch (err) {
     console.error('Error al generar comprobante PDF:', err)
@@ -69,46 +89,30 @@ const generarComprobantePDF = async () => {
   }
 }
 
-// Limpiar la URL del blob al desmontar el componente
 onBeforeUnmount(() => {
-  if (pdfUrl.value) {
-    URL.revokeObjectURL(pdfUrl.value)
-  }
+  if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
 })
 
 onMounted(() => {
+  isMobile.value = window.innerWidth < 768
   generarComprobantePDF()
 })
 </script>
 
 <style scoped>
-.pdf-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-}
-
-.loading,
-.error-message {
+/* Tus estilos actuales más lo nuevo */
+.mobile-success {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: #555;
+  padding: 2rem;
+  text-align: center;
 }
-
-.error-message {
-  color: #c10015;
-}
-
-.pdf-viewer {
-  width: 100vw;
-
-  height: 100vh;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+.download-link {
+  color: var(--q-primary);
+  font-weight: bold;
+  text-decoration: underline;
 }
 </style>

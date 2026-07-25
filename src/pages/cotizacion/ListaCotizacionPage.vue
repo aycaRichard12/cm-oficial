@@ -48,6 +48,15 @@
             :src="pdfData"
             style="width: 100%; height: 100%; border: none"
           ></iframe>
+          <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+            <q-icon name="check_circle" color="positive" size="2em" />
+            <p>
+              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            </p>
+            <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+              Descargar comprobante
+            </a>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -70,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
 import { URL_APICM } from 'src/composables/services'
@@ -81,7 +90,7 @@ import FacturarCotizacion from './FacturarCotizacion.vue'
 import { api } from 'src/boot/axios'
 import { DPFReporteCotizacion } from 'src/utils/pdfReportGenerator'
 import { getTipoFactura } from 'src/composables/FuncionesG'
-import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import TableCotizacionPrincipal from 'src/components/cotizacion/TableCotizacionPrincipal.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
 const emit = defineEmits(['registrarcotizacion', 'reiniciar', 'cancelarregistro'])
@@ -154,6 +163,10 @@ const usuarioInfo = computed(() => {
   const user = validarUsuario()
   return user && user.length > 0 ? user[0] : {}
 })
+
+const error = ref(null)
+const isMobile = ref(false)
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 
 // Table columns for q-table
 
@@ -491,39 +504,26 @@ const generarComprobantePDF = async (id) => {
       // pdfData.value = doc.output('dataurlstring')
       // showPdfModal.value = true
 
-      const doc = await generarPdfCotizacion(data)
+      const resultado = await generarPdfCotizacion(data)
+      if (!resultado || !resultado.doc) {
+        error.value = 'No se pudo generar el PDF.'
+        return
+      }
 
-      const ua = navigator.userAgent
-      const esWindowsAntiguo =
-        ua.includes('Windows NT 6.1') || // Windows 7
-        ua.includes('Windows NT 6.2') || // Windows 8
-        ua.includes('Windows NT 6.3')
+      // Limpiar blob anterior
+      if (pdfData.value) {
+        URL.revokeObjectURL(pdfData.value)
+        pdfData.value = null
+      }
 
-      if (esWindowsAntiguo) {
-        $q.dialog({
-          title: 'PDF generado',
-          message:
-            'Su sistema puede no soportar la visualización integrada de PDF. ¿Qué desea hacer?',
-          cancel: {
-            label: 'Descargar',
-            color: 'secondary',
-          },
-          ok: {
-            label: 'Abrir en nueva ventana',
-            color: 'primary',
-          },
-          persistent: true,
-        })
-          .onOk(() => {
-            const blob = doc.output('blob')
-            const url = URL.createObjectURL(blob)
-            window.open(url, '_blank')
-          })
-          .onCancel(() => {
-            doc.save(`cotizacion_${id}.pdf`)
-          })
+      if (isMobile.value) {
+        // En móvil, la función ya intentó abrir/descargar.
+        // Solo guardamos la URL para el enlace manual.
+        mobileFallbackUrl.value = resultado.mobileBlobUrl
       } else {
-        pdfData.value = doc.output('dataurlstring')
+        // Escritorio: crear blob para el iframe
+        const pdfBlob = resultado.doc.output('blob')
+        pdfData.value = URL.createObjectURL(pdfBlob)
         showPdfModal.value = true
       }
     }
@@ -542,10 +542,14 @@ const alGuardarEdicion = () => {
   showEditModal.value = false
   generarReporte() // Refresh the report after editing
 }
-
+onBeforeUnmount(() => {
+  if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+})
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)
   await generarReporte()
+  isMobile.value = window.innerWidth < 768
 
   // Detectar datos de Quick Consult
   const quickConsult = localStorage.getItem('quickConsult')

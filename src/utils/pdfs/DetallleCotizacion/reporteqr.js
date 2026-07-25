@@ -56,9 +56,9 @@ export async function generarPdfCotizacion(data) {
   }
 
   // 5. Verificar tamaño de pantalla y redirigir si es necesario
-  const docResult = verificarTamanoPantallaYRedirigir(doc)
-  if (!docResult) return
-  return docResult
+  const mobileBlobUrl = verificarTamanoPantallaYRedirigir(doc)
+  //if (!docResult) return
+  return { doc, mobileBlobUrl }
 }
 
 /**

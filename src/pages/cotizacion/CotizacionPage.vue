@@ -1296,6 +1296,15 @@
             :src="pdfData"
             style="width: 100%; height: 100%; border: none"
           ></iframe>
+          <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+            <q-icon name="check_circle" color="positive" size="2em" />
+            <p>
+              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            </p>
+            <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+              Descargar comprobante
+            </a>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -1363,10 +1372,10 @@
   </q-page>
 </template>
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
-import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporte.js'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -1433,6 +1442,10 @@ const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se u
 const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
 const canalventa = ref(null)
 const salesChannels = ref([])
+
+const error = ref(null)
+const isMobile = ref(false)
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 
 // Tipo de operación: cotizacion o venta
 const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
@@ -2520,15 +2533,31 @@ async function generarComprobante(id) {
       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
       emit('reiniciar')
     } else {
-      // Cargar leyendas si no están cargadas
-      if (leyendasCotizacion.value.length === 0) {
-        await cargarLeyendasCotizacion()
+      //const doc = await generarPdfCotizacion(data)
+      //console.log(doc)
+      const resultado = await generarPdfCotizacion(data)
+      if (!resultado || !resultado.doc) {
+        error.value = 'No se pudo generar el PDF.'
+        return
       }
-      const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      mostrarModal.value = true
-      console.log(data[0]?.cliente.idcliente, data)
-      open('right', data[0]?.cliente.idcliente, data)
+
+      // Limpiar blob anterior
+      if (pdfData.value) {
+        URL.revokeObjectURL(pdfData.value)
+        pdfData.value = null
+      }
+
+      if (isMobile.value) {
+        // En móvil, la función ya intentó abrir/descargar.
+        // Solo guardamos la URL para el enlace manual.
+        mobileFallbackUrl.value = resultado.mobileBlobUrl
+      } else {
+        // Escritorio: crear blob para el iframe
+        const pdfBlob = resultado.doc.output('blob')
+        pdfData.value = URL.createObjectURL(pdfBlob)
+        open('right', data[0]?.cliente.idcliente, data)
+        mostrarModal.value = true
+      }
     }
   } catch (error) {
     console.error('Error al generar comprobante:', error)
@@ -2645,8 +2674,14 @@ async function listarcajasbanco() {
     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
   }
 }
+onBeforeUnmount(() => {
+  if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+})
 // --- Inicialización ---
 onMounted(async () => {
+  isMobile.value = window.innerWidth < 768
+
   isInitializing.value = true
   try {
     // Cargar datos iniciales

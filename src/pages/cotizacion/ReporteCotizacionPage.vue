@@ -93,6 +93,15 @@
             :src="pdfData"
             style="width: 100%; height: 100%; border: none"
           ></iframe>
+          <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+            <q-icon name="check_circle" color="positive" size="2em" />
+            <p>
+              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            </p>
+            <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+              Descargar comprobante
+            </a>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -107,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
 import { URL_APICM } from 'src/composables/services'
@@ -199,6 +208,10 @@ const comprobanteData = reactive({})
 const loading = ref(false)
 const refHijo = ref(null)
 const resultadoFiltrado = ref([])
+const error = ref(null)
+const isMobile = ref(false)
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
+
 const usuarioInfo = computed(() => {
   const user = validarUsuario()
   return user && user.length > 0 ? user[0] : {}
@@ -557,9 +570,33 @@ const generarComprobantePDF = async (id) => {
       Object.keys(comprobanteData).forEach((key) => delete comprobanteData[key])
     } else {
       Object.assign(comprobanteData, data[0]) // Assign properties to reactive object
-      const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      showPdfModal.value = true
+
+      //const doc = await generarPdfCotizacion(data)
+      //console.log(doc)
+      const resultado = await generarPdfCotizacion(data)
+      if (!resultado || !resultado.doc) {
+        error.value = 'No se pudo generar el PDF.'
+        return
+      }
+
+      // Limpiar blob anterior
+      if (pdfData.value) {
+        URL.revokeObjectURL(pdfData.value)
+        pdfData.value = null
+      }
+
+      if (isMobile.value) {
+        // En móvil, la función ya intentó abrir/descargar.
+        // Solo guardamos la URL para el enlace manual.
+        mobileFallbackUrl.value = resultado.mobileBlobUrl
+      } else {
+        // Escritorio: crear blob para el iframe
+        const pdfBlob = resultado.doc.output('blob')
+        pdfData.value = URL.createObjectURL(pdfBlob)
+        showPdfModal.value = true
+      }
+      // pdfData.value = doc.output('dataurlstring')
+      // showPdfModal.value = true
     }
   } catch (error) {
     console.error('Error al generar comprobante PDF:', error)
@@ -572,9 +609,14 @@ const generarComprobantePDF = async (id) => {
     loading.value = false
   }
 }
+onBeforeUnmount(() => {
+  if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+})
 
 onMounted(() => {
   document.addEventListener('click', handleOutsideClick)
+  isMobile.value = window.innerWidth < 768
 })
 </script>
 
