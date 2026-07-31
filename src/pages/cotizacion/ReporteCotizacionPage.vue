@@ -135,9 +135,11 @@ import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteq
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
+import { obtenerDivisaActiva } from 'src/services/divisaService.js'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales.js'
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
-
+const divisa = ref(null)
 const abrirModalEdicion = (id) => {
   idCotizacionAEditar.value = id
   showEditModal.value = true
@@ -149,7 +151,6 @@ const alGuardarEdicion = () => {
 }
 
 const tipoFactura = getTipoFactura()
-console.log(tipoFactura)
 const pdfData = ref(null)
 
 const mostrar = ref(false)
@@ -269,18 +270,6 @@ async function crearFormularioFacturaCompraVenta() {
     console.error('Error al obtener datos:', error)
   }
 }
-// Computed properties for PDF table (Reporte)
-
-// const filteredClientes = computed(() => {
-//   if (!clienteSearchTerm.value) {
-//     return clientesOptions.value
-//   }
-//   const searchTermNormalized = normalizeText(clienteSearchTerm.value).toLowerCase()
-//   return clientesOptions.value.filter((cliente) => {
-//     const point = `${cliente.codigo} - ${cliente.nombre} - ${cliente.nombrecomercial} - ${cliente.ciudad} - ${cliente.nit}`
-//     return normalizeText(point).toLowerCase().includes(searchTermNormalized)
-//   })
-// })
 
 // Watchers
 watch([almacenSeleccionado, clienteSeleccionadoId], () => {
@@ -532,8 +521,9 @@ const cargarPDF = () => {
   const almacen = {
     almacen: filterReporte.almacen || 'Todos los almacenes',
   }
-
-  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen)
+  console.log(divisa.value)
+  const d = divisa.value
+  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen, d.tipo)
   pdfData.value = doc.output('dataurlstring')
 
   showPdfModal.value = true
@@ -614,9 +604,10 @@ onBeforeUnmount(() => {
   // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
 })
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)
   isMobile.value = window.innerWidth < 768
+  divisa.value = await obtenerDivisaActiva(idempresa_md5())
 })
 </script>
 

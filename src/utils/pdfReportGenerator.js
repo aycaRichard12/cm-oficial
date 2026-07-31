@@ -2196,8 +2196,8 @@ export async function PDFenviarFacturaCorreoAlInicio(idcliente, detalleVenta, $q
   }
 }
 
-export function DPFReporteCotizacion(cotizaciones, almacen) {
-  console.log(cotizaciones.value)
+export function DPFReporteCotizacion(cotizaciones, almacen, divisa) {
+  console.log(divisa)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   console.log('estas son las cotizacoines', cotizaciones)
   // Columns for jsPDF-autoTable

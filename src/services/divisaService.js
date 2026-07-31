@@ -1,7 +1,7 @@
 // services/divisaService.js
 import { api } from 'boot/axios'
 
-export async function obtenerDivisaActiva(idempresa, token, tipoFactura) {
+export async function obtenerDivisaActiva(idempresa, token = '', tipoFactura = '') {
   const endpoint = `listaDivisa/${idempresa}/${token}/${tipoFactura}`
   const response = await api.get(endpoint)
   const data = response.data?.data || response.data
