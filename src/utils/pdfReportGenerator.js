@@ -2200,17 +2200,14 @@ export function DPFReporteCotizacion(cotizaciones, almacen, divisa) {
   console.log(divisa)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
   console.log('estas son las cotizacoines', cotizaciones)
-  // Columns for jsPDF-autoTable
   const columns = [
     { header: 'N', dataKey: 'nro' },
     { header: 'Fecha', dataKey: 'fecha' }, // Match actual field names from API
     { header: 'Cliente', dataKey: 'cliente' },
     { header: 'Comercial', dataKey: 'sucursal' },
-    { header: 'Monto', dataKey: 'total_sumatorias' }, //total_sumatorias
-    { header: 'Desc.', dataKey: 'descuento' },
-    { header: 'Total.', dataKey: 'monto' },
-
-    // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
+    { header: `Monto (${divisa})`, dataKey: 'total_sumatorias' }, //total_sumatorias
+    { header: `Desc. (${divisa})`, dataKey: 'descuento' },
+    { header: `Total (${divisa})`, dataKey: 'monto' },
   ]
   const datos = [...cotizaciones.value]
     .map((item) => ({
@@ -2228,9 +2225,6 @@ export function DPFReporteCotizacion(cotizaciones, almacen, divisa) {
       total_sumatorias: decimas(parseFloat(item.total_sumatorias)),
     }))
 
-  // Data for jsPDF-autoTable - map from `reportData.
-  // value`
-
   const cotizaciontotal = datos.reduce((sum, u) => {
     return decimas(parseFloat(sum) + parseFloat(u.total_sumatorias))
   }, 0)
@@ -2242,18 +2236,9 @@ export function DPFReporteCotizacion(cotizaciones, almacen, divisa) {
     return decimas(parseFloat(sum) + parseFloat(u.monto))
   }, 0)
 
-  // console.log(total)
-  // const pieTable = {
-  //   sucursal: 'Total:',
-  //   monto: cotizaciontotal,
-  //   descuento: descuento,
-  //   total_sumatorias: total,
-  // }
-  // datos.push(pieTable)
-  // console.log(datos)
   datos.push(
     crearFilaTotalGeneral(
-      `TOTAL GENERAL (${divisaActiva})`,
+      `TOTAL GENERAL (${divisa})`,
       [
         { valor: cotizaciontotal, halign: 'right' },
         { valor: descuento, halign: 'right' },
@@ -2330,8 +2315,6 @@ export function PDFextrabiosRobos(extravios, almacen) {
     { header: 'Almacén', dataKey: 'almacen' },
     { header: 'Descripción', dataKey: 'descripcion' },
     { header: 'Estado', dataKey: 'autorizacion' },
-
-    // { header: 'Foto', dataKey: 'foto_detalle_cobro' }, // Images in autoTable are more complex
   ]
   const datos = [...extravios.value]
     .sort((a, b) => new Date(a.fecha) - new Date(b.fecha)) // 👈 orden real por fecha

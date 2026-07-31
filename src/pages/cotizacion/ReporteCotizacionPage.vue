@@ -129,7 +129,7 @@ import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import ModalR from 'src/components/ModalR.vue'
 import FacturarCotizacion from './FacturarCotizacion.vue'
 import { api } from 'src/boot/axios'
-import { DPFReporteCotizacion } from 'src/utils/pdfReportGenerator'
+import { DPFReporteCotizacion } from 'src/utils/pdfs/ReporteCotizaciones/reporte.js'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
@@ -523,7 +523,7 @@ const cargarPDF = () => {
   }
   console.log(divisa.value)
   const d = divisa.value
-  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen, d.tipo)
+  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen, d.tipo, fechai.value, fechaf.value)
   pdfData.value = doc.output('dataurlstring')
 
   showPdfModal.value = true
