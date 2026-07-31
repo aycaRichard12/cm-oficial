@@ -730,8 +730,10 @@ async function cargarAlmacenes() {
   try {
     cargandoAlmacenes.value = true
     const endpoint = `/listaResponsableAlmacen/${idempresa}`
-    const { data } = await api.get(endpoint)
+    console.log('ANTES DE LA PETICIÓN', new Date().toISOString())
 
+    const { data } = await api.get(endpoint)
+    console.log('DESPUÉS DE LA PETICIÓN', new Date().toISOString())
     if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
     console.log(data)
     // Filtrar por usuario y mapear

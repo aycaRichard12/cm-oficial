@@ -1,29 +1,44 @@
 import { defineBoot } from '#q-app/wrappers'
 import axios from 'axios'
+import PQueue from 'p-queue'
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-// baseURL: 'https://vivasoft.link/app/cm/api/', https://mistersofts.com/app/
-//baseURL: 'https://www.mistersofts.com/app/cmv1/api/',
+// ─── Cola para API principal (1 petición a la vez) ───
+const queue = new PQueue({ concurrency: 1 })
+
 const api = axios.create({
   baseURL: process.env.VITE_API_URL,
-  timeout: 10000,
+  timeout: 10000, // tiempo máximo de espera de respuesta
 })
 
+// Cada petición pasa por la cola y además espera 200 ms antes de devolver la config
+api.interceptors.request.use((config) => {
+  return queue.add(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300)) // 200 ms de retardo
+    return config
+  })
+})
+
+// ─── API secundaria con su propia cola y retardo ───
 const apiCt = axios.create({
   baseURL: process.env.VITE_URL_APIC,
   timeout: 10000,
 })
-export default defineBoot(({ app }) => {
-  app.config.globalProperties.$axios = axios
-  app.config.globalProperties.$api = api // API principal
-  app.config.globalProperties.$apiCt = apiCt // API secundaria
 
-  // Interceptors API principal
+const queueCt = new PQueue({ concurrency: 1 })
+apiCt.interceptors.request.use((config) => {
+  return queueCt.add(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    return config
+  })
+})
+
+export default defineBoot(({ app }) => {
+  // Exponer las instancias globalmente
+  app.config.globalProperties.$axios = axios
+  app.config.globalProperties.$api = api
+  app.config.globalProperties.$apiCt = apiCt
+
+  // Interceptor de respuesta para la API principal
   api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -35,7 +50,7 @@ export default defineBoot(({ app }) => {
     },
   )
 
-  // Interceptors API secundaria
+  // Interceptor de respuesta para la API secundaria
   apiCt.interceptors.response.use(
     (response) => response,
     (error) => {

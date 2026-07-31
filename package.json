@@ -30,6 +30,7 @@
     "jspdf-autotable": "^5.0.2",
     "leaflet": "^1.9.4",
     "mitt": "^3.0.1",
+    "p-queue": "^9.3.3",
     "pinia": "^3.0.1",
     "pusher-js": "^8.4.0",
     "qrcode": "^1.5.4",
