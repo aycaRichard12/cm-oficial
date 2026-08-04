@@ -30,6 +30,17 @@ export class PdfGeneratorService {
       columnStyles,
       headerColumnStyles,
       marginTop: 55, // podría ser configurable
+      drawPageHeader: () => {
+        docBuilder.addEncabezado()
+        docBuilder.addEncabezadoInfo(
+          titulo,
+          options.fechas,
+          options.datosIzquierda,
+          options.datosDerecho,
+          options.conImpresionEncargado,
+          options.extras,
+        )
+      },
       añadirDescricionAdcional: options.añadirDescricionAdcional,
     })
 

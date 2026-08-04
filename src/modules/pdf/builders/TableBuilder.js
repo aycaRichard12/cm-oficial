@@ -9,7 +9,7 @@ export class TableBuilder {
     this.cellPadding = defaultCellPadding
   }
 
-  draw({ columns, datos, columnStyles, headerColumnStyles, marginTop, añadirDescricionAdcional }) {
+  draw({ columns, datos, columnStyles, headerColumnStyles, marginTop, drawPageHeader, añadirDescricionAdcional }) {
     const { marginLeft, tableWidth } = calcularMargenCentral(this.doc, columns, columnStyles)
 
     autoTable(this.doc, {
@@ -33,7 +33,11 @@ export class TableBuilder {
       didParseCell: (data) =>
         this._parseCell(data, columnStyles, headerColumnStyles, añadirDescricionAdcional),
       didDrawCell: (data) => this._drawCell(data),
-      didDrawPage: () => {}, // Se maneja externamente para no duplicar encabezados
+      didDrawPage: (data) => {
+        if (data.pageNumber > 1 && drawPageHeader) {
+          drawPageHeader(this.doc)
+        }
+      },
     })
   }
 
