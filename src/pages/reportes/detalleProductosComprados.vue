@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-    
     <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
@@ -85,9 +84,9 @@ const columnas = [
     dataType: 'date',
   },
   {
-    name: 'nrofactura',
+    name: 'nfactura',
     label: 'Nro. Doc.',
-    field: 'nrofactura',
+    field: 'nfactura',
     align: 'left',
 
     dataType: 'text',

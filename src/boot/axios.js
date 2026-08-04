@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
   })
 })
 
-// ─── API secundaria con su propia cola y retardo ───
+// API secundaria con su propia cola y retardo
 const apiCt = axios.create({
   baseURL: process.env.VITE_URL_APIC,
   timeout: 10000,

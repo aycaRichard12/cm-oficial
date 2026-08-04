@@ -27,5 +27,6 @@ export async function obtenerDivisaActiva(idempresa, token = '', tipoFactura = '
     throw new Error('No se encontró divisa activa')
   }
 
+  console.log(divisaActiva)
   return divisaActiva
 }

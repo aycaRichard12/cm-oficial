@@ -2,7 +2,6 @@ import { PdfGeneratorService } from 'src/modules/pdf/services/PdfGeneratorServic
 import { verificarTamanoPantallaYRedirigir } from 'src/modules/pdf/utils/screenUtils'
 import { decimas } from 'src/composables/FuncionesG'
 import { crearFilaTotalGeneral } from 'src/modules/pdf/utils/rowUtils'
-import { cargarLogoBase64 } from 'src/composables/FuncionesG'
 import { ReportDataService } from 'src/modules/pdf/services/ReportDataService'
 /**
  * Genera el PDF del reporte de cotizaciones usando el servicio optimizado.
@@ -12,19 +11,8 @@ import { ReportDataService } from 'src/modules/pdf/services/ReportDataService'
  * @param {Object} [empresa] - (Opcional) Datos de la empresa para el encabezado
  * @returns {jsPDF|undefined}
  */
-export async function DPFReporteCotizacion(
-  cotizaciones,
-  almacen,
-  divisa,
-  fechaInicio,
-  fechaFinal,
-  empresa = null,
-) {
-  const lista = Array.isArray(cotizaciones)
-    ? cotizaciones
-    : cotizaciones && cotizaciones.value
-      ? cotizaciones.value
-      : []
+export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal) {
+  const lista = Array.isArray(Compras) ? Compras : Compras && Compras.value ? Compras.value : []
 
   // Ordenar por fecha...
   const ordenados = lista
@@ -59,62 +47,41 @@ export async function DPFReporteCotizacion(
   )
 
   const columns = [
-    { header: 'N', dataKey: 'nro' },
+    { header: 'N', dataKey: 'num' },
     { header: 'Fecha', dataKey: 'fecha' },
-    { header: 'Cliente', dataKey: 'cliente' },
-    { header: 'Comercial', dataKey: 'sucursal' },
-    { header: `Monto (${divisa})`, dataKey: 'total_sumatorias' },
-    { header: `Desc. (${divisa})`, dataKey: 'descuento' },
-    { header: `Total (${divisa})`, dataKey: 'monto' },
+    { header: 'Codigo', dataKey: 'codigo' },
+    { header: 'Nombre Lote', dataKey: 'nombrelote' },
+    { header: `Proveedor`, dataKey: 'proveedor' },
+    { header: `Importe Compra (${divisa})`, dataKey: 'total' },
+    { header: `Autorización`, dataKey: 'autorizacionTexto' },
+    { header: `Factura`, dataKey: 'nfactura' },
+    { header: `Almacén`, dataKey: 'almacen' },
   ]
   const columnStyles = {
-    nro: { cellWidth: 10, halign: 'center' },
+    num: { cellWidth: 10, halign: 'center' },
     fecha: { cellWidth: 25, halign: 'center' },
-    cliente: { cellWidth: 50, halign: 'left' },
-    sucursal: { cellWidth: 35, halign: 'left' },
-    total_sumatorias: { cellWidth: 25, halign: 'right' },
-    descuento: { cellWidth: 25, halign: 'right' },
-    monto: { cellWidth: 25, halign: 'right' },
+    codigo: { cellWidth: 50, halign: 'left' },
+    nombrelote: { cellWidth: 35, halign: 'left' },
+    proveedor: { cellWidth: 25, halign: 'right' },
+    total: { cellWidth: 25, halign: 'right' },
+    autorizacionTexto: { cellWidth: 25, halign: 'right' },
+    nfactura: { cellWidth: 25, halign: 'right' },
+    almacen: { cellWidth: 25, halign: 'right' },
   }
   const headerColumnStyles = { ...columnStyles }
-
-  const datosIzquierda = {
-    titulo: 'DATOS REPORTE',
-    campos: [{ label: 'Almacén', valor: almacen.almacen || 'Todos los Almacenes' }],
-  }
 
   // ─── OBTENER DATOS DE EMPRESA ─────────────────────
   let userData
   try {
-    if (empresa) {
-      // Si se pasó una empresa, usamos sus datos (logo se carga con cargarLogoBase64)
-      const logoBase64 = empresa.logo ? await cargarLogoBase64(empresa.logo) : ''
-      userData = {
-        logoBase64,
-        nombreEmpresa: empresa.nombre || '',
-        direccionEmpresa: empresa.direccion || '',
-        encargadoNombre: empresa.encargado || '',
-        cargo: '',
-        pais: empresa.opais || '',
-        estado: empresa.oestado || '',
-        ciudad: empresa.ociudad || '',
-        nit: empresa.nit || '',
-        telefono: empresa.telefono || '',
-        celular: empresa.ocelular || '',
-        email: empresa.email || '',
-        web: empresa.ositioweb || '',
-      }
-    } else {
-      // Si no, cargamos desde la sesión con ReportDataService
-      const reportService = new ReportDataService()
-      userData = await reportService.getUserData()
-    }
+    // Si no, cargamos desde la sesión con ReportDataService
+    const reportService = new ReportDataService()
+    userData = await reportService.getUserData()
   } catch (error) {
     console.warn('No se pudieron obtener datos de empresa. Se usará info mínima.', error)
     // Fallback mínimo con el nombre del almacén
     userData = {
       logoBase64: '',
-      nombreEmpresa: almacen.almacen || 'Sin empresa',
+      nombreEmpresa: 'Sin empresa',
       direccionEmpresa: '',
       encargadoNombre: '',
       cargo: '',
@@ -138,7 +105,7 @@ export async function DPFReporteCotizacion(
     titulo: 'REPORTE COTIZACIONES',
     columnStyles,
     headerColumnStyles,
-    datosIzquierda,
+    datosIzquierda: null,
     datosDerecho: null,
     conImpresionEncargado: true,
     fechas: { inicio: fechaInicio, final: fechaFinal },

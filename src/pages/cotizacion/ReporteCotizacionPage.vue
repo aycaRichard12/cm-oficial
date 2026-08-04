@@ -506,7 +506,7 @@ const filtrarYOrdenarDatos = () => {
   datosFiltrados.value = tempDatos
 }
 
-const cargarPDF = () => {
+const cargarPDF = async () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
@@ -516,17 +516,57 @@ const cargarPDF = () => {
     return
   }
 
-  resultadoFiltrado.value = refHijo.value.obtenerDatos()
-  const filterReporte = refHijo.value.getActiveFiltersReport()
-  const almacen = {
-    almacen: filterReporte.almacen || 'Todos los almacenes',
-  }
-  console.log(divisa.value)
-  const d = divisa.value
-  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen, d.tipo, fechai.value, fechaf.value)
-  pdfData.value = doc.output('dataurlstring')
+  loading.value = true
+  try {
+    const datosTabla = refHijo.value?.obtenerDatos ? refHijo.value.obtenerDatos() : datosFiltrados.value
+    resultadoFiltrado.value = datosTabla || []
 
-  showPdfModal.value = true
+    const filterReporte = refHijo.value?.getActiveFiltersReport ? refHijo.value.getActiveFiltersReport() : {}
+    const almacen = {
+      almacen: filterReporte?.almacen || 'Todos los almacenes',
+    }
+    const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
+
+    const resultado = await DPFReporteCotizacion(
+      resultadoFiltrado.value,
+      almacen,
+      dSimbolo,
+      fechai.value,
+      fechaf.value,
+    )
+
+    if (!resultado || !resultado.doc) {
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudo generar el PDF del reporte.',
+        position: 'top',
+      })
+      return
+    }
+
+    if (pdfData.value) {
+      URL.revokeObjectURL(pdfData.value)
+      pdfData.value = null
+    }
+
+    if (isMobile.value && resultado.mobileBlobUrl) {
+      mobileFallbackUrl.value = resultado.mobileBlobUrl
+      showPdfModal.value = true
+    } else {
+      const pdfBlob = resultado.doc.output('blob')
+      pdfData.value = URL.createObjectURL(pdfBlob)
+      showPdfModal.value = true
+    }
+  } catch (err) {
+    console.error('Error al generar la vista previa del PDF:', err)
+    $q.notify({
+      type: 'negative',
+      message: 'Hubo un error al generar la vista previa del PDF.',
+      position: 'top',
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
 const generarComprobantePDF = async (id) => {

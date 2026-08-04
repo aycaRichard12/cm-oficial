@@ -1,15 +1,12 @@
 <template>
   <q-page padding>
-    
     <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
           Reporte Compras
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Reporte Compras
-        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Compras</div>
       </div>
     </div>
     <q-form>
@@ -54,7 +51,7 @@
       </div>
     </q-form>
 
-    <q-table
+    <!-- <q-table
       id="reporteCompras"
       title="Reporte de Compras"
       :rows="datosFiltrados"
@@ -79,7 +76,15 @@
           </q-btn>
         </q-td>
       </template>
-    </q-table>
+    </q-table> -->
+
+    <TablaReporteCompra
+      :rows="datosFiltrados"
+      :loading="isLoading"
+      :divisa="divisa"
+      :almacen-seleccionado="almacenActual"
+      @detalle-pdf="verDetallePDF"
+    />
     <q-dialog v-model="showPdfDialog" maximized>
       <q-card>
         <q-toolbar class="bg-primary text-white">
@@ -106,66 +111,73 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
-import { date } from 'quasar'
+//import { date } from 'quasar'
 import * as XLSX from 'xlsx'
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
 import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfs/Detalle_Compra/reporte'
-const { detalleCompra, loadingDetalle, fetchDetalleCompra } = useReporteProveedorCompras()
+import TablaReporteCompra from 'src/components/compra/reportes/TablaReporteCompra.vue'
+import { obtenerDivisaActiva } from 'src/services/divisaService.js'
+
+const { detalleCompra, fetchDetalleCompra } = useReporteProveedorCompras()
 const showPdfDialog = ref(false)
 const pdfUrl = ref(null)
+const divisa = ref(null)
+console.log(divisa.value)
 
 const idusuario = idusuario_md5()
 const startDate = ref(null)
 const endDate = ref(null)
 const datosFiltrados = ref([])
 const search = ref('')
-const columnas = [
-  {
-    name: 'num',
-    label: 'N°',
-    field: 'num',
-    align: 'center',
-  },
-  {
-    name: 'almacen',
-    label: 'Almacén',
-    field: 'almacen',
-    align: 'left',
-  },
-  {
-    name: 'codigo',
-    label: 'Codigo',
-    field: 'codigo',
-    align: 'left',
-  },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    field: (row) => date.formatDate(row.fecha, 'DD/MM/YYYY'),
-    align: 'left',
-  },
-  { name: 'nombrelote', label: 'Nombre Lote', field: 'nombrelote', align: 'left' },
-  {
-    name: 'nfactura',
-    label: 'Factura',
-    field: 'nfactura',
-    align: 'right',
-  },
-  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
-  {
-    name: 'autorizacion',
-    label: 'Autorización',
-    field: (row) => (row.autorizacion == 1 ? 'Autorizado' : 'No Autorizado'),
-    align: 'left',
-  },
-  {
-    name: 'acciones',
-    label: 'Acciones',
-    field: 'acciones',
-    align: 'left',
-  },
-]
+// const columnas = [
+//   {
+//     name: 'num',
+//     label: 'N°',
+//     field: 'num',
+//     align: 'center',
+//   },
+//   {
+//     name: 'fecha',
+//     label: 'Fecha',
+//     field: (row) => date.formatDate(row.fecha, 'DD/MM/YYYY'),
+//     align: 'left',
+//   },
+//   {
+//     name: 'codigo',
+//     label: 'Codigo',
+//     field: 'codigo',
+//     align: 'left',
+//   },
+//   { name: 'nombrelote', label: 'Nombre Lote', field: 'nombrelote', align: 'left' },
+//   { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
+//   { name: 'total', label: 'Importe Compra', field: 'total', align: 'right' },
+//   {
+//     name: 'autorizacion',
+//     label: 'Autorización',
+//     field: (row) => (row.autorizacion == 1 ? 'Autorizado' : 'No Autorizado'),
+//     align: 'left',
+//   },
+//   {
+//     name: 'nfactura',
+//     label: 'Factura',
+//     field: 'nfactura',
+//     align: 'right',
+//   },
+//   {
+//     name: 'almacen',
+//     label: 'Almacén',
+//     field: 'almacen',
+//     align: 'left',
+//   },
+
+//   {
+//     name: 'acciones',
+//     label: 'Acciones',
+//     field: 'acciones',
+//     align: 'left',
+//   },
+// ]
 
 async function generarReporte() {
   try {
@@ -229,7 +241,9 @@ const verDetallePDF = async (row) => {
     showPdfDialog.value = true
   }
 }
-onMounted(() => {
+onMounted(async () => {
+  divisa.value = await obtenerDivisaActiva(idempresa_md5())
+  console.log(divisa.value)
   const today = new Date()
   const year = today.getFullYear()
   const month = (today.getMonth() + 1).toString().padStart(2, '0')
