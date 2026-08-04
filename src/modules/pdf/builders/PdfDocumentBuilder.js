@@ -1,4 +1,3 @@
-// src/modules/pdf/builders/PdfDocumentBuilder.js
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
 import { HeaderFooterBuilder } from './HeaderFooterBuilder'
@@ -10,8 +9,13 @@ import {
 } from 'src/composables/FuncionesG'
 
 export class PdfDocumentBuilder {
-  constructor(userData) {
-    this.doc = new jsPDF()
+  constructor(userData, options = {}) {
+    const { orientation = 'portrait', format = 'a4' } = options
+    this.doc = new jsPDF({
+      orientation,
+      unit: 'mm',
+      format,
+    })
     this.userData = userData
     this.headerFooter = new HeaderFooterBuilder(this.doc, userData)
     this.signature = new SignatureBuilder(this.doc)

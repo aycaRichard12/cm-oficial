@@ -32,51 +32,8 @@
           class="q-mr-sm"
           id="generarReporte"
         />
-        <q-btn
-          color="secondary"
-          label="Exportar a Excel"
-          @click="exportarExcel"
-          id="exportarExcel"
-        />
-      </div>
-      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
-        <div>
-          <label for="buscar">Buscar...</label>
-          <q-input dense debounce="300" v-model="search" id="buscar" outlined>
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
       </div>
     </q-form>
-
-    <!-- <q-table
-      id="reporteCompras"
-      title="Reporte de Compras"
-      :rows="datosFiltrados"
-      :columns="columnas"
-      :filter="search"
-      row-key="codigo"
-      class="q-mt-lg"
-    >
-      <template v-slot:body-cell-acciones="props">
-        <q-td :props="props">
-          <q-btn
-            id="verDetallePDF"
-            flat
-            round
-            dense
-            color="primary"
-            icon="picture_as_pdf"
-            @click="verDetallePDF(props.row)"
-            :loading="loadingDetalle && selectedIdIngreso === props.row.idIngreso"
-          >
-            <q-tooltip>Ver Detalle en PDF</q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
-    </q-table> -->
 
     <TablaReporteCompra
       :rows="datosFiltrados"
@@ -114,7 +71,7 @@
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 //import { date } from 'quasar'
-import * as XLSX from 'xlsx'
+//import * as XLSX from 'xlsx'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
 import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfs/Detalle_Compra/reporte'
@@ -131,55 +88,6 @@ const idusuario = idusuario_md5()
 const startDate = ref(null)
 const endDate = ref(null)
 const datosFiltrados = ref([])
-const search = ref('')
-// const columnas = [
-//   {
-//     name: 'num',
-//     label: 'N°',
-//     field: 'num',
-//     align: 'center',
-//   },
-//   {
-//     name: 'fecha',
-//     label: 'Fecha',
-//     field: (row) => date.formatDate(row.fecha, 'DD/MM/YYYY'),
-//     align: 'left',
-//   },
-//   {
-//     name: 'codigo',
-//     label: 'Codigo',
-//     field: 'codigo',
-//     align: 'left',
-//   },
-//   { name: 'nombrelote', label: 'Nombre Lote', field: 'nombrelote', align: 'left' },
-//   { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
-//   { name: 'total', label: 'Importe Compra', field: 'total', align: 'right' },
-//   {
-//     name: 'autorizacion',
-//     label: 'Autorización',
-//     field: (row) => (row.autorizacion == 1 ? 'Autorizado' : 'No Autorizado'),
-//     align: 'left',
-//   },
-//   {
-//     name: 'nfactura',
-//     label: 'Factura',
-//     field: 'nfactura',
-//     align: 'right',
-//   },
-//   {
-//     name: 'almacen',
-//     label: 'Almacén',
-//     field: 'almacen',
-//     align: 'left',
-//   },
-
-//   {
-//     name: 'acciones',
-//     label: 'Acciones',
-//     field: 'acciones',
-//     align: 'left',
-//   },
-// ]
 
 async function generarReporte() {
   try {
@@ -197,27 +105,27 @@ async function generarReporte() {
   }
 }
 
-function exportarExcel() {
-  const worksheet = XLSX.utils.json_to_sheet(
-    datosFiltrados.value.map((item) => ({
-      idcompra: item.idcompra,
-      codigo: item.codigo,
-      fecha: item.fecha,
-      nombrelote: item.nombrelote,
-      nfactura: item.nfactura,
-      proveedor: item.proveedor,
-      almacen: item.almacen,
-      idalmacen: item.idalmacen,
-      autorizacion: item.autorizacion,
-      total: item.total,
-      num: item.num,
-    })),
-  )
+// function exportarExcel() {
+//   const worksheet = XLSX.utils.json_to_sheet(
+//     datosFiltrados.value.map((item) => ({
+//       idcompra: item.idcompra,
+//       codigo: item.codigo,
+//       fecha: item.fecha,
+//       nombrelote: item.nombrelote,
+//       nfactura: item.nfactura,
+//       proveedor: item.proveedor,
+//       almacen: item.almacen,
+//       idalmacen: item.idalmacen,
+//       autorizacion: item.autorizacion,
+//       total: item.total,
+//       num: item.num,
+//     })),
+//   )
 
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
-  XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
-}
+//   const workbook = XLSX.utils.book_new()
+//   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
+//   XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
+// }
 
 const verDetallePDF = async (row) => {
   console.log('Generando PDF para la compra:', row)

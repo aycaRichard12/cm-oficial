@@ -281,18 +281,11 @@ const columns = [
     dataType: 'date',
     format: (val) => (val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''),
   },
-  {
-    name: 'Venta',
-    align: 'left',
-    label: 'Venta',
-    field: 'Venta',
-    sortable: true,
-    dataType: 'text',
-  },
+
   {
     name: 'nombre_cliente',
     align: 'left',
-    label: 'Cliente',
+    label: 'Razón Social',
     field: 'nombre_cliente',
     sortable: true,
     dataType: 'text',
@@ -305,7 +298,14 @@ const columns = [
     sortable: true,
     dataType: 'text',
   },
-
+  {
+    name: 'Venta',
+    align: 'left',
+    label: 'Documento Cobrado',
+    field: 'Venta',
+    sortable: true,
+    dataType: 'text',
+  },
   {
     name: 'monto_total_venta',
     align: 'right',

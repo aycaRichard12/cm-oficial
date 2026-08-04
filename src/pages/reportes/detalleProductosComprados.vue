@@ -283,32 +283,58 @@ async function generarReporte() {
 }
 
 function exportarExcel() {
+  // ── 1. Obtener datos y columnas visibles ─────────────────
   const dataToExport = tableRef.value
     ? tableRef.value.obtenerDatosFiltrados()
     : datosFiltrados.value
-  const worksheet = XLSX.utils.json_to_sheet(
-    dataToExport.map((item) => ({
-      Fecha: item.fecha_formateada,
-      'Nro. documento': item.nrofactura,
-      'Tipo de compra': item.tipocompra_label,
-      'Código producto': item.codigo,
-      'Código barras': item.codigobarra,
-      Descripción: item.descripcion,
-      'Costo unitario': item.costounitario,
-      'Precio unitario': item.precio,
-      Cantidad: item.cantidad,
-      Importe: item.importe,
-      'Costo total': item.costototal,
-      'Compra total': item.compratotal,
-      Utilidad: item.utilidad,
-      'Nombre usuario': item.usuario,
-      'Almacén empresa': item.almacen,
-      Proveedor: item.proveedor,
-      Unidad: item.unidad,
-      Categoría: item.categoria,
-      'Sub Categoría': item.subcategoria,
-    })),
-  )
+
+  const visibleColumns = tableRef.value?.obtenerColumnasVisibles
+    ? tableRef.value.obtenerColumnasVisibles()
+    : []
+
+  // ── 2. Definir todas las columnas posibles ────────────────
+  const allPossibleColumns = [
+    { header: 'Fecha', dataKey: 'fecha_formateada', width: 15, name: 'fecha_formateada' },
+    { header: 'Nro. documento', dataKey: 'nrofactura', width: 15, name: 'nrofactura' },
+    { header: 'Tipo de compra', dataKey: 'tipocompra_label', width: 15, name: 'tipocompra' },
+    { header: 'Código producto', dataKey: 'codigo', width: 15, name: 'codigo' },
+    { header: 'Código barras', dataKey: 'codigobarra', width: 15, name: 'codigobarra' },
+    { header: 'Descripción', dataKey: 'descripcion', width: 25, name: 'descripcion' },
+    { header: 'Costo unitario', dataKey: 'costounitario', width: 12, name: 'costounitario' },
+    { header: 'Precio unitario', dataKey: 'precio', width: 12, name: 'precio' },
+    { header: 'Cantidad', dataKey: 'cantidad', width: 10, name: 'cantidad' },
+    { header: 'Importe', dataKey: 'importe', width: 12, name: 'importe' },
+    { header: 'Costo total', dataKey: 'costototal', width: 12, name: 'costototal' },
+    { header: 'Compra total', dataKey: 'compratotal', width: 12, name: 'compratotal' },
+    { header: 'Utilidad', dataKey: 'utilidad', width: 10, name: 'utilidad' },
+    { header: 'Nombre usuario', dataKey: 'usuario', width: 15, name: 'usuario' },
+    { header: 'Almacén empresa', dataKey: 'almacen', width: 15, name: 'almacen' },
+    { header: 'Proveedor', dataKey: 'proveedor', width: 20, name: 'proveedor' },
+    { header: 'Unidad', dataKey: 'unidad', width: 10, name: 'unidad' },
+    { header: 'Categoría', dataKey: 'categoria', width: 12, name: 'categoria' },
+    { header: 'Sub Categoría', dataKey: 'subcategoria', width: 12, name: 'subcategoria' },
+  ]
+
+  // ── 3. Filtrar columnas según las visibles ───────────────
+  let exportColumns = allPossibleColumns
+  if (visibleColumns.length > 0) {
+    const visibleNames = visibleColumns.map((col) => col.name)
+    exportColumns = allPossibleColumns.filter((col) => visibleNames.includes(col.name))
+  }
+
+  // ── 4. Construir array de datos solo con las columnas seleccionadas ──
+  const dataForSheet = dataToExport.map((item) => {
+    const row = {}
+    exportColumns.forEach((col) => {
+      row[col.header] = item[col.dataKey] ?? ''
+    })
+    return row
+  })
+
+  // ── 5. Generar hoja de cálculo y descargar ──────────────
+  const headers = exportColumns.map((col) => col.header)
+  const worksheet = XLSX.utils.json_to_sheet(dataForSheet, { header: headers })
+  worksheet['!cols'] = exportColumns.map((col) => ({ wch: col.width }))
 
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')

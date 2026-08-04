@@ -115,9 +115,10 @@ async function loadSucursales() {
 }
 const toggleForm = () => {
   showForm.value = !showForm.value
-  if (!showForm.value) {
-    isEditing.value = false
+  if (showForm.value) {
     resetForm()
+  } else {
+    isEditing.value = false
   }
 }
 
@@ -138,6 +139,7 @@ function resetForm() {
   formData.value = {
     ver: 'registrarAlmacen',
     idempresa: idempresa,
+    codigo: generarCodigo(),
   }
 }
 const editUnit = (item) => {
@@ -146,6 +148,7 @@ const editUnit = (item) => {
     idempresa: idempresa,
     nombre: item.nombre,
     direccion: item.direccion,
+    codigo: item.codigo,
     id: item.id,
     email: item.email,
     tipoalmacen: item.idtipoalmacen,

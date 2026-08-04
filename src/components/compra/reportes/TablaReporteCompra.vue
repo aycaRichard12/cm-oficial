@@ -47,6 +47,7 @@ import { ref, computed, onMounted } from 'vue'
 import CompraAcciones from './CompraAcciones.vue'
 import { PDFReporteCompras } from 'src/utils/pdfs/reporteCompras/reporte.js'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
+import * as XLSX from 'xlsx'
 
 // Stores & composables
 
@@ -194,18 +195,102 @@ const processedRows = computed(() =>
 )
 
 // Función para exportar a Excel (mantenida localmente, o se podría emitir al padre)
+// Función para exportar a Excel (adaptada a la estructura del PDF)
 const exportarexcel = () => {
-  // Se podría implementar usando tableRef o emitiendo al padre
-  // Por ahora asumimos que CompraAcciones ya tiene lógica interna o emite
-  console.warn('Exportar Excel no implementado aún')
+  // ── 1. Obtener datos y columnas visibles ─────────────────
+  const resultado = refHijo.value.obtenerDatosFiltrados()
+  const visibleColumns = refHijo.value?.obtenerColumnasVisibles() || []
+
+  // Normalizar resultado: a veces devuelve un ref, a veces el array directamente
+  const lista = (resultado?.value || resultado || []).filter(Boolean)
+
+  // Si no hay datos, no genera el Excel
+  if (!lista.length) {
+    console.warn('No hay datos para exportar a Excel')
+    return
+  }
+
+  // ── 2. Ordenar por fecha (como en el PDF) ─────────────────
+  const ordenados = [...lista]
+    .map((item) => ({ ...item, _fechaOrden: item.fecha }))
+    .sort((a, b) => (a._fechaOrden > b._fechaOrden ? 1 : -1))
+
+  // ── 3. Definir todas las columnas posibles (copiado del PDF) ──
+  const allPossibleColumns = [
+    { header: 'N', dataKey: 'nro', width: 10 },
+    { header: 'Fecha', dataKey: 'fecha', width: 20 },
+    { header: 'Código', dataKey: 'codigo', width: 30 },
+    { header: 'Nombre Lote', dataKey: 'nombrelote', width: 30 },
+    { header: 'Proveedor', dataKey: 'proveedor', width: 30 },
+    { header: `Importe Compra (${nombreDivisa.value})`, dataKey: 'total', width: 15 },
+    { header: 'Autorización', dataKey: 'autorizacionTexto', width: 25 },
+    { header: 'Factura', dataKey: 'nfactura', width: 10 },
+    { header: 'Almacén', dataKey: 'almacen', width: 20 },
+  ]
+
+  // ── 4. Filtrar columnas según visibilidad (igual que en PDF) ──
+  let exportColumns = allPossibleColumns
+  if (visibleColumns.length > 0) {
+    const visibleNames = visibleColumns.map((c) => c.name)
+    exportColumns = allPossibleColumns.filter(
+      (col) => visibleNames.includes(col.dataKey) || col.dataKey === 'nro', // siempre incluimos Nro
+    )
+  }
+
+  // ── 5. Construir array de datos SOLO con las columnas seleccionadas ──
+  const datos = ordenados.map((item, index) => {
+    const fila = {}
+    exportColumns.forEach((col) => {
+      let valor
+      if (col.dataKey === 'nro') {
+        valor = index + 1
+      } else if (col.dataKey === 'total') {
+        valor = Number(item.total || 0).toFixed(2)
+      } else {
+        valor = item[col.dataKey] || ''
+      }
+      fila[col.header] = valor
+    })
+    return fila
+  })
+
+  // ── 6. Calcular total general y añadir fila de totales ──
+  const total = ordenados.reduce((sum, u) => sum + parseFloat(u.total || 0), 0)
+  const filaTotal = {}
+  exportColumns.forEach((col) => {
+    if (col.dataKey === 'nro') {
+      filaTotal[col.header] = `TOTAL GENERAL (${nombreDivisa.value})`
+    } else if (col.dataKey === 'total') {
+      filaTotal[col.header] = total.toFixed(2)
+    } else {
+      filaTotal[col.header] = ''
+    }
+  })
+  datos.push(filaTotal)
+
+  // ── 7. Crear hoja de cálculo ─────────────────
+  const headers = exportColumns.map((c) => c.header)
+  const worksheet = XLSX.utils.json_to_sheet(datos, { header: headers })
+
+  // Anchos de columna
+  worksheet['!cols'] = exportColumns.map((c) => ({ wch: c.width }))
+
+  // ── 8. Generar y descargar archivo ────────────
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Compras')
+  XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
 }
 
 // Función para imprimir reporte de compras
 const imprimirReporte = async () => {
   try {
     const resultado = refHijo.value.obtenerDatosFiltrados()
+    const visibleColumns = refHijo.value?.obtenerColumnasVisibles() || []
+    console.log('columnas Visibles:   ' + visibleColumns)
+
     console.log(fechai.value)
     const { doc, mobileBlobUrl } = await PDFReporteCompras(
+      visibleColumns,
       resultado,
       nombreDivisa.value,
       fechai.value,

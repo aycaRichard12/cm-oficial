@@ -42,6 +42,25 @@
       </q-tabs>
     </div>
 
+    <div class="q-mt-md" v-if="tipoReporte === 'grafico' && graficoData">
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-3">
+          <div class="text-subtitle1 text-weight-medium q-mb-sm">Configuración de Gráfico</div>
+          <q-select
+            v-model="form.granularidad"
+            label="Agrupar por"
+            :options="['dia', 'semana', 'mes', 'anual']"
+            emit-value
+            map-options
+            dense
+            outlined
+            class="full-width"
+            @update:model-value="(val) => form.granularidad = val"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="q-mt-md">
       <TablaReporte
         ref="refHijo"
@@ -61,8 +80,10 @@
         :rows="graficoData"
         :columns="graficoColumns"
         :divisa="divisa"
+        :granularidad="form.granularidad"
         row-key="periodo"
         :rowsPerPage="30"
+        @update:granularidad="form.granularidad = $event"
       />
 
       <div v-if="errorMensaje" class="text-negative q-mt-md">

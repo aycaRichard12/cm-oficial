@@ -14,6 +14,18 @@
           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
             <q-btn
               unelevated
+              rounded
+              color="negative"
+              text-color="red"
+              icon="picture_as_pdf"
+              label="Generar catálogo"
+              no-caps
+              class="q-px-lg q-py-sm"
+              outline
+              @click="generarCatalogo"
+            />
+            <q-btn
+              unelevated
               outline
               color="indigo"
               @click="exportarDatos"
@@ -179,6 +191,7 @@ import {
 } from 'src/utils/XCLReportImport'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import { PDF_vistaCatalogoSimple } from 'src/utils/pdfs/catalogoGeneral/reporte'
 
 const selectedIds = ref(new Set())
 const $q = useQuasar()
@@ -421,6 +434,21 @@ const exportarDatos = () => {
     return
   }
   exportToXLSX_CatalogoProductos(props.rows)
+}
+const generarCatalogo = async () => {
+  if (props.rows.length === 0) {
+    $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
+    return
+  }
+  try {
+    // 1. Generar el PDF (devuelve un data URL)
+    const dataUrl = await PDF_vistaCatalogoSimple(props.rows)
+
+    // 2. Abrirlo en una pestaña/ventana nueva
+    window.open(dataUrl)
+  } catch (error) {
+    console.error('Error al generar el catálogo:', error)
+  }
 }
 
 const emit = defineEmits([

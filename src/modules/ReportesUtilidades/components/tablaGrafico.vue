@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import VueApexCharts from 'vue3-apexcharts'
 
@@ -125,6 +125,19 @@ const props = defineProps({
   rowKey: { type: String, default: 'periodo' },
   rowsPerPage: { type: Number, default: 15 },
   divisa: { type: Object, default: () => ({ simbolo: 'Bs', codigo: 'BOB' }) },
+  granularidad: { type: String, default: 'dia' },
+})
+
+const emit = defineEmits(['update:granularidad'])
+
+const granularidadLocal = ref(props.granularidad)
+
+watch(() => props.granularidad, (newVal) => {
+  granularidadLocal.value = newVal
+})
+
+watch(granularidadLocal, (newVal) => {
+  emit('update:granularidad', newVal)
 })
 
 const ArrayHeaders = [
@@ -138,6 +151,38 @@ const ArrayHeaders = [
 const summationHeaders = ['venta_bruta', 'venta_neta', 'costo_ventas', 'utilidad']
 
 const simbolo = computed(() => props.divisa?.simbolo || 'Bs')
+
+const formatPeriodo = (granularidad, periodo) => {
+  if (!periodo) return periodo
+
+  const date = new Date(periodo)
+  const options = {}
+
+  switch (granularidad) {
+    case 'dia':
+      options.year = 'numeric'
+      options.month = 'short'
+      options.day = 'numeric'
+      break
+    case 'semana':
+      options.year = 'numeric'
+      options.month = 'short'
+      options.day = 'numeric'
+      break
+    case 'mes':
+      options.year = 'numeric'
+      options.month = 'short'
+      break
+    case 'anual':
+      options.year = 'numeric'
+      break
+    default:
+      options.year = 'numeric'
+      options.month = 'short'
+  }
+
+  return date.toLocaleDateString('es-ES', options)
+}
 
 /* ------------------------------------------------------------------ */
 /*  Construir los datos de cada sección (total, venta, cotización)
@@ -271,7 +316,7 @@ function buildSectionData(label, rows) {
     dataLabels: { enabled: false },
     stroke: { show: true, width: 1, colors: ['transparent'] },
     xaxis: {
-      categories: sorted.map((r) => r.periodo),
+      categories: sorted.map((r) => formatPeriodo(props.granularidad, r.periodo)),
       labels: {
         rotate: -45,
         style: {

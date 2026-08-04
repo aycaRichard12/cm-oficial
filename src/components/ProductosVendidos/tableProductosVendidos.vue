@@ -224,6 +224,14 @@ const columnasExtensas = [
     sortable: true,
   },
   {
+    name: 'nombrecomercial',
+    label: 'Nombre Comercial',
+    align: 'left',
+    field: 'nombrecomercial',
+    dataType: 'text',
+    sortable: true,
+  },
+  {
     name: 'tipodocumento',
     label: 'Tipo Documento',
     align: 'left',
@@ -239,14 +247,7 @@ const columnasExtensas = [
     dataType: 'text',
     sortable: true,
   },
-  {
-    name: 'nombrecomercial',
-    label: 'Nombre Comercial',
-    align: 'left',
-    field: 'nombrecomercial',
-    dataType: 'text',
-    sortable: true,
-  },
+
   {
     name: 'unidad',
     label: 'Unidad',

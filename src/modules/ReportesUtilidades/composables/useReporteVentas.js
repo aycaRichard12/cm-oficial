@@ -1,4 +1,4 @@
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import {
   getAlmacenes,
@@ -197,6 +197,16 @@ export function useReporteVentas() {
   const resumenData = ref(null)
   const detalleData = ref([])
   const graficoData = ref([])
+
+  // Watcher para actualizar el reporte cuando cambia la granularidad
+  watch(
+    () => form.granularidad,
+    (newVal) => {
+      if (tipoReporte.value === 'grafico' && newVal) {
+        obtenerReporte()
+      }
+    },
+  )
 
   // Columnas computadas que usan el símbolo de la divisa actual
   const detalleColumns = computed(() => {

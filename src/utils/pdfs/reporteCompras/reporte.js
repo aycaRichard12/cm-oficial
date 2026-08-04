@@ -5,7 +5,13 @@ import { ReportDataService } from 'src/modules/pdf/services/ReportDataService'
 /**
 
  */
-export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal) {
+export async function PDFReporteCompras(
+  visibleColumnsFromTable = [],
+  Compras,
+  divisa,
+  fechaInicio,
+  fechaFinal,
+) {
   const lista = Array.isArray(Compras) ? Compras : Compras && Compras.value ? Compras.value : []
 
   // Ordenar por fecha...
@@ -14,7 +20,7 @@ export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal
     .sort((a, b) => a._fechaOrden - b._fechaOrden)
 
   const datos = ordenados.map((item, index) => ({
-    nro: index + 1,
+    num: index + 1,
     fecha: item.fecha,
     codigo: item.codigo,
     nombrelote: item.nombrelote,
@@ -32,28 +38,53 @@ export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal
     crearFilaTotalGeneral(`TOTAL GENERAL (${divisa})`, [{ valor: total, halign: 'right' }], 5),
   )
 
-  const columns = [
-    { header: 'N', dataKey: 'nro' },
-    { header: 'Fecha', dataKey: 'fecha' },
-    { header: 'Codigo', dataKey: 'codigo' },
-    { header: 'Nombre Lote', dataKey: 'nombrelote' },
-    { header: `Proveedor`, dataKey: 'proveedor' },
-    { header: `Importe Compra (${divisa})`, dataKey: 'total' },
-    { header: `Autorización`, dataKey: 'autorizacionTexto' },
-    { header: `Factura`, dataKey: 'nfactura' },
-    { header: `Almacén`, dataKey: 'almacen' },
+  const allPossibleColumns = [
+    { header: 'N°', dataKey: 'num', name: 'num', width: '10' },
+    { header: 'Fecha', dataKey: 'fecha', name: 'fecha', width: '20' },
+    { header: 'Codigo', dataKey: 'codigo', name: 'codigo', width: '30' },
+    { header: 'Nombre Lote', dataKey: 'nombrelote', name: 'nombrelote', width: '30' },
+    { header: `Proveedor`, dataKey: 'proveedor', name: 'proveedor', width: '30' },
+    { header: `Importe Compra (${divisa})`, dataKey: 'total', name: 'total', width: '15' },
+    {
+      header: `Autorización`,
+      dataKey: 'autorizacionTexto',
+      name: 'autorizacionTexto',
+      width: '25',
+    },
+    { header: `Fact.`, dataKey: 'nfactura', name: 'nfactura', width: '10' },
+    { header: `Almacén`, dataKey: 'almacen', name: 'almacen', width: '20' },
   ]
-  const columnStyles = {
-    nro: { cellWidth: 10, halign: 'center' },
-    fecha: { cellWidth: 20, halign: 'center' },
-    codigo: { cellWidth: 30, halign: 'left' },
-    nombrelote: { cellWidth: 30, halign: 'left' },
-    proveedor: { cellWidth: 30, halign: 'right' },
-    total: { cellWidth: 15, halign: 'right' },
-    autorizacionTexto: { cellWidth: 25, halign: 'right' },
-    nfactura: { cellWidth: 10, halign: 'right' },
-    almacen: { cellWidth: 20, halign: 'right' },
+
+  let columns = allPossibleColumns
+  if (visibleColumnsFromTable && visibleColumnsFromTable.length > 0) {
+    const visibleNames = visibleColumnsFromTable.map((c) => c.name)
+    columns = allPossibleColumns.filter((c) => visibleNames.includes(c.name) || c.name === 'indice')
   }
+
+  // const columnStyles = {
+  //   nro: { cellWidth: 10, halign: 'center' },
+  //   fecha: { cellWidth: 20, halign: 'center' },
+  //   codigo: { cellWidth: 30, halign: 'left' },
+  //   nombrelote: { cellWidth: 30, halign: 'left' },
+  //   proveedor: { cellWidth: 30, halign: 'right' },
+  //   total: { cellWidth: 15, halign: 'right' },
+  //   autorizacionTexto: { cellWidth: 25, halign: 'right' },
+  //   nfactura: { cellWidth: 10, halign: 'right' },
+  //   almacen: { cellWidth: 20, halign: 'right' },
+  // }
+
+  const columnStyles = {}
+  columns.forEach((col) => {
+    columnStyles[col.dataKey] = {
+      cellWidth: Number(col.width),
+      halign:
+        col.dataKey === 'total' || col.dataKey === 'nfactura'
+          ? 'right'
+          : col.dataKey === 'num'
+            ? 'center'
+            : 'left',
+    }
+  })
   const headerColumnStyles = { ...columnStyles }
 
   // ─── OBTENER DATOS DE EMPRESA ─────────────────────
