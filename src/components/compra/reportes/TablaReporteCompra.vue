@@ -65,8 +65,12 @@ const props = defineProps({
     default: false,
   },
   divisa: {
-    type: String,
+    type: [String, Object],
     default: 'USD',
+  },
+  fechaInicio: {
+    type: String,
+    default: '',
   },
   fechaIncio: {
     type: String,
@@ -82,8 +86,27 @@ const props = defineProps({
 // Emits
 defineEmits(['detallePdf'])
 
-// Columnas de la tabla (se podrían mover a un archivo aparte para mayor limpieza)
-const columns = [
+// Obtener nombre o símbolo representativo de la divisa
+const nombreDivisa = computed(() => {
+  if (!props.divisa) return 'USD'
+  if (typeof props.divisa === 'object') {
+    return props.divisa.tipo || props.divisa.simbolo || props.divisa.nombre || 'USD'
+  }
+  return props.divisa
+})
+
+const fechai = computed(() => {
+  const val = props.fechaInicio || props.fechaIncio || ''
+  return typeof val === 'string' ? val : ''
+})
+
+const fechaf = computed(() => {
+  const val = props.fechaFin || ''
+  return typeof val === 'string' ? val : ''
+})
+
+// Columnas de la tabla (como computed para que reaccione al cargar la divisa)
+const columns = computed(() => [
   {
     name: 'num',
     label: 'N°',
@@ -120,7 +143,7 @@ const columns = [
   },
   {
     name: 'total',
-    label: `Importe Compra (${props.divisa})`,
+    label: `Importe Compra (${nombreDivisa.value})`,
     field: 'total',
     align: 'right',
     dataType: 'text',
@@ -152,12 +175,12 @@ const columns = [
     field: 'acciones',
     align: 'left',
   },
-]
+])
 
 // Cabeceras para exportar (solo los campos relevantes)
-const arrayHeaders = columns
-  .filter((col) => !['num', 'acciones'].includes(col.name))
-  .map((col) => col.name)
+const arrayHeaders = computed(() =>
+  columns.value.filter((col) => !['num', 'acciones'].includes(col.name)).map((col) => col.name),
+)
 
 // Columnas que se suman en el pie de la tabla
 const sumColumns = ['total']
@@ -181,11 +204,12 @@ const exportarexcel = () => {
 const imprimirReporte = async () => {
   try {
     const resultado = refHijo.value.obtenerDatosFiltrados()
+    console.log(fechai.value)
     const { doc, mobileBlobUrl } = await PDFReporteCompras(
       resultado,
-      props.divisa,
-      props.fechaIncio,
-      props.fechaFin,
+      nombreDivisa.value,
+      fechai.value,
+      fechaf.value,
     )
 
     // Abrir en ventana nueva (escritorio)

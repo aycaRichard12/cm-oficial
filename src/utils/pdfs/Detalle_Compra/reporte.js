@@ -1,11 +1,8 @@
 import jsPDF from 'jspdf'
 import { verificarTamanoPantallaYRedirigir } from '../dibujar'
 import { decimas } from 'src/composables/FuncionesG'
-import { useCurrencyStore } from 'src/stores/currencyStore'
 import { dibujarCuerpoTabla } from '../dibujar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
-
-const divisaActiva = useCurrencyStore().simbolo
 
 function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
   const fila = [
@@ -39,7 +36,7 @@ function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
   return fila
 }
 
-export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
+export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
   console.log('esto son las divisas', detalleCompra)
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
 
@@ -54,8 +51,8 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
     { header: 'Descripción', dataKey: 'descripcion' },
     { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Cantidad', dataKey: 'cantidad' },
-    { header: 'Precio (' + divisaActiva + ')', dataKey: 'precio' },
-    { header: 'Subtotal (' + divisaActiva + ')', dataKey: 'subTotal' },
+    { header: 'Precio (' + divisa + ')', dataKey: 'precio' },
+    { header: 'Subtotal (' + divisa + ')', dataKey: 'subTotal' },
   ]
 
   // Mapear datos de productos
@@ -84,7 +81,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra) {
 
   datos.push(
     crearFilaTotalGeneral(
-      `TOTAL GENERAL (${divisaActiva})`,
+      `TOTAL GENERAL (${divisa})`,
       [
         { valor: precioUnitario, halign: 'center' },
         { valor: totalGeneral, halign: 'center' },

@@ -82,6 +82,8 @@
       :rows="datosFiltrados"
       :loading="isLoading"
       :divisa="divisa"
+      :fecha-inicio="startDate"
+      :fecha-fin="endDate"
       :almacen-seleccionado="almacenActual"
       @detalle-pdf="verDetallePDF"
     />
@@ -224,7 +226,8 @@ const verDetallePDF = async (row) => {
 
   if (detalle) {
     // Generar PDF
-    const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value)
+    const divisaActiva = divisa.value
+    const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value, divisaActiva.tipo)
 
     // Convertir a blob URL para mostrar en iframe
     const pdfBlob = doc.output('blob')

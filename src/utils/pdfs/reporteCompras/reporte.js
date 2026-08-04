@@ -1,15 +1,9 @@
 import { PdfGeneratorService } from 'src/modules/pdf/services/PdfGeneratorService'
 import { verificarTamanoPantallaYRedirigir } from 'src/modules/pdf/utils/screenUtils'
-import { decimas } from 'src/composables/FuncionesG'
 import { crearFilaTotalGeneral } from 'src/modules/pdf/utils/rowUtils'
 import { ReportDataService } from 'src/modules/pdf/services/ReportDataService'
 /**
- * Genera el PDF del reporte de cotizaciones usando el servicio optimizado.
- * @param {Array|Ref} cotizaciones - Lista de cotizaciones (puede ser un ref())
- * @param {Object} almacen - Datos del almacén
- * @param {string} divisa - Símbolo o nombre de la divisa
- * @param {Object} [empresa] - (Opcional) Datos de la empresa para el encabezado
- * @returns {jsPDF|undefined}
+
  */
 export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal) {
   const lista = Array.isArray(Compras) ? Compras : Compras && Compras.value ? Compras.value : []
@@ -22,32 +16,24 @@ export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal
   const datos = ordenados.map((item, index) => ({
     nro: index + 1,
     fecha: item.fecha,
-    cliente: item.cliente,
-    sucursal: item.sucursal,
-    monto: decimas(parseFloat(item.monto)),
-    descuento: decimas(parseFloat(item.descuento)),
-    total_sumatorias: decimas(parseFloat(item.total_sumatorias)),
+    codigo: item.codigo,
+    nombrelote: item.nombrelote,
+    proveedor: item.proveedor,
+    total: Number(item.total).toFixed(2),
+    autorizacionTexto: item.autorizacionTexto,
+    nfactura: item.nfactura,
+    almacen: item.almacen,
   }))
 
-  const cotizaciontotal = datos.reduce((sum, u) => sum + parseFloat(u.total_sumatorias || 0), 0)
-  const descuentoTotal = datos.reduce((sum, u) => sum + parseFloat(u.descuento || 0), 0)
-  const total = datos.reduce((sum, u) => sum + parseFloat(u.monto || 0), 0)
+  const total = ordenados.reduce((sum, u) => sum + parseFloat(u.total || 0), 0)
 
   // Agregar fila de totales al array de datos antes de construir la tabla PDF
   datos.push(
-    crearFilaTotalGeneral(
-      `TOTAL GENERAL (${divisa})`,
-      [
-        { valor: cotizaciontotal, halign: 'right' },
-        { valor: descuentoTotal, halign: 'right' },
-        { valor: total, halign: 'right' },
-      ],
-      4,
-    ),
+    crearFilaTotalGeneral(`TOTAL GENERAL (${divisa})`, [{ valor: total, halign: 'right' }], 5),
   )
 
   const columns = [
-    { header: 'N', dataKey: 'num' },
+    { header: 'N', dataKey: 'nro' },
     { header: 'Fecha', dataKey: 'fecha' },
     { header: 'Codigo', dataKey: 'codigo' },
     { header: 'Nombre Lote', dataKey: 'nombrelote' },
@@ -58,15 +44,15 @@ export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal
     { header: `Almacén`, dataKey: 'almacen' },
   ]
   const columnStyles = {
-    num: { cellWidth: 10, halign: 'center' },
-    fecha: { cellWidth: 25, halign: 'center' },
-    codigo: { cellWidth: 50, halign: 'left' },
-    nombrelote: { cellWidth: 35, halign: 'left' },
-    proveedor: { cellWidth: 25, halign: 'right' },
-    total: { cellWidth: 25, halign: 'right' },
+    nro: { cellWidth: 10, halign: 'center' },
+    fecha: { cellWidth: 20, halign: 'center' },
+    codigo: { cellWidth: 30, halign: 'left' },
+    nombrelote: { cellWidth: 30, halign: 'left' },
+    proveedor: { cellWidth: 30, halign: 'right' },
+    total: { cellWidth: 15, halign: 'right' },
     autorizacionTexto: { cellWidth: 25, halign: 'right' },
-    nfactura: { cellWidth: 25, halign: 'right' },
-    almacen: { cellWidth: 25, halign: 'right' },
+    nfactura: { cellWidth: 10, halign: 'right' },
+    almacen: { cellWidth: 20, halign: 'right' },
   }
   const headerColumnStyles = { ...columnStyles }
 
@@ -102,7 +88,7 @@ export async function PDFReporteCompras(Compras, divisa, fechaInicio, fechaFinal
     userData,
     columns,
     datos,
-    titulo: 'REPORTE COTIZACIONES',
+    titulo: 'REPORTE COMPRAS',
     columnStyles,
     headerColumnStyles,
     datosIzquierda: null,
