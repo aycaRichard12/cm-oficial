@@ -245,7 +245,7 @@ const exportarexcel = () => {
       if (col.dataKey === 'nro') {
         valor = index + 1
       } else if (col.dataKey === 'total') {
-        valor = Number(item.total || 0).toFixed(2)
+        valor = Number(Number(item.total).toFixed(2))
       } else {
         valor = item[col.dataKey] || ''
       }
@@ -261,7 +261,7 @@ const exportarexcel = () => {
     if (col.dataKey === 'nro') {
       filaTotal[col.header] = `TOTAL GENERAL (${nombreDivisa.value})`
     } else if (col.dataKey === 'total') {
-      filaTotal[col.header] = total.toFixed(2)
+      filaTotal[col.header] = Number(total.toFixed(2))
     } else {
       filaTotal[col.header] = ''
     }

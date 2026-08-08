@@ -56,7 +56,7 @@
             />
             <span
               :class="{
-                'text-negative text-weight-bold': Number(props.row.id) === almacenPrincipalId,
+                ' text-weight-bold': Number(props.row.id) === almacenPrincipalId,
               }"
             >
               {{ props.row.nombre }}
@@ -322,7 +322,6 @@ function mostrarReporte() {
   border-radius: 12px;
   th {
     font-weight: 600;
-    color: #37474f;
     font-size: 0.85rem;
     letter-spacing: 0.02em;
   }

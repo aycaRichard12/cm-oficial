@@ -97,6 +97,7 @@ async function generarReporte() {
     const compras = response.data.map((item, index) => ({
       ...item,
       num: index + 1,
+      total: Number(item.total).toFixed(2),
     }))
     console.log(compras)
     datosFiltrados.value = compras
