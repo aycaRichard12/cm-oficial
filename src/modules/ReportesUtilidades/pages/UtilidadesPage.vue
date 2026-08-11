@@ -14,7 +14,7 @@
       :loadingReporte="loadingReporte"
       @update:form="actualizarFormulario"
       @submit="obtenerResumen"
-      @limpiar="limpiar"
+      @limpiar="limpiarFiltros"
     />
 
     <ResumenCards
@@ -194,6 +194,7 @@ const {
   graficoColumns,
   obtenerReporte,
   obtenerResumen,
+  limpiarFiltros,
   init,
 } = useReporteVentas()
 

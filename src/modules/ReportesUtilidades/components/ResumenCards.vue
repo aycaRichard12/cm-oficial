@@ -24,77 +24,103 @@
         </q-card-section>
         <q-separator />
 
-        <q-list class="q-pa-sm">
-          <!-- Bloque 1: Venta Neta -->
-          <q-item>
-            <q-item-section>
-              <q-item-label class="text-subtitle1 text-weight-bold text-grey-9">
-                Venta neta
-              </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-h6 text-weight-bold text-primary">
-                {{ formatNumber(data[cat.key]?.venta_neta) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
+        <!-- Tabla contable (reemplaza el q-list) -->
+        <q-card-section class="q-pa-sm">
+          <table style="width: 100%; border-collapse: collapse">
+            <tbody>
+              <!-- Venta Neta -->
+              <tr>
+                <td
+                  class="text-subtitle1 text-weight-bold text-grey-9"
+                  style="padding: 8px 0 8px 12px"
+                >
+                  Venta neta
+                </td>
+                <td
+                  class="text-right text-h6 text-weight-bold text-primary"
+                  style="padding: 8px 16px 8px 8px"
+                ></td>
+                <td
+                  class="text-right text-weight-bold text-primary"
+                  style="padding: 8px 16px 8px 8px"
+                >
+                  {{ formatNumber(data[cat.key]?.venta_neta) }}
+                </td>
+              </tr>
 
-          <!-- Subcomponentes indentados (Desglose) -->
-          <div class="sub-items-container q-pl-md q-pr-sm q-pb-sm">
-            <q-item dense>
-              <q-item-section>
-                <q-item-label class="text-body2 text-grey-7">Precio venta</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-item-label class="text-body1 text-grey-9">
+              <!-- Desglose: Precio venta -->
+              <tr>
+                <td
+                  class="text-body2 text-grey-7"
+                  style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
+                >
+                  Precio venta
+                </td>
+                <td class="text-right text-grey-9" style="padding: 4px 16px 4px 8px">
                   {{ formatNumber(data[cat.key]?.venta_bruta) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
+                </td>
+              </tr>
 
-            <q-item dense>
-              <q-item-section>
-                <q-item-label class="text-body2 text-grey-7">Descuento</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-item-label class="text-body1 text-negative">
+              <!-- Desglose: Descuento -->
+              <tr>
+                <td
+                  class="text-body2 text-grey-7"
+                  style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
+                >
+                  Descuento
+                </td>
+                <td class="text-right text-negative" style="padding: 4px 16px 4px 8px">
                   - {{ formatNumber(data[cat.key]?.descuentos) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </div>
+                </td>
+              </tr>
 
-          <q-separator inset class="q-my-sm" />
+              <!-- Separador -->
+              <tr>
+                <td colspan="3" style="padding: 0 12px">
+                  <hr style="margin: 6px 0; border: none; border-top: 1px solid #e0e0e0" />
+                </td>
+              </tr>
 
-          <!-- Bloque 2: Costo de Ventas -->
-          <q-item>
-            <q-item-section>
-              <q-item-label class="text-subtitle1 text-grey-9"> Costo de ventas </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-h6 text-grey-9">
-                {{ formatNumber(data[cat.key]?.costo_ventas) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
+              <!-- Costo de Ventas -->
+              <tr>
+                <td class="text-subtitle1 text-grey-9" style="padding: 8px 0 8px 12px">
+                  Costo de ventas
+                </td>
+                <td
+                  class="text-right text-weight-bold text-primary"
+                  style="padding: 8px 16px 8px 8px"
+                ></td>
+                <td class="text-right text-grey-9" style="padding: 8px 16px 8px 8px">
+                  {{ formatNumber(data[cat.key]?.costo_ventas) }}
+                </td>
+              </tr>
 
-          <!-- Línea final de cálculo -->
-          <q-separator class="q-mt-md q-mx-md" color="grey-5" size="2px" />
+              <!-- Separador final -->
+              <tr>
+                <td colspan="3" style="padding: 0 12px">
+                  <hr style="margin: 8px 0 4px; border: none; border-top: 2px solid #bdbdbd" />
+                </td>
+              </tr>
 
-          <!-- Resultado: Utilidad o Pérdida -->
-          <q-item class="q-mt-sm q-mb-xs">
-            <q-item-section>
-              <q-item-label class="text-h6 text-weight-bold text-grey-10">
-                Utilidad o Pérdida
-              </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-h5 text-weight-bolder text-positive">
-                {{ formatNumber(data[cat.key]?.utilidad) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+              <!-- Resultado: Utilidad o Pérdida -->
+              <tr>
+                <td class="text-h6 text-weight-bold text-grey-10" style="padding: 10px 0 14px 12px">
+                  Utilidad
+                </td>
+                <td
+                  class="text-right text-h6 text-weight-bold text-primary"
+                  style="padding: 8px 16px 8px 8px"
+                ></td>
+                <td
+                  class="text-right text-weight-bolder text-positive"
+                  style="padding: 10px 16px 14px 8px"
+                >
+                  {{ formatNumber(data[cat.key]?.utilidad) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </q-card-section>
       </q-card>
     </div>
 

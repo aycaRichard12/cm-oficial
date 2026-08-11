@@ -383,6 +383,21 @@ export function useReporteVentas() {
     }
   }
 
+  function limpiarFiltros() {
+    const fechas = getDefaultDates()
+    form.fecha_inicio = fechas.fecha_inicio
+    form.fecha_fin = fechas.fecha_fin
+    form.almacen_id = null
+    form.categoriaProd = null
+    form.cliente_id = null
+    form.campana_id = null
+    form.granularidad = 'dia'
+    resumenData.value = null
+    detalleData.value = []
+    graficoData.value = []
+    errorMensaje.value = ''
+  }
+
   async function init() {
     // Cargar divisa primero para que las columnas estén listas
     await cargarDivisa()
@@ -431,6 +446,7 @@ export function useReporteVentas() {
     cargarCategoriaProductos,
     obtenerReporte,
     obtenerResumen,
+    limpiarFiltros,
     init,
   }
 }
