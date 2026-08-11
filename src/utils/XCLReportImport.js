@@ -153,6 +153,7 @@ export function exportToXLSX_Reporte_Creditos(
   const allPossibleColumns = [
     { header: 'N°', key: 'numero', width: 5 },
     { header: 'Fecha Crédito', key: 'fechaventa', width: 12, format: 'date' },
+    { header: 'Fact.', key: 'numFactura', width: 12, numeric: true },
     { header: 'Cliente', key: 'razonsocial', width: 30 },
     { header: 'Sucursal', key: 'sucursal', width: 20 },
     { header: 'Fecha Límite', key: 'fechalimite', width: 12, format: 'date' },
@@ -1070,15 +1071,15 @@ export function exportToXLSX_Reporte_Utilidades(
     return {
       'N°': index + 1,
       'Código Producto': row.codigo_producto || '',
-      'Producto': row.nombre_producto || '',
-      'Categoría': row.categoria || '',
+      Producto: row.nombre_producto || '',
+      Categoría: row.categoria || '',
       'Categoría Precio': row.categoria_precio || '',
-      'Cantidad': parseFloat(row.cantidad_vendida || 0),
+      Cantidad: parseFloat(row.cantidad_vendida || 0),
       'Precio Unitario Prom.': parseFloat(row.precio_unitario_promedio || 0),
       'Total Vendido': parseFloat(row.total_vendido || 0),
       'Costo Unitario Prom.': parseFloat(row.costo_unitario_promedio || 0),
       'Costo Total': parseFloat(row.costo_total || 0),
-      'Utilidad': parseFloat(row.utilidad || 0),
+      Utilidad: parseFloat(row.utilidad || 0),
       'Margen s/ Venta Neta (%)': parseFloat(row.margen_sobre_venta_neta || 0),
       'Margen s/ Venta Bruta (%)': parseFloat(row.margen_sobre_venta_bruta || 0),
     }
@@ -1088,15 +1089,15 @@ export function exportToXLSX_Reporte_Utilidades(
   dataForExport.push({
     'N°': '',
     'Código Producto': '',
-    'Producto': 'TOTAL GENERAL',
-    'Categoría': '',
+    Producto: 'TOTAL GENERAL',
+    Categoría: '',
     'Categoría Precio': '',
-    'Cantidad': totalCantidad,
+    Cantidad: totalCantidad,
     'Precio Unitario Prom.': '',
     'Total Vendido': totalVendido,
     'Costo Unitario Prom.': '',
     'Costo Total': totalCosto,
-    'Utilidad': totalUtilidad,
+    Utilidad: totalUtilidad,
     'Margen s/ Venta Neta (%)': '',
     'Margen s/ Venta Bruta (%)': '',
   })
@@ -1106,7 +1107,7 @@ export function exportToXLSX_Reporte_Utilidades(
 
   // Definir anchos de columnas
   worksheet['!cols'] = [
-    { wch: 5 },  // N°
+    { wch: 5 }, // N°
     { wch: 15 }, // Código Producto
     { wch: 35 }, // Producto
     { wch: 20 }, // Categoría
@@ -1197,4 +1198,3 @@ export function exportToXLSX_Reporte_Utilidades(
   let filename = `Reporte_Utilidades_${startDate}_a_${endDate}.xlsx`
   XLSX.writeFile(workbook, filename, { cellStyles: true })
 }
-

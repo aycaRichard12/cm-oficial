@@ -28,7 +28,8 @@ export function PDFreporteCreditosA(
   const allPossibleColumns = [
     { header: 'N°', dataKey: 'numero', name: 'numero' },
     { header: 'Fecha Crédito', dataKey: 'fechaventa', name: 'fechaventa' },
-    { header: 'Cliente', dataKey: 'razonsocial', name: 'razonsocial' },
+    { header: 'Fact', dataKey: 'numFactura', name: 'numFactura' },
+    { header: 'Razón Social', dataKey: 'razonsocial', name: 'razonsocial' },
     { header: 'Sucursal', dataKey: 'sucursal', name: 'sucursal' },
     { header: 'Fecha Límite', dataKey: 'fechalimite', name: 'fechalimite' },
     { header: 'Cuotas', dataKey: 'ncuotas', name: 'ncuotas' },
@@ -75,6 +76,7 @@ export function PDFreporteCreditosA(
     idcliente: row.idcliente,
     numero: row.numero,
     fechaventa: row.fechaventa,
+    numFactura: row.numFactura,
     razonsocial: row.razonsocial,
     sucursal: row.sucursal,
     fechalimite: row.fechalimite,
@@ -124,6 +126,7 @@ export function PDFreporteCreditosA(
   const columnStyles = {
     numero: { cellWidth: 10, halign: 'center' },
     fechaventa: { cellWidth: 20, halign: 'left', angle: 45 },
+    numFactura: { cellWidth: 15, halign: 'left', angle: 45 },
     razonsocial: { cellWidth: 25, halign: 'left' },
     sucursal: { cellWidth: 25, halign: 'left' },
     fechalimite: { cellWidth: 20, halign: 'left' },
@@ -144,6 +147,7 @@ export function PDFreporteCreditosA(
   const headerColumnStyles = {
     numero: { cellWidth: 10, halign: 'center', angle: 45, valign: 'middle' },
     fechaventa: { cellWidth: 20, halign: 'left', angle: 90, valign: 'middle' },
+    numFactura: { cellWidth: 15, halign: 'left', angle: 90, valign: 'middle' },
     razonsocial: { cellWidth: 25, halign: 'left', angle: 90, valign: 'middle' },
     sucursal: { cellWidth: 25, halign: 'left', angle: 90, valign: 'middle' },
     fechalimite: { cellWidth: 20, halign: 'left', angle: 90, valign: 'middle' },

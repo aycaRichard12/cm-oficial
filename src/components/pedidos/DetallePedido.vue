@@ -78,13 +78,13 @@
             <div class="row q-col-gutter-md">
               <div
                 v-for="attr in atributosProducto"
-                :key="attr.id_Producto_Atributo"
+                :key="attr.id_Atributo_producto"
                 class="col-12 col-sm-6 col-md-4"
               >
                 <q-select
-                  v-model="selectedAttributes[attr.id_Producto_Atributo]"
+                  v-model="selectedAttributes[attr.id_Atributo_producto]"
                   :options="
-                    (valoresPorAtributo[attr.id_Producto_Atributo] || []).map((v) => ({
+                    (valoresPorAtributo[attr.id_Atributo_producto] || []).map((v) => ({
                       label: v.valor,
                       value: v.id_Valor_Atributo,
                     }))
@@ -179,7 +179,8 @@ watch(
       localData.value.descripcion = productoSeleccionado.descripcion || ''
     }
     // Cargar atributos del producto
-    cargarAtributosProducto(nuevoValor)
+
+    cargarAtributosProducto(productoSeleccionado)
   },
 )
 
@@ -223,25 +224,25 @@ async function loadAllData(pedido) {
 }
 
 // --- Funciones de atributos ---
-async function cargarAtributosProducto(idproductoalmacen) {
+async function cargarAtributosProducto(productoDisponible) {
+  console.log('cargando Atributos PROD', productoDisponible)
+  const idproducto = productoDisponible.idproducto
   // Limpiar estados previos
   atributosProducto.value = []
   Object.keys(valoresPorAtributo).forEach((key) => delete valoresPorAtributo[key])
   Object.keys(selectedAttributes).forEach((key) => delete selectedAttributes[key])
 
-  if (!idproductoalmacen) return
-
-  const producto = productosDisponibles.value.find((p) => p.value === idproductoalmacen)
-  if (!producto?.idproducto) return
+  if (!idproducto) return
 
   try {
-    const { data: atributos } = await apiP.get(`listar_atributos_producto/${producto.idproducto}`)
+    const { data: atributos } = await apiP.get(`listar_atributos_producto/${idproducto}`)
+    console.log('Atributos cargados:', atributos)
     atributosProducto.value = atributos
 
     // Cargar valores para cada atributo
     for (const attr of atributos) {
-      const { data: valores } = await apiP.get(`listar_valores/${attr.id_Producto_Atributo}`)
-      valoresPorAtributo[attr.id_Producto_Atributo] = valores
+      const { data: valores } = await apiP.get(`listar_valores/${attr.id_Atributo_producto}`)
+      valoresPorAtributo[attr.id_Atributo_producto] = valores
     }
   } catch (error) {
     console.error('Error al cargar atributos:', error)
@@ -254,7 +255,7 @@ async function handleFormSubmit() {
   // Validar atributos si existen
   if (atributosProducto.value.length > 0) {
     for (const attr of atributosProducto.value) {
-      if (!selectedAttributes[attr.id_Producto_Atributo]) {
+      if (!selectedAttributes[attr.id_Atributo_producto]) {
         $q.notify({
           type: 'warning',
           message: `Debe seleccionar un valor para "${attr.nombre}"`,
@@ -315,10 +316,10 @@ async function editDetalle(row) {
   if (row.idvalores) {
     const idsArray = row.idvalores.split(',').map((id) => parseInt(id.trim()))
     atributosProducto.value.forEach((attr) => {
-      const valores = valoresPorAtributo[attr.id_Producto_Atributo] || []
+      const valores = valoresPorAtributo[attr.id_Atributo_producto] || []
       const encontrado = valores.find((v) => idsArray.includes(v.id_Valor_Atributo))
       if (encontrado) {
-        selectedAttributes[attr.id_Producto_Atributo] = encontrado.id_Valor_Atributo
+        selectedAttributes[attr.id_Atributo_producto] = encontrado.id_Valor_Atributo
       }
     })
   }

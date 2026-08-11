@@ -272,9 +272,10 @@ const printFilteredTable = () => {
   }).onOk((orientation) => {
     const data = tablaCreditosRef.value?.obtenerDatosFiltrados() || []
     const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
+    const inicioFecha = tipoReporte.value ? 'Hasta' : startDate.value
     const doc = PDFreporteCreditosA(
       data,
-      startDate.value,
+      inicioFecha,
       endDate.value,
       null,
       null,

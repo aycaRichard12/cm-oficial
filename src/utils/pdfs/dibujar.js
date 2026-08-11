@@ -401,14 +401,9 @@ function agregarEncabezadoInfo(
   if (fechas) {
     doc.setFontSize(8)
     doc.setFont(undefined, 'normal')
-    doc.text(
-      'Entre ' + cambiarFormatoFecha(fechas.inicio) + ' Y ' + cambiarFormatoFecha(fechas.final),
-      pageWidth / 2,
-      33,
-      {
-        align: 'center',
-      },
-    )
+    doc.text(obtenerEtiquetaRango(fechas.inicio, fechas.final), pageWidth / 2, 33, {
+      align: 'center',
+    })
   }
 
   if (extras) {
@@ -604,5 +599,16 @@ function agregarPieDePagina(doc) {
     doc.text(finalFullText, doc.internal.pageSize.getWidth() - 10, 53, {
       align: 'right',
     })
+  }
+}
+
+function obtenerEtiquetaRango(inicio, final) {
+  // Determina si inicio es una fecha válida
+  const esFechaValida = inicio && !isNaN(new Date(inicio).getTime())
+
+  if (esFechaValida) {
+    return `Entre ${cambiarFormatoFecha(inicio)} Y ${cambiarFormatoFecha(final)}`
+  } else {
+    return `Hasta ${cambiarFormatoFecha(final)}`
   }
 }
