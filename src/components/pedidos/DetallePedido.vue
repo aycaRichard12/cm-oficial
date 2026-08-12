@@ -111,6 +111,27 @@
   </q-form>
 
   <q-table class="q-mt-lg" :rows="processedRows" :columns="columnas" row-key="id" flat bordered>
+    <template v-slot:body-cell-descripcion="props">
+      <q-td :props="props">
+        <!-- Descripción principal -->
+        <div class="text-body2">{{ props.row.descripcion }}</div>
+
+        <!-- Contenedor de atributos (solo si existen) -->
+        <div
+          v-if="props.row.atributos && props.row.atributos.length"
+          class="q-mt-xs row q-gutter-xs items-center"
+        >
+          <q-badge
+            v-for="attr in props.row.atributos"
+            :key="attr.atributo"
+            outline
+            color="grey-7"
+            :label="`${attr.atributo}: ${attr.valor}`"
+            class="q-px-xs"
+          />
+        </div>
+      </q-td>
+    </template>
     <template v-slot:body-cell-opciones="props" v-if="localData.autorizacion == 2">
       <q-td align="center">
         <q-btn dense icon="edit" color="primary" flat @click="editDetalle(props.row)" />
@@ -225,21 +246,23 @@ async function loadAllData(pedido) {
 
 // --- Funciones de atributos ---
 async function cargarAtributosProducto(productoDisponible) {
-  console.log('cargando Atributos PROD', productoDisponible)
-  const idproducto = productoDisponible.idproducto
-  // Limpiar estados previos
+  // Limpiar estados siempre
   atributosProducto.value = []
   Object.keys(valoresPorAtributo).forEach((key) => delete valoresPorAtributo[key])
   Object.keys(selectedAttributes).forEach((key) => delete selectedAttributes[key])
 
-  if (!idproducto) return
+  // Validación segura: si el argumento no es válido, terminar aquí
+  if (!productoDisponible || !productoDisponible.idproducto) {
+    return
+  }
+
+  const idproducto = productoDisponible.idproducto
 
   try {
     const { data: atributos } = await apiP.get(`listar_atributos_producto/${idproducto}`)
     console.log('Atributos cargados:', atributos)
     atributosProducto.value = atributos
 
-    // Cargar valores para cada atributo
     for (const attr of atributos) {
       const { data: valores } = await apiP.get(`listar_valores/${attr.id_Atributo_producto}`)
       valoresPorAtributo[attr.id_Atributo_producto] = valores
@@ -290,6 +313,7 @@ async function updateDetalle() {
 }
 
 async function editDetalle(row) {
+  console.log(row)
   // Llenar formulario con los datos del row
   localData.value = {
     id: row.id,
@@ -301,7 +325,7 @@ async function editDetalle(row) {
     autorizacion: props.modelValue.autorizacion,
     idalmacen: props.modelValue.idalmacen,
     idalmacenorigen: props.modelValue.idalmacenorigen,
-    idvalores: '', // se reasignará después de cargar atributos
+    idvalores: row.idvalores, // se reasignará después de cargar atributos
   }
 
   // Actualizar stock (puede ser diferente al del row si cambió)
@@ -311,7 +335,7 @@ async function editDetalle(row) {
   }
 
   // Cargar atributos y preseleccionar valores si existen
-  await cargarAtributosProducto(localData.value.idproductoalmacen)
+  await cargarAtributosProducto(producto)
 
   if (row.idvalores) {
     const idsArray = row.idvalores.split(',').map((id) => parseInt(id.trim()))
@@ -412,7 +436,7 @@ function filtrarProductos(val, update) {
 const columnas = [
   { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
   { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'center' },
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'lengt' },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
 ]

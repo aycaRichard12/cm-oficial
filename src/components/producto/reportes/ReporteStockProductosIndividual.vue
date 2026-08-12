@@ -37,7 +37,12 @@
 
       <div class="row q-gutter-sm justify-center q-mt-lg">
         <q-btn color="primary" label="Vista Previa" @click="vistaPrevia" id="vistaPrevia" />
-        <q-btn color="primary" label="Reporte con imágen" @click="reporteImage" id="reporteImage" />
+        <!-- <q-btn
+          color="primary"
+          label="Reporte con imágen"
+          @click="reporteImage"
+          id="reporteImage"
+        /> -->
         <q-btn color="primary" label="Catálogo" @click="vistaCatalogo" id="vistaCatalogo" />
       </div>
     </q-form>
@@ -112,11 +117,7 @@ import { api } from 'src/boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import { useQuasar } from 'quasar'
 import { decimas, redondear } from 'src/composables/FuncionesG'
-import { imagen } from 'src/boot/url'
-import {
-  PDFreporteStockProductosIndividual,
-  PDFreporteStockProductosIndividual_img,
-} from 'src/utils/pdfReportGenerator'
+import { PDFreporteStockProductosIndividual } from 'src/utils/pdfReportGenerator'
 import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -289,56 +290,55 @@ const vistaPrevia = () => {
   pdfData.value = doc.output('dataurlstring')
   mostrarModal.value = true
 }
-const reporteImage = async () => {
-  const productos = await prepararImagenes()
-  const doc = PDFreporteStockProductosIndividual_img(productos)
+// const reporteImage = async () => {
+//   const productos = await prepararImagenes()
+//   const doc = PDFreporteStockProductosIndividual_img(productos)
 
-  pdfData.value = doc.output('dataurlstring')
-  mostrarModal.value = true
-}
+//   pdfData.value = doc.output('dataurlstring')
+//   mostrarModal.value = true
+// }
 
-function convertirImagenARutaBase64(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0)
-      const dataURL = canvas.toDataURL('image/jpeg')
-      resolve(dataURL)
-    }
-    img.onerror = () => reject('Error al cargar imagen')
-    img.src = url
-  })
-}
-const prepararImagenes = async () => {
-  const resultadoFiltrado = ref(null)
-  resultadoFiltrado.value = miTabla.value?.obtenerDatosFiltrados()
-  const productosConImagenes = await Promise.all(
-    resultadoFiltrado.value.map(async (item) => {
-      try {
-        console.log(`${imagen}${item.imagen}`)
-        const base64 = await convertirImagenARutaBase64(`${imagen}${item.imagen}`)
-        console.log(base64)
-        return { ...item, imagenBase64: base64 }
-      } catch (e) {
-        console.warn('No se pudo cargar imagen para', item.codigo + e)
-        return { ...item, imagenBase64: null }
-      }
-    }),
-  )
-  console.log(productosConImagenes)
-  return productosConImagenes
-}
+// function convertirImagenARutaBase64(url) {
+//   return new Promise((resolve, reject) => {
+//     const img = new Image()
+//     img.crossOrigin = 'anonymous'
+//     img.onload = () => {
+//       const canvas = document.createElement('canvas')
+//       canvas.width = img.width
+//       canvas.height = img.height
+//       const ctx = canvas.getContext('2d')
+//       ctx.drawImage(img, 0, 0)
+//       const dataURL = canvas.toDataURL('image/jpeg')
+//       resolve(dataURL)
+//     }
+//     img.onerror = () => reject('Error al cargar imagen')
+//     img.src = url
+//   })
+// }
+// const prepararImagenes = async () => {
+//   const resultadoFiltrado = ref(null)
+//   resultadoFiltrado.value = miTabla.value?.obtenerDatosFiltrados()
+//   const productosConImagenes = await Promise.all(
+//     resultadoFiltrado.value.map(async (item) => {
+//       try {
+//         console.log(`${imagen}${item.imagen}`)
+//         const base64 = await convertirImagenARutaBase64(`${imagen}${item.imagen}`)
+//         console.log(base64)
+//         return { ...item, imagenBase64: base64 }
+//       } catch (e) {
+//         console.warn('No se pudo cargar imagen para', item.codigo + e)
+//         return { ...item, imagenBase64: null }
+//       }
+//     }),
+//   )
+//   console.log(productosConImagenes)
+//   return productosConImagenes
+// }
 
 const vistaCatalogo = async () => {
   const resultadoFiltrado = ref(null)
   resultadoFiltrado.value = miTabla.value?.obtenerDatosFiltrados()
   const doc = await PDF_vistaCatalogo(resultadoFiltrado, almacenes, divisaActiva, form)
-
   pdfData.value = doc
   mostrarModal.value = true
 }

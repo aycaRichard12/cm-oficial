@@ -134,6 +134,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reporteproductosvendidosindividual: 'shopping_cart',
   kardex: 'list_alt',
   indicadoresderotacion: 'rotate_right',
+  generarCatalogoProductosDisponibles: 'mdi-book-open-page-variant',
 
   // Íconos para los submenús de Contingencias
   registraranulaciones: 'cancel',
@@ -191,6 +192,7 @@ export const PAGINAS_SELECT = Object.freeze({
     'reportedecotizacionesocultas',
     'reporteproductosvendidosindividual',
     'kardex',
+    'generarCatalogoProductosDisponibles',
   ]),
   cuentasporcobrar: Object.freeze([
     'reportecuentasporcobrarocultas',
