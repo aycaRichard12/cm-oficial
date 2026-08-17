@@ -48,7 +48,18 @@
           outlined
         />
       </div>
-      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
+      <div class="col-12 col-md-3 q-mt-lg" id="importarExcelPedidos">
+        <q-btn
+          outline
+          color="green"
+          icon="upload"
+          label="Importar Excel"
+          no-caps
+          @click="mostrarImportarExcel = true"
+          id="importarExcel"
+        />
+      </div>
+      <div class="col-12 col-md-12 flex justify-end" id="buscarPedidos">
         <div>
           <label for="buscar">Buscar...</label>
           <q-input dense debounce="300" v-model="search" id="buscar" outlined>
@@ -235,6 +246,7 @@
     :title="tituloNotificacion"
     @notificacion-enviada="onNotificacionEnviada"
   />
+  <importarInventarioProductoVariante v-model="mostrarImportarExcel" @done="$emit('reload')" />
 </template>
 
 <script setup>
@@ -244,6 +256,7 @@ import { PDFpedidos } from 'src/utils/pdfReportGenerator'
 import baucherPedido from './baucherPedido.vue'
 import NotificacionDialog from 'src/components/pusher-notificaciones/NotificacionDialog.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import importarInventarioProductoVariante from './importarInventarioProductoVariante.vue'
 
 const permisosStore = useOperacionesPermitidas()
 const $q = useQuasar()
@@ -256,6 +269,7 @@ const tituloNotificacion = computed(() => {
   const tipo = Number(pedidoSeleccionado.value.tipopedido) === 1 ? 'Compra' : 'Movimiento'
   return `Notificación - Pedido de ${tipo} #${pedidoSeleccionado.value.codigo}`
 })
+const mostrarImportarExcel = ref(false)
 
 //filtroAlmacen
 const props = defineProps({
@@ -275,7 +289,7 @@ const props = defineProps({
 })
 const pedido = ref(null)
 const baucherPedidomodal = ref(false)
-defineEmits(['add', 'edit', 'delete'])
+defineEmits(['add', 'edit', 'delete', 'reload'])
 const tipoestados = { 1: 'Procesado', 2: 'Pendiente', 3: 'Descartado' }
 const pdfData = ref(null)
 console.log(props.almacenes[0])

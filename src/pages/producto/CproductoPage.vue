@@ -349,7 +349,7 @@ const confirmDelete = (row) => {
 
   $q.dialog({
     title: 'Confirmar',
-    message: `¿Eliminar Proveedor "${row.nombre}"?`,
+    message: `¿Eliminar Producto "${row.nombre}"?`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
