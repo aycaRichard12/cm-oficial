@@ -238,6 +238,12 @@
             </div>
           </div>
 
+          <SelectorVariantesProducto
+            :idProducto="productoSeleccionado?.originalData?.id"
+            @confirmar="recibirSeleccion"
+            ref="selectorRef"
+          />
+
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
               <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block"
@@ -463,6 +469,8 @@ import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 import { useRoute } from 'vue-router'
+import SelectorVariantesProducto from './SelectorVariantesProducto.vue'
+
 // ... otros imports
 
 const route = useRoute()
@@ -541,6 +549,7 @@ const cantidad = ref(1)
 const precioUnitario = ref(0)
 const descuento = ref(0)
 const carritoPrueba = ref([])
+const selectorRef = ref(null)
 
 const showPermisosDialog = ref(false)
 // Estados de carga
@@ -580,6 +589,19 @@ const columnasCarrito = [
   },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
 ]
+
+function recibirSeleccion(datos) {
+  console.log('Selección confirmada:', datos)
+  // Aquí puedes procesar la venta, pedido, etc.
+  // datos = { totalVariantes, cantidadTotal, variantes: [{ idVariante, sku, cantidad, stock }] }
+}
+
+// function obtenerSeleccion() {
+//   if (selectorRef.value) {
+//     const datos = selectorRef.value.obtenerSeleccion()
+//     console.log(datos)
+//   }
+// }
 
 const onSolicitudEnviada = (datos) => {
   console.log('Solicitud enviada con los siguientes datos:', datos)
