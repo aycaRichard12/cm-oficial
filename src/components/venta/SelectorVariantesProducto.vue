@@ -152,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'src/boot/axios' // Ajusta la ruta según tu proyecto
 import { useQuasar } from 'quasar'
 
@@ -219,6 +219,13 @@ async function cargarDatos() {
   loading.value = true
   error.value = null
 
+  if (!props.idProducto) {
+    producto.value = { nombre: '', codigo: '', descripcion: '' }
+    variantes.value = []
+    loading.value = false
+    return
+  }
+
   try {
     // Ajusta la URL según tu endpoint real.
     // Se espera una respuesta con la estructura:
@@ -228,7 +235,7 @@ async function cargarDatos() {
     //     { id_producto_variante, sku, stock, atributos: [{ nombre, valor }] }
     //   ]
     // }
-    const response = await api.get(`/productos/${props.idProducto}/variantes`)
+    const response = await api.get(`obtenerProductoConAtributos/${props.idProducto}`)
     const data = response.data
 
     producto.value = {
@@ -240,7 +247,7 @@ async function cargarDatos() {
     variantes.value = data.variantes.map((v) => ({
       id_producto_variante: v.id_producto_variante,
       sku: v.sku,
-      stock: Number(v.stock),
+      stock: Number(v.cantidad),
       atributos: v.atributos || [],
       seleccionada: false,
       cantidad_seleccionada: 0,
@@ -314,6 +321,17 @@ defineExpose({ obtenerSeleccion, reset })
 onMounted(() => {
   cargarDatos()
 })
+
+// Recargar la información al cambiar el producto seleccionado
+watch(
+  () => props.idProducto,
+  (nuevoId, idAnterior) => {
+    if (nuevoId !== idAnterior) {
+      reset()
+      cargarDatos()
+    }
+  },
+)
 </script>
 
 <style scoped>
