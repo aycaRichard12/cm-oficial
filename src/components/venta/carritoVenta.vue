@@ -360,6 +360,22 @@
             <!-- Descripción principal -->
             <div>{{ props.row.descripcion }}</div>
 
+            <!-- Atributos de la variante -->
+            <div
+              v-if="props.row.atributos && props.row.atributos.length"
+              class="q-mt-xs row q-gutter-xs items-center"
+            >
+              <q-badge v-if="props.row.sku" outline color="primary" :label="props.row.sku" class="q-px-xs" />
+              <q-badge
+                v-for="attr in props.row.atributos"
+                :key="attr.atributo"
+                outline
+                color="grey-7"
+                :label="`${attr.atributo}: ${attr.valor}`"
+                class="q-px-xs"
+              />
+            </div>
+
             <!-- Descripción adicional editable debajo -->
             <div
               id="descripcionAdicional"
