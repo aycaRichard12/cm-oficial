@@ -591,9 +591,44 @@ const columnasCarrito = [
 ]
 
 function recibirSeleccion(datos) {
-  console.log('Selección confirmada:', datos)
-  // Aquí puedes procesar la venta, pedido, etc.
-  // datos = { totalVariantes, cantidadTotal, variantes: [{ idVariante, sku, cantidad, stock }] }
+  if (!datos || !Array.isArray(datos.variantes) || datos.variantes.length === 0) return
+
+  const carrito = JSON.parse(localStorage.getItem('carrito'))
+  const producto = productoSeleccionado.value?.originalData
+  if (!producto) return
+  carrito.idalmacen = almacenSeleccionado.value?.value
+
+  let subtotalNuevo = parseFloat(carrito.subtotal || 0)
+
+  for (const variante of datos.variantes) {
+    const { item, itemFactura } = crearItemCarrito(
+      producto,
+      variante.cantidad,
+      precioUnitario.value || producto.precio,
+      variante.idVariante,
+      variante.sku,
+      variante.atributos || [],
+    )
+
+    subtotalNuevo += item.subtotal
+
+    carrito.listaProductos.push(item)
+    carrito.listaProductosFactura.push(itemFactura)
+    carritoPrueba.value.push(item)
+  }
+
+  carrito.subtotal = subtotalNuevo.toFixed(2)
+  carrito.ventatotal = (subtotalNuevo - parseFloat(carrito.descuento || 0)).toFixed(2)
+  localStorage.setItem('carrito', JSON.stringify(carrito))
+
+  $q.notify({
+    type: 'positive',
+    message: `${datos.variantes.length} ${datos.variantes.length === 1 ? 'variante agregada' : 'variantes agregadas'} al carrito`,
+  })
+
+  resetearCamposProducto()
+  productoSeleccionado.value = null
+  cargarProductosDisponibles()
 }
 
 // function obtenerSeleccion() {
@@ -1244,6 +1279,53 @@ function redondear(num) {
 }
 const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
 
+function crearItemCarrito(producto, cantidadProd, precio, idproductovariante = null, sku = '', atributos = []) {
+  const item = {
+    idproductoalmacen: producto.id,
+    cantidad: Number(cantidadProd),
+    precio: formatear(precio),
+    idstock: producto.idstock,
+    idporcentaje: producto.idporcentaje,
+    candiponible: Number(producto.stock),
+    descripcion: producto.descripcion,
+    descripcionAdicional: '',
+    codigo: producto.codigo,
+    id: Number(producto.id),
+    subtotal: decimas(redondear(parseFloat(cantidadProd) * parseFloat(precio))),
+    datosAdicionales: producto.datosAdicionales,
+    despachado: Number(producto.stock) == 0 ? 2 : 1,
+  }
+
+  if (idproductovariante != null) {
+    item.idproductovariante = Number(idproductovariante)
+    item.sku = sku
+    item.atributos = atributos
+    item.id = Number(idproductovariante) // clave única de la variante
+  }
+
+  const itemFactura = {
+    codigoProducto: producto.codigo,
+    codigoActividadSin: producto.actividadsin,
+    codigoProductoSin: producto.codigosin,
+    descripcion: producto.descripcion,
+    unidadMedida: producto.unidadsin,
+    precioUnitario: formatear(precio),
+    subTotal: decimas(redondear(parseFloat(cantidadProd) * parseFloat(precio))),
+    cantidad: Number(cantidadProd),
+    numeroSerie: '',
+    montoDescuento: 0,
+    numeroImei: '',
+    codigoNandina: producto.codigonandina,
+  }
+
+  if (idproductovariante != null) {
+    itemFactura.idproductovariante = Number(idproductovariante)
+    itemFactura.sku = sku
+  }
+
+  return { item, itemFactura }
+}
+
 function agregarAlCarrito() {
   const datos = JSON.parse(localStorage.getItem('carrito'))
   datos.idalmacen = almacenSeleccionado.value?.value
@@ -1252,38 +1334,12 @@ function agregarAlCarrito() {
   console.log(producto)
   console.log(precioUnitario.value)
 
-  const nuevoProducto = {
-    idproductoalmacen: producto.id,
-    cantidad: Number(cantidad.value),
-    precio: formatear(precioUnitario.value),
-    idstock: producto.idstock,
-    idporcentaje: producto.idporcentaje,
-    candiponible: Number(producto.stock),
-    descripcion: producto.descripcion,
-    descripcionAdicional: '',
-    codigo: producto.codigo,
-    id: Number(producto.id),
-    subtotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
-    datosAdicionales: producto.datosAdicionales,
-    despachado: Number(producto.stock) == 0 ? 2 : 1,
-  }
+  const { item: nuevoProducto, itemFactura: nuevoProductoFactura } = crearItemCarrito(
+    producto,
+    cantidad.value,
+    precioUnitario.value,
+  )
   datos.listaProductos.push(nuevoProducto)
-
-  const nuevoProductoFactura = {
-    codigoProducto: producto.codigo,
-    codigoActividadSin: producto.actividadsin,
-    codigoProductoSin: producto.codigosin,
-    descripcion: producto.descripcion,
-    unidadMedida: producto.unidadsin,
-    precioUnitario: formatear(precioUnitario.value),
-    subTotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
-    cantidad: Number(cantidad.value),
-    numeroSerie: '',
-    montoDescuento: 0,
-    numeroImei: '',
-    codigoNandina: producto.codigonandina,
-  }
-  datos.listaProductosFactura.push(nuevoProductoFactura)
 
   // Actualiza el subtotal sumando los nuevos productos
   datos.subtotal = datos.listaProductos
