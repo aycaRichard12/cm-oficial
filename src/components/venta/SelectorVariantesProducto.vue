@@ -318,8 +318,11 @@ function reset() {
   })
 }
 
+// Indica si el producto cargado tiene variantes (reactivo)
+const tieneVariantes = computed(() => variantes.value.length > 0)
+
 // Exponer métodos
-defineExpose({ obtenerSeleccion, reset })
+defineExpose({ obtenerSeleccion, reset, tieneVariantes })
 
 // ==================== LIFECYCLE ====================
 onMounted(() => {

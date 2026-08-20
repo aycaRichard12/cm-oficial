@@ -268,6 +268,7 @@
                 v-model.number="cantidad"
                 id="cantidad"
                 type="number"
+                :disable="productoTieneVariantes"
                 :rules="[
                   (val) => val > 0 || 'Ingrese cantidad válida',
                   (val) => val <= productoSeleccionado.originalData.stock || 'Supera el stock',
@@ -289,6 +290,7 @@
                 :rules="[(val) => val > 0 || 'Ingrese precio válido']"
                 outlined
                 dense
+                :disable="productoTieneVariantes"
                 :readonly="!permisosStore.tienePermiso('editarprecioventa')"
                 type="number"
               >
@@ -695,7 +697,13 @@ const validarDescripcion = async (scope, row) => {
 }
 
 // Computed properties
+const productoTieneVariantes = computed(() => {
+  if (!productoSeleccionado.value || !selectorRef.value) return false
+  return selectorRef.value.tieneVariantes === true
+})
+
 const puedeAgregarProducto = computed(() => {
+  if (productoTieneVariantes.value) return false
   const producto = productoSeleccionado.value
   const cantidadValida = cantidad.value > 0
   const precioValido = precioUnitario.value > 0
