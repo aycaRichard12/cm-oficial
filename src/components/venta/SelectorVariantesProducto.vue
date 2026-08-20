@@ -301,6 +301,10 @@ function obtenerSeleccion() {
       sku: v.sku,
       cantidad: v.cantidad_seleccionada,
       stock: v.stock, // opcional
+      atributos: (v.atributos || []).map((a) => ({
+        atributo: a.nombre,
+        valor: a.valor,
+      })),
     })),
   }
 }
