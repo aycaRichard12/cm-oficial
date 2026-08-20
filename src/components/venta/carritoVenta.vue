@@ -1369,6 +1369,7 @@ function agregarAlCarrito() {
     precioUnitario.value,
   )
   datos.listaProductos.push(nuevoProducto)
+  datos.listaProductosFactura.push(nuevoProductoFactura)
 
   // Actualiza el subtotal sumando los nuevos productos
   datos.subtotal = datos.listaProductos
