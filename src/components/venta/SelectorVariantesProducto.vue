@@ -44,7 +44,7 @@
               <q-checkbox
                 v-model="props.row.seleccionada"
                 @update:model-value="onCheckboxChange(props.row)"
-                :disable="props.row.stock <= 0"
+                :disable="props.row.stock <= 0 || props.row.deshabilitada"
               />
             </q-td>
           </template>
@@ -251,6 +251,18 @@ async function cargarDatos() {
       atributos: v.atributos || [],
       seleccionada: false,
       cantidad_seleccionada: 0,
+    }))
+
+    // Excluir variantes que ya están en el carrito (mismo producto + variante)
+    const carritoActual = JSON.parse(localStorage.getItem('carrito')) || { listaProductos: [] }
+    const idsVariantesUsadas = new Set(
+      (carritoActual.listaProductos || [])
+        .filter((p) => p.idproductovariante != null)
+        .map((p) => Number(p.idproductovariante)),
+    )
+    variantes.value = variantes.value.map((v) => ({
+      ...v,
+      deshabilitada: idsVariantesUsadas.has(Number(v.id_producto_variante)),
     }))
   } catch (err) {
     error.value = 'No se pudo cargar la información del producto.'

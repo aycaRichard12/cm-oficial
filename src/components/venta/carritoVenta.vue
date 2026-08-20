@@ -1186,12 +1186,17 @@ async function cargarProductosDisponibles() {
     let productosDisponibles = data.datos.filter((u) => u.idporcentaje == idporcentajeventa)
     console.log(productosDisponibles, datosCarrito.listaProductos)
     if (datosCarrito.listaProductos.length > 0) {
+      // Los items con variante tienen id = idproductovariante; los sin variante,
+      // id = idproductoalmacen. Un item de variante no debe bloquear el producto
+      // base: permite agregar otra combinación del mismo producto.
+      const idsProductoEnCarrito = new Set(
+        datosCarrito.listaProductos
+          .filter((u2) => u2.idproductovariante == null)
+          .map((u2) => Number(u2.id)),
+      )
+
       productosDisponibles = productosDisponibles.filter(
-        (u) =>
-          !datosCarrito.listaProductos.some((u2) => {
-            console.log(u2, u)
-            return Number(u.id) === Number(u2.id)
-          }),
+        (u) => !idsProductoEnCarrito.has(Number(u.id)),
       )
     }
     console.log(productosDisponibles)
