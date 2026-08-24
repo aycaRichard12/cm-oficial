@@ -70,7 +70,14 @@ watch(
   () => props.client,
   (newVal) => {
     selectedClient.value = newVal
+    if (newVal) {
+      fetchBranches(newVal.value)
+    } else {
+      branches.value = []
+      selectedBranch.value = null
+    }
   },
+  { immediate: true },
 )
 
 watch(
@@ -78,6 +85,7 @@ watch(
   (newVal) => {
     selectedBranch.value = newVal
   },
+  { immediate: true },
 )
 
 watch(selectedClient, (newVal) => {
@@ -87,7 +95,6 @@ watch(selectedClient, (newVal) => {
 watch(selectedBranch, (newVal) => {
   emit('update:branch', newVal)
 })
-
 const showError = (message, error) => {
   console.error(message, error)
   $q.notify({
@@ -148,6 +155,9 @@ const fetchBranches = async (clientId) => {
       value: sucursal.id,
       clientId: clientId,
     }))
+    if (branches.value.length > 0) {
+      selectedBranch.value = branches.value[0]
+    }
   } catch (error) {
     showError('Error al cargar sucursales', error)
   }

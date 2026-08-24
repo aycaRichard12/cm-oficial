@@ -1,7 +1,11 @@
 <template>
-  <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
+  <q-dialog
+    :model-value="mostrar"
+    @update:model-value="$emit('update:mostrar', $event)"
+    backdrop-filter="blur(4px)"
+    persistent
+  >
     <q-card class="responsive-dialog shadow-24 column no-wrap">
-      <!-- Header del Diálogo -->
       <q-card-section
         class="bg-primary text-white q-py-md q-px-md q-px-sm-md flex justify-between items-center shrink-0"
         style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
@@ -37,11 +41,10 @@
       </q-card-section>
 
       <q-card-section class="col scroll q-pa-lg q-pa-sm-md bg-grey-1 content-section">
-        <!-- Selector de Modalidad Principal -->
         <div class="row justify-center q-mb-xl q-mb-md-sm">
           <q-btn-toggle
-            :model-value="carrito.credito"
-            @update:model-value="$emit('tipo-pago-change', $event)"
+            v-model="carritoLocal.credito"
+            @update:model-value="onTipoPagoChange"
             toggle-color="primary"
             toggle-text-color="white"
             color="grey-1"
@@ -55,7 +58,6 @@
               { value: true, slot: 'credito' },
             ]"
           >
-            <!-- Custom Slots for perfect flex control -->
             <template v-slot:efectivo>
               <div
                 class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
@@ -78,8 +80,7 @@
           </q-btn-toggle>
         </div>
 
-        <!-- SECCIÓN: PAGO EFECTIVO -->
-        <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
+        <div v-if="!carritoLocal.credito" class="animate__animated animate__fadeIn">
           <div class="flex items-center justify-between q-mb-lg">
             <div
               class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
@@ -90,23 +91,20 @@
             </div>
 
             <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-              Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+              Total: {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
             </div>
           </div>
 
-          <!-- Selector de tipo de pago en efectivo -->
           <div class="q-gutter-x-xl q-mb-xl row justify-center">
             <q-radio
-              :model-value="carrito.variablePago"
-              @update:model-value="$emit('update:variablePago', $event)"
+              v-model="carritoLocal.variablePago"
               val="directo"
               color="positive"
               label="Pago Único"
               class="text-weight-bolder text-subtitle2"
             />
             <q-radio
-              :model-value="carrito.variablePago"
-              @update:model-value="$emit('update:variablePago', $event)"
+              v-model="carritoLocal.variablePago"
               val="dividido"
               color="orange-8"
               label="Pago Dividido"
@@ -114,9 +112,8 @@
             />
           </div>
 
-          <!-- Caso: Pago Único -->
           <div
-            v-if="carritoCO.variablePago === 'directo'"
+            v-if="carritoLocal.variablePago === 'directo'"
             class="row q-col-gutter-lg justify-center q-pt-sm"
           >
             <div class="col-12 col-md-10">
@@ -127,7 +124,7 @@
                 Método de pago principal <span class="text-negative">*</span>
               </label>
               <q-select
-                v-model="carritoCO.metodoPago"
+                v-model="carritoLocal.metodoPago"
                 dense
                 outlined
                 bg-color="white"
@@ -147,15 +144,14 @@
             </div>
           </div>
 
-          <!-- Caso: Pago Dividido -->
-          <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
+          <div v-else-if="carritoLocal.variablePago === 'dividido'" class="q-pt-sm">
             <div class="text-caption text-grey-7 q-mb-md flex items-center">
               <q-icon name="info" size="xs" class="q-mr-xs" />
               Distribuya el monto total entre diferentes métodos de pago.
             </div>
 
             <div
-              v-for="(payment, index) in carritoCO.pagosDivididos"
+              v-for="(payment, index) in carritoLocal.pagosDivididos"
               :key="index"
               class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
             >
@@ -215,7 +211,7 @@
               </div>
               <div class="col-12 col-md-1 flex flex-center" style="padding-top: 24px">
                 <q-btn
-                  v-if="carritoCO.pagosDivididos.length > 1"
+                  v-if="carritoLocal.pagosDivididos.length > 1"
                   icon="delete_outline"
                   color="negative"
                   flat
@@ -239,7 +235,6 @@
               />
             </div>
 
-            <!-- Banner de estado del pago dividido -->
             <div
               v-if="remainingAmount !== 0 || totalPaidAmount !== 0"
               class="q-mt-xl q-pa-lg rounded-borders shadow-2"
@@ -282,7 +277,6 @@
             </div>
           </div>
 
-          <!-- Selección de Caja/Banco para Efectivo -->
           <div
             class="col-12 q-mt-xl animate__animated animate__fadeInUp"
             v-if="listaCajaBancos.length > 0"
@@ -297,7 +291,7 @@
             </label>
 
             <q-select
-              v-model="idcajaBancoSeleccionada"
+              v-model="idcajaBancoSeleccionadaLocal"
               :options="listaCajaBancos"
               dense
               outlined
@@ -337,7 +331,6 @@
           </div>
         </div>
 
-        <!-- SECCIÓN: PAGO A CRÉDITO -->
         <div v-else class="animate__animated animate__fadeIn">
           <div class="flex items-center justify-between q-mb-lg">
             <div
@@ -349,7 +342,7 @@
             </div>
 
             <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-              Monto Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+              Monto Total: {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
             </div>
           </div>
 
@@ -361,7 +354,7 @@
                 >Número de Cuotas *</label
               >
               <q-input
-                v-model="carritoCO.cantidadPagos"
+                v-model="carritoLocal.cantidadPagos"
                 type="number"
                 min="1"
                 dense
@@ -384,7 +377,7 @@
                 >Monto por Cuota</label
               >
               <q-input
-                v-model="carritoCO.montoPagos"
+                v-model="carritoLocal.montoPagos"
                 dense
                 outlined
                 readonly
@@ -405,7 +398,7 @@
                 >Frecuencia de Pago *</label
               >
               <q-select
-                v-model="carritoCO.periodo"
+                v-model="carritoLocal.periodo"
                 dense
                 outlined
                 bg-color="white"
@@ -420,7 +413,7 @@
             </div>
 
             <div
-              v-if="carritoCO.periodo === 0"
+              v-if="carritoLocal.periodo === 0"
               class="col-12 col-md-6 animate__animated animate__zoomIn"
             >
               <label
@@ -429,7 +422,7 @@
                 >Plazo Total (Días) *</label
               >
               <q-input
-                v-model="carritoCO.plazoPersonalizado"
+                v-model="carritoLocal.plazoPersonalizado"
                 type="number"
                 dense
                 outlined
@@ -449,7 +442,7 @@
                 >Fecha de Vencimiento Estimada</label
               >
               <q-input
-                v-model="carritoCO.fechaLimite"
+                v-model="carritoLocal.fechaLimite"
                 dense
                 outlined
                 type="date"
@@ -473,7 +466,6 @@
 
       <q-separator />
 
-      <!-- Acciones del Diálogo -->
       <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
         <q-btn
           flat
@@ -493,8 +485,8 @@
             height: 48px;
             background: linear-gradient(45deg, #1976d2, #42a5f5);
           "
-          @click="enviarDatos"
-          :disable="carritoCO.variablePago === 'dividido' && remainingAmount !== 0"
+          @click="$emit('confirmar-pago')"
+          :disable="carritoLocal.variablePago === 'dividido' && remainingAmount !== 0"
         />
       </q-card-actions>
     </q-card>
@@ -502,26 +494,44 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { decimas } from 'src/composables/FuncionesG'
+import { usePago } from '../composables/usePago'
+
+const props = defineProps({
   mostrar: Boolean,
   carrito: Object,
-  remainingAmount: Number,
   metodosPagos: Array,
   listaCajaBancos: Array,
   divisaActiva: Object,
 })
-defineEmits([
-  'tipo-pago-change',
-  'update:variablePago',
-  'update:metodoPago',
-  'update:pagosDivididos',
-  'update:cantidadPagos',
-  'update:periodo',
-  'update:plazoPersonalizado',
-  'update:fechaLimite',
-  'update:montoPagos',
-  'update:idcajaBancoSeleccionada',
-  'confirmar-pago',
-  'update:mostrar',
-])
+const emit = defineEmits(['update:mostrar', 'update:idcajaBancoSeleccionada', 'confirmar-pago'])
+
+const carritoLocal = props.carrito
+
+const pago = usePago(carritoLocal)
+const {
+  periodOptions,
+  totalPaidAmount,
+  remainingAmount,
+  calculatePayments,
+  calculateDueDate,
+  calculateRemainingAmount,
+  calculateAmountFromPercentage,
+  addPaymentMethod,
+  removePaymentMethod,
+  handleTipoPagoGeneralChange,
+} = pago
+
+const idcajaBancoSeleccionadaLocal = computed({
+  get: () => pago.idcajaBancoSeleccionada.value,
+  set: (val) => {
+    pago.idcajaBancoSeleccionada.value = val
+    emit('update:idcajaBancoSeleccionada', val)
+  },
+})
+
+const onTipoPagoChange = (val) => {
+  handleTipoPagoGeneralChange(val)
+}
 </script>

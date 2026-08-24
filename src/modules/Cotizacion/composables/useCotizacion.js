@@ -51,7 +51,7 @@ export function useCotizacion(options) {
     }
 
     carritoCO.tipoOperacion = tipoOperacion.value?.value
-    carritoCO.ipv = Number(puntoVenta.value?.value)
+    carritoCO.ipv = Number(puntoVenta.value) || 0
     carritoCO.idalmacen = filtroAlmacenCO.value
     carritoCO.tipopago = carritoCO.credito ? 'credito' : 'contado'
     carritoCO.cajabanco = idcajaBancoSeleccionada.value

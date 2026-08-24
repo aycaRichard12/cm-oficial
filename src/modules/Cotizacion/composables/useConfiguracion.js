@@ -29,6 +29,26 @@ export function useConfiguracion() {
     }
   }
 
+  async function cargarPuntosVenta() {
+    try {
+      const user = await validarUsuario()
+      const idusuario = user[0]?.idusuario
+      if (!idusuario) {
+        puntosVenta.value = []
+        return
+      }
+      const response = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
+      // Suponiendo que response.data es un array de objetos con id y puntoVenta o similar
+      puntosVenta.value = response.data.map((item) => ({
+        label: item.puntoVenta || item.nombre || `Punto ${item.id}`,
+        value: item.id,
+      }))
+    } catch (error) {
+      console.error('Error al cargar puntos de venta:', error)
+      puntosVenta.value = []
+    }
+  }
+
   async function divisaEmonedaActiva() {
     let endpoint = `listaDivisa/${idempresa}`
     if (token && tipoFactura) {
@@ -195,5 +215,6 @@ export function useConfiguracion() {
     cargarCanales,
     listarcajasbanco,
     cargarLeyendasCotizacion,
+    cargarPuntosVenta,
   }
 }

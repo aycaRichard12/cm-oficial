@@ -58,12 +58,12 @@
       <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
 
       <ConfiguracionInicial
-        :filtro-almacen="filtroAlmacenCO"
-        :almacenes-options="almacenesOptions"
-        :filtro-categoria="filtroCategoriaCO"
-        :categorias-options="categoriasOptions"
-        :punto-venta="puntoVenta"
-        :puntos-venta="puntosVenta"
+        :filtroAlmacenCO="filtroAlmacenCO"
+        :almacenesOptions="almacenesOptions"
+        :filtroCategoriaCO="filtroCategoriaCO"
+        :categoriasOptions="categoriasOptions"
+        :puntoVenta="puntoVenta"
+        :puntosVenta="puntosVenta"
         @update:filtroAlmacenCO="filtroAlmacenCO = $event"
         @update:filtroCategoriaCO="filtroCategoriaCO = $event"
         @update:puntoVenta="puntoVenta = $event"
@@ -82,17 +82,20 @@
 
       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
         <AgregarProducto
-          :es-producto-unico="esProductoUnico"
-          :registrar-como-producto-unico="registrarComoProductoUnico"
-          :selected-product="selectedProduct"
-          :filtered-products="filteredProducts"
-          :cantidad-disponible="cantidaddisponibleCO"
-          :cantidad="cantidadCO"
-          :precio="precioCO"
-          :id-producto-almacen="idproductoalmacenCO"
-          :can-add-product="canAddProduct"
-          :divisa-activa="divisaActiva"
-          :permisos-store="permisosStore"
+          :esProductoUnico="esProductoUnico"
+          :registrarComoProductoUnico="registrarComoProductoUnico"
+          :selectedProduct="selectedProduct"
+          :filteredProducts="filteredProducts"
+          :cantidaddisponibleCO="cantidaddisponibleCO"
+          :cantidadCO="cantidadCO"
+          :precioCO="precioCO"
+          :idproductoalmacenCO="idproductoalmacenCO"
+          :canAddProduct="canAddProduct"
+          :divisaActiva="divisaActiva"
+          :permisosStore="permisosStore"
+          @update:registrarComoProductoUnico="registrarComoProductoUnico = $event"
+          @update:cantidadCO="cantidadCO = $event"
+          @update:precioCO="precioCO = $event"
           @filter-product="filterProduct"
           @set-product-input="setProductInputValue"
           @elegir-producto="elegirUnProducto"
@@ -108,6 +111,8 @@
         @eliminar-producto="eliminarProductoCarrito"
         @recalcular-totales="calcularTotalesCarrito"
         @aplicar-descuento="aplicarDescuento"
+        @update:descuento="carritoCO.descuento = $event"
+        @update:descripcionAdicional="handleDescripcionAdicional"
       />
 
       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
@@ -146,8 +151,10 @@
       :mostrar="modalmetodopago"
       @update:mostrar="modalmetodopago = $event"
       :carrito="carritoCO"
-      :remaining-amount="remainingAmount"
-      @tipo-pago-change="handleTipoPagoGeneralChange"
+      :metodos-pagos="metodosPagos"
+      :lista-caja-bancos="listaCajaBancos"
+      :divisa-activa="divisaActiva"
+      @update:idcajaBancoSeleccionada="idcajaBancoSeleccionada = $event"
       @confirmar-pago="enviarDatos"
     />
 
@@ -171,21 +178,31 @@
     </q-dialog>
   </q-page>
 </template>
+
 <script setup>
 import { ref, watch, onMounted, reactive } from 'vue'
+
+// Importar Componentes Faltantes
+import CabeceraCotizacion from '../components/CabeceraCotizacion.vue'
+import DatosCliente from '../components/DatosCliente.vue'
+import ConfiguracionInicial from '../components/ConfiguracionInicial.vue'
+import AgregarProducto from '../components/AgregarProducto.vue'
+import ResumenCarrito from '../components/ResumenCarrito.vue'
+import DialogoPago from '../components/DialogoPago.vue'
+import DialogoConfirmacion from '../components/DialogoConfirmacion.vue'
+import DialogoPDF from '../components/DialogoPDF.vue'
+import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+
 import { useCarrito } from '../composables/useCarrito'
 import { useCliente } from '../composables/useCliente'
 import { useProducto } from '../composables/useProducto'
 import { useCotizacion } from '../composables/useCotizacion'
-import { usePago } from '../composables/usePago'
 import { useConfiguracion } from '../composables/useConfiguracion'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-import { obtenerFechaActualDato } from 'src/composables/FuncionesG'
-import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
-import { validarUsuario } from 'src/composables/FuncionesG'
+import { obtenerFechaActualDato, validarUsuario } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
-// 2. Definir refs locales
+
 const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const fecha = ref(obtenerFechaActualDato())
@@ -205,8 +222,8 @@ const formClientes = ref(null)
 const idalmacenfiltro = ref(0)
 const idporcentajeventa = ref(0)
 const modalmetodopago = ref(false)
+const idcajaBancoSeleccionada = ref(null) // Para usar con useCotizacion
 
-// 3. Inicializar useConfiguracion (ahora existe)
 const {
   almacenesOptions,
   categoriasOptions,
@@ -214,12 +231,14 @@ const {
   salesChannels,
   divisaActiva,
   soloAlmacen,
+  metodosPagos,
+  listaCajaBancos,
   cargarConfiguracionInicial,
   cargarAlmacenes,
   fetchEstadoActual,
+  cargarPuntosVenta,
 } = useConfiguracion()
 
-// 4. Inicializar useCliente pasando dependencias
 const cliente = useCliente({
   soloAlmacen,
   almacenesOptions,
@@ -249,7 +268,7 @@ const carritoCO = reactive({
   subtotal: 0,
   descuento: 0,
   idalmacen: 0,
-  divisa: 0, // se actualizará después
+  divisa: 0,
   ipv: null,
   idusuario: 0,
   listaProductos: [],
@@ -267,7 +286,7 @@ const carritoCO = reactive({
   plazoPersonalizado: 0,
   fechaLimite: '',
 })
-// 5. Inicializar useProducto (carritoCO ya está definido arriba)
+
 const {
   selectedProduct,
   filteredProducts,
@@ -288,7 +307,6 @@ const {
   guardarCodigosEnVenta,
 } = useProducto({ idempresa, filtroCategoriaCO, carritoCO })
 
-// 6. Inicializar useCarrito pasando el carritoCO ya definido
 const {
   canAddProduct,
   anadirProductoACarrito,
@@ -312,14 +330,9 @@ const {
   CodigosUnicosSeleccionados,
   listaProductosDisponibles,
   resetProductoInputs,
-  carritoExistente: carritoCO, // reutiliza el reactive ya definido
+  carritoExistente: carritoCO,
 })
 
-// 9. Inicializar usePago
-const pago = usePago(carritoCO)
-const { idcajaBancoSeleccionada, remainingAmount, handleTipoPagoGeneralChange } = pago
-
-// 10. Inicializar useCotizacion
 const cotizacion = useCotizacion({
   carritoCO,
   tipoOperacion,
@@ -335,6 +348,7 @@ const cotizacion = useCotizacion({
   resetCarrito,
   cargarAlmacenes,
   cargarCLientes: cargarClientes,
+
   idempresa,
   onReset: () => emit('reiniciar'),
 })
@@ -352,13 +366,12 @@ const {
   RegistrarFirma,
   alTerminarFirma,
   alFallarFirma,
+  enviarDatos,
 } = cotizacion
 
-// 11. Definir funciones locales que llaman a las de los composables
 const listaCategoria = async () => {
-  // Esta función debería cargar las categorías según el almacén seleccionado.
-  // Podemos usar una función de useConfiguracion o implementarla aquí.
-  // Como useConfiguracion no tiene listaCategoria, la implementamos localmente.
+  //await cargarPuntoVentas()
+
   const user = await validarUsuario()
   const idempresa = user[0]?.empresa?.idempresa
   if (!idempresa) return
@@ -382,29 +395,45 @@ const listaCategoria = async () => {
   }
 }
 
-// 12. Watchers
-watch(filtroAlmacenCO, (newVal) => {
+const handleDescripcionAdicional = ({ id, value }) => {
+  const producto = carritoCO.listaProductos.find((p) => p.idproductoalmacen === id)
+  if (producto) {
+    producto.descripcionAdicional = value
+  }
+}
+
+watch(filtroAlmacenCO, async (newVal) => {
   idalmacenfiltro.value = newVal
-  listaCategoria()
+  await listaCategoria()
+  if (puntosVenta.value && puntosVenta.value.length > 0) {
+    puntoVenta.value = puntosVenta.value[0].value
+  }
 })
 
-watch(filtroCategoriaCO, (newVal) => {
+watch(filtroCategoriaCO, async (newVal) => {
   idporcentajeventa.value = newVal
-  listaProductosDisponibles()
+  await listaProductosDisponibles()
 })
 
-// 13. Ciclo de vida
+watch(selectedClient, (newVal) => {
+  elegirUnCliente(newVal)
+})
+
+const permitirStockvacio = () => {
+  permitirStock.value = !permitirStock.value
+}
+
 onMounted(async () => {
   isMobile.value = window.innerWidth < 768
   await fetchEstadoActual()
   await cargarConfiguracionInicial()
   await permisosStore.cargarPermisos()
-  // Cargar categorías después de tener almacenes
+  await cargarClientes() // <--- agregado
+  await cargarPuntosVenta()
   if (filtroAlmacenCO.value) {
     await listaCategoria()
   }
 })
 
-// 14. Emit
 const emit = defineEmits(['reiniciar', 'cancelarregistro'])
 </script>

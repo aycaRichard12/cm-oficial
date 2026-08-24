@@ -84,6 +84,7 @@
       </label>
       <q-input
         :model-value="precioCO"
+        @update:model-value="$emit('update:precioCO', $event)"
         type="number"
         :rules="precioRules"
         :readonly="!permisosStore.tienePermiso('editarprecioventa')"
@@ -136,7 +137,7 @@
 
 <script setup>
 import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vue'
-import { cantidadRules, precioRules } from 'src/validators/cotizacionValidators'
+import { cantidadRules, precioRules } from '../validators/cotizacionValidators'
 
 defineProps({
   esProductoUnico: Boolean,

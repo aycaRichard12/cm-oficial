@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { almacenRules, categoriaRules, puntoVentaRules } from 'src/validators/cotizacionValidators'
+import { almacenRules, categoriaRules, puntoVentaRules } from '../validators/cotizacionValidators'
 
 defineProps({
   filtroAlmacenCO: [Number, null],

@@ -148,16 +148,15 @@
 </template>
 
 <script setup>
-import ModalfirmaPage from './ModalfirmaPage.vue'
+import ModalfirmaPage from 'src/pages/cotizacion/ModalfirmaPage.vue'
 import {
   tipoOperacionRules,
   fechaRules,
   sucursalRules,
   canalVentaRules,
   clienteRules,
-} from 'src/validators/cotizacionValidators'
+} from '../validators/cotizacionValidators'
 
-// Props
 defineProps({
   tipoOperacion: Object,
   optionOperacion: Array,
@@ -171,7 +170,6 @@ defineProps({
   modalfirmaActivo: Boolean,
 })
 
-// Emits
 const emit = defineEmits([
   'tipo-operacion-change',
   'fecha-change',
@@ -192,7 +190,6 @@ const emit = defineEmits([
   'update:modalfirmaActivo',
 ])
 
-// Local functions (delegate to parent)
 function filterClient(val, update) {
   emit('filter-client', val, update)
 }

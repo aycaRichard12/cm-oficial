@@ -21,7 +21,6 @@
   >
     <template v-slot:body="props">
       <q-tr :props="props" :class="props.expand ? 'bg-blue-50' : 'hover-row'">
-        <!-- Código de expansión para códigos únicos -->
         <q-td auto-width>
           <q-btn
             v-if="props.row.codigosUnicos?.length > 0"
@@ -58,12 +57,7 @@
             }}</span>
             <q-popup-edit
               :model-value="props.row.descripcionAdicional"
-              @update:model-value="
-                $emit('update:descripcionAdicional', {
-                  id: props.row.idproductoalmacen,
-                  value: $event,
-                })
-              "
+              @update:model-value="validarDescripcion(scope, props.row)"
               v-slot="scope"
               buttons
               label-set="Guardar"
@@ -207,13 +201,22 @@ defineProps({
   esProductoUnico: Boolean,
 })
 
-defineEmits([
+const emit = defineEmits([
   'eliminar-producto',
   'recalcular-totales',
   'aplicar-descuento',
   'update:descuento',
   'update:descripcionAdicional',
 ])
+
+const validarDescripcion = (scope, row) => {
+  emit('update:descripcionAdicional', {
+    id: row.idproductoalmacen,
+    value: scope.value,
+  })
+  scope.set()
+}
+
 const carritoColumns = [
   { name: 'exp', label: '', align: 'left' },
   { name: 'num', label: 'N°', align: 'left', field: 'num' },
