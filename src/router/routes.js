@@ -285,6 +285,10 @@ const routes = [
         component: () => import('src/pages/cotizacion/cotizacionIndex.vue'),
       },
       {
+        path: '/registrarcotizacionocultomodulo',
+        component: () => import('src/modules/Cotizacion/page/CotizacionPage.vue'),
+      },
+      {
         path: '/reportedecotizacionesocultas',
         component: () => import('src/pages/cotizacion/ReporteCotizacionPage.vue'),
       },
@@ -432,6 +436,10 @@ const routes = [
       {
         path: '/configuracionclientealmacen',
         component: () => import('src/modules/config/page/ClienteAlmacenPage.vue'),
+      },
+      {
+        path: '/configuracionProductoVariante',
+        component: () => import('src/modules/config/page/ProductoVariantePage.vue'),
       },
       {
         path: '/reporteProductoUnico',

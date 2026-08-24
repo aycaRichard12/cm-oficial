@@ -457,8 +457,9 @@
             </q-btn>
           </div>
         </div>
-
+        {{ esProductoUnico }}
         <UniqueProductSelector
+          v-if="esProductoUnico"
           :product-id="idproductoalmacenCO"
           :is-unique="esProductoUnico && registrarComoProductoUnico"
           :cantidad-requerida="cantidadCO"
@@ -630,6 +631,7 @@
           <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
             <q-td colspan="100%" class="q-pa-lg">
               <TableCodigosUnicos
+                v-if="esProductoUnico"
                 v-model="props.row.codigosUnicos"
                 :parent-row="props.row"
                 :can-delete="true"

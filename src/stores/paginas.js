@@ -12,6 +12,7 @@ export const PAGINAS = Object.freeze({
     'caracteristicadeproducto',
     'parametrosdeobsolescencia',
     'configuracionproductounico',
+    'configuracionproductovariante',
   ]),
   configuracioncliente: Object.freeze([
     'tiposdeclientes',
@@ -91,6 +92,7 @@ export const PAGINAS_ICONS = Object.freeze({
   unidaddeproducto: 'straighten',
   caracteristicadeproducto: 'style',
   parametrosdeobsolescencia: 'history_toggle_off',
+  configuracionproductovariante: 'extension',
 
   // Íconos para los submenús de Configuración de Cliente
   tiposdeclientes: 'groups',

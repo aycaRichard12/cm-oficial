@@ -355,7 +355,7 @@ watch(
 
 <style scoped>
 .selector-variantes-producto {
-  max-width: 800px;
+  max-width: 100%;
   margin: auto;
 }
 </style>

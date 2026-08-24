@@ -239,6 +239,7 @@
           </div>
 
           <SelectorVariantesProducto
+            v-if="ConfiguracionProductoVariante"
             :idProducto="productoSeleccionado?.originalData?.id"
             @confirmar="recibirSeleccion"
             ref="selectorRef"
@@ -367,7 +368,13 @@
               v-if="props.row.atributos && props.row.atributos.length"
               class="q-mt-xs row q-gutter-xs items-center"
             >
-              <q-badge v-if="props.row.sku" outline color="primary" :label="props.row.sku" class="q-px-xs" />
+              <q-badge
+                v-if="props.row.sku"
+                outline
+                color="primary"
+                :label="props.row.sku"
+                class="q-px-xs"
+              />
               <q-badge
                 v-for="attr in props.row.atributos"
                 :key="attr.atributo"
@@ -505,6 +512,7 @@ leyendaActiva.cargarLeyendaActivo()
 const showSolicitudesDialog = ref(false)
 const tituloNotificacion = ref('Solicitud de permiso para venta sin stock')
 const showPermisos = ref(false)
+const ConfiguracionProductoVariante = ref(false)
 
 const onPermisoUsado = (permiso) => {
   console.log('Se consumió el permiso:', permiso.id_almacen)
@@ -1308,7 +1316,14 @@ function redondear(num) {
 }
 const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
 
-function crearItemCarrito(producto, cantidadProd, precio, idproductovariante = null, sku = '', atributos = []) {
+function crearItemCarrito(
+  producto,
+  cantidadProd,
+  precio,
+  idproductovariante = null,
+  sku = '',
+  atributos = [],
+) {
   const item = {
     idproductoalmacen: producto.id,
     cantidad: Number(cantidadProd),
@@ -1523,6 +1538,17 @@ async function consumirPermisoVentaSinStock(idalmacen) {
   return response
 }
 
+const fetchEstadoActualProductoVariante = async () => {
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    console.log(data)
+    // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // Inicialización $ currencyStore codigoActividadSin despachado
 onMounted(async () => {
   isInitializing.value = true
@@ -1530,6 +1556,7 @@ onMounted(async () => {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
     await permisosStore.cargarPermisos()
+    await fetchEstadoActualProductoVariante()
     if (!currencyStore.divisa) {
       console.error('No se pudo cargar la divisa')
       return
