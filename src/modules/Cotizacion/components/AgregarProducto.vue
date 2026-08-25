@@ -22,12 +22,13 @@
         use-input
         hide-selected
         fill-input
+        :input-value="selectedProduct ? selectedProduct.display : undefined"
         input-debounce="0"
         outlined
         dense
         bg-color="white"
         class="premium-input"
-        @filter="$emit('filter-product', $event)"
+        @filter="(val, update) => $emit('filter-product', val, update)"
         @input-value="$emit('set-product-input', $event)"
         @update:model-value="$emit('elegir-producto', $event)"
       >

@@ -38,19 +38,31 @@ export function useProducto(options) {
     const idempresa = user[0]?.empresa?.idempresa
     if (!idempresa || !filtroCategoriaCO.value) {
       productosDisponibles.value = []
+      filteredProducts.value = []
       return
     }
+
+    // Limpiar resultados anteriores (del almacén previo) antes de la llamada
+    productosDisponibles.value = []
+    filteredProducts.value = []
 
     try {
       const response = await api.get(`listaProductosDisponiblesVenta/${idempresa}`)
       const data = response.data
-      if (data[0] === 'error') {
-        console.error(data.error)
-        productosDisponibles.value = []
+
+      // La API puede devolver un array ['error', ...] o un objeto { datos: [...] }
+      const isErrorArray = Array.isArray(data) && data[0] === 'error'
+      const isErrorObj = data && data.estado === 'error'
+      if (isErrorArray || isErrorObj) {
+        console.error(isErrorArray ? data[1] : data.error)
         return
       }
 
-      let use = data.datos.filter((u) => Number(u.idporcentaje) === Number(filtroCategoriaCO.value))
+      const rawList = Array.isArray(data) ? data : (data.datos ?? [])
+
+      let use = rawList.filter(
+        (u) => Number(u.idporcentaje) === Number(filtroCategoriaCO.value),
+      )
 
       if (carritoCO.listaProductos.length > 0) {
         use = use.filter(
@@ -66,6 +78,7 @@ export function useProducto(options) {
     } catch (error) {
       console.error('Error cargando productos:', error)
       productosDisponibles.value = []
+      filteredProducts.value = []
     }
   }
 
@@ -80,6 +93,11 @@ export function useProducto(options) {
   }
 
   function setProductInputValue(val) {
+    // Solo anular la selección si el texto no coincide con ningún producto
+    // Y no hay ningún producto ya elegido (idproductoalmacenCO vacío).
+    // Si hay producto seleccionado y Quasar limpia el input al cerrar el
+    // dropdown, NO debemos perder la selección.
+    if (idproductoalmacenCO.value) return
     if (!productosDisponibles.value.some((p) => p.display === val)) {
       selectedProduct.value = null
     }
@@ -87,6 +105,7 @@ export function useProducto(options) {
 
   function elegirUnProducto(product) {
     if (product) {
+      selectedProduct.value = product          // ← persiste la referencia completa
       cantidaddisponibleCO.value = product.stock
       precioCO.value = product.precio
       idstockCO.value = product.idstock

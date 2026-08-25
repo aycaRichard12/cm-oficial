@@ -29,7 +29,7 @@ export function useConfiguracion() {
     }
   }
 
-  async function cargarPuntosVenta() {
+  async function cargarPuntosVenta(idalmacen) {
     try {
       const user = await validarUsuario()
       const idusuario = user[0]?.idusuario
@@ -38,11 +38,18 @@ export function useConfiguracion() {
         return
       }
       const response = await api.get(`listaPuntoVentaFacturaCotizacion/${idusuario}`)
-      // Suponiendo que response.data es un array de objetos con id y puntoVenta o similar
-      puntosVenta.value = response.data.map((item) => ({
-        label: item.puntoVenta || item.nombre || `Punto ${item.id}`,
-        value: item.id,
-      }))
+      if (response.data.estado === 'error') {
+        console.error(response.data.error)
+        puntosVenta.value = []
+      } else {
+        const datos = response.data.datos || response.data
+        const filtrados = idalmacen ? datos.filter((u) => u.idalmacen == idalmacen) : datos
+        puntosVenta.value = filtrados.map((item) => ({
+          label: item.nombre,
+          value: item.idpuntoventa,
+          Data: item,
+        }))
+      }
     } catch (error) {
       console.error('Error al cargar puntos de venta:', error)
       puntosVenta.value = []

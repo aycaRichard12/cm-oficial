@@ -176,6 +176,14 @@
     <q-dialog v-model="showAddModal">
       <MyRegistrationForm @recordCreated="handleRecordCreated" />
     </q-dialog>
+
+    <ModalfirmaPage
+      v-model="modalfirmaActivo"
+      :id-entidad="selectedClient"
+      tipo-operacion="CLIENTE"
+      @onSuccess="alTerminarFirma"
+      @onError="alFallarFirma"
+    />
   </q-page>
 </template>
 
@@ -192,6 +200,7 @@ import DialogoPago from '../components/DialogoPago.vue'
 import DialogoConfirmacion from '../components/DialogoConfirmacion.vue'
 import DialogoPDF from '../components/DialogoPDF.vue'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
+import ModalfirmaPage from './ModalfirmaPage.vue'
 
 import { useCarrito } from '../composables/useCarrito'
 import { useCliente } from '../composables/useCliente'
@@ -206,7 +215,6 @@ import { api } from 'src/boot/axios'
 const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const fecha = ref(obtenerFechaActualDato())
-const showAddModal = ref(false)
 const modalfirmaActivo = ref(false)
 const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
 const optionOperacion = ref([
@@ -252,6 +260,8 @@ const {
   idclienteCO,
   idsucursalCOS,
   canalventa,
+  showAddModal,
+
   filterClient,
   setClientInputValue,
   elegirUnCliente,
@@ -370,25 +380,29 @@ const {
 } = cotizacion
 
 const listaCategoria = async () => {
-  //await cargarPuntoVentas()
-
   const user = await validarUsuario()
   const idempresa = user[0]?.empresa?.idempresa
   if (!idempresa) return
+
+  // Limpiar selección de producto anterior al cambiar almacén
+  resetProductoInputs()
+
   try {
     const response = await api.get(`listarCategoriaPrecioVenta/${idempresa}`)
     const resultado = response.data
-    if (resultado[0] === 'error') {
-      console.error(resultado.error)
+    // La API puede devolver ['error', msg] o un array de categorías
+    const isErrorArray = Array.isArray(resultado) && resultado[0] === 'error'
+    if (isErrorArray) {
+      console.error(resultado[1] ?? resultado.error)
+      return
+    }
+    categoriasOptions.value = resultado.filter((u) => {
+      return Number(u.estado) === 1 && Number(u.idalmacen) === Number(filtroAlmacenCO.value)
+    })
+    if (categoriasOptions.value.length > 0) {
+      filtroCategoriaCO.value = categoriasOptions.value[0].id
     } else {
-      categoriasOptions.value = resultado.filter((u) => {
-        return Number(u.estado) === 1 && Number(u.idalmacen) === Number(filtroAlmacenCO.value)
-      })
-      if (categoriasOptions.value.length > 0) {
-        filtroCategoriaCO.value = categoriasOptions.value[0].id
-      } else {
-        filtroCategoriaCO.value = null
-      }
+      filtroCategoriaCO.value = null
     }
   } catch (error) {
     console.error('Error al cargar categorías:', error)
@@ -404,6 +418,7 @@ const handleDescripcionAdicional = ({ id, value }) => {
 
 watch(filtroAlmacenCO, async (newVal) => {
   idalmacenfiltro.value = newVal
+  await cargarPuntosVenta(newVal)
   await listaCategoria()
   if (puntosVenta.value && puntosVenta.value.length > 0) {
     puntoVenta.value = puntosVenta.value[0].value
