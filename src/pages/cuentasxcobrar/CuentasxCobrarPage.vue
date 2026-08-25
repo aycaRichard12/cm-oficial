@@ -27,6 +27,7 @@
       :formato-moneda="formatoMoneda"
       @back="vistaActiva = 'principal'"
       @ver-comprobante="mostrarImagen"
+      @editar-cobro="abrirEdicionCobro"
     />
 
     <!-- Diálogo Registrar Cobro -->
@@ -35,8 +36,11 @@
       v-model:formulario="formulario"
       :divisa="divisa"
       :is-compressing="isCompressing"
+      :modo-edicion="modoEdicion"
+      :cobro-a-editar="cobroAEditar"
       @close="cerrarFormulario"
       @submit="() => registrarCobro(cargarDatos)"
+      @editar="() => editarCobro(cargarDatos)"
       @handle-archivo="convertirImagen"
       @calcular-totales="calcularTotales"
       @calcular-numero-cobros="calcularNumeroCobros"
@@ -91,6 +95,10 @@ const {
   mostrarImagen,
   formatoMoneda,
   isCompressing,
+  modoEdicion,
+  cobroAEditar,
+  abrirEdicionCobro,
+  editarCobro,
 } = useCuentasxCobrar()
 
 // Ref tabla hija (para acceso externo si es necesario)
@@ -106,7 +114,7 @@ onMounted(async () => {
   window.addEventListener('keydown', handleKeydown)
   await cargarAlmacenesAutorizados()
   await cargarDatos()
-  
+
   emitter.on('realizar-pago', (notification) => {
     const btn = document.getElementById(`btn-${notification.id}`)
     if (btn) btn.click()
