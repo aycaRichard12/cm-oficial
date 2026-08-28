@@ -440,6 +440,20 @@
 
           <q-td key="descripcion" :props="props">
             <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+            <div v-if="props.row.variante?.atributos?.length" class="q-mt-xs flex gap-1">
+              <q-badge
+                v-for="attr in props.row.variante.atributos"
+                :key="attr.id_Valor_Atributo"
+                outline
+                color="secondary"
+                class="q-mr-xs"
+              >
+                {{ attr.atributo }}: {{ attr.valor }}
+              </q-badge>
+              <q-badge v-if="props.row.variante.sku" outline color="grey-7" class="q-mr-xs">
+                SKU: {{ props.row.variante.sku }}
+              </q-badge>
+            </div>
           </q-td>
 
           <q-td key="precio" :props="props" class="text-right">
