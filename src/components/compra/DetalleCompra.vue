@@ -191,7 +191,10 @@
                   </div>
                 </div>
                 <!-- Tabla de variantes -->
-                <div v-if="variantesDelProducto.length > 0" class="q-mt-md">
+                <div
+                  v-if="ConfiguracionProductoVariante && variantesDelProducto.length > 0"
+                  class="q-mt-md"
+                >
                   <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
                   <q-table
                     :rows="variantesDelProducto"
@@ -244,7 +247,10 @@
           <!-- Tarjeta de precios y cantidades -->
           <q-card flat class="product-card">
             <q-card-section class="q-pa-lg">
-              <div class="section-header flex items-center q-mb-md">
+              <div
+                v-if="!ConfiguracionProductoVariante"
+                class="section-header flex items-center q-mb-md"
+              >
                 <div class="section-indicator bg-primary"></div>
                 <q-icon name="price_change" size="sm" color="primary" class="q-mr-sm" />
                 <h3 class="section-title text-h6 text-grey-9 q-ma-none text-weight-medium">
@@ -253,7 +259,7 @@
               </div>
 
               <div class="row q-col-gutter-lg items-end">
-                <div class="col-12 col-sm-6 col-md-4">
+                <div v-if="!ConfiguracionProductoVariante" class="col-12 col-sm-6 col-md-4">
                   <div class="q-mb-sm">
                     <q-checkbox
                       v-model="detalleForm.sinPrecio"
@@ -318,7 +324,7 @@
                   </q-input>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-4">
+                <div v-if="!ConfiguracionProductoVariante" class="col-12 col-sm-6 col-md-4">
                   <q-input
                     v-model.number="detalleForm.cantidad"
                     type="text"
