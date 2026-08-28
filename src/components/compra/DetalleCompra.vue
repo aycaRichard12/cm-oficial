@@ -190,6 +190,53 @@
                     </div>
                   </div>
                 </div>
+                <!-- Tabla de variantes -->
+                <div v-if="variantesDelProducto.length > 0" class="q-mt-md">
+                  <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
+                  <q-table
+                    :rows="variantesDelProducto"
+                    :columns="columnasVariantes"
+                    row-key="id_Producto_Variante"
+                    flat
+                    bordered
+                    dense
+                    :loading="loadingVariantes"
+                  >
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
+                        <q-td key="atributos" :props="props">
+                          <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
+                            <q-badge outline color="primary" class="q-mr-xs">
+                              {{ attr.atributo }}: {{ attr.valor }}
+                            </q-badge>
+                          </div>
+                        </q-td>
+                        <q-td key="precio" :props="props">
+                          <q-input
+                            v-model.number="preciosVariantes[props.row.id_Producto_Variante]"
+                            type="number"
+                            dense
+                            outlined
+                            label="Precio"
+                            style="min-width: 120px"
+                          />
+                        </q-td>
+                        <q-td key="cantidad" :props="props">
+                          <q-input
+                            v-model.number="cantidadesVariantes[props.row.id_Producto_Variante]"
+                            type="number"
+                            dense
+                            outlined
+                            label="Cantidad"
+                            min="0"
+                            style="min-width: 120px"
+                          />
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+                </div>
               </div>
             </q-card-section>
           </q-card>
@@ -474,7 +521,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
@@ -510,6 +557,12 @@ const productosDisponibles = ref([])
 const productosFiltrados = ref([])
 const esModoEdicion = ref(false)
 const loadingTable = ref(false)
+const ConfiguracionProductoVariante = ref(false)
+
+const variantesDelProducto = ref([])
+const loadingVariantes = ref(false)
+const cantidadesVariantes = ref({}) // { [idVariante]: cantidad }
+const preciosVariantes = ref({}) // { [idVariante]: precio }
 
 const detalleForm = ref({
   id: null,
@@ -557,6 +610,12 @@ const total = computed(() => {
     0,
   )
 })
+const columnasVariantes = computed(() => [
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left' },
+  { name: 'atributos', label: 'Atributos', align: 'left' },
+  { name: 'precio', label: 'Precio', align: 'left' },
+  { name: 'cantidad', label: 'Cantidad', align: 'left' },
+])
 
 // --- WATCHERS ---
 watch(
@@ -683,6 +742,66 @@ function confirmarCantidadEspecial() {
 }
 async function onSubmit() {
   if (!formRef.value.validate()) return
+
+  // Si hay variantes, registrar cada una con cantidad > 0
+  if (variantesDelProducto.value.length > 0) {
+    const variantesConCantidad = variantesDelProducto.value.filter(
+      (v) => Number(cantidadesVariantes.value[v.id_Producto_Variante] || 0) > 0,
+    )
+
+    if (variantesConCantidad.length === 0) {
+      $q.notify({
+        type: 'warning',
+        message: 'Debe ingresar al menos una cantidad mayor a 0 para las variantes.',
+        position: 'top',
+      })
+      return
+    }
+
+    $q.loading.show({ message: 'Guardando variantes...' })
+    try {
+      for (const variante of variantesConCantidad) {
+        const cantidad = Number(cantidadesVariantes.value[variante.id_Producto_Variante])
+        const precio = Number(preciosVariantes.value[variante.id_Producto_Variante])
+
+        const formData = objectToFormData({
+          precio,
+          cantidad,
+          idproductoalmacen: detalleForm.value.idproductoalmacen,
+          idProductoVariante: variante.id_Producto_Variante,
+          registrarProUnico: false,
+        })
+        formData.append('idingreso', props.compra.id)
+        formData.append('ver', 'registrarDetalleCompra')
+
+        const response = await api.post('', formData)
+        if (response.data.estado !== 'exito') {
+          throw new Error(response.data.mensaje || 'Error al registrar variante')
+        }
+      }
+
+      $q.notify({
+        type: 'positive',
+        message: 'Variantes registradas con éxito',
+        position: 'top',
+      })
+      await getDetalleCompra()
+      await listaProductosDisponibles()
+      onResetForm()
+      emit('update')
+    } catch (error) {
+      console.error('Error al guardar variantes:', error)
+      $q.notify({
+        type: 'negative',
+        message: error.message || 'Error al guardar variantes',
+        position: 'top',
+      })
+    } finally {
+      $q.loading.hide()
+    }
+    return
+  }
+  if (!formRef.value.validate()) return
   if (!esModoEdicion.value && detalleForm.value.productoUnico && productoUnico.value) {
     const confirmado = await confirmarCantidadEspecial()
     if (!confirmado) return
@@ -749,6 +868,12 @@ function onResetForm() {
   formRef.value?.reset()
   formRef.value?.resetValidation()
   esModoEdicion.value = false
+  variantesDelProducto.value = []
+  cantidadesVariantes.value = {}
+  preciosVariantes.value = {}
+  formRef.value?.reset()
+  formRef.value?.resetValidation()
+  esModoEdicion.value = false
 }
 
 // --- MÉTODOS DE LA TABLA ---
@@ -800,6 +925,14 @@ function confirmarEliminar(row) {
     await eliminarDetalle(row)
   })
 }
+const fetchEstadoActual = async () => {
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 async function eliminarDetalle(row) {
   try {
@@ -831,6 +964,53 @@ async function eliminarDetalle(row) {
     $q.loading.hide()
   }
 }
+watch(
+  () => detalleForm.value.idproductoalmacen,
+  async (nuevoValor) => {
+    if (nuevoValor && ConfiguracionProductoVariante.value) {
+      await cargarVariantesProducto(nuevoValor)
+    } else {
+      variantesDelProducto.value = []
+      cantidadesVariantes.value = {}
+      preciosVariantes.value = {}
+    }
+  },
+)
+
+async function cargarVariantesProducto(idproductoalmacen) {
+  loadingVariantes.value = true
+  try {
+    const response = await api.get(`listar_producto_variantes_por_almacen/${idproductoalmacen}`)
+    const data = response.data
+    if (data?.Productos_variantes?.length) {
+      variantesDelProducto.value = data.Productos_variantes
+      // Inicializar cantidades y precios
+      variantesDelProducto.value.forEach((variante) => {
+        cantidadesVariantes.value[variante.id_Producto_Variante] = 0
+        preciosVariantes.value[variante.id_Producto_Variante] = variante.precio_base || 0
+      })
+    } else {
+      variantesDelProducto.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar variantes:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar las variantes del producto.',
+      position: 'top',
+    })
+  } finally {
+    loadingVariantes.value = false
+  }
+}
+onMounted(async () => {
+  try {
+    // Cargar datos iniciales
+    await fetchEstadoActual()
+  } catch (error) {
+    console.error('Error en inicialización de Cotización:', error)
+  }
+})
 </script>
 <style scoped>
 .my-custom-table {

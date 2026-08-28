@@ -398,6 +398,7 @@
               type="number"
               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
               :readonly="esProductoUnico && registrarComoProductoUnico"
+              :disable="productoTieneVariantes"
               required
               outlined
               dense
@@ -422,6 +423,7 @@
               required
               outlined
               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
+              :disable="productoTieneVariantes"
               dense
               bg-color="white"
               hide-bottom-space
@@ -457,7 +459,14 @@
             </q-btn>
           </div>
         </div>
-        {{ esProductoUnico }}
+        <SelectorVariantesProducto
+          v-if="ConfiguracionProductoVariante && selectedProduct"
+          :idProducto="selectedProduct.id"
+          :disabledVariants="disabledVariantsCotizacion"
+          @confirmar="recibirSeleccionCotizacion"
+          ref="selectorRef"
+          class="q-mt-lg"
+        />
         <UniqueProductSelector
           v-if="esProductoUnico"
           :product-id="idproductoalmacenCO"
@@ -543,6 +552,24 @@
                 {{ props.row.descripcion }}
               </div>
 
+              <div v-if="props.row.atributos?.length" class="q-mt-xs row q-gutter-xs items-center">
+                <q-badge
+                  v-if="props.row.sku"
+                  outline
+                  color="primary"
+                  :label="props.row.sku"
+                  class="q-px-xs"
+                />
+                <q-badge
+                  v-for="attr in props.row.atributos"
+                  :key="attr.atributo"
+                  outline
+                  color="grey-7"
+                  :label="`${attr.atributo}: ${attr.valor}`"
+                  class="q-px-xs"
+                />
+              </div>
+
               <div
                 class="flex items-center text-primary cursor-pointer q-mt-xs"
                 style="
@@ -618,7 +645,7 @@
                 round
                 dense
                 size="sm"
-                @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
+                @click="eliminarProductoCarrito(props.row)"
                 class="hover-shake"
               >
                 <q-tooltip class="bg-negative text-weight-medium shadow-3"
@@ -1390,6 +1417,7 @@ import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vu
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import SelectorVariantesProducto from 'src/components/venta/SelectorVariantesProducto.vue'
 
 const permisosStore = useOperacionesPermitidas()
 //console.log(permisosStore.tienePermiso('editarprecioventa'))
@@ -1495,6 +1523,8 @@ const productosDisponibles = ref([])
 const filteredProducts = ref([])
 const metodosPagos = ref([])
 const permitirStock = ref(false)
+const selectorRef = ref(null)
+const ConfiguracionProductoVariante = ref(false)
 const carritoCO = reactive({
   ventatotal: 0,
   subtotal: 0,
@@ -1638,6 +1668,8 @@ const carritoColumns = [
 
 // --- Computed Properties ---
 const canAddProduct = computed(() => {
+  if (productoTieneVariantes.value) return false
+
   if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
     return true
   }
@@ -1651,7 +1683,16 @@ const canAddProduct = computed(() => {
 
   return true // Para cotización, no se valida stock venta Proforma La cantidad solicitada excede el stock disponible
 })
+const productoTieneVariantes = computed(() => {
+  if (!selectedProduct.value || !selectorRef.value) return false
+  return selectorRef.value.tieneVariantes === true
+})
 
+const disabledVariantsCotizacion = computed(() => {
+  return carritoCO.listaProductos
+    .filter((p) => p.idproductovariante != null)
+    .map((p) => p.idproductovariante)
+})
 // --- Watchers ---
 
 // Sincronizar carrito con localStorage
@@ -2270,12 +2311,27 @@ async function anadirProductoACarrito() {
   resetProductoInputs()
 }
 
-function eliminarProductoCarrito(idProductoAlmacen) {
-  carritoCO.listaProductos = carritoCO.listaProductos.filter(
-    (p) => p.idproductoalmacen !== idProductoAlmacen,
-  )
+function eliminarProductoCarrito(row) {
+  if (row.idproductovariante != null) {
+    // Variante: eliminar solo el ítem con ese idproductovariante específico
+    const idx = carritoCO.listaProductos.findIndex(
+      (p) => p.idproductovariante === row.idproductovariante,
+    )
+    if (idx !== -1) carritoCO.listaProductos.splice(idx, 1)
+  } else {
+    // Producto sin variante: eliminar por idproductoalmacen
+    // (solo el primer ítem encontrado para no afectar otros productos del mismo almacén)
+    const idx = carritoCO.listaProductos.findIndex(
+      (p) => p.idproductoalmacen === row.idproductoalmacen && p.idproductovariante == null,
+    )
+    if (idx !== -1) carritoCO.listaProductos.splice(idx, 1)
+  }
+  // Re-numerar
+  carritoCO.listaProductos.forEach((p, i) => {
+    p.num = i + 1
+  })
   calcularTotalesCarrito()
-  listaProductosDisponibles() // Recargar la lista de productos disponibles
+  listaProductosDisponibles()
 }
 const validarDescripcion = async (scope, row) => {
   console.log(scope.value)
@@ -2641,6 +2697,12 @@ const fetchEstadoActual = async () => {
   } catch (error) {
     console.log(error)
   }
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 watch(
@@ -2675,6 +2737,49 @@ async function listarcajasbanco() {
     console.error('Error al cargar caja bancos:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
   }
+}
+async function recibirSeleccionCotizacion(datos) {
+  if (!datos || !Array.isArray(datos.variantes) || datos.variantes.length === 0) return
+
+  const producto = selectedProduct.value
+  if (!producto) return
+
+  const contenidousuario = await getUserData()
+  const idusuario = contenidousuario?.idusuario
+  carritoCO.idusuario = idusuario
+  carritoCO.idempresa = idempresa_md5()
+  carritoCO.divisa = divisaActiva.id
+
+  for (const variante of datos.variantes) {
+    const nuevoProducto = {
+      id: Number(variante.idVariante),
+      num: carritoCO.listaProductos.length + 1,
+      idproductoalmacen: idproductoalmacenCO.value,
+      cantidad: variante.cantidad,
+      precio: precioCO.value ?? producto.precio,
+      idstock: idstockCO.value,
+      idporcentaje: idporcentajeCO.value,
+      candiponible: cantidaddisponibleCO.value,
+      descripcion: producto.descripcion,
+      descripcionAdicional: '',
+      codigo: producto.codigo,
+      despachado:
+        Number(producto.stock) == 0 || Number(producto.stock) < Number(variante.cantidad) ? 2 : 1,
+      idproductovariante: Number(variante.idVariante),
+      sku: variante.sku,
+      atributos: variante.atributos || [],
+    }
+    carritoCO.listaProductos.push(nuevoProducto)
+  }
+
+  calcularTotalesCarrito()
+  listaProductosDisponibles()
+  resetProductoInputs()
+
+  $q.notify({
+    type: 'positive',
+    message: `${datos.variantes.length} variante(s) agregada(s) al carrito`,
+  })
 }
 onBeforeUnmount(() => {
   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
@@ -2740,6 +2845,12 @@ onMounted(async () => {
             codigo: p.codigo,
             despachado: p.despachado,
             codigosUnicos: p.codigosUnicos || [],
+            ...(p.idproductovariante != null && {
+              idproductovariante: p.idproductovariante,
+              sku: p.sku || '',
+              atributos: p.atributos || [],
+              id: p.idproductovariante,
+            }),
           }))
         }
 

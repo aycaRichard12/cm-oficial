@@ -164,6 +164,10 @@ const props = defineProps({
     type: [Number, String],
     required: true,
   },
+  disabledVariants: {
+    type: Array,
+    default: null,
+  },
 })
 
 // ==================== EMITS ====================
@@ -254,12 +258,28 @@ async function cargarDatos() {
     }))
 
     // Excluir variantes que ya están en el carrito (mismo producto + variante)
-    const carritoActual = JSON.parse(localStorage.getItem('carrito')) || { listaProductos: [] }
-    const idsVariantesUsadas = new Set(
-      (carritoActual.listaProductos || [])
-        .filter((p) => p.idproductovariante != null)
-        .map((p) => Number(p.idproductovariante)),
-    )
+    // const carritoActual = JSON.parse(localStorage.getItem('carrito')) || { listaProductos: [] }
+    // const idsVariantesUsadas = new Set(
+    //   (carritoActual.listaProductos || [])
+    //     .filter((p) => p.idproductovariante != null)
+    //     .map((p) => Number(p.idproductovariante)),
+    // )
+    // variantes.value = variantes.value.map((v) => ({
+    //   ...v,
+    //   deshabilitada: idsVariantesUsadas.has(Number(v.id_producto_variante)),
+    // }))
+
+    let idsVariantesUsadas
+    if (props.disabledVariants) {
+      idsVariantesUsadas = new Set(props.disabledVariants.map((id) => Number(id)))
+    } else {
+      const carritoActual = JSON.parse(localStorage.getItem('carrito')) || { listaProductos: [] }
+      idsVariantesUsadas = new Set(
+        (carritoActual.listaProductos || [])
+          .filter((p) => p.idproductovariante != null)
+          .map((p) => Number(p.idproductovariante)),
+      )
+    }
     variantes.value = variantes.value.map((v) => ({
       ...v,
       deshabilitada: idsVariantesUsadas.has(Number(v.id_producto_variante)),
