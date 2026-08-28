@@ -2768,6 +2768,7 @@ async function recibirSeleccionCotizacion(datos) {
       idproductovariante: Number(variante.idVariante),
       sku: variante.sku,
       atributos: variante.atributos || [],
+      idstock_variante: variante.idstock_variante || null,
     }
     carritoCO.listaProductos.push(nuevoProducto)
   }

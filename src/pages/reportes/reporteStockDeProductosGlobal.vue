@@ -1,5 +1,8 @@
 <template>
   <q-page class="q-pa-md">
+    <div>
+      <inventarioProductoVariantePage></inventarioProductoVariantePage>
+    </div>
     <!-- Título mejorado -->
     <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
@@ -216,7 +219,7 @@ import { PDFreporteStockProductosIndividual } from 'src/utils/pdfs/StockProducto
 
 import StockGlobalTable from 'src/components/reporte/stockGlobal/StockGlobalTable.vue'
 import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalPdfModal.vue'
-
+import inventarioProductoVariantePage from 'src/modules/inventarioProductoVariante/pages/inventarioProductoVariantePage.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 const stockTableRef = ref(null)
 const divisaActiva = useCurrencyStore()

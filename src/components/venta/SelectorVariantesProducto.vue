@@ -27,13 +27,29 @@
       <q-card-section v-if="!confirmado">
         <div class="text-subtitle1 q-mb-md">Selecciona las variantes y cantidades</div>
 
+        <div class="row q-mb-md">
+          <q-input
+            v-model="filtro"
+            dense
+            outlined
+            placeholder="Buscar por SKU o atributo..."
+            class="full-width"
+            clearable
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
+
         <!-- Tabla de variantes -->
         <q-table
           :rows="variantes"
           :columns="columnas"
           row-key="id_producto_variante"
-          :pagination="{ rowsPerPage: 0 }"
-          hide-pagination
+          v-model:pagination="paginacion"
+          :filter="filtro"
+          :filter-method="metodoFiltro"
           flat
           bordered
           dense
@@ -70,11 +86,11 @@
             <q-td :props="props">
               <div
                 v-for="attr in props.row.atributos"
-                :key="attr.id_valor_atributo"
+                :key="attr.id_Valor_Atributo || attr.id_valor_atributo"
                 class="q-mb-xs"
               >
                 <q-chip dense size="sm" class="q-mr-xs" color="grey-3" text-color="grey-8">
-                  {{ attr.nombre }}: {{ attr.valor }}
+                  {{ attr.atributo || attr.nombre }}: {{ attr.valor }}
                 </q-chip>
               </div>
             </q-td>
@@ -186,6 +202,39 @@ const producto = ref({
 
 const variantes = ref([])
 
+const filtro = ref('')
+const paginacion = ref({
+  sortBy: 'sku',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10
+})
+
+const metodoFiltro = (rows, terms) => {
+  const searchTerm = (terms || '').toLowerCase()
+  if (!searchTerm) return rows
+
+  return rows.filter((row) => {
+    // Buscar en SKU
+    if (row.sku && row.sku.toLowerCase().includes(searchTerm)) {
+      return true
+    }
+    // Buscar en atributos
+    if (row.atributos && row.atributos.length) {
+      const matchAttr = row.atributos.some((attr) => {
+        const nombreAtributo = attr.atributo || attr.nombre || ''
+        const valorAtributo = attr.valor || ''
+        return (
+          nombreAtributo.toLowerCase().includes(searchTerm) ||
+          valorAtributo.toLowerCase().includes(searchTerm)
+        )
+      })
+      if (matchAttr) return true
+    }
+    return false
+  })
+}
+
 // Columnas para QTable
 const columnas = [
   { name: 'seleccion', label: 'Seleccionar', align: 'center', field: 'seleccionada' },
@@ -255,6 +304,7 @@ async function cargarDatos() {
       atributos: v.atributos || [],
       seleccionada: false,
       cantidad_seleccionada: 0,
+      idstock_variante: v.idstock_variante || null,
     }))
 
     // Excluir variantes que ya están en el carrito (mismo producto + variante)
@@ -333,6 +383,7 @@ function obtenerSeleccion() {
       sku: v.sku,
       cantidad: v.cantidad_seleccionada,
       stock: v.stock, // opcional
+      idstock_variante: v.idstock_variante,
       atributos: (v.atributos || []).map((a) => ({
         atributo: a.nombre,
         valor: a.valor,
