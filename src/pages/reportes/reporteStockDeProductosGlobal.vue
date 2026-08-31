@@ -1,164 +1,187 @@
 <template>
   <q-page class="q-pa-md">
-    <div>
-      <inventarioProductoVariantePage></inventarioProductoVariantePage>
+    <!-- Vista de Variantes -->
+    <div v-if="mostrarVariantes">
+      <div class="row justify-end q-mb-md">
+        <q-btn
+          color="primary"
+          label="Volver a Stock Global"
+          icon="arrow_back"
+          @click="mostrarVariantes = false"
+          outline
+        />
+      </div>
+      <inventarioProductoVariantePage />
     </div>
-    <!-- Título mejorado -->
-    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
-      <div class="col-12 col-md-auto">
-        <div class="text-h5 text-primary text-weight-bold flex items-center">
-          <q-icon name="inventory_2" size="md" class="q-mr-sm" />
-          Stock Productos Global
-        </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración y consulta de inventario global
+
+    <!-- Vista Global -->
+    <div v-else>
+      <!-- Título mejorado -->
+      <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="inventory_2" size="md" class="q-mr-sm" />
+            Stock Productos Global
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración y consulta de inventario global
+          </div>
         </div>
       </div>
-    </div>
-    <q-separator class="q-mb-lg" />
+      <q-separator class="q-mb-lg" />
 
-    <!-- Almacén seleccionado como chip moderno -->
-    <div v-if="nombreAlmacenSeleccionado" class="row justify-center q-mb-lg">
-      <q-chip outline color="primary" icon="warehouse" class="q-px-md">
-        Almacén: {{ nombreAlmacenSeleccionado }}
-      </q-chip>
-    </div>
+      <!-- Almacén seleccionado como chip moderno -->
+      <div v-if="nombreAlmacenSeleccionado" class="row justify-center q-mb-lg">
+        <q-chip outline color="primary" icon="warehouse" class="q-px-md">
+          Almacén: {{ nombreAlmacenSeleccionado }}
+        </q-chip>
+      </div>
 
-    <!-- Filtros unificados - Card mejorada -->
-    <q-card class="q-mb-md rounded-borders shadow-2" bordered flat>
-      <q-card-section class="q-pa-md">
-        <div class="row q-col-gutter-md items-end">
-          <!-- Fecha Final -->
-          <div class="col-12 col-md-2" id="fechaFinal">
-            <q-input
-              v-model="fechaFin"
-              label="Fecha Final*"
-              type="date"
-              stack-label
-              outlined
-              dense
-              class="rounded-borders"
-              @update:model-value="generarReporte"
-            >
-              <template v-slot:prepend>
-                <q-icon name="event" color="primary" />
-              </template>
-            </q-input>
-          </div>
-
-          <!-- Almacén -->
-          <div class="col-12 col-md-2" id="almacen">
-            <q-select
-              v-model="almacenSeleccionado"
-              :options="opcionesAlmacenes"
-              emit-value
-              map-options
-              label="Almacén*"
-              dense
-              outlined
-              class="rounded-borders"
-              @update:model-value="cargarCategoriasPrecio"
-            >
-              <template v-slot:prepend>
-                <q-icon name="store" color="primary" />
-              </template>
-            </q-select>
-          </div>
-
-          <!-- Categoría de precio -->
-          <div class="col-12 col-md-3" id="categoriaPrecio">
-            <div class="text-caption text-weight-medium text-grey-7 q-mb-xs">
-              Categoría de precio
+      <!-- Filtros unificados - Card mejorada -->
+      <q-card class="q-mb-md rounded-borders shadow-2" bordered flat>
+        <q-card-section class="q-pa-md">
+          <div class="row q-col-gutter-md items-end">
+            <!-- Fecha Final -->
+            <div class="col-12 col-md-2" id="fechaFinal">
+              <q-input
+                v-model="fechaFin"
+                label="Fecha Final*"
+                type="date"
+                stack-label
+                outlined
+                dense
+                class="rounded-borders"
+                @update:model-value="generarReporte"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="event" color="primary" />
+                </template>
+              </q-input>
             </div>
-            <q-select
-              v-model="categoriaPrecioSeleccionada"
-              :options="categoriasPrecio"
-              id="categoria"
-              emit-value
-              map-options
-              :loading="cargandoCategorias"
-              :disable="!almacenSeleccionado"
-              outlined
-              dense
-              class="rounded-borders"
-              @update:model-value="generarReporte"
-            >
-              <template v-slot:prepend>
-                <q-icon name="category" color="primary" />
-              </template>
-            </q-select>
+
+            <!-- Almacén -->
+            <div class="col-12 col-md-2" id="almacen">
+              <q-select
+                v-model="almacenSeleccionado"
+                :options="opcionesAlmacenes"
+                emit-value
+                map-options
+                label="Almacén*"
+                dense
+                outlined
+                class="rounded-borders"
+                @update:model-value="cargarCategoriasPrecio"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="store" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Categoría de precio -->
+            <div class="col-12 col-md-3" id="categoriaPrecio">
+              <div class="text-caption text-weight-medium text-grey-7 q-mb-xs">
+                Categoría de precio
+              </div>
+              <q-select
+                v-model="categoriaPrecioSeleccionada"
+                :options="categoriasPrecio"
+                id="categoria"
+                emit-value
+                map-options
+                :loading="cargandoCategorias"
+                :disable="!almacenSeleccionado"
+                outlined
+                dense
+                class="rounded-borders"
+                @update:model-value="generarReporte"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="category" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-12 col-md-2" id="estado">
+              <q-select
+                v-model="filtroEstado"
+                :options="opcionesEstado"
+                label="Estado"
+                dense
+                outlined
+                emit-value
+                map-options
+                class="rounded-borders"
+                @update:model-value="filtrarYOrdenarDatos"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="check_circle" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Ordenar Stock -->
+            <div class="col-12 col-md-2" id="ordenStock">
+              <q-select
+                v-model="ordenStock"
+                :options="opcionesOrden"
+                label="Ordenar Stock"
+                dense
+                outlined
+                emit-value
+                map-options
+                class="rounded-borders"
+                @update:model-value="filtrarYOrdenarDatos"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="swap_vert" color="primary" />
+                </template>
+              </q-select>
+            </div>
           </div>
 
-          <!-- Estado -->
-          <div class="col-12 col-md-2" id="estado">
-            <q-select
-              v-model="filtroEstado"
-              :options="opcionesEstado"
-              label="Estado"
-              dense
-              outlined
-              emit-value
-              map-options
-              class="rounded-borders"
-              @update:model-value="filtrarYOrdenarDatos"
-            >
-              <template v-slot:prepend>
-                <q-icon name="check_circle" color="primary" />
-              </template>
-            </q-select>
+          <!-- Botones de acción -->
+          <div class="row justify-between items-center q-mt-lg">
+            <q-btn
+              color="secondary"
+              label="Ver Stock Variantes"
+              icon="style"
+              @click="mostrarVariantes = true"
+              class="rounded-borders shadow-1 q-px-md"
+              no-caps
+              unelevated
+            />
+            <q-btn
+              color="primary"
+              label="Vista previa del Reporte"
+              icon="picture_as_pdf"
+              icon-right="chevron_right"
+              class="rounded-borders shadow-1 q-px-md"
+              no-caps
+              unelevated
+              @click="mostrarVistaPrevia"
+              id="vistaPrevia"
+            />
           </div>
+        </q-card-section>
+      </q-card>
 
-          <!-- Ordenar Stock -->
-          <div class="col-12 col-md-2" id="ordenStock">
-            <q-select
-              v-model="ordenStock"
-              :options="opcionesOrden"
-              label="Ordenar Stock"
-              dense
-              outlined
-              emit-value
-              map-options
-              class="rounded-borders"
-              @update:model-value="filtrarYOrdenarDatos"
-            >
-              <template v-slot:prepend>
-                <q-icon name="swap_vert" color="primary" />
-              </template>
-            </q-select>
-          </div>
-        </div>
+      <!-- Tabla de resultados con separación visual -->
+      <div class="q-mt-md">
+        <StockGlobalTable
+          ref="stockTableRef"
+          id="tablaResultados"
+          :rows="datosFiltrados"
+          :columns="columnas"
+          :sumatoriaStock="sumatoriaStock"
+          :sumatoriaCostoTotal="sumatoriaCostoTotal"
+        />
+      </div>
 
-        <!-- Botón de acción -->
-        <div class="row justify-end q-mt-lg">
-          <q-btn
-            color="primary"
-            label="Vista previa del Reporte"
-            icon="picture_as_pdf"
-            icon-right="chevron_right"
-            class="rounded-borders shadow-1 q-px-md"
-            no-caps
-            unelevated
-            @click="mostrarVistaPrevia"
-            id="vistaPrevia"
-          />
-        </div>
-      </q-card-section>
-    </q-card>
-
-    <!-- Tabla de resultados con separación visual -->
-    <div class="q-mt-md">
-      <StockGlobalTable
-        ref="stockTableRef"
-        id="tablaResultados"
-        :rows="datosFiltrados"
-        :columns="columnas"
-        :sumatoriaStock="sumatoriaStock"
-        :sumatoriaCostoTotal="sumatoriaCostoTotal"
-      />
+      <!-- Modal de vista previa PDF -->
+      <StockGlobalPdfModal v-model:modelValue="mostrarModal" :pdfData="pdfData" />
     </div>
-
-    <!-- Modal de vista previa PDF -->
-    <StockGlobalPdfModal v-model:modelValue="mostrarModal" :pdfData="pdfData" />
   </q-page>
 </template>
 
@@ -222,6 +245,7 @@ import StockGlobalPdfModal from 'src/components/reporte/stockGlobal/StockGlobalP
 import inventarioProductoVariantePage from 'src/modules/inventarioProductoVariante/pages/inventarioProductoVariantePage.vue'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 const stockTableRef = ref(null)
+const mostrarVariantes = ref(false)
 const divisaActiva = useCurrencyStore()
 const categoriasPrecio = ref([])
 const pdfData = ref(null)

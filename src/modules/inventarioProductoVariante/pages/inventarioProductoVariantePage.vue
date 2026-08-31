@@ -3,112 +3,180 @@
     <q-card>
       <q-card-section>
         <div class="text-h6">Inventario de Productos Variantes</div>
-        <div class="text-subtitle2 text-grey">Almacén ID: {{ idalmacen }}</div>
       </q-card-section>
 
       <q-card-section>
-        <q-input
-          v-model="filtro"
-          dense
-          outlined
-          debounce="300"
-          placeholder="Buscar producto, SKU o atributo..."
-          class="q-mb-md"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+        <!-- Select de almacén -->
+        <div class="row q-col-gutter-md q-mb-md items-end">
+          <div class="col-12 col-md-4">
+            <q-select
+              v-model="almacenSeleccionado"
+              :options="opcionesAlmacenes"
+              emit-value
+              map-options
+              label="Almacén"
+              dense
+              outlined
+              :loading="loadingAlmacenes"
+              :disable="loadingAlmacenes"
+              @update:model-value="cargarInventario"
+            >
+              <template v-slot:prepend>
+                <q-icon name="store" color="primary" />
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">Sin almacenes disponibles</q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+        </div>
 
-        <q-table
-          :rows="filasFiltradas"
+        <!-- Tabla con filtros avanzados -->
+        <BaseFilterableTable
+          :rows="filas"
           :columns="columnas"
+          :array-headers="columnasFiltrables"
+          :sum-columns="['cantidad', 'precio_base']"
           row-key="id_variante"
-          flat
-          bordered
           :loading="loading"
-          :no-data-label="'Sin variantes para este almacén'"
+          :no-data-label="almacenSeleccionado ? 'Sin variantes para este almacén' : 'Seleccione un almacén'"
         >
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td key="codigo" :props="props">
-                <q-chip outline color="primary" dense>{{ props.row.codigo }}</q-chip>
-              </q-td>
-              <q-td key="nombre" :props="props">
-                {{ props.row.nombre }}
-                <div class="text-caption text-grey">{{ props.row.descripcion }}</div>
-              </q-td>
-              <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
-              <q-td key="atributos" :props="props">
-                <div v-for="(attr, idx) in props.row.atributos" :key="idx">
-                  <q-badge outline color="secondary" class="q-mr-xs">
-                    {{ attr.atributo }}: {{ attr.valor }}
-                  </q-badge>
-                </div>
-              </q-td>
-              <q-td key="stock" :props="props">
-                <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
-                  {{ props.row.cantidad }}
-                </q-badge>
-              </q-td>
-              <q-td key="precio" :props="props">
-                {{ props.row.precio_base }}
-              </q-td>
-            </q-tr>
+          <!-- Celda: Imagen -->
+          <template v-slot:body-cell-imagen="props">
+            <q-td :props="props" style="width: 70px">
+              <q-img
+                :src="imagen + props.row.imagen"
+                style="width: 56px; height: 56px; border-radius: 6px"
+                spinner-color="primary"
+                fit="cover"
+              >
+                <template v-slot:error>
+                  <div
+                    class="column items-center justify-center bg-grey-3"
+                    style="height: 100%; width: 100%; border-radius: 6px"
+                  >
+                    <q-icon name="image_not_supported" size="sm" color="grey-6" />
+                  </div>
+                </template>
+              </q-img>
+            </q-td>
           </template>
-        </q-table>
+
+          <!-- Celda: Código -->
+          <template v-slot:body-cell-codigo="props">
+            <q-td :props="props">
+              <q-chip outline color="primary" dense>{{ props.row.codigo }}</q-chip>
+            </q-td>
+          </template>
+
+          <!-- Celda: Nombre -->
+          <template v-slot:body-cell-nombre="props">
+            <q-td :props="props">
+              <div class="text-weight-medium">{{ props.row.nombre }}</div>
+              <div class="text-caption text-grey">{{ props.row.descripcion }}</div>
+            </q-td>
+          </template>
+
+          <!-- Celda: Atributos -->
+          <template v-slot:body-cell-atributos="props">
+            <q-td :props="props">
+              <div v-for="(attr, idx) in props.row.atributos" :key="idx" class="q-mb-xs">
+                <q-badge outline color="secondary" class="q-mr-xs">
+                  {{ attr.atributo }}: {{ attr.valor }}
+                </q-badge>
+              </div>
+            </q-td>
+          </template>
+
+          <!-- Celda: Stock -->
+          <template v-slot:body-cell-stock="props">
+            <q-td :props="props" class="text-center">
+              <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
+                {{ props.row.cantidad }}
+              </q-badge>
+            </q-td>
+          </template>
+        </BaseFilterableTable>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
+import { imagen } from 'src/boot/url'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const props = defineProps({
   idalmacen: {
     type: [Number, String],
-    required: true,
+    default: null,
   },
 })
 
 const $q = useQuasar()
+const idempresa = idempresa_md5()
+const idusuario = idusuario_md5()
+
 const loading = ref(false)
+const loadingAlmacenes = ref(false)
 const filas = ref([])
-const filtro = ref('')
+const almacenSeleccionado = ref(null)
+const opcionesAlmacenes = ref([])
 
 const columnas = [
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'nombre', label: 'Producto', field: 'nombre', align: 'left', sortable: true },
-  { name: 'sku', label: 'SKU', field: 'sku', align: 'left' },
+  { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'nombre', label: 'Producto', field: 'nombre', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true, dataType: 'text' },
   { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'stock', label: 'Stock', field: 'cantidad', align: 'center', sortable: true },
-  { name: 'precio', label: 'Precio Base', field: 'precio_base', align: 'right', sortable: true },
+  { name: 'stock', label: 'Stock', field: 'cantidad', align: 'center', sortable: true, dataType: 'number' },
+  { name: 'precio_base', label: 'Precio Base', field: 'precio_base', align: 'right', sortable: true, dataType: 'number' },
 ]
 
-const filasFiltradas = computed(() => {
-  if (!filtro.value.trim()) return filas.value
-  const needle = filtro.value.toLowerCase()
-  return filas.value.filter((fila) =>
-    Object.values(fila).some((valor) => {
-      if (Array.isArray(valor)) {
-        return valor.some((attr) => `${attr.atributo} ${attr.valor}`.toLowerCase().includes(needle))
+// Columnas que tendrán filtro de encabezado (excluye imagen y atributos por su complejidad)
+const columnasFiltrables = ['codigo', 'nombre', 'sku', 'stock', 'precio_base']
+
+async function cargarAlmacenes() {
+  loadingAlmacenes.value = true
+  try {
+    const response = await api.get(`listaResponsableAlmacenReportes/${idempresa}`)
+    if (Array.isArray(response.data)) {
+      const filtrados = response.data.filter((obj) => obj.idusuario == idusuario)
+      opcionesAlmacenes.value = filtrados.map((item) => ({
+        label: item.almacen,
+        value: item.idalmacen,
+      }))
+
+      // Si se pasó idalmacen como prop, usarlo; si no, usar el primero disponible
+      if (props.idalmacen) {
+        almacenSeleccionado.value = props.idalmacen
+      } else if (opcionesAlmacenes.value.length > 0) {
+        almacenSeleccionado.value = opcionesAlmacenes.value[0].value
       }
-      return String(valor).toLowerCase().includes(needle)
-    }),
-  )
-})
+    }
+  } catch (error) {
+    console.error('Error al cargar almacenes:', error)
+    $q.notify({ type: 'negative', message: 'No se pudo cargar la lista de almacenes.' })
+  } finally {
+    loadingAlmacenes.value = false
+  }
+}
 
 async function cargarInventario() {
+  if (!almacenSeleccionado.value) return
+
   loading.value = true
   try {
-    const response = await api.get(`listar_inventario_variantes_por_almacen/${props.idalmacen}`)
+    const response = await api.get(`listar_inventario_variantes_por_almacen/${almacenSeleccionado.value}`)
     if (response.data.estado === 'exito' && Array.isArray(response.data.data)) {
-      const datos = response.data.data
       const plano = []
-      for (const producto of datos) {
+      for (const producto of response.data.data) {
         for (const variante of producto.variantes) {
           plano.push({
             id_variante: `${producto.id_productos_almacen}-${variante.id_Producto_Variante}`,
@@ -117,6 +185,7 @@ async function cargarInventario() {
             codigo: producto.codigo,
             nombre: producto.nombre,
             descripcion: producto.descripcion,
+            imagen: producto.imagen || '',
             unidad: producto.unidad,
             sku: variante.sku,
             precio_base: variante.precio_base,
@@ -141,5 +210,8 @@ async function cargarInventario() {
   }
 }
 
-onMounted(cargarInventario)
+onMounted(async () => {
+  await cargarAlmacenes()
+  await cargarInventario()
+})
 </script>
