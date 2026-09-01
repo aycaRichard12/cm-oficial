@@ -28,29 +28,25 @@
       </div>
 
       <div class="col-12" v-if="localForm.producto_idproducto">
-        <q-select
-          v-model="localForm.variantes"
-          :options="variantesOptions"
-          label="Variantes del Producto"
-          outlined
-          dense
-          multiple
-          use-chips
-          emit-value
-          map-options
-          option-label="label"
-          option-value="value"
+        <q-table
+          v-model:selected="selectedRows"
+          :rows="variantesOptions"
+          :columns="variantColumns"
+          row-key="value"
+          selection="multiple"
           :loading="cargandoVariantes"
+          dense
+          flat
+          bordered
+          :pagination="{ rowsPerPage: 5 }"
+          :rows-per-page-options="[5, 10, 20, 0]"
         >
-          <template v-slot:option="scope">
-            <q-item v-bind="scope.itemProps">
-              <q-item-section>
-                <q-item-label>{{ scope.opt.label }}</q-item-label>
-                <q-item-label caption v-if="scope.opt.sku">SKU: {{ scope.opt.sku }} | Precio: {{ scope.opt.precio }}</q-item-label>
-              </q-item-section>
-            </q-item>
+          <template v-slot:top>
+            <div class="text-subtitle2">Seleccione las variantes</div>
+            <q-space />
+            <div class="text-caption">{{ selectedRows.length }} seleccionadas</div>
           </template>
-        </q-select>
+        </q-table>
       </div>
 
       <div class="col-12">
@@ -91,17 +87,24 @@ const props = defineProps({
     default: false,
   },
 })
-
 const emit = defineEmits(['update:modelValue', 'submit', 'cancel'])
 
 const localForm = ref({ ...props.modelValue })
 const productosOptions = ref([])
 const variantesOptions = ref([])
 const cargandoVariantes = ref(false)
+const selectedRows = ref([]) // filas seleccionadas en la tabla
+
+const variantColumns = [
+  { name: 'label', label: 'Variante', field: 'label', align: 'left', sortable: true },
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
+  { name: 'precio', label: 'Precio', field: 'precio', align: 'left', sortable: true },
+]
 
 const cargarVariantes = async (idproducto) => {
   if (!idproducto) {
     variantesOptions.value = []
+    selectedRows.value = []
     return
   }
   cargandoVariantes.value = true
@@ -112,8 +115,12 @@ const cargarVariantes = async (idproducto) => {
       label: v.sku ? `Variante ${v.sku}` : `Variante #${v.id_Producto_Variante}`,
       value: v.id_Producto_Variante,
       sku: v.sku,
-      precio: v.precio_base
+      precio: v.precio_base,
     }))
+
+    // Precargar selección si estamos editando y hay variantes previamente asignadas
+    const idsSeleccionados = localForm.value.variantes || []
+    selectedRows.value = variantesOptions.value.filter((v) => idsSeleccionados.includes(v.value))
   } catch (error) {
     console.error('Error al cargar variantes', error)
     $q.notify({ type: 'negative', message: 'Error al cargar variantes' })
@@ -124,8 +131,18 @@ const cargarVariantes = async (idproducto) => {
 
 const onProductoChange = (val) => {
   localForm.value.variantes = []
+  selectedRows.value = []
   cargarVariantes(val)
 }
+
+// Sincronizar selectedRows -> localForm.variantes
+watch(
+  selectedRows,
+  (nuevasSeleccionadas) => {
+    localForm.value.variantes = nuevasSeleccionadas.map((row) => row.value)
+  },
+  { deep: true },
+)
 
 watch(
   () => props.modelValue,
@@ -133,6 +150,9 @@ watch(
     localForm.value = { ...newVal }
     if (newVal.producto_idproducto) {
       cargarVariantes(newVal.producto_idproducto)
+    } else {
+      variantesOptions.value = []
+      selectedRows.value = []
     }
   },
   { deep: true, immediate: true },

@@ -208,18 +208,24 @@
                   class="q-mt-md"
                 >
                   <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
-                  <q-table
+                  <BaseFilterableTable
+                    title="Variantes del Producto"
                     :rows="variantesDelProducto"
                     :columns="columnasVariantes"
                     row-key="id_Producto_Variante"
-                    flat
-                    bordered
-                    dense
+                    :arrayHeaders="['sku', 'serie']"
                     :loading="loadingVariantes"
+                    filterMode="client"
                   >
                     <template v-slot:body="props">
                       <q-tr :props="props">
                         <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
+                        <q-td key="serie" :props="props">
+                          <q-badge v-if="props.row.serie" color="teal" outline>
+                            {{ props.row.serie }}
+                          </q-badge>
+                          <span v-else class="text-grey text-caption">Sin serie</span>
+                        </q-td>
                         <q-td key="atributos" :props="props">
                           <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
                             <q-badge outline color="primary" class="q-mr-xs">
@@ -250,7 +256,7 @@
                         </q-td>
                       </q-tr>
                     </template>
-                  </q-table>
+                  </BaseFilterableTable>
                 </div>
               </div>
             </q-card-section>
@@ -562,6 +568,7 @@ import { useCurrencyStore } from 'src/stores/currencyStore'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from '../cotizacion/TableCodigosUnicos.vue'
+import BaseFilterableTable from '../componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 const productoUnico = ref(false)
 const idempresa = idempresa_md5()
 
@@ -643,7 +650,8 @@ const total = computed(() => {
   )
 })
 const columnasVariantes = computed(() => [
-  { name: 'sku', label: 'SKU', field: 'sku', align: 'left' },
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
+  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
   { name: 'atributos', label: 'Atributos', align: 'left' },
   { name: 'precio', label: 'Precio', align: 'left' },
   { name: 'cantidad', label: 'Cantidad', align: 'left' },
