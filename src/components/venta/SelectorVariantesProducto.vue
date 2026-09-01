@@ -27,29 +27,12 @@
       <q-card-section v-if="!confirmado">
         <div class="text-subtitle1 q-mb-md">Selecciona las variantes y cantidades</div>
 
-        <div class="row q-mb-md">
-          <q-input
-            v-model="filtro"
-            dense
-            outlined
-            placeholder="Buscar por SKU o atributo..."
-            class="full-width"
-            clearable
-          >
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-
-        <!-- Tabla de variantes -->
-        <q-table
+        <!-- Tabla de variantes con filtros avanzados -->
+        <BaseFilterableTable
           :rows="variantes"
           :columns="columnas"
+          :array-headers="columnasFiltrables"
           row-key="id_producto_variante"
-          v-model:pagination="paginacion"
-          :filter="filtro"
-          :filter-method="metodoFiltro"
           flat
           bordered
           dense
@@ -65,6 +48,16 @@
             </q-td>
           </template>
 
+          <!-- Columna Serie -->
+          <template v-slot:body-cell-serie="props">
+            <q-td :props="props">
+              <q-chip v-if="props.row.serie" outline color="primary" dense size="sm">
+                {{ props.row.serie }}
+              </q-chip>
+              <span v-else class="text-grey-6">-</span>
+            </q-td>
+          </template>
+
           <!-- Columna SKU -->
           <template v-slot:body-cell-sku="props">
             <q-td :props="props">
@@ -74,7 +67,7 @@
 
           <!-- Columna Stock -->
           <template v-slot:body-cell-stock="props">
-            <q-td :props="props">
+            <q-td :props="props" class="text-center">
               <q-badge :color="props.row.stock > 0 ? 'positive' : 'negative'">
                 {{ props.row.stock }}
               </q-badge>
@@ -98,7 +91,7 @@
 
           <!-- Columna Cantidad -->
           <template v-slot:body-cell-cantidad="props">
-            <q-td :props="props">
+            <q-td :props="props" class="text-center">
               <q-input
                 v-model.number="props.row.cantidad_seleccionada"
                 type="number"
@@ -116,7 +109,7 @@
               />
             </q-td>
           </template>
-        </q-table>
+        </BaseFilterableTable>
 
         <!-- Botón confirmar -->
         <div class="row justify-end q-mt-lg">
@@ -137,10 +130,16 @@
         <q-list separator bordered>
           <q-item v-for="variante in seleccionConfirmada" :key="variante.id_producto_variante">
             <q-item-section>
-              <q-item-label class="text-weight-medium">SKU: {{ variante.sku }}</q-item-label>
+              <q-item-label class="text-weight-medium">
+                SKU: {{ variante.sku }}
+                <q-chip v-if="variante.serie" outline color="primary" dense size="sm" class="q-ml-sm">
+                  Serie: {{ variante.serie }}
+                </q-chip>
+              </q-item-label>
               <q-item-label caption>
                 Cantidad: {{ variante.cantidad_seleccionada }}
                 <span v-if="variante.stock !== undefined">| Stock: {{ variante.stock }}</span>
+                <span v-if="variante.atributos_str">| Atributos: {{ variante.atributos_str }}</span>
               </q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -169,8 +168,9 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { api } from 'src/boot/axios' // Ajusta la ruta según tu proyecto
+import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const $q = useQuasar()
 
@@ -202,69 +202,44 @@ const producto = ref({
 
 const variantes = ref([])
 
-const filtro = ref('')
-const paginacion = ref({
-  sortBy: 'sku',
-  descending: false,
-  page: 1,
-  rowsPerPage: 10,
-})
-
-const metodoFiltro = (rows, terms) => {
-  const searchTerm = (terms || '').toLowerCase()
-  if (!searchTerm) return rows
-
-  return rows.filter((row) => {
-    // Buscar en SKU
-    if (row.sku && row.sku.toLowerCase().includes(searchTerm)) {
-      return true
-    }
-    // Buscar en atributos
-    if (row.atributos && row.atributos.length) {
-      const matchAttr = row.atributos.some((attr) => {
-        const nombreAtributo = attr.atributo || attr.nombre || ''
-        const valorAtributo = attr.valor || ''
-        return (
-          nombreAtributo.toLowerCase().includes(searchTerm) ||
-          valorAtributo.toLowerCase().includes(searchTerm)
-        )
-      })
-      if (matchAttr) return true
-    }
-    return false
-  })
-}
-
-// Columnas para QTable
+// Columnas para BaseFilterableTable
 const columnas = [
-  { name: 'seleccion', label: 'Seleccionar', align: 'center', field: 'seleccionada' },
-  { name: 'sku', label: 'SKU', align: 'left', field: 'sku' },
-  { name: 'stock', label: 'Stock', align: 'center', field: 'stock' },
-  { name: 'atributos', label: 'Atributos', align: 'left', field: 'atributos' },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad_seleccionada' },
+  { name: 'seleccion', label: 'Seleccionar', align: 'center', field: 'seleccionada', sortable: false },
+  { name: 'serie', label: 'Serie', align: 'left', field: 'serie', sortable: true, dataType: 'text' },
+  { name: 'sku', label: 'SKU', align: 'left', field: 'sku', sortable: true, dataType: 'text' },
+  { name: 'stock', label: 'Stock', align: 'center', field: 'stock', sortable: true, dataType: 'number' },
+  {
+    name: 'atributos',
+    label: 'Atributos',
+    align: 'left',
+    field: 'atributos_str',
+    sortable: true,
+    dataType: 'text',
+  },
+  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad_seleccionada', sortable: false },
 ]
+
+const columnasFiltrables = ['serie', 'sku', 'stock', 'atributos']
 
 // ==================== COMPUTED ====================
 const seleccionConfirmada = computed(() =>
-  variantes.value.filter((v) => v.seleccionada && v.cantidad_seleccionada > 0),
+  variantes.value.filter((v) => v.seleccionada && Number(v.cantidad_seleccionada) > 0),
 )
 
 const totalVariantes = computed(() => seleccionConfirmada.value.length)
 
 const cantidadTotal = computed(() =>
-  seleccionConfirmada.value.reduce((sum, v) => sum + (v.cantidad_seleccionada || 0), 0),
+  seleccionConfirmada.value.reduce((sum, v) => sum + (Number(v.cantidad_seleccionada) || 0), 0),
 )
 
 const haySeleccionValida = computed(() => {
   const seleccionadas = variantes.value.filter((v) => v.seleccionada)
   if (seleccionadas.length === 0) return false
   // Toda variante seleccionada debe tener cantidad válida (entre 1 y stock)
-  return seleccionadas.every(
-    (v) =>
-      Number.isInteger(v.cantidad_seleccionada) &&
-      v.cantidad_seleccionada > 0 &&
-      v.cantidad_seleccionada <= v.stock,
-  )
+  return seleccionadas.every((v) => {
+    const cant = Number(v.cantidad_seleccionada)
+    return Number.isInteger(cant) && cant > 0 && cant <= Number(v.stock)
+  })
 })
 
 function safeJsonParse(str) {
@@ -344,9 +319,16 @@ async function cargarDatos() {
 
     variantes.value = (vars || []).map((v) => ({
       id_producto_variante: v.id_producto_variante,
+      serie: v.serie || '',
+      idserie: v.idserie || null,
       sku: v.sku,
+      precio_base: v.precio_base ?? null,
+      codigo_barras: v.codigo_barras || '',
       stock: Number(v.cantidad ?? v.stock ?? 0),
       atributos: v.atributos || [],
+      atributos_str: (v.atributos || [])
+        .map((a) => `${a.atributo || a.nombre || ''}: ${a.valor || ''}`)
+        .join(', '),
       seleccionada: false,
       cantidad_seleccionada: 0,
       idstock_variante: v.idstock_variante || null,
@@ -381,19 +363,23 @@ async function cargarDatos() {
 }
 
 function onCheckboxChange(variante) {
-  if (!variante.seleccionada) {
-    variante.cantidad_seleccionada = 0 // Limpiar cantidad al desmarcar
+  if (variante.seleccionada) {
+    if (!variante.cantidad_seleccionada || Number(variante.cantidad_seleccionada) < 1) {
+      variante.cantidad_seleccionada = variante.stock > 0 ? 1 : 0
+    }
+  } else {
+    variante.cantidad_seleccionada = 0
   }
 }
 
 function onCantidadChange(variante) {
-  // Validación extra por si el input no captura las reglas
-  if (variante.cantidad_seleccionada == null || isNaN(variante.cantidad_seleccionada)) {
-    variante.cantidad_seleccionada = 0
-  } else if (variante.cantidad_seleccionada < 1) {
-    variante.cantidad_seleccionada = 1
-  } else if (variante.cantidad_seleccionada > variante.stock) {
-    variante.cantidad_seleccionada = variante.stock
+  const cant = Number(variante.cantidad_seleccionada)
+  if (isNaN(cant) || cant < 1) {
+    variante.cantidad_seleccionada = variante.seleccionada ? 1 : 0
+  } else if (cant > variante.stock) {
+    variante.cantidad_seleccionada = Number(variante.stock)
+  } else {
+    variante.cantidad_seleccionada = Math.floor(cant)
   }
 }
 
@@ -413,9 +399,14 @@ function obtenerSeleccion() {
     cantidadTotal: cantidadTotal.value,
     variantes: seleccionConfirmada.value.map((v) => ({
       idVariante: v.id_producto_variante,
+      id_producto_variante: v.id_producto_variante,
+      serie: v.serie || '',
+      idserie: v.idserie || null,
       sku: v.sku,
+      precio_base: v.precio_base,
+      codigo_barras: v.codigo_barras,
       cantidad: v.cantidad_seleccionada,
-      stock: v.stock, // opcional
+      stock: v.stock,
       idstock_variante: v.idstock_variante,
       atributos: (v.atributos || []).map((a) => ({
         atributo: a.atributo || a.nombre || '',
