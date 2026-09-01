@@ -207,7 +207,7 @@ const paginacion = ref({
   sortBy: 'sku',
   descending: false,
   page: 1,
-  rowsPerPage: 10
+  rowsPerPage: 10,
 })
 
 const metodoFiltro = (rows, terms) => {
@@ -290,9 +290,9 @@ async function cargarDatos() {
     // }
     const response = await api.get(`obtenerProductoConAtributos/${props.idProducto}`)
     const data = response.data
-
+    console.log(data)
     producto.value = {
-      nombre: data.producto.nombre,
+      nombre: data.producto.descripcion, // 🔁 corrección
       codigo: data.producto.codigo,
       descripcion: data.producto.descripcion,
     }

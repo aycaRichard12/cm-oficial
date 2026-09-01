@@ -199,6 +199,6 @@ const varianteColumns = [
 const getProductoNombre = (id) => {
   if (!id) return '-'
   const prod = props.productos.find((p) => p.id == id)
-  return prod ? prod.nombre : `Desconocido (${id})`
+  return prod ? prod.descripcion : `Desconocido (${id})`
 }
 </script>
