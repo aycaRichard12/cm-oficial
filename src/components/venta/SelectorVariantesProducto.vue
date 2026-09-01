@@ -267,7 +267,42 @@ const haySeleccionValida = computed(() => {
   )
 })
 
-// ==================== MÉTODOS ====================
+function safeJsonParse(str) {
+  if (typeof str !== 'string') return str
+  const text = str.trim()
+  try {
+    return JSON.parse(text)
+  } catch (e) {
+    const firstBrace = text.indexOf('{')
+    const firstBracket = text.indexOf('[')
+    let start = -1
+    if (firstBrace !== -1 && firstBracket !== -1) {
+      start = Math.min(firstBrace, firstBracket)
+    } else if (firstBrace !== -1) {
+      start = firstBrace
+    } else if (firstBracket !== -1) {
+      start = firstBracket
+    }
+
+    if (start === -1) {
+      console.error('[SelectorVariantesProducto] No se encontró estructura JSON:', e)
+      return null
+    }
+
+    let end = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'))
+    while (end > start) {
+      try {
+        const candidate = text.substring(start, end + 1)
+        return JSON.parse(candidate)
+      } catch {
+        end = Math.max(text.lastIndexOf('}', end - 1), text.lastIndexOf(']', end - 1))
+      }
+    }
+    console.error('[SelectorVariantesProducto] Error al extraer JSON limpio:', e)
+    return null
+  }
+}
+
 async function cargarDatos() {
   loading.value = true
   error.value = null
@@ -289,35 +324,33 @@ async function cargarDatos() {
     //   ]
     // }
     const response = await api.get(`obtenerProductoConAtributos/${props.idProducto}`)
-    const data = response.data
-    console.log(data)
+    let raw = safeJsonParse(response.data)
+
+    // Soporta respuestas directas, anidadas en .data o devueltas en arreglo
+    const payload = Array.isArray(raw)
+      ? raw[0]
+      : raw?.data && (raw.data.producto || raw.data.variantes)
+        ? raw.data
+        : raw
+
+    const prod = payload?.producto || raw?.producto || {}
+    const vars = payload?.variantes || raw?.variantes || (Array.isArray(payload) ? payload : [])
+
     producto.value = {
-      nombre: data.producto.descripcion, // 🔁 corrección
-      codigo: data.producto.codigo,
-      descripcion: data.producto.descripcion,
+      nombre: prod.descripcion || prod.nombre || '',
+      codigo: prod.codigo || '',
+      descripcion: prod.descripcion || prod.nombre || '',
     }
 
-    variantes.value = data.variantes.map((v) => ({
+    variantes.value = (vars || []).map((v) => ({
       id_producto_variante: v.id_producto_variante,
       sku: v.sku,
-      stock: Number(v.cantidad),
+      stock: Number(v.cantidad ?? v.stock ?? 0),
       atributos: v.atributos || [],
       seleccionada: false,
       cantidad_seleccionada: 0,
       idstock_variante: v.idstock_variante || null,
     }))
-
-    // Excluir variantes que ya están en el carrito (mismo producto + variante)
-    // const carritoActual = JSON.parse(localStorage.getItem('carrito')) || { listaProductos: [] }
-    // const idsVariantesUsadas = new Set(
-    //   (carritoActual.listaProductos || [])
-    //     .filter((p) => p.idproductovariante != null)
-    //     .map((p) => Number(p.idproductovariante)),
-    // )
-    // variantes.value = variantes.value.map((v) => ({
-    //   ...v,
-    //   deshabilitada: idsVariantesUsadas.has(Number(v.id_producto_variante)),
-    // }))
 
     let idsVariantesUsadas
     if (props.disabledVariants) {
@@ -385,8 +418,8 @@ function obtenerSeleccion() {
       stock: v.stock, // opcional
       idstock_variante: v.idstock_variante,
       atributos: (v.atributos || []).map((a) => ({
-        atributo: a.nombre,
-        valor: a.valor,
+        atributo: a.atributo || a.nombre || '',
+        valor: a.valor || '',
       })),
     })),
   }

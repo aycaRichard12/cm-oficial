@@ -289,12 +289,48 @@ async function fetchEstadoActual() {
   }
 }
 
+function safeJsonParse(str) {
+  if (typeof str !== 'string') return str
+  const text = str.trim()
+  try {
+    return JSON.parse(text)
+  } catch (e) {
+    const firstBrace = text.indexOf('{')
+    const firstBracket = text.indexOf('[')
+    let start = -1
+    if (firstBrace !== -1 && firstBracket !== -1) {
+      start = Math.min(firstBrace, firstBracket)
+    } else if (firstBrace !== -1) {
+      start = firstBrace
+    } else if (firstBracket !== -1) {
+      start = firstBracket
+    }
+
+    if (start === -1) {
+      console.error('[DetalleMovimiento] No se encontró estructura JSON:', e)
+      return null
+    }
+
+    let end = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'))
+    while (end > start) {
+      try {
+        const candidate = text.substring(start, end + 1)
+        return JSON.parse(candidate)
+      } catch {
+        end = Math.max(text.lastIndexOf('}', end - 1), text.lastIndexOf(']', end - 1))
+      }
+    }
+    console.error('[DetalleMovimiento] Error al extraer JSON limpio:', e)
+    return null
+  }
+}
+
 // --- API: Cargar variantes del producto ---
 async function cargarVariantesProducto(idproductoalmacen) {
   loadingVariantes.value = true
   try {
     const response = await api.get(`obtenerProductoConAtributos/${idproductoalmacen}`)
-    const data = response.data
+    const data = safeJsonParse(response.data)
     if (data?.variantes?.length) {
       variantesDelProducto.value = data.variantes.map(v => ({
         ...v,
