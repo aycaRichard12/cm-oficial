@@ -267,10 +267,13 @@ async function fetchEstadoActual() {
 async function cargarVariantesProducto(idproductoalmacen) {
   loadingVariantes.value = true
   try {
-    const response = await api.get(`listar_producto_variantes_por_almacen/${idproductoalmacen}`)
+    const response = await api.get(`obtenerProductoConAtributos/${idproductoalmacen}`)
     const data = response.data
-    if (data?.Productos_variantes?.length) {
-      variantesDelProducto.value = data.Productos_variantes
+    if (data?.variantes?.length) {
+      variantesDelProducto.value = data.variantes.map(v => ({
+        ...v,
+        id_Producto_Variante: v.id_producto_variante
+      }))
       variantesDelProducto.value.forEach((variante) => {
         cantidadesVariantes.value[variante.id_Producto_Variante] = 0
       })
