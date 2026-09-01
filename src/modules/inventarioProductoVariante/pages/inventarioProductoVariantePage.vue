@@ -7,7 +7,7 @@
 
       <q-card-section>
         <!-- Select de almacén -->
-        <div class="row q-col-gutter-md q-mb-md items-end">
+        <div class="row q-col-gutter-md q-mb-md items-center">
           <div class="col-12 col-md-4">
             <q-select
               v-model="almacenSeleccionado"
@@ -30,6 +30,29 @@
                 </q-item>
               </template>
             </q-select>
+          </div>
+          <div class="col-auto flex q-gutter-sm">
+            <q-btn
+              icon="refresh"
+              color="primary"
+              flat
+              dense
+              @click="cargarAlmacenes"
+              :loading="loadingAlmacenes"
+            >
+              <q-tooltip>Recargar almacenes</q-tooltip>
+            </q-btn>
+            <q-btn
+              icon="sync"
+              color="secondary"
+              flat
+              dense
+              @click="cargarInventario"
+              :loading="loading"
+              :disable="!almacenSeleccionado"
+            >
+              <q-tooltip>Recargar inventario</q-tooltip>
+            </q-btn>
           </div>
         </div>
 

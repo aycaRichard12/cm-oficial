@@ -16,23 +16,35 @@
         </div>
         <div v-if="!isEditing">
           <label for="producto">Producto*</label>
-          <q-select
-            use-input
-            hide-dropdown-icon
-            v-model="localData.idproductoalmacen"
-            :options="productosFiltrados"
-            @filter="filtrarProductos"
-            id="producto"
-            outlined
-            emit-value
-            map-options
-            option-label="label"
-            option-value="value"
-            :rules="[(val) => !!val || 'Requerido']"
-            dense
-            clearable
-            class="full-width"
-          />
+          <div class="row items-center no-wrap">
+            <q-select
+              use-input
+              hide-dropdown-icon
+              v-model="localData.idproductoalmacen"
+              :options="productosFiltrados"
+              @filter="filtrarProductos"
+              id="producto"
+              outlined
+              emit-value
+              map-options
+              option-label="label"
+              option-value="value"
+              :rules="[(val) => !!val || 'Requerido']"
+              dense
+              clearable
+              class="col"
+            />
+            <q-btn
+              icon="refresh"
+              color="primary"
+              flat
+              dense
+              class="q-ml-sm"
+              @click="getProductosDisponibles(props.modelValue)"
+            >
+              <q-tooltip>Recargar productos</q-tooltip>
+            </q-btn>
+          </div>
         </div>
       </div>
 
@@ -67,11 +79,25 @@
 
     <!-- Tabla de variantes -->
     <div
-      v-if="ConfiguracionProductoVariante && variantesDelProducto.length > 0"
+      v-if="ConfiguracionProductoVariante && localData.idproductoalmacen"
       class="q-mt-md"
     >
-      <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
+      <div class="row items-center q-mb-sm">
+        <div class="text-subtitle2 text-weight-bold">Variantes del Producto</div>
+        <q-btn
+          v-if="!loadingVariantes"
+          icon="refresh"
+          color="primary"
+          flat
+          dense
+          class="q-ml-sm"
+          @click="cargarVariantesProducto(localData.idproductoalmacen)"
+        >
+          <q-tooltip>Recargar variantes</q-tooltip>
+        </q-btn>
+      </div>
       <q-table
+        v-if="variantesDelProducto.length > 0"
         :rows="variantesDelProducto"
         :columns="columnasVariantes"
         row-key="id_Producto_Variante"
