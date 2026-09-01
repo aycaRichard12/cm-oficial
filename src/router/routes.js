@@ -446,6 +446,10 @@ const routes = [
         component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
       },
       {
+        path: '/serie',
+        component: () => import('src/modules/serie/page/seriePage.vue'),
+      },
+      {
         path: '/configurarsucursalsin',
         name: 'ConfigurarSucursalSin',
         component: configSucursalSinPage,
