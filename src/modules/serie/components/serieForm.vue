@@ -31,7 +31,7 @@
         <BaseFilterableTable
           title="Seleccione las variantes"
           v-model:selected="selectedRows"
-          :rows="variantesOptions"
+          :rows="filteredVariantesOptions"
           :columns="variantColumns"
           :arrayHeaders="['sku', 'atributos']"
           row-key="value"
@@ -40,13 +40,21 @@
           dense
           flat
           bordered
-          :pagination="{ rowsPerPage: 5 }"
-          :rows-per-page-options="[5, 10, 20, 0]"
           filterMode="client"
         >
           <template v-slot:top>
             <div class="text-subtitle2">Seleccione las variantes</div>
             <q-space />
+            <q-chip
+              v-if="quickSearchAttr"
+              removable
+              color="secondary"
+              text-color="white"
+              @remove="quickSearchAttr = null"
+              class="q-mr-sm"
+            >
+              Filtro: {{ quickSearchAttr.atributo }} = {{ quickSearchAttr.valor }}
+            </q-chip>
             <div class="text-caption">{{ selectedRows.length }} seleccionadas</div>
           </template>
 
@@ -63,8 +71,10 @@
                   <q-badge
                     v-for="attr in props.row.valores"
                     :key="attr.id_Valor_Atributo"
-                    color="primary"
-                    outline
+                    :color="isQuickSearchActive(attr) ? 'secondary' : 'primary'"
+                    :outline="!isQuickSearchActive(attr)"
+                    class="cursor-pointer transition-colors"
+                    @click.stop="setQuickSearch(attr)"
                   >
                     {{ attr.atributo }}: {{ attr.valor }}
                   </q-badge>
@@ -94,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { apiP } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
@@ -122,6 +132,41 @@ const productosOptions = ref([])
 const variantesOptions = ref([])
 const cargandoVariantes = ref(false)
 const selectedRows = ref([]) // filas seleccionadas en la tabla
+
+// Lógica de Quick Filter al hacer clic en un badge
+const quickSearchAttr = ref(null)
+
+const setQuickSearch = (attr) => {
+  if (
+    quickSearchAttr.value &&
+    quickSearchAttr.value.atributo === attr.atributo &&
+    quickSearchAttr.value.valor === attr.valor
+  ) {
+    quickSearchAttr.value = null // Desactivar si ya está activo
+  } else {
+    quickSearchAttr.value = attr
+  }
+}
+
+const isQuickSearchActive = (attr) => {
+  return (
+    quickSearchAttr.value &&
+    quickSearchAttr.value.atributo === attr.atributo &&
+    quickSearchAttr.value.valor === attr.valor
+  )
+}
+
+const filteredVariantesOptions = computed(() => {
+  if (!quickSearchAttr.value) return variantesOptions.value
+
+  return variantesOptions.value.filter((v) =>
+    v.valores.some(
+      (attr) =>
+        attr.atributo === quickSearchAttr.value.atributo &&
+        attr.valor === quickSearchAttr.value.valor,
+    ),
+  )
+})
 
 const variantColumns = [
   { name: 'label', label: 'Variante', field: 'label', align: 'left', sortable: true },
