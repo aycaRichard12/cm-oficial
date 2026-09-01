@@ -115,6 +115,18 @@
                   <template v-slot:prepend>
                     <q-icon name="search" size="xs" color="primary" />
                   </template>
+                  <template v-slot:append>
+                    <q-btn
+                      round
+                      dense
+                      flat
+                      icon="refresh"
+                      color="primary"
+                      @click.stop.prevent="listaProductosDisponibles"
+                    >
+                      <q-tooltip>Recargar productos</q-tooltip>
+                    </q-btn>
+                  </template>
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey-500 text-center q-py-md">
