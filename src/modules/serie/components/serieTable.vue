@@ -101,6 +101,7 @@
             >
               <template v-slot:body="varProps">
                 <q-tr :props="varProps">
+                  <q-td key="indice" :props="varProps">{{ varProps.rowIndex + 1 }}</q-td>
                   <q-td key="sku" :props="varProps">{{ varProps.row.sku || 'N/A' }}</q-td>
                   <q-td key="codigo_barras" :props="varProps">{{
                     varProps.row.codigo_barras || '-'
