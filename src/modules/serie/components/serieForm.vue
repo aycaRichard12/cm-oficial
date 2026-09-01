@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit.prevent="submitForm" class="q-gutter-md">
+  <q-form @submit.prevent="submitForm" class="q-gutter-md q-ma-md">
     <div class="row q-col-gutter-md">
       <div class="col-12">
         <q-input
@@ -28,10 +28,12 @@
       </div>
 
       <div class="col-12" v-if="localForm.producto_idproducto">
-        <q-table
+        <BaseFilterableTable
+          title="Seleccione las variantes"
           v-model:selected="selectedRows"
           :rows="variantesOptions"
           :columns="variantColumns"
+          :arrayHeaders="['sku', 'atributos']"
           row-key="value"
           selection="multiple"
           :loading="cargandoVariantes"
@@ -40,13 +42,38 @@
           bordered
           :pagination="{ rowsPerPage: 5 }"
           :rows-per-page-options="[5, 10, 20, 0]"
+          filterMode="client"
         >
           <template v-slot:top>
             <div class="text-subtitle2">Seleccione las variantes</div>
             <q-space />
             <div class="text-caption">{{ selectedRows.length }} seleccionadas</div>
           </template>
-        </q-table>
+
+          <!-- Custom body slot to handle selection and display format -->
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td auto-width>
+                <q-checkbox v-model="props.selected" />
+              </q-td>
+              <q-td key="label" :props="props">{{ props.row.label }}</q-td>
+              <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
+              <q-td key="atributos" :props="props">
+                <div class="q-gutter-xs">
+                  <q-badge
+                    v-for="attr in props.row.valores"
+                    :key="attr.id_Valor_Atributo"
+                    color="primary"
+                    outline
+                  >
+                    {{ attr.atributo }}: {{ attr.valor }}
+                  </q-badge>
+                </div>
+              </q-td>
+              <q-td key="precio" :props="props">{{ props.row.precio }}</q-td>
+            </q-tr>
+          </template>
+        </BaseFilterableTable>
       </div>
 
       <div class="col-12">
@@ -70,6 +97,7 @@
 import { ref, watch } from 'vue'
 import { apiP } from 'boot/axios'
 import { useQuasar } from 'quasar'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const $q = useQuasar()
 
@@ -98,6 +126,12 @@ const selectedRows = ref([]) // filas seleccionadas en la tabla
 const variantColumns = [
   { name: 'label', label: 'Variante', field: 'label', align: 'left', sortable: true },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
+  {
+    name: 'atributos',
+    label: 'Atributos',
+    field: (row) => row.valores.map((v) => `${v.atributo}: ${v.valor}`).join(', '),
+    align: 'left',
+  },
   { name: 'precio', label: 'Precio', field: 'precio', align: 'left', sortable: true },
 ]
 
@@ -116,6 +150,7 @@ const cargarVariantes = async (idproducto) => {
       value: v.id_Producto_Variante,
       sku: v.sku,
       precio: v.precio_base,
+      valores: v.valores || [],
     }))
 
     // Precargar selección si estamos editando y hay variantes previamente asignadas
@@ -162,7 +197,7 @@ watch(
   () => props.productos,
   (newVal) => {
     productosOptions.value = newVal.map((p) => ({
-      label: p.nombre,
+      label: p.codigo + ' - ' + p.descripcion,
       value: p.id,
     }))
   },

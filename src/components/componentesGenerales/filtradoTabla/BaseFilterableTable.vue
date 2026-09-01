@@ -9,6 +9,7 @@
     :rows-per-page-options="rowsPerPageOptions"
     :virtual-scroll="true"
     wrap-cells
+    v-bind="$attrs"
   >
     <template v-slot:header-cell="props">
       <q-th
