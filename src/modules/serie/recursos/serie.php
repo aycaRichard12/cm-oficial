@@ -141,16 +141,19 @@ class Serie_conf extends FuncionesGenerales {
      */
     public function listar_series($idproducto = null) {
         $lista = [];
-        $query = "SELECT s.idserie, s.serie, s.estado, s.fecha, s.producto_idproducto
-                  FROM serie s";
+
+        // 1. Consulta de series
+        $sqlSeries = "SELECT s.idserie, s.serie, s.estado, s.fecha, s.producto_idproducto
+                    FROM serie s";
         $params = [];
         $tipos = "";
         if ($idproducto !== null) {
-            $query .= " WHERE s.producto_idproducto = ?";
+            $sqlSeries .= " WHERE s.producto_idproducto = ?";
             $tipos .= "i";
             $params[] = $idproducto;
         }
-        $stmt = $this->dbp->prepare($query);
+
+        $stmt = $this->dbp->prepare($sqlSeries);
         if ($stmt === false) {
             echo json_encode(["danger", "Error en consulta: " . $this->dbp->error, "listar_series"]);
             return;
@@ -160,35 +163,115 @@ class Serie_conf extends FuncionesGenerales {
         }
         $stmt->execute();
         $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) {
-            $idserie = $row['idserie'];
-            // Obtener variantes de la serie
-            $variantes = [];
-            $stmtVar = $this->dbp->prepare("SELECT pv.id_Producto_Variante, pv.idproducto, pv.sku, pv.precio_base, pv.codigo_barras, pv.activo
-                                            FROM serie_producto_variante spv
-                                            INNER JOIN Producto_Variante pv ON pv.id_Producto_Variante = spv.id_Producto_Variante
-                                            WHERE spv.idserie = ?");
-            if ($stmtVar) {
-                $stmtVar->bind_param("i", $idserie);
-                $stmtVar->execute();
-                $resVar = $stmtVar->get_result();
-                while ($var = $resVar->fetch_assoc()) {
-                    $variantes[] = $var;
-                }
-                $stmtVar->close();
-            }
 
-            $lista[] = [
-                "idserie" => $row['idserie'],
-                "serie" => $row['serie'],
-                "estado" => $row['estado'],
-                "fecha" => $row['fecha'],
-                "producto_idproducto" => $row['producto_idproducto'],
-                "variantes" => $variantes
-            ];
+        $series = [];
+        $idsSeries = [];
+        while ($row = $result->fetch_assoc()) {
+            $row['variantes'] = []; // se llenará después
+            $series[$row['idserie']] = $row;
+            $idsSeries[] = $row['idserie'];
         }
         $stmt->close();
-        echo json_encode($lista);
+
+        // Si no hay series, devolver vacío
+        if (empty($idsSeries)) {
+            echo json_encode([]);
+            return;
+        }
+
+        // 2. Obtener todas las variantes de las series encontradas
+        $placeholdersSeries = implode(',', array_fill(0, count($idsSeries), '?'));
+        $sqlVariantes = "
+            SELECT 
+                spv.idserie,
+                pv.id_Producto_Variante,
+                pv.idproducto,
+                pv.sku,
+                pv.precio_base,
+                pv.codigo_barras,
+                pv.activo
+            FROM serie_producto_variante spv
+            INNER JOIN Producto_Variante pv 
+                ON pv.id_Producto_Variante = spv.id_Producto_Variante
+            WHERE spv.idserie IN ($placeholdersSeries)
+            ORDER BY spv.idserie, pv.id_Producto_Variante
+        ";
+
+        $stmt = $this->dbp->prepare($sqlVariantes);
+        $typesSeries = str_repeat('i', count($idsSeries));
+        $stmt->bind_param($typesSeries, ...$idsSeries);
+        $stmt->execute();
+        $resultVariantes = $stmt->get_result();
+
+        $variantesPorSerie = [];
+        $idsVariantes = [];
+        while ($var = $resultVariantes->fetch_assoc()) {
+            $idSerie = $var['idserie'];
+            $idVariante = $var['id_Producto_Variante'];
+            // Guardar referencia rápida de la variante
+            $var['valores'] = []; // se llenará después
+            $series[$idSerie]['variantes'][$idVariante] = $var;
+            $variantesPorSerie[$idSerie][$idVariante] = &$series[$idSerie]['variantes'][$idVariante];
+            $idsVariantes[] = $idVariante;
+        }
+        $stmt->close();
+
+        // Si no hay variantes, devolver series sin variantes
+        if (empty($idsVariantes)) {
+            echo json_encode(array_values($series));
+            return;
+        }
+
+        // 3. Obtener todos los atributos de las variantes encontradas
+        $placeholdersVariantes = implode(',', array_fill(0, count($idsVariantes), '?'));
+        $sqlValores = "
+            SELECT 
+                vv.id_Producto_Variante,
+                vv.id_Valor_Atributo,
+                va.valor,
+                ap.nombre AS atributo
+            FROM Variante_Valor vv
+            JOIN Valor_Atributo va ON vv.id_Valor_Atributo = va.id_Valor_Atributo
+            JOIN Atributo_producto ap ON va.id_Atributo_producto = ap.id_Atributo_producto
+            WHERE vv.id_Producto_Variante IN ($placeholdersVariantes)
+            ORDER BY vv.id_Producto_Variante, ap.nombre
+        ";
+
+        $stmt = $this->dbp->prepare($sqlValores);
+        $typesVariantes = str_repeat('i', count($idsVariantes));
+        $stmt->bind_param($typesVariantes, ...$idsVariantes);
+        $stmt->execute();
+        $resultValores = $stmt->get_result();
+
+        // Mapa temporal para relacionar variante -> serie
+        $varianteASerie = [];
+        foreach ($variantesPorSerie as $idSerie => $variantes) {
+            foreach ($variantes as $idVariante => $v) {
+                $varianteASerie[$idVariante] = $idSerie;
+            }
+        }
+
+        while ($fila = $resultValores->fetch_assoc()) {
+            $idVariante = $fila['id_Producto_Variante'];
+            if (isset($varianteASerie[$idVariante])) {
+                $idSerie = $varianteASerie[$idVariante];
+                // Agregar el atributo a la variante correspondiente
+                $series[$idSerie]['variantes'][$idVariante]['valores'][] = [
+                    'id_Valor_Atributo' => $fila['id_Valor_Atributo'],
+                    'valor' => $fila['valor'],
+                    'atributo' => $fila['atributo']
+                ];
+            }
+        }
+        $stmt->close();
+
+        // Convertir 'variantes' de mapa a lista indexada y devolver series como lista
+        foreach ($series as &$serie) {
+            $serie['variantes'] = array_values($serie['variantes']);
+        }
+        unset($serie); // romper referencia
+
+        echo json_encode(array_values($series));
     }
 
     /**

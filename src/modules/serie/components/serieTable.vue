@@ -80,7 +80,7 @@
         </q-tr>
 
         <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%" class="bg-grey-2">
+          <q-td colspan="100%" class="bg-grey-2 q-pa-md">
             <div class="text-subtitle2 q-mb-sm">Variantes de la serie</div>
             <div
               v-if="!props.row.variantes || props.row.variantes.length === 0"
@@ -88,22 +88,69 @@
             >
               No hay variantes asignadas.
             </div>
-            <div class="row q-col-gutter-sm" v-else>
-              <div
-                class="col-12 col-sm-6 col-md-4"
-                v-for="v in props.row.variantes"
-                :key="v.id_Producto_Variante"
-              >
-                <q-card bordered flat class="bg-white">
-                  <q-card-section class="q-pa-sm flex justify-between items-center">
-                    <div>
-                      <div class="text-weight-bold">SKU: {{ v.sku || 'N/A' }}</div>
-                      <div class="text-caption">Precio: {{ v.precio_base }}</div>
+            <q-table
+              v-else
+              :rows="props.row.variantes"
+              :columns="varianteColumns"
+              row-key="id_Producto_Variante"
+              flat
+              bordered
+              dense
+              :pagination="{ rowsPerPage: 0 }"
+              hide-bottom
+            >
+              <template v-slot:body="varProps">
+                <q-tr :props="varProps">
+                  <q-td key="sku" :props="varProps">{{ varProps.row.sku || 'N/A' }}</q-td>
+                  <q-td key="codigo_barras" :props="varProps">{{
+                    varProps.row.codigo_barras || '-'
+                  }}</q-td>
+                  <q-td key="atributos" :props="varProps">
+                    <div class="q-gutter-xs">
+                      <q-badge
+                        v-for="attr in varProps.row.valores"
+                        :key="attr.id_Valor_Atributo"
+                        color="primary"
+                        outline
+                      >
+                        {{ attr.atributo }}: {{ attr.valor }}
+                      </q-badge>
+                      <span
+                        v-if="!varProps.row.valores || varProps.row.valores.length === 0"
+                        class="text-caption text-grey"
+                        >Sin atributos</span
+                      >
                     </div>
-                  </q-card-section>
-                </q-card>
-              </div>
-            </div>
+                  </q-td>
+                  <q-td key="precio_base" :props="varProps">{{ varProps.row.precio_base }}</q-td>
+                  <q-td key="activo" :props="varProps">
+                    <q-badge
+                      :color="varProps.row.activo == 1 ? 'positive' : 'grey'"
+                      :label="varProps.row.activo == 1 ? 'Activo' : 'Inactivo'"
+                    />
+                  </q-td>
+                  <q-td key="acciones_var" :props="varProps">
+                    <q-btn
+                      dense
+                      round
+                      flat
+                      color="negative"
+                      icon="link_off"
+                      size="sm"
+                      @click="
+                        $emit('delete-variante', {
+                          idserie: props.row.idserie,
+                          id_Producto_Variante: varProps.row.id_Producto_Variante,
+                          sku: varProps.row.sku,
+                        })
+                      "
+                    >
+                      <q-tooltip>Quitar variante de la serie</q-tooltip>
+                    </q-btn>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
           </q-td>
         </q-tr>
       </template>
@@ -127,15 +174,25 @@ const props = defineProps({
   },
 })
 
-defineEmits(['add', 'edit-item', 'delete-item', 'toggleStatus', 'import'])
+defineEmits(['add', 'edit-item', 'delete-item', 'toggleStatus', 'import', 'delete-variante'])
 
 const columns = [
-  { name: 'idserie', label: '#', field: 'idserie', align: 'left', sortable: true },
+  { name: 'indice', label: 'N°', field: 'indice', align: 'left', sortable: true },
   { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
   { name: 'producto', label: 'Producto', field: 'producto_idproducto', align: 'left' },
   { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+]
+
+const varianteColumns = [
+  { name: 'indice', label: 'N°', field: 'indice', align: 'left', sortable: true },
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
+  { name: 'codigo_barras', label: 'Cód. Barras', field: 'codigo_barras', align: 'left' },
+  { name: 'atributos', label: 'Atributos', align: 'left' },
+  { name: 'precio_base', label: 'Precio', field: 'precio_base', align: 'left', sortable: true },
+  { name: 'activo', label: 'Estado', field: 'activo', align: 'center' },
+  { name: 'acciones_var', label: '', align: 'center' },
 ]
 
 const getProductoNombre = (id) => {

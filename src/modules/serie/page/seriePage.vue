@@ -26,6 +26,7 @@
       @edit-item="editItem"
       @delete-item="confirmDelete"
       @toggleStatus="toggleStatus"
+      @delete-variante="confirmDeleteVariante"
     />
   </q-page>
 </template>
@@ -97,7 +98,10 @@ async function loadSeries() {
   try {
     cargando.value = true
     const response = await apiP.get('listar_series')
-    series.value = response.data || []
+    series.value = (response.data || []).map((x, indice) => ({
+      ...x, // spread existing properties
+      indice: indice + 1, // add/overwrite `indice`
+    }))
   } catch (error) {
     console.error('Error al cargar series:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar las series' })
@@ -193,6 +197,31 @@ const toggleStatus = async (row) => {
     $q.notify({ type: 'negative', message: 'Error al cambiar estado' })
     loadSeries()
   }
+}
+
+const confirmDeleteVariante = (payload) => {
+  $q.dialog({
+    title: 'Confirmar',
+    message: `¿Quitar la variante "${payload.sku || payload.id_Producto_Variante}" de esta serie?`,
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    try {
+      const response = await apiP.get(
+        `eliminar_variante_de_serie/${payload.idserie}/${payload.id_Producto_Variante}`,
+      )
+      const res = response.data
+      if (res && res[0] === 'success') {
+        $q.notify({ type: 'positive', message: res[1] })
+        loadSeries()
+      } else {
+        $q.notify({ type: 'negative', message: res[1] || 'Error al quitar variante' })
+      }
+    } catch (error) {
+      console.error('Error al quitar variante:', error)
+      $q.notify({ type: 'negative', message: 'Error al quitar variante de la serie' })
+    }
+  })
 }
 
 onMounted(() => {
