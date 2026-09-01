@@ -1,0 +1,256 @@
+<?php
+require_once __DIR__ . "/../db/conexion.php";
+require_once __DIR__ . "/../funcionesGenerales.php";
+
+class Serie_conf extends FuncionesGenerales {
+    private Conexion $conexion;
+
+    public function __construct() {
+        $this->conexion = Conexion::getInstance();
+    }
+
+    public function __get(string $name) {
+        return $this->conexion->$name;
+    }
+
+    
+    /**
+     * Registrar una nueva serie y opcionalmente asociar variantes
+     * @param array $data {serie, estado, fecha, producto_idproducto, variantes:[id_Producto_Variante,...]}
+     */
+    public function registrar_serie($data) {
+        $serie = $data['serie'] ?? null;
+        $estado = $data['estado'] ?? 1;
+        $fecha = $data['fecha'] ?? date('Y-m-d H:i:s');
+        $producto_id = $data['producto_idproducto'] ?? null; // puede ser null
+        $variantes = isset($data['variantes']) && is_array($data['variantes']) ? $data['variantes'] : [];
+
+        if (empty($serie)) {
+            echo json_encode(["danger", "El nombre de la serie es obligatorio", "registrar_serie"]);
+            return;
+        }
+
+        $this->dbp->begin_transaction();
+        try {
+            // Insertar serie
+            $query = "INSERT INTO serie (serie, estado, fecha, producto_idproducto) VALUES (?,?,?,?)";
+            $stmt = $this->dbp->prepare($query);
+            if ($stmt === false) throw new Exception("Error preparando inserción de serie: " . $this->dbp->error);
+            $stmt->bind_param("sisi", $serie, $estado, $fecha, $producto_id);
+            $stmt->execute();
+            if ($stmt->affected_rows <= 0) throw new Exception("No se pudo insertar la serie");
+            $idserie = $stmt->insert_id;
+            $stmt->close();
+
+            // Asociar variantes si hay
+            if (!empty($variantes)) {
+                $this->asociar_variantes($idserie, $variantes);
+            }
+
+            $this->dbp->commit();
+            echo json_encode(["success", "Serie registrada correctamente", "registrar_serie"]);
+        } catch (Exception $e) {
+            $this->dbp->rollback();
+            echo json_encode(["danger", $e->getMessage(), "registrar_serie"]);
+        }
+    }
+
+    /**
+     * Editar serie y reemplazar variantes asociadas
+     * @param int $idserie
+     * @param array $data {serie, estado, fecha, producto_idproducto, variantes:[...]}
+     */
+    public function editar_serie($idserie, $data) {
+        $serie = $data['serie'] ?? null;
+        $estado = $data['estado'] ?? null;
+        $fecha = $data['fecha'] ?? null;
+        $producto_id = $data['producto_idproducto'] ?? null;
+        $variantes = isset($data['variantes']) && is_array($data['variantes']) ? $data['variantes'] : null;
+
+        if (empty($idserie)) {
+            echo json_encode(["danger", "ID de serie requerido", "editar_serie"]);
+            return;
+        }
+
+        // Construir dinámicamente campos a actualizar
+        $campos = [];
+        $tipos = "";
+        $valores = [];
+
+        if ($serie !== null) { $campos[] = "serie = ?"; $tipos .= "s"; $valores[] = $serie; }
+        if ($estado !== null) { $campos[] = "estado = ?"; $tipos .= "i"; $valores[] = $estado; }
+        if ($fecha !== null) { $campos[] = "fecha = ?"; $tipos .= "s"; $valores[] = $fecha; }
+        if ($producto_id !== null) { $campos[] = "producto_idproducto = ?"; $tipos .= "i"; $valores[] = $producto_id; }
+
+        if (empty($campos) && $variantes === null) {
+            echo json_encode(["Info", "No hay cambios para actualizar", "editar_serie"]);
+            return;
+        }
+
+        $this->dbp->begin_transaction();
+        try {
+            // Actualizar campos de serie si hay
+            if (!empty($campos)) {
+                $query = "UPDATE serie SET " . implode(", ", $campos) . " WHERE idserie = ?";
+                $tipos .= "i";
+                $valores[] = $idserie;
+                $stmt = $this->dbp->prepare($query);
+                if ($stmt === false) throw new Exception("Error preparando actualización: " . $this->dbp->error);
+                $stmt->bind_param($tipos, ...$valores);
+                $stmt->execute();
+                $stmt->close();
+            }
+
+            // Reemplazar variantes si se proporcionó el arreglo
+            if ($variantes !== null) {
+                // Eliminar asociaciones actuales
+                $stmt = $this->dbp->prepare("DELETE FROM serie_producto_variante WHERE idserie = ?");
+                $stmt->bind_param("i", $idserie);
+                $stmt->execute();
+                $stmt->close();
+                // Insertar nuevas
+                if (!empty($variantes)) {
+                    $this->asociar_variantes($idserie, $variantes);
+                }
+            }
+
+            $this->dbp->commit();
+            echo json_encode(["success", "Serie actualizada correctamente", "editar_serie"]);
+        } catch (Exception $e) {
+            $this->dbp->rollback();
+            echo json_encode(["danger", $e->getMessage(), "editar_serie"]);
+        }
+    }
+
+    /**
+     * Asociar múltiples variantes a una serie (método auxiliar)
+     */
+    private function asociar_variantes($idserie, array $idsVariantes) {
+        $stmt = $this->dbp->prepare("INSERT INTO serie_producto_variante (idserie, id_Producto_Variante) VALUES (?, ?)");
+        if ($stmt === false) throw new Exception("Error preparando inserción de variantes: " . $this->dbp->error);
+        foreach ($idsVariantes as $idVariante) {
+            $stmt->bind_param("ii", $idserie, $idVariante);
+            $stmt->execute();
+        }
+        $stmt->close();
+    }
+
+    /**
+     * Listar series con sus variantes asociadas y datos de Producto_Variante
+     * @param int|null $idproducto Filtro opcional por producto
+     */
+    public function listar_series($idproducto = null) {
+        $lista = [];
+        $query = "SELECT s.idserie, s.serie, s.estado, s.fecha, s.producto_idproducto
+                  FROM serie s";
+        $params = [];
+        $tipos = "";
+        if ($idproducto !== null) {
+            $query .= " WHERE s.producto_idproducto = ?";
+            $tipos .= "i";
+            $params[] = $idproducto;
+        }
+        $stmt = $this->dbp->prepare($query);
+        if ($stmt === false) {
+            echo json_encode(["danger", "Error en consulta: " . $this->dbp->error, "listar_series"]);
+            return;
+        }
+        if (!empty($params)) {
+            $stmt->bind_param($tipos, ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $idserie = $row['idserie'];
+            // Obtener variantes de la serie
+            $variantes = [];
+            $stmtVar = $this->dbp->prepare("SELECT pv.id_Producto_Variante, pv.idproducto, pv.sku, pv.precio_base, pv.codigo_barras, pv.activo
+                                            FROM serie_producto_variante spv
+                                            INNER JOIN Producto_Variante pv ON pv.id_Producto_Variante = spv.id_Producto_Variante
+                                            WHERE spv.idserie = ?");
+            if ($stmtVar) {
+                $stmtVar->bind_param("i", $idserie);
+                $stmtVar->execute();
+                $resVar = $stmtVar->get_result();
+                while ($var = $resVar->fetch_assoc()) {
+                    $variantes[] = $var;
+                }
+                $stmtVar->close();
+            }
+
+            $lista[] = [
+                "idserie" => $row['idserie'],
+                "serie" => $row['serie'],
+                "estado" => $row['estado'],
+                "fecha" => $row['fecha'],
+                "producto_idproducto" => $row['producto_idproducto'],
+                "variantes" => $variantes
+            ];
+        }
+        $stmt->close();
+        echo json_encode($lista);
+    }
+
+    /**
+     * Eliminar serie y sus asociaciones
+     */
+    public function eliminar_serie($idserie) {
+        if (empty($idserie)) {
+            echo json_encode(["danger", "ID requerido", "eliminar_serie"]);
+            return;
+        }
+        $this->dbp->begin_transaction();
+        try {
+            $stmt = $this->dbp->prepare("DELETE FROM serie_producto_variante WHERE idserie = ?");
+            $stmt->bind_param("i", $idserie);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $this->dbp->prepare("DELETE FROM serie WHERE idserie = ?");
+            $stmt->bind_param("i", $idserie);
+            $stmt->execute();
+            $stmt->close();
+
+            $this->dbp->commit();
+            echo json_encode(["success", "Serie eliminada correctamente", "eliminar_serie"]);
+        } catch (Exception $e) {
+            $this->dbp->rollback();
+            echo json_encode(["danger", $e->getMessage(), "eliminar_serie"]);
+        }
+    }
+
+    /**
+     * Cambiar estado de una serie
+     */
+    public function cambiar_estado_serie($idserie, $estado) {
+        if (empty($idserie) || $estado === null) {
+            echo json_encode(["danger", "Parámetros incompletos", "cambiar_estado_serie"]);
+            return;
+        }
+        $stmt = $this->dbp->prepare("UPDATE serie SET estado = ? WHERE idserie = ?");
+        if ($stmt === false) {
+            echo json_encode(["danger", "Error en preparación: " . $this->dbp->error, "cambiar_estado_serie"]);
+            return;
+        }
+        $stmt->bind_param("ii", $estado, $idserie);
+        $stmt->execute();
+        $stmt->close();
+        echo json_encode(["success", "Estado actualizado", "cambiar_estado_serie"]);
+    }
+
+    /**
+     * Método para eliminar una variante específica de una serie
+     */
+    public function eliminar_variante_de_serie($idserie, $idVariante) {
+        if (empty($idserie) || empty($idVariante)) {
+            echo json_encode(["danger", "Parámetros incompletos", "eliminar_variante_de_serie"]);
+            return;
+        }
+        $stmt = $this->dbp->prepare("DELETE FROM serie_producto_variante WHERE idserie = ? AND id_Producto_Variante = ?");
+        $stmt->bind_param("ii", $idserie, $idVariante);
+        $stmt->execute();
+        $stmt->close();
+        echo json_encode(["success", "Variante eliminada de la serie", "eliminar_variante_de_serie"]);
+    }
+}
+?>
