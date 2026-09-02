@@ -62,6 +62,18 @@
               @click="$emit('detalleCompra', props.row)"
             />
             <q-btn
+              v-if="Number(props.row.autorizacion) !== 1"
+              id="importarDetalleCompra"
+              title="Importar Detalle Excel"
+              icon="upload_file"
+              color="green-8"
+              dense
+              flat
+              @click="abrirImportarDetalle(props.row)"
+            >
+              <q-tooltip>Importar detalle desde Excel</q-tooltip>
+            </q-btn>
+            <q-btn
               id="planPago"
               v-if="Number(props.row.tipocompra) === 1 && Number(props.row.estado) === 1"
               title="Generar Plan de Pagos"
@@ -169,6 +181,13 @@
       :title="tituloNotificacion"
       @notificacion-enviada="onNotificacionEnviada"
     />
+
+    <!-- Dialog de Importar Detalle Compra -->
+    <ventanaImportacionDetalleCompra
+      v-model="dialogImportarDetalle"
+      :compra="compraParaImportar"
+      @done="emit('actualizarTablaPrincipal')"
+    />
   </q-page>
 </template>
 
@@ -181,6 +200,7 @@ import CompraActions from './CompraActions.vue'
 import CompraFilters from './CompraFilters.vue'
 import CompraDialogs from './CompraDialogs.vue'
 import NotificacionDialog from 'src/components/pusher-notificaciones/NotificacionDialog.vue'
+import ventanaImportacionDetalleCompra from 'src/components/compra/importarDetalleCompra/page/ventanaImportacionDetalleCompra.vue'
 import { useQuasar } from 'quasar'
 import { showDialog } from 'src/utils/dialogs'
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -230,6 +250,15 @@ const compra = ref({})
 // Estado para el dialog de notificación
 const dialogNotificacionOpen = ref(false)
 const compraSeleccionada = ref(null)
+
+// Estado para el dialog de importación de detalle de compra
+const dialogImportarDetalle = ref(false)
+const compraParaImportar = ref(null)
+
+function abrirImportarDetalle(row) {
+  compraParaImportar.value = row
+  dialogImportarDetalle.value = true
+}
 const columnas = [
   {
     name: 'numero',
