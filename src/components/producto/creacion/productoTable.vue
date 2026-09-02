@@ -15,6 +15,14 @@
             <q-btn
               unelevated
               outline
+              color="blue"
+              @click="$emit('irconjunto')"
+              icon="mdi-set-all"
+              label="Conjunto"
+            />
+            <q-btn
+              unelevated
+              outline
               color="indigo"
               @click="exportarDatos"
               icon="mdi-file-excel"

@@ -1,5 +1,17 @@
 <template>
-  <q-page padding>
+  <q-page v-if="mostrarmoduloConjunto">
+    <div class="row justify-end q-mb-md">
+      <q-btn
+        color="primary"
+        label="Volver a Productos"
+        icon="arrow_back"
+        @click="mostrarmoduloConjunto = false"
+        outline
+      />
+    </div>
+    <seriePage />
+  </q-page>
+  <q-page padding v-else>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
@@ -30,6 +42,7 @@
       :loading="cargando"
       :importing="importing"
       @add="toggleForm"
+      @irconjunto="mostrarmoduloConjunto = true"
       @mostrarReporte="mostrarReporte"
       @edit-item="editUnit"
       @delete-item="confirmDelete"
@@ -50,8 +63,10 @@ import ProductoForm from 'src/components/producto/creacion/productoForm.vue'
 import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
-
+import seriePage from 'src/modules/serie/page/seriePage.vue'
 const tipoFactura = getTipoFactura(true)
+const mostrarmoduloConjunto = ref(false)
+
 console.log('Tipo Factura:', tipoFactura)
 const idempresa = idempresa_md5()
 const contenidousuario = validarUsuario()
