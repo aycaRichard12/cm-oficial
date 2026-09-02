@@ -96,51 +96,75 @@
           <q-tooltip>Recargar variantes</q-tooltip>
         </q-btn>
       </div>
-      <q-table
+      <BaseFilterableTable
         v-if="variantesDelProducto.length > 0"
         :rows="variantesDelProducto"
         :columns="columnasVariantes"
+        :array-headers="columnasVariantesFiltrables"
         row-key="id_Producto_Variante"
         flat
         bordered
         dense
         :loading="loadingVariantes"
       >
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
-            <q-td key="atributos" :props="props">
-              <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
-                <q-badge outline color="primary" class="q-mr-xs">
-                  {{ attr.atributo }}: {{ attr.valor }}
-                </q-badge>
-              </div>
-            </q-td>
-            <q-td key="stock" :props="props">
-              <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
-                {{ props.row.cantidad ?? 0 }}
-              </q-badge>
-            </q-td>
-            <q-td key="cantidad" :props="props">
-              <q-input
-                v-model.number="cantidadesVariantes[props.row.id_Producto_Variante]"
-                type="number"
-                dense
-                outlined
-                label="Cantidad"
-                min="0"
-                :max="props.row.cantidad ?? 0"
-                :disable="(props.row.cantidad ?? 0) <= 0"
-                :rules="[
-                  val => !val || val <= (props.row.cantidad ?? 0) || 'Stock insuficiente'
-                ]"
-                hide-bottom-space
-                style="min-width: 120px"
-              />
-            </q-td>
-          </q-tr>
+        <!-- Columna Serie -->
+        <template v-slot:body-cell-serie="props">
+          <q-td :props="props">
+            <q-chip v-if="props.row.serie" outline color="primary" dense size="sm">
+              {{ props.row.serie }}
+            </q-chip>
+            <span v-else class="text-grey-6">-</span>
+          </q-td>
         </template>
-      </q-table>
+
+        <!-- Columna SKU -->
+        <template v-slot:body-cell-sku="props">
+          <q-td :props="props">
+            <span class="text-weight-medium">{{ props.row.sku }}</span>
+          </q-td>
+        </template>
+
+        <!-- Columna Atributos -->
+        <template v-slot:body-cell-atributos="props">
+          <q-td :props="props">
+            <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
+              <q-badge outline color="primary" class="q-mr-xs">
+                {{ attr.atributo }}: {{ attr.valor }}
+              </q-badge>
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Columna Stock -->
+        <template v-slot:body-cell-stock="props">
+          <q-td :props="props" class="text-center">
+            <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
+              {{ props.row.cantidad ?? 0 }}
+            </q-badge>
+          </q-td>
+        </template>
+
+        <!-- Columna Cantidad -->
+        <template v-slot:body-cell-cantidad="props">
+          <q-td :props="props">
+            <q-input
+              v-model.number="cantidadesVariantes[props.row.id_Producto_Variante]"
+              type="number"
+              dense
+              outlined
+              label="Cantidad"
+              min="0"
+              :max="props.row.cantidad ?? 0"
+              :disable="(props.row.cantidad ?? 0) <= 0"
+              :rules="[
+                val => !val || val <= (props.row.cantidad ?? 0) || 'Stock insuficiente'
+              ]"
+              hide-bottom-space
+              style="min-width: 120px"
+            />
+          </q-td>
+        </template>
+      </BaseFilterableTable>
     </div>
 
     <div class="col-md-2 col-12 flex justify-end items-center q-gutter-sm q-mt-md">
@@ -190,6 +214,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
 const props = defineProps({
   modelValue: { type: Object, required: true },
@@ -230,12 +255,29 @@ const columnas = [
   { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
 ]
 
-const columnasVariantes = computed(() => [
-  { name: 'sku', label: 'SKU', field: 'sku', align: 'left' },
-  { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'stock', label: 'Stock disponible', align: 'center' },
-  { name: 'cantidad', label: 'Cantidad a mover', align: 'left' },
-])
+const columnasVariantes = [
+  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true, dataType: 'text' },
+  {
+    name: 'atributos',
+    label: 'Atributos',
+    field: 'atributos_str',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'stock',
+    label: 'Stock disponible',
+    field: 'cantidad',
+    align: 'center',
+    sortable: true,
+    dataType: 'number',
+  },
+  { name: 'cantidad', label: 'Cantidad a mover', field: 'cantidad', align: 'left', sortable: false },
+]
+
+const columnasVariantesFiltrables = ['serie', 'sku', 'atributos', 'stock']
 
 const processedRows = computed(() =>
   detalleMovimiento.value.map((row, index) => ({
@@ -330,11 +372,31 @@ async function cargarVariantesProducto(idproductoalmacen) {
   loadingVariantes.value = true
   try {
     const response = await api.get(`obtenerProductoConAtributos/${idproductoalmacen}`)
-    const data = safeJsonParse(response.data)
-    if (data?.variantes?.length) {
-      variantesDelProducto.value = data.variantes.map(v => ({
+    const raw = safeJsonParse(response.data)
+
+    // Soporta respuestas directas, anidadas en .data o devueltas en arreglo
+    const payload = Array.isArray(raw)
+      ? raw[0]
+      : raw?.data && (raw.data.producto || raw.data.variantes)
+        ? raw.data
+        : raw
+
+    const vars = payload?.variantes || raw?.variantes || (Array.isArray(payload) ? payload : [])
+
+    if (vars?.length) {
+      variantesDelProducto.value = vars.map((v) => ({
         ...v,
-        id_Producto_Variante: v.id_producto_variante
+        id_Producto_Variante: v.id_producto_variante,
+        serie: v.serie || '',
+        idserie: v.idserie || null,
+        sku: v.sku,
+        precio_base: v.precio_base ?? null,
+        codigo_barras: v.codigo_barras || '',
+        cantidad: Number(v.cantidad ?? v.stock ?? 0),
+        atributos: v.atributos || [],
+        atributos_str: (v.atributos || [])
+          .map((a) => `${a.atributo || a.nombre || ''}: ${a.valor || ''}`)
+          .join(', '),
       }))
       variantesDelProducto.value.forEach((variante) => {
         cantidadesVariantes.value[variante.id_Producto_Variante] = 0

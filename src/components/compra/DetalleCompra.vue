@@ -902,7 +902,7 @@ function onResetForm() {
     descripcion: '',
     stockActual: 0,
     unidad: '',
-    productoUnico: false,
+    productoUnico: productoUnico.value,
     sinPrecio: false,
   }
   formRef.value?.reset()
@@ -911,9 +911,6 @@ function onResetForm() {
   variantesDelProducto.value = []
   cantidadesVariantes.value = {}
   preciosVariantes.value = {}
-  formRef.value?.reset()
-  formRef.value?.resetValidation()
-  esModoEdicion.value = false
 }
 
 // --- MÉTODOS DE LA TABLA ---
