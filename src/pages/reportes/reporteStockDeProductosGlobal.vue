@@ -1,8 +1,8 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page>
     <!-- Vista de Variantes -->
     <div v-if="mostrarVariantes">
-      <div class="row justify-end q-mb-md">
+      <div class="row justify-left q-pa-lg">
         <q-btn
           color="primary"
           label="Volver a Stock Global"
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Vista Global -->
-    <div v-else>
+    <div v-else class="q-pa-md">
       <!-- Título mejorado -->
       <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
         <div class="col-12 col-md-auto">

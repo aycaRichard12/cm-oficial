@@ -1,129 +1,147 @@
 <template>
   <q-page padding>
-    <q-card>
-      <q-card-section>
-        <div class="text-h6">Inventario de Productos Variantes</div>
-      </q-card-section>
+    <q-card-section class="row items-center justify-between q-pb-none">
+      <div class="text-h6">Inventario de Productos Variantes</div>
+      <q-btn
+        color="primary"
+        icon="refresh"
+        label="Recargar Todo"
+        outline
+        dense
+        class="q-px-sm"
+        :loading="loading || loadingAlmacenes"
+        @click="recargarTodo"
+      >
+        <q-tooltip>Recargar almacenes e inventario</q-tooltip>
+      </q-btn>
+    </q-card-section>
 
-      <q-card-section>
-        <!-- Select de almacén -->
-        <div class="row q-col-gutter-md q-mb-md items-center">
-          <div class="col-12 col-md-4">
-            <q-select
-              v-model="almacenSeleccionado"
-              :options="opcionesAlmacenes"
-              emit-value
-              map-options
-              label="Almacén"
-              dense
-              outlined
-              :loading="loadingAlmacenes"
-              :disable="loadingAlmacenes"
-              @update:model-value="cargarInventario"
-            >
-              <template v-slot:prepend>
-                <q-icon name="store" color="primary" />
-              </template>
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">Sin almacenes disponibles</q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-auto flex q-gutter-sm">
-            <q-btn
-              icon="refresh"
-              color="primary"
-              flat
-              dense
-              @click="cargarAlmacenes"
-              :loading="loadingAlmacenes"
-            >
-              <q-tooltip>Recargar almacenes</q-tooltip>
-            </q-btn>
-            <q-btn
-              icon="sync"
-              color="secondary"
-              flat
-              dense
-              @click="cargarInventario"
-              :loading="loading"
-              :disable="!almacenSeleccionado"
-            >
-              <q-tooltip>Recargar inventario</q-tooltip>
-            </q-btn>
-          </div>
-        </div>
-
-        <!-- Tabla con filtros avanzados -->
-        <BaseFilterableTable
-          :rows="filas"
-          :columns="columnas"
-          :array-headers="columnasFiltrables"
-          :sum-columns="['cantidad', 'precio_base']"
-          row-key="id_variante"
-          :loading="loading"
-          :no-data-label="almacenSeleccionado ? 'Sin variantes para este almacén' : 'Seleccione un almacén'"
-        >
-          <!-- Celda: Imagen -->
-          <template v-slot:body-cell-imagen="props">
-            <q-td :props="props" style="width: 70px">
-              <q-img
-                :src="imagen + props.row.imagen"
-                style="width: 56px; height: 56px; border-radius: 6px"
-                spinner-color="primary"
-                fit="cover"
+    <q-card-section>
+      <!-- Select de almacén -->
+      <div class="row q-col-gutter-md q-mb-md items-center">
+        <div class="col-12 col-md-4">
+          <q-select
+            v-model="almacenSeleccionado"
+            :options="opcionesAlmacenes"
+            emit-value
+            map-options
+            label="Almacén"
+            dense
+            outlined
+            :loading="loadingAlmacenes"
+            :disable="loadingAlmacenes"
+            @update:model-value="cargarInventario"
+          >
+            <template v-slot:prepend>
+              <q-icon name="store" color="primary" />
+            </template>
+            <template v-slot:append>
+              <q-btn
+                round
+                dense
+                flat
+                icon="refresh"
+                color="primary"
+                :loading="loadingAlmacenes"
+                @click.stop="cargarAlmacenes"
               >
-                <template v-slot:error>
-                  <div
-                    class="column items-center justify-center bg-grey-3"
-                    style="height: 100%; width: 100%; border-radius: 6px"
-                  >
-                    <q-icon name="image_not_supported" size="sm" color="grey-6" />
-                  </div>
-                </template>
-              </q-img>
-            </q-td>
-          </template>
+                <q-tooltip>Recargar almacenes</q-tooltip>
+              </q-btn>
+            </template>
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">Sin almacenes disponibles</q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+      </div>
 
-          <!-- Celda: Código -->
-          <template v-slot:body-cell-codigo="props">
-            <q-td :props="props">
-              <q-chip outline color="primary" dense>{{ props.row.codigo }}</q-chip>
-            </q-td>
-          </template>
+      <!-- Tabla con filtros avanzados -->
+      <BaseFilterableTable
+        :rows="filas"
+        :columns="columnas"
+        :array-headers="columnasFiltrables"
+        :sum-columns="['cantidad', 'precio_base']"
+        row-key="id_variante"
+        :loading="loading"
+        :no-data-label="
+          almacenSeleccionado ? 'Sin variantes para este almacén' : 'Seleccione un almacén'
+        "
+      >
+        <!-- Botón recargar dentro de la tabla -->
+        <template v-slot:top-right>
+          <q-btn
+            icon="sync"
+            color="primary"
+            flat
+            round
+            dense
+            @click="cargarInventario"
+            :loading="loading"
+            :disable="!almacenSeleccionado"
+            class="q-mr-xs"
+          >
+            <q-tooltip>Recargar inventario</q-tooltip>
+          </q-btn>
+        </template>
+        <!-- Celda: Imagen -->
+        <template v-slot:body-cell-imagen="props">
+          <q-td :props="props" style="width: 70px">
+            <q-img
+              :src="imagen + props.row.imagen"
+              style="width: 56px; height: 56px; border-radius: 6px"
+              spinner-color="primary"
+              fit="cover"
+            >
+              <template v-slot:error>
+                <div
+                  class="column items-center justify-center bg-grey-3"
+                  style="height: 100%; width: 100%; border-radius: 6px"
+                >
+                  <q-icon name="image_not_supported" size="sm" color="grey-6" />
+                </div>
+              </template>
+            </q-img>
+          </q-td>
+        </template>
 
-          <!-- Celda: Nombre -->
-          <template v-slot:body-cell-nombre="props">
-            <q-td :props="props">
-              <div class="text-weight-medium">{{ props.row.nombre }}</div>
-              <div class="text-caption text-grey">{{ props.row.descripcion }}</div>
-            </q-td>
-          </template>
+        <!-- Celda: Código -->
+        <template v-slot:body-cell-codigo="props">
+          <q-td :props="props">
+            <q-chip outline color="primary" dense>{{ props.row.codigo }}</q-chip>
+          </q-td>
+        </template>
 
-          <!-- Celda: Atributos -->
-          <template v-slot:body-cell-atributos="props">
-            <q-td :props="props">
-              <div v-for="(attr, idx) in props.row.atributos" :key="idx" class="q-mb-xs">
-                <q-badge outline color="secondary" class="q-mr-xs">
-                  {{ attr.atributo }}: {{ attr.valor }}
-                </q-badge>
-              </div>
-            </q-td>
-          </template>
+        <!-- Celda: Nombre -->
+        <template v-slot:body-cell-nombre="props">
+          <q-td :props="props">
+            <div class="text-weight-medium">{{ props.row.nombre }}</div>
+            <div class="text-caption text-grey">{{ props.row.descripcion }}</div>
+          </q-td>
+        </template>
 
-          <!-- Celda: Stock -->
-          <template v-slot:body-cell-stock="props">
-            <q-td :props="props" class="text-center">
-              <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
-                {{ props.row.cantidad }}
+        <!-- Celda: Atributos -->
+        <template v-slot:body-cell-atributos="props">
+          <q-td :props="props">
+            <div v-for="(attr, idx) in props.row.atributos" :key="idx" class="q-mb-xs">
+              <q-badge outline color="secondary" class="q-mr-xs">
+                {{ attr.atributo }}: {{ attr.valor }}
               </q-badge>
-            </q-td>
-          </template>
-        </BaseFilterableTable>
-      </q-card-section>
-    </q-card>
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Celda: Stock -->
+        <template v-slot:body-cell-stock="props">
+          <q-td :props="props" class="text-center">
+            <q-badge :color="props.row.cantidad > 0 ? 'green' : 'red'">
+              {{ props.row.cantidad }}
+            </q-badge>
+          </q-td>
+        </template>
+      </BaseFilterableTable>
+    </q-card-section>
   </q-page>
 </template>
 
@@ -154,12 +172,40 @@ const opcionesAlmacenes = ref([])
 
 const columnas = [
   { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'nombre', label: 'Producto', field: 'nombre', align: 'left', sortable: true, dataType: 'text' },
+  {
+    name: 'codigo',
+    label: 'Código',
+    field: 'codigo',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'nombre',
+    label: 'Producto',
+    field: 'nombre',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true, dataType: 'text' },
   { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'stock', label: 'Stock', field: 'cantidad', align: 'center', sortable: true, dataType: 'number' },
-  { name: 'precio_base', label: 'Precio Base', field: 'precio_base', align: 'right', sortable: true, dataType: 'number' },
+  {
+    name: 'stock',
+    label: 'Stock',
+    field: 'cantidad',
+    align: 'center',
+    sortable: true,
+    dataType: 'number',
+  },
+  {
+    name: 'precio_base',
+    label: 'Precio Base',
+    field: 'precio_base',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
 ]
 
 // Columnas que tendrán filtro de encabezado (excluye imagen y atributos por su complejidad)
@@ -176,10 +222,14 @@ async function cargarAlmacenes() {
         value: item.idalmacen,
       }))
 
-      // Si se pasó idalmacen como prop, usarlo; si no, usar el primero disponible
+      const existeSeleccionado = opcionesAlmacenes.value.some(
+        (item) => item.value === almacenSeleccionado.value,
+      )
+
+      // Si se pasó idalmacen como prop, usarlo; si ya tiene seleccionado válido, conservarlo; si no, el primero
       if (props.idalmacen) {
         almacenSeleccionado.value = props.idalmacen
-      } else if (opcionesAlmacenes.value.length > 0) {
+      } else if (!existeSeleccionado && opcionesAlmacenes.value.length > 0) {
         almacenSeleccionado.value = opcionesAlmacenes.value[0].value
       }
     }
@@ -196,7 +246,9 @@ async function cargarInventario() {
 
   loading.value = true
   try {
-    const response = await api.get(`listar_inventario_variantes_por_almacen/${almacenSeleccionado.value}`)
+    const response = await api.get(
+      `listar_inventario_variantes_por_almacen/${almacenSeleccionado.value}`,
+    )
     if (response.data.estado === 'exito' && Array.isArray(response.data.data)) {
       const plano = []
       for (const producto of response.data.data) {
@@ -233,8 +285,12 @@ async function cargarInventario() {
   }
 }
 
-onMounted(async () => {
+async function recargarTodo() {
   await cargarAlmacenes()
   await cargarInventario()
+}
+
+onMounted(async () => {
+  await recargarTodo()
 })
 </script>
