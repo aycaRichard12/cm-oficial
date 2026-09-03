@@ -15,7 +15,17 @@
       </q-btn>
     </div>
 
-    <div class="col-2 q-mt-lg flex justify-end">
+    <div class="col-auto q-mt-lg flex justify-end q-gutter-x-sm">
+      <q-btn
+        color="primary"
+        @click="$emit('recargar')"
+        class="btn-res"
+        outline
+        id="btnRecargar"
+      >
+        <q-icon name="refresh" class="icono" />
+        <span class="texto">Recargar</span>
+      </q-btn>
       <q-btn
         color="info"
         @click="$emit('imprimirReporte')"
@@ -31,5 +41,5 @@
 </template>
 
 <script setup>
-defineEmits(['add', 'imprimirReporte'])
+defineEmits(['add', 'imprimirReporte', 'recargar'])
 </script>

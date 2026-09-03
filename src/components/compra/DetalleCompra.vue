@@ -6,16 +6,30 @@
         <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
         {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
-      <q-chip
-        v-if="esModoEdicion"
-        color="warning"
-        text-color="white"
-        icon="edit"
-        size="sm"
-        class="text-weight-medium"
-        removable
-        @remove="onResetForm"
-      />
+      <div class="row items-center q-gutter-x-sm">
+        <q-btn
+          flat
+          round
+          dense
+          icon="refresh"
+          color="primary"
+          :loading="isReloading"
+          @click="recargarComponente"
+          class="q-mr-sm"
+        >
+          <q-tooltip>Recargar componente</q-tooltip>
+        </q-btn>
+        <q-chip
+          v-if="esModoEdicion"
+          color="warning"
+          text-color="white"
+          icon="edit"
+          size="sm"
+          class="text-weight-medium"
+          removable
+          @remove="onResetForm"
+        />
+      </div>
     </div>
 
     <q-form @submit="onSubmit" ref="formRef" class="purchase-form">
@@ -416,12 +430,26 @@
         <q-icon name="list_alt" size="sm" class="q-mr-sm text-primary" />
         Detalle de Productos
       </div>
-      <q-badge
-        color="primary"
-        rounded
-        class="q-pa-sm text-caption text-weight-bold"
-        :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
-      />
+      <div class="row items-center q-gutter-x-sm">
+        <q-btn
+          v-if="compra.autorizacion != 2"
+          flat
+          round
+          dense
+          icon="refresh"
+          color="primary"
+          :loading="isReloading"
+          @click="recargarComponente"
+        >
+          <q-tooltip>Recargar componente</q-tooltip>
+        </q-btn>
+        <q-badge
+          color="primary"
+          rounded
+          class="q-pa-sm text-caption text-weight-bold"
+          :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
+        />
+      </div>
     </div>
 
     <q-table
@@ -596,6 +624,7 @@ const productosDisponibles = ref([])
 const productosFiltrados = ref([])
 const esModoEdicion = ref(false)
 const loadingTable = ref(false)
+const isReloading = ref(false)
 const ConfiguracionProductoVariante = ref(false)
 
 const variantesDelProducto = ref([])
@@ -705,6 +734,25 @@ async function cargarDatos() {
     })
   } finally {
     $q.loading.hide()
+  }
+}
+
+async function recargarComponente() {
+  isReloading.value = true
+  try {
+    await cargarDatos()
+    onResetForm()
+    emit('update')
+    $q.notify({
+      type: 'positive',
+      message: 'Componente recargado correctamente',
+      position: 'top',
+      timeout: 1500,
+    })
+  } catch (error) {
+    console.error('Error al recargar componente:', error)
+  } finally {
+    isReloading.value = false
   }
 }
 

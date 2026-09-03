@@ -2,7 +2,11 @@
   <q-page>
     <div>
       <!-- Botones principales -->
-      <CompraActions @add="$emit('add')" @imprimirReporte="imprimirReporte" />
+      <CompraActions
+        @add="$emit('add')"
+        @imprimirReporte="imprimirReporte"
+        @recargar="$emit('actualizarTablaPrincipal')"
+      />
 
       <!-- Filtro de almacén -->
       <CompraFilters

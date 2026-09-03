@@ -38,7 +38,6 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
 import { useQuasar } from 'quasar'
 //import { objectToFormData } from 'src/composables/FuncionesGenerales'
-
 import SerieForm from '../components/serieForm.vue'
 import SerieTable from '../components/serieTable.vue'
 
@@ -56,12 +55,14 @@ const formData = ref({
   serie: '',
   producto_idproducto: null,
   estado: 1,
+  md5: idempresa,
   variantes: [],
 })
 
 const resetForm = () => {
   formData.value = {
     ver: 'registrar_serie',
+    md5: idempresa,
     serie: '',
     producto_idproducto: null,
     estado: 1,
@@ -97,7 +98,8 @@ async function loadProductos() {
 async function loadSeries() {
   try {
     cargando.value = true
-    const response = await apiP.get('listar_series')
+    const enpoint = `listar_series/${idempresa}`
+    const response = await apiP.get(enpoint)
     series.value = (response.data || []).map((x, indice) => ({
       ...x, // spread existing properties
       indice: indice + 1, // add/overwrite `indice`
