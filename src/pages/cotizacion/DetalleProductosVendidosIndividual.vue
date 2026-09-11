@@ -322,6 +322,7 @@ const generarReporte = async () => {
       const numerados = datosOriginales.value.map((row, index) => ({
         ...row,
         nro: index + 1,
+        tipoventa: tipoVentaMap[Number(row.tipoventa)],
       }))
       console.log('Datos numerados:', numerados)
 
@@ -588,7 +589,7 @@ const exportarTablaAExcel = () => {
       formularioExcel.push({
         Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
         'Nro. Doc.': key.nrofactura,
-        'Tipo de Venta': tipoVentaMap[key.tipoventa],
+        'Tipo de Venta': tipoVentaMap[Number(key.tipoventa)],
         'Código Producto': key.codigo,
         'Código Barras': key.codigobarra,
         'Descripción de Producto': key.descripcion,

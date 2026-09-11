@@ -122,15 +122,7 @@ const columnas = [
 
     dataType: 'text',
   },
-  {
-    name: 'costounitario',
-    label: 'Costo Unitario',
-    field: 'costounitario',
-    align: 'right',
 
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
   {
     name: 'precio',
     label: 'Precio Unitario',
@@ -157,32 +149,7 @@ const columnas = [
     format: (val) => Number(val).toFixed(2),
     dataType: 'number',
   },
-  {
-    name: 'costototal',
-    label: 'Costo Total',
-    field: 'costototal',
-    align: 'right',
 
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
-  {
-    name: 'compratotal',
-    label: 'Compra Total',
-    field: 'compratotal',
-    align: 'right',
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
-  {
-    name: 'utilidad',
-    label: 'Utilidad',
-    field: 'utilidad',
-    align: 'right',
-
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
   {
     name: 'usuario',
     label: 'Usuario',

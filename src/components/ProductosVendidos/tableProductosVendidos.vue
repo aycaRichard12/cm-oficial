@@ -112,10 +112,10 @@ const columnasExtensas = [
     sortable: true,
   },
   {
-    name: 'tipoDocumento',
+    name: 'tipoventa',
     label: 'Tipo de Venta',
     align: 'left',
-    field: 'tipoDocumento',
+    field: 'tipoventa',
     dataType: 'text',
     sortable: true,
   },
