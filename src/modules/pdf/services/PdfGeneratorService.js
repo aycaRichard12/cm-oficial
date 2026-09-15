@@ -36,6 +36,7 @@ export class PdfGeneratorService {
   async _solicitarConfiguracion() {
     const defaultConfig = this._getDefaultConfig()
     const defaultValue = `${defaultConfig.orientation}-${defaultConfig.format}`
+    //$q.loading.hide()
 
     return new Promise((resolve) => {
       Dialog.create({

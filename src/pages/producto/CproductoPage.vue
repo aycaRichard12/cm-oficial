@@ -49,6 +49,13 @@
       @toggleStatus="toggleStatus"
       @importar="handleImport"
       @delete-selected="eliminarProductosSeleccionados"
+      @gestionar-variantes="abrirVariantes"
+    />
+
+    <ProductoVarianteDialog
+      v-model="showVariantesDialog"
+      :producto="productoVariantes"
+      :empresa="idempresa"
     />
   </q-page>
 </template>
@@ -64,9 +71,11 @@ import ProductoTabla from 'src/components/producto/creacion/productoTable.vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
 import seriePage from 'src/modules/serie/page/seriePage.vue'
+import ProductoVarianteDialog from 'src/components/producto/variantes/productoVarianteDialog.vue'
 const tipoFactura = getTipoFactura(true)
 const mostrarmoduloConjunto = ref(false)
-
+const showVariantesDialog = ref(false)
+const productoVariantes = ref(null)
 console.log('Tipo Factura:', tipoFactura)
 const idempresa = idempresa_md5()
 const contenidousuario = validarUsuario()
@@ -496,6 +505,10 @@ const handleImport = async (data) => {
   })
 
   loadRows()
+}
+const abrirVariantes = (row) => {
+  productoVariantes.value = row
+  showVariantesDialog.value = true
 }
 onMounted(() => {
   loadcategorias()

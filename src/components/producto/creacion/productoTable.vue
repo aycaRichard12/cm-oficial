@@ -134,6 +134,16 @@
                 id="editarproducto"
               />
               <q-btn
+                icon="tune"
+                color="secondary"
+                dense
+                class="q-mr-sm"
+                @click="$emit('gestionar-variantes', props.row)"
+                flat
+                title="Gestionar variantes"
+                id="variantesproducto"
+              />
+              <q-btn
                 icon="delete"
                 color="negative"
                 dense
@@ -141,7 +151,6 @@
                 flat
                 id="eliminarproducto"
               />
-              <!-- <q-btn color="blue" text-color="black" label="" dense="" /> -->
             </q-td>
           </template>
           <template v-slot:body-cell-seleccionar="props">
@@ -439,6 +448,7 @@ const emit = defineEmits([
   'mostrarReporte',
   'importar',
   'delete-selected',
+  'gestionar-variantes',
 ])
 
 const toggleSeleccion = (id, checked) => {

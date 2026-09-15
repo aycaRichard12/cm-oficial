@@ -2469,16 +2469,15 @@ async function enviarDatos() {
     message: 'Registrando cotización...',
   })
   try {
-    // Asumo que tu backend espera 'listaProductos' como un JSON string.
     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
-    //const datosJson = {}
-    // datosFormulario.forEach((valor, clave) => {
-    //   datosJson[clave] = valor
-    // })
-    //console.log(JSON.stringify(datosJson, null, 2))
+
     const response = await api.post(``, datosFormulario)
     const data = response.data
     console.log('Datos recibidos:', response)
+
+    //  Ocultar el spinner ANTES de abrir cualquier diálogo modal.
+    //    Esto evita que el overlay del loading quede por encima del modal.
+    $q.loading.hide()
 
     if (data.estado === 'exito') {
       resetFormulario()
@@ -2488,6 +2487,9 @@ async function enviarDatos() {
       })
       cotizacionFormRef.value.resetValidation() // Resetear validación
 
+      // Bandera para saber si el usuario confirmó la generación del comprobante.
+      let confirmado = false
+
       $q.dialog({
         title: 'Cotización Exitosa',
         message: 'Su comprobante está listo. ¿Desea verlo?',
@@ -2495,10 +2497,19 @@ async function enviarDatos() {
         persistent: true,
       })
         .onOk(() => {
-          generarComprobante(data.id)
+          //  No llamar aquí a generarComprobante: el diálogo aún se está
+          //    cerrando y el spinner nuevo quedaría pintado sobre él.
+          confirmado = true
         })
         .onCancel(() => {
           emit('reiniciar')
+        })
+        .onDismiss(() => {
+          // onDismiss se ejecuta cuando el diálogo terminó su animación
+          //    de cierre. Ahora sí es seguro mostrar el spinner.
+          if (confirmado) {
+            generarComprobante(data.id)
+          }
         })
     } else {
       $q.notify({
@@ -2512,9 +2523,11 @@ async function enviarDatos() {
       type: 'negative',
       message: 'Hubo un error de conexión o en el servidor.',
     })
-  } finally {
     $q.loading.hide()
   }
+  // Se eliminó el bloque finally: el loading ya se cerró en cada rama.
+  // Si se quiere mantener por seguridad, basta con dejar $q.loading.hide()
+  // al final del catch y de las ramas exitosas (es idempotente).
 }
 
 function resetFormulario() {
@@ -2576,6 +2589,7 @@ async function generarComprobante(id) {
     })
     return
   }
+  modalmetodopago.value = false
 
   $q.loading.show({
     message: 'Generando comprobante...',
@@ -2591,8 +2605,8 @@ async function generarComprobante(id) {
       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
       emit('reiniciar')
     } else {
-      //const doc = await generarPdfCotizacion(data)
-      //console.log(doc)
+      $q.loading.hide()
+
       const resultado = await generarPdfCotizacion(data)
       if (!resultado || !resultado.doc) {
         error.value = 'No se pudo generar el PDF.'
@@ -2605,12 +2619,13 @@ async function generarComprobante(id) {
         pdfData.value = null
       }
 
+      // ✅ Ocultar el spinner ANTES de abrir los modales de vista previa.
+      //    Así el overlay del loading nunca queda por encima del modal PDF.
+      $q.loading.hide()
+
       if (isMobile.value) {
-        // En móvil, la función ya intentó abrir/descargar.
-        // Solo guardamos la URL para el enlace manual.
         mobileFallbackUrl.value = resultado.mobileBlobUrl
       } else {
-        // Escritorio: crear blob para el iframe
         const pdfBlob = resultado.doc.output('blob')
         pdfData.value = URL.createObjectURL(pdfBlob)
         open('right', data[0]?.cliente.idcliente, data)
@@ -2622,6 +2637,8 @@ async function generarComprobante(id) {
     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
     emit('reiniciar')
   } finally {
+    // Salvaguarda: si por alguna rama (early return / excepción) el spinner
+    // no se ocultó, lo apagamos aquí. Es idempotente.
     $q.loading.hide()
   }
 }
