@@ -40,7 +40,7 @@ export class PdfDocumentBuilder {
     const y = this.doc.lastAutoTable.finalY + 5
     const fechaGeneracion = cambiarFormatoFecha(obtenerFechaActualDato())
     this.doc.setFontSize(8)
-    this.doc.text(`Fecha hora reporte: ${fechaGeneracion} ${obtenerHora()}`, 14, y, {
+    this.doc.text(`Fecha y Hora : ${fechaGeneracion} ${obtenerHora()}`, 14, y, {
       align: 'left',
     })
 

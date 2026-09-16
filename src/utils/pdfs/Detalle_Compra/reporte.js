@@ -1,65 +1,62 @@
-import jsPDF from 'jspdf'
-import { verificarTamanoPantallaYRedirigir } from '../dibujar'
-import { decimas } from 'src/composables/FuncionesG'
-import { dibujarCuerpoTabla } from '../dibujar'
-import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
-
-function crearFilaTotalGeneral(label, columnasTotales, colSpan) {
-  const fila = [
-    {
-      content: label,
-      colSpan: colSpan || 6,
-      styles: {
-        halign: 'right',
-        fontStyle: 'bold',
-        // fillColor: [240, 230, 240],
-        lineWidth: { top: 0.3, bottom: 0.3 },
-        lineColor: [0, 0, 0],
-      },
-    },
-  ]
-
-  // Agregar las columnas de totales
-  columnasTotales.forEach((columna) => {
-    fila.push({
-      content: decimas(columna.valor),
-      styles: {
-        halign: columna.halign || 'center',
-        fontStyle: 'bold',
-        // pintar bordes una sola vez
-        lineWidth: { top: 0.3, bottom: 0.3 }, // left: 0.3  top: 0.3,
-        lineColor: [0, 0, 0],
-      },
-    })
-  })
-
-  return fila
-}
-
-export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
-  console.log('esto son las divisas', detalleCompra)
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' })
-
-  // Extraer el primer elemento del array (según la estructura de la API)
+import { PdfGeneratorService } from 'src/modules/pdf/services/PdfGeneratorService'
+import { verificarTamanoPantallaYRedirigir } from 'src/modules/pdf/utils/screenUtils'
+import { decimas, cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import { cargarLogoBase64 } from 'src/composables/FuncionesG'
+/**
+ * Genera el PDF de un detalle de compra a proveedor.
+ * @param {Array|Object} detalleCompra - Datos del detalle de compra (puede venir como array de un elemento)
+ * @param {string} divisa - Código/símbolo de la divisa
+ * @returns {Object} { doc, mobileBlobUrl }
+ */
+export async function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
+  // Normalizar: la API entrega un array con el detalle en la primera posición
   const detalle = Array.isArray(detalleCompra) ? detalleCompra[0] : detalleCompra
 
-  // Columnas para la tabla de productos
+  // 1. Preparar datos estructurados
+  const reportData = await prepararDatosCompra(detalle, divisa)
+
+  // 2. Generar PDF mediante el servicio
+  const pdfService = new PdfGeneratorService()
+  const doc = await pdfService.generateReport({
+    userData: reportData.userData,
+    columns: reportData.columns,
+    datos: reportData.datos,
+    titulo: 'COMPRA',
+    columnStyles: reportData.columnStyles,
+    headerColumnStyles: reportData.headerColumnStyles,
+    datosIzquierda: reportData.datosIzquierda,
+    datosDerecho: reportData.datosDerecho,
+    conImpresionEncargado: false, // se usa datosDerecho personalizado (proveedor)
+    extras: reportData.extras,
+  })
+
+  // 3. Verificar tamaño de pantalla y redirigir si es necesario
+  const mobileBlobUrl = verificarTamanoPantallaYRedirigir(doc)
+  return { doc, mobileBlobUrl }
+}
+
+/**
+ * Prepara todos los datos necesarios para el reporte PDF de compra.
+ * @param {Object} detalle - Objeto con el detalle de la compra
+ * @param {string} divisa - Código/símbolo de la divisa
+ * @returns {Object} Datos estructurados para PdfGeneratorService
+ */
+async function prepararDatosCompra(detalle, divisa) {
+  // --- Columnas de la tabla ---
   const columns = [
     { header: 'N°', dataKey: 'indice' },
     { header: 'Código', dataKey: 'codigo' },
-    { header: 'Producto', dataKey: 'producto' },
     { header: 'Descripción', dataKey: 'descripcion' },
     { header: 'Unidad', dataKey: 'unidad' },
     { header: 'Cantidad', dataKey: 'cantidad' },
-    { header: 'Precio (' + divisa + ')', dataKey: 'precio' },
-    { header: 'Subtotal (' + divisa + ')', dataKey: 'subTotal' },
+    { header: `Precio (${divisa})`, dataKey: 'precio' },
+    { header: `Subtotal (${divisa})`, dataKey: 'subTotal' },
   ]
 
-  // Mapear datos de productos
+  // --- Filas de datos ---
   const datos = (detalle.detalle || []).map((item, index) => ({
     indice: index + 1,
     codigo: item.codigo || '-',
-    producto: item.producto || '-',
     descripcion: item.descripcion || '-',
     unidad: item.unidad || '-',
     cantidad: item.cantidad || '0',
@@ -67,35 +64,31 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
     subTotal: decimas(item.subTotal || item.subtotal || item.total || 0),
   }))
 
-  // Calcular total
+  // --- Calcular totales ---
   const totalGeneral = (detalle.detalle || []).reduce(
     (sum, item) => sum + parseFloat(item.subTotal || item.subtotal || item.total || 0),
     0,
   )
 
-  //calcular precio unitario
   const precioUnitario = (detalle.detalle || []).reduce(
     (sum, item) => sum + parseFloat(item.precio || item.precioUnitario || 0),
     0,
   )
 
-  datos.push(
-    crearFilaTotalGeneral(
-      `TOTAL GENERAL (${divisa})`,
-      [
-        { valor: precioUnitario, halign: 'center' },
-        { valor: totalGeneral, halign: 'center' },
-      ],
-      6,
-    ),
-  )
+  // Fila de total general (formato objeto simple compatible con el servicio)
+  // El label se ubica en la columna "producto" y los valores en precio/subTotal
+  datos.push({
+    producto: `TOTAL GENERAL (${divisa})`,
+    precio: decimas(precioUnitario),
+    subTotal: decimas(totalGeneral),
+  })
 
-  // Estilos de columnas
+  // --- Estilos de columnas ---
   const columnStyles = {
     indice: { cellWidth: 6, halign: 'center' },
     codigo: { cellWidth: 20, halign: 'center' },
-    producto: { cellWidth: 35, halign: 'left' },
-    descripcion: { cellWidth: 40, halign: 'left' },
+    //producto: { cellWidth: 35, halign: 'left' },
+    descripcion: { cellWidth: 75, halign: 'left' },
     unidad: { cellWidth: 20, halign: 'center' },
     cantidad: { cellWidth: 20, halign: 'center' },
     precio: { cellWidth: 30, halign: 'center' },
@@ -105,7 +98,7 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
   const headerColumnStyles = {
     indice: { halign: 'center' },
     codigo: { halign: 'center' },
-    producto: { halign: 'left' },
+    //producto: { halign: 'left' },
     descripcion: { halign: 'left' },
     unidad: { halign: 'center' },
     cantidad: { halign: 'center' },
@@ -113,24 +106,19 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
     subTotal: { halign: 'center' },
   }
 
-  // Información izquierda - Datos de la compra
-  const Izquierda = {
+  // --- Datos de la compra (bloque izquierdo) ---
+  const datosIzquierda = {
     titulo: 'DATOS DE LA COMPRA',
     campos: [
       { label: 'Fecha', valor: cambiarFormatoFecha(detalle.fechaIngreso) || '' },
       { label: 'N° Factura', valor: detalle.nfactura || '' },
-      // {
-      //   label: 'Autorización',
-      //   valor: detalle.autorizacion == '1' ? 'Autorizado' : 'No Autorizado',
-      // },
-      // { label: 'Almacén', valor: detalle.almacen || '' },
       { label: 'Nombre Lote', valor: detalle.nombreIngreso || '' },
       { label: 'Almacen', valor: detalle.almacen || '' },
     ],
   }
 
-  // Información derecha - Proveedor
-  const derecho = {
+  // --- Datos del proveedor (bloque derecho) ---
+  const datosDerecho = {
     titulo: 'PROVEEDOR',
     campos: [
       { label: 'Cod. Proveedor', valor: detalle.proveedor?.codigo || '' },
@@ -139,32 +127,42 @@ export function PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra, divisa) {
     ],
   }
 
-  // Información adicional centrada - Usuario y Empresa
-  const extras = {
-    // centreado: {
-    //   campos: [
-    //     { label: '', valor: detalle.usuario?.usuario || '' },
-    //     { label: '', valor: detalle.usuario?.cargo || '' },
-    //   ],
-    // },
+  // --- Información extra para el encabezado ---
+  // Nota: la API de este reporte no expone datos de empresa/usuario.
+  // Si en el futuro se requieren logo/nombre de empresa, agregarlos aquí.
+  const empresa = detalle.empresa || {}
+  const usuario = detalle.usuario || {}
+  let logoBase64 = ''
+  if (empresa?.logo) {
+    logoBase64 = await cargarLogoBase64(empresa.logo)
   }
 
-  // Dibujar el PDF
-  dibujarCuerpoTabla(
-    doc,
+  const userData = {
+    logoBase64,
+    nombreEmpresa: empresa?.nombre || '',
+    direccionEmpresa: empresa?.direccion || '',
+    encargadoNombre: usuario?.usuario || usuario?.nombre || '',
+    cargo: usuario?.cargo || '',
+    pais: empresa?.opais || '',
+    estado: empresa?.oestado || '',
+    ciudad: empresa?.ociudad || '',
+    nit: empresa?.nit || '',
+    telefono: empresa?.telefono || '',
+    celular: empresa?.ocelular || '',
+    email: empresa?.email || '',
+    web: empresa?.ositioweb || '',
+  }
+
+  const extras = {}
+
+  return {
+    userData,
     columns,
     datos,
-    'REPORTE DE COMPRA',
     columnStyles,
     headerColumnStyles,
-    Izquierda,
-    derecho,
-    true, // con impresión de encargado
-    null,
+    datosIzquierda,
+    datosDerecho,
     extras,
-  )
-
-  const docResult = verificarTamanoPantallaYRedirigir(doc)
-  if (!docResult) return
-  return docResult
+  }
 }

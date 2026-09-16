@@ -136,20 +136,18 @@ const verDetallePDF = async (row) => {
   if (detalle) {
     // Generar PDF
     const divisaActiva = divisa.value
-    const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value, divisaActiva.tipo)
+    const { doc, mobileBlobUrl } = await PDF_DETALLE_COMPRA_PROVEEDOR(
+      detalleCompra.value,
+      divisaActiva.tipo,
+    )
 
-    // Convertir a blob URL para mostrar en iframe
-    const pdfBlob = doc.output('blob')
+    if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
 
-    // Revocar URL anterior si existe
-    if (pdfUrl.value) {
-      URL.revokeObjectURL(pdfUrl.value)
+    if (mobileBlobUrl) {
+      pdfUrl.value = mobileBlobUrl
+    } else {
+      pdfUrl.value = URL.createObjectURL(doc.output('blob'))
     }
-
-    // Crear nueva URL
-    pdfUrl.value = URL.createObjectURL(pdfBlob)
-
-    // Mostrar dialog
     showPdfDialog.value = true
   }
 }

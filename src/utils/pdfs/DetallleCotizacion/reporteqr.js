@@ -144,12 +144,13 @@ async function prepararDatosCotizacion(cot) {
 
   // Filas de totales
   const montoTexto = numeroALetras(montoTotal, divisa.divisa)
-  datos.push({ precio: 'SUBTOTAL', total: decimas(subtotal) })
-  datos.push({ precio: 'DESCUENTO', total: decimas(descuento) })
+
+  datos.push({ precio: '<b>SUBTOTAL</b>', total: '<b>' + decimas(subtotal) + '</b>' })
+  datos.push({ precio: '<b>DESCUENTO</b>', total: '<b>' + decimas(descuento) + '</b>' })
   datos.push({
-    precio: 'MONTO TOTAL',
-    total: decimas(montoTotal),
-    descripcion: montoTexto, // aparece en la columna "Descripción"
+    precio: '<b>MONTO TOTAL</b>',
+    total: '<b>' + decimas(montoTotal) + '</b>',
+    descripcion: '<b>' + montoTexto + '</b>',
   })
 
   // --- Estilos de columnas ---

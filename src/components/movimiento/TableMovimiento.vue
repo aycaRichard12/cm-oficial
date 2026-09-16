@@ -271,8 +271,9 @@ import { api } from 'src/boot/axios'
 import pedidosMovimiento from './pedidosMovimiento.vue'
 import RegistrarAlmacenDialog from 'src/components/RegistrarAlmacenDialog.vue'
 import { useRouter } from 'vue-router'
-import { PDF_LISTA_MOVIMIENTOS, PDFComprobanteMovimiento } from 'src/utils/pdfReportGenerator'
+import { PDF_LISTA_MOVIMIENTOS } from 'src/utils/pdfReportGenerator'
 import { useAlmacenStore } from 'src/composables/movimiento/useAlmacenStore'
+import { PDFComprobanteMovimiento } from 'src/utils/pdfs/Movimiento/detalleMovimiento.js'
 
 //import { URL_APIE } from 'src/composables/services'
 const mostrarModal = ref(false)
@@ -471,10 +472,11 @@ const verDetalle = async (row) => {
       'ruta donde sea hace la peticion',
       `${api}/comprobanteMovimiento/${row.id}/${idempresa}`,
     )
+
     if (detallePedido.data) {
-      // Generar el PDF usando la función centralizada
-      const doc = PDFComprobanteMovimiento(detallePedido.data)
-      pdfData.value = doc.output('dataurlstring')
+      const { doc, mobileBlobUrl } = await PDFComprobanteMovimiento(detallePedido.data)
+      pdfData.value = mobileBlobUrl ?? doc.output('dataurlstring')
+
       mostrarModal.value = true
     } else {
       $q.notify({
@@ -483,7 +485,6 @@ const verDetalle = async (row) => {
       })
     }
   } catch (error) {
-    // This catches errors re-thrown from the store (e.g., network errors)
     console.error('Error al obtener el movimiento:', error)
     $q.notify({
       type: 'negative',

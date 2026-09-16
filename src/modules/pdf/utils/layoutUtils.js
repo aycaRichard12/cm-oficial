@@ -10,10 +10,11 @@
  * @param {Object.<string, {cellWidth?: number}>} columnStyles - Estilos por columna
  * @returns {{ marginLeft: number, tableWidth: number }}
  */
-export function calcularMargenCentral(doc, columns, columnStyles) {
+export function calcularMargenCentral(doc, columns = [], columnStyles = {}) {
   const pageWidth = doc.internal.pageSize.getWidth()
 
-  const tableWidth = columns.reduce((total, col) => {
+  const safeColumns = Array.isArray(columns) ? columns : []
+  const tableWidth = safeColumns.reduce((total, col) => {
     const style = columnStyles?.[col.dataKey]
     const width = style?.cellWidth ?? 0
     return total + width
