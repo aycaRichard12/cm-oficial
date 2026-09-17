@@ -455,7 +455,7 @@
     <q-table
       :rows="detalleItems"
       :columns="columnas"
-      row-key="id"
+      :row-key="row => row.variante?.id_producto_variante ? 'var-' + row.variante.id_producto_variante : 'prod-' + row.id"
       flat
       bordered
       class="my-custom-table shadow-1"
@@ -549,9 +549,7 @@
               :can-edit="true"
               :api-mode="true"
               @update-parent-quantity="
-                (nuevaCant) => {
-                  props.row.cantidad = nuevaCant
-                }
+                (nuevaCant) => actualizarCantidadRow(props.row, nuevaCant)
               "
             />
           </q-td>
@@ -959,6 +957,10 @@ function onResetForm() {
   variantesDelProducto.value = []
   cantidadesVariantes.value = {}
   preciosVariantes.value = {}
+}
+
+function actualizarCantidadRow(row, nuevaCant) {
+  row.cantidad = nuevaCant
 }
 
 // --- MÉTODOS DE LA TABLA ---

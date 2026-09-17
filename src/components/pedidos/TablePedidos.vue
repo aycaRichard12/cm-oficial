@@ -300,6 +300,7 @@ const pedidoId = ref('')
 const tiposPedido = [
   { label: 'Pedidos de Compras', value: 1 },
   { label: 'Pedidos de Movimientos', value: 2 },
+  { label: 'Pedidos de Producción', value: 3 },
 ]
 
 const filtroTipo = ref(null) // Siempre comienza en 1

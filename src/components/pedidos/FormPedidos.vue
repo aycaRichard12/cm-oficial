@@ -123,11 +123,13 @@ const emit = defineEmits(['submit', 'cancel'])
 const TIPOS_PEDIDO = Object.freeze({
   COMPRA: 1,
   MOVIMIENTO: 2,
+  PRODUCCION: 3,
 })
 
 const tiposPedido = [
   { label: 'Pedido de Compra', value: TIPOS_PEDIDO.COMPRA },
   { label: 'Pedido de Movimiento', value: TIPOS_PEDIDO.MOVIMIENTO },
+  { label: 'Pedidos de Producción', value: TIPOS_PEDIDO.PRODUCCION },
 ]
 
 // State
