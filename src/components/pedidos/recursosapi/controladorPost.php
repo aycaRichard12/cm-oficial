@@ -372,8 +372,10 @@ elseif ($ver == "uploadFotoMovimiento") {
 }
 elseif ($ver == "registrarDetallePedido") {
     $controlador = new compras();
-    $controlador->registroDetallePedido($_POST['idpedido'], $_POST['cantidad'], $_POST['idproductoalmacen'], $_POST['idProductoVariante'] ?? null);
-} elseif ($ver == "editardetallepedido") {
+    $idProductoVariante = !empty($_POST['idProductoVariante']) ? $_POST['idProductoVariante'] : null;
+    $controlador->registroDetallePedido($_POST['idpedido'], $_POST['cantidad'], $_POST['idproductoalmacen'], $idProductoVariante);
+} 
+elseif ($ver == "editardetallepedido") {
     $controlador = new compras();
     $controlador->editarDetallePedido($_POST['id'], $_POST['cantidad'], $_POST['idproductoalmacen']);
 } elseif ($ver == "registrarCompra") {

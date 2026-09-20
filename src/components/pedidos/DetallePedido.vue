@@ -42,7 +42,7 @@
         <q-input id="stockactual" v-model="localData.stock" disable dense outlined />
       </div>
 
-      <div class="col-md-2 col-6" v-if="!ConfiguracionProductoVariante">
+      <div class="col-md-2 col-6" v-if="!ConfiguracionProductoVariante || variantesDelProducto.length === 0">
         <label for="cantidad">Cantidad*</label>
 
         <q-input
@@ -143,16 +143,6 @@
                 </q-badge>
               </div>
             </q-td>
-            <q-td key="precio" :props="props">
-              <q-input
-                v-model.number="preciosVariantes[props.row.id_Producto_Variante]"
-                type="number"
-                dense
-                outlined
-                label="Precio"
-                style="min-width: 120px"
-              />
-            </q-td>
             <q-td key="cantidad" :props="props">
               <q-input
                 v-model.number="cantidadesVariantes[props.row.id_Producto_Variante]"
@@ -248,7 +238,7 @@ const localData = ref({
   autorizacion: props.modelValue.autorizacion,
   idalmacen: props.modelValue.idalmacen,
   idalmacenorigen: props.modelValue.idalmacenorigen,
-  idvalores: '', // se calculará antes de enviar
+  idProductoVariante: 0, // se calculará antes de enviar
   descripcion: '', // para edición
 })
 
@@ -275,7 +265,6 @@ const columnasVariantes = computed(() => [
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
   { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
   { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'precio', label: 'Precio', align: 'left' },
   { name: 'cantidad', label: 'Cantidad', align: 'left' },
 ])
 
@@ -323,13 +312,34 @@ async function getDetallePedidoInternal(pedidoId) {
 }
 
 async function getProductosDisponiblesInternal(pedido) {
+  if (!pedido?.id) {
+    console.warn('Pedido sin id, se omite carga de productos')
+    return
+  }
+  console.log(pedido)
+
+  // Normaliza: acepta varias convenciones de nombre
+  const idAlmacen        = pedido.idalmacen        ?? pedido.idAlmacen        ?? null
+  const idAlmacenOrigen  = pedido.idalmacenorigen  ?? pedido.idAlmacenOrigen  ?? null
+
+  // Regla: si origen es 0 (o null/undefined) usar idalmacen; si no, usar origen
+  const almacenId = (idAlmacenOrigen === 0 || idAlmacenOrigen == null)
+    ? idAlmacen
+    : idAlmacenOrigen
+
+  if (almacenId == null) {
+    console.error('No hay idalmacen ni idalmacenorigen válido en el pedido:', pedido)
+    $q.notify({
+      type: 'negative',
+      message: 'El pedido no tiene almacén asignado, no se pueden listar productos',
+    })
+    productosDisponibles.value = []
+    productosFiltrados.value = []
+    return
+  }
+
   try {
-    let endpoint = ''
-    if (pedido.idalmacenorigen == 0) {
-      endpoint = `ListaProductosPedido/${pedido.id}/${pedido.idalmacen}`
-    } else {
-      endpoint = `ListaProductosPedido/${pedido.id}/${pedido.idalmacenorigen}`
-    }
+    const endpoint = `ListaProductosPedido/${pedido.id}/${almacenId}`
     const response = await api.get(endpoint)
     productosDisponibles.value = response.data.map((item) => ({
       label: `${item.codigo} - ${item.descripcion}`,
@@ -337,7 +347,7 @@ async function getProductosDisponiblesInternal(pedido) {
       stock: item.stock,
       descripcion: item.descripcion,
       codigo: item.codigo,
-      idproducto: item.idproducto, // necesario para atributos
+      idproducto: item.idproducto,
     }))
     productosFiltrados.value = [...productosDisponibles.value]
   } catch (error) {
@@ -450,7 +460,7 @@ async function handleFormSubmit() {
           ver: 'registrarDetallePedido',
         })
 
-        const response = await api.post('', formData)
+        const response = await api.post('registrarDetallePedido', formData)
         if (response.data.estado !== 'exito') {
           throw new Error(response.data.mensaje || 'Error al registrar variante')
         }

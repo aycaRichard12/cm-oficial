@@ -462,8 +462,9 @@
       :loading="loadingTable"
     >
       <template v-slot:body="props">
-        <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
-          <q-td auto-width>
+        <q-tr :props="props" :key="`row-${props.row.id ?? props.row.variante?.id_producto_variante}`" :class="props.expand ? 'bg-blue-1' : ''">
+          <q-td auto-width :key="`expand-${props.row.id ?? props.row.variante?.id_producto_variante}`"
+      :colspan="1" >
             <q-btn
               v-if="props.row.productos_detallados?.length > 0"
               size="sm"
@@ -517,7 +518,7 @@
             {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
           </q-td>
 
-          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2">
+          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2" >
             <q-btn
               flat
               round
@@ -537,7 +538,7 @@
               @click="confirmarEliminar(props.row)"
             />
           </q-td>
-          <q-td v-else />
+          <q-td v-else :key="`ops-empty-${props.row.id}`" />
         </q-tr>
 
         <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">

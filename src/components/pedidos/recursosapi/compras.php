@@ -852,7 +852,16 @@ class compras
                 if (isset($atributos[$idVal])) {
                     $detalle['atributos'] = $atributos[$idVal]['valores'];
                     $detalle['sku']       = $atributos[$idVal]['sku'];
+                    $detalle['variante']  = [
+                        'id_producto_variante' => $idVal,
+                        'sku'                  => $atributos[$idVal]['sku'],
+                        'atributos'            => $atributos[$idVal]['valores']
+                    ];
+                } else {
+                    $detalle['variante'] = null;
                 }
+            } else {
+                $detalle['variante'] = null;
             }
         }
         unset($detalle);
