@@ -28,7 +28,7 @@
             :model-value="fecha"
             type="date"
             :rules="fechaRules"
-            @update:model-value="$emit('update:fecha', $event)"
+            @update:model-value="onFechaChange"
             outlined
             dense
             bg-color="white"
@@ -186,6 +186,13 @@ function filterClient(val, update) {
 }
 function setClientInputValue(val) {
   emit('set-client-input', val)
+}
+
+// Fix FECHA: notificar al padre por ambos canales para que actualice el ref
+// `fecha` (v-model) y dispare `cambioFecha` (lógica de reset de validación).
+function onFechaChange(val) {
+  emit('update:fecha', val)
+  emit('fecha-change', val)
 }
 
 function filterSucursal(val, update) {

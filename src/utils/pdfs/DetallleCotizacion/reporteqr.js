@@ -8,6 +8,7 @@ import {
   numeroALetras,
 } from 'src/composables/FuncionesG'
 import QRCode from 'qrcode'
+import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 /**
  * Genera el PDF de una cotización a partir de los datos recibidos.
@@ -170,7 +171,7 @@ async function prepararDatosCotizacion(cot) {
       { label: '', valor: `${cliente.nombre} - ${cliente.nombrecomercial} - ${cliente.sucursal}` },
       { label: '', valor: cliente.direccion || '' },
       { label: '', valor: cliente.email || '' },
-      { label: 'Fecha de Venta', valor: cotizacion.fecha || '' },
+      { label: 'Fecha de Venta', valor: cambiarFormatoFecha(cotizacion.fecha) || '' },
     ],
   }
 

@@ -430,6 +430,17 @@ watch(selectedClient, (newVal) => {
   elegirUnCliente(newVal)
 })
 
+// Fix FECHA: sincronizar la fecha seleccionada con el carrito para que se
+// envíe al backend en `listaProductos`. Con `immediate: true` se garantiza
+// que la fecha por defecto (obtenerFechaActualDato) también se propague.
+watch(
+  fecha,
+  (newVal) => {
+    carritoCO.fecha = newVal
+  },
+  { immediate: true },
+)
+
 const permitirStockvacio = () => {
   permitirStock.value = !permitirStock.value
 }

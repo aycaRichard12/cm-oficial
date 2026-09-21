@@ -24,7 +24,6 @@ export function useCotizacion(options) {
     cargarAlmacenes,
     cargarCLientes,
     idempresa, // nuevo
-    onReset,
   } = options
 
   const pdfData = ref(null)
@@ -39,8 +38,11 @@ export function useCotizacion(options) {
 
   // ─── Envío de cotización ──────────────────────────────────────────────────
   async function enviarCotizacion() {
-    const isValidForm = await cotizacionFormRef.value?.validate()
-    const isValidCliente = await formClientes.value?.validate()
+    // Fix BUG#1: los refs pueden no estar montados en el padre (los <q-form>
+    // viven dentro de los componentes hijos). Si el ref no existe, NO bloqueamos
+    // el flujo: solo validamos cuando el ref esté realmente disponible.
+    const isValidForm = cotizacionFormRef.value ? await cotizacionFormRef.value.validate() : true
+    const isValidCliente = formClientes.value ? await formClientes.value.validate() : true
     if (!isValidForm || !isValidCliente) {
       $q.notify({ type: 'info', message: 'Complete todos los campos requeridos.' })
       return false
@@ -57,11 +59,11 @@ export function useCotizacion(options) {
     carritoCO.cajabanco = idcajaBancoSeleccionada.value
     carritoCO.idcliente = idclienteCO.value
     carritoCO.md5_em = idempresa
-    carritoCO.almacen = almacenesOptions.value
-      .find((obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value))
-      ?.almacen.onCancel(() => {
-        onReset?.()
-      })
+    // Fix BUG#2: `.almacen` es un string; se elimina el encadenamiento
+    // erróneo `.onCancel(...)` (era código pegado de un $q.dialog).
+    carritoCO.almacen = almacenesOptions.value.find(
+      (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
+    )?.almacen
     const formData = new FormData()
     formData.append('ver', 'registrarCotizacion')
     formData.append('filtroALmacen', filtroAlmacenCO.value)
@@ -231,9 +233,7 @@ export function useCotizacion(options) {
       respuesta?.data?.id_firma,
       respuesta?.data?.id,
     ]
-    const idFirma = candidatos.find(
-      (v) => v !== undefined && v !== null && v !== '',
-    )
+    const idFirma = candidatos.find((v) => v !== undefined && v !== null && v !== '')
 
     if (idFirma) {
       carritoCO.idfirma = idFirma

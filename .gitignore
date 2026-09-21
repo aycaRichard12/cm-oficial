@@ -60,3 +60,4 @@ upload_dist.bat
 *.txt
 *.xlsx
 *.bat
+*.bak
