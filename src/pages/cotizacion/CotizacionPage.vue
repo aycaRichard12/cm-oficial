@@ -1293,7 +1293,10 @@
               background: linear-gradient(45deg, #1976d2, #42a5f5);
             "
             @click="enviarDatos"
-            :disable="carritoCO.variablePago === 'dividido' && remainingAmount !== 0"
+            :disable="
+              (carritoCO.variablePago === 'dividido' && remainingAmount !== 0) ||
+              (carritoCO.variablePago === 'directo' && !carritoCO.metodoPago)
+            "
           />
         </q-card-actions>
       </q-card>
@@ -1704,9 +1707,10 @@ watch(
   { deep: true },
 )
 const handleTipoOperacionChange = () => {
-  cotizacionFormRef.value.resetValidation() // Resetear validación
-
-  resetFormulario()
+  cotizacionFormRef.value?.resetValidation() // Resetear validación
+  // FIX BUG#3: no vaciar el carrito al alternar entre Cotización Normal y
+  // Cotización Preferencial; solo se preserva el reset de validación visual.
+  // El reset completo debe quedar explícito en el botón "Cancelar".
   console.log(tipoOperacion.value)
 }
 const cambioFecha = () => {
@@ -2425,6 +2429,20 @@ async function enviarDatos() {
     return
   }
 
+  // FIX BUG#2: validación explícita del método de pago en efectivo directo.
+  if (
+    carritoCO.variablePago === 'directo' &&
+    !carritoCO.credito &&
+    !carritoCO.metodoPago
+  ) {
+    $q.notify({
+      type: 'info',
+      message: 'Seleccione un método de pago antes de confirmar.',
+      actions: [{ icon: 'close', color: 'white', round: true }],
+    })
+    return
+  }
+
   carritoCO.tipoOperacion = tipoOperacion.value?.value
 
   // Preparar los datos de pago según la modalidad seleccionada
@@ -2439,16 +2457,30 @@ async function enviarDatos() {
   }
   // Si es 'dividido', carritoCO.pagosDivididos ya contiene los datos ingresados en el formulario
 
+  // FIX BUG#1: `puntoVenta.value` puede ser null cuando se confirma Preferencial
+  // desde el modal antes de que cargarPuntoVentas() haya resuelto. Se accede de
+  // forma segura y se valida explícitamente para no lanzar TypeError silencioso.
   const pv = puntoVenta.value
+  if (!pv || typeof pv !== 'object' || pv.value == null) {
+    $q.loading.hide()
+    $q.notify({
+      type: 'warning',
+      message: 'Debe seleccionar un Punto de Venta antes de registrar la cotización.',
+      actions: [{ icon: 'close', color: 'white', round: true }],
+    })
+    return
+  }
   carritoCO.ipv = Number(pv.value)
   carritoCO.idalmacen = filtroAlmacenCO.value
   carritoCO.tipopago = carritoCO.credito ? 'credito' : CONSTANTES.tipopago
   carritoCO.cajabanco = idcajaBancoSeleccionada.value
   carritoCO.idcliente = idclienteCO.value
   carritoCO.md5_em = idempresa
+  // FIX BUG#3 relacionado: `.almacen` puede no existir si filtroAlmacenCO no matchea;
+  // se usa optional chaining para evitar un crash idéntico al de puntoVenta.
   carritoCO.almacen = almacenesOptions.value.find(
     (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
-  ).almacen //filtroAlmacenCO.value
+  )?.almacen
   // console.log(carritoCO.almacen)
   // console.log(carritoCO.cajabanco)
   // console.log(carritoCO.cajabanco)
