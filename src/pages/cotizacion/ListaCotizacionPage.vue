@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-md" v-if="!showEditModal">
-    <div class="q-pa-md row justify-between">
+    <div class="q-pa-md row justify-between items-center">
       <q-btn
         color="primary"
         class="btn-res"
@@ -12,7 +12,30 @@
         <q-icon name="add" class="icono" />
         <span class="texto"> <q-icon name="add" />Registrar Cotización</span>
       </q-btn>
-      <q-btn color="negative" icon="mdi-file-pdf-box" label="PDF" @click="cargarPDF" outline />
+
+      <div class="row items-center q-gutter-x-sm">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Cargar Datos"
+          id="btnCargarDatosCotizacion"
+          @click="recargarDatos"
+          outline
+          no-caps
+          :loading="cargandoManual"
+          :disable="loading"
+        >
+          <q-tooltip>Recargar la lista de cotizaciones</q-tooltip>
+        </q-btn>
+        <q-btn
+          color="negative"
+          icon="mdi-file-pdf-box"
+          label="PDF"
+          @click="cargarPDF"
+          outline
+          no-caps
+        />
+      </div>
     </div>
 
     <TableCotizacionPrincipal
@@ -170,6 +193,8 @@ const error = ref(null)
 const isMobile = ref(false)
 const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 const divisa = ref(null)
+const cargandoManual = ref(false)
+let _generarReporteEnVuelo = null
 
 // Table columns for q-table
 
@@ -255,36 +280,43 @@ const closeModalFactura = () => {
   generarReporte()
 }
 
-const generarReporte = async () => {
-  loading.value = true
-
-  const idusuario = usuarioInfo.value?.idusuario
-  if (!idusuario) {
-    $q.notify({
-      type: 'negative',
-      message: 'Información de usuario no disponible.',
-      position: 'top',
-    })
-    loading.value = false
-    return
+const generarReporte = async ({ manual = false } = {}) => {
+  // Guard de concurrencia: si ya hay una petición en vuelo, devolvemos la misma promesa
+  if (_generarReporteEnVuelo) {
+    return _generarReporteEnVuelo
   }
 
-  try {
-    const endpoint = `reportecotizacion/${idusuario}`
-    console.log('recuerda esto', endpoint)
-    const response = await api.get(endpoint)
-    const data = response.data
-    console.log(response.data)
-    if (data[0] === 'error') {
-      console.error(data.error)
+  const ejecutar = async () => {
+    loading.value = true
+
+    const idusuario = usuarioInfo.value?.idusuario
+    if (!idusuario) {
       $q.notify({
         type: 'negative',
-        message: `Error al generar el reporte: ${data.error}`,
+        message: 'Información de usuario no disponible.',
         position: 'top',
       })
-      datosOriginales.value = []
-      datosFiltrados.value = []
-    } else {
+      loading.value = false
+      return
+    }
+
+    try {
+      const endpoint = `reportecotizacion/${idusuario}`
+      const response = await api.get(endpoint)
+      const data = response.data
+
+      if (!Array.isArray(data) || data[0] === 'error') {
+        console.error(data?.error || 'Respuesta inesperada del servidor')
+        $q.notify({
+          type: 'negative',
+          message: `Error al generar el reporte: ${data?.error || 'respuesta inválida'}`,
+          position: 'top',
+        })
+        datosOriginales.value = []
+        datosFiltrados.value = []
+        return
+      }
+
       datosOriginales.value = data
       datosFiltrados.value = data.map((p, index) => ({
         idcotizacion: p.idcotizacion,
@@ -306,25 +338,43 @@ const generarReporte = async () => {
         estadoCobroResumido: p.estadoCobroResumido,
         numFactura: p.numeroFactura,
         nro: index + 1,
-      })) // Initialize with all data
+      }))
+
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: manual ? 'Datos recargados correctamente.' : 'Reporte generado con éxito.',
         position: 'top',
+        timeout: 1500,
       })
-      // Load related data for filters after report generation
+
       await listaAlmacenes()
       await listaCLientes()
+    } catch (error) {
+      console.error('Error al generar el reporte:', error)
+      $q.notify({
+        type: 'negative',
+        message: 'Hubo un error al generar el reporte. Inténtelo de nuevo.',
+        position: 'top',
+      })
+    } finally {
+      loading.value = false
     }
-  } catch (error) {
-    console.error('Error al generar el reporte:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'Hubo un error al generar el reporte. Inténtelo de nuevo.',
-      position: 'top',
-    })
+  }
+
+  _generarReporteEnVuelo = ejecutar().finally(() => {
+    _generarReporteEnVuelo = null
+  })
+
+  return _generarReporteEnVuelo
+}
+
+const recargarDatos = async () => {
+  if (cargandoManual.value || loading.value) return
+  cargandoManual.value = true
+  try {
+    await generarReporte({ manual: true })
   } finally {
-    loading.value = false
+    cargandoManual.value = false
   }
 }
 
@@ -450,63 +500,6 @@ const filtrarYOrdenarDatos = () => {
   datosFiltrados.value = tempDatos
 }
 
-/**const cargarPDF = async () => {
-  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
-    $q.notify({
-      type: 'info',
-      message: 'No se generó ningún reporte para la vista previa.',
-      position: 'top',
-    })
-    return
-  }
-
-  try {
-    resultadoFiltrado.value = refHijo.value?.obtenerDatos
-      ? refHijo.value.obtenerDatos()
-      : datosFiltrados.value
-    const filterReporte = refHijo.value?.getActiveFiltersReport
-      ? refHijo.value.getActiveFiltersReport()
-      : {}
-    const almacen = {
-      almacen: filterReporte?.almacen || 'Todos los almacenes',
-    }
-
-    // Símbolo de divisa para el reporte (igual que en ReporteCotizacionPage)
-    const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
-
-    const resultado = await DPFReporteCotizacion(resultadoFiltrado, almacen, dSimbolo)
-
-    if (!resultado) {
-      $q.notify({
-        type: 'negative',
-        message: 'No se pudo generar el PDF del reporte.',
-        position: 'top',
-      })
-      return
-    }
-
-    if (pdfData.value) {
-      URL.revokeObjectURL(pdfData.value)
-      pdfData.value = null
-    }
-
-    if (isMobile.value && resultado.mobileBlobUrl) {
-      mobileFallbackUrl.value = resultado.mobileBlobUrl
-      showPdfModal.value = true
-    } else {
-      const pdfBlob = resultado.doc.output('blob')
-      pdfData.value = URL.createObjectURL(pdfBlob)
-      showPdfModal.value = true
-    }
-  } catch (err) {
-    console.error('Error al generar la vista previa del PDF:', err)
-    $q.notify({
-      type: 'negative',
-      message: 'Hubo un error al generar la vista previa del PDF.',
-      position: 'top',
-    })
-  }
-}*/
 const cargarPDF = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
