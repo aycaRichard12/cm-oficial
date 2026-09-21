@@ -93,6 +93,8 @@ import { getTipoFactura } from 'src/composables/FuncionesG'
 import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import TableCotizacionPrincipal from 'src/components/cotizacion/TableCotizacionPrincipal.vue'
 import EditarCotizacion from './EditarCotizacion.vue'
+import { obtenerDivisaActiva } from 'src/services/divisaService.js'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales.js'
 const emit = defineEmits(['registrarcotizacion', 'reiniciar', 'cancelarregistro'])
 const showEditModal = ref(false)
 const idCotizacionAEditar = ref(null)
@@ -167,6 +169,7 @@ const usuarioInfo = computed(() => {
 const error = ref(null)
 const isMobile = ref(false)
 const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
+const divisa = ref(null)
 
 // Table columns for q-table
 
@@ -447,6 +450,63 @@ const filtrarYOrdenarDatos = () => {
   datosFiltrados.value = tempDatos
 }
 
+/**const cargarPDF = async () => {
+  if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
+    $q.notify({
+      type: 'info',
+      message: 'No se generó ningún reporte para la vista previa.',
+      position: 'top',
+    })
+    return
+  }
+
+  try {
+    resultadoFiltrado.value = refHijo.value?.obtenerDatos
+      ? refHijo.value.obtenerDatos()
+      : datosFiltrados.value
+    const filterReporte = refHijo.value?.getActiveFiltersReport
+      ? refHijo.value.getActiveFiltersReport()
+      : {}
+    const almacen = {
+      almacen: filterReporte?.almacen || 'Todos los almacenes',
+    }
+
+    // Símbolo de divisa para el reporte (igual que en ReporteCotizacionPage)
+    const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
+
+    const resultado = await DPFReporteCotizacion(resultadoFiltrado, almacen, dSimbolo)
+
+    if (!resultado) {
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudo generar el PDF del reporte.',
+        position: 'top',
+      })
+      return
+    }
+
+    if (pdfData.value) {
+      URL.revokeObjectURL(pdfData.value)
+      pdfData.value = null
+    }
+
+    if (isMobile.value && resultado.mobileBlobUrl) {
+      mobileFallbackUrl.value = resultado.mobileBlobUrl
+      showPdfModal.value = true
+    } else {
+      const pdfBlob = resultado.doc.output('blob')
+      pdfData.value = URL.createObjectURL(pdfBlob)
+      showPdfModal.value = true
+    }
+  } catch (err) {
+    console.error('Error al generar la vista previa del PDF:', err)
+    $q.notify({
+      type: 'negative',
+      message: 'Hubo un error al generar la vista previa del PDF.',
+      position: 'top',
+    })
+  }
+}*/
 const cargarPDF = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
@@ -462,13 +522,13 @@ const cargarPDF = () => {
   const almacen = {
     almacen: filterReporte.almacen || 'Todos los almacenes',
   }
+  const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
 
-  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen)
+  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen, dSimbolo)
   pdfData.value = doc.output('dataurlstring')
 
   showPdfModal.value = true
 }
-
 const generarComprobantePDF = async (id) => {
   loading.value = true
   const idempresa = usuarioInfo.value?.empresa?.idempresa
@@ -548,8 +608,16 @@ onBeforeUnmount(() => {
 })
 onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)
-  await generarReporte()
   isMobile.value = window.innerWidth < 768
+
+  try {
+    divisa.value = await obtenerDivisaActiva(idempresa_md5())
+    console.log('Divisa cargada en ListaCotizacionPage:', divisa.value)
+  } catch (err) {
+    console.error('Error al cargar la divisa activa en ListaCotizacionPage:', err)
+  }
+
+  await generarReporte()
 
   // Detectar datos de Quick Consult
   const quickConsult = localStorage.getItem('quickConsult')
