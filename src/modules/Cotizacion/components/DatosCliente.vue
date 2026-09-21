@@ -135,20 +135,13 @@
         </div>
       </div>
 
-      <ModalfirmaPage
-        :model-value="modalfirmaActivo"
-        :id-entidad="selectedClient"
-        tipo-operacion="CLIENTE"
-        @onSuccess="alTerminarFirma"
-        @onError="alFallarFirma"
-        @update:model-value="$emit('update:modalfirmaActivo', $event)"
-      />
+      <!-- La firma se gestiona en CotizacionPage.vue (unica instancia) -->
     </q-form>
   </q-card-section>
 </template>
 
 <script setup>
-import ModalfirmaPage from 'src/pages/cotizacion/ModalfirmaPage.vue'
+// (ModalfirmaPage migrado a CotizacionPage.vue)
 import {
   tipoOperacionRules,
   fechaRules,
@@ -167,7 +160,7 @@ defineProps({
   filteredSucursales: Array,
   canalventa: [Object, null],
   salesChannels: Array,
-  modalfirmaActivo: Boolean,
+  // (ESLint-fix) sin prop modalfirmaActivo
 })
 
 const emit = defineEmits([
@@ -180,14 +173,12 @@ const emit = defineEmits([
   'filter-sucursal',
   'set-sucursal-input',
   'elegir-sucursal',
-  'on-success-firma',
-  'on-error-firma',
+  // (ESLint-fix) sin emits de firma
   'update:tipoOperacion',
   'update:fecha',
   'update:selectedClient',
   'update:selectedSucursal',
   'update:canalventa',
-  'update:modalfirmaActivo',
 ])
 
 function filterClient(val, update) {
@@ -204,10 +195,5 @@ function setSucursalInputValue(val) {
   emit('set-sucursal-input', val)
 }
 
-function alTerminarFirma(respuesta) {
-  emit('on-success-firma', respuesta)
-}
-function alFallarFirma(err) {
-  emit('on-error-firma', err)
-}
+// (ESLint-fix) elimina funciones de firma muertas
 </script>

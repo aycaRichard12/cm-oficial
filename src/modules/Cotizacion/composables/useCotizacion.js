@@ -216,9 +216,33 @@ export function useCotizacion(options) {
     }
   }
 
+  // (FirmaFix) alTerminarFirma tolerante a variantes
   const alTerminarFirma = (respuesta) => {
-    if (respuesta.id_firma) {
-      carritoCO.idfirma = respuesta.id_firma
+    // El backend puede devolver el id de la firma bajo distintos nombres;
+    // probamos las variantes mas comunes y, si viene anidado, tambien
+    // dentro de `datos` o `data`.
+    const candidatos = [
+      respuesta?.id_firma,
+      respuesta?.idfirma,
+      respuesta?.firma_id,
+      respuesta?.id,
+      respuesta?.datos?.id_firma,
+      respuesta?.datos?.id,
+      respuesta?.data?.id_firma,
+      respuesta?.data?.id,
+    ]
+    const idFirma = candidatos.find(
+      (v) => v !== undefined && v !== null && v !== '',
+    )
+
+    if (idFirma) {
+      carritoCO.idfirma = idFirma
+    } else {
+      console.warn('[firma] Respuesta sin id reconocible:', respuesta)
+      $q.notify({
+        type: 'warning',
+        message: 'Firma recibida pero sin id. Revise la respuesta del servidor.',
+      })
     }
     $q.notify({ type: 'positive', message: 'Documento firmado correctamente' })
   }

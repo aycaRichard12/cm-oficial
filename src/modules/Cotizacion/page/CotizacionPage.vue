@@ -35,13 +35,11 @@
         :filtered-sucursales="filteredSucursales"
         :canalventa="canalventa"
         :sales-channels="salesChannels"
-        :modalfirma-activo="modalfirmaActivo"
         @update:tipoOperacion="tipoOperacion = $event"
         @update:fecha="fecha = $event"
         @update:selectedClient="selectedClient = $event"
         @update:selectedSucursal="selectedSucursal = $event"
         @update:canalventa="canalventa = $event"
-        @update:modalfirmaActivo="modalfirmaActivo = $event"
         @tipo-operacion-change="handleTipoOperacionChange"
         @fecha-change="cambioFecha"
         @registrar-cliente="RegistrarCliente"
@@ -51,8 +49,6 @@
         @filter-sucursal="filterSucursal"
         @set-sucursal-input="setSucursalInputValue"
         @elegir-sucursal="elegirUnaSucursal"
-        @on-success-firma="alTerminarFirma"
-        @on-error-firma="alFallarFirma"
       />
 
       <q-separator class="q-my-xl bg-grey-3" style="height: 2px" />
@@ -130,7 +126,7 @@
             color="primary"
             icon="edit_note"
             label="Firma del Cliente"
-            @click="RegistrarFirma"
+            @click="handleFirmaClick"
             class="q-px-lg bg-white btn-firma"
           />
           <q-btn
@@ -211,6 +207,7 @@ import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperacione
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaActualDato, validarUsuario } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
+import { useQuasar } from 'quasar'
 
 const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
@@ -373,7 +370,6 @@ const {
   cotizacion_proforma,
   handleTipoOperacionChange,
   cambioFecha,
-  RegistrarFirma,
   alTerminarFirma,
   alFallarFirma,
   enviarDatos,
@@ -436,6 +432,19 @@ watch(selectedClient, (newVal) => {
 
 const permitirStockvacio = () => {
   permitirStock.value = !permitirStock.value
+}
+
+const $q = useQuasar()
+
+const handleFirmaClick = () => {
+  if (!selectedClient.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un cliente antes de firmar.',
+    })
+    return
+  }
+  modalfirmaActivo.value = true
 }
 
 onMounted(async () => {

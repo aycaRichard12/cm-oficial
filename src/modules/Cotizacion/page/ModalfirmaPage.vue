@@ -9,7 +9,7 @@
 
       <q-card-section>
         <div class="q-mb-sm text-caption text-grey-7">
-          Firma para: {{ idEntidad.nombre }} {{ idEntidad.nombrecomercial }}
+          Firma para: {{ idEntidad?.nombre }} {{ idEntidad?.nombrecomercial }}
         </div>
         <canvas
           ref="canvasRef"
@@ -51,11 +51,10 @@ const $q = useQuasar()
 // PROPS: Datos que recibe del padre
 const props = defineProps({
   modelValue: Boolean, // Controla si el modal está abierto
-  idEntidad: { type: Object }, // id_cliente o id_operacion
+  idEntidad: { type: Object, default: null }, // (LintFix) default null para idEntidad
   tipoOperacion: { type: String, default: 'CLIENTE' },
 })
 
-console.log(props.idEntidad)
 // EMITS: Eventos que devuelve al padre
 const emit = defineEmits(['update:modelValue', 'onSuccess', 'onError'])
 
@@ -69,12 +68,12 @@ watch(
   () => props.modelValue,
   async (val) => {
     show.value = val
-    console.log(val)
     if (val) {
       await nextTick()
       inicializarCanvas()
     }
   },
+  { immediate: true },
 )
 
 watch(show, (val) => emit('update:modelValue', val))
@@ -129,8 +128,20 @@ const guardarFirma = async () => {
   // Convertimos el base64 a un Blob para enviarlo como archivo real
   const blob = await (await fetch(firmaReducida)).blob()
 
-  formData.append('imagen', blob, `firma_${props.idEntidad}.png`)
-  formData.append('idcliente', props.idEntidad)
+  // Extraer el id real del objeto cliente (soporta objeto o id plano).
+  const idCliente =
+    typeof props.idEntidad === 'object' && props.idEntidad !== null
+      ? (props.idEntidad.id ?? props.idEntidad.idcliente ?? props.idEntidad.idusuario)
+      : props.idEntidad
+
+  if (!idCliente) {
+    $q.notify({ color: 'negative', message: 'Cliente no valido para registrar firma.' })
+    cargando.value = false
+    return
+  }
+
+  formData.append('imagen', blob, `firma_${idCliente}.png`)
+  formData.append('idcliente', String(idCliente))
   formData.append('ver', 'subirFirmaUsuario')
 
   try {
