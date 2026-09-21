@@ -494,7 +494,12 @@
         id="tablaResumenCotizacion"
         :rows="carritoCO.listaProductos"
         :columns="carritoColumns"
-        row-key="idproductoalmacen"
+        :row-key="
+          (row) =>
+            row.idproductovariante != null
+              ? 'var-' + row.idproductovariante
+              : 'prod-' + row.idproductoalmacen
+        "
         flat
         hide-bottom
         class="custom-table q-pt-md"
@@ -504,10 +509,18 @@
         <template v-slot:body="props">
           <q-tr
             :props="props"
+            :key="
+              `row-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+            "
             :class="props.expand ? 'bg-blue-50' : 'hover-row'"
             style="transition: background 0.3s"
           >
-            <q-td auto-width>
+            <q-td
+              auto-width
+              :key="
+                `expand-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+              "
+            >
               <q-btn
                 v-if="props.row.codigosUnicos?.length > 0"
                 size="sm"
@@ -655,7 +668,14 @@
             </q-td>
           </q-tr>
 
-          <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
+          <q-tr
+            v-show="props.expand"
+            :props="props"
+            :key="
+              `expanded-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+            "
+            class="expanded-row bg-blue-50"
+          >
             <q-td colspan="100%" class="q-pa-lg">
               <TableCodigosUnicos
                 v-if="esProductoUnico"
