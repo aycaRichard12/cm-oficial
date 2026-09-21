@@ -15,6 +15,19 @@
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar"
+          outline
+          no-caps
+          class="btn-res q-mr-sm"
+          id="btnRecargarTablaPedidos"
+          :loading="recargando"
+          @click.stop.prevent="recargar"
+        >
+          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+        </q-btn>
         <q-btn color="info" @click="imprimir" outline class="btn-res" id="btnImprimir">
           <q-icon name="picture_as_pdf" class="icono" />
           <span class="texto">Vista Previa PDF</span>
@@ -270,6 +283,7 @@ const tituloNotificacion = computed(() => {
   return `Notificación - Pedido de ${tipo} #${pedidoSeleccionado.value.codigo}`
 })
 const mostrarImportarExcel = ref(false)
+const recargando = ref(false)
 
 //filtroAlmacen
 const props = defineProps({
@@ -289,7 +303,17 @@ const props = defineProps({
 })
 const pedido = ref(null)
 const baucherPedidomodal = ref(false)
-defineEmits(['add', 'edit', 'delete', 'reload'])
+const emit = defineEmits(['add', 'edit', 'delete', 'reload'])
+const recargar = async () => {
+  if (recargando.value) return
+  recargando.value = true
+  try {
+    emit('reload')
+    $q.notify({ type: 'positive', message: 'Solicitando recarga...', position: 'top', timeout: 1200 })
+  } finally {
+    recargando.value = false
+  }
+}
 const tipoestados = { 1: 'Procesado', 2: 'Pendiente', 3: 'Descartado' }
 const pdfData = ref(null)
 console.log(props.almacenes[0])

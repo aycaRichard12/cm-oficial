@@ -71,6 +71,20 @@
             <template #prepend>
               <q-icon name="store" color="primary" />
             </template>
+            <template #append>
+              <q-btn
+                round
+                dense
+                flat
+                size="sm"
+                color="primary"
+                icon="refresh"
+                :loading="isLoadingAlmacenes"
+                @click.stop.prevent="recargarAlmacenes"
+              >
+                <q-tooltip>Recargar almacenes</q-tooltip>
+              </q-btn>
+            </template>
             <template #no-option>
               <q-item>
                 <q-item-section class="text-grey text-caption">
@@ -440,6 +454,16 @@ function onFileSelected(file) {
 /**
  * Handler cuando cambia el almacén seleccionado
  */
+async function recargarAlmacenes() {
+  if (isLoadingAlmacenes.value) return
+  try {
+    await cargarAlmacenes()
+    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar almacenes:', err)
+  }
+}
+
 function onAlmacenChange() {
   resetArchivo()
   statusMessage.value = null

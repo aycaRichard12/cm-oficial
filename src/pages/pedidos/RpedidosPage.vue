@@ -11,6 +11,20 @@
           Administración de Pedidos
         </div>
       </div>
+      <div class="col-12 col-md-auto q-mt-sm q-mt-md-none">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar"
+          outline
+          no-caps
+          id="btnRecargarPedidos"
+          :loading="recargandoTodo"
+          @click.stop.prevent="recargarTodo"
+        >
+          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+        </q-btn>
+      </div>
     </div>
     <!-- Diálogo con Formulario -->
     <q-dialog v-model="showForm" persistent>
@@ -42,6 +56,7 @@
       @delete="confirmDelete"
       @verimagen="onVerimagen"
       @toggle-status="toggleStatus"
+      @reload="recargarTodo"
     />
     <q-dialog v-model="showDetallePedido" persistent>
       <q-card class="responsive-dialog">
@@ -103,6 +118,7 @@ const cargando = ref(false) // Cargando tabla
 const listaAlmacenes = ref([])
 const mostrarImagen = ref(false)
 const imagenSeleccionada = ref('')
+const recargandoTodo = ref(false)
 
 const router = useRouter()
 const ShowWarningDialog = ref(false)
@@ -333,6 +349,19 @@ function handleKeydown(e) {
     showForm.value = false
     showDetallePedido.value = false
     selectedPedido.value = null
+  }
+}
+
+const recargarTodo = async () => {
+  if (recargandoTodo.value) return
+  recargandoTodo.value = true
+  try {
+    await Promise.all([getAlmacen(), getPedidos()])
+    $q.notify({ type: 'positive', message: 'Datos recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar:', err)
+  } finally {
+    recargandoTodo.value = false
   }
 }
 

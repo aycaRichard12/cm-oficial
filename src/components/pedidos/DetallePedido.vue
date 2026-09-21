@@ -34,7 +34,22 @@
           dense
           clearable
           class="full-width"
-        />
+        >
+          <template v-slot:append>
+            <q-btn
+              round
+              dense
+              flat
+              size="sm"
+              color="primary"
+              icon="refresh"
+              :loading="recargandoProductos"
+              @click.stop.prevent="recargarProductos"
+            >
+              <q-tooltip>Recargar productos</q-tooltip>
+            </q-btn>
+          </template>
+        </q-select>
       </div>
 
       <div class="col-12 col-md-2">
@@ -160,6 +175,20 @@
     </div>
   </q-form>
 
+  <div class="row justify-end q-mb-sm">
+    <q-btn
+      color="primary"
+      icon="refresh"
+      label="Recargar Detalle"
+      outline
+      no-caps
+      id="btnRecargarDetallePedido"
+      :loading="recargandoDetalle"
+      @click.stop.prevent="recargarDetalle"
+    >
+      <q-tooltip>Volver a cargar los detalles del pedido</q-tooltip>
+    </q-btn>
+  </div>
   <q-table class="q-mt-lg" :rows="processedRows" :columns="columnas" row-key="id" flat bordered>
     <template v-slot:body-cell-descripcion="props">
       <q-td :props="props">
@@ -257,6 +286,8 @@ const variantesDelProducto = ref([])
 const loadingVariantes = ref(false)
 const cantidadesVariantes = ref({}) // { [idVariante]: cantidad }
 const preciosVariantes = ref({}) // { [idVariante]: precio }
+const recargandoProductos = ref(false)
+const recargandoDetalle = ref(false)
 
 const isEditing = computed(() => !!localData.value.id)
 
@@ -654,6 +685,32 @@ const processedRows = computed(() =>
     numero: index + 1,
   })),
 )
+
+const recargarProductos = async () => {
+  if (recargandoProductos.value) return
+  recargandoProductos.value = true
+  try {
+    await getProductosDisponiblesInternal(props.modelValue)
+    $q.notify({ type: 'positive', message: 'Productos recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar productos:', err)
+  } finally {
+    recargandoProductos.value = false
+  }
+}
+
+const recargarDetalle = async () => {
+  if (recargandoDetalle.value) return
+  recargandoDetalle.value = true
+  try {
+    await getDetallePedidoInternal(props.modelValue.id)
+    $q.notify({ type: 'positive', message: 'Detalle recargado', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar detalle:', err)
+  } finally {
+    recargandoDetalle.value = false
+  }
+}
 
 onMounted(async () => {
   await fetchConfiguracionProductoVariante()
