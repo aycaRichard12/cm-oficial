@@ -132,6 +132,20 @@
                   bg-color="white"
                   hide-bottom-space
                 >
+                  <template v-slot:append>
+                    <q-btn
+                      round
+                      dense
+                      flat
+                      size="sm"
+                      color="primary"
+                      icon="refresh"
+                      :loading="recargandoClientes"
+                      @click.stop.prevent="recargarClientes"
+                    >
+                      <q-tooltip>Recargar clientes</q-tooltip>
+                    </q-btn>
+                  </template>
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
@@ -184,6 +198,20 @@
                 hide-bottom-space
                 class="premium-input"
               >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoSucursales"
+                    @click.stop.prevent="recargarSucursales"
+                  >
+                    <q-tooltip>Recargar sucursales</q-tooltip>
+                  </q-btn>
+                </template>
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey"> No hay resultados </q-item-section>
@@ -205,6 +233,20 @@
                 required
                 :rules="[(val) => !!val || 'Seleccione un canal']"
               >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoCanales"
+                    @click.stop.prevent="recargarCanales"
+                  >
+                    <q-tooltip>Recargar canales</q-tooltip>
+                  </q-btn>
+                </template>
                 <template v-slot:prepend>
                   <q-icon name="point_of_sale" color="blue" />
                 </template>
@@ -248,7 +290,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoAlmacenes"
+                    @click.stop.prevent="recargarAlmacenes"
+                  >
+                    <q-tooltip>Recargar almacenes</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
             <div class="col-12 col-md-4" id="categoriaCotizacion">
               <label
@@ -271,7 +328,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoCategorias"
+                    @click.stop.prevent="recargarCategorias"
+                  >
+                    <q-tooltip>Recargar categorías</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
             <div class="col-12 col-md-4" id="puntoVentaCotizacion">
               <label
@@ -294,7 +366,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoPuntosVenta"
+                    @click.stop.prevent="recargarPuntosVenta"
+                  >
+                    <q-tooltip>Recargar puntos de venta</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
           </div>
         </q-form>
@@ -353,6 +440,20 @@
               @input-value="setProductInputValue"
               @update:model-value="elegirUnProducto"
             >
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  size="sm"
+                  color="primary"
+                  icon="refresh"
+                  :loading="recargandoProductos"
+                  @click.stop.prevent="recargarProductos"
+                >
+                  <q-tooltip>Recargar productos</q-tooltip>
+                </q-btn>
+              </template>
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
@@ -1495,6 +1596,15 @@ const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se u
 const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
 const canalventa = ref(null)
 const salesChannels = ref([])
+
+// Refs de recarga por select
+const recargandoClientes = ref(false)
+const recargandoSucursales = ref(false)
+const recargandoCanales = ref(false)
+const recargandoAlmacenes = ref(false)
+const recargandoCategorias = ref(false)
+const recargandoPuntosVenta = ref(false)
+const recargandoProductos = ref(false)
 
 const error = ref(null)
 const isMobile = ref(false)
@@ -2851,6 +2961,139 @@ async function recibirSeleccionCotizacion(datos) {
     message: `${datos.variantes.length} variante(s) agregada(s) al carrito`,
   })
 }
+// --- Recarga individual de cada select ---
+const recargarClientes = async () => {
+  if (recargandoClientes.value) return
+  recargandoClientes.value = true
+  try {
+    await listaCLientes()
+    $q.notify({ type: 'positive', message: 'Clientes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar clientes:', err)
+  } finally {
+    recargandoClientes.value = false
+  }
+}
+
+const recargarSucursales = async () => {
+  if (recargandoSucursales.value) return
+  if (!idclienteCO.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un cliente antes de recargar sucursales.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoSucursales.value = true
+  try {
+    await selectSucursal(idclienteCO.value)
+    $q.notify({ type: 'positive', message: 'Sucursales recargadas', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar sucursales:', err)
+  } finally {
+    recargandoSucursales.value = false
+  }
+}
+
+const recargarCanales = async () => {
+  if (recargandoCanales.value) return
+  recargandoCanales.value = true
+  try {
+    await cargarCanales()
+    $q.notify({ type: 'positive', message: 'Canales recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar canales:', err)
+  } finally {
+    recargandoCanales.value = false
+  }
+}
+
+const recargarAlmacenes = async () => {
+  if (recargandoAlmacenes.value) return
+  recargandoAlmacenes.value = true
+  try {
+    await listaAlmacenes()
+    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar almacenes:', err)
+  } finally {
+    recargandoAlmacenes.value = false
+  }
+}
+
+const recargarCategorias = async () => {
+  if (recargandoCategorias.value) return
+  if (!idalmacenfiltro.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un almacén antes de recargar categorías.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoCategorias.value = true
+  try {
+    await listaCategoria()
+    $q.notify({ type: 'positive', message: 'Categorías recargadas', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar categorías:', err)
+  } finally {
+    recargandoCategorias.value = false
+  }
+}
+
+const recargarPuntosVenta = async () => {
+  if (recargandoPuntosVenta.value) return
+  if (!idalmacenfiltro.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un almacén antes de recargar puntos de venta.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoPuntosVenta.value = true
+  try {
+    await cargarPuntoVentas()
+    $q.notify({
+      type: 'positive',
+      message: 'Puntos de venta recargados',
+      position: 'top',
+      timeout: 1200,
+    })
+  } catch (err) {
+    console.error('Error al recargar puntos de venta:', err)
+  } finally {
+    recargandoPuntosVenta.value = false
+  }
+}
+
+const recargarProductos = async () => {
+  if (recargandoProductos.value) return
+  if (!idporcentajeventa.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione una categoría antes de recargar productos.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoProductos.value = true
+  try {
+    await listaProductosDisponibles()
+    $q.notify({ type: 'positive', message: 'Productos recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar productos:', err)
+  } finally {
+    recargandoProductos.value = false
+  }
+}
+
 onBeforeUnmount(() => {
   if (pdfData.value) URL.revokeObjectURL(pdfData.value)
   // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
