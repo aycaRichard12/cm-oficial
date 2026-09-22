@@ -64,12 +64,25 @@
 
     <q-dialog v-model="mostrarDetalleCompra" persistent>
       <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-h6 text-white flex justify-between">
+        <q-card-section class="bg-primary text-h6 text-white flex justify-between items-center">
           <div>Detalle Compra</div>
-          <q-btn icon="close" @click="mostrarDetalleCompra = false" flat dense round />
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              :loading="isReloadingDetalle"
+              @click="recargarDetalleCompra"
+            >
+              <q-tooltip>Recargar detalle</q-tooltip>
+            </q-btn>
+            <q-btn icon="close" @click="mostrarDetalleCompra = false" flat dense round />
+          </div>
         </q-card-section>
         <q-card-section>
           <DetalleCompra
+            ref="detalleCompraRef"
             :compra="formularioDetalleCompra"
             @close="cancelarDetalle"
             @update="iniciar"
@@ -160,6 +173,8 @@ const registroActual = ref({
 })
 const showFormEdit = ref(false)
 const formularioDetalleCompra = ref({ ver: 'registrarDetalleCompra' })
+const detalleCompraRef = ref(null)
+const isReloadingDetalle = ref(false)
 const detalleCompra = ref([])
 const productosDisponibles = ref([])
 const listaCajaBancos = ref([])
@@ -415,6 +430,18 @@ async function getDetalleCompra(compra) {
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los detalles de la compra' })
+  }
+}
+
+async function recargarDetalleCompra() {
+  if (isReloadingDetalle.value) return
+  isReloadingDetalle.value = true
+  try {
+    await detalleCompraRef.value?.recargarComponente?.()
+  } catch (error) {
+    console.error('Error al recargar detalle:', error)
+  } finally {
+    isReloadingDetalle.value = false
   }
 }
 

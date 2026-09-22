@@ -7,18 +7,6 @@
         {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
       <div class="row items-center q-gutter-x-sm">
-        <q-btn
-          flat
-          round
-          dense
-          icon="refresh"
-          color="primary"
-          :loading="isReloading"
-          @click="recargarComponente"
-          class="q-mr-sm"
-        >
-          <q-tooltip>Recargar componente</q-tooltip>
-        </q-btn>
         <q-chip
           v-if="esModoEdicion"
           color="warning"
@@ -431,18 +419,6 @@
         Detalle de Productos
       </div>
       <div class="row items-center q-gutter-x-sm">
-        <q-btn
-          v-if="compra.autorizacion != 2"
-          flat
-          round
-          dense
-          icon="refresh"
-          color="primary"
-          :loading="isReloading"
-          @click="recargarComponente"
-        >
-          <q-tooltip>Recargar componente</q-tooltip>
-        </q-btn>
         <q-badge
           color="primary"
           rounded
@@ -737,19 +713,24 @@ async function cargarDatos() {
 }
 
 async function recargarComponente() {
+  if (isReloading.value) return // ✅ Evitar doble disparo
   isReloading.value = true
   try {
     await cargarDatos()
     onResetForm()
-    emit('update')
     $q.notify({
       type: 'positive',
-      message: 'Componente recargado correctamente',
+      message: 'Detalle recargado correctamente',
       position: 'top',
       timeout: 1500,
     })
   } catch (error) {
     console.error('Error al recargar componente:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudo recargar el detalle',
+      position: 'top',
+    })
   } finally {
     isReloading.value = false
   }
@@ -1099,6 +1080,9 @@ onMounted(async () => {
     console.error('Error en inicialización de Cotización:', error)
   }
 })
+
+// ✅ Exponer método público al padre (RcompraPage)
+defineExpose({ recargarComponente })
 </script>
 <style scoped>
 .my-custom-table {
