@@ -1,6 +1,19 @@
 <template>
   <!-- Botones Reportes -->
   <div class="col-8 q-mt-lg flex justify-between q-gutter-sm q-mb-lg">
+    <!-- Recargar -->
+    <q-btn
+      color="primary"
+      outline
+      class="btn-res"
+      @click="$emit('recargar')"
+      id="btnRecargarReporte"
+      :loading="loading"
+    >
+      <q-icon name="refresh" class="icono" />
+      <span class="texto">Recargar</span>
+    </q-btn>
+
     <!-- PDF -->
     <q-btn
       color="negative"
@@ -28,5 +41,8 @@
 </template>
 
 <script setup>
-defineEmits(['imprimirReporte', 'exportarExcel'])
+defineProps({
+  loading: { type: Boolean, default: false },
+})
+defineEmits(['imprimirReporte', 'exportarExcel', 'recargar'])
 </script>

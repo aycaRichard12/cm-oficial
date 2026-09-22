@@ -18,6 +18,17 @@
           <q-input dense debounce="300" v-model="busqueda" id="buscar" outlined>
             <template v-slot:append>
               <q-icon name="search" />
+              <q-btn
+                round
+                dense
+                flat
+                icon="refresh"
+                color="primary"
+                :loading="loading"
+                @click.stop.prevent="$emit('recargar')"
+              >
+                <q-tooltip>Recargar compras</q-tooltip>
+              </q-btn>
             </template>
           </q-input>
         </div>
@@ -33,7 +44,7 @@
         :filter="busqueda"
         dense
       >
-        <template v-slot:top-right> </template>
+
         <template v-slot:body-cell-autorizacion="props">
           <q-td :props="props">
             <q-badge
@@ -167,7 +178,7 @@ const columnas = [
   { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'right' },
   { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
 ]
-defineEmits(['add', 'repDesglosado', 'repCompras', 'edit', 'delete'])
+defineEmits(['add', 'repDesglosado', 'repCompras', 'edit', 'delete', 'recargar'])
 
 const filteredCompra = computed(() => {
   if (!filtroAlmacen.value) {

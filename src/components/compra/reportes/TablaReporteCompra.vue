@@ -2,8 +2,12 @@
   <q-page>
     <div>
       <!-- Botones principales (exportar/imprimir) -->
-      <CompraAcciones @exportar-excel="exportarexcel" @imprimirReporte="imprimirReporte" />
-
+      <CompraAcciones
+        @exportar-excel="exportarexcel"
+        @imprimirReporte="imprimirReporte"
+        @recargar="$emit('recargar')"
+        :loading="loading"
+      />
       <!-- Tabla de compras -->
       <BaseFilterableTable
         id="tabla"
@@ -19,6 +23,7 @@
         flat
         dense
       >
+
         <!-- Columna personalizada: autorización -->
 
         <!-- Columna personalizada: acciones -->
@@ -85,7 +90,7 @@ const props = defineProps({
 })
 
 // Emits
-defineEmits(['detallePdf'])
+defineEmits(['detallePdf', 'recargar'])
 
 // Obtener nombre o símbolo representativo de la divisa
 const nombreDivisa = computed(() => {

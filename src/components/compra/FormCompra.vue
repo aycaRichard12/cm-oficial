@@ -371,8 +371,9 @@ const props = defineProps({
   proveedores: Array,
   cajaBancos: Array,
 })
+const loadingPedidos = ref(false)
 const PedidosAlmacen = ref([])
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['submit', 'cancel', 'recargarProveedores', 'recargarAlmacenes', 'recargarCajaBancos'])
 const pedidos = ref([])
 const localData = ref({
   ...props.modalValue,
@@ -504,6 +505,8 @@ const verificar = () => {
 //   }
 // }
 async function cargarPedidos() {
+  loadingPedidos.value = true
+
   if (!props.almacenes || props.almacenes.length === 0) {
     console.warn('No hay almacenes disponibles para cargar pedidos')
     pedidos.value = []

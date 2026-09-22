@@ -42,6 +42,7 @@
       :fecha-inicio="startDate"
       :fecha-fin="endDate"
       :almacen-seleccionado="almacenActual"
+      @recargar="generarReporte"
       @detalle-pdf="verDetallePDF"
     />
     <q-dialog v-model="showPdfDialog" maximized>

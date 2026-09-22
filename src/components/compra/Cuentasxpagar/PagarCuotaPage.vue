@@ -112,6 +112,7 @@ import { api, apiCt } from 'src/boot/axios'
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const listaCajaBancos = ref([])
+const loadingCajas = ref(false)
 // Se asume una instancia de axios pre-configurada, pero puedes usar axios directamente.
 
 const props = defineProps({
@@ -214,6 +215,7 @@ const onSubmit = async () => {
   }
 }
 async function listarcajasbanco() {
+  loadingCajas.value = true
   try {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
 
@@ -225,11 +227,15 @@ async function listarcajasbanco() {
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+  } finally {
+    loadingCajas.value = false
   }
 }
 onMounted(() => {
   listarcajasbanco()
 })
+
+defineExpose({ listarcajasbanco })
 </script>
 
 <style scoped>

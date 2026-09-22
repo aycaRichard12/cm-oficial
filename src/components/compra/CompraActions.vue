@@ -18,6 +18,7 @@
     <div class="col-auto q-mt-lg flex justify-end q-gutter-x-sm">
       <q-btn
         color="primary"
+        icon="refresh"
         @click="$emit('recargar')"
         class="btn-res"
         outline

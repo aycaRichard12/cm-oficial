@@ -8,6 +8,7 @@
     flat
     bordered
   >
+
     <!-- Slot para personalizar la celda de Estado -->
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
@@ -152,6 +153,8 @@ const ValidarResultado = (data) => {
   cerrarModalformulario()
   emit('actualizar')
 }
+
+defineExpose({ fetchData })
 </script>
 
 <style>

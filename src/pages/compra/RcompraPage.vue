@@ -14,9 +14,21 @@
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary flex justify-between text-h6 text-white">
+        <q-card-section class="bg-primary flex justify-between items-center text-h6 text-white">
           <div>Registrar Compra</div>
-          <q-btn color="white" icon="close" @click="cerrarFormulario" flat round dense />
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              color="white"
+              icon="refresh"
+              flat
+              round
+              dense
+              @click="recargarDatosModal"
+            >
+              <q-tooltip>Recargar datos</q-tooltip>
+            </q-btn>
+            <q-btn color="white" icon="close" @click="cerrarFormulario" flat round dense />
+          </div>
         </q-card-section>
         <q-card-section>
           <form-compra
@@ -26,6 +38,9 @@
             :cajaBancos="listaCajaBancos"
             @submit="guardarRegistro"
             @cancel="cerrarFormulario"
+            @recargarProveedores="cargarProveedores"
+            @recargarAlmacenes="cargarAlmacenes"
+            @recargarCajaBancos="listarcajasbanco"
           />
         </q-card-section>
       </q-card>
@@ -64,12 +79,28 @@
     </q-dialog>
     <q-dialog v-model="showFormEdit" persistent>
       <q-card class="q-pa-md" style="width: 1200px; max-width: 90vw">
+        <div class="row justify-between items-center q-mb-sm">
+          <div class="text-h6">Editar Compra</div>
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              color="primary"
+              @click="cargarProveedores"
+            >
+              <q-tooltip>Recargar proveedores</q-tooltip>
+            </q-btn>
+          </div>
+        </div>
         <FormCompraEditar
           :modalValue="registroActual"
           :proveedores="proveedores"
           :editing="isEditing"
           @submit="guardarRegistro"
           @cancel="cerrarFormulario"
+          @recargarProveedores="cargarProveedores"
         />
       </q-card>
     </q-dialog>
@@ -217,6 +248,14 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     console.error('Error en API:', error)
     $q.notify({ type: 'negative', message: 'Error en la solicitud al servidor' + error })
   }
+}
+
+async function recargarDatosModal() {
+  await Promise.all([
+    cargarProveedores(),
+    cargarAlmacenes(),
+    listarcajasbanco(),
+  ])
 }
 
 async function guardarRegistro(data) {

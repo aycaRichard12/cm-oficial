@@ -142,7 +142,7 @@ const props = defineProps({
 })
 const requiredRule = (val) => !!val || 'Campo requerido'
 
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['submit', 'cancel', 'recargarProveedores'])
 const localData = ref({ ...props.modalValue })
 
 const onSubmit = () => {

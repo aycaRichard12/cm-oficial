@@ -13,7 +13,6 @@
     </div>
 
   <!-- Sección de Filtros -->
-
   <!-- Tabla de Datos -->
   <q-table
     :rows="allRows"
@@ -24,6 +23,7 @@
     flat
     bordered
   >
+
     <!-- Slot para personalizar la celda de Estado -->
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
@@ -161,6 +161,8 @@ const onVerimagen = (item) => {
 }
 
 // --- Acciones de la Tabla ---
+
+defineExpose({ fetchData })
 </script>
 
 <style>

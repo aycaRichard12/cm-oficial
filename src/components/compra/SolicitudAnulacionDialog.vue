@@ -7,7 +7,19 @@
           <q-icon name="block" class="q-mr-sm" />
           Solicitar Anulación de Compra
         </div>
-        <q-btn icon="close" flat round dense @click="handleCancel" />
+        <div class="row q-gutter-x-xs">
+          <q-btn
+            icon="refresh"
+            flat
+            round
+            dense
+            :loading="loadingUsuarios"
+            @click="recargarUsuarios"
+          >
+            <q-tooltip>Recargar usuarios</q-tooltip>
+          </q-btn>
+          <q-btn icon="close" flat round dense @click="handleCancel" />
+        </div>
       </q-card-section>
 
       <q-card-section>
@@ -179,6 +191,15 @@ watch(
     }
   },
 )
+
+async function recargarUsuarios() {
+  loadingUsuarios.value = true
+  try {
+    await loadUsuarios()
+  } finally {
+    loadingUsuarios.value = false
+  }
+}
 
 async function handleConfirm() {
   const isValid = await formRef.value?.validate()
