@@ -374,7 +374,10 @@ const props = defineProps({
 const PedidosAlmacen = ref([])
 const emit = defineEmits(['submit', 'cancel'])
 const pedidos = ref([])
-const localData = ref({ ...props.modalValue })
+const localData = ref({
+  ...props.modalValue,
+  total: Number(props.modalValue?.total) || 0,
+})
 const isIngresoConPedido = computed({
   get() {
     // La vista lee este valor para saber si el toggle está 'encendido'
@@ -399,7 +402,10 @@ const onSubmit = () => {
   localData.value.nombrealmacen = localData.value.almacen?.label || ''
   localData.value.almacen = localData.value.almacen?.value || null
   localData.value.md5empresa = idempresa
-  //console.log('Formulario enviado con datos:', localData.value)
+
+  // Garantizar que SIEMPRE viaje 'total' al backend (0 si es compra nueva)
+  const totalNum = Number(localData.value.total)
+  localData.value.total = Number.isFinite(totalNum) ? totalNum : 0
 
   emit('submit', localData.value)
 }

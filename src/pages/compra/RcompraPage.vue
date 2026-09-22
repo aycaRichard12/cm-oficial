@@ -124,6 +124,7 @@ const registroActual = ref({
   codigo: generarCodigo(),
   nombre: 'CMP-',
   tipoRegistro: 2,
+  total: 0,
   nombrealmacen: '',
 })
 const showFormEdit = ref(false)
@@ -252,6 +253,7 @@ function resetForm() {
     codigo: generarCodigo(),
     nombre: 'CMP-',
     tipoRegistro: 2,
+  total: 0,
   }
   console.log('Formulario reseteado', registroActual.value)
 }
@@ -478,6 +480,7 @@ async function iniciar() {
     codigo: generarCodigo(),
     nombre: 'CMP-',
     tipoRegistro: 2,
+  total: 0,
   }
 }
 onMounted(async () => {
