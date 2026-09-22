@@ -63,6 +63,19 @@
               <template v-slot:prepend>
                 <q-icon name="receipt_long" color="primary" />
               </template>
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  icon="refresh"
+                  color="primary"
+                  :loading="loadingPedidos"
+                  @click.stop.prevent="cargarPedidos"
+                >
+                  <q-tooltip>Recargar pedidos</q-tooltip>
+                </q-btn>
+              </template>
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey text-italic"> No hay resultados </q-item-section>
@@ -93,6 +106,18 @@
             >
               <template v-slot:prepend>
                 <q-icon name="warehouse" color="primary" />
+              </template>
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  icon="refresh"
+                  color="primary"
+                  @click.stop.prevent="$emit('recargarAlmacenes')"
+                >
+                  <q-tooltip>Recargar almacenes</q-tooltip>
+                </q-btn>
               </template>
             </q-select>
           </div>
@@ -195,6 +220,18 @@
             >
               <template v-slot:prepend>
                 <q-icon name="local_shipping" color="grey-6" />
+              </template>
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  icon="refresh"
+                  color="primary"
+                  @click.stop.prevent="$emit('recargarProveedores')"
+                >
+                  <q-tooltip>Recargar proveedores</q-tooltip>
+                </q-btn>
               </template>
               <template v-slot:no-option>
                 <q-item>
@@ -307,6 +344,18 @@
                 </div>
               </template>
 
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  icon="refresh"
+                  color="primary"
+                  @click.stop.prevent="$emit('recargarCajaBancos')"
+                >
+                  <q-tooltip>Recargar caja/bancos</q-tooltip>
+                </q-btn>
+              </template>
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -505,16 +554,17 @@ const verificar = () => {
 //   }
 // }
 async function cargarPedidos() {
+  if (loadingPedidos.value) return // ✅ Evitar doble disparo concurrente
   loadingPedidos.value = true
 
-  if (!props.almacenes || props.almacenes.length === 0) {
-    console.warn('No hay almacenes disponibles para cargar pedidos')
-    pedidos.value = []
-    filteredPedidos.value = [] // También limpiar los filtrados
-    return
-  }
-
   try {
+    if (!props.almacenes || props.almacenes.length === 0) {
+      console.warn('No hay almacenes disponibles para cargar pedidos')
+      pedidos.value = []
+      filteredPedidos.value = [] // También limpiar los filtrados
+      return
+    }
+
     const idAlmacenes = props.almacenes.map((obj) => obj.value)
     const response = await api.get(`listaPedido/${idempresa}`)
 
@@ -545,6 +595,8 @@ async function cargarPedidos() {
       type: 'negative',
       message: 'No se pudieron cargar los Pedidos',
     })
+  } finally {
+    loadingPedidos.value = false // ✅ Siempre resetea el flag
   }
 }
 const filteredProveedores = ref([...props.proveedores])
