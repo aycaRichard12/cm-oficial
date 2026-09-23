@@ -684,15 +684,23 @@ const validarDescripcion = async (scope, row) => {
     return
   }
 
+  // Normaliza: trim + colapsa espacios/tabs/saltos múltiples a un solo espacio
+  const normalizarEspacios = (str) => {
+    if (str == null) return ''
+    return String(str).replace(/\s+/g, ' ').trim()
+  }
+
   // Construye la cadena de atributos: "Talla: 36 Color: Coyote oscuro"
   const buildAtributosStr = (atributos) => {
     if (!Array.isArray(atributos) || atributos.length === 0) return ''
     return atributos
       .map((a) => {
-        const nombre = (a.atributo || a.nombre || '').toString().trim()
-        const valor = (a.valor || '').toString().trim()
-        if (!nombre && !valor) return ''
-        return `${nombre}: ${valor}`
+        const nombre = normalizarEspacios(a.atributo || a.nombre || '')
+        const valor = normalizarEspacios(a.valor || '')
+        if (nombre && valor) return `${nombre}: ${valor}`
+        if (nombre) return nombre
+        if (valor) return valor
+        return ''
       })
       .filter(Boolean)
       .join(' ')
@@ -702,15 +710,19 @@ const validarDescripcion = async (scope, row) => {
     row.idproductovariante != null ||
     (Array.isArray(row.atributos) && row.atributos.length > 0)
 
-  const atributosStr = esVariante ? buildAtributosStr(row.atributos) : ''
-  const descAdicional = scope.value || ''
+  const atributosStr = normalizarEspacios(esVariante ? buildAtributosStr(row.atributos) : '')
+  const descAdicional = normalizarEspacios(scope.value || '')
+
+  // Base sin atributos: si viene de crearItemCarrito() usamos descripcionBase
+  // para evitar duplicar los atributos al reconstruir.
+  const base = normalizarEspacios(row.descripcionBase || row.descripcion || '')
 
   // Orden final: <base> <atributos> (<descAdicional>)
   const partes = []
-  if (row.descripcion) partes.push(row.descripcion)
+  if (base) partes.push(base)
   if (atributosStr) partes.push(atributosStr)
   if (descAdicional) partes.push(`(${descAdicional})`)
-  const descripcionFinal = partes.join(' ')
+  const descripcionFinal = normalizarEspacios(partes.join(' '))
 
   // ----- listaProductos (detalle de carrito) -----
   carrito.listaProductos = carrito.listaProductos.map((prod) => {
@@ -1373,6 +1385,36 @@ function crearItemCarrito(
   sku = '',
   atributos = [],
 ) {
+  // Normaliza: trim + colapsa espacios/tabs/saltos múltiples a un solo espacio
+  const normalizarEspacios = (str) => {
+    if (str == null) return ''
+    return String(str).replace(/\s+/g, ' ').trim()
+  }
+
+  // Construye la cadena de atributos: "Talla: 36 Color: Coyote oscuro"
+  const buildAtributosStr = (attrs) => {
+    if (!Array.isArray(attrs) || attrs.length === 0) return ''
+    return attrs
+      .map((a) => {
+        const nombre = normalizarEspacios(a.atributo || a.nombre || '')
+        const valor = normalizarEspacios(a.valor || '')
+        // Evita generar "Nombre:" sin valor o ": valor" sin nombre
+        if (nombre && valor) return `${nombre}: ${valor}`
+        if (nombre) return nombre
+        if (valor) return valor
+        return ''
+      })
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  const esVariante = idproductovariante != null
+  const atributosStr = normalizarEspacios(esVariante ? buildAtributosStr(atributos) : '')
+  const descripcionBase = normalizarEspacios(producto.descripcion || '')
+  const descripcionConAtributos = normalizarEspacios(
+    atributosStr ? `${descripcionBase} ${atributosStr}` : descripcionBase,
+  )
+
   const item = {
     idproductoalmacen: producto.id,
     cantidad: Number(cantidadProd),
@@ -1380,7 +1422,10 @@ function crearItemCarrito(
     idstock: producto.idstock,
     idporcentaje: producto.idporcentaje,
     candiponible: Number(producto.stock),
-    descripcion: producto.descripcion,
+    descripcion: descripcionConAtributos,
+    // Se conserva la base para que validarDescripcion() pueda reconstruir
+    // la cadena sin duplicar los atributos.
+    descripcionBase: descripcionBase,
     descripcionAdicional: '',
     codigo: producto.codigo,
     id: Number(producto.id),
@@ -1389,7 +1434,7 @@ function crearItemCarrito(
     despachado: Number(producto.stock) == 0 ? 2 : 1,
   }
 
-  if (idproductovariante != null) {
+  if (esVariante) {
     item.idproductovariante = Number(idproductovariante)
     item.sku = sku
     item.atributos = atributos
@@ -1400,7 +1445,8 @@ function crearItemCarrito(
     codigoProducto: producto.codigo,
     codigoActividadSin: producto.actividadsin,
     codigoProductoSin: producto.codigosin,
-    descripcion: producto.descripcion,
+    // La descripción ya incluye los atributos desde el alta.
+    descripcion: descripcionConAtributos,
     unidadMedida: producto.unidadsin,
     precioUnitario: formatear(precio),
     subTotal: decimas(redondear(parseFloat(cantidadProd) * parseFloat(precio))),
@@ -1411,7 +1457,7 @@ function crearItemCarrito(
     codigoNandina: producto.codigonandina,
   }
 
-  if (idproductovariante != null) {
+  if (esVariante) {
     itemFactura.idproductovariante = Number(idproductovariante)
     itemFactura.sku = sku
   }
