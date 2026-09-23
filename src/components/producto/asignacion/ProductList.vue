@@ -63,7 +63,23 @@
     bordered
   >
     <!-- Buscador -->
-
+    <template v-slot:body-cell-estado="props">
+      <q-td :props="props" class="text-center">
+        <q-btn
+          flat
+          round
+          dense
+          :icon="Number(props.row.estado) === 1 ? 'thumb_up' : 'thumb_down'"
+          :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
+          @click="$emit('toggle-estado', props.row)"
+          :disable="props.row.estado === undefined"
+        >
+          <q-tooltip>
+            {{ Number(props.row.estado) === 1 ? 'Desactivar producto' : 'Activar producto' }}
+          </q-tooltip>
+        </q-btn>
+      </q-td>
+    </template>
     <!-- Acciones -->
     <template v-slot:body-cell-opciones="props">
       <q-td :props="props" class="text-nowrap">
@@ -133,6 +149,7 @@ const emit = defineEmits([
   'add',
   'onPrintReport',
   'onSeleccion_almacen',
+  'toggle-estado',
 ])
 const productoLista = computed(() => props.rows)
 // Estado local
@@ -199,7 +216,7 @@ const columns = [
   },
   {
     name: 'estadoproducto',
-    label: 'Estado',
+    label: 'Estado Fisico',
     field: 'estadoproducto',
     align: 'left',
     sortable: true,
@@ -220,6 +237,8 @@ const columns = [
     sortable: true,
   },
   { name: 'fecha', label: 'Fecha creación', field: 'fecha', align: 'center', sortable: true },
+  { name: 'fecha', label: 'Fecha creación', field: 'fecha', align: 'center', sortable: true },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
   { name: 'opciones', label: 'Acciones', field: 'actions', align: 'center' },
 ]
 

@@ -1,6 +1,14 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="titulo">Asignar Producto</div>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="inventory" size="md" class="q-mr-sm" />
+          Asignar Producto
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Asignar Producto</div>
+      </div>
+    </div>
     <div class="row q-col-gutter-md">
       <!-- Main Content Area -->
       <div class="col-12">
@@ -14,6 +22,7 @@
             @add="handleAgregar"
             @onPrintReport="handleImprimir"
             @onSeleccion_almacen="handleSeleccionAlmacen"
+            @toggle-estado="cambiarEstado"
           />
         </div>
 
@@ -126,7 +135,7 @@ const redirectToAssignment = () => {
 
 const getProductoAlmacen = async () => {
   try {
-    const response = await api.get(`listaProductoAlmacen/${idempresa}`) // ejemplo
+    const response = await api.get(`listarProductoAlmacenAsignados/${idempresa}`) // ejemplo
     console.log(response.data)
     productos.value = response.data
   } catch (error) {
@@ -158,6 +167,11 @@ function handleEliminar(item) {
           type: 'positive',
           message: response.data.mensaje,
         })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: response.data.mensaje || 'Error al eliminar el producto',
+        })
       }
     } catch (error) {
       console.error('Error al cargar datos:', error)
@@ -165,6 +179,75 @@ function handleEliminar(item) {
         type: 'negative',
         message: 'No se pudieron cargar los datos',
       })
+    }
+  })
+}
+const cambiandoEstado = ref(false) // para evitar múltiples clics
+
+async function cambiarEstado(item) {
+  console.log(item)
+  // Prevenir clics mientras se procesa
+  if (cambiandoEstado.value) return
+
+  // Determinar mensaje según estado actual (asumiendo que item.estado = 1 activo, 2 inactivo)
+  const nuevoEstado = Number(item.estado) === 1 ? 'desactivar' : 'activar'
+  const mensajeConfirmacion = `¿Estás seguro de que deseas ${nuevoEstado} el producto "${item.descripcion}"?`
+
+  $q.dialog({
+    title: 'Confirmar cambio de estado',
+    message: mensajeConfirmacion,
+    cancel: {
+      label: 'Cancelar',
+      color: 'negative',
+      flat: true,
+    },
+    ok: {
+      label: 'Confirmar',
+      color: 'primary',
+    },
+    persistent: true,
+  }).onOk(async () => {
+    cambiandoEstado.value = true
+
+    try {
+      // Usar método HTTP apropiado (PUT o POST) y pasar el id en el cuerpo o parámetro
+      const response = await api.get(`actualizarEstadoProductoAlmacen/${item.id}`)
+      // O si tu backend solo acepta GET: const response = await api.get(`/actualizarEstadoProductoAlmacen/${item.id_productos_almacen}`)
+
+      if (response.data.estado === 'exito') {
+        // Recargar la lista de productos
+        await getProductoAlmacen() // tu función que refresca la tabla
+
+        $q.notify({
+          type: 'positive',
+          message: response.data.mensaje || 'Estado actualizado correctamente',
+          position: 'top',
+          timeout: 3000,
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: response.data.mensaje || 'No se pudo cambiar el estado',
+          position: 'top',
+          timeout: 5000,
+        })
+      }
+    } catch (error) {
+      console.error('Error al cambiar estado:', error)
+      let mensajeError = 'Ocurrió un error inesperado'
+      if (error.response) {
+        mensajeError = error.response.data?.mensaje || `Error ${error.response.status}`
+      } else if (error.request) {
+        mensajeError = 'No se recibió respuesta del servidor'
+      }
+      $q.notify({
+        type: 'negative',
+        message: mensajeError,
+        position: 'top',
+        timeout: 5000,
+      })
+    } finally {
+      cambiandoEstado.value = false
     }
   })
 }

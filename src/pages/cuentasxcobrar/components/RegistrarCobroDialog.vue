@@ -4,7 +4,9 @@
       <!-- Cabecera -->
       <q-card-section class="bg-primary text-white row items-center q-py-sm">
         <q-icon name="payments" size="sm" class="q-mr-sm" />
-        <div class="text-h6 text-weight-bold">Registrar Cobro</div>
+        <div class="text-h6 text-weight-bold">
+          {{ modoEdicion ? 'Editar Cobro' : 'Registrar Cobro' }}
+        </div>
         <q-space />
         <q-btn icon="close" flat round dense @click="cerrar" />
       </q-card-section>
@@ -324,7 +326,7 @@
 
           <div class="q-mt-lg row justify-center q-gutter-sm">
             <q-btn
-              label="Registrar Cobro"
+              :label="modoEdicion ? 'Guardar Cambios' : 'Registrar Cobro'"
               type="submit"
               color="primary"
               icon="check_circle"
@@ -351,13 +353,54 @@ const props = defineProps({
   formulario: Object,
   divisa: String,
   isCompressing: Boolean,
+  modoEdicion: { type: Boolean, default: false },
+  cobroAEditar: { type: Object, default: null },
 })
+
+const montoOriginal = ref(0)
+watch(
+  () => props.modelValue,
+  (abierto) => {
+    if (abierto && props.modoEdicion && props.cobroAEditar) {
+      // Precargar datos del cobro a editar en localFormulario
+      Object.assign(localFormulario, {
+        fecha: props.cobroAEditar.fecha || new Date().toISOString().split('T')[0],
+        numeroCobros: props.cobroAEditar.ncuotas || 1,
+        totalCobro: props.cobroAEditar.total || props.cobroAEditar.monto || 0,
+        idcajaBancoSeleccionada: props.cobroAEditar.idcaja_bancos || null,
+        comprobante: null, // Se cargará la URL existente en otro campo
+        urlComprobanteExistente:
+          props.cobroAEditar.imagen ||
+          props.cobroAEditar.urlpdf ||
+          props.cobroAEditar.foto_detalle_cobro ||
+          '',
+        iddetalle_cobro: props.cobroAEditar.id,
+      })
+      montoOriginal.value = parseFloat(props.cobroAEditar.total || props.cobroAEditar.monto || 0)
+      // Ajustar saldoPendiente para validaciones: saldoPendiente + montoOriginal
+      localFormulario.saldoPendiente = (
+        parseFloat(localFormulario.saldoPendiente) + montoOriginal.value
+      ).toFixed(2)
+    }
+  },
+  { immediate: true },
+)
+
+function guardar() {
+  if (props.modoEdicion) {
+    // Emitir evento de edición con los datos del formulario
+    emit('editar', { ...localFormulario })
+  } else {
+    emit('submit', { ...localFormulario })
+  }
+}
 const listaCajaBancos = ref([])
 
 const emit = defineEmits([
   'update:modelValue',
   'close',
   'submit',
+  'editar', // <-- Agregado
   'handle-archivo',
   'calcular-totales',
   'calcular-numero-cobros',
@@ -453,11 +496,11 @@ function cerrar() {
   emit('close')
 }
 
-function guardar() {
-  // Same here, avoid JSON.stringify to not destroy File objects
-  console.log('Formulario a enviar:', localFormulario)
-  emit('submit', { ...localFormulario })
-}
+// function guardar() {
+//   // Same here, avoid JSON.stringify to not destroy File objects
+//   console.log('Formulario a enviar:', localFormulario)
+//   emit('submit', { ...localFormulario })
+// }
 
 watch(model, (abierto) => {
   if (!abierto && previewUrl.value) {

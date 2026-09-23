@@ -1,5 +1,17 @@
 <template>
   <q-page padding>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para precios sugeridos o análisis de mercado -->
+          <q-icon name="trending_up" size="md" class="q-mr-sm" />
+          Precios Sugeridos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Gestión de estrategias y valores de venta recomendados
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">

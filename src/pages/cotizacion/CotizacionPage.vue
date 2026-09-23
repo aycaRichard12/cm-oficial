@@ -132,6 +132,20 @@
                   bg-color="white"
                   hide-bottom-space
                 >
+                  <template v-slot:append>
+                    <q-btn
+                      round
+                      dense
+                      flat
+                      size="sm"
+                      color="primary"
+                      icon="refresh"
+                      :loading="recargandoClientes"
+                      @click.stop.prevent="recargarClientes"
+                    >
+                      <q-tooltip>Recargar clientes</q-tooltip>
+                    </q-btn>
+                  </template>
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
@@ -184,6 +198,20 @@
                 hide-bottom-space
                 class="premium-input"
               >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoSucursales"
+                    @click.stop.prevent="recargarSucursales"
+                  >
+                    <q-tooltip>Recargar sucursales</q-tooltip>
+                  </q-btn>
+                </template>
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey"> No hay resultados </q-item-section>
@@ -192,7 +220,40 @@
               </q-select>
               <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
             </div>
+            <div class="col-8 col-md-6">
+              <label for="canalVenta">Canal de venta*</label>
+              <q-select
+                v-model="canalventa"
+                id="canalVenta"
+                dense
+                outlined
+                :options="salesChannels"
+                option-label="label"
+                option-value="value"
+                required
+                :rules="[(val) => !!val || 'Seleccione un canal']"
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoCanales"
+                    @click.stop.prevent="recargarCanales"
+                  >
+                    <q-tooltip>Recargar canales</q-tooltip>
+                  </q-btn>
+                </template>
+                <template v-slot:prepend>
+                  <q-icon name="point_of_sale" color="blue" />
+                </template>
+              </q-select>
+            </div>
           </div>
+
           <ModalfirmaPage
             v-model="modalfirmaActivo"
             :id-entidad="selectedClient"
@@ -229,7 +290,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoAlmacenes"
+                    @click.stop.prevent="recargarAlmacenes"
+                  >
+                    <q-tooltip>Recargar almacenes</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
             <div class="col-12 col-md-4" id="categoriaCotizacion">
               <label
@@ -252,7 +328,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoCategorias"
+                    @click.stop.prevent="recargarCategorias"
+                  >
+                    <q-tooltip>Recargar categorías</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
             <div class="col-12 col-md-4" id="puntoVentaCotizacion">
               <label
@@ -275,7 +366,22 @@
                 bg-color="white"
                 hide-bottom-space
                 class="premium-input"
-              />
+              >
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    flat
+                    size="sm"
+                    color="primary"
+                    icon="refresh"
+                    :loading="recargandoPuntosVenta"
+                    @click.stop.prevent="recargarPuntosVenta"
+                  >
+                    <q-tooltip>Recargar puntos de venta</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-select>
             </div>
           </div>
         </q-form>
@@ -299,7 +405,7 @@
 
       <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
         <div class="row q-col-gutter-lg items-end">
-          <div class="col-12 col-md-6" id="productoCotizacion">
+          <div class="col-12 col-md-4" id="productoCotizacion">
             <div class="flex justify-between items-center q-mb-sm">
               <label
                 class="text-weight-bold text-grey-9 block"
@@ -334,12 +440,50 @@
               @input-value="setProductInputValue"
               @update:model-value="elegirUnProducto"
             >
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  size="sm"
+                  color="primary"
+                  icon="refresh"
+                  :loading="recargandoProductos"
+                  @click.stop.prevent="recargarProductos"
+                >
+                  <q-tooltip>Recargar productos</q-tooltip>
+                </q-btn>
+              </template>
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey"> No hay resultados </q-item-section>
                 </q-item>
               </template>
             </q-select>
+          </div>
+
+          <div class="col-12 col-md-2" id="stockCotizacion">
+            <label
+              class="text-weight-bold text-grey-9 q-mb-sm block"
+              style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
+              for="stock"
+              >Stock Actual</label
+            >
+            <q-input
+              id="stock"
+              v-model="cantidaddisponibleCO"
+              readonly
+              outlined
+              dense
+              bg-color="grey-2"
+              hide-bottom-space
+              class="premium-input text-center"
+              placeholder="0"
+            >
+              <template v-slot:prepend>
+                <q-icon name="inventory_2" size="xs" color="grey-7" />
+              </template>
+            </q-input>
           </div>
 
           <div class="col-12 col-md-2" id="cantidadCotizacion">
@@ -355,6 +499,7 @@
               type="number"
               :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
               :readonly="esProductoUnico && registrarComoProductoUnico"
+              :disable="productoTieneVariantes"
               required
               outlined
               dense
@@ -379,6 +524,7 @@
               required
               outlined
               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
+              :disable="productoTieneVariantes"
               dense
               bg-color="white"
               hide-bottom-space
@@ -414,8 +560,16 @@
             </q-btn>
           </div>
         </div>
-
+        <SelectorVariantesProducto
+          v-if="ConfiguracionProductoVariante && selectedProduct"
+          :idProducto="selectedProduct.id"
+          :disabledVariants="disabledVariantsCotizacion"
+          @confirmar="recibirSeleccionCotizacion"
+          ref="selectorRef"
+          class="q-mt-lg"
+        />
         <UniqueProductSelector
+          v-if="esProductoUnico"
           :product-id="idproductoalmacenCO"
           :is-unique="esProductoUnico && registrarComoProductoUnico"
           :cantidad-requerida="cantidadCO"
@@ -441,7 +595,12 @@
         id="tablaResumenCotizacion"
         :rows="carritoCO.listaProductos"
         :columns="carritoColumns"
-        row-key="idproductoalmacen"
+        :row-key="
+          (row) =>
+            row.idproductovariante != null
+              ? 'var-' + row.idproductovariante
+              : 'prod-' + row.idproductoalmacen
+        "
         flat
         hide-bottom
         class="custom-table q-pt-md"
@@ -451,10 +610,18 @@
         <template v-slot:body="props">
           <q-tr
             :props="props"
+            :key="
+              `row-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+            "
             :class="props.expand ? 'bg-blue-50' : 'hover-row'"
             style="transition: background 0.3s"
           >
-            <q-td auto-width>
+            <q-td
+              auto-width
+              :key="
+                `expand-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+              "
+            >
               <q-btn
                 v-if="props.row.codigosUnicos?.length > 0"
                 size="sm"
@@ -497,6 +664,24 @@
                 style="font-family: 'Inter', sans-serif"
               >
                 {{ props.row.descripcion }}
+              </div>
+
+              <div v-if="props.row.atributos?.length" class="q-mt-xs row q-gutter-xs items-center">
+                <q-badge
+                  v-if="props.row.sku"
+                  outline
+                  color="primary"
+                  :label="props.row.sku"
+                  class="q-px-xs"
+                />
+                <q-badge
+                  v-for="attr in props.row.atributos"
+                  :key="attr.atributo"
+                  outline
+                  color="grey-7"
+                  :label="`${attr.atributo}: ${attr.valor}`"
+                  class="q-px-xs"
+                />
               </div>
 
               <div
@@ -574,7 +759,7 @@
                 round
                 dense
                 size="sm"
-                @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
+                @click="eliminarProductoCarrito(props.row)"
                 class="hover-shake"
               >
                 <q-tooltip class="bg-negative text-weight-medium shadow-3"
@@ -584,9 +769,17 @@
             </q-td>
           </q-tr>
 
-          <q-tr v-show="props.expand" :props="props" class="expanded-row bg-blue-50">
+          <q-tr
+            v-show="props.expand"
+            :props="props"
+            :key="
+              `expanded-${props.row.idproductovariante ?? props.row.idproductoalmacen}`
+            "
+            class="expanded-row bg-blue-50"
+          >
             <q-td colspan="100%" class="q-pa-lg">
               <TableCodigosUnicos
+                v-if="esProductoUnico"
                 v-model="props.row.codigosUnicos"
                 :parent-row="props.row"
                 :can-delete="true"
@@ -679,57 +872,76 @@
       </q-table>
 
       <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
-        <div class="row justify-end items-center q-gutter-x-lg">
+        <div class="row justify-end items-center q-gutter-x-md">
+          <!-- Botón Cancelar -->
+          <q-btn
+            flat
+            color="negative"
+            icon="close"
+            label="Cancelar"
+            @click="$emit('cancelarregistro')"
+            class="q-px-md"
+            style="border-radius: 100px; font-weight: 500"
+          />
+
+          <!-- Botón Firma del Cliente -->
           <q-btn
             outline
             color="primary"
-            icon="draw"
-            @click="RegistrarFirma"
+            icon="edit_note"
             label="Firma del Cliente"
-            class="q-px-lg bg-white shadow-1"
-            style="border-radius: 8px; font-weight: 600"
+            @click="RegistrarFirma"
+            class="q-px-lg bg-white"
+            style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
           />
+
+          <!-- Botón Registrar Cotización -->
           <q-btn
-            label="Registrar Cotización"
+            label="Continuar"
             color="primary"
             icon="task_alt"
             size="lg"
             :disable="carritoCO.listaProductos.length === 0"
             @click="cotizacion_proforma"
-            class="q-px-xl text-weight-bolder shadow-4"
-            style="
-              border-radius: 12px;
-              background: linear-gradient(45deg, #1976d2, #42a5f5);
-              transition: transform 0.2s;
+            class="q-px-xl text-weight-bolder"
+            :class="{ 'gradient-btn': carritoCO.listaProductos.length > 0 }"
+            style="border-radius: 40px; transition: all 0.2s ease"
+            :style="
+              carritoCO.listaProductos.length === 0
+                ? 'border-radius: 40px'
+                : 'background: linear-gradient(135deg, #1976d2, #1565c0); box-shadow: 0 4px 12px rgba(25,118,210,0.3); border-radius: 40px'
             "
           />
         </div>
       </q-card-section>
     </q-card>
 
-    <!-- Diálogo: metodo de pago -->
+    <!-- Diálogo: método de pago -->
     <q-dialog v-model="modalmetodopago" backdrop-filter="blur(4px)" persistent>
-      <q-card
-        class="responsive-dialog shadow-10 column no-wrap"
-        style="
-          min-width: 500px;
-          max-width: 750px;
-          max-height: 90vh;
-          border-radius: 16px;
-          overflow: hidden;
-        "
-      >
+      <q-card class="responsive-dialog shadow-24 column no-wrap">
+        <!-- Header del Diálogo -->
         <q-card-section
-          class="bg-primary text-white q-py-md flex justify-between items-center shrink-0"
+          class="bg-primary text-white q-py-md q-px-md q-px-sm-md flex justify-between items-center shrink-0"
           style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
         >
           <div class="flex items-center">
-            <div class="bg-white q-pa-xs rounded-borders q-mr-md shadow-1">
-              <q-icon name="payments" class="text-primary" size="24px" />
+            <div
+              class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner"
+              style="backdrop-filter: blur(8px); border-radius: 12px"
+            >
+              <q-icon name="account_balance_wallet" class="text-white" size="24px" />
             </div>
-            <span class="text-h6 text-weight-bold" style="font-family: 'Inter', sans-serif">
-              Método de Pago
-            </span>
+            <div>
+              <div
+                class="text-h6 text-weight-bolder"
+                style="font-family: 'Inter', sans-serif; line-height: 1.2"
+              >
+                Método de Pago
+              </div>
+              <div class="text-caption text-white/80 text-weight-medium gt-xs">
+                Configure la modalidad y detalles del pago
+              </div>
+            </div>
           </div>
           <q-btn
             icon="close"
@@ -737,49 +949,80 @@
             flat
             round
             dense
-            class="bg-white text-primary shadow-1"
-            size="sm"
+            class="text-white/80 hover:text-white transition-all"
+            size="md"
           />
         </q-card-section>
 
-        <q-card-section class="col scroll q-pa-lg bg-grey-1">
-          <div class="row justify-center q-mb-xl">
+        <q-card-section class="col scroll q-pa-lg q-pa-sm-md bg-grey-1 content-section">
+          <!-- Selector de Modalidad Principal -->
+          <div class="row justify-center q-mb-xl q-mb-md-sm">
             <q-btn-toggle
               v-model="carritoCO.credito"
               toggle-color="primary"
-              color="white"
-              text-color="primary"
+              toggle-text-color="white"
+              color="grey-1"
+              text-color="grey-7"
               unelevated
               rounded
-              padding="10px 40px"
-              class="shadow-3 text-weight-bolder"
-              style="border: 1px solid #e0e0e0; font-family: 'Inter', sans-serif"
+              no-caps
+              class="custom-premium-toggle border-grey-3 shadow-2"
               @update:model-value="handleTipoPagoGeneralChange"
               :options="[
-                { label: 'Pago Efectivo', value: false, icon: 'payments' },
-                { label: 'Pago a Crédito', value: true, icon: 'credit_score' },
+                { value: false, slot: 'efectivo' },
+                { value: true, slot: 'credito' },
               ]"
-            />
+            >
+              <!-- Custom Slots for perfect flex control -->
+              <template v-slot:efectivo>
+                <div
+                  class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+                  style="padding: 4px 12px"
+                >
+                  <q-icon name="payments" size="18px" />
+                  <span>Efectivo</span>
+                </div>
+              </template>
+
+              <template v-slot:credito>
+                <div
+                  class="row no-wrap text-weight-bold items-center q-gutter-x-xs"
+                  style="padding: 4px 12px"
+                >
+                  <q-icon name="credit_score" size="18px" />
+                  <span>Crédito</span>
+                </div>
+              </template>
+            </q-btn-toggle>
           </div>
 
+          <!-- SECCIÓN: PAGO EFECTIVO -->
           <div v-if="!carritoCO.credito" class="animate__animated animate__fadeIn">
-            <div
-              class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
-              style="width: fit-content; border-left: 4px solid #1976d2"
-            >
-              MODALIDAD: EFECTIVO
+            <div class="flex items-center justify-between q-mb-lg">
+              <div
+                class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
+                style="border-left: 4px solid #1976d2"
+              >
+                <q-icon name="payments" class="q-mr-sm" />
+                MODALIDAD: EFECTIVO
+              </div>
+
+              <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
+                Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+              </div>
             </div>
 
+            <!-- Selector de tipo de pago en efectivo -->
             <div class="q-gutter-x-xl q-mb-xl row justify-center">
               <q-radio
-                v-model="variablePago"
+                v-model="carritoCO.variablePago"
                 val="directo"
                 color="positive"
                 label="Pago Único"
                 class="text-weight-bolder text-subtitle2"
               />
               <q-radio
-                v-model="variablePago"
+                v-model="carritoCO.variablePago"
                 val="dividido"
                 color="orange-8"
                 label="Pago Dividido"
@@ -787,24 +1030,31 @@
               />
             </div>
 
-            <div v-if="variablePago === 'directo'" class="row q-col-gutter-lg q-pt-sm">
-              <div class="col-12">
+            <!-- Caso: Pago Único -->
+            <div
+              v-if="carritoCO.variablePago === 'directo'"
+              class="row q-col-gutter-lg justify-center q-pt-sm"
+            >
+              <div class="col-12 col-md-10">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
+                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 12px"
                 >
-                  Método de pago <span class="text-negative">*</span>
+                  Método de pago principal <span class="text-negative">*</span>
                 </label>
                 <q-select
-                  v-model="metodoPago"
+                  v-model="carritoCO.metodoPago"
                   dense
                   outlined
                   bg-color="white"
                   :options="metodosPagos"
+                  emit-value
+                  map-options
                   option-label="label"
                   option-value="value"
                   :rules="[(val) => !!val || 'Seleccione un método de pago']"
                   class="premium-input"
+                  style="border-radius: 8px"
                 >
                   <template v-slot:prepend>
                     <q-icon name="account_balance_wallet" color="primary" />
@@ -813,16 +1063,22 @@
               </div>
             </div>
 
-            <div v-else-if="variablePago === 'dividido'" class="q-pt-sm">
+            <!-- Caso: Pago Dividido -->
+            <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
+              <div class="text-caption text-grey-7 q-mb-md flex items-center">
+                <q-icon name="info" size="xs" class="q-mr-xs" />
+                Distribuya el monto total entre diferentes métodos de pago.
+              </div>
+
               <div
-                v-for="(payment, index) in pagosDivididos"
+                v-for="(payment, index) in carritoCO.pagosDivididos"
                 :key="index"
-                class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-sm shadow-1 rounded-borders"
-                style="border: 1px solid #eee"
+                class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
               >
                 <div class="col-12 col-md-5">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
-                    >Método *</label
+                  <label
+                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                    >Método de Pago *</label
                   >
                   <q-select
                     v-model="payment.metodoPago"
@@ -830,14 +1086,18 @@
                     outlined
                     bg-color="grey-1"
                     :options="metodosPagos"
+                    emit-value
+                    map-options
                     option-label="label"
                     option-value="value"
                     :rules="[(val) => !!val || 'Requerido']"
                     hide-bottom-space
+                    class="rounded-borders"
                   />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
+                  <label
+                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
                     >Monto ({{ divisaActiva.tipo }})</label
                   >
                   <q-input
@@ -849,10 +1109,12 @@
                     @update:model-value="calculateRemainingAmount(index)"
                     :rules="[(val) => !!val || 'Requerido']"
                     hide-bottom-space
+                    class="rounded-borders"
                   />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
+                  <label
+                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
                     >Porcentaje (%)</label
                   >
                   <q-input
@@ -864,16 +1126,17 @@
                     @update:model-value="calculateAmountFromPercentage(index)"
                     :rules="[(val) => !!val || 'Requerido']"
                     hide-bottom-space
+                    class="rounded-borders"
                   />
                 </div>
-                <div class="col-12 col-md-1 flex flex-center" style="padding-top: 26px">
+                <div class="col-12 col-md-1 flex flex-center" style="padding-top: 24px">
                   <q-btn
-                    v-if="pagosDivididos.length > 1"
-                    icon="close"
+                    v-if="carritoCO.pagosDivididos.length > 1"
+                    icon="delete_outline"
                     color="negative"
                     flat
                     round
-                    size="sm"
+                    size="md"
                     class="bg-red-1"
                     @click="removePaymentMethod(index)"
                   />
@@ -882,63 +1145,83 @@
 
               <div class="flex justify-end q-mt-md">
                 <q-btn
-                  label="Agregar Otro Pago"
+                  label="Añadir Método"
                   icon="add"
-                  color="positive"
+                  color="primary"
                   outline
-                  dense
-                  class="q-px-md bg-white shadow-1 text-weight-bold"
-                  style="border-radius: 8px"
+                  class="q-px-lg bg-white shadow-1 text-weight-bold"
+                  style="border-radius: 10px"
                   @click="addPaymentMethod"
                 />
               </div>
 
-              <q-banner
-                v-if="remainingAmount !== 0"
-                dense
-                rounded
-                class="bg-orange-1 text-orange-10 q-mt-lg shadow-2 text-weight-bold"
-                style="border-left: 4px solid #f57f17"
+              <!-- Banner de estado del pago dividido -->
+              <div
+                v-if="remainingAmount !== 0 || totalPaidAmount !== 0"
+                class="q-mt-xl q-pa-lg rounded-borders shadow-2"
+                :class="
+                  remainingAmount === 0 ? 'bg-green-50 border-green' : 'bg-orange-50 border-orange'
+                "
+                style="border-left: 6px solid"
               >
-                <template v-slot:avatar>
-                  <q-icon name="warning" color="warning" size="md" />
-                </template>
-                <div class="row q-col-gutter-x-xl text-subtitle2">
-                  <div>
-                    <span class="text-grey-8 text-caption uppercase block">Total Pagado:</span>
-                    <span class="text-h6">{{ totalPaidAmount.toFixed(2) }}</span>
+                <div class="row items-center justify-between">
+                  <div class="row q-gutter-x-xl">
+                    <div class="column">
+                      <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+                        >Total Pagado</span
+                      >
+                      <span
+                        class="text-h6 text-weight-bolder"
+                        :class="remainingAmount === 0 ? 'text-positive' : 'text-orange-9'"
+                      >
+                        {{ totalPaidAmount.toFixed(2) }} {{ divisaActiva.tipo }}
+                      </span>
+                    </div>
+                    <div class="column">
+                      <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+                        >Monto Pendiente</span
+                      >
+                      <span
+                        class="text-h6 text-weight-bolder"
+                        :class="remainingAmount === 0 ? 'text-positive' : 'text-negative'"
+                      >
+                        {{ remainingAmount.toFixed(2) }} {{ divisaActiva.tipo }}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span class="text-grey-8 text-caption uppercase block">Monto Restante:</span>
-                    <span class="text-h6" :class="remainingAmount < 0 ? 'text-negative' : ''">
-                      {{ remainingAmount.toFixed(2) }}
-                    </span>
-                  </div>
+                  <q-icon
+                    :name="remainingAmount === 0 ? 'check_circle' : 'warning'"
+                    :color="remainingAmount === 0 ? 'positive' : 'warning'"
+                    size="44px"
+                  />
                 </div>
-              </q-banner>
+              </div>
             </div>
 
+            <!-- Selección de Caja/Banco para Efectivo -->
             <div
-              class="col-12 q-mt-lg animate__animated animate__zoomIn"
+              class="col-12 q-mt-xl animate__animated animate__fadeInUp"
               v-if="listaCajaBancos.length > 0"
             >
+              <q-separator class="q-mb-xl" />
+
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                style="font-size: 13px"
+                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+                style="font-size: 12px"
               >
-                Seleccione Caja o Banco <span class="text-negative">*</span>
+                Asignar a Caja o Banco <span class="text-negative">*</span>
               </label>
 
               <q-select
                 v-model="idcajaBancoSeleccionada"
                 :options="listaCajaBancos"
-                id="cajaBanco"
                 dense
                 outlined
                 emit-value
                 map-options
-                class="premium-input"
+                class="premium-input bg-white"
                 :rules="[(val) => !!val || 'Campo requerido']"
+                style="border-radius: 8px"
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="positive" />
@@ -947,17 +1230,20 @@
                 <template v-slot:selected-item="scope">
                   <div v-if="scope.opt" class="q-py-xs">
                     <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
-                    <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                    <span class="q-ml-xs text-grey-8">- {{ scope.opt.nombre }}</span>
                   </div>
                 </template>
 
                 <template v-slot:option="scope">
-                  <q-item v-bind="scope.itemProps">
+                  <q-item v-bind="scope.itemProps" class="q-py-md">
+                    <q-item-section avatar>
+                      <q-icon name="account_balance" color="grey-6" />
+                    </q-item-section>
                     <q-item-section>
-                      <q-item-label>
-                        <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                      <q-item-label class="text-weight-bolder text-primary">
+                        {{ scope.opt.codigo }}
                       </q-item-label>
-                      <q-item-label caption>
+                      <q-item-label caption class="text-weight-medium">
                         {{ scope.opt.nombre }}
                       </q-item-label>
                     </q-item-section>
@@ -967,19 +1253,28 @@
             </div>
           </div>
 
+          <!-- SECCIÓN: PAGO A CRÉDITO -->
           <div v-else class="animate__animated animate__fadeIn">
-            <div
-              class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
-              style="width: fit-content; border-left: 4px solid #1976d2"
-            >
-              MODALIDAD: CRÉDITO
+            <div class="flex items-center justify-between q-mb-lg">
+              <div
+                class="text-subtitle1 text-weight-bold text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-sm"
+                style="border-left: 4px solid #1976d2"
+              >
+                <q-icon name="credit_score" class="q-mr-sm" />
+                MODALIDAD: CRÉDITO
+              </div>
+
+              <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
+                Monto Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+              </div>
             </div>
-            <div class="row q-col-gutter-lg">
+
+            <div class="row q-col-gutter-xl q-pt-md">
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
-                  >Cantidad de pagos *</label
+                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 11px"
+                  >Número de Cuotas *</label
                 >
                 <q-input
                   v-model="carritoCO.cantidadPagos"
@@ -987,8 +1282,10 @@
                   min="1"
                   dense
                   outlined
+                  bg-color="white"
                   @update:model-value="(calculatePayments(), calculateDueDate())"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => (!!val && val > 0) || 'Requerido']"
+                  class="rounded-borders"
                 >
                   <template v-slot:prepend
                     ><q-icon name="format_list_numbered" color="primary"
@@ -998,9 +1295,9 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
-                  >Monto por pago *</label
+                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 11px"
+                  >Monto por Cuota</label
                 >
                 <q-input
                   v-model="carritoCO.montoPagos"
@@ -1019,18 +1316,20 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
-                  >Frecuencia *</label
+                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 11px"
+                  >Frecuencia de Pago *</label
                 >
                 <q-select
                   v-model="carritoCO.periodo"
                   dense
                   outlined
+                  bg-color="white"
                   :options="periodOptions"
                   emit-value
                   map-options
                   @update:model-value="calculateDueDate"
+                  class="rounded-borders"
                 >
                   <template v-slot:prepend><q-icon name="event_repeat" color="primary" /></template>
                 </q-select>
@@ -1038,20 +1337,22 @@
 
               <div
                 v-if="carritoCO.periodo === 0"
-                class="col-12 col-md-6 animate__animated animate__fadeIn"
+                class="col-12 col-md-6 animate__animated animate__zoomIn"
               >
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
-                  >Plazo total (días) *</label
+                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 11px"
+                  >Plazo Total (Días) *</label
                 >
                 <q-input
                   v-model="carritoCO.plazoPersonalizado"
                   type="number"
                   dense
                   outlined
+                  bg-color="white"
                   @update:model-value="calculateDueDate"
                   :rules="[(val) => !!val || 'Requerido']"
+                  class="rounded-borders"
                 >
                   <template v-slot:prepend
                     ><q-icon name="edit_calendar" color="primary"
@@ -1061,9 +1362,9 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
-                  style="font-size: 13px"
-                  >Fecha límite *</label
+                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  style="font-size: 11px"
+                  >Fecha de Vencimiento Estimada</label
                 >
                 <q-input
                   v-model="carritoCO.fechaLimite"
@@ -1079,32 +1380,44 @@
                 </q-input>
               </div>
             </div>
+
+            <div class="q-mt-xl q-pa-md bg-blue-50 rounded-borders border-blue flex items-center">
+              <q-icon name="info" color="primary" size="sm" class="q-mr-md" />
+              <div class="text-caption text-blue-9 text-weight-medium">
+                La fecha de vencimiento se calcula automáticamente según la frecuencia y el número
+                de cuotas desde la fecha de emisión.
+              </div>
+            </div>
           </div>
         </q-card-section>
 
         <q-separator />
 
-        <q-card-actions align="right" class="q-pa-lg bg-white shrink-0 shadow-up-1">
+        <!-- Acciones del Diálogo -->
+        <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
           <q-btn
             flat
-            label="Cancelar"
+            label="Regresar"
             color="grey-8"
             v-close-popup
-            class="q-px-md text-weight-bold"
+            class="q-px-md text-weight-bold rounded-pill"
           />
           <q-btn
             unelevated
             label="Confirmar Cotización"
             color="primary"
             icon="task_alt"
-            class="q-px-xl text-weight-bolder shadow-3"
+            class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"
             style="
-              border-radius: 12px;
-              height: 44px;
+              border-radius: 50px;
+              height: 48px;
               background: linear-gradient(45deg, #1976d2, #42a5f5);
             "
             @click="enviarDatos"
-            :disable="variablePago === 'dividido' && remainingAmount !== 0"
+            :disable="
+              (carritoCO.variablePago === 'dividido' && remainingAmount !== 0) ||
+              (carritoCO.variablePago === 'directo' && !carritoCO.metodoPago)
+            "
           />
         </q-card-actions>
       </q-card>
@@ -1116,6 +1429,7 @@
       full-height
       transition-show="scale"
       transition-hide="scale"
+      @hide="emit('reiniciar')"
     >
       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
@@ -1135,6 +1449,15 @@
             :src="pdfData"
             style="width: 100%; height: 100%; border: none"
           ></iframe>
+          <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+            <q-icon name="check_circle" color="positive" size="2em" />
+            <p>
+              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            </p>
+            <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+              Descargar comprobante
+            </a>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -1202,10 +1525,10 @@
   </q-page>
 </template>
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
-import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr.js'
 import { redondear, normalizeText, decimas, validarUsuario } from 'src/composables/FuncionesG'
 import MyRegistrationForm from 'src/components/clientes/admin/modalClienteForm.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -1218,18 +1541,22 @@ import UniqueProductSelector from 'src/components/venta/UniqueProductSelector.vu
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import SelectorVariantesProducto from 'src/components/venta/SelectorVariantesProducto.vue'
 
 const permisosStore = useOperacionesPermitidas()
-console.log(permisosStore.tienePermiso('editarprecioventa'))
+//console.log(permisosStore.tienePermiso('editarprecioventa'))
 
 const showAddModal = ref(false)
 const esProductoUnico = ref(false)
-const registrarComoProductoUnico = ref(false)
+const registrarComoProductoUnico = ref(true)
 const idempresa = idempresa_md5()
+const isInitializing = ref(false)
 const CodigosUnicosSeleccionados = ref([])
 const { config } = useProductoConfig(idempresa)
 const listaCajaBancos = ref([])
 const idcajaBancoSeleccionada = ref(null)
+const soloAlmacen = ref(false)
+
 watch(
   () => config.value.idempresa,
   (nuevoValor) => {
@@ -1250,7 +1577,6 @@ const modalfirmaActivo = ref(false)
 const token = getToken()
 const tipoFactura = getTipoFactura()
 const fecha = ref(obtenerFechaActualDato())
-const variablePago = ref('directo')
 const modalmetodopago = ref(false)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
@@ -1268,11 +1594,26 @@ const idporcentajeventa = ref(0)
 const divisaActiva = reactive({ id: 0, nombre: '', tipo: '', codigosin: 0 })
 const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se usa en este formulario, se mantiene por original
 const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
+const canalventa = ref(null)
+const salesChannels = ref([])
+
+// Refs de recarga por select
+const recargandoClientes = ref(false)
+const recargandoSucursales = ref(false)
+const recargandoCanales = ref(false)
+const recargandoAlmacenes = ref(false)
+const recargandoCategorias = ref(false)
+const recargandoPuntosVenta = ref(false)
+const recargandoProductos = ref(false)
+
+const error = ref(null)
+const isMobile = ref(false)
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 
 // Tipo de operación: cotizacion o venta
-const tipoOperacion = ref({ value: 2, label: 'Cotización Normal' })
+const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
 const optionOperacion = ref([
-  { value: 2, label: 'Cotización Normal' },
+  { value: 0, label: 'Cotización Normal' },
   { value: 1, label: 'Cotización Preferencial' },
 ])
 
@@ -1313,11 +1654,10 @@ const idporcentajeCO = ref('')
 const idproductoalmacenCO = ref('')
 const productosDisponibles = ref([])
 const filteredProducts = ref([])
-const pagosDivididos = ref([{ metodoPago: null, monto: 0, porcentaje: 0 }])
 const metodosPagos = ref([])
-const metodoPago = ref(null)
 const permitirStock = ref(false)
-const idfirma = ref(null)
+const selectorRef = ref(null)
+const ConfiguracionProductoVariante = ref(false)
 const carritoCO = reactive({
   ventatotal: 0,
   subtotal: 0,
@@ -1327,17 +1667,21 @@ const carritoCO = reactive({
   ipv: puntoVenta.value,
   idusuario: 0,
   listaProductos: [],
-  pagosDivididos: [],
+  pagosDivididos: [{ metodoPago: null, monto: 0, porcentaje: 0 }],
   metodoPago: 0,
-  variablePago: '',
+  variablePago: 'directo',
   fecha: fecha.value,
   credito: false,
-  periodo: null,
   idfirma: null,
   codigosUnicos: [], // Para productos únicos
   cajabanco: null,
+  // Campos de crédito persistentes
+  cantidadPagos: 1,
+  montoPagos: 0,
+  periodo: 30,
+  plazoPersonalizado: 0,
+  fechaLimite: '',
 })
-console.log(idfirma.value)
 const RegistrarFirma = () => {
   console.log(selectedClient.value)
   if (selectedClient.value != null) {
@@ -1372,15 +1716,6 @@ const alTerminarFirma = (respuesta) => {
 const alFallarFirma = (err) => {
   console.error('El registro falló:', err)
 }
-const toggleCredit = (value) => {
-  if (!value) {
-    carritoCO.cantidadPagos = 0
-    carritoCO.montoPagos = 0
-    carritoCO.periodo = null
-    carritoCO.plazoPersonalizado = 0 // Corregido
-    carritoCO.fechaLimite = '' // Corregido
-  }
-}
 const calculatePayments = () => {
   if (carritoCO.credito && carritoCO.cantidadPagos > 0 && totalSaleAmount.value > 0) {
     carritoCO.montoPagos = (totalSaleAmount.value / carritoCO.cantidadPagos).toFixed(2)
@@ -1413,7 +1748,7 @@ const CONSTANTES = {
   tipopago: 'contado',
 }
 console.log(CONSTANTES.tipopago)
-const emit = defineEmits(['reiniciar'])
+const emit = defineEmits(['reiniciar', 'cancelarregistro'])
 
 // premitir stock
 const permitirStockvacio = () => {
@@ -1466,6 +1801,8 @@ const carritoColumns = [
 
 // --- Computed Properties ---
 const canAddProduct = computed(() => {
+  if (productoTieneVariantes.value) return false
+
   if (permitirStock.value && precioCO.value > 0 && Number(tipoOperacion.value?.value) === 1) {
     return true
   }
@@ -1479,7 +1816,16 @@ const canAddProduct = computed(() => {
 
   return true // Para cotización, no se valida stock venta Proforma La cantidad solicitada excede el stock disponible
 })
+const productoTieneVariantes = computed(() => {
+  if (!selectedProduct.value || !selectorRef.value) return false
+  return selectorRef.value.tieneVariantes === true
+})
 
+const disabledVariantsCotizacion = computed(() => {
+  return carritoCO.listaProductos
+    .filter((p) => p.idproductovariante != null)
+    .map((p) => p.idproductovariante)
+})
 // --- Watchers ---
 
 // Sincronizar carrito con localStorage
@@ -1491,9 +1837,10 @@ watch(
   { deep: true },
 )
 const handleTipoOperacionChange = () => {
-  cotizacionFormRef.value.resetValidation() // Resetear validación
-
-  resetFormulario()
+  cotizacionFormRef.value?.resetValidation() // Resetear validación
+  // FIX BUG#3: no vaciar el carrito al alternar entre Cotización Normal y
+  // Cotización Preferencial; solo se preserva el reset de validación visual.
+  // El reset completo debe quedar explícito en el botón "Cancelar".
   console.log(tipoOperacion.value)
 }
 const cambioFecha = () => {
@@ -1503,16 +1850,6 @@ const cambioFecha = () => {
   }
   cotizacionFormRef.value?.resetValidation()
 }
-
-// Cargar carrito desde localStorage al inicio
-
-onMounted(() => {
-  localStorage.removeItem('carritoCO') // Limpiar localStorage al inicio
-  const storedCarrito = localStorage.getItem('carritoCO')
-  if (storedCarrito) {
-    Object.assign(carritoCO, JSON.parse(storedCarrito))
-  }
-})
 
 // Watcher para el filtro de almacén para recargar categorías
 watch(filtroAlmacenCO, (newVal) => {
@@ -1541,7 +1878,7 @@ watch(selectedProduct, (newVal) => {
 const cotizacion_proforma = async () => {
   console.log(tipoOperacion.value)
   const tipo_cotz = tipoOperacion.value
-  if (Number(tipo_cotz.value) == 2) {
+  if (Number(tipo_cotz.value) == 0) {
     await enviarDatos()
   } else {
     modalmetodopago.value = true
@@ -1555,29 +1892,46 @@ const totalSaleAmount = computed(() => {
 })
 
 const totalPaidAmount = computed(() => {
-  if (variablePago.value === 'dividido') {
-    return pagosDivididos.value.reduce((sum, payment) => sum + parseFloat(payment.monto || 0), 0)
+  if (carritoCO.variablePago === 'dividido') {
+    return carritoCO.pagosDivididos.reduce(
+      (sum, payment) => sum + parseFloat(payment.monto || 0),
+      0,
+    )
   }
   return 0
 })
 
 const remainingAmount = computed(() => {
-  if (variablePago.value === 'dividido') {
+  if (carritoCO.variablePago === 'dividido') {
     return totalSaleAmount.value - totalPaidAmount.value
   }
   return 0
 })
 
 const addPaymentMethod = () => {
-  pagosDivididos.value.push({ metodoPago: null, monto: 0, porcentaje: 0 })
+  carritoCO.pagosDivididos.push({ metodoPago: null, monto: 0, porcentaje: 0 })
+}
+
+const cargarCanales = async () => {
+  try {
+    const respuesta = await validarUsuario()
+    const idempresa = respuesta[0]?.empresa?.idempresa
+    const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
+    salesChannels.value = response.data.map((item) => ({
+      label: item.canal,
+      value: item.id,
+    }))
+  } catch (error) {
+    console.error('Error cargando canales:', error)
+  }
 }
 
 const removePaymentMethod = (index) => {
-  pagosDivididos.value.splice(index, 1)
+  carritoCO.pagosDivididos.splice(index, 1)
 }
 const calculateAmountFromPercentage = (index) => {
   console.log(index)
-  const payment = pagosDivididos.value[index]
+  const payment = carritoCO.pagosDivididos[index]
   console.log(payment)
   // Ensure percentage is treated as a number and within valid range
   const percentage = parseFloat(payment.porcentaje) || 0
@@ -1589,7 +1943,7 @@ const calculateAmountFromPercentage = (index) => {
 }
 const calculateRemainingAmount = (index) => {
   console.log(index)
-  const payment = pagosDivididos.value[index]
+  const payment = carritoCO.pagosDivididos[index]
   console.log(payment)
   const monto = parseFloat(payment.monto) || 0
   if (monto >= 0 && monto <= totalSaleAmount.value && totalSaleAmount.value > 0) {
@@ -1696,10 +2050,13 @@ async function listaAlmacenes() {
       console.error(resultado.error)
     } else {
       almacenesOptions.value = resultado.filter((u) => u.idusuario === idusuario)
+      console.log(isInitializing.value)
       if (almacenesOptions.value.length > 0) {
+        console.log(isInitializing.value)
         filtroAlmacenCO.value = almacenesOptions.value[0].idalmacen // Seleccionar el primero por defecto
       }
     }
+    await listaCLientes()
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
   }
@@ -1821,16 +2178,33 @@ async function listaCLientes() {
     if (resultado[0] === 'error') {
       console.error(resultado.error)
     } else {
-      clientesOptions.value = resultado.map((c) => ({
-        ...c,
-        display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
-      }))
+      if (soloAlmacen.value) {
+        console.log(soloAlmacen)
+        const allowedAlmacenIds = almacenesOptions.value.map((a) => a.idalmacen)
+
+        // Filtrar clientes: se muestran si no tienen almacén (globales) o si tienen al menos uno permitido
+        const clientesFiltrados = resultado.filter((c) => {
+          // Cliente sin almacenes → se muestra siempre
+          if (!c.almacenes || c.almacenes.length === 0) return true
+          // Cliente con al menos un almacén permitido
+          return c.almacenes.some((al) => allowedAlmacenIds.includes(al.idalmacen))
+        })
+
+        clientesOptions.value = clientesFiltrados.map((c) => ({
+          ...c,
+          display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+        }))
+      } else {
+        clientesOptions.value = resultado.map((c) => ({
+          ...c,
+          display: `${c.codigo} - ${c.nombre} - ${c.nombrecomercial} - ${c.ciudad} - ${c.nit}`,
+        }))
+      }
     }
   } catch (error) {
     console.error('Error al cargar clientes:', error)
   }
 }
-
 async function selectSucursal(clientId) {
   if (!clientId) {
     sucursalesOptions.value = []
@@ -1917,16 +2291,22 @@ function setClientInputValue(val) {
 }
 
 function elegirUnCliente(client) {
+  //console.log(client)
   if (client) {
     idclienteCO.value = client.id
     selectSucursal(client.id)
+    selectCanalVenta(client.idcanal)
   } else {
     idclienteCO.value = ''
     selectedSucursal.value = null
     idsucursalCOS.value = ''
   }
 }
+function selectCanalVenta(canalid) {
+  console.log(canalid)
 
+  canalventa.value = salesChannels.value.find((c) => Number(c.value) === Number(canalid)) || null
+}
 function filterSucursal(val, update) {
   if (val === '') {
     update(() => {
@@ -1999,7 +2379,6 @@ function elegirUnProducto(product) {
 // --- Lógica del Carrito ---
 
 async function anadirProductoACarrito() {
-  console.log(pagosDivididos.value)
   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
     $q.notify({
       type: 'info',
@@ -2066,12 +2445,27 @@ async function anadirProductoACarrito() {
   resetProductoInputs()
 }
 
-function eliminarProductoCarrito(idProductoAlmacen) {
-  carritoCO.listaProductos = carritoCO.listaProductos.filter(
-    (p) => p.idproductoalmacen !== idProductoAlmacen,
-  )
+function eliminarProductoCarrito(row) {
+  if (row.idproductovariante != null) {
+    // Variante: eliminar solo el ítem con ese idproductovariante específico
+    const idx = carritoCO.listaProductos.findIndex(
+      (p) => p.idproductovariante === row.idproductovariante,
+    )
+    if (idx !== -1) carritoCO.listaProductos.splice(idx, 1)
+  } else {
+    // Producto sin variante: eliminar por idproductoalmacen
+    // (solo el primer ítem encontrado para no afectar otros productos del mismo almacén)
+    const idx = carritoCO.listaProductos.findIndex(
+      (p) => p.idproductoalmacen === row.idproductoalmacen && p.idproductovariante == null,
+    )
+    if (idx !== -1) carritoCO.listaProductos.splice(idx, 1)
+  }
+  // Re-numerar
+  carritoCO.listaProductos.forEach((p, i) => {
+    p.num = i + 1
+  })
   calcularTotalesCarrito()
-  listaProductosDisponibles() // Recargar la lista de productos disponibles
+  listaProductosDisponibles()
 }
 const validarDescripcion = async (scope, row) => {
   console.log(scope.value)
@@ -2165,35 +2559,61 @@ async function enviarDatos() {
     return
   }
 
+  // FIX BUG#2: validación explícita del método de pago en efectivo directo.
+  if (
+    carritoCO.variablePago === 'directo' &&
+    !carritoCO.credito &&
+    !carritoCO.metodoPago
+  ) {
+    $q.notify({
+      type: 'info',
+      message: 'Seleccione un método de pago antes de confirmar.',
+      actions: [{ icon: 'close', color: 'white', round: true }],
+    })
+    return
+  }
+
   carritoCO.tipoOperacion = tipoOperacion.value?.value
 
-  if (pagosDivididos.value.length > 0) {
-    console.log('entro')
-    carritoCO.pagosDivididos = pagosDivididos.value
-    carritoCO.variablePago = 'dividido'
-  } else {
-    console.log('entro')
-    carritoCO.variablePago = 'dividido'
-    const pago = {
-      metodoPago: metodoPago.value,
-      monto: carritoCO.ventatotal,
-      porcentaje: 100,
-    }
-    carritoCO.pagosDivididos.push(pago)
+  // Preparar los datos de pago según la modalidad seleccionada
+  if (carritoCO.variablePago === 'directo') {
+    carritoCO.pagosDivididos = [
+      {
+        metodoPago: carritoCO.metodoPago,
+        monto: carritoCO.ventatotal,
+        porcentaje: 100,
+      },
+    ]
   }
+  // Si es 'dividido', carritoCO.pagosDivididos ya contiene los datos ingresados en el formulario
+
+  // FIX BUG#1: `puntoVenta.value` puede ser null cuando se confirma Preferencial
+  // desde el modal antes de que cargarPuntoVentas() haya resuelto. Se accede de
+  // forma segura y se valida explícitamente para no lanzar TypeError silencioso.
   const pv = puntoVenta.value
+  if (!pv || typeof pv !== 'object' || pv.value == null) {
+    $q.loading.hide()
+    $q.notify({
+      type: 'warning',
+      message: 'Debe seleccionar un Punto de Venta antes de registrar la cotización.',
+      actions: [{ icon: 'close', color: 'white', round: true }],
+    })
+    return
+  }
   carritoCO.ipv = Number(pv.value)
   carritoCO.idalmacen = filtroAlmacenCO.value
   carritoCO.tipopago = carritoCO.credito ? 'credito' : CONSTANTES.tipopago
   carritoCO.cajabanco = idcajaBancoSeleccionada.value
   carritoCO.idcliente = idclienteCO.value
   carritoCO.md5_em = idempresa
+  // FIX BUG#3 relacionado: `.almacen` puede no existir si filtroAlmacenCO no matchea;
+  // se usa optional chaining para evitar un crash idéntico al de puntoVenta.
   carritoCO.almacen = almacenesOptions.value.find(
     (obj) => Number(obj.idalmacen) === Number(filtroAlmacenCO.value),
-  ).almacen //filtroAlmacenCO.value
-  console.log(carritoCO.almacen)
-  console.log(carritoCO.cajabanco)
-  console.log(carritoCO.cajabanco)
+  )?.almacen
+  // console.log(carritoCO.almacen)
+  // console.log(carritoCO.cajabanco)
+  // console.log(carritoCO.cajabanco)
 
   const datosFormulario = new FormData()
   datosFormulario.append('ver', 'registrarCotizacion')
@@ -2204,22 +2624,22 @@ async function enviarDatos() {
   datosFormulario.append('listaProductos', JSON.stringify(carritoCO)) // Enviar el objeto completo del carrito
   datosFormulario.append('tipo_operacion', tipoOperacion.value?.value) // Añadir el tipo de operación
 
-  console.log(carritoCO)
+  console.log(tipoOperacion.value?.value)
+  // console.log(carritoCO)
 
   $q.loading.show({
     message: 'Registrando cotización...',
   })
   try {
-    // Asumo que tu backend espera 'listaProductos' como un JSON string.
     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
-    const datosJson = {}
-    datosFormulario.forEach((valor, clave) => {
-      datosJson[clave] = valor
-    })
-    console.log(JSON.stringify(datosJson, null, 2))
+
     const response = await api.post(``, datosFormulario)
     const data = response.data
     console.log('Datos recibidos:', response)
+
+    //  Ocultar el spinner ANTES de abrir cualquier diálogo modal.
+    //    Esto evita que el overlay del loading quede por encima del modal.
+    $q.loading.hide()
 
     if (data.estado === 'exito') {
       resetFormulario()
@@ -2229,14 +2649,30 @@ async function enviarDatos() {
       })
       cotizacionFormRef.value.resetValidation() // Resetear validación
 
+      // Bandera para saber si el usuario confirmó la generación del comprobante.
+      let confirmado = false
+
       $q.dialog({
         title: 'Cotización Exitosa',
         message: 'Su comprobante está listo. ¿Desea verlo?',
         cancel: true,
         persistent: true,
-      }).onOk(() => {
-        generarComprobante(data.id)
       })
+        .onOk(() => {
+          //  No llamar aquí a generarComprobante: el diálogo aún se está
+          //    cerrando y el spinner nuevo quedaría pintado sobre él.
+          confirmado = true
+        })
+        .onCancel(() => {
+          emit('reiniciar')
+        })
+        .onDismiss(() => {
+          // onDismiss se ejecuta cuando el diálogo terminó su animación
+          //    de cierre. Ahora sí es seguro mostrar el spinner.
+          if (confirmado) {
+            generarComprobante(data.id)
+          }
+        })
     } else {
       $q.notify({
         type: 'negative',
@@ -2249,9 +2685,11 @@ async function enviarDatos() {
       type: 'negative',
       message: 'Hubo un error de conexión o en el servidor.',
     })
-  } finally {
     $q.loading.hide()
   }
+  // Se eliminó el bloque finally: el loading ya se cerró en cada rama.
+  // Si se quiere mantener por seguridad, basta con dejar $q.loading.hide()
+  // al final del catch y de las ramas exitosas (es idempotente).
 }
 
 function resetFormulario() {
@@ -2270,9 +2708,15 @@ function resetFormulario() {
   carritoCO.descuento = 0
   carritoCO.listaProductos = []
   localStorage.removeItem('carritoCO')
-  carritoCO.metodoPago = 0
-  carritoCO.pagosDivididos = []
-  pagosDivididos.value = []
+  carritoCO.metodoPago = null
+  carritoCO.variablePago = 'directo'
+  carritoCO.pagosDivididos = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
+  carritoCO.credito = false
+  carritoCO.cantidadPagos = 1
+  carritoCO.montoPagos = 0
+  carritoCO.periodo = 30
+  carritoCO.plazoPersonalizado = 0
+  carritoCO.fechaLimite = ''
 
   // Recargar listas dependientes si es necesario
   listaAlmacenes()
@@ -2307,6 +2751,7 @@ async function generarComprobante(id) {
     })
     return
   }
+  modalmetodopago.value = false
 
   $q.loading.show({
     message: 'Generando comprobante...',
@@ -2320,21 +2765,42 @@ async function generarComprobante(id) {
     if (data[0] === 'error') {
       console.error(data.error)
       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+      emit('reiniciar')
     } else {
-      // Cargar leyendas si no están cargadas
-      if (leyendasCotizacion.value.length === 0) {
-        await cargarLeyendasCotizacion()
+      $q.loading.hide()
+
+      const resultado = await generarPdfCotizacion(data)
+      if (!resultado || !resultado.doc) {
+        error.value = 'No se pudo generar el PDF.'
+        return
       }
-      const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      mostrarModal.value = true
-      console.log(data[0]?.cliente.idcliente, data)
-      open('right', data[0]?.cliente.idcliente, data)
+
+      // Limpiar blob anterior
+      if (pdfData.value) {
+        URL.revokeObjectURL(pdfData.value)
+        pdfData.value = null
+      }
+
+      // ✅ Ocultar el spinner ANTES de abrir los modales de vista previa.
+      //    Así el overlay del loading nunca queda por encima del modal PDF.
+      $q.loading.hide()
+
+      if (isMobile.value) {
+        mobileFallbackUrl.value = resultado.mobileBlobUrl
+      } else {
+        const pdfBlob = resultado.doc.output('blob')
+        pdfData.value = URL.createObjectURL(pdfBlob)
+        open('right', data[0]?.cliente.idcliente, data)
+        mostrarModal.value = true
+      }
     }
   } catch (error) {
     console.error('Error al generar comprobante:', error)
     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+    emit('reiniciar')
   } finally {
+    // Salvaguarda: si por alguna rama (early return / excepción) el spinner
+    // no se ocultó, lo apagamos aquí. Es idempotente.
     $q.loading.hide()
   }
 }
@@ -2356,7 +2822,6 @@ const cancelar = () => {
 // --- registrar Cliente ---
 
 const RegistrarCliente = () => {
-  console.log(variablePago.value)
   showAddModal.value = !showAddModal.value
 }
 const handleRecordCreated = async (newRecordData) => {
@@ -2402,31 +2867,39 @@ const handleRecordCreated = async (newRecordData) => {
     })
   }
 }
+const fetchEstadoActual = async () => {
+  try {
+    const { data } = await api.get(`configuracionclientesAlmacenEstadoActual/${idempresa}`)
+    console.log(data)
+    // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
+    soloAlmacen.value = data.clientesAlmacen ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 watch(
-  () => variablePago.value,
+  () => carritoCO.variablePago,
   (nuevoValor) => {
-    console.log(nuevoValor)
-    if (nuevoValor === 'directo') {
-      // Limpiar los datos de pago dividido
-      pagosDivididos.value = [{ metodoPago: null, monto: 0, porcentaje: 0 }]
-    } else if (nuevoValor === 'dividido') {
-      // Limpiar el método de pago único
-      metodoPago.value = null
-    }
+    console.log('Cambiando modalidad de pago:', nuevoValor)
+    // No reseteamos automáticamente para permitir al usuario cambiar de opinión sin perder datos
+    // Los datos se preparan adecuadamente en enviarDatos()
   },
 )
 
 const handleTipoPagoGeneralChange = (val) => {
   if (val) {
-    // Caso Crédito
-    variablePago.value = 'directo'
+    // Al activar crédito, recalculamos valores basados en el estado actual
     calculatePayments()
     calculateDueDate()
-  } else {
-    // Caso Efectivo
-    toggleCredit(false)
   }
+  // No reseteamos los datos de crédito al cambiar a efectivo para permitir la persistencia entre pestañas
 }
 async function listarcajasbanco() {
   try {
@@ -2444,25 +2917,288 @@ async function listarcajasbanco() {
     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
   }
 }
+async function recibirSeleccionCotizacion(datos) {
+  if (!datos || !Array.isArray(datos.variantes) || datos.variantes.length === 0) return
+
+  const producto = selectedProduct.value
+  if (!producto) return
+
+  const contenidousuario = await getUserData()
+  const idusuario = contenidousuario?.idusuario
+  carritoCO.idusuario = idusuario
+  carritoCO.idempresa = idempresa_md5()
+  carritoCO.divisa = divisaActiva.id
+
+  for (const variante of datos.variantes) {
+    const nuevoProducto = {
+      id: Number(variante.idVariante),
+      num: carritoCO.listaProductos.length + 1,
+      idproductoalmacen: idproductoalmacenCO.value,
+      cantidad: variante.cantidad,
+      precio: precioCO.value ?? producto.precio,
+      idstock: idstockCO.value,
+      idporcentaje: idporcentajeCO.value,
+      candiponible: cantidaddisponibleCO.value,
+      descripcion: producto.descripcion,
+      descripcionAdicional: '',
+      codigo: producto.codigo,
+      despachado:
+        Number(producto.stock) == 0 || Number(producto.stock) < Number(variante.cantidad) ? 2 : 1,
+      idproductovariante: Number(variante.idVariante),
+      sku: variante.sku,
+      atributos: variante.atributos || [],
+      idstock_variante: variante.idstock_variante || null,
+    }
+    carritoCO.listaProductos.push(nuevoProducto)
+  }
+
+  calcularTotalesCarrito()
+  listaProductosDisponibles()
+  resetProductoInputs()
+
+  $q.notify({
+    type: 'positive',
+    message: `${datos.variantes.length} variante(s) agregada(s) al carrito`,
+  })
+}
+// --- Recarga individual de cada select ---
+const recargarClientes = async () => {
+  if (recargandoClientes.value) return
+  recargandoClientes.value = true
+  try {
+    await listaCLientes()
+    $q.notify({ type: 'positive', message: 'Clientes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar clientes:', err)
+  } finally {
+    recargandoClientes.value = false
+  }
+}
+
+const recargarSucursales = async () => {
+  if (recargandoSucursales.value) return
+  if (!idclienteCO.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un cliente antes de recargar sucursales.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoSucursales.value = true
+  try {
+    await selectSucursal(idclienteCO.value)
+    $q.notify({ type: 'positive', message: 'Sucursales recargadas', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar sucursales:', err)
+  } finally {
+    recargandoSucursales.value = false
+  }
+}
+
+const recargarCanales = async () => {
+  if (recargandoCanales.value) return
+  recargandoCanales.value = true
+  try {
+    await cargarCanales()
+    $q.notify({ type: 'positive', message: 'Canales recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar canales:', err)
+  } finally {
+    recargandoCanales.value = false
+  }
+}
+
+const recargarAlmacenes = async () => {
+  if (recargandoAlmacenes.value) return
+  recargandoAlmacenes.value = true
+  try {
+    await listaAlmacenes()
+    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar almacenes:', err)
+  } finally {
+    recargandoAlmacenes.value = false
+  }
+}
+
+const recargarCategorias = async () => {
+  if (recargandoCategorias.value) return
+  if (!idalmacenfiltro.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un almacén antes de recargar categorías.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoCategorias.value = true
+  try {
+    await listaCategoria()
+    $q.notify({ type: 'positive', message: 'Categorías recargadas', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar categorías:', err)
+  } finally {
+    recargandoCategorias.value = false
+  }
+}
+
+const recargarPuntosVenta = async () => {
+  if (recargandoPuntosVenta.value) return
+  if (!idalmacenfiltro.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione un almacén antes de recargar puntos de venta.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoPuntosVenta.value = true
+  try {
+    await cargarPuntoVentas()
+    $q.notify({
+      type: 'positive',
+      message: 'Puntos de venta recargados',
+      position: 'top',
+      timeout: 1200,
+    })
+  } catch (err) {
+    console.error('Error al recargar puntos de venta:', err)
+  } finally {
+    recargandoPuntosVenta.value = false
+  }
+}
+
+const recargarProductos = async () => {
+  if (recargandoProductos.value) return
+  if (!idporcentajeventa.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Seleccione una categoría antes de recargar productos.',
+      position: 'top',
+      timeout: 1500,
+    })
+    return
+  }
+  recargandoProductos.value = true
+  try {
+    await listaProductosDisponibles()
+    $q.notify({ type: 'positive', message: 'Productos recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar productos:', err)
+  } finally {
+    recargandoProductos.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+})
 // --- Inicialización ---
 onMounted(async () => {
-  localStorage.removeItem('carritoCO') // Limpiar localStorage al inicio
-  // Cargar datos iniciales
-  await divisaEmonedaActiva()
-  await leyendaActiva() // Aunque no se use directamente, la lógica original la carga.
-  await listaAlmacenes()
-  await listaCLientes()
-  await listaProductosDisponibles() // Cargar productos inicialmente
-  await cargarLeyendasCotizacion() // Cargar leyendas para el comprobante
-  await cargarMetodoPagoFactura()
-  await permisosStore.cargarPermisos()
+  isMobile.value = window.innerWidth < 768
 
-  calcularTotalesCarrito() // Recalcular si hay carrito guardado en localStorage
-  listarcajasbanco()
+  isInitializing.value = true
+  try {
+    // Cargar datos iniciales
+    await fetchEstadoActual()
+    await divisaEmonedaActiva()
+    await leyendaActiva()
+    await listaAlmacenes()
+
+    await cargarLeyendasCotizacion()
+    await cargarMetodoPagoFactura()
+    await permisosStore.cargarPermisos()
+    await cargarCanales()
+    await listarcajasbanco()
+
+    // Detectar si venimos de Quick Consult
+    const quickConsult = localStorage.getItem('quickConsult')
+    if (quickConsult) {
+      const data = JSON.parse(quickConsult)
+      console.log('Procesando datos de Quick Consult en CotizacionPage:', data)
+
+      if (data.destination === 'quotation') {
+        tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
+        const user = await getUserData()
+        carritoCO.idusuario = user?.idusuario
+        carritoCO.idempresa = idempresa
+        carritoCO.divisa = divisaActiva.id
+
+        // Restaurar almacén y categoría
+        if (data.almacen) {
+          filtroAlmacenCO.value = data.almacen.value
+          idalmacenfiltro.value = data.almacen.value
+        }
+        if (data.categoria) {
+          console.log(data.categoria)
+          filtroCategoriaCO.value = data.categoria.value
+          idporcentajeventa.value = data.categoria.value
+        }
+
+        // Cargar categorías del almacén seleccionado
+        await listaCategoria()
+
+        // Mapear productos al formato de CotizacionPage
+        if (data.listaProductos) {
+          carritoCO.listaProductos = data.listaProductos.map((p, index) => ({
+            num: index + 1,
+            idproductoalmacen: p.idproductoalmacen,
+            cantidad: p.cantidad,
+            precio: p.precio,
+            idstock: p.idstock,
+            idporcentaje: p.idporcentaje,
+            candiponible: p.stock,
+            descripcion: p.descripcion,
+            descripcionAdicional: p.descripcionAdicional || '',
+            codigo: p.codigo,
+            despachado: p.despachado,
+            codigosUnicos: p.codigosUnicos || [],
+            ...(p.idproductovariante != null && {
+              idproductovariante: p.idproductovariante,
+              sku: p.sku || '',
+              atributos: p.atributos || [],
+              id: p.idproductovariante,
+            }),
+          }))
+        }
+
+        calcularTotalesCarrito()
+        await listaProductosDisponibles()
+
+        localStorage.removeItem('quickConsult')
+        $q.notify({
+          type: 'positive',
+          message: 'Productos de Consulta Rápida cargados correctamente',
+        })
+      }
+    } else {
+      localStorage.removeItem('carritoCO') // Limpiar solo si no venimos de Quick Consult
+      await listaProductosDisponibles()
+    }
+  } catch (error) {
+    console.error('Error en inicialización de Cotización:', error)
+  } finally {
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 500)
+  }
 })
 </script>
 
 <style lang="scss" scoped>
+.gradient-btn {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+.gradient-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+}
 /* Puedes mover tus estilos relacionados con el comprobante y otros aquí */
 .invoice {
   font-family: 'Arial', sans-serif;
@@ -2607,9 +3343,60 @@ onMounted(async () => {
 /* Quitar el q-linear-progress si no es funcional aquí, o darle un propósito */
 /* .q-linear-progress { display: none; } */
 </style>
-\n
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Responsive dialog width */
+.responsive-dialog {
+  max-height: 90vh;
+  width: 95vw;
+  max-width: 95vw;
+  min-width: unset;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 601px) {
+  .responsive-dialog {
+    width: auto;
+    min-width: 550px;
+    max-width: 800px;
+    max-height: 90vh; /* mantenlo también aquí si quieres */
+    border-radius: 20px;
+  }
+}
+
+/* Padding responsive para el contenido */
+.content-section {
+  padding: 24px;
+}
+@media (max-width: 600px) {
+  .content-section {
+    padding: 16px !important;
+  }
+}
+
+/* Toggle más compacto en móviles */
+.custom-premium-toggle .q-btn {
+  line-height: 1.2 !important;
+  min-height: unset;
+  padding: 8px 12px;
+}
+@media (max-width: 600px) {
+  .custom-premium-toggle .q-btn {
+    min-height: 48px;
+    font-size: 14px;
+  }
+}
+
+/* Botón confirmar full width en móviles */
+@media (max-width: 600px) {
+  .full-width-xs {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
 
 .premium-input:hover {
   transform: translateY(-1px);
@@ -2658,5 +3445,17 @@ onMounted(async () => {
 }
 .scroll::-webkit-scrollbar-track {
   background: #f1f1f1;
+}
+/* Add this to your style block (scoped or global depending on your setup) */
+.custom-premium-toggle {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  overflow: hidden; /* Ensures the rounded borders clip perfectly */
+}
+
+/* Force standard line-heights inside the button to prevent font-specific shifting */
+.custom-premium-toggle .q-btn {
+  line-height: 1 !important;
+  min-height: 100px; /* Guarantees matching, explicit heights */
 }
 </style>

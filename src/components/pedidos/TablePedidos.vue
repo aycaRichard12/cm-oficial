@@ -3,12 +3,31 @@
     <!-- Cabecera -->
     <div class="row q-col-gutter-x-md">
       <div class="col-6 flex justify-start">
-        <q-btn color="primary" @click="$emit('add')" class="btn-res" id="btnAgregar">
+        <q-btn
+          color="primary"
+          @click="$emit('add')"
+          class="btn-res"
+          id="btnAgregar"
+          title="Registrar Pedido"
+        >
           <q-icon name="add" class="icono" />
-          <span class="texto">Nuevo</span>
+          <span class="texto"> <q-icon name="add" />Nuevo</span>
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar"
+          outline
+          no-caps
+          class="btn-res q-mr-sm"
+          id="btnRecargarTablaPedidos"
+          :loading="recargando"
+          @click.stop.prevent="recargar"
+        >
+          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+        </q-btn>
         <q-btn color="info" @click="imprimir" outline class="btn-res" id="btnImprimir">
           <q-icon name="picture_as_pdf" class="icono" />
           <span class="texto">Vista Previa PDF</span>
@@ -42,7 +61,18 @@
           outlined
         />
       </div>
-      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
+      <div class="col-12 col-md-3 q-mt-lg" id="importarExcelPedidos">
+        <q-btn
+          outline
+          color="green"
+          icon="upload"
+          label="Importar Excel"
+          no-caps
+          @click="mostrarImportarExcel = true"
+          id="importarExcel"
+        />
+      </div>
+      <div class="col-12 col-md-12 flex justify-end" id="buscarPedidos">
         <div>
           <label for="buscar">Buscar...</label>
           <q-input dense debounce="300" v-model="search" id="buscar" outlined>
@@ -93,7 +123,7 @@
         <q-td :props="props">
           <template v-if="/\.pdf$/i.test(props.row.ruta)">
             <q-btn
-            id="btnVerPDF"
+              id="btnVerPDF"
               color="primary"
               icon="picture_as_pdf"
               label="Ver PDF"
@@ -120,7 +150,7 @@
       <template v-slot:body-cell-detalle="props">
         <q-td>
           <q-btn
-          id="btnVerDetalle"
+            id="btnVerDetalle"
             color="primary"
             label=""
             icon="shopping_cart"
@@ -134,8 +164,22 @@
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props" class="text-nowrap">
           <div v-if="Number(props.row.autorizacion) === 2">
-            <q-btn icon="edit" color="primary" dense flat @click="$emit('edit', props.row)" id="btnEditar"/>
-            <q-btn icon="delete" color="negative" dense flat @click="$emit('delete', props.row)" id="btnEliminar"/>
+            <q-btn
+              icon="edit"
+              color="primary"
+              dense
+              flat
+              @click="$emit('edit', props.row)"
+              id="btnEditar"
+            />
+            <q-btn
+              icon="delete"
+              color="negative"
+              dense
+              flat
+              @click="$emit('delete', props.row)"
+              id="btnEliminar"
+            />
             <q-btn
               id="autorizar"
               v-if="permisosStore.tienePermiso('generarpedido')"
@@ -165,7 +209,7 @@
                 flat
                 @click="subirBaucher(props.row)"
                 id="btnSubirBaucher"
-                    />
+              />
             </template>
           </div>
           <div v-else>
@@ -177,7 +221,7 @@
                 flat
                 @click="subirBaucher(props.row)"
                 id="btnSubirBaucher"
-                        />
+              />
             </div>
           </div>
         </q-td>
@@ -215,6 +259,7 @@
     :title="tituloNotificacion"
     @notificacion-enviada="onNotificacionEnviada"
   />
+  <importarInventarioProductoVariante v-model="mostrarImportarExcel" @done="$emit('reload')" />
 </template>
 
 <script setup>
@@ -224,6 +269,7 @@ import { PDFpedidos } from 'src/utils/pdfReportGenerator'
 import baucherPedido from './baucherPedido.vue'
 import NotificacionDialog from 'src/components/pusher-notificaciones/NotificacionDialog.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import importarInventarioProductoVariante from './importarInventarioProductoVariante.vue'
 
 const permisosStore = useOperacionesPermitidas()
 const $q = useQuasar()
@@ -236,6 +282,8 @@ const tituloNotificacion = computed(() => {
   const tipo = Number(pedidoSeleccionado.value.tipopedido) === 1 ? 'Compra' : 'Movimiento'
   return `Notificación - Pedido de ${tipo} #${pedidoSeleccionado.value.codigo}`
 })
+const mostrarImportarExcel = ref(false)
+const recargando = ref(false)
 
 //filtroAlmacen
 const props = defineProps({
@@ -255,7 +303,17 @@ const props = defineProps({
 })
 const pedido = ref(null)
 const baucherPedidomodal = ref(false)
-defineEmits(['add', 'edit', 'delete'])
+const emit = defineEmits(['add', 'edit', 'delete', 'reload'])
+const recargar = async () => {
+  if (recargando.value) return
+  recargando.value = true
+  try {
+    emit('reload')
+    $q.notify({ type: 'positive', message: 'Solicitando recarga...', position: 'top', timeout: 1200 })
+  } finally {
+    recargando.value = false
+  }
+}
 const tipoestados = { 1: 'Procesado', 2: 'Pendiente', 3: 'Descartado' }
 const pdfData = ref(null)
 console.log(props.almacenes[0])
@@ -266,6 +324,7 @@ const pedidoId = ref('')
 const tiposPedido = [
   { label: 'Pedidos de Compras', value: 1 },
   { label: 'Pedidos de Movimientos', value: 2 },
+  { label: 'Pedidos de Producción', value: 3 },
 ]
 
 const filtroTipo = ref(null) // Siempre comienza en 1

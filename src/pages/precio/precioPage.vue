@@ -1,5 +1,17 @@
 <template>
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para costos y precios -->
+          <q-icon name="price_change" size="md" class="q-mr-sm" />
+          Costo Unitario
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Gestión y actualización de costos por unidad de producto
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">

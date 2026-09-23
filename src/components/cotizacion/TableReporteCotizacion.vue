@@ -132,6 +132,18 @@
           >
             <q-tooltip>Ver Comprobante</q-tooltip>
           </q-btn>
+          <!-- <q-btn
+            id="btneditarcotizacion"
+            v-if="props.row.estadoResumido === 'NOR'"
+            icon="edit"
+            color="orange-8"
+            flat
+            round
+            dense
+            @click="$emit('editarCotizacion', props.row.idcotizacion)"
+          >
+            <q-tooltip>Editar Cotización</q-tooltip>
+          </q-btn> -->
           <q-btn
             id="btnfacturarcotizacion"
             v-if="
@@ -173,12 +185,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
-import { getTipoFactura } from 'src/composables/FuncionesG'
+import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
 import emitter from 'src/event-bus'
 import { verificarexistenciapagina } from 'src/composables/FuncionesG'
+import { obtenerDivisaActiva } from 'src/services/divisaService'
+import { useQuasar } from 'quasar'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+const $q = useQuasar()
 
+// Cargar automáticamente al montar el componente
+
+const ID_EMPRESA = idempresa_md5()
+const divisa = ref(null)
+console.log(divisa.value)
 const tipoFactura = getTipoFactura()
 const refHijo = ref(null)
 
@@ -190,7 +211,7 @@ const props = defineProps({
     default: () => [],
   },
 })
-console.log('Props recibidas en TableReporteCotizacion:', props.rows)
+//console.log('Props recibidas en TableReporteCotizacion:', props.rows)
 defineExpose({ obtenerDatos: () => ejecutarDesdePadre(), getActiveFiltersReport })
 
 function getActiveFiltersReport() {
@@ -200,7 +221,7 @@ function getActiveFiltersReport() {
 function ejecutarDesdePadre() {
   const resultado = refHijo.value.obtenerDatosFiltrados()
 
-  console.log('Resultado recibido del hijo:', resultado)
+  //console.log('Resultado recibido del hijo:', resultado)
   return resultado
 }
 
@@ -209,84 +230,94 @@ defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
 
 // Mapeo de tipos de venta (copiado de la lógica del archivo original)
 
-// Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
-const columnas = [
-  { name: 'nro', label: 'N°', align: 'center', field: 'nro', sortable: true },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    align: 'left',
-    field: 'fecha',
-    dataType: 'date',
-    sortable: true,
-  },
-  {
-    name: 'almacen',
-    label: 'Almacén',
-    align: 'left',
-    field: 'almacen',
-    dataType: 'text',
-    sortable: true,
-  },
-  {
-    name: 'cliente',
-    label: 'Cliente',
-    align: 'left',
-    field: 'cliente',
-    dataType: 'text',
-    sortable: true,
-  },
-  {
-    name: 'sucursal',
-    label: 'Sucursal',
-    align: 'left',
-    field: 'sucursal',
-    dataType: 'text',
-    sortable: true,
-  },
-  {
-    name: 'estadoCobroResumido',
-    label: 'Estado Pago',
-    align: 'center',
-    field: 'estadoCobroResumido',
-    dataType: 'text',
-    sortable: true,
-  },
-  {
-    name: 'estadoResumido',
-    label: 'Tipo',
-    align: 'center',
-    field: 'estadoResumido',
-    dataType: 'text',
-    sortable: true,
-  },
-  {
-    name: 'monto',
-    label: 'Monto',
-    align: 'right',
-    field: 'monto',
-    dataType: 'number',
-    sortable: true,
-  },
-  {
-    name: 'descuento',
-    label: 'Desc.',
-    align: 'right',
-    field: 'descuento',
-    dataType: 'number',
-    sortable: true,
-  },
-  {
-    name: 'total_sumatorias',
-    label: 'Total',
-    align: 'right',
-    field: 'total_sumatorias',
-    dataType: 'number',
-    sortable: true,
-  },
-
-  { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
-]
+// Definición de las columnas como computed para que se actualice cuando cambie la divisa
+const columnas = computed(() => {
+  const sim = divisa.value?.simbolo ?? '$'
+  return [
+    { name: 'nro', label: 'N°', align: 'center', field: 'nro', sortable: true },
+    {
+      name: 'fecha',
+      label: 'Fecha',
+      align: 'left',
+      field: 'fecha',
+      dataType: 'date',
+      sortable: true,
+    },
+    {
+      name: 'almacen',
+      label: 'Almacén',
+      align: 'left',
+      field: 'almacen',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'cliente',
+      label: 'Razón Social',
+      align: 'left',
+      field: 'cliente',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'nombreComercial',
+      label: 'Nombre Comercial',
+      align: 'left',
+      field: 'nombreComercial',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'sucursal',
+      label: 'Sucursal',
+      align: 'left',
+      field: 'sucursal',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'estadoCobroResumido',
+      label: 'Estado Pago',
+      align: 'center',
+      field: 'estadoCobroResumido',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'estadoResumido',
+      label: 'Tipo',
+      align: 'center',
+      field: 'estadoResumido',
+      dataType: 'text',
+      sortable: true,
+    },
+    {
+      name: 'total_sumatorias',
+      label: `Subtotal (${sim})`,
+      align: 'right',
+      field: 'total_sumatorias',
+      dataType: 'number',
+      sortable: true,
+    },
+    {
+      name: 'descuento',
+      label: `Desc. (${sim})`,
+      align: 'right',
+      field: 'descuento',
+      dataType: 'number',
+      sortable: true,
+    },
+    {
+      name: 'monto',
+      label: `Total (${sim})`,
+      align: 'right',
+      field: 'monto',
+      dataType: 'number',
+      sortable: true,
+    },
+    { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
+  ]
+})
 
 const estadoCobro = [
   {
@@ -319,6 +350,7 @@ const ArrayHeaders = [
   'fecha',
   'almacen',
   'cliente',
+  'nombreComercial',
   'sucursal',
   'monto',
   'descuento',
@@ -328,4 +360,26 @@ const ArrayHeaders = [
 ]
 
 const summationHeaders = ['monto', 'descuento', 'total_sumatorias']
+
+onMounted(async () => {
+  try {
+    let tipoFactura = ''
+    let token = ''
+    if (getTipoFactura(true) && getToken(true)) {
+      tipoFactura = getTipoFactura()
+      token = getToken()
+    }
+    divisa.value = await obtenerDivisaActiva(ID_EMPRESA, token, tipoFactura)
+    console.log('Divisa activa:', divisa.value)
+  } catch (error) {
+    console.error('Error al obtener divisa activa:', error)
+    $q.notify({
+      type: 'warning',
+      message: 'No se pudo cargar la divisa activa. Usando configuración por defecto.',
+    })
+  }
+  //cargarAlmacenes()
+  //getClientes()
+  //getCanalVenta()
+})
 </script>

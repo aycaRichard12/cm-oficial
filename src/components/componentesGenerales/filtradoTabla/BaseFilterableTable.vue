@@ -9,12 +9,13 @@
     :rows-per-page-options="rowsPerPageOptions"
     :virtual-scroll="true"
     wrap-cells
+    v-bind="$attrs"
   >
     <template v-slot:header-cell="props">
       <q-th
         :props="props"
         class="cursor-pointer text-left no-sort-icon"
-        style="white-space: normal; vertical-align: top"
+        :style="[{ 'white-space': 'normal', 'vertical-align': 'top' }, props.col.headerStyle || {}]"
       >
         <div class="flex items-start no-wrap">
           <span class="flex items-center text-weight-bold q-pr-sm">
@@ -116,13 +117,15 @@
     </template>
 
     <template
-      v-for="slot in Object.keys($slots).filter(
-        (s) => !['header-cell', 'bottom-row', 'top-right'].includes(s),
-      )"
-      :key="slot"
-      #[slot]="slotProps"
+      v-for="(_, name) in $slots"
+      :key="name"
+      #[name]="slotData"
     >
-      <slot :name="slot" v-bind="slotProps || {}" />
+      <slot
+        v-if="!['header-cell', 'bottom-row', 'top-right'].includes(name)"
+        :name="name"
+        v-bind="slotData || {}"
+      />
     </template>
   </q-table>
 </template>
@@ -132,20 +135,20 @@ import { ref, computed, defineProps, defineEmits, watch } from 'vue'
 import ColumnFilter from './ColumnFilter.vue' // Asegúrate de que la ruta sea correcta
 
 const props = defineProps({
-  title: { type: String, default: 'Datos' },
+  title: { type: String, default: '' },
   nombreColumnaTotales: { type: String, default: 'nombreColumnaTotales' },
   rows: { type: Array, required: true },
   columns: { type: Array, required: true },
   arrayHeaders: { type: Array, default: () => [] }, // Columnas que permiten filtrado
   sumColumns: { type: Array, default: () => [] }, // Columnas que permiten filtrado
-  rowKey: { type: String, default: 'id' },
+  rowKey: { type: [String, Function], default: 'id' },
   search: { type: String, default: '' },
   filterMode: { type: String, default: 'client' }, // 'client' o 'server'
   rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
 })
 
-console.log(props.sumColumns)
-console.log(props.rows)
+//console.log(props.sumColumns)
+//console.log(props.rows)
 
 const emit = defineEmits(['column-filter-changed'])
 defineExpose({
@@ -178,8 +181,15 @@ const visibleColumnNames = ref(
   props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name),
 )
 
+let _prevVisibleKey = ''
+let _prevVisibleResult = []
+
 const visibleColumns = computed(() => {
-  return props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
+  const key = visibleColumnNames.value.join('|')
+  if (key === _prevVisibleKey) return _prevVisibleResult
+  _prevVisibleKey = key
+  _prevVisibleResult = props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
+  return _prevVisibleResult
 })
 
 const pagination = ref({
@@ -191,15 +201,26 @@ const pagination = ref({
 
 const totales = computed(() => {
   const totals = {}
-  props.sumColumns.forEach((colName) => {
-    totals[colName] = filteredData.value.reduce((sum, row) => {
-      const value = parseFloat(row[colName])
+  const totalsRaw = {} // Para valores numéricos sin formato
 
-      return sum + (isNaN(value) ? 0 : value)
+  props.sumColumns.forEach((colName) => {
+    const sum = filteredData.value.reduce((accumulator, row) => {
+      const value = parseFloat(row[colName])
+      return accumulator + (isNaN(value) ? 0 : value)
     }, 0)
-    totals[colName] = Number(totals[colName].toFixed(2))
+
+    // Almacenar valor crudo (número)
+    totalsRaw[colName] = Number(sum.toFixed(2))
+
+    // Almacenar valor formateado para mostrar
+    totals[colName] = sum.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   })
-  console.log(totals)
+
+  //console.log('Totales crudos:', totalsRaw)
+  //console.log('Totales formateados:', totals)
   return totals
 })
 // Forzar cálculo inicial
@@ -406,35 +427,48 @@ function extractAllValues(obj) {
  * Aplica todos los filtros activos de columna (lógica AND) y la ordenación.
  */
 const filteredData = computed(() => {
-  let data = Array.isArray(props.rows) ? props.rows.slice() : []
+  if (!Array.isArray(props.rows)) return []
+
+  const hasFilters = Object.keys(activeFilters.value).length > 0
+  const hasSearch = localSearch.value && localSearch.value.trim() !== ''
+  const hasSort = !!pagination.value.sortBy
+
+  // Sin filtros, búsqueda ni ordenamiento: retornar la misma referencia
+  if (!hasFilters && !hasSearch && !hasSort) {
+    return props.rows
+  }
+
+  let data = props.rows.slice()
 
   // Aplicar filtros de columna (no el filtro global 'search')
-  Object.keys(activeFilters.value).forEach((col) => {
-    const filterPayload = activeFilters.value[col]
-    const column = props.columns.find((c) => c.name === col)
+  if (hasFilters) {
+    Object.keys(activeFilters.value).forEach((col) => {
+      const filterPayload = activeFilters.value[col]
+      const column = props.columns.find((c) => c.name === col)
 
-    if (!filterPayload || !column) return
+      if (!filterPayload || !column) return
 
-    data = data.filter((row) => {
-      const rowValue = getByPath(row, column.field) // Usar getByPath para campos anidados
+      data = data.filter((row) => {
+        const rowValue = getByPath(row, column.field) // Usar getByPath para campos anidados
 
-      if (filterPayload.type === 'values' && filterPayload.values.length > 0) {
-        // Filtrado por valores múltiples
-        return filterPayload.values.includes(String(rowValue || '-').trim())
-      } else if (
-        filterPayload.type === 'condition' &&
-        filterPayload.condition &&
-        filterPayload.condition.active
-      ) {
-        // Filtrado por condición (>, <, between, contains, etc.)
-        return evaluateCondition(rowValue, filterPayload.condition, column.dataType || 'text')
-      }
-      return true
+        if (filterPayload.type === 'values' && filterPayload.values.length > 0) {
+          // Filtrado por valores múltiples
+          return filterPayload.values.includes(String(rowValue || '-').trim())
+        } else if (
+          filterPayload.type === 'condition' &&
+          filterPayload.condition &&
+          filterPayload.condition.active
+        ) {
+          // Filtrado por condición (>, <, between, contains, etc.)
+          return evaluateCondition(rowValue, filterPayload.condition, column.dataType || 'text')
+        }
+        return true
+      })
     })
-  })
+  }
 
   // Aplicar filtro de búsqueda global (search) - búsqueda universal en todos los datos de la fila
-  if (localSearch.value && localSearch.value.trim() !== '') {
+  if (hasSearch) {
     const searchTerm = localSearch.value.toLowerCase().trim()
     data = data.filter((row) => {
       // Buscar en TODOS los datos de la fila, incluyendo objetos anidados
@@ -444,11 +478,11 @@ const filteredData = computed(() => {
   }
 
   // ORDENAMIENTO robusto y estable
-  if (pagination.value.sortBy) {
+  if (hasSort) {
     const sortKey = pagination.value.sortBy
     const desc = pagination.value.descending
 
-    data = data.slice().sort((a, b) => {
+    data.sort((a, b) => {
       // Usar getByPath en el ordenamiento para campos anidados
       const valA = getByPath(a, sortKey)
       const valB = getByPath(b, sortKey)

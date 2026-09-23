@@ -11,7 +11,7 @@
             @click="$emit('volver')"
             class="q-mr-sm"
           />
-          <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" />
+          <!-- <q-btn label="Inicio" icon="home" color="primary" size="sm" @click="handleContinue" /> -->
         </div>
         <div class="col-12 col-sm-8 text-center">
           <h4 class="q-ma-none text-primary" style="font-size: 20px">
@@ -57,6 +57,18 @@
                     <q-item>
                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
                     </q-item>
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="listaCLientes"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
                   </template>
                 </q-select>
               </div>
@@ -138,6 +150,18 @@
                   <template v-slot:prepend>
                     <q-icon name="point_of_sale" color="blue" />
                   </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="cargarCanales"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
+                  </template>
                 </q-select>
               </div>
               <div class="col-12 col-md-3">
@@ -175,6 +199,18 @@
                 >
                   <template v-slot:prepend>
                     <q-icon name="store" color="blue" />
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="cargarPuntoVentas"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
                   </template>
                 </q-select>
               </div>
@@ -614,6 +650,7 @@ async function crearFormularioFacturaAlquileres() {
       montoTotalSujetoIva: datos.ventatotal,
       codigoPuntoVenta: 0,
       extras: {
+        uniqueCode: '',
         facturaTicket: '',
       },
       detalles: datos.listaProductosFactura,
@@ -711,7 +748,7 @@ const cargarCanales = async () => {
   try {
     const respuesta = await validarUsuario()
     const idempresa = respuesta[0]?.empresa?.idempresa
-    const response = await api.get(`listaCanalVenta/${idempresa}`)
+    const response = await api.get(`listaCanalVentaActivos/${idempresa}`)
     salesChannels.value = response.data.map((item) => ({
       label: item.canal,
       value: item.id,
@@ -1159,9 +1196,9 @@ const resetForm = () => {
   localStorage.removeItem('carrito')
 }
 
-const handleContinue = () => {
-  emit('continuar') // Esto activará el toggle en el padre
-}
+// const handleContinue = () => {
+//   emit('continuar') // Esto activará el toggle en el padre
+// }
 //=======================Cliente ====================
 const RegistrarCliente = () => {
   showAddModal.value = !showAddModal.value

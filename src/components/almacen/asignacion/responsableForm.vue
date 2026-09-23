@@ -31,45 +31,66 @@
 
       <q-card-actions class="flex justify-end">
         <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn
-          label="Aprobar"
-          type="submit"
-          color="primary"
-          :disable="!formData.usuario"
-        />
+        <q-btn label="Aprobar" type="submit" color="primary" :disable="!formData.usuario" />
       </q-card-actions>
     </q-form>
   </q-card>
 </template>
 
 <script setup>
+/**
+ * Componente para gestión de responsables de empresa
+ * Permite seleccionar usuarios existentes y registrar/editar su información
+ * @module components/RegistroResponsable
+ */
+
+// ==================== DEPENDENCIAS EXTERNAS ====================
 import { ref, onMounted, watch } from 'vue'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 
-const $q = useQuasar()
+// ==================== ESTADO GLOBAL Y CONFIGURACIÓN ====================
+const $q = useQuasar() // Instancia de Quasar para notificaciones y UI
+
+// Validación y obtención del usuario autenticado
 const contenidousuario = validarUsuario()
+// Extracción del ID de empresa del usuario actual (primer elemento del array)
 const idempresa = contenidousuario[0]?.empresa?.idempresa
 
-const usuarios = ref([])
-const nombre = ref('')
-const apellido = ref('')
-const cargo = ref('')
-const isEditing = ref(false) // Puedes convertir esto en una prop si lo necesitas externo
-const emit = defineEmits(['registroExitoso', 'cancel'])
+// ==================== ESTADOS REACTIVOS ====================
+const usuarios = ref([]) // Lista de usuarios disponibles para seleccionar
+const nombre = ref('') // Nombre del usuario seleccionado (solo lectura)
+const apellido = ref('') // Apellido del usuario seleccionado (solo lectura)
+const cargo = ref('') // Cargo del usuario seleccionado (solo lectura)
+const isEditing = ref(false) // Controla si el formulario está en modo edición (potencial prop externa)
+const emit = defineEmits(['registroExitoso', 'cancel']) // Eventos para comunicación con componente padre
 
+// ==================== DATOS DEL FORMULARIO ====================
+/**
+ * Estructura principal del formulario
+ * @property {string} ver - Acción a ejecutar en el backend
+ * @property {number} idempresa - ID de la empresa del usuario autenticado
+ * @property {number|null} usuario - ID del usuario seleccionado (inicialmente nulo)
+ */
 const formData = ref({
   ver: 'registrarResponsable',
   idempresa: idempresa,
   usuario: null,
 })
 
-// Cargar usuarios desde API
+// ==================== FUNCIONES API ====================
+/**
+ * Carga la lista de usuarios desde el backend
+ * Transforma la respuesta en formato consumible por un select (label, value, data)
+ * @async
+ * @throws {Error} Cuando falla la petición a la API
+ */
 async function loadUsuarios() {
   try {
     const response = await api.get(`usuarios/${idempresa}`)
+    // Mapeo de datos: label para mostrar, value para el ID, data para información adicional
     usuarios.value = response.data.map((item) => ({
       label: item.usuario,
       value: item.id,
@@ -84,16 +105,23 @@ async function loadUsuarios() {
   }
 }
 
-// Actualizar campos cuando cambia el usuario
+// ==================== WATCHERS ====================
+/**
+ * Observa cambios en la selección del usuario
+ * Actualiza automáticamente nombre, apellido y cargo basado en el usuario seleccionado
+ * Limpia los campos si no hay usuario seleccionado
+ */
 watch(
   () => formData.value.usuario,
   (nuevoValor) => {
     const seleccionado = usuarios.value.find((u) => u.value === nuevoValor)
     if (seleccionado) {
+      // Datos almacenados en el array: [cargo, nombre, apellido]
       cargo.value = seleccionado.data[0]
       nombre.value = seleccionado.data[1]
       apellido.value = seleccionado.data[2]
     } else {
+      // Reset cuando se deselecciona
       cargo.value = ''
       nombre.value = ''
       apellido.value = ''
@@ -101,8 +129,16 @@ watch(
   },
 )
 
-// Manejo del formulario
+// ==================== MANEJADORES DE FORMULARIO ====================
+/**
+ * Procesa el envío del formulario
+ * Realiza validaciones, transforma datos a FormData y envía al backend
+ * Emite evento de éxito o error según el resultado
+ * @async
+ * @emits registroExitoso - Cuando el registro/edición es exitoso
+ */
 const handleSubmit = async () => {
+  // Validación: usuario obligatorio
   if (!formData.value.usuario) {
     $q.notify({
       type: 'warning',
@@ -110,21 +146,29 @@ const handleSubmit = async () => {
     })
     return
   }
+
+  // Construcción del payload combinando formData con datos complementarios
   const data = {
     ...formData.value,
     nombre: nombre.value,
     apellido: apellido.value,
     cargo: cargo.value,
   }
+
+  // Conversión a FormData para envío multipart (necesario para el backend)
   const form = objectToFormData(data)
+
   try {
     const response = await api.post('', form)
-    console.log(response)
+    console.log(response) // Log de depuración para verificar respuesta
+
+    // Notificación según modo (edición o registro)
     $q.notify({
       type: 'positive',
       message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
     })
-    emit('registroExitoso') // 🔔 Emite evento
+
+    emit('registroExitoso') // 🔔 Notifica al componente padre para actualizar listas/estados
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
@@ -134,6 +178,11 @@ const handleSubmit = async () => {
   }
 }
 
+// ==================== CICLO DE VIDA ====================
+/**
+ * Carga inicial de datos al montar el componente
+ * Obtiene la lista de usuarios disponibles para selección
+ */
 onMounted(() => {
   loadUsuarios()
 })

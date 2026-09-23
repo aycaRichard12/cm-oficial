@@ -1,6 +1,17 @@
 <template>
   <q-page padding>
-    <div class="titulo">Reporte Pedidos</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assessment" size="md" class="q-mr-sm" />
+          Reporte Pedidos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Pedidos
+        </div>
+      </div>
+    </div>
     <q-form @submit.prevent="handleGenerarReporte">
       <div class="row justify-center q-col-gutter-x-md" id="pedidos">
         <div class="col-12 col-md-4">
@@ -59,10 +70,39 @@
               outlined
               dense
               :disable="!reporteGenerado"
-            />
+            >
+              <template v-slot:append>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  size="sm"
+                  color="primary"
+                  icon="refresh"
+                  :loading="recargandoAlmacenes"
+                  @click.stop.prevent="recargarAlmacenes"
+                >
+                  <q-tooltip>Recargar almacenes</q-tooltip>
+                </q-btn>
+              </template>
+            </q-select>
           </div>
         </div>
       </q-form>
+      <div class="row justify-end q-mb-sm">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar Tabla"
+          outline
+          no-caps
+          id="btnRecargarTablaReporte"
+          :loading="recargandoTabla"
+          @click.stop.prevent="recargarTabla"
+        >
+          <q-tooltip>Volver a generar el reporte</q-tooltip>
+        </q-btn>
+      </div>
       <q-table
         id="tablaPedidos"
         :rows="datosFiltrados"
@@ -160,6 +200,8 @@ const datosOriginales = ref([])
 const datosFiltrados = ref([])
 const datosUsuario = reactive({})
 const reporteGenerado = ref(false)
+const recargandoAlmacenes = ref(false)
+const recargandoTabla = ref(false)
 
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
@@ -482,6 +524,32 @@ const enviarPDFPorWhatsApp = async (row) => {
   mostrarDialogoWhatsapp(
     `Aquí tienes la orden de pedido: ${linkPDF}\n\n*Nota: Este enlace estará activo por 48 horas y luego será eliminado.*`,
   )
+}
+
+const recargarAlmacenes = async () => {
+  if (recargandoAlmacenes.value) return
+  recargandoAlmacenes.value = true
+  try {
+    await cargarListaAlmacenes()
+    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar almacenes:', err)
+  } finally {
+    recargandoAlmacenes.value = false
+  }
+}
+
+const recargarTabla = async () => {
+  if (recargandoTabla.value) return
+  recargandoTabla.value = true
+  try {
+    await generarReporte()
+    $q.notify({ type: 'positive', message: 'Tabla recargada', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar tabla:', err)
+  } finally {
+    recargandoTabla.value = false
+  }
 }
 
 // --- Ciclo de Vida ---

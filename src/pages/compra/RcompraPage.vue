@@ -1,11 +1,34 @@
 <template>
   <q-page padding>
-    <div class="titulo">Registrar Compras</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Registrar Compras
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Registrar Compras
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary flex justify-between text-h6 text-white">
+        <q-card-section class="bg-primary flex justify-between items-center text-h6 text-white">
           <div>Registrar Compra</div>
-          <q-btn color="white" icon="close" @click="cerrarFormulario" flat round dense />
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              color="white"
+              icon="refresh"
+              flat
+              round
+              dense
+              @click="recargarDatosModal"
+            >
+              <q-tooltip>Recargar datos</q-tooltip>
+            </q-btn>
+            <q-btn color="white" icon="close" @click="cerrarFormulario" flat round dense />
+          </div>
         </q-card-section>
         <q-card-section>
           <form-compra
@@ -15,6 +38,9 @@
             :cajaBancos="listaCajaBancos"
             @submit="guardarRegistro"
             @cancel="cerrarFormulario"
+            @recargarProveedores="cargarProveedores"
+            @recargarAlmacenes="cargarAlmacenes"
+            @recargarCajaBancos="listarcajasbanco"
           />
         </q-card-section>
       </q-card>
@@ -38,12 +64,25 @@
 
     <q-dialog v-model="mostrarDetalleCompra" persistent>
       <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-h6 text-white flex justify-between">
+        <q-card-section class="bg-primary text-h6 text-white flex justify-between items-center">
           <div>Detalle Compra</div>
-          <q-btn icon="close" @click="mostrarDetalleCompra = false" flat dense round />
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              :loading="isReloadingDetalle"
+              @click="recargarDetalleCompra"
+            >
+              <q-tooltip>Recargar detalle</q-tooltip>
+            </q-btn>
+            <q-btn icon="close" @click="mostrarDetalleCompra = false" flat dense round />
+          </div>
         </q-card-section>
         <q-card-section>
           <DetalleCompra
+            ref="detalleCompraRef"
             :compra="formularioDetalleCompra"
             @close="cancelarDetalle"
             @update="iniciar"
@@ -53,12 +92,28 @@
     </q-dialog>
     <q-dialog v-model="showFormEdit" persistent>
       <q-card class="q-pa-md" style="width: 1200px; max-width: 90vw">
+        <div class="row justify-between items-center q-mb-sm">
+          <div class="text-h6">Editar Compra</div>
+          <div class="row q-gutter-x-xs">
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              color="primary"
+              @click="cargarProveedores"
+            >
+              <q-tooltip>Recargar proveedores</q-tooltip>
+            </q-btn>
+          </div>
+        </div>
         <FormCompraEditar
           :modalValue="registroActual"
           :proveedores="proveedores"
           :editing="isEditing"
           @submit="guardarRegistro"
           @cancel="cerrarFormulario"
+          @recargarProveedores="cargarProveedores"
         />
       </q-card>
     </q-dialog>
@@ -113,10 +168,13 @@ const registroActual = ref({
   codigo: generarCodigo(),
   nombre: 'CMP-',
   tipoRegistro: 2,
+  total: 0,
   nombrealmacen: '',
 })
 const showFormEdit = ref(false)
 const formularioDetalleCompra = ref({ ver: 'registrarDetalleCompra' })
+const detalleCompraRef = ref(null)
+const isReloadingDetalle = ref(false)
 const detalleCompra = ref([])
 const productosDisponibles = ref([])
 const listaCajaBancos = ref([])
@@ -207,6 +265,14 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
   }
 }
 
+async function recargarDatosModal() {
+  await Promise.all([
+    cargarProveedores(),
+    cargarAlmacenes(),
+    listarcajasbanco(),
+  ])
+}
+
 async function guardarRegistro(data) {
   console.log(data)
   const endpoint = isEditing.value ? 'editarCompra' : 'nuevaCompra'
@@ -241,6 +307,7 @@ function resetForm() {
     codigo: generarCodigo(),
     nombre: 'CMP-',
     tipoRegistro: 2,
+  total: 0,
   }
   console.log('Formulario reseteado', registroActual.value)
 }
@@ -366,6 +433,18 @@ async function getDetalleCompra(compra) {
   }
 }
 
+async function recargarDetalleCompra() {
+  if (isReloadingDetalle.value) return
+  isReloadingDetalle.value = true
+  try {
+    await detalleCompraRef.value?.recargarComponente?.()
+  } catch (error) {
+    console.error('Error al recargar detalle:', error)
+  } finally {
+    isReloadingDetalle.value = false
+  }
+}
+
 function cancelarDetalle() {
   mostrarDetalleCompra.value = false
 }
@@ -467,6 +546,7 @@ async function iniciar() {
     codigo: generarCodigo(),
     nombre: 'CMP-',
     tipoRegistro: 2,
+  total: 0,
   }
 }
 onMounted(async () => {

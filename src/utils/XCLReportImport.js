@@ -153,6 +153,7 @@ export function exportToXLSX_Reporte_Creditos(
   const allPossibleColumns = [
     { header: 'N°', key: 'numero', width: 5 },
     { header: 'Fecha Crédito', key: 'fechaventa', width: 12, format: 'date' },
+    { header: 'Fact.', key: 'numFactura', width: 12, numeric: true },
     { header: 'Cliente', key: 'razonsocial', width: 30 },
     { header: 'Sucursal', key: 'sucursal', width: 20 },
     { header: 'Fecha Límite', key: 'fechalimite', width: 12, format: 'date' },
@@ -740,7 +741,7 @@ export function exportTOXLSX_Reporte_Ventas(filteredVentas, almacen, startDate, 
     item.fecha || '',
     item.sucursal || '',
     item.cliente || '',
-    item.Vendedor || '',
+    item.vendedor || '',
     item.almacen || '',
     item.divisa || '',
     item.estado || '',
@@ -1046,4 +1047,154 @@ export async function importarProductosDesdeExcel(file) {
     reader.onerror = (err) => reject(err)
     reader.readAsBinaryString(file)
   })
+}
+
+export function exportToXLSX_Reporte_Utilidades(
+  reportData,
+  startDate,
+  endDate,
+  almacenSeleccionado = null,
+  clienteSeleccionado = null,
+  campanaSeleccionada = null,
+  categoriaSeleccionada = null,
+) {
+  const datos = [...reportData]
+
+  // Calcular totales
+  const totalCantidad = datos.reduce((sum, item) => sum + parseFloat(item.cantidad_vendida || 0), 0)
+  const totalVendido = datos.reduce((sum, item) => sum + parseFloat(item.total_vendido || 0), 0)
+  const totalCosto = datos.reduce((sum, item) => sum + parseFloat(item.costo_total || 0), 0)
+  const totalUtilidad = datos.reduce((sum, item) => sum + parseFloat(item.utilidad || 0), 0)
+
+  // Mapear datos para exportación
+  const dataForExport = datos.map((row, index) => {
+    return {
+      'N°': index + 1,
+      'Código Producto': row.codigo_producto || '',
+      Producto: row.nombre_producto || '',
+      Categoría: row.categoria || '',
+      'Categoría Precio': row.categoria_precio || '',
+      Cantidad: parseFloat(row.cantidad_vendida || 0),
+      'Precio Unitario Prom.': parseFloat(row.precio_unitario_promedio || 0),
+      'Total Vendido': parseFloat(row.total_vendido || 0),
+      'Costo Unitario Prom.': parseFloat(row.costo_unitario_promedio || 0),
+      'Costo Total': parseFloat(row.costo_total || 0),
+      Utilidad: parseFloat(row.utilidad || 0),
+      'Margen s/ Venta Neta (%)': parseFloat(row.margen_sobre_venta_neta || 0),
+      'Margen s/ Venta Bruta (%)': parseFloat(row.margen_sobre_venta_bruta || 0),
+    }
+  })
+
+  // Agregar fila de totales
+  dataForExport.push({
+    'N°': '',
+    'Código Producto': '',
+    Producto: 'TOTAL GENERAL',
+    Categoría: '',
+    'Categoría Precio': '',
+    Cantidad: totalCantidad,
+    'Precio Unitario Prom.': '',
+    'Total Vendido': totalVendido,
+    'Costo Unitario Prom.': '',
+    'Costo Total': totalCosto,
+    Utilidad: totalUtilidad,
+    'Margen s/ Venta Neta (%)': '',
+    'Margen s/ Venta Bruta (%)': '',
+  })
+
+  // Crear hoja de trabajo
+  const worksheet = XLSX.utils.json_to_sheet(dataForExport)
+
+  // Definir anchos de columnas
+  worksheet['!cols'] = [
+    { wch: 5 }, // N°
+    { wch: 15 }, // Código Producto
+    { wch: 35 }, // Producto
+    { wch: 20 }, // Categoría
+    { wch: 20 }, // Categoría Precio
+    { wch: 12 }, // Cantidad
+    { wch: 18 }, // Precio Unitario Prom.
+    { wch: 15 }, // Total Vendido
+    { wch: 18 }, // Costo Unitario Prom.
+    { wch: 15 }, // Costo Total
+    { wch: 15 }, // Utilidad
+    { wch: 22 }, // Margen s/ Venta Neta (%)
+    { wch: 22 }, // Margen s/ Venta Bruta (%)
+  ]
+
+  // Aplicar estilos a las celdas
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  for (let R = range.s.r; R <= range.e.r; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cell_address = { c: C, r: R }
+      const cell_ref = XLSX.utils.encode_cell(cell_address)
+      const cell = worksheet[cell_ref]
+
+      if (!cell) continue
+
+      let cellStyle = {
+        font: { name: 'Arial', sz: 10 },
+        alignment: { horizontal: 'left', vertical: 'center', wrapText: true },
+        border: {
+          top: { style: 'thin', color: { rgb: 'D3D3D3' } },
+          bottom: { style: 'thin', color: { rgb: 'D3D3D3' } },
+          left: { style: 'thin', color: { rgb: 'D3D3D3' } },
+          right: { style: 'thin', color: { rgb: 'D3D3D3' } },
+        },
+      }
+
+      if (R === 0) {
+        cellStyle.font = { name: 'Arial', sz: 11, bold: true, color: { rgb: 'FFFFFF' } }
+        cellStyle.fill = { fgColor: { rgb: '4F81BD' } }
+        cellStyle.alignment = { horizontal: 'center', vertical: 'center' }
+      } else if (R === range.e.r) {
+        cellStyle.font = { name: 'Arial', sz: 10, bold: true }
+        cellStyle.fill = { fgColor: { rgb: 'F2F2F2' } }
+
+        const numericColumns = [5, 7, 9, 10] // Cantidad, Total Vendido, Costo Total, Utilidad
+        if (numericColumns.includes(C)) {
+          cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
+          if (typeof cell.v === 'number') {
+            cell.z = '[$-40A]#,##0.00'
+            cellStyle.numFmt = '[$-40A]#,##0.00'
+          }
+        }
+      } else {
+        const numericColumns = [5, 6, 7, 8, 9, 10, 11, 12]
+        if (numericColumns.includes(C)) {
+          cellStyle.alignment = { horizontal: 'right', vertical: 'center' }
+          if (typeof cell.v === 'number') {
+            cell.z = '[$-40A]#,##0.00'
+            cellStyle.numFmt = '[$-40A]#,##0.00'
+          }
+        }
+      }
+      cell.s = cellStyle
+    }
+  }
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Utilidades')
+
+  const contenidoUsuario = validarUsuario()
+  const empresa = contenidoUsuario[0]?.empresa?.nombre || ''
+  const usuario = contenidoUsuario[0]?.nombre || ''
+  const cargo = contenidoUsuario[0]?.cargo || ''
+
+  let filtros = `Del ${cambiarFormatoFecha(startDate)} al ${cambiarFormatoFecha(endDate)}`
+  if (almacenSeleccionado) filtros += ` | Almacén: ${almacenSeleccionado}`
+  if (clienteSeleccionado) filtros += ` | Cliente: ${clienteSeleccionado}`
+  if (campanaSeleccionada) filtros += ` | Campaña: ${campanaSeleccionada}`
+  if (categoriaSeleccionada) filtros += ` | Categoría: ${categoriaSeleccionada}`
+
+  workbook.Props = {
+    Title: `Reporte de Utilidades - ${empresa}`,
+    Subject: 'Utilidades por producto',
+    Author: `${usuario} - ${cargo}`,
+    CreatedDate: new Date(),
+    Comments: filtros,
+  }
+
+  let filename = `Reporte_Utilidades_${startDate}_a_${endDate}.xlsx`
+  XLSX.writeFile(workbook, filename, { cellStyles: true })
 }

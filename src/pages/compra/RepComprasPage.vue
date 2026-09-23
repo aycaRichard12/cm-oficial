@@ -1,6 +1,14 @@
 <template>
   <q-page padding>
-    <div class="titulo">Reporte Compras</div>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Reporte Compras
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Compras</div>
+      </div>
+    </div>
     <q-form>
       <div
         class="row q-col-gutter-md"
@@ -24,51 +32,19 @@
           class="q-mr-sm"
           id="generarReporte"
         />
-        <q-btn
-          color="secondary"
-          label="Exportar a Excel"
-          @click="exportarExcel"
-          id="exportarExcel"
-        />
-      </div>
-      <div class="col-12 col-md-6 flex justify-end" id="buscarPedidos">
-        <div>
-          <label for="buscar">Buscar...</label>
-          <q-input dense debounce="300" v-model="search" id="buscar" outlined>
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
       </div>
     </q-form>
 
-    <q-table
-      id="reporteCompras"
-      title="Reporte de Compras"
+    <TablaReporteCompra
       :rows="datosFiltrados"
-      :columns="columnas"
-      :filter="search"
-      row-key="codigo"
-      class="q-mt-lg"
-    >
-      <template v-slot:body-cell-acciones="props">
-        <q-td :props="props">
-          <q-btn
-            id="verDetallePDF"
-            flat
-            round
-            dense
-            color="primary"
-            icon="picture_as_pdf"
-            @click="verDetallePDF(props.row)"
-            :loading="loadingDetalle && selectedIdIngreso === props.row.idIngreso"
-          >
-            <q-tooltip>Ver Detalle en PDF</q-tooltip>
-          </q-btn>
-        </q-td>
-      </template>
-    </q-table>
+      :loading="isLoading"
+      :divisa="divisa"
+      :fecha-inicio="startDate"
+      :fecha-fin="endDate"
+      :almacen-seleccionado="almacenActual"
+      @recargar="generarReporte"
+      @detalle-pdf="verDetallePDF"
+    />
     <q-dialog v-model="showPdfDialog" maximized>
       <q-card>
         <q-toolbar class="bg-primary text-white">
@@ -95,66 +71,24 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
-import { date } from 'quasar'
-import * as XLSX from 'xlsx'
-import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
+//import { date } from 'quasar'
+//import * as XLSX from 'xlsx'
+import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
-import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfReportGenerator'
-const { detalleCompra, loadingDetalle, fetchDetalleCompra } = useReporteProveedorCompras()
+import { PDF_DETALLE_COMPRA_PROVEEDOR } from 'src/utils/pdfs/Detalle_Compra/reporte'
+import TablaReporteCompra from 'src/components/compra/reportes/TablaReporteCompra.vue'
+import { obtenerDivisaActiva } from 'src/services/divisaService.js'
+
+const { detalleCompra, fetchDetalleCompra } = useReporteProveedorCompras()
 const showPdfDialog = ref(false)
 const pdfUrl = ref(null)
+const divisa = ref(null)
+console.log(divisa.value)
 
 const idusuario = idusuario_md5()
 const startDate = ref(null)
 const endDate = ref(null)
 const datosFiltrados = ref([])
-const search = ref('')
-const columnas = [
-  {
-    name: 'num',
-    label: 'N°',
-    field: 'num',
-    align: 'center',
-  },
-  {
-    name: 'almacen',
-    label: 'Almacén',
-    field: 'almacen',
-    align: 'left',
-  },
-  {
-    name: 'codigo',
-    label: 'Codigo',
-    field: 'codigo',
-    align: 'left',
-  },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    field: (row) => date.formatDate(row.fecha, 'DD/MM/YYYY'),
-    align: 'left',
-  },
-  { name: 'nombrelote', label: 'Nombre Lote', field: 'nombrelote', align: 'left' },
-  {
-    name: 'nfactura',
-    label: 'Factura',
-    field: 'nfactura',
-    align: 'right',
-  },
-  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
-  {
-    name: 'autorizacion',
-    label: 'Autorización',
-    field: (row) => (row.autorizacion == 1 ? 'Autorizado' : 'No Autorizado'),
-    align: 'left',
-  },
-  {
-    name: 'acciones',
-    label: 'Acciones',
-    field: 'acciones',
-    align: 'left',
-  },
-]
 
 async function generarReporte() {
   try {
@@ -164,6 +98,7 @@ async function generarReporte() {
     const compras = response.data.map((item, index) => ({
       ...item,
       num: index + 1,
+      total: Number(item.total).toFixed(2),
     }))
     console.log(compras)
     datosFiltrados.value = compras
@@ -172,27 +107,27 @@ async function generarReporte() {
   }
 }
 
-function exportarExcel() {
-  const worksheet = XLSX.utils.json_to_sheet(
-    datosFiltrados.value.map((item) => ({
-      idcompra: item.idcompra,
-      codigo: item.codigo,
-      fecha: item.fecha,
-      nombrelote: item.nombrelote,
-      nfactura: item.nfactura,
-      proveedor: item.proveedor,
-      almacen: item.almacen,
-      idalmacen: item.idalmacen,
-      autorizacion: item.autorizacion,
-      total: item.total,
-      num: item.num,
-    })),
-  )
+// function exportarExcel() {
+//   const worksheet = XLSX.utils.json_to_sheet(
+//     datosFiltrados.value.map((item) => ({
+//       idcompra: item.idcompra,
+//       codigo: item.codigo,
+//       fecha: item.fecha,
+//       nombrelote: item.nombrelote,
+//       nfactura: item.nfactura,
+//       proveedor: item.proveedor,
+//       almacen: item.almacen,
+//       idalmacen: item.idalmacen,
+//       autorizacion: item.autorizacion,
+//       total: item.total,
+//       num: item.num,
+//     })),
+//   )
 
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
-  XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
-}
+//   const workbook = XLSX.utils.book_new()
+//   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
+//   XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
+// }
 
 const verDetallePDF = async (row) => {
   console.log('Generando PDF para la compra:', row)
@@ -201,24 +136,25 @@ const verDetallePDF = async (row) => {
 
   if (detalle) {
     // Generar PDF
-    const doc = PDF_DETALLE_COMPRA_PROVEEDOR(detalleCompra.value)
+    const divisaActiva = divisa.value
+    const { doc, mobileBlobUrl } = await PDF_DETALLE_COMPRA_PROVEEDOR(
+      detalleCompra.value,
+      divisaActiva.tipo,
+    )
 
-    // Convertir a blob URL para mostrar en iframe
-    const pdfBlob = doc.output('blob')
+    if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
 
-    // Revocar URL anterior si existe
-    if (pdfUrl.value) {
-      URL.revokeObjectURL(pdfUrl.value)
+    if (mobileBlobUrl) {
+      pdfUrl.value = mobileBlobUrl
+    } else {
+      pdfUrl.value = URL.createObjectURL(doc.output('blob'))
     }
-
-    // Crear nueva URL
-    pdfUrl.value = URL.createObjectURL(pdfBlob)
-
-    // Mostrar dialog
     showPdfDialog.value = true
   }
 }
-onMounted(() => {
+onMounted(async () => {
+  divisa.value = await obtenerDivisaActiva(idempresa_md5())
+  console.log(divisa.value)
   const today = new Date()
   const year = today.getFullYear()
   const month = (today.getMonth() + 1).toString().padStart(2, '0')

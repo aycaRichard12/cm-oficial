@@ -1,6 +1,15 @@
 <template>
   <div>
     <div>
+      <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
+            Procesar Venta
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Procesar Venta</div>
+        </div>
+      </div>
       <q-card class="my-card q-mb-md">
         <div
           class="bg-primary text-white q-py-lg q-bar--dense"
@@ -9,7 +18,7 @@
           <div class="col flex justify-start">
             <div class="text-weight-bold btn-res" style="font-size: 15px">
               <q-icon name="shopping_cart" size="15px" class="q-mr-sm icono" />
-              <span class="texto">Procesar Venta</span>
+              <!-- <span class="texto">Procesar Venta</span> -->
             </div>
           </div>
           <div class="col-auto" id="btnContinuar">
@@ -49,6 +58,19 @@
                 <template v-slot:prepend>
                   <q-icon name="store" color="primary" />
                 </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarAlmacenes"
+                    :disable="cargandoAlmacenes"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
+                </template>
               </q-select>
             </div>
 
@@ -70,6 +92,19 @@
               >
                 <template v-slot:prepend>
                   <q-icon name="category" color="primary" />
+                </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarCategoriasPrecio"
+                    :disable="cargandoCategorias"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
                 </template>
               </q-select>
             </div>
@@ -110,6 +145,19 @@
                       }}
                     </q-item-section>
                   </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarCampanasDisponibles"
+                    :disable="cargandoCampanias"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
                 </template>
               </q-select>
             </div>
@@ -229,6 +277,13 @@
             </div>
           </div>
 
+          <SelectorVariantesProducto
+            v-if="ConfiguracionProductoVariante && productoSeleccionado?.originalData?.id"
+            :idProducto="productoSeleccionado.originalData.id"
+            @confirmar="recibirSeleccion"
+            ref="selectorRef"
+          />
+
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
               <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block"
@@ -253,6 +308,7 @@
                 v-model.number="cantidad"
                 id="cantidad"
                 type="number"
+                :disable="productoTieneVariantes"
                 :rules="[
                   (val) => val > 0 || 'Ingrese cantidad válida',
                   (val) => val <= productoSeleccionado.originalData.stock || 'Supera el stock',
@@ -274,6 +330,7 @@
                 :rules="[(val) => val > 0 || 'Ingrese precio válido']"
                 outlined
                 dense
+                :disable="productoTieneVariantes"
                 :readonly="!permisosStore.tienePermiso('editarprecioventa')"
                 type="number"
               >
@@ -344,6 +401,28 @@
           <q-td :props="props" style="background-color: #f9f9f9; vertical-align: top">
             <!-- Descripción principal -->
             <div>{{ props.row.descripcion }}</div>
+
+            <!-- Atributos de la variante -->
+            <div
+              v-if="props.row.atributos && props.row.atributos.length"
+              class="q-mt-xs row q-gutter-xs items-center"
+            >
+              <q-badge
+                v-if="props.row.sku"
+                outline
+                color="primary"
+                :label="props.row.sku"
+                class="q-px-xs"
+              />
+              <q-badge
+                v-for="attr in props.row.atributos"
+                :key="attr.atributo"
+                outline
+                color="grey-7"
+                :label="`${attr.atributo}: ${attr.valor}`"
+                class="q-px-xs"
+              />
+            </div>
 
             <!-- Descripción adicional editable debajo -->
             <div
@@ -453,6 +532,14 @@ import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { showDialog } from 'src/utils/dialogs'
 import dialogPermisosUsuario from 'src/pages/autorizaciones/dialogPermisosUsuario.vue'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
+import { useRoute } from 'vue-router'
+import SelectorVariantesProducto from './SelectorVariantesProducto.vue'
+
+// ... otros imports
+
+const route = useRoute()
+const preserveCart = route.query.preserveCart === 'true'
+const isInitializing = ref(false)
 
 const { consumirPermiso } = useSolicitudes()
 const permisosStore = useOperacionesPermitidas()
@@ -464,6 +551,7 @@ leyendaActiva.cargarLeyendaActivo()
 const showSolicitudesDialog = ref(false)
 const tituloNotificacion = ref('Solicitud de permiso para venta sin stock')
 const showPermisos = ref(false)
+const ConfiguracionProductoVariante = ref(false)
 
 const onPermisoUsado = (permiso) => {
   console.log('Se consumió el permiso:', permiso.id_almacen)
@@ -526,6 +614,7 @@ const cantidad = ref(1)
 const precioUnitario = ref(0)
 const descuento = ref(0)
 const carritoPrueba = ref([])
+const selectorRef = ref(null)
 
 const showPermisosDialog = ref(false)
 // Estados de carga
@@ -566,6 +655,54 @@ const columnasCarrito = [
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
 ]
 
+function recibirSeleccion(datos) {
+  if (!datos || !Array.isArray(datos.variantes) || datos.variantes.length === 0) return
+
+  const carrito = JSON.parse(localStorage.getItem('carrito'))
+  const producto = productoSeleccionado.value?.originalData
+  if (!producto) return
+  carrito.idalmacen = almacenSeleccionado.value?.value
+
+  let subtotalNuevo = parseFloat(carrito.subtotal || 0)
+
+  for (const variante of datos.variantes) {
+    const { item, itemFactura } = crearItemCarrito(
+      producto,
+      variante.cantidad,
+      precioUnitario.value || producto.precio,
+      variante.idVariante,
+      variante.sku,
+      variante.atributos || [],
+    )
+
+    subtotalNuevo += item.subtotal
+
+    carrito.listaProductos.push(item)
+    carrito.listaProductosFactura.push(itemFactura)
+    carritoPrueba.value.push(item)
+  }
+
+  carrito.subtotal = subtotalNuevo.toFixed(2)
+  carrito.ventatotal = (subtotalNuevo - parseFloat(carrito.descuento || 0)).toFixed(2)
+  localStorage.setItem('carrito', JSON.stringify(carrito))
+
+  $q.notify({
+    type: 'positive',
+    message: `${datos.variantes.length} ${datos.variantes.length === 1 ? 'variante agregada' : 'variantes agregadas'} al carrito`,
+  })
+
+  resetearCamposProducto()
+  productoSeleccionado.value = null
+  cargarProductosDisponibles()
+}
+
+// function obtenerSeleccion() {
+//   if (selectorRef.value) {
+//     const datos = selectorRef.value.obtenerSeleccion()
+//     console.log(datos)
+//   }
+// }
+
 const onSolicitudEnviada = (datos) => {
   console.log('Solicitud enviada con los siguientes datos:', datos)
 
@@ -578,30 +715,103 @@ const onSolicitudEnviada = (datos) => {
   })
 }
 const validarDescripcion = async (scope, row) => {
-  console.log(scope.value)
+  const carrito = JSON.parse(localStorage.getItem('carrito'))
 
-  let carrito = JSON.parse(localStorage.getItem('carrito'))
-
-  if (carrito && carrito.listaProductos) {
-    carrito.listaProductos = carrito.listaProductos.map((prod) => {
-      // Agregar o editar la descripción adicional
-      if (Number(prod.id) == Number(row.idproductoalmacen)) {
-        prod.descripcionAdicional = scope.value
-      }
-      return prod
-    })
-
-    localStorage.setItem('carrito', JSON.stringify(carrito))
-    console.log('Descripción adicional actualizada correctamente ')
-  } else {
+  if (!carrito || !Array.isArray(carrito.listaProductos)) {
     console.warn('No se encontró la lista de productos en el localStorage')
+    scope.set()
+    return
   }
 
+  // Normaliza: trim + colapsa espacios/tabs/saltos múltiples a un solo espacio
+  const normalizarEspacios = (str) => {
+    if (str == null) return ''
+    return String(str).replace(/\s+/g, ' ').trim()
+  }
+
+  // Construye la cadena de atributos: "Talla: 36 Color: Coyote oscuro"
+  const buildAtributosStr = (atributos) => {
+    if (!Array.isArray(atributos) || atributos.length === 0) return ''
+    return atributos
+      .map((a) => {
+        const nombre = normalizarEspacios(a.atributo || a.nombre || '')
+        const valor = normalizarEspacios(a.valor || '')
+        if (nombre && valor) return `${nombre}: ${valor}`
+        if (nombre) return nombre
+        if (valor) return valor
+        return ''
+      })
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  const esVariante =
+    row.idproductovariante != null ||
+    (Array.isArray(row.atributos) && row.atributos.length > 0)
+
+  const atributosStr = normalizarEspacios(esVariante ? buildAtributosStr(row.atributos) : '')
+  const descAdicional = normalizarEspacios(scope.value || '')
+
+  // Base sin atributos: si viene de crearItemCarrito() usamos descripcionBase
+  // para evitar duplicar los atributos al reconstruir.
+  const base = normalizarEspacios(row.descripcionBase || row.descripcion || '')
+
+  // Orden final: <base> <atributos> (<descAdicional>)
+  const partes = []
+  if (base) partes.push(base)
+  if (atributosStr) partes.push(atributosStr)
+  if (descAdicional) partes.push(`(${descAdicional})`)
+  const descripcionFinal = normalizarEspacios(partes.join(' '))
+
+  // ----- listaProductos (detalle de carrito) -----
+  carrito.listaProductos = carrito.listaProductos.map((prod) => {
+    const matchVariante =
+      prod.idproductovariante != null &&
+      row.idproductovariante != null &&
+      Number(prod.idproductovariante) === Number(row.idproductovariante)
+
+    const matchProductoBase =
+      prod.idproductovariante == null &&
+      row.idproductovariante == null &&
+      Number(prod.idproductoalmacen) === Number(row.idproductoalmacen)
+
+    if (matchVariante || matchProductoBase) {
+      prod.descripcionAdicional = descAdicional
+      prod.descripcion = descripcionFinal
+    }
+    return prod
+  })
+
+  // ----- listaProductosFactura (detalle para factura) -----
+  carrito.listaProductosFactura = carrito.listaProductosFactura.map((prod) => {
+    const matchVariante =
+      prod.idproductovariante != null &&
+      row.idproductovariante != null &&
+      Number(prod.idproductovariante) === Number(row.idproductovariante)
+
+    const matchProductoBase =
+      prod.idproductovariante == null &&
+      row.idproductovariante == null &&
+      String(prod.codigoProducto) === String(row.codigo)
+
+    if (matchVariante || matchProductoBase) {
+      prod.descripcion = descripcionFinal
+    }
+    return prod
+  })
+
+  localStorage.setItem('carrito', JSON.stringify(carrito))
   scope.set()
 }
 
 // Computed properties
+const productoTieneVariantes = computed(() => {
+  if (!productoSeleccionado.value || !selectorRef.value) return false
+  return selectorRef.value.tieneVariantes === true
+})
+
 const puedeAgregarProducto = computed(() => {
+  if (productoTieneVariantes.value) return false
   const producto = productoSeleccionado.value
   const cantidadValida = cantidad.value > 0
   const precioValido = precioUnitario.value > 0
@@ -708,9 +918,11 @@ const total = computed(() => {
 async function cargarAlmacenes() {
   try {
     cargandoAlmacenes.value = true
-    const endpoint = `/listaResponsableAlmacen/${usuario.value.empresa.idempresa}`
-    const { data } = await api.get(endpoint)
+    const endpoint = `/listaResponsableAlmacen/${idempresa}`
+    console.log('ANTES DE LA PETICIÓN', new Date().toISOString())
 
+    const { data } = await api.get(endpoint)
+    console.log('DESPUÉS DE LA PETICIÓN', new Date().toISOString())
     if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
     console.log(data)
     // Filtrar por usuario y mapear
@@ -753,10 +965,13 @@ async function cargarCategoriasPrecio() {
     localStorage.setItem('carrito', JSON.stringify(datos))
     try {
       cargandoCategorias.value = true
+      // Preservamos el valor actual por si viene de una carga externa (Quick Consult)
+      const categoriaActual = categoriaPrecioSeleccionada.value
+
       categoriaPrecioSeleccionada.value = null
       categoriasPrecio.value = []
 
-      const endpoint = `listarCategoriaPrecioVenta/${usuario.value.empresa.idempresa}`
+      const endpoint = `listarCategoriaPrecioVenta/${idempresa}`
       console.log(endpoint)
       const { data } = await api.get(endpoint)
       console.log('Respuesta de categorías de precio:', data)
@@ -769,6 +984,12 @@ async function cargarCategoriasPrecio() {
           label: item.nombre,
           value: item.id,
         }))
+
+      // Si la categoría que teníamos sigue siendo válida para este almacén, la restauramos
+      if (categoriaActual && categoriasPrecio.value.some((c) => c.value == categoriaActual)) {
+        categoriaPrecioSeleccionada.value = categoriaActual
+      }
+
       reinicia()
     } catch (error) {
       console.error('Error al cargar categorías:', error)
@@ -791,7 +1012,7 @@ async function cargarCampanasDisponibles() {
     if (!almacenSeleccionado.value) return
 
     const idalm = almacenSeleccionado.value?.value || almacenSeleccionado.value
-    const endpoint = `campanas/${usuario.value.empresa.idempresa}`
+    const endpoint = `campanas/${idempresa}`
     console.log('Cargando campañas para almacén:', idalm)
 
     const { data } = await api.get(endpoint)
@@ -996,6 +1217,8 @@ watch(
 // Los otros dos `watch` ya no son necesarios.)
 
 function reinicia() {
+  if (isInitializing.value) return
+
   const datos = JSON.parse(localStorage.getItem('carrito')) || {}
 
   const productos = Array.isArray(datos.listaProductos) && datos.listaProductos.length > 0
@@ -1061,7 +1284,7 @@ async function cargarProductosDisponibles() {
     const datosCarrito = datos
     const idporcentajeventa = categoriaPrecioSeleccionada.value
 
-    const endpoint = `/listaProductosDisponiblesVenta/${usuario.value.empresa.idempresa}`
+    const endpoint = `/listaProductosDisponiblesVenta/${idempresa}`
     const { data } = await api.get(endpoint)
     console.log(data)
 
@@ -1071,12 +1294,17 @@ async function cargarProductosDisponibles() {
     let productosDisponibles = data.datos.filter((u) => u.idporcentaje == idporcentajeventa)
     console.log(productosDisponibles, datosCarrito.listaProductos)
     if (datosCarrito.listaProductos.length > 0) {
+      // Los items con variante tienen id = idproductovariante; los sin variante,
+      // id = idproductoalmacen. Un item de variante no debe bloquear el producto
+      // base: permite agregar otra combinación del mismo producto.
+      const idsProductoEnCarrito = new Set(
+        datosCarrito.listaProductos
+          .filter((u2) => u2.idproductovariante == null)
+          .map((u2) => Number(u2.id)),
+      )
+
       productosDisponibles = productosDisponibles.filter(
-        (u) =>
-          !datosCarrito.listaProductos.some((u2) => {
-            console.log(u2, u)
-            return Number(u.id) === Number(u2.id)
-          }),
+        (u) => !idsProductoEnCarrito.has(Number(u.id)),
       )
     }
     console.log(productosDisponibles)
@@ -1177,18 +1405,105 @@ function buscarPorCodigoBarra() {
   }
 }
 function decimas(saldo) {
-  var saldocondecimas = parseFloat(saldo).toFixed(2)
-  return saldocondecimas
+  return Number(parseFloat(saldo).toFixed(2)) // Devuelve tipo Number
 }
 function redondear(num) {
   if (typeof num != 'number') {
     return null
   }
   let signo = num >= 0 ? 1 : -1
-  return parseFloat(
-    (Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2),
-  )
+  return Number((Math.round(num * Math.pow(10, 2) + signo * 0.0001) / Math.pow(10, 2)).toFixed(2))
 }
+const formatear = (valor) => Number(parseFloat(valor).toFixed(2))
+
+function crearItemCarrito(
+  producto,
+  cantidadProd,
+  precio,
+  idproductovariante = null,
+  sku = '',
+  atributos = [],
+) {
+  // Normaliza: trim + colapsa espacios/tabs/saltos múltiples a un solo espacio
+  const normalizarEspacios = (str) => {
+    if (str == null) return ''
+    return String(str).replace(/\s+/g, ' ').trim()
+  }
+
+  // Construye la cadena de atributos: "Talla: 36 Color: Coyote oscuro"
+  const buildAtributosStr = (attrs) => {
+    if (!Array.isArray(attrs) || attrs.length === 0) return ''
+    return attrs
+      .map((a) => {
+        const nombre = normalizarEspacios(a.atributo || a.nombre || '')
+        const valor = normalizarEspacios(a.valor || '')
+        // Evita generar "Nombre:" sin valor o ": valor" sin nombre
+        if (nombre && valor) return `${nombre}: ${valor}`
+        if (nombre) return nombre
+        if (valor) return valor
+        return ''
+      })
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  const esVariante = idproductovariante != null
+  const atributosStr = normalizarEspacios(esVariante ? buildAtributosStr(atributos) : '')
+  const descripcionBase = normalizarEspacios(producto.descripcion || '')
+  const descripcionConAtributos = normalizarEspacios(
+    atributosStr ? `${descripcionBase} ${atributosStr}` : descripcionBase,
+  )
+
+  const item = {
+    idproductoalmacen: producto.id,
+    cantidad: Number(cantidadProd),
+    precio: formatear(precio),
+    idstock: producto.idstock,
+    idporcentaje: producto.idporcentaje,
+    candiponible: Number(producto.stock),
+    descripcion: descripcionConAtributos,
+    // Se conserva la base para que validarDescripcion() pueda reconstruir
+    // la cadena sin duplicar los atributos.
+    descripcionBase: descripcionBase,
+    descripcionAdicional: '',
+    codigo: producto.codigo,
+    id: Number(producto.id),
+    subtotal: decimas(redondear(parseFloat(cantidadProd) * parseFloat(precio))),
+    datosAdicionales: producto.datosAdicionales,
+    despachado: Number(producto.stock) == 0 ? 2 : 1,
+  }
+
+  if (esVariante) {
+    item.idproductovariante = Number(idproductovariante)
+    item.sku = sku
+    item.atributos = atributos
+    item.id = Number(idproductovariante) // clave única de la variante
+  }
+
+  const itemFactura = {
+    codigoProducto: producto.codigo,
+    codigoActividadSin: producto.actividadsin,
+    codigoProductoSin: producto.codigosin,
+    // La descripción ya incluye los atributos desde el alta.
+    descripcion: descripcionConAtributos,
+    unidadMedida: producto.unidadsin,
+    precioUnitario: formatear(precio),
+    subTotal: decimas(redondear(parseFloat(cantidadProd) * parseFloat(precio))),
+    cantidad: Number(cantidadProd),
+    numeroSerie: '',
+    montoDescuento: 0,
+    numeroImei: '',
+    codigoNandina: producto.codigonandina,
+  }
+
+  if (esVariante) {
+    itemFactura.idproductovariante = Number(idproductovariante)
+    itemFactura.sku = sku
+  }
+
+  return { item, itemFactura }
+}
+
 function agregarAlCarrito() {
   const datos = JSON.parse(localStorage.getItem('carrito'))
   datos.idalmacen = almacenSeleccionado.value?.value
@@ -1197,37 +1512,12 @@ function agregarAlCarrito() {
   console.log(producto)
   console.log(precioUnitario.value)
 
-  const nuevoProducto = {
-    idproductoalmacen: producto.id,
-    cantidad: cantidad.value,
-    precio: precioUnitario.value,
-    idstock: producto.idstock,
-    idporcentaje: producto.idporcentaje,
-    candiponible: producto.stock,
-    descripcion: producto.descripcion,
-    descripcionAdicional: '',
-    codigo: producto.codigo,
-    id: producto.id,
-    subtotal: precioUnitario.value * cantidad.value,
-    datosAdicionales: producto.datosAdicionales,
-    despachado: Number(producto.stock) == 0 ? 2 : 1,
-  }
+  const { item: nuevoProducto, itemFactura: nuevoProductoFactura } = crearItemCarrito(
+    producto,
+    cantidad.value,
+    precioUnitario.value,
+  )
   datos.listaProductos.push(nuevoProducto)
-
-  const nuevoProductoFactura = {
-    codigoProducto: producto.codigo,
-    codigoActividadSin: producto.actividadsin,
-    codigoProductoSin: producto.codigosin,
-    descripcion: producto.descripcion,
-    unidadMedida: producto.unidadsin,
-    precioUnitario: precioUnitario.value,
-    subTotal: decimas(redondear(parseFloat(cantidad.value) * parseFloat(precioUnitario.value))),
-    cantidad: cantidad.value,
-    numeroSerie: '',
-    montoDescuento: 0,
-    numeroImei: '',
-    codigoNandina: producto.codigonandina,
-  }
   datos.listaProductosFactura.push(nuevoProductoFactura)
 
   // Actualiza el subtotal sumando los nuevos productos
@@ -1382,27 +1672,108 @@ async function consumirPermisoVentaSinStock(idalmacen) {
   return response
 }
 
+const fetchEstadoActualProductoVariante = async () => {
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    console.log(data)
+    // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // Inicialización $ currencyStore codigoActividadSin despachado
 onMounted(async () => {
+  isInitializing.value = true
   try {
     // Cargar divisa
     await currencyStore.cargarDivisaActiva()
     await permisosStore.cargarPermisos()
+    await fetchEstadoActualProductoVariante()
     if (!currencyStore.divisa) {
       console.error('No se pudo cargar la divisa')
       return
     }
 
-    // Limpiar y cargar todo
-    eliminarCarrito()
-    await crearCarritoVenta()
+    // Verificar si venimos de Quick Consult
+    const quickConsult = localStorage.getItem('quickConsult')
+    let importedFromQuickConsult = false
+
+    if (quickConsult) {
+      const data = JSON.parse(quickConsult)
+
+      if (data.destination === 'sale') {
+        console.log('Procesando datos de Quick Consult:', data)
+        importedFromQuickConsult = true
+
+        // Restaurar estado local
+        if (data.almacen) {
+          almacenSeleccionado.value = data.almacen
+        }
+        if (data.categoria) {
+          categoriaPrecioSeleccionada.value = data.categoria.value
+        }
+        if (data.listaProductos) {
+          carritoPrueba.value = [...data.listaProductos]
+        }
+        if (data.descuento !== undefined) {
+          descuento.value = data.descuento
+        }
+
+        // Preparar el carrito principal con los datos importados
+        const contenidousuario = validarUsuario()
+        const token = contenidousuario[0]?.factura?.access_token
+        const tipo = contenidousuario[0]?.factura?.tipo
+
+        const mainCart = {
+          ...data,
+          idalmacen: data.almacen?.value || 0,
+          codigosinsucursal: data.almacen?.codigosin || null,
+          token,
+          tipo,
+          iddivisa: currencyStore.divisa.id || null,
+          pagosDivididos: [],
+          variablePago: 'dividido',
+        }
+
+        localStorage.setItem('carrito', JSON.stringify(mainCart))
+        localStorage.removeItem('quickConsult')
+      }
+    }
+
+    if (!importedFromQuickConsult) {
+      if (!preserveCart) {
+        // Solo limpiar y crear nuevo si no se pide preservar
+        eliminarCarrito()
+        console.log('Carrito eliminado para nueva sesión')
+        await crearCarritoVenta()
+      } else {
+        // Si se preserva, verificar que exista el carrito; si no, crearlo
+        if (!localStorage.getItem('carrito')) {
+          await crearCarritoVenta()
+        }
+        // No se limpia el carrito, se conservan los productos transferidos
+      }
+    }
     await cargarAlmacenes()
+
+    // Si importamos de Quick Consult, cargar categorías y productos para la UI
+    if (almacenSeleccionado.value && categoriaPrecioSeleccionada.value) {
+      await cargarCategoriasPrecio()
+      await cargarProductosDisponibles()
+    }
   } catch (error) {
     console.error('Error en inicialización:', error)
     $q.notify({
       type: 'negative',
       message: 'Error al inicializar componente',
     })
+  } finally {
+    // Pequeño delay para asegurar que los watches iniciales se ignoren
+    setTimeout(() => {
+      isInitializing.value = false
+    }, 500)
   }
 })
 </script>

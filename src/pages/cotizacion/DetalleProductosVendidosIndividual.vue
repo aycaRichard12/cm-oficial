@@ -1,168 +1,144 @@
 <template>
   <q-page class="q-pa-md">
-    <q-form @submit="generarReporte">
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3" id="fechainidetalleproductos">
-          <label for="fechaini">Fecha Inicial *</label>
-          <q-input
-            v-model="fechai"
-            id="fechaini"
-            type="date"
-            outlined
-            dense
-            class="col-md-4"
-            @change="validarFechas"
-          />
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="inventory" size="md" class="q-mr-sm" />
+          Reporte Productos Vendidos
         </div>
-        <div class="col-12 col-md-3" id="fechafindetalleproductos">
-          <label for="fechafin">Fecha Final*</label>
-          <q-input
-            v-model="fechaf"
-            id="fechafin"
-            type="date"
-            outlined
-            dense
-            class="col-md-4"
-            @change="validarFechas"
-          />
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Productos Vendidos
         </div>
       </div>
-      <div class="row justify-center q-ma-md">
-        <q-btn
-          id="btngenerarreporte"
-          label="Generar Reporte"
-          type="submit"
-          color="primary"
-          class="q-mr-sm"
-          :disable="!fechai || !fechaf"
-        />
-        <q-btn
-          id="btnexportarexcel"
-          label="Exportar a Excel"
-          color="positive"
-          @click="exportarTablaAExcel"
-          :disable="!datosFiltrados || datosFiltrados.length === 0"
+    </div>
+
+    <div class="row justify-center q-col-gutter-x-md">
+      <div class="col-12 col-md-3" id="fechainidetalleproductos">
+        <label for="fechaini">Fecha Inicial *</label>
+        <q-input
+          v-model="fechai"
+          id="fechaini"
+          type="date"
+          outlined
+          dense
+          class="col-md-4"
+          @change="validarFechas"
         />
       </div>
-    </q-form>
-
-    <q-form>
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3" id="filtraralmacendetalle">
-          <label for="almacen">Filtrar por almacén</label>
-          <q-select
-            v-model="almacenSeleccionado"
-            :options="almacenesOptions"
-            label=""
-            emit-value
-            map-options
-            option-value="idalmacen"
-            option-label="almacen"
-            outlined
-            dense
-            clearable
-            :disable="!datosOriginales || datosOriginales.length === 0"
-          />
-        </div>
-
-        <div class="col-12 col-md-3" id="filtrarraizonsozialdetalle">
-          <label for="razonsocial">Filtrar por razón social</label>
-          <q-input
-            v-model="clienteSearchTerm"
-            id="razonsocial"
-            outlined
-            dense
-            autocomplete="off"
-            @focus="showClienteDropdown = true"
-            @blur="hideClienteDropdownDelayed"
-            clearable
-          >
-            <template v-slot:append>
-              <q-icon name="arrow_drop_down" />
-            </template>
-          </q-input>
-          <q-card
-            v-if="showClienteDropdown && filteredClientes.length > 0"
-            class="q-mt-xs absolute-cliente-dropdown"
-          >
-            <q-list bordered separator>
-              <q-item
-                v-for="clienteOption in filteredClientes"
-                :key="clienteOption.id"
-                clickable
-                v-ripple
-                @click="seleccionarCliente(clienteOption)"
-              >
-                <q-item-section>
-                  {{ clienteOption.codigo }} - {{ clienteOption.nombre }} -
-                  {{ clienteOption.nombrecomercial }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
-
-        <div class="col-12 col-md-3" id="filtrarsucursaldetalle">
-          <label for="sucursal">Filtrar por sucursal</label>
-          <q-input
-            v-model="sucursalSearchTerm"
-            id="sucursal"
-            outlined
-            dense
-            autocomplete="off"
-            @focus="showSucursalDropdown = true"
-            @blur="hideSucursalDropdownDelayed"
-            :disable="!clienteSeleccionadoId"
-            clearable
-          >
-            <template v-slot:append>
-              <q-icon name="arrow_drop_down" />
-            </template>
-          </q-input>
-          <q-card
-            v-if="showSucursalDropdown && filteredSucursales.length > 0"
-            class="q-mt-xs absolute-sucursal-dropdown"
-          >
-            <q-list bordered separator>
-              <q-item
-                v-for="sucursalOption in filteredSucursales"
-                :key="sucursalOption.id"
-                clickable
-                v-ripple
-                @click="seleccionarSucursal(sucursalOption)"
-              >
-                <q-item-section>
-                  {{ sucursalOption.nombre }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
+      <div class="col-12 col-md-3" id="fechafindetalleproductos">
+        <label for="fechafin">Fecha Final*</label>
+        <q-input
+          v-model="fechaf"
+          id="fechafin"
+          type="date"
+          outlined
+          dense
+          class="col-md-4"
+          @change="validarFechas"
+        />
       </div>
-    </q-form>
+    </div>
 
-    <q-table
-      id="tabladetalleproductos"
+    <div class="row justify-center q-col-gutter-x-md">
+      <div class="col-12 col-md-3" id="filtraralmacendetalle">
+        <label for="almacen">Filtrar por almacén</label>
+        <q-select
+          v-model="almacenSeleccionado"
+          :options="almacenesOptions"
+          label=""
+          emit-value
+          map-options
+          option-value="idalmacen"
+          option-label="almacen"
+          outlined
+          dense
+          clearable
+          :disable="!datosOriginales || datosOriginales.length === 0"
+        />
+      </div>
+
+      <div class="col-12 col-md-3" id="filtrarraizonsozialdetalle">
+        <label for="razonsocial">Filtrar por razón social</label>
+        <q-input
+          v-model="clienteSearchTerm"
+          id="razonsocial"
+          outlined
+          dense
+          autocomplete="off"
+          @focus="showClienteDropdown = true"
+          @blur="hideClienteDropdownDelayed"
+          clearable
+        >
+          <template v-slot:append>
+            <q-icon name="arrow_drop_down" />
+          </template>
+        </q-input>
+        <q-card
+          v-if="showClienteDropdown && filteredClientes.length > 0"
+          class="q-mt-xs absolute-cliente-dropdown"
+        >
+          <q-list bordered separator>
+            <q-item
+              v-for="clienteOption in filteredClientes"
+              :key="clienteOption.id"
+              clickable
+              v-ripple
+              @click="seleccionarCliente(clienteOption)"
+            >
+              <q-item-section>
+                {{ clienteOption.codigo }} - {{ clienteOption.nombre }} -
+                {{ clienteOption.nombrecomercial }}
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md-3" id="filtrarsucursaldetalle">
+        <label for="sucursal">Filtrar por sucursal</label>
+        <q-input
+          v-model="sucursalSearchTerm"
+          id="sucursal"
+          outlined
+          dense
+          autocomplete="off"
+          @focus="showSucursalDropdown = true"
+          @blur="hideSucursalDropdownDelayed"
+          :disable="!clienteSeleccionadoId"
+          clearable
+        >
+          <template v-slot:append>
+            <q-icon name="arrow_drop_down" />
+          </template>
+        </q-input>
+        <q-card
+          v-if="showSucursalDropdown && filteredSucursales.length > 0"
+          class="q-mt-xs absolute-sucursal-dropdown"
+        >
+          <q-list bordered separator>
+            <q-item
+              v-for="sucursalOption in filteredSucursales"
+              :key="sucursalOption.id"
+              clickable
+              v-ripple
+              @click="seleccionarSucursal(sucursalOption)"
+            >
+              <q-item-section>
+                {{ sucursalOption.nombre }}
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
+    </div>
+
+    <tableProductosVendidos
+      id="tablareportecotizacion"
+      ref="refHijo"
       :rows="datosFiltrados"
-      :columns="columns"
-      row-key="index"
-      class="q-mt-lg"
-      flat
-      bordered
-      title="Reporte de Productos Vendidos"
-      no-data-label="No hay datos para mostrar. Genere un reporte."
-    >
-      <template v-slot:bottom-row>
-        <q-tr>
-          <q-td colspan="8" class="text-right text-bold">Sumatorias</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(cantidadTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(importeTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(descuentoTotal) }}</q-td>
-          <q-td class="text-right text-bold">{{ funGeneral.decimas(ventaTotal) }}</q-td>
-          <q-td colspan="13"></q-td>
-        </q-tr>
-      </template>
-    </q-table>
+      @exportarexcel="exportarTablaAExcel"
+      @reportepdf="generarPDF"
+    />
 
     <q-loading :showing="loading" />
   </q-page>
@@ -176,6 +152,8 @@ import * as funGeneral from 'src/composables/FuncionesG'
 import { URL_APICM } from 'src/composables/services'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import * as XLSX from 'xlsx'
+import tableProductosVendidos from 'src/components/ProductosVendidos/tableProductosVendidos.vue'
+import { PDFreporteVentasPeriodoCompacta } from 'src/utils/pdfs/compactaProductosVendidos/reporte'
 // Importar XLSX si no está globalmente disponible
 // import * as XLSX from 'xlsx';
 
@@ -198,7 +176,8 @@ const sucursalSeleccionadaId = ref(null)
 const showClienteDropdown = ref(false)
 const showSucursalDropdown = ref(false)
 const loading = ref(false)
-
+const resultadoFiltrado = ref([])
+const refHijo = ref(null)
 const formularioExcel = reactive([])
 
 const tipoVentaMap = {
@@ -206,6 +185,8 @@ const tipoVentaMap = {
   1: 'Factura Compra-Venta',
   2: 'Factura Alquileres',
   3: 'Factura Comercial Exportación',
+  4: 'Cotizacion',
+  15: 'Factura de Entidades Financieras',
   24: 'Nota de Crédito-Débido',
 }
 
@@ -216,97 +197,8 @@ const usuarioInfo = computed(() => {
 })
 
 // Table columns for q-table
-const columns = [
-  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
-  {
-    name: 'fecha',
-    label: 'Fecha',
-    align: 'right',
-    field: (row) => funGeneral.cambiarFormatoFecha(row.fecha),
-  },
-  { name: 'nrofactura', label: 'Nro. Doc.', align: 'right', field: 'nrofactura' },
-  {
-    name: 'tipoventa',
-    label: 'Tipo de Venta',
-    align: 'left',
-    field: (row) => tipoVentaMap[row.tipoventa] || row.tipoventa,
-  },
-  { name: 'codigo', label: 'Código Producto', align: 'left', field: 'codigo' },
-  { name: 'codigobarra', label: 'Código Barras', align: 'right', field: 'codigobarra' },
-  { name: 'descripcion', label: 'Descripción de Producto', align: 'left', field: 'descripcion' },
-  {
-    name: 'preciounitario',
-    label: 'Precio Unitario',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.preciounitario),
-  },
-  {
-    name: 'cantidad',
-    label: 'Cantidad',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.cantidad),
-  },
-  {
-    name: 'importe',
-    label: 'Importe',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.importe),
-  },
-  {
-    name: 'descuento',
-    label: 'Dscto.',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.descuento),
-  },
-  {
-    name: 'totalventa',
-    label: 'Venta Total',
-    align: 'right',
-    field: (row) => funGeneral.decimas(row.totalventa),
-  },
-  { name: 'tipopago', label: 'Tipo Pago', align: 'left', field: 'tipopago' },
-  { name: 'idusuario', label: 'Nombre de Usuario', align: 'left', field: 'idusuario' },
-  { name: 'sucursalc', label: 'Sucursal del Cliente', align: 'left', field: 'sucursalc' },
-  { name: 'almacen', label: 'Almacén Empresa', align: 'left', field: 'almacen' },
-  { name: 'cliente', label: 'Razón Social Empresa', align: 'left', field: 'cliente' },
-  { name: 'tipodocumento', label: 'Tipo Documento', align: 'left', field: 'tipodocumento' },
-  { name: 'nrodoc', label: 'Nro. Doc. Tributario', align: 'right', field: 'nrodoc' },
-  { name: 'nombrecomercial', label: 'Nombre Comercial', align: 'left', field: 'nombrecomercial' },
-  { name: 'unidad', label: 'Unidad', align: 'left', field: 'unidad' },
-  { name: 'categoria', label: 'Categoría', align: 'left', field: 'categoria' },
-  { name: 'subcategoria', label: 'Sub Categoría', align: 'left', field: 'subcategoria' },
-  { name: 'canal', label: 'Canal', align: 'left', field: 'canal' },
-  { name: 'tipoprecio', label: 'Tipo de Precio', align: 'left', field: 'tipoprecio' },
-]
 
 // Computed properties for totals
-const cantidadTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.cantidad)),
-    0,
-  )
-})
-
-const importeTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.importe)),
-    0,
-  )
-})
-
-const descuentoTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.descuento)),
-    0,
-  )
-})
-
-const ventaTotal = computed(() => {
-  return datosFiltrados.value.reduce(
-    (sum, dato) => sum + funGeneral.redondear(parseFloat(dato.totalventa)),
-    0,
-  )
-})
 
 const filteredClientes = computed(() => {
   if (!clienteSearchTerm.value) {
@@ -354,7 +246,24 @@ watch(sucursalSearchTerm, (newVal) => {
     filtrarYOrdenarDatos()
   }
 })
+watch([fechai, fechaf], ([nuevaInicio, nuevaFin]) => {
+  // Solo procede si ambas fechas están definidas
+  if (!nuevaInicio || !nuevaFin) return
 
+  const inicio = new Date(nuevaInicio)
+  const fin = new Date(nuevaFin)
+
+  // Verifica que la fecha de inicio no sea mayor que la de fin
+  if (inicio.getTime() > fin.getTime()) {
+    // La validación visual ya se encarga de mostrar la notificación gracias al @change
+    return
+  }
+
+  // Evita múltiples generaciones simultáneas
+  if (!loading.value) {
+    generarReporte()
+  }
+})
 // Methods
 const validarFechas = () => {
   const fechaInicio = new Date(fechai.value)
@@ -413,7 +322,10 @@ const generarReporte = async () => {
       const numerados = datosOriginales.value.map((row, index) => ({
         ...row,
         nro: index + 1,
+        tipoventa: tipoVentaMap[Number(row.tipoventa)],
       }))
+      console.log('Datos numerados:', numerados)
+
       datosFiltrados.value = [...numerados] // Initialize with all data
       $q.notify({
         type: 'positive',
@@ -601,15 +513,60 @@ const filtrarYOrdenarDatos = () => {
   let tempDatos = [...datosOriginales.value]
 
   if (almacenSeleccionado.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idalmacen == almacenSeleccionado.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idalmacen) === Number(almacenSeleccionado.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   if (clienteSeleccionadoId.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idclienteve == clienteSeleccionadoId.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idclienteve) === Number(clienteSeleccionadoId.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   if (sucursalSeleccionadaId.value !== null) {
-    tempDatos = tempDatos.filter((u) => u.idsucursalve == sucursalSeleccionadaId.value)
+    tempDatos = tempDatos
+      .filter((u) => Number(u.idsucursalve) === Number(sucursalSeleccionadaId.value))
+      .map((u, index) => ({
+        nro: index + 1,
+        ...u,
+      }))
   }
   datosFiltrados.value = tempDatos
+}
+
+const generarPDF = () => {
+  console.log(almacenSeleccionado.value)
+  console.log(fechaf.value)
+  console.log(fechai.value)
+  const doc = PDFreporteVentasPeriodoCompacta(
+    datosFiltrados.value,
+    fechai.value,
+    fechaf.value,
+    almacenSeleccionado.value
+      ? almacenesOptions.value.find(
+          (a) => Number(a.idalmacen) === Number(almacenSeleccionado.value),
+        )?.almacen || 'Todos los almacenes'
+      : 'Todos los almacenes',
+    clienteSeleccionadoId.value
+      ? clientesOptions.value.find((c) => c.id === clienteSeleccionadoId.value)?.nombre ||
+          'Todos los clientes'
+      : 'Todos los clientes',
+    sucursalSeleccionadaId.value
+      ? sucursalesClienteOptions.value.find((s) => s.id === sucursalSeleccionadaId.value)?.nombre ||
+          'Todas las sucursales'
+      : 'Todas las sucursales',
+  )
+
+  if (doc) {
+    const pdfBlob = doc.output('blob')
+    const url = URL.createObjectURL(pdfBlob)
+    window.open(url)
+  }
 }
 
 const exportarTablaAExcel = () => {
@@ -621,49 +578,85 @@ const exportarTablaAExcel = () => {
     })
     return
   }
+  console.log('Modo actual:', refHijo.value.tipoVista) // 'compacta' o 'extensa'
+  const tipoVista = refHijo.value.tipoVista
+  if (tipoVista === 'extensa') {
+    resultadoFiltrado.value = refHijo.value.obtenerDatos()
 
-  // Prepare data for Excel
-  formularioExcel.splice(0) // Clear previous data
-  datosFiltrados.value.forEach((key) => {
-    formularioExcel.push({
-      Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
-      'Nro. Doc.': key.nrofactura,
-      'Tipo de Venta': tipoVentaMap[key.tipoventa],
-      'Código Producto': key.codigo,
-      'Código Barras': key.codigobarra,
-      'Descripción de Producto': key.descripcion,
-      'Precio Unitario': funGeneral.redondear(parseFloat(key.preciounitario)),
-      Cantidad: funGeneral.redondear(parseFloat(key.cantidad)),
-      Importe: funGeneral.redondear(parseFloat(key.importe)),
-      Descuento: funGeneral.redondear(parseFloat(key.descuento)),
-      'Venta Total': funGeneral.redondear(parseFloat(key.totalventa)),
-      'Tipo Pago': key.tipopago,
-      'Nombre Usuario': key.idusuario,
-      'Sucursal del Cliente': key.sucursalc,
-      'Almacén Empresa': key.almacen,
-      'Razón Social Empresa': key.cliente,
-      'Tipo Documento': key.tipodocumento,
-      'Nro. Doc. Tributario': key.nrodoc,
-      'Nombre Comercial': key.nombrecomercial,
-      Unidad: key.unidad,
-      Categoria: key.categoria,
-      'Sub Categoria': key.subcategoria,
-      Canal: key.canal,
-      'Tipo de Precio': key.tipoprecio,
+    // Prepare data for Excel
+    formularioExcel.splice(0) // Clear previous data
+    resultadoFiltrado.value.forEach((key) => {
+      formularioExcel.push({
+        Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
+        'Nro. Doc.': key.nrofactura,
+        'Tipo de Venta': tipoVentaMap[Number(key.tipoventa)],
+        'Código Producto': key.codigo,
+        'Código Barras': key.codigobarra,
+        'Descripción de Producto': key.descripcion,
+        'Precio Unitario': funGeneral.redondear(parseFloat(key.preciounitario)),
+        Cantidad: funGeneral.redondear(parseFloat(key.cantidad)),
+        Importe: funGeneral.redondear(parseFloat(key.importe)),
+        Descuento: funGeneral.redondear(parseFloat(key.descuento)),
+        'Venta Total': funGeneral.redondear(parseFloat(key.totalventa)),
+        'Tipo Pago': key.tipopago,
+        'Nombre Usuario': key.idusuario,
+        'Sucursal del Cliente': key.sucursalc,
+        'Almacén Empresa': key.almacen,
+        'Razón Social Empresa': key.cliente,
+        'Tipo Documento': key.tipodocumento,
+        'Nro. Doc. Tributario': key.nrodoc,
+        'Nombre Comercial': key.nombrecomercial,
+        Unidad: key.unidad,
+        Categoria: key.categoria,
+        'Sub Categoria': key.subcategoria,
+        Canal: key.canal,
+        'Tipo de Precio': key.tipoprecio,
+      })
     })
-  })
 
-  let myFile = `REPORTE DE PRODUCTOS VENDIDOS ${funGeneral.obtenerFechaActualDato()}.xlsx`
-  let myWorkSheet = XLSX.utils.json_to_sheet(formularioExcel)
-  let myWorkBook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(myWorkBook, myWorkSheet, 'myWorkSheet')
-  XLSX.writeFile(myWorkBook, myFile)
+    let myFile = `REPORTE DE PRODUCTOS VENDIDOS ${funGeneral.obtenerFechaActualDato()}.xlsx`
+    let myWorkSheet = XLSX.utils.json_to_sheet(formularioExcel)
+    let myWorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(myWorkBook, myWorkSheet, 'myWorkSheet')
+    XLSX.writeFile(myWorkBook, myFile)
 
-  $q.notify({
-    type: 'positive',
-    message: 'Reporte exportado a Excel con éxito.',
-    position: 'top',
-  })
+    $q.notify({
+      type: 'positive',
+      message: 'Reporte exportado a Excel con éxito.',
+      position: 'top',
+    })
+  } else {
+    resultadoFiltrado.value = refHijo.value.obtenerDatos()
+
+    // Prepare data for Excel
+    formularioExcel.splice(0) // Clear previous data
+    resultadoFiltrado.value.forEach((key) => {
+      formularioExcel.push({
+        Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
+        'Nro. Doc.': key.nrofactura,
+        'Nombre Comercial': key.nombrecomercial,
+        'Código Producto': key.codigo,
+        'Descripción de Producto': key.descripcion,
+        Cantidad: funGeneral.redondear(parseFloat(key.cantidad)),
+
+        'Precio Unitario': funGeneral.redondear(parseFloat(key.preciounitario)),
+        Descuento: funGeneral.redondear(parseFloat(key.descuento)),
+        'Venta Total': funGeneral.redondear(parseFloat(key.totalventa)),
+      })
+    })
+
+    let myFile = `REPORTE DE PRODUCTOS VENDIDOS ${funGeneral.obtenerFechaActualDato()}.xlsx`
+    let myWorkSheet = XLSX.utils.json_to_sheet(formularioExcel)
+    let myWorkBook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(myWorkBook, myWorkSheet, 'myWorkSheet')
+    XLSX.writeFile(myWorkBook, myFile)
+
+    $q.notify({
+      type: 'positive',
+      message: 'Reporte exportado a Excel con éxito.',
+      position: 'top',
+    })
+  }
 }
 
 onMounted(() => {
@@ -672,6 +665,7 @@ onMounted(() => {
   if (typeof XLSX === 'undefined') {
     console.warn('XLSX library not found. Please ensure it is loaded.')
   }
+  generarReporte() // Generate report on mount
 })
 </script>
 

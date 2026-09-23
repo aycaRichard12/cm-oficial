@@ -30,9 +30,7 @@
         <q-td :props="props">
           <VentasTableActions
             :row="props.row"
-            :opciones="
-              getNumber(props.row.tipoventa) == 0 ? opcionesAccionSimple : opcionesAccionCompleta
-            "
+            :opciones="getOpcionesAccion(props.row)"
             @accion="handleAccion"
           />
         </q-td>
@@ -166,6 +164,12 @@ const opcionesAccionSimple = [
   { label: 'Devolución', value: 2 },
 ]
 
+const opcionesAccionCotizacionNormal = [
+  { label: 'Seleccione', value: '' },
+  { label: 'Anulación', value: 1 },
+  { label: 'Ver estado', value: 3 },
+]
+
 const opcionesAccionCompleta = [
   { label: 'Seleccione', value: '' },
   { label: 'Anulación', value: 1 },
@@ -175,6 +179,18 @@ const opcionesAccionCompleta = [
 
 // Logic
 const getNumber = (val) => Number(val)
+
+const getOpcionesAccion = (venta) => {
+  if (getNumber(venta.tipoventa) == 0 && venta.tipo === 'FAC') {
+    return opcionesAccionSimple
+  } else if (getNumber(venta.tipoventa) == -1 && venta.tipo === 'PREF') {
+    return opcionesAccionSimple
+  } else if (getNumber(venta.tipoventa) == -1 && venta.tipo === 'NOR') {
+    return opcionesAccionCotizacionNormal
+  } else {
+    return opcionesAccionCompleta
+  }
+}
 
 const filteredRows = computed(() => {
   if (filtroAlmacen.value || filtroTipo.value) {

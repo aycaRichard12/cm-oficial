@@ -1,5 +1,17 @@
 <template>
   <q-page class="q-pa-md" style="background-color: #eeebe2">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para métodos de pago y transacciones -->
+          <q-icon name="payments" size="md" class="q-mr-sm" />
+          Métodos de Pago
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de formas de pago para facturación
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent class="responsive-dialog">
       <q-card class="responsive-dialog">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
@@ -85,11 +97,17 @@
     </q-dialog>
     <div class="row">
       <q-btn
-        :label="showForm ? 'Cancelar Registro' : 'Nuevo'"
         color="primary"
-        class="q-ma-lg"
         @click="toggleForm"
-      />
+        class="btn-res q-ma-lg"
+        id="agregarCanalDeVenta"
+        title="Registrar Leyenda"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto">
+          <q-icon name="add" /> {{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}
+        </span>
+      </q-btn>
     </div>
 
     <q-table

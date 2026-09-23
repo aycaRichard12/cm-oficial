@@ -1,6 +1,19 @@
 <template>
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para categorías o grupos -->
+          <q-icon name="category" size="md" class="q-mr-sm" />
+          Categoría de Producto
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de grupos y clasificaciones de productos
+        </div>
+      </div>
+    </div>
     <!-- Componente de la tabla -->
+
     <TablaCategorias
       :rows="categorias"
       @new-item="abrirModalNuevo"

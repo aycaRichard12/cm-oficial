@@ -1,6 +1,31 @@
 <template>
   <q-page padding="">
-    <div class="titulo">Pedidos</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assignment" size="md" class="q-mr-sm" />
+          Pedidos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Pedidos
+        </div>
+      </div>
+      <div class="col-12 col-md-auto q-mt-sm q-mt-md-none">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar"
+          outline
+          no-caps
+          id="btnRecargarPedidos"
+          :loading="recargandoTodo"
+          @click.stop.prevent="recargarTodo"
+        >
+          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
     <!-- Diálogo con Formulario -->
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
@@ -31,6 +56,7 @@
       @delete="confirmDelete"
       @verimagen="onVerimagen"
       @toggle-status="toggleStatus"
+      @reload="recargarTodo"
     />
     <q-dialog v-model="showDetallePedido" persistent>
       <q-card class="responsive-dialog">
@@ -92,6 +118,7 @@ const cargando = ref(false) // Cargando tabla
 const listaAlmacenes = ref([])
 const mostrarImagen = ref(false)
 const imagenSeleccionada = ref('')
+const recargandoTodo = ref(false)
 
 const router = useRouter()
 const ShowWarningDialog = ref(false)
@@ -322,6 +349,19 @@ function handleKeydown(e) {
     showForm.value = false
     showDetallePedido.value = false
     selectedPedido.value = null
+  }
+}
+
+const recargarTodo = async () => {
+  if (recargandoTodo.value) return
+  recargandoTodo.value = true
+  try {
+    await Promise.all([getAlmacen(), getPedidos()])
+    $q.notify({ type: 'positive', message: 'Datos recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar:', err)
+  } finally {
+    recargandoTodo.value = false
   }
 }
 

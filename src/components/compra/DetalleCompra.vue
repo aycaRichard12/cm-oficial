@@ -6,234 +6,407 @@
         <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
         {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
       </div>
-      <q-chip
-        v-if="esModoEdicion"
-        color="warning"
-        text-color="white"
-        icon="edit"
-        size="sm"
-        class="text-weight-medium"
-        removable
-        @remove="onResetForm"
-      />
+      <div class="row items-center q-gutter-x-sm">
+        <q-chip
+          v-if="esModoEdicion"
+          color="warning"
+          text-color="white"
+          icon="edit"
+          size="sm"
+          class="text-weight-medium"
+          removable
+          @remove="onResetForm"
+        />
+      </div>
     </div>
 
-    <q-form @submit="onSubmit" ref="formRef" class="q-mb-md">
-      <div class="row q-col-gutter-md items-start">
-        <!-- Producto en modo edición -->
-        <div class="col-xs-12 col-sm-12 col-md-5" v-if="esModoEdicion">
-          <q-input
-            v-model="detalleForm.descripcion"
-            dense
-            filled
-            readonly
-            bg-color="grey-2"
-            label="Producto o Servicio"
-            class="full-width"
-            stack-label
-          >
-            <template v-slot:prepend>
-              <q-icon name="lock" size="xs" color="grey-6" />
-            </template>
-          </q-input>
+    <q-form @submit="onSubmit" ref="formRef" class="purchase-form">
+      <div class="row q-col-gutter-xl items-start">
+        <!-- Columna principal del producto -->
+        <div class="col-12 col-md-12">
+          <!-- Tarjeta de selección de producto -->
+          <q-card flat class="product-card q-mb-lg">
+            <q-card-section class="q-pa-lg">
+              <!-- Encabezado de sección -->
+              <div class="row q-col-gutter-md items-center">
+                <div class="col-xs-12 col-md-6">
+                  <div class="section-header flex items-center">
+                    <div class="section-indicator bg-primary"></div>
+                    <q-icon name="shopping_bag" size="sm" color="primary" class="q-mr-sm" />
+                    <h3 class="section-title text-h6 text-grey-9 q-ma-none text-weight-medium">
+                      {{ esModoEdicion ? 'Editar Producto' : 'Seleccionar Producto' }}
+                    </h3>
+                    <q-badge
+                      v-if="esModoEdicion"
+                      color="orange-7"
+                      rounded
+                      class="q-ml-sm q-px-md"
+                      outline
+                    >
+                      Modo Edición
+                    </q-badge>
+                  </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                  <div v-if="productoUnico" class="unique-product-section q-mb-sm">
+                    <q-checkbox
+                      v-model="detalleForm.productoUnico"
+                      label="Producto Único"
+                      color="primary"
+                      class="custom-checkbox text-weight-medium"
+                      :disable="esModoEdicion"
+                    >
+                      <template v-slot:label>
+                        <span class="text-grey-800">Producto Único</span>
+                      </template>
+                    </q-checkbox>
+
+                    <q-tooltip v-if="esModoEdicion" class="bg-grey-800">
+                      No se puede cambiar el tipo de producto en modo edición
+                    </q-tooltip>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Producto en modo edición -->
+              <div v-if="esModoEdicion">
+                <q-input
+                  v-model="detalleForm.descripcion"
+                  dense
+                  outlined
+                  readonly
+                  bg-color="grey-50"
+                  label="Producto o Servicio"
+                  class="readonly-input full-width"
+                  stack-label
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="inventory_2" size="xs" color="primary" />
+                  </template>
+                  <template v-slot:append>
+                    <q-icon name="lock" size="xs" color="grey-400" />
+                  </template>
+                </q-input>
+              </div>
+
+              <!-- Producto en modo añadir -->
+              <div v-if="!esModoEdicion">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  v-model="detalleForm.idproductoalmacen"
+                  :options="productosFiltrados"
+                  @filter="filtrarProductos"
+                  id="producto"
+                  outlined
+                  emit-value
+                  map-options
+                  option-label="label"
+                  option-value="value"
+                  :rules="[(val) => !!val || 'Requerido']"
+                  dense
+                  clearable
+                  class="product-select full-width"
+                  behavior="menu"
+                  input-debounce=""
+                  bg-color="white"
+                  placeholder="Escribe para buscar..."
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="search" size="xs" color="primary" />
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      round
+                      dense
+                      flat
+                      icon="refresh"
+                      color="primary"
+                      @click.stop.prevent="listaProductosDisponibles"
+                    >
+                      <q-tooltip>Recargar productos</q-tooltip>
+                    </q-btn>
+                  </template>
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey-500 text-center q-py-md">
+                        <q-icon name="inbox" size="md" class="q-mb-sm" />
+                        <div>No se encontraron productos</div>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps" class="product-option">
+                      <q-item-section avatar>
+                        <q-avatar
+                          rounded
+                          color="primary-50"
+                          text-color="primary"
+                          icon="inventory"
+                          size="36px"
+                        />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label class="text-weight-medium">{{
+                          scope.opt.label
+                        }}</q-item-label>
+                        <div class="stock-info text-caption text-grey-600 q-mt-xs">
+                          <q-icon name="inventory_2" size="xs" />
+                          <span
+                            >Stock:
+                            {{
+                              productosDisponibles.find((p) => p.value === scope.opt.value)
+                                ?.stock || 0
+                            }}</span
+                          >
+                          <span class="q-mx-xs">•</span>
+                          <q-icon name="straighten" size="xs" />
+                          <span>{{
+                            productosDisponibles.find((p) => p.value === scope.opt.value)?.unidad ||
+                            ''
+                          }}</span>
+                        </div>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-icon name="chevron_right" size="xs" color="grey-400" />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+
+                <div
+                  v-if="detalleForm.idproductoalmacen"
+                  class="stock-indicators row q-col-gutter-md"
+                >
+                  <div class="col-6">
+                    <div class="flex items-center q-px-md q-py-sm bg-blue-1 rounded-borders">
+                      <q-icon name="inventory_2" size="sm" color="primary" class="q-mr-sm" />
+                      <div class="column">
+                        <span class="text-caption text-primary text-weight-bold">STOCK ACTUAL</span>
+                        <span class="text-subtitle1 text-blue-10 text-weight-bolder">{{
+                          detalleForm.stockActual
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <div class="flex items-center q-px-md q-py-sm bg-orange-1 rounded-borders">
+                      <q-icon name="straighten" size="sm" color="orange-8" class="q-mr-sm" />
+                      <div class="column">
+                        <span class="text-caption text-orange-9 text-weight-bold">UNIDAD</span>
+                        <span class="text-subtitle1 text-orange-10 text-weight-bolder">{{
+                          detalleForm.unidad || '---'
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Tabla de variantes -->
+                <div
+                  v-if="ConfiguracionProductoVariante && variantesDelProducto.length > 0"
+                  class="q-mt-md"
+                >
+                  <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
+                  <BaseFilterableTable
+                    title="Variantes del Producto"
+                    :rows="variantesDelProducto"
+                    :columns="columnasVariantes"
+                    row-key="id_Producto_Variante"
+                    :arrayHeaders="['sku', 'serie']"
+                    :loading="loadingVariantes"
+                    filterMode="client"
+                  >
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td key="sku" :props="props">{{ props.row.sku }}</q-td>
+                        <q-td key="serie" :props="props">
+                          <q-badge v-if="props.row.serie" color="teal" outline>
+                            {{ props.row.serie }}
+                          </q-badge>
+                          <span v-else class="text-grey text-caption">Sin serie</span>
+                        </q-td>
+                        <q-td key="atributos" :props="props">
+                          <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
+                            <q-badge outline color="primary" class="q-mr-xs">
+                              {{ attr.atributo }}: {{ attr.valor }}
+                            </q-badge>
+                          </div>
+                        </q-td>
+                        <q-td key="precio" :props="props">
+                          <q-input
+                            v-model.number="preciosVariantes[props.row.id_Producto_Variante]"
+                            type="number"
+                            dense
+                            outlined
+                            label="Precio"
+                            style="min-width: 120px"
+                          />
+                        </q-td>
+                        <q-td key="cantidad" :props="props">
+                          <q-input
+                            v-model.number="cantidadesVariantes[props.row.id_Producto_Variante]"
+                            type="number"
+                            dense
+                            outlined
+                            label="Cantidad"
+                            min="0"
+                            style="min-width: 120px"
+                          />
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </BaseFilterableTable>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Tarjeta de precios y cantidades -->
+          <q-card flat class="product-card">
+            <q-card-section class="q-pa-lg">
+              <div
+                v-if="!ConfiguracionProductoVariante"
+                class="section-header flex items-center q-mb-md"
+              >
+                <div class="section-indicator bg-primary"></div>
+                <q-icon name="price_change" size="sm" color="primary" class="q-mr-sm" />
+                <h3 class="section-title text-h6 text-grey-9 q-ma-none text-weight-medium">
+                  Precio y Cantidad
+                </h3>
+              </div>
+
+              <div class="row q-col-gutter-lg items-end">
+                <div v-if="!ConfiguracionProductoVariante" class="col-12 col-sm-6 col-md-4">
+                  <div class="q-mb-sm">
+                    <q-checkbox
+                      v-model="detalleForm.sinPrecio"
+                      label="Registrar Sin Precio"
+                      color="orange-7"
+                      dense
+                      class="custom-checkbox"
+                      icon="check_box_outline_blank"
+                      checked-icon="check_box"
+                      @update:model-value="
+                        (val) => {
+                          if (val) {
+                            detalleForm.precio = '0'
+                            formRef?.validate()
+                          }
+                        }
+                      "
+                    />
+                  </div>
+
+                  <q-input
+                    v-if="!detalleForm.sinPrecio"
+                    v-model="detalleForm.precio"
+                    type="text"
+                    inputmode="decimal"
+                    :rules="[
+                      (val) => (val !== null && val !== '') || 'Requerido',
+                      (val) => parseFloat(val) > 0 || 'Mayor a 0',
+                    ]"
+                    dense
+                    outlined
+                    label="Precio Unitario *"
+                    placeholder="0.00"
+                    class="price-input full-width"
+                    stack-label
+                    bg-color="white"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="attach_money" size="xs" color="grey-6" />
+                    </template>
+                    <template v-slot:append>
+                      <q-badge outline color="primary" class="currency-badge text-body2">
+                        {{ divisaActiva.simbolo }}
+                      </q-badge>
+                    </template>
+                  </q-input>
+
+                  <q-input
+                    v-else
+                    dense
+                    outlined
+                    readonly
+                    bg-color="grey-2"
+                    label="Precio Unitario"
+                    placeholder="0.00"
+                    class="full-width q-mb-md"
+                    stack-label
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="lock" size="xs" color="orange-7" />
+                    </template>
+                  </q-input>
+                </div>
+
+                <div v-if="!ConfiguracionProductoVariante" class="col-12 col-sm-6 col-md-4">
+                  <q-input
+                    v-model.number="detalleForm.cantidad"
+                    type="text"
+                    inputmode="decimal"
+                    :rules="[(val) => val > 0 || 'Mayor a 0']"
+                    dense
+                    outlined
+                    clearable
+                    label="Cantidad *"
+                    placeholder="0"
+                    class="quantity-input full-width"
+                    stack-label
+                    bg-color="white"
+                    @update:model-value="(val) => (detalleForm.cantidad = parseFloat(val) || null)"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="production_quantity_limits" size="xs" color="grey-6" />
+                    </template>
+                    <template v-slot:append>
+                      <q-badge outline color="primary" class="unit-badge text-body2">
+                        {{ detalleForm.unidad || 'und' }}
+                      </q-badge>
+                    </template>
+                  </q-input>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-4">
+                  <div class="action-buttons column q-gutter-y-sm q-pb-md">
+                    <q-btn
+                      v-if="esModoEdicion"
+                      label="Cancelar Edición"
+                      color="grey-7"
+                      flat
+                      rounded
+                      outline
+                      dense
+                      @click="onResetForm"
+                      no-caps
+                      icon="close"
+                      class="full-width"
+                    />
+
+                    <q-btn
+                      :label="esModoEdicion ? 'Actualizar Producto' : 'Agregar a la Compra'"
+                      :icon="esModoEdicion ? 'update' : 'add_shopping_cart'"
+                      color="primary"
+                      type="submit"
+                      unelevated
+                      rounded
+                      no-caps
+                      :disable="!detalleForm.idproductoalmacen && !esModoEdicion"
+                      class="full-width submit-btn text-weight-medium"
+                      style="min-height: 40px"
+                    />
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
         </div>
 
-        <!-- Producto en modo añadir -->
-        <div class="col-xs-12 col-sm-12 col-md-5" v-if="!esModoEdicion">
-          <q-select
-            use-input
-            hide-selected
-            fill-input
-            v-model="detalleForm.idproductoalmacen"
-            :options="productosFiltrados"
-            @filter="filtrarProductos"
-            id="producto"
-            filled
-            emit-value
-            map-options
-            option-label="label"
-            option-value="value"
-            :rules="[(val) => !!val || 'Requerido']"
-            dense
-            clearable
-            class="full-width"
-            label="Buscar Producto o Servicio *"
-            behavior="menu"
-            input-debounce="500"
-            bg-color="grey-2"
-          >
-            <template v-slot:prepend>
-              <q-icon name="search" size="xs" color="primary" />
-            </template>
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey text-italic">
-                  No se encontraron productos
-                </q-item-section>
-              </q-item>
-            </template>
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps">
-                <q-item-section avatar>
-                  <q-icon name="inventory" color="primary" size="xs" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ scope.opt.label }}</q-item-label>
-                  <q-item-label caption>
-                    Stock:
-                    {{ productosDisponibles.find((p) => p.value === scope.opt.value)?.stock || 0 }}
-                    {{
-                      productosDisponibles.find((p) => p.value === scope.opt.value)?.unidad || ''
-                    }}
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-
-        <!-- Detalles de Stock y Unidad -->
-        <div class="col-xs-12 col-sm-12 col-md-7" v-if="!esModoEdicion">
-          <div class="row q-col-gutter-md">
-            <div class="col-xs-6 col-md-6">
-              <q-input
-                v-model="detalleForm.stockActual"
-                readonly
-                dense
-                filled
-                type="number"
-                bg-color="grey-2"
-                label="Stock Actual"
-                class="full-width"
-                stack-label
-                text-color="grey-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="inventory_2" size="xs" color="grey-7" />
-                </template>
-              </q-input>
-            </div>
-            <div class="col-xs-6 col-md-6">
-              <q-input
-                v-model="detalleForm.unidad"
-                type="text"
-                dense
-                filled
-                readonly
-                bg-color="grey-2"
-                label="Unidad"
-                class="full-width"
-                stack-label
-                text-color="grey-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="straighten" size="xs" color="grey-7" />
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div>
-
-        <!-- Precios y Cantidades -->
-        <div class="col-xs-12 col-sm-12 col-md-8">
-          <div class="row q-col-gutter-md">
-            <div class="col-xs-12 col-sm-6">
-              <q-input
-                v-model="detalleForm.precio"
-                type="text"
-                inputmode="decimal"
-                :rules="[
-                  (val) => (val !== null && val !== '') || 'Requerido',
-                  (val) => parseFloat(val) > 0 || 'Mayor a 0',
-                ]"
-                dense
-                filled
-                label="Precio Unit. *"
-                placeholder="0.00"
-                class="full-width"
-                stack-label
-                bg-color="grey-2"
-                text-color="grey-9"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="payments" size="xs" color="grey-7" />
-                </template>
-                <template v-slot:append>
-                  <span class="text-grey-7 text-body1 text-weight-bold">
-                    {{ divisaActiva.simbolo }}
-                  </span>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-              <q-input
-                v-model.number="detalleForm.cantidad"
-                type="text"
-                inputmode="decimal"
-                :rules="[(val) => val > 0 || 'Mayor a 0']"
-                dense
-                filled
-                clearable
-                label="Cantidad *"
-                placeholder="0"
-                class="full-width"
-                stack-label
-                bg-color="grey-2"
-                text-color="grey-9"
-                @update:model-value="(val) => (detalleForm.cantidad = parseFloat(val) || null)"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="numbers" size="xs" color="grey-7" />
-                </template>
-                <template v-slot:append>
-                  <span class="text-grey-7 text-body1 text-weight-bold">{{
-                    detalleForm.unidad || 'und'
-                  }}</span>
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div>
-
-        <!-- Botones de acción -->
-        <div
-          class="col-xs-12 col-md-4 flex items-start justify-center justify-md-end q-gutter-sm q-pb-md"
-        >
-          <q-checkbox
-            v-if="productoUnico"
-            v-model="detalleForm.productoUnico"
-            label="Producto Único"
-            color="primary"
-            class="q-mr-md"
-            :disable="esModoEdicion"
-          >
-            <q-tooltip v-if="esModoEdicion">
-              No se puede cambiar el tipo de producto en edición
-            </q-tooltip>
-          </q-checkbox>
-          <q-btn
-            v-if="esModoEdicion"
-            label="Cancelar"
-            color="grey-7"
-            flat
-            rounded
-            @click="onResetForm"
-            no-caps
-            icon="close"
-            :class="$q.screen.lt.md ? 'full-width q-mb-xs' : ''"
-          />
-          <q-btn
-            :label="esModoEdicion ? 'Guardar Cambios' : 'Añadir a la Compra'"
-            :icon="esModoEdicion ? 'save' : 'add'"
-            color="primary"
-            type="submit"
-            unelevated
-            rounded
-            no-caps
-            :disable="!detalleForm.idproductoalmacen && !esModoEdicion"
-            :class="$q.screen.lt.md ? 'full-width' : 'q-px-lg'"
-          />
-        </div>
+        <!-- Columna de acciones -->
       </div>
     </q-form>
   </q-card-section>
@@ -245,26 +418,29 @@
         <q-icon name="list_alt" size="sm" class="q-mr-sm text-primary" />
         Detalle de Productos
       </div>
-      <q-badge
-        color="primary"
-        rounded
-        class="q-pa-sm text-caption text-weight-bold"
-        :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
-      />
+      <div class="row items-center q-gutter-x-sm">
+        <q-badge
+          color="primary"
+          rounded
+          class="q-pa-sm text-caption text-weight-bold"
+          :label="`${detalleItems.length} producto${detalleItems.length !== 1 ? 's' : ''}`"
+        />
+      </div>
     </div>
 
     <q-table
       :rows="detalleItems"
       :columns="columnas"
-      row-key="id"
+      :row-key="row => row.variante?.id_producto_variante ? 'var-' + row.variante.id_producto_variante : 'prod-' + row.id"
       flat
       bordered
       class="my-custom-table shadow-1"
       :loading="loadingTable"
     >
       <template v-slot:body="props">
-        <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
-          <q-td auto-width>
+        <q-tr :props="props" :key="`row-${props.row.id ?? props.row.variante?.id_producto_variante}`" :class="props.expand ? 'bg-blue-1' : ''">
+          <q-td auto-width :key="`expand-${props.row.id ?? props.row.variante?.id_producto_variante}`"
+      :colspan="1" >
             <q-btn
               v-if="props.row.productos_detallados?.length > 0"
               size="sm"
@@ -287,10 +463,27 @@
 
           <q-td key="descripcion" :props="props">
             <div class="text-weight-bold">{{ props.row.descripcion }}</div>
+            <div v-if="props.row.variante?.atributos?.length" class="q-mt-xs flex gap-1">
+              <q-badge
+                v-for="attr in props.row.variante.atributos"
+                :key="attr.id_Valor_Atributo"
+                outline
+                color="secondary"
+                class="q-mr-xs"
+              >
+                {{ attr.atributo }}: {{ attr.valor }}
+              </q-badge>
+              <q-badge v-if="props.row.variante.sku" outline color="grey-7" class="q-mr-xs">
+                SKU: {{ props.row.variante.sku }}
+              </q-badge>
+            </div>
           </q-td>
 
           <q-td key="precio" :props="props" class="text-right">
-            {{ decimas(props.row.precio) }}
+            <template v-if="Number(props.row.precio) > 0">
+              {{ decimas(props.row.precio) }}
+            </template>
+            <q-badge v-else color="orange-9" label="0" />
           </q-td>
 
           <q-td key="cantidad" :props="props" class="text-right">
@@ -301,7 +494,7 @@
             {{ (props.row.precio * props.row.cantidad).toFixed(2) }}
           </q-td>
 
-          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2">
+          <q-td key="opciones" :props="props" align="center" v-if="compra.autorizacion == 2" >
             <q-btn
               flat
               round
@@ -321,7 +514,7 @@
               @click="confirmarEliminar(props.row)"
             />
           </q-td>
-          <q-td v-else />
+          <q-td v-else :key="`ops-empty-${props.row.id}`" />
         </q-tr>
 
         <q-tr v-show="props.expand" :props="props" class="expanded-row-premium">
@@ -333,9 +526,7 @@
               :can-edit="true"
               :api-mode="true"
               @update-parent-quantity="
-                (nuevaCant) => {
-                  props.row.cantidad = nuevaCant
-                }
+                (nuevaCant) => actualizarCantidadRow(props.row, nuevaCant)
               "
             />
           </q-td>
@@ -371,7 +562,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { decimas } from 'src/composables/FuncionesG'
@@ -380,6 +571,7 @@ import { useCurrencyStore } from 'src/stores/currencyStore'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 import TableCodigosUnicos from '../cotizacion/TableCodigosUnicos.vue'
+import BaseFilterableTable from '../componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 const productoUnico = ref(false)
 const idempresa = idempresa_md5()
 
@@ -407,6 +599,13 @@ const productosDisponibles = ref([])
 const productosFiltrados = ref([])
 const esModoEdicion = ref(false)
 const loadingTable = ref(false)
+const isReloading = ref(false)
+const ConfiguracionProductoVariante = ref(false)
+
+const variantesDelProducto = ref([])
+const loadingVariantes = ref(false)
+const cantidadesVariantes = ref({}) // { [idVariante]: cantidad }
+const preciosVariantes = ref({}) // { [idVariante]: precio }
 
 const detalleForm = ref({
   id: null,
@@ -416,7 +615,8 @@ const detalleForm = ref({
   descripcion: '',
   stockActual: 0,
   unidad: '',
-  productoUnico: false,
+  productoUnico: true,
+  sinPrecio: false,
 })
 
 // --- COMPUTED PROPERTIES ---
@@ -453,6 +653,13 @@ const total = computed(() => {
     0,
   )
 })
+const columnasVariantes = computed(() => [
+  { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
+  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
+  { name: 'atributos', label: 'Atributos', align: 'left' },
+  { name: 'precio', label: 'Precio', align: 'left' },
+  { name: 'cantidad', label: 'Cantidad', align: 'left' },
+])
 
 // --- WATCHERS ---
 watch(
@@ -477,6 +684,17 @@ watch(
   },
 )
 
+watch(
+  () => detalleForm.value.sinPrecio,
+  (val) => {
+    if (val) {
+      detalleForm.value.precio = '0'
+    } else if (detalleForm.value.precio === '0') {
+      detalleForm.value.precio = ''
+    }
+  },
+)
+
 // --- MÉTODOS DE DATOS (API) ---
 async function cargarDatos() {
   $q.loading.show({ message: 'Cargando datos...' })
@@ -491,6 +709,30 @@ async function cargarDatos() {
     })
   } finally {
     $q.loading.hide()
+  }
+}
+
+async function recargarComponente() {
+  if (isReloading.value) return // ✅ Evitar doble disparo
+  isReloading.value = true
+  try {
+    await cargarDatos()
+    onResetForm()
+    $q.notify({
+      type: 'positive',
+      message: 'Detalle recargado correctamente',
+      position: 'top',
+      timeout: 1500,
+    })
+  } catch (error) {
+    console.error('Error al recargar componente:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudo recargar el detalle',
+      position: 'top',
+    })
+  } finally {
+    isReloading.value = false
   }
 }
 
@@ -568,7 +810,67 @@ function confirmarCantidadEspecial() {
 }
 async function onSubmit() {
   if (!formRef.value.validate()) return
-  if (!esModoEdicion.value && detalleForm.value.productoUnico) {
+
+  // Si hay variantes, registrar cada una con cantidad > 0
+  if (variantesDelProducto.value.length > 0) {
+    const variantesConCantidad = variantesDelProducto.value.filter(
+      (v) => Number(cantidadesVariantes.value[v.id_Producto_Variante] || 0) > 0,
+    )
+
+    if (variantesConCantidad.length === 0) {
+      $q.notify({
+        type: 'warning',
+        message: 'Debe ingresar al menos una cantidad mayor a 0 para las variantes.',
+        position: 'top',
+      })
+      return
+    }
+
+    $q.loading.show({ message: 'Guardando variantes...' })
+    try {
+      for (const variante of variantesConCantidad) {
+        const cantidad = Number(cantidadesVariantes.value[variante.id_Producto_Variante])
+        const precio = Number(preciosVariantes.value[variante.id_Producto_Variante])
+
+        const formData = objectToFormData({
+          precio,
+          cantidad,
+          idproductoalmacen: detalleForm.value.idproductoalmacen,
+          idProductoVariante: variante.id_Producto_Variante,
+          registrarProUnico: false,
+        })
+        formData.append('idingreso', props.compra.id)
+        formData.append('ver', 'registrarDetalleCompra')
+
+        const response = await api.post('', formData)
+        if (response.data.estado !== 'exito') {
+          throw new Error(response.data.mensaje || 'Error al registrar variante')
+        }
+      }
+
+      $q.notify({
+        type: 'positive',
+        message: 'Variantes registradas con éxito',
+        position: 'top',
+      })
+      await getDetalleCompra()
+      await listaProductosDisponibles()
+      onResetForm()
+      emit('update')
+    } catch (error) {
+      console.error('Error al guardar variantes:', error)
+      $q.notify({
+        type: 'negative',
+        message: error.message || 'Error al guardar variantes',
+        position: 'top',
+      })
+    } finally {
+      $q.loading.hide()
+    }
+    return
+  }
+  if (!formRef.value.validate()) return
+  if (!esModoEdicion.value && detalleForm.value.productoUnico && productoUnico.value) {
     const confirmado = await confirmarCantidadEspecial()
     if (!confirmado) return
   }
@@ -628,11 +930,19 @@ function onResetForm() {
     descripcion: '',
     stockActual: 0,
     unidad: '',
-    productoUnico: false,
+    productoUnico: productoUnico.value,
+    sinPrecio: false,
   }
   formRef.value?.reset()
   formRef.value?.resetValidation()
   esModoEdicion.value = false
+  variantesDelProducto.value = []
+  cantidadesVariantes.value = {}
+  preciosVariantes.value = {}
+}
+
+function actualizarCantidadRow(row, nuevaCant) {
+  row.cantidad = nuevaCant
 }
 
 // --- MÉTODOS DE LA TABLA ---
@@ -652,6 +962,7 @@ async function iniciarEdicion(row) {
         descripcion: response.data.datos.descripcion,
         stockActual: Number(response.data.datos.stock) || 0,
         unidad: response.data.datos.unidad || '',
+        sinPrecio: parseFloat(response.data.datos.precio) === 0,
       }
     } else {
       $q.notify({
@@ -682,6 +993,14 @@ function confirmarEliminar(row) {
   }).onOk(async () => {
     await eliminarDetalle(row)
   })
+}
+const fetchEstadoActual = async () => {
+  try {
+    const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
+    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 async function eliminarDetalle(row) {
@@ -714,6 +1033,56 @@ async function eliminarDetalle(row) {
     $q.loading.hide()
   }
 }
+watch(
+  () => detalleForm.value.idproductoalmacen,
+  async (nuevoValor) => {
+    if (nuevoValor && ConfiguracionProductoVariante.value) {
+      await cargarVariantesProducto(nuevoValor)
+    } else {
+      variantesDelProducto.value = []
+      cantidadesVariantes.value = {}
+      preciosVariantes.value = {}
+    }
+  },
+)
+
+async function cargarVariantesProducto(idproductoalmacen) {
+  loadingVariantes.value = true
+  try {
+    const response = await api.get(`listar_producto_variantes_por_almacen/${idproductoalmacen}`)
+    const data = response.data
+    if (data?.Productos_variantes?.length) {
+      variantesDelProducto.value = data.Productos_variantes
+      // Inicializar cantidades y precios
+      variantesDelProducto.value.forEach((variante) => {
+        cantidadesVariantes.value[variante.id_Producto_Variante] = 0
+        preciosVariantes.value[variante.id_Producto_Variante] = variante.precio_base || 0
+      })
+    } else {
+      variantesDelProducto.value = []
+    }
+  } catch (error) {
+    console.error('Error al cargar variantes:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar las variantes del producto.',
+      position: 'top',
+    })
+  } finally {
+    loadingVariantes.value = false
+  }
+}
+onMounted(async () => {
+  try {
+    // Cargar datos iniciales
+    await fetchEstadoActual()
+  } catch (error) {
+    console.error('Error en inicialización de Cotización:', error)
+  }
+})
+
+// ✅ Exponer método público al padre (RcompraPage)
+defineExpose({ recargarComponente })
 </script>
 <style scoped>
 .my-custom-table {
@@ -760,5 +1129,151 @@ async function eliminarDetalle(row) {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Estilos personalizados para mejorar la UI */
+.purchase-form {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.product-card {
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.product-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.actions-card {
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+.section-header {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.section-indicator {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  margin-right: 12px;
+}
+
+.section-title {
+  letter-spacing: -0.01em;
+}
+
+.product-select :deep(.q-field__control) {
+  border-radius: 12px;
+}
+
+.product-select :deep(.q-field__native) {
+  padding: 12px 0;
+}
+
+.readonly-input :deep(.q-field__control) {
+  background-color: #f9fafb;
+  border-radius: 12px;
+}
+
+.price-input :deep(.q-field__control),
+.quantity-input :deep(.q-field__control) {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.price-input :deep(.q-field__control:hover),
+.quantity-input :deep(.q-field__control:hover) {
+  border-color: #9ca3af;
+}
+
+.info-chip {
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.info-chip:hover {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb;
+}
+
+.currency-badge,
+.unit-badge {
+  background: white;
+  padding: 4px 8px;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+}
+
+.custom-checkbox :deep(.q-checkbox__label) {
+  font-weight: 500;
+  color: #374151;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  transition: transform 0.1s ease;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+.sticky-actions {
+  position: sticky;
+  top: 90px;
+}
+
+/* Estilo para la opción del producto */
+.product-option {
+  border-radius: 8px;
+  margin: 2px 8px;
+}
+
+.product-option:hover {
+  background-color: #f9fafb;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+  .sticky-actions {
+    position: static;
+    top: auto;
+  }
+
+  .section-title {
+    font-size: 1rem;
+  }
+
+  .product-card .q-pa-lg {
+    padding: 16px;
+  }
+
+  .checkbox-hint {
+    margin-left: 28px;
+  }
+}
+
+/* Animaciones suaves */
+.product-card,
+.actions-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejora de accesibilidad */
+:deep(.q-field__native:focus) {
+  border-color: #2c3e50;
+}
+
+:deep(.q-btn:focus-visible) {
+  outline: 2px solid #2c3e50;
+  outline-offset: 2px;
 }
 </style>

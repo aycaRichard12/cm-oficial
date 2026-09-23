@@ -1,4 +1,3 @@
-
 <template>
   <q-page class="q-pa-md">
     <InventarioExteriorHeader />
@@ -89,28 +88,28 @@ const showMapDialog = ref(false)
 const selectedLocation = ref({ lat: '', lng: '' })
 
 const onViewMap = (row) => {
-    selectedLocation.value = {
-        lat: row.latitud, // Ensure 'latitud' is in 'row' (from inventarioData mapping)
-        lng: row.longitud
-    }
-    showMapDialog.value = true
+  selectedLocation.value = {
+    lat: row.latitud, // Ensure 'latitud' is in 'row' (from inventarioData mapping)
+    lng: row.longitud,
+  }
+  showMapDialog.value = true
 }
 
 // Destructure Composables
 const {
   almacenOptions,
   clientesOptions,
-  // filteredClientesOptions, // Not used directly in page? Used deeply in ClienteSucursal or we need to pass it? 
-  // Wait, ClienteSucursal component handles its own filtering?? 
+  // filteredClientesOptions, // Not used directly in page? Used deeply in ClienteSucursal or we need to pass it?
+  // Wait, ClienteSucursal component handles its own filtering??
   // In original code: `filteredClientesOptions` was used for Q-Select filter but passed??
   // Looking at original template: <ClienteSucursal ... />
   // ClienteSucursal seems to be a custom component. The original code had `clientesOptions` but `ClienteSucursal` might use them or fetch its own?
   // Let's check original code usage:
   // `valores iniciales`: `await listaCliente()` populated `clientesOptions`.
-  // `ClienteSucursal` components usually take `options` as props OR fetch them. 
+  // `ClienteSucursal` components usually take `options` as props OR fetch them.
   // The original template: `<ClienteSucursal ... v-model:client="formData.cliente" v-model:branch="formData.sucursal" />`
   // It didn't pass options? So ClienteSucursal might be fetching its own or using store?
-  // WAIT. The original code had `listaCliente` filling `clientesOptions`. 
+  // WAIT. The original code had `listaCliente` filling `clientesOptions`.
   // But `ClienteSucursal` usage in template did NOT see `clientes` passed as prop.
   // Exception: Maybe `ClienteSucursal` is not using the `clientesOptions` from this page?
   // Let's look closer at original code:
@@ -119,7 +118,7 @@ const {
   // However, `selectSucursal` IS called when `formData.value.idcliente` changes.
   // And `editItem` uses `clientesOptions` to find the selected client object.
   // So `clientesOptions` IS needed for `editItem` logic.
-  
+
   sucursalOptions,
   // filteredSucursalOptions,
 
@@ -129,8 +128,9 @@ const {
   listaCliente,
   selectSucursal,
   listaProductosDisponibles,
-  filterProductos
+  filterProductos,
 } = useCatalogosInventario()
+console.log('Almacen Options:', almacenOptions.value)
 
 const {
   formCollapse,
@@ -147,7 +147,7 @@ const {
   deleteItem,
   editItem,
   resetearFormulario,
-  toggleFormCollapse
+  toggleFormCollapse,
 } = useInventarioExterior()
 
 const {
@@ -161,9 +161,8 @@ const {
   elminarDetalleMovimiento,
   actualizarDetalleINV,
   showDetail,
-  hideDetail
+  hideDetail,
 } = useInventarioExteriorDetalle()
-
 
 // --- Lifecycle & Watchers ---
 
@@ -193,24 +192,23 @@ watch(formCollapse, (newVal) => {
 })
 
 watch(
-  () => formData.value.cliente, // Watch the object or value? Original watched `formData.value.idcliente`? 
+  () => formData.value.cliente, // Watch the object or value? Original watched `formData.value.idcliente`?
   // Original: `watch(() => formData.value.idcliente, ...)`
   // But `ClienteSucursal` updates `formData.cliente` (object typically).
   // We need to sync `idcliente`?
   async (newCliente) => {
-     // If `ClienteSucursal` returns object, we extract ID.
-     const id = newCliente?.value || newCliente
-     formData.value.idcliente = id
-     
+    // If `ClienteSucursal` returns object, we extract ID.
+    const id = newCliente?.value || newCliente
+    formData.value.idcliente = id
+
     if (id) {
-      // We don't have logic to populate `sucursalOptions` locally for `ClienteSucursal` 
+      // We don't have logic to populate `sucursalOptions` locally for `ClienteSucursal`
       // if `ClienteSucursal` handles its own options.
       // But `selectSucursal` in original code populated `sucursalOptions` AND `filtered...`.
-      // The original `selectSucursal` was used in `editItem`. 
+      // The original `selectSucursal` was used in `editItem`.
       // Does `ClienteSucursal` component use `sucursalOptions`??
-      // If `ClienteSucursal` is a black box, it might load its own stuff. 
+      // If `ClienteSucursal` is a black box, it might load its own stuff.
       // BUT `editItem` needs to set `formData.sucursal`.
-      
       // Let's assume `ClienteSucursal` handles user interaction.
       // We only strictly need `selectSucursal` for `editItem` populating (if customized).
       // Or maybe we just need `idcliente` update.
@@ -219,61 +217,60 @@ watch(
       formData.value.idsucursal = ''
     }
   },
-  { deep: true }
+  { deep: true },
 )
 
 // --- Event Handlers ---
 
 const onToggleForm = () => {
-    toggleFormCollapse(escritura)
+  toggleFormCollapse(escritura)
 }
 
 const onSubmitMainForm = () => {
-    handleMainFormSubmit(escritura)
+  handleMainFormSubmit(escritura)
 }
 
 const onShowDetail = (row) => {
-    showDetail(row, async () => {
-         // Refresh products available for this warehouse/register
-         // Logic inside showDetail saves to localStorage, so listaProductosDisponibles works
-         await listaProductosDisponibles() 
-    })
+  showDetail(row, async () => {
+    // Refresh products available for this warehouse/register
+    // Logic inside showDetail saves to localStorage, so listaProductosDisponibles works
+    await listaProductosDisponibles()
+  })
 }
 
 const onSubmitDetailForm = () => {
-    handleDetailFormSubmit(async () => {
-        await listaProductosDisponibles()
-    })
+  handleDetailFormSubmit(async () => {
+    await listaProductosDisponibles()
+  })
 }
 
 const onDeleteDetail = (id) => {
-    elminarDetalleMovimiento(id, async () => {
-         await listaProductosDisponibles()
-    })
+  elminarDetalleMovimiento(id, async () => {
+    await listaProductosDisponibles()
+  })
 }
 
 const onEditItem = async (row) => {
-    // editItem returns idcliente or null
-    const idcliente = await editItem(row, clientesOptions.value)
-    if (idcliente) {
-        await selectSucursal(idcliente)
-        
-        // Let's replicate original behavior:
-        const firstBranch = sucursalOptions.value.find(s => Number(s.clientId) === Number(idcliente))
-        if(firstBranch) formData.value.sucursal = firstBranch
-    }
+  // editItem returns idcliente or null
+  const idcliente = await editItem(row, clientesOptions.value)
+  if (idcliente) {
+    await selectSucursal(idcliente)
+
+    // Let's replicate original behavior:
+    const firstBranch = sucursalOptions.value.find((s) => Number(s.clientId) === Number(idcliente))
+    if (firstBranch) formData.value.sucursal = firstBranch
+  }
 }
 
 const onSelectProductOption = (val) => {
-    if (val) {
-        detalleFormData.value.productos = val.label
-        detalleFormData.value.idproductoalmacen = val.value
-    } else {
-        detalleFormData.value.productos = ''
-        detalleFormData.value.idproductoalmacen = ''
-    }
+  if (val) {
+    detalleFormData.value.productos = val.label
+    detalleFormData.value.idproductoalmacen = val.value
+  } else {
+    detalleFormData.value.productos = ''
+    detalleFormData.value.idproductoalmacen = ''
+  }
 }
-
 </script>
 
 <style scoped>

@@ -44,6 +44,12 @@
               <q-item-section>
                 <q-item-label class="text-subtitle2" :lines="1">
                   {{ notification.title }} {{ 'en fecha ' + notification.fecha }}
+                  <q-btn
+                    v-if="notification.codigo == 'importacion_pendiente'"
+                    color="primary"
+                    label="Aprobar"
+                    @click="aprobarImportacion(notification)"
+                  />
                 </q-item-label>
                 <q-item-label v-if="!compactMode" caption lines="2">
                   {{ notification.message }}
@@ -78,6 +84,8 @@ import { api } from 'src/boot/axios'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import emitter from 'src/event-bus'
 import { verificarexistenciapagina } from 'src/composables/FuncionesG'
+import { useQuasar } from 'quasar'
+const $q = useQuasar()
 // Estado de la UI
 const showMenu = ref(false)
 const compactMode = ref(true)
@@ -161,8 +169,50 @@ const markAsRead = (notif) => {
       emitter.emit('abrir-submenu', cxc)
       emitter.emit('realizar-pago', notif)
       break
+    case 'importacion_pendiente':
+      break
     default:
       break
+  }
+}
+
+const aprobarImportacion = async (notif) => {
+  console.log(notif)
+  const point = `autorizarProductoVarianteImportacion/${notif.id}`
+  console.log(point)
+  try {
+    const response = await api.get(point)
+    const data = response.data
+
+    if (data.status === 'ok') {
+      $q.notify({
+        type: 'positive',
+        message: 'Importación autorizada y procesada correctamente.',
+        icon: 'check_circle',
+        timeout: 3000,
+        position: 'top',
+      })
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: data.mensaje || 'Error al autorizar la importación.',
+        icon: 'error',
+        timeout: 5000,
+        position: 'top',
+      })
+    }
+
+    // Recargar notificaciones para reflejar el cambio
+    await getNotificaciones()
+  } catch (error) {
+    console.error('[aprobarImportacion]', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Error de conexión al procesar la solicitud.',
+      icon: 'error',
+      timeout: 5000,
+      position: 'top',
+    })
   }
 }
 

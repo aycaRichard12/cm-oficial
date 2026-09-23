@@ -1,16 +1,19 @@
 import { URL_APICM } from 'src/composables/services'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { peticionGET } from 'src/composables/peticionesFetch'
-
+import { QuickConsultPage } from 'src/modules/quick-consult'
+import { configSucursalSinPage } from 'src/modules/configurarsucursalSin'
+import { routes as utilidadesRoutes } from 'src/modules/ReportesUtilidades'
 async function empresaRegistrada() {
   const contenidousuario = validarUsuario()
-  const idempresa = contenidousuario[0]?.empresa?.idempresa
+  const idempresa = contenidousuario?.[0]?.empresa?.idempresa
+  if (!idempresa) return true // O manejar como no registrado
   const endpoint = `${URL_APICM}api/empresaRegistrada/${idempresa}`
-  console.log(endpoint)
+  //console.log(endpoint)
 
   try {
     const resultado = await peticionGET(endpoint)
-    console.log(resultado)
+    //console.log(resultado)
     return resultado.estado !== 'error'
   } catch (error) {
     console.error('Error al consultar empresa:', error)
@@ -26,6 +29,12 @@ const routes = [
   {
     path: '/',
     beforeEnter: async (to, from, next) => {
+      // Excepción: la ruta /factura no necesita autenticación ni configuración
+      if (to.path === '/factura') {
+        next('/factura')
+        return
+      }
+
       // 1. Verificar Autenticación
       const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
 
@@ -151,10 +160,10 @@ const routes = [
         path: '/gestionPedido',
         component: () => import('src/pages/autorizaciones/GestionPedidoPage.vue'),
       },
-      {
-        path: '/registrarventa',
-        component: () => import('src/components/venta/ventaComponent.vue'),
-      },
+      // {
+      //   path: '/registrarventa',
+      //   component: () => import('src/components/venta/ventaComponent.vue'),
+      // },
       {
         path: '/registrarventaoculto',
         component: () => import('src/components/venta/ventaPage.vue'),
@@ -268,12 +277,16 @@ const routes = [
         component: () => import('src/pages/reportes/reporteVentasCampanapage.vue'),
       },
       {
-        path: '/inventarioexterno',
+        path: '/registrarinventarioexterno',
         component: () => import('src/pages/inventarioExterior/inventarioExteriorPage.vue'),
       },
       {
         path: '/registrarcotizacionoculto',
         component: () => import('src/pages/cotizacion/cotizacionIndex.vue'),
+      },
+      {
+        path: '/registrarcotizacionocultomodulo',
+        component: () => import('src/modules/Cotizacion/page/CotizacionPage.vue'),
       },
       {
         path: '/reportedecotizacionesocultas',
@@ -292,7 +305,7 @@ const routes = [
         component: () => import('src/pages/metodoPago/metodoPago.vue'),
       },
       {
-        path: '/leyendasdefacturas',
+        path: '/configleyendasdefacturas',
         component: () => import('src/pages/leyendaFactura/LeyendaFactura.vue'),
       },
       {
@@ -385,6 +398,10 @@ const routes = [
         component: () => import('src/pages/config/permisosUsuariosPage.vue'),
       },
       {
+        path: '/atajosrapidos',
+        component: () => import('src/pages/AtajosConfig/ShortcutsConfigPage.vue'),
+      },
+      {
         path: '/reporteproveedorcompras',
         component: () => import('src/pages/proveedor/ReporteProveedorComprasPage.vue'),
       },
@@ -416,6 +433,33 @@ const routes = [
         path: '/configuracionproductounico',
         component: () => import('src/pages/productoUnico/ConfiguracionPage.vue'),
       },
+      {
+        path: '/configuracionclientealmacen',
+        component: () => import('src/modules/config/page/ClienteAlmacenPage.vue'),
+      },
+      {
+        path: '/configuracionProductoVariante',
+        component: () => import('src/modules/config/page/ProductoVariantePage.vue'),
+      },
+      {
+        path: '/reporteProductoUnico',
+        component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
+      },
+      {
+        path: '/serie',
+        component: () => import('src/modules/serie/page/seriePage.vue'),
+      },
+      {
+        path: '/configurarsucursalsin',
+        name: 'ConfigurarSucursalSin',
+        component: configSucursalSinPage,
+      },
+      {
+        path: '/quickconsult',
+        name: 'QuickConsult',
+        component: QuickConsultPage,
+      },
+      ...utilidadesRoutes,
     ],
   },
   {
@@ -425,7 +469,8 @@ const routes = [
   {
     path: '/login',
     beforeEnter: (to, from, next) => {
-      const isAuthenticated = localStorage.getItem('puedeIniciarsesion')
+      const userData = localStorage.getItem('mistersofts-cm')
+      const isAuthenticated = userData && userData !== 'undefined' && userData !== 'null'
       if (isAuthenticated) {
         next('/')
       } else {
@@ -433,6 +478,13 @@ const routes = [
       }
     },
     component: () => import('pages/auth/LoginPage.vue'),
+  },
+  {
+    path: '/factura/:i/:e',
+
+    name: 'pdfFactura',
+
+    component: () => import('src/pages/GenerarPDFQR/FacturaQrPage.vue'),
   },
   // Always leave this as last one,
   // but you can also remove it reportedecompras registrarventa

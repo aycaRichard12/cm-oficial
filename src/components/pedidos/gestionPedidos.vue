@@ -1,7 +1,18 @@
 <template>
   <q-page class="q-ma-md">
     <div>
-      <div class="titulo">Autorizando Pedidos</div>
+      
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assignment" size="md" class="q-mr-sm" />
+          Autorizando Pedidos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Autorizando Pedidos
+        </div>
+      </div>
+    </div>
       <!-- Formulario principal -->
       <q-form @submit.prevent="onSubmit">
         <div class="row justify-center q-col-gutter-x-md" id='filtrosFechas'>
@@ -25,8 +36,37 @@
       <div class="row q-col-gutter-x-md flex justify-start" id="filtrosAlmacen">
         <div class="col-12 col-md-3">
           <label for="almacen">Filtrar por Almacén</label>
-          <q-select id="almacen" v-model="almacen" :options="almacenes" clearable dense outlined />
+          <q-select id="almacen" v-model="almacen" :options="almacenes" clearable dense outlined>
+            <template v-slot:append>
+              <q-btn
+                round
+                dense
+                flat
+                size="sm"
+                color="primary"
+                icon="refresh"
+                :loading="recargandoAlmacenes"
+                @click.stop.prevent="recargarAlmacenes"
+              >
+                <q-tooltip>Recargar almacenes</q-tooltip>
+              </q-btn>
+            </template>
+          </q-select>
         </div>
+      </div>
+      <div class="row justify-end q-mb-sm">
+        <q-btn
+          color="primary"
+          icon="refresh"
+          label="Recargar Tabla"
+          outline
+          no-caps
+          id="btnRecargarTablaGestion"
+          :loading="recargandoTabla"
+          @click.stop.prevent="recargarTabla"
+        >
+          <q-tooltip>Volver a cargar los pedidos</q-tooltip>
+        </q-btn>
       </div>
       <q-table
       id="tablaPedidos"
@@ -168,6 +208,8 @@ const tipopago = ref('')
 
 // Opciones select
 const almacenes = ref([])
+const recargandoAlmacenes = ref(false)
+const recargandoTabla = ref(false)
 
 const router = useRouter()
 const ShowWarningDialog = ref(false)
@@ -545,6 +587,32 @@ const enviarPDFPorWhatsApp = async (row) => {
   mostrarDialogoWhatsapp(
     `Aquí tienes la orden de pedido: ${linkPDF}\n\n*Nota: Este enlace estará activo por 48 horas y luego será eliminado.*`,
   )
+}
+
+const recargarAlmacenes = async () => {
+  if (recargandoAlmacenes.value) return
+  recargandoAlmacenes.value = true
+  try {
+    await cargarAlmacenes()
+    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar almacenes:', err)
+  } finally {
+    recargandoAlmacenes.value = false
+  }
+}
+
+const recargarTabla = async () => {
+  if (recargandoTabla.value) return
+  recargandoTabla.value = true
+  try {
+    await onSubmit()
+    $q.notify({ type: 'positive', message: 'Tabla recargada', position: 'top', timeout: 1200 })
+  } catch (err) {
+    console.error('Error al recargar tabla:', err)
+  } finally {
+    recargandoTabla.value = false
+  }
 }
 
 onMounted(() => {

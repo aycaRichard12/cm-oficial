@@ -1,8 +1,18 @@
 <template>
-  <div class="titulo">Reporte de Pagos</div>
+  
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assessment" size="md" class="q-mr-sm" />
+          Reporte de Pagos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte de Pagos
+        </div>
+      </div>
+    </div>
 
   <!-- Sección de Filtros -->
-
   <!-- Tabla de Datos -->
   <q-table
     :rows="allRows"
@@ -13,6 +23,7 @@
     flat
     bordered
   >
+
     <!-- Slot para personalizar la celda de Estado -->
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
@@ -150,6 +161,8 @@ const onVerimagen = (item) => {
 }
 
 // --- Acciones de la Tabla ---
+
+defineExpose({ fetchData })
 </script>
 
 <style>

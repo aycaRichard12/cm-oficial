@@ -41,6 +41,7 @@ const componentes = {
   facturaCV: defineAsyncComponent(() => import('./facturaCV.vue')),
   facturaCMEX: defineAsyncComponent(() => import('./facturaCMEX.vue')),
   facturaABYM: defineAsyncComponent(() => import('./facturaABYM.vue')),
+  facturaEF: defineAsyncComponent(() => import('./facturaEF.vue')),
 }
 
 const componenteActual = ref('tipo_doc')

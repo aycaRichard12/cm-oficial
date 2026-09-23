@@ -131,7 +131,15 @@
         id="tablareportecobros"
         ref="tablaRef"
         :rows="filteredReportData"
-        :array-headers="['fecha_actual', 'nombre_cliente', 'nombre_comercial', 'nombre_almacen', 'nombre_sucursal', 'tipo_cobro']"
+        :array-headers="[
+          'fecha_actual',
+          'Venta',
+          'nombre_cliente',
+          'nombre_comercial',
+          'nombre_almacen',
+          'nombre_sucursal',
+          'tipo_cobro',
+        ]"
         :columns="columns"
         :sum-columns="['monto_total_venta', 'saldo_estado_cobro', 'monto_detalle_cobro']"
         nombre-columna-totales="nombre_comercial"
@@ -140,12 +148,14 @@
       >
         <template v-slot:body-cell-tipo_cobro="props">
           <q-td :props="props">
-            <q-badge 
-              v-if="props.value" 
-              :color="props.value === 'CF' ? 'green-2' : (props.value === 'SF' ? 'cyan-2' : 'teal-2')" 
-              :text-color="props.value === 'CF' ? 'green-10' : (props.value === 'SF' ? 'cyan-10' : 'teal-10')" 
+            <q-badge
+              v-if="props.value"
+              :color="props.value === 'CF' ? 'green-2' : props.value === 'SF' ? 'cyan-2' : 'teal-2'"
+              :text-color="
+                props.value === 'CF' ? 'green-10' : props.value === 'SF' ? 'cyan-10' : 'teal-10'
+              "
               class="text-weight-bold q-px-sm q-py-xs"
-              style="font-size: 0.85rem;"
+              style="font-size: 0.85rem"
             >
               {{ props.value }}
             </q-badge>
@@ -159,10 +169,19 @@
               round
               dense
               color="primary"
-              :icon="esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'picture_as_pdf' : 'photo'"
+              :icon="
+                esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf)
+                  ? 'picture_as_pdf'
+                  : 'photo'
+              "
               @click="verImagen(props.row.foto_detalle_cobro || props.row.urlpdf)"
             >
-              <q-tooltip>Ver {{ esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'PDF' : 'Imagen' }}</q-tooltip>
+              <q-tooltip
+                >Ver
+                {{
+                  esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'PDF' : 'Imagen'
+                }}</q-tooltip
+              >
             </q-btn>
           </q-td>
         </template>
@@ -179,7 +198,7 @@
 
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="column no-wrap" style="height: 100%">
-        <q-card-section class="row items-center q-pb-none bg-primary text-white"  >
+        <q-card-section class="row items-center q-pb-none bg-primary text-white">
           <div class="text-h6">Vista previa de Reporte</div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup />
@@ -196,10 +215,7 @@
     </q-dialog>
 
     <!-- Visor de Comprobante (Soporta PDF e Imagen) -->
-    <ComprobanteViewerDialog
-      v-model="showImage"
-      :imagen-seleccionada="currentImage"
-    />
+    <ComprobanteViewerDialog v-model="showImage" :imagen-seleccionada="currentImage" />
 
     <q-inner-loading :showing="loading">
       <q-spinner-dots color="primary" size="40px" />
@@ -231,14 +247,14 @@ const currentImage = ref('')
 
 const verImagen = (url) => {
   if (!url) return
-  
+
   // Si la URL es relativa (ej: uploads/...), concatenamos la base de la API
   if (!url.startsWith('http') && !url.startsWith('blob:')) {
     currentImage.value = `${api.defaults.baseURL}${url}`
   } else {
     currentImage.value = url
   }
-  
+
   showImage.value = true
 }
 
@@ -256,19 +272,20 @@ const reportFetched = ref(false) // To indicate if a fetch attempt has been made
 
 // Define table columns
 const columns = [
-  { 
-    name: 'fecha_actual', 
-    align: 'left', 
-    label: 'Fecha', 
-    field: 'fecha_actual', 
-    sortable: true, 
+  {
+    name: 'fecha_actual',
+    align: 'left',
+    label: 'Fecha',
+    field: 'fecha_actual',
+    sortable: true,
     dataType: 'date',
-    format: (val) => val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''
+    format: (val) => (val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''),
   },
+
   {
     name: 'nombre_cliente',
     align: 'left',
-    label: 'Cliente',
+    label: 'Razón Social',
     field: 'nombre_cliente',
     sortable: true,
     dataType: 'text',
@@ -281,7 +298,14 @@ const columns = [
     sortable: true,
     dataType: 'text',
   },
-
+  {
+    name: 'Venta',
+    align: 'left',
+    label: 'Documento Cobrado',
+    field: 'Venta',
+    sortable: true,
+    dataType: 'text',
+  },
   {
     name: 'monto_total_venta',
     align: 'right',
@@ -314,11 +338,15 @@ const columns = [
     sortable: true,
     dataType: 'text',
   },
-  { name: 'foto_detalle_cobro', align: 'center', label: 'Comprobante', field: 'foto_detalle_cobro' },
+  {
+    name: 'foto_detalle_cobro',
+    align: 'center',
+    label: 'Comprobante',
+    field: 'foto_detalle_cobro',
+  },
 ]
 
 // --- Methods ---
-
 
 /**
  * Fetches the daily collections report from the API.

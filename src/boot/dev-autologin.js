@@ -30,7 +30,7 @@ export default async function devAutologin() {
       codigo: item.codigo,
       submenu: (item.submenu || []).map((sub) => ({
         ...sub,
-        codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo
+        codigo: sub.codigo ? `${sub.codigo.split('-')[0]}-${idusuario}` : sub.codigo,
       })),
     }))
 
@@ -40,7 +40,7 @@ export default async function devAutologin() {
     localStorage.setItem('mistersofts-cmmenu', JSON.stringify(userMenu))
     localStorage.setItem('puedeIniciarsesion', 'true')
 
-    console.log('[DEV] Auto-login como:', usuarioDatos.usuario)
+    //console.log('[DEV] Auto-login como:', usuarioDatos.usuario)
   } catch (e) {
     console.warn('[DEV] Auto-login fallido:', e)
   }

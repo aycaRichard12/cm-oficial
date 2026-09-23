@@ -1,4 +1,4 @@
-<template>
+<template class="bg-primary">
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">

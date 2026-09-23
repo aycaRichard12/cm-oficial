@@ -2,7 +2,7 @@
   <q-page>
     <div>
       <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
-        <div class="col-12 col-md-4" id='filtrosAlmacen'>
+        <div class="col-12 col-md-4" id="filtrosAlmacen">
           <label for="almacen">Seleccione un Almacén</label>
           <q-select
             v-model="filtroAlmacen"
@@ -13,11 +13,22 @@
             outlined
           />
         </div>
-        <div class="col-12 col-md-2" id='filtrosProducto'>
+        <div class="col-12 col-md-2" id="filtrosProducto">
           <label for="buscar">Buscar...</label>
           <q-input dense debounce="300" v-model="busqueda" id="buscar" outlined>
             <template v-slot:append>
               <q-icon name="search" />
+              <q-btn
+                round
+                dense
+                flat
+                icon="refresh"
+                color="primary"
+                :loading="loading"
+                @click.stop.prevent="$emit('recargar')"
+              >
+                <q-tooltip>Recargar compras</q-tooltip>
+              </q-btn>
             </template>
           </q-input>
         </div>
@@ -25,7 +36,7 @@
 
       <!-- Tabla -->
       <q-table
-        id='tablaCompras'
+        id="tablaCompras"
         title="Compras"
         :rows="processedRows"
         :columns="columnas"
@@ -33,7 +44,7 @@
         :filter="busqueda"
         dense
       >
-        <template v-slot:top-right> </template>
+
         <template v-slot:body-cell-autorizacion="props">
           <q-td :props="props">
             <q-badge
@@ -54,7 +65,7 @@
         <template v-slot:body-cell-detalle="props">
           <q-td :props="props">
             <q-btn
-              id='anadirCarrito'
+              id="anadirCarrito"
               title="Añadir Carrito "
               icon="shopping_cart"
               color="primary"
@@ -63,7 +74,7 @@
               @click="$emit('detalleCompra', props.row)"
             />
             <q-btn
-            id='detalleCredito'
+              id="detalleCredito"
               v-if="Number(props.row.tipocompra) === 1"
               title="Detelle Credito"
               icon="payment"
@@ -79,7 +90,7 @@
           <q-td :props="props">
             <div v-if="Number(props.row.autorizacion) === 2">
               <q-btn
-                id='autorizar'
+                id="autorizar"
                 icon="toggle_off"
                 dense
                 flat
@@ -167,7 +178,7 @@ const columnas = [
   { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'right' },
   { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
 ]
-defineEmits(['add', 'repDesglosado', 'repCompras', 'edit', 'delete'])
+defineEmits(['add', 'repDesglosado', 'repCompras', 'edit', 'delete', 'recargar'])
 
 const filteredCompra = computed(() => {
   if (!filtroAlmacen.value) {
@@ -181,6 +192,7 @@ const filteredCompra = computed(() => {
 const processedRows = computed(() => {
   return filteredCompra.value.map((row, index) => ({
     ...row,
+    total: parseFloat(row.total).toFixed(2) || '0.00',
     numero: index + 1,
   }))
 })

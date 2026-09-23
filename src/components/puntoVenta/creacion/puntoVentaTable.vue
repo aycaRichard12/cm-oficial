@@ -1,9 +1,14 @@
 <template>
   <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
     <div class="col-12 col-md-3" id="agregarPuntoVenta">
-      <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg">
+      <q-btn
+        color="primary"
+        @click="$emit('add')"
+        class="btn-res q-mt-lg"
+        title="Registrar Punto Venta"
+      >
         <q-icon name="add" class="icono" />
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
     </div>
 
@@ -57,7 +62,7 @@
       <q-td :props="props" class="text-nowrap">
         <q-btn
           v-if="tipoFactura"
-          icon="check"
+          icon="cloud_sync"
           color="primary"
           flat=""
           @click="abrirModal(props.row)"

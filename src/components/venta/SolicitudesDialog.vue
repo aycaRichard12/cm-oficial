@@ -36,6 +36,19 @@
               <q-item-section class="text-grey"> No hay almacenes disponibles </q-item-section>
             </q-item>
           </template>
+          <template v-slot:append>
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              color="primary"
+              @click.stop="loadAAlmacenes"
+              :disable="loadingUsuarios"
+            >
+              <q-tooltip>Recargar datos</q-tooltip>
+            </q-btn>
+          </template>
         </q-select>
       </div>
 
@@ -65,6 +78,19 @@
             <q-item>
               <q-item-section class="text-grey"> No hay usuarios disponibles </q-item-section>
             </q-item>
+          </template>
+          <template v-slot:append>
+            <q-btn
+              icon="refresh"
+              flat
+              round
+              dense
+              color="primary"
+              @click.stop="loadUsuarios"
+              :disable="loadingUsuarios"
+            >
+              <q-tooltip>Recargar datos</q-tooltip>
+            </q-btn>
           </template>
         </q-select>
       </div>

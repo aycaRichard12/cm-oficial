@@ -1,7 +1,17 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" v-if="!showEditModal">
     <q-form @submit="generarReporte">
-      <div class="titulo" id="reportecotizaciones">Reporte Cotizaciones</div>
+      <div id="reportecotizaciones" class="row items-center justify-between q-mb-md q-ml-sm">
+        <div class="col-12 col-md-auto">
+          <div class="text-h5 text-primary text-weight-bold flex items-center">
+            <q-icon name="assignment" size="md" class="q-mr-sm" />
+            Reporte Cotizaciones
+          </div>
+          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            Administración de Reporte Cotizaciones
+          </div>
+        </div>
+      </div>
       <div class="row flex justify-center q-col-gutter-x-md">
         <div class="col-12 col-md-3" id="fechainicotizacion">
           <label for="fechaini">Fecha Inicial * {{ tipoFactura }}</label>
@@ -50,73 +60,13 @@
 
     <q-separator class="q-my-lg" />
 
-    <!-- <q-form>
-      <div class="row justify-center q-col-gutter-x-md">
-        <div class="col-12 col-md-3">
-          <label for="almacen">Almacén*</label>
-          <q-select
-            v-model="almacenSeleccionado"
-            :options="almacenesOptions"
-            id="almacen"
-            emit-value
-            map-options
-            option-value="idalmacen"
-            option-label="almacen"
-            outlined
-            dense
-            :disable="!datosOriginales || datosOriginales.length === 0"
-          />
-        </div>
-
-        <div class="col-12 col-md-3">
-          <label for="cliente">Razón Social *</label>
-          <q-select
-            use-input=""
-            v-model="clienteSearchTerm"
-            id="cliente"
-            outlined
-            dense
-            autocomplete="on"
-            clearable
-            @focus="showClienteDropdown = true"
-            hide-selected
-            fill-input
-          >
-            <template v-slot:append>
-              <q-icon name="arrow_drop_down" />
-            </template>
-          </q-select>
-
-          <q-card
-            v-if="showClienteDropdown && filteredClientes.length > 0"
-            class="q-mt-xs"
-            style="position: absolute; z-index: 10; width: 100%"
-          >
-            <q-list bordered separator>
-              <q-item
-                v-for="clienteOption in filteredClientes"
-                :key="clienteOption.id"
-                clickable
-                v-ripple
-                @click="seleccionarCliente(clienteOption)"
-              >
-                <q-item-section>
-                  {{ clienteOption.codigo }} - {{ clienteOption.nombre }} -
-                  {{ clienteOption.nombrecomercial }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
-      </div>
-    </q-form> -->
-
     <TableReporteCotizacion
       id="tablareportecotizacion"
       ref="refHijo"
       :rows="datosFiltrados"
       @generarComprobantePDF="generarComprobantePDF"
       @facturarVenta="facturarVenta"
+      @editarCotizacion="abrirModalEdicion"
     />
 
     <q-loading :showing="loading" />
@@ -126,6 +76,7 @@
         @venta-registrada="closeModalFactura"
       />
     </modal-r>
+
     <q-dialog v-model="showPdfModal" full-width full-height>
       <q-card class="q-pa-none" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
@@ -142,14 +93,30 @@
             :src="pdfData"
             style="width: 100%; height: 100%; border: none"
           ></iframe>
+          <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
+            <q-icon name="check_circle" color="positive" size="2em" />
+            <p>
+              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            </p>
+            <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
+              Descargar comprobante
+            </a>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
   </q-page>
+  <q-page class="q-pa-md" v-else>
+    <EditarCotizacion
+      v-if="showEditModal"
+      :id-cotizacion="idCotizacionAEditar"
+      @saved="alGuardarEdicion"
+    />
+  </q-page>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
 import { URL_APICM } from 'src/composables/services'
@@ -162,13 +129,28 @@ import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
 import ModalR from 'src/components/ModalR.vue'
 import FacturarCotizacion from './FacturarCotizacion.vue'
 import { api } from 'src/boot/axios'
-import { DPFReporteCotizacion } from 'src/utils/pdfReportGenerator'
+import { DPFReporteCotizacion } from 'src/utils/pdfs/ReporteCotizaciones/reporte.js'
 import { getTipoFactura } from 'src/composables/FuncionesG'
-import { generarPdfCotizacion } from 'src/utils/pdfReportGenerator'
+import { generarPdfCotizacion } from 'src/utils/pdfs/DetallleCotizacion/reporteqr'
 import { primerDiaDelMes } from 'src/composables/FuncionesG'
 import TableReporteCotizacion from 'src/components/cotizacion/TableReporteCotizacion.vue'
+import EditarCotizacion from './EditarCotizacion.vue'
+import { obtenerDivisaActiva } from 'src/services/divisaService.js'
+import { idempresa_md5 } from 'src/composables/FuncionesGenerales.js'
+const showEditModal = ref(false)
+const idCotizacionAEditar = ref(null)
+const divisa = ref(null)
+const abrirModalEdicion = (id) => {
+  idCotizacionAEditar.value = id
+  showEditModal.value = true
+}
+
+const alGuardarEdicion = () => {
+  showEditModal.value = false
+  generarReporte()
+}
+
 const tipoFactura = getTipoFactura()
-console.log(tipoFactura)
 const pdfData = ref(null)
 
 const mostrar = ref(false)
@@ -227,6 +209,10 @@ const comprobanteData = reactive({})
 const loading = ref(false)
 const refHijo = ref(null)
 const resultadoFiltrado = ref([])
+const error = ref(null)
+const isMobile = ref(false)
+const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
+
 const usuarioInfo = computed(() => {
   const user = validarUsuario()
   return user && user.length > 0 ? user[0] : {}
@@ -284,18 +270,6 @@ async function crearFormularioFacturaCompraVenta() {
     console.error('Error al obtener datos:', error)
   }
 }
-// Computed properties for PDF table (Reporte)
-
-// const filteredClientes = computed(() => {
-//   if (!clienteSearchTerm.value) {
-//     return clientesOptions.value
-//   }
-//   const searchTermNormalized = normalizeText(clienteSearchTerm.value).toLowerCase()
-//   return clientesOptions.value.filter((cliente) => {
-//     const point = `${cliente.codigo} - ${cliente.nombre} - ${cliente.nombrecomercial} - ${cliente.ciudad} - ${cliente.nit}`
-//     return normalizeText(point).toLowerCase().includes(searchTermNormalized)
-//   })
-// })
 
 // Watchers
 watch([almacenSeleccionado, clienteSeleccionadoId], () => {
@@ -373,6 +347,7 @@ const generarReporte = async () => {
         idcotizacion: p.idcotizacion,
         fecha: cambiarFormatoFecha(p.fecha),
         cliente: p.cliente,
+        nombreComercial: p.nombreComercial,
         monto: Number(p.cotizaciontotal),
         descuento: Number(p.descuento),
         idalmacen: p.idalmacen,
@@ -531,7 +506,7 @@ const filtrarYOrdenarDatos = () => {
   datosFiltrados.value = tempDatos
 }
 
-const cargarPDF = () => {
+const cargarPDF = async () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
@@ -541,16 +516,57 @@ const cargarPDF = () => {
     return
   }
 
-  resultadoFiltrado.value = refHijo.value.obtenerDatos()
-  const filterReporte = refHijo.value.getActiveFiltersReport()
-  const almacen = {
-    almacen: filterReporte.almacen || 'Todos los almacenes',
+  loading.value = true
+  try {
+    const datosTabla = refHijo.value?.obtenerDatos ? refHijo.value.obtenerDatos() : datosFiltrados.value
+    resultadoFiltrado.value = datosTabla || []
+
+    const filterReporte = refHijo.value?.getActiveFiltersReport ? refHijo.value.getActiveFiltersReport() : {}
+    const almacen = {
+      almacen: filterReporte?.almacen || 'Todos los almacenes',
+    }
+    const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
+
+    const resultado = await DPFReporteCotizacion(
+      resultadoFiltrado.value,
+      almacen,
+      dSimbolo,
+      fechai.value,
+      fechaf.value,
+    )
+
+    if (!resultado || !resultado.doc) {
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudo generar el PDF del reporte.',
+        position: 'top',
+      })
+      return
+    }
+
+    if (pdfData.value) {
+      URL.revokeObjectURL(pdfData.value)
+      pdfData.value = null
+    }
+
+    if (isMobile.value && resultado.mobileBlobUrl) {
+      mobileFallbackUrl.value = resultado.mobileBlobUrl
+      showPdfModal.value = true
+    } else {
+      const pdfBlob = resultado.doc.output('blob')
+      pdfData.value = URL.createObjectURL(pdfBlob)
+      showPdfModal.value = true
+    }
+  } catch (err) {
+    console.error('Error al generar la vista previa del PDF:', err)
+    $q.notify({
+      type: 'negative',
+      message: 'Hubo un error al generar la vista previa del PDF.',
+      position: 'top',
+    })
+  } finally {
+    loading.value = false
   }
-
-  const doc = DPFReporteCotizacion(resultadoFiltrado, almacen)
-  pdfData.value = doc.output('dataurlstring')
-
-  showPdfModal.value = true
 }
 
 const generarComprobantePDF = async (id) => {
@@ -568,9 +584,9 @@ const generarComprobantePDF = async (id) => {
 
   try {
     const endpoint = `detallesCotizacion/${id}/${idempresa}`
-    console.log(endpoint)
+    //console.log(endpoint)
     const response = await api.get(endpoint)
-    console.log(response)
+    //console.log(response)
     const data = response.data
 
     if (data[0] === 'error') {
@@ -584,9 +600,33 @@ const generarComprobantePDF = async (id) => {
       Object.keys(comprobanteData).forEach((key) => delete comprobanteData[key])
     } else {
       Object.assign(comprobanteData, data[0]) // Assign properties to reactive object
-      const doc = await generarPdfCotizacion(data)
-      pdfData.value = doc.output('dataurlstring')
-      showPdfModal.value = true
+
+      //const doc = await generarPdfCotizacion(data)
+      //console.log(doc)
+      const resultado = await generarPdfCotizacion(data)
+      if (!resultado || !resultado.doc) {
+        error.value = 'No se pudo generar el PDF.'
+        return
+      }
+
+      // Limpiar blob anterior
+      if (pdfData.value) {
+        URL.revokeObjectURL(pdfData.value)
+        pdfData.value = null
+      }
+
+      if (isMobile.value) {
+        // En móvil, la función ya intentó abrir/descargar.
+        // Solo guardamos la URL para el enlace manual.
+        mobileFallbackUrl.value = resultado.mobileBlobUrl
+      } else {
+        // Escritorio: crear blob para el iframe
+        const pdfBlob = resultado.doc.output('blob')
+        pdfData.value = URL.createObjectURL(pdfBlob)
+        showPdfModal.value = true
+      }
+      // pdfData.value = doc.output('dataurlstring')
+      // showPdfModal.value = true
     }
   } catch (error) {
     console.error('Error al generar comprobante PDF:', error)
@@ -599,9 +639,15 @@ const generarComprobantePDF = async (id) => {
     loading.value = false
   }
 }
+onBeforeUnmount(() => {
+  if (pdfData.value) URL.revokeObjectURL(pdfData.value)
+  // mobileFallbackUrl no se revoca porque el enlace lo usa; el navegador lo libera al cerrar la página
+})
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleOutsideClick)
+  isMobile.value = window.innerWidth < 768
+  divisa.value = await obtenerDivisaActiva(idempresa_md5())
 })
 </script>
 

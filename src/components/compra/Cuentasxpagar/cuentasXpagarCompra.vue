@@ -1,6 +1,6 @@
 <template>
   <div v-if="vistaTransacciones">
-    <div class="row q-col-gutter-x-md">
+    <div class="row q-col-gutter-x-md q-mb-md">
       <q-btn
         icon="arrow_back_ios"
         color="primary"
@@ -9,11 +9,30 @@
         text-color="white"
         @click="vistaTransacciones = false"
       />
+      <q-btn
+        icon="refresh"
+        color="primary"
+        label="Recargar"
+        dense
+        text-color="white"
+        @click="transaccionesRef?.fetchData?.()"
+      />
     </div>
-    <transaccionesPague :pago="pago" />
+    <transaccionesPague ref="transaccionesRef" :pago="pago" />
   </div>
   <div v-else>
-    <div class="titulo">Reporte de Pagos</div>
+    
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="assessment" size="md" class="q-mr-sm" />
+          Reporte de Pagos
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte de Pagos
+        </div>
+      </div>
+    </div>
     <q-form>
       <div
         class="row q-col-gutter-md"
@@ -43,6 +62,17 @@
           @click="exportarExcel"
           id="reporteExportar"
         />
+        <q-btn
+          color="primary"
+          outline
+          icon="refresh"
+          label="Recargar"
+          @click="fetchData"
+          :loading="loading"
+          id="reporteRecargar"
+        >
+          <q-tooltip>Recargar reporte</q-tooltip>
+        </q-btn>
       </div>
     </q-form>
     <!-- Sección de Filtros -->
@@ -90,7 +120,6 @@
         />
       </div>
     </div>
-
     <!-- Tabla de Datos -->
     <q-table
       id="tablaDatos"
@@ -102,6 +131,7 @@
       flat
       bordered
     >
+
       <!-- Slot para personalizar la celda de Estado -->
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
@@ -147,10 +177,19 @@
 
   <q-dialog v-model="mdpagarCueota">
     <q-card class="responsive-dialog">
-      <div class="bg-primary text-white text-h6 flex justify-end">
+      <div class="bg-primary text-white text-h6 flex justify-end q-gutter-x-xs q-pr-sm">
+        <q-btn
+          icon="refresh"
+          dense
+          flat
+          rounded
+          @click="cuotasRef?.fetchData?.()"
+        >
+          <q-tooltip>Recargar cuotas</q-tooltip>
+        </q-btn>
         <q-btn icon="close" dense flat rounded @click="mdpagarCueota = false" />
       </div>
-      <CuotasPage :pago="pago" @actualizar="fetchData" />
+      <CuotasPage ref="cuotasRef" :pago="pago" @actualizar="fetchData" />
     </q-card>
   </q-dialog>
 </template>
@@ -171,6 +210,8 @@ const vistaTransacciones = ref(false)
 const $q = useQuasar()
 const loading = ref(false)
 const mdpagarCueota = ref(false)
+const cuotasRef = ref(null)
+const transaccionesRef = ref(null)
 // --- Datos y Columnas de la Tabla ---
 const allRows = ref([]) // Almacena todos los datos originales de la API
 const pago = ref({})

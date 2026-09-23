@@ -12,9 +12,51 @@
     bordered
     class="q-ma-sm"
   >
+    <template #body-cell-estado="props">
+      <q-td :props="props" class="text-center">
+        <q-badge
+          v-if="props.row.estado === 'Valido'"
+          color="green"
+          label="Activo"
+          outline
+          class="text-weight-bold shadow-1"
+        >
+          <q-tooltip content-class="bg-dark text-white text-caption">Activo</q-tooltip>
+        </q-badge>
+
+        <q-badge
+          v-else-if="props.row.estado === 'Anulado'"
+          color="red"
+          label="Anulado"
+          outline
+          class="text-weight-bold shadow-1"
+        >
+          <q-tooltip content-class="bg-dark text-white text-caption">Anulado</q-tooltip>
+        </q-badge>
+        <q-badge
+          v-else-if="props.row.estado === 'Devuelta'"
+          color="orange"
+          label="Devuelto"
+          outline
+          class="text-weight-bold shadow-1"
+        >
+          <q-tooltip content-class="bg-dark text-white text-caption">Anulado</q-tooltip>
+        </q-badge>
+
+        <q-badge v-else color="grey" label="Desconocido" outline class="text-weight-bold shadow-1">
+          <q-tooltip content-class="bg-dark text-white text-caption">Estado desconocido</q-tooltip>
+        </q-badge>
+      </q-td>
+    </template>
     <template #body-cell-acciones="props">
-      <q-td align="center">
-        <q-btn id="btnverdetalle" size="sm" icon="visibility" flat @click="$emit('verDetalle', props.row)" />
+      <q-td align="center" :props="props">
+        <q-btn
+          id="btnverdetalle"
+          size="sm"
+          icon="visibility"
+          flat
+          @click="$emit('verDetalle', props.row)"
+        />
         <q-btn
           size="sm"
           icon="email"
@@ -24,37 +66,56 @@
           class="q-ml-sm"
           id="btncrearmensaje"
         />
-        <q-btn
-          v-if="props.row.tv >= 1"
-          icon="receipt_long"
+        <q-btn-dropdown
+          color="grey-7"
+          flat
           dense
-          rounded
-          flat
-          color="blue"
-          @click="$emit('irAFactura', props.row)"
-          title="Ver Factura (Shortlink)"
-          id="btnverfactura"
-        />
-        <q-btn
+          round
+          dropdown-icon="more_vert"
+          no-icon-animation
           v-if="props.row.tv >= 1"
-          icon="policy"
-          dense
-          rounded
-          flat
-          color="warning"
-          @click="$emit('irAImpuestos', props.row)"
-          title="Ver URL SIN"
-          id="btnverurlsin"
-        />
-        <q-btn
-          v-if="props.row.tv >= 1"
-          icon="account_balance_wallet"
-          flat
-          color="orange"
-          @click="$emit('abrirModalNota', props.row)"
-          title="Abrir Nota Crédito/Débito"
-          id="btnabrirmodalnota"
-        />
+        >
+          <q-list style="min-width: 180px">
+            <!-- <q-item clickable v-close-popup @click="$emit('verDetalle', props.row)">
+              <q-item-section avatar>
+                <q-icon name="visibility" size="xs" />
+              </q-item-section>
+              <q-item-section>Ver detalle</q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup @click="$emit('crearMensaje', props.row)">
+              <q-item-section avatar>
+                <q-icon name="email" color="primary" size="xs" />
+              </q-item-section>
+              <q-item-section>Enviar mensaje</q-item-section>
+            </q-item> -->
+
+            <template v-if="props.row.tv >= 1">
+              <q-separator />
+
+              <q-item clickable v-close-popup @click="$emit('irAFactura', props.row)">
+                <q-item-section avatar>
+                  <q-icon name="receipt_long" color="blue" size="xs" />
+                </q-item-section>
+                <q-item-section>Ver Factura</q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup @click="$emit('irAImpuestos', props.row)">
+                <q-item-section avatar>
+                  <q-icon name="policy" color="warning" size="xs" />
+                </q-item-section>
+                <q-item-section>Ver URL SIN</q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup @click="$emit('abrirModalNota', props.row)">
+                <q-item-section avatar>
+                  <q-icon name="account_balance_wallet" color="orange" size="xs" />
+                </q-item-section>
+                <q-item-section>Nota Crédito/Débito</q-item-section>
+              </q-item>
+            </template>
+          </q-list>
+        </q-btn-dropdown>
       </q-td>
     </template>
   </BaseFilterableTable>
@@ -98,26 +159,131 @@ defineEmits([
 
 // Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
 const columnas = [
-  { name: 'nro', label: 'N°', field: 'nro', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', dataType: 'date', align: 'left' },
-  { name: 'almacen', label: 'Almacen', field: 'almacen', dataType: 'text', align: 'left' },
+  {
+    name: 'nro',
+    label: 'N°',
+    field: 'nro',
+    align: 'left',
+    style: 'width: 50px',
+    headerStyle: 'width: 50px',
+  },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    field: 'fecha',
+    dataType: 'date',
+    align: 'left',
+    style: 'width: 90px',
+    headerStyle: 'width: 90px',
+  },
+  {
+    name: 'almacen',
+    label: 'Almacén',
+    field: 'almacen',
+    dataType: 'text',
+    align: 'left',
+    style: 'min-width: 150px',
+    headerStyle: 'min-width: 150px',
+  },
 
-  { name: 'cliente', label: 'Cliente', field: 'cliente', dataType: 'text', align: 'left' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', dataType: 'text', align: 'left' },
+  {
+    name: 'cliente',
+    label: 'Razón Social',
+    field: 'cliente',
+    dataType: 'text',
+    align: 'left',
+    style: 'min-width: 250px',
+    headerStyle: 'min-width: 250px',
+  },
+  {
+    name: 'sucursal',
+    label: 'Sucursal',
+    field: 'sucursal',
+    dataType: 'text',
+    align: 'left',
+    style: 'min-width: 150px',
+    headerStyle: 'min-width: 150px',
+  },
   {
     name: 'tipoventa',
     label: 'Tipo-Venta',
     field: 'tipoventa',
     dataType: 'number',
     align: 'left',
+    style: 'width: 100px',
+    headerStyle: 'width: 100px',
   },
-  { name: 'tipopago', label: 'Tipo-Pago', field: 'tipopago', dataType: 'text', align: 'left' },
-  { name: 'nfactura', label: 'Nro.Factura', field: 'nfactura', dataType: 'text' },
-  { name: 'canal', label: 'Canal', field: 'canal', dataType: 'text', align: 'left' },
-  { name: 'total', label: 'Total', field: 'total', align: 'right', dataType: 'number' },
-  { name: 'descuento', label: 'Dscto.', field: 'descuento', align: 'right', dataType: 'number' },
-  { name: 'ventatotal', label: 'Monto', field: 'ventatotal', align: 'right', dataType: 'number' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  {
+    name: 'estado',
+    label: 'Estado',
+    field: 'estado',
+    dataType: 'text',
+    align: 'left',
+    style: 'width: 100px',
+    headerStyle: 'width: 100px',
+  },
+  {
+    name: 'tipopago',
+    label: 'Tipo-Pago',
+    field: 'tipopago',
+    dataType: 'text',
+    align: 'left',
+    style: 'width: 120px',
+    headerStyle: 'width: 120px',
+  },
+  {
+    name: 'nfactura',
+    label: 'Nro.Fact',
+    field: 'nfactura',
+    dataType: 'text',
+    style: 'width: 50px',
+    headerStyle: 'width: 50px',
+  },
+  {
+    name: 'canal',
+    label: 'Canal',
+    field: 'canal',
+    dataType: 'text',
+    align: 'left',
+    style: 'width: 100px',
+    headerStyle: 'width: 100px',
+  },
+  {
+    name: 'total',
+    label: 'Total',
+    field: 'total',
+    align: 'right',
+    dataType: 'number',
+    style: 'width: 90px',
+    headerStyle: 'width: 90px',
+  },
+  {
+    name: 'descuento',
+    label: 'Dscto.',
+    field: 'descuento',
+    align: 'right',
+    dataType: 'number',
+    style: 'width: 90px',
+    headerStyle: 'width: 90px',
+  },
+  {
+    name: 'ventatotal',
+    label: 'Monto',
+    field: 'ventatotal',
+    align: 'right',
+    dataType: 'number',
+    style: 'width: 100px',
+    headerStyle: 'width: 100px',
+  },
+  {
+    name: 'acciones',
+    label: 'Acciones',
+    field: 'acciones',
+    align: 'center',
+    sortable: false,
+    style: 'width: 120px',
+    headerStyle: 'width: 120px',
+  },
 ]
 
 // Headers para la tabla filtrable (copiado del archivo original)
@@ -127,6 +293,7 @@ const ArrayHeaders = [
   'cliente',
   'sucursal',
   'tipoventa',
+  'estado',
   'tipopago',
   'nfactura',
   'canal',

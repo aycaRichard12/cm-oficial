@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row items-center justify-between q-mb-md q-ml-sm">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="group" size="md" class="q-mr-sm" />
@@ -13,7 +13,9 @@
     </div>
 
     <q-dialog v-model="showForm" persistent :full-width="$q.screen.lt.md">
-      <q-card :style="$q.screen.lt.md ? 'width: 100%; max-width: 100%' : 'width: 860px; max-width: 90vw'">
+      <q-card
+        :style="$q.screen.lt.md ? 'width: 100%; max-width: 100%' : 'width: 860px; max-width: 90vw'"
+      >
         <q-card-section class="bg-primary text-h6 text-white row items-center justify-between">
           <div>
             <q-icon name="person" class="q-mr-sm" />
@@ -28,6 +30,7 @@
             :tipoClienteOptions="opcionesTipoCliente"
             :canalVentaOptions="opcionesCanalVenta"
             :tipoDocumetosOptions="tipoDocumetosOptions"
+            :almacen-options="almacenes"
             @submit="guardarCliente"
             @cancel="toggleForm"
           ></registro-cliente
@@ -79,6 +82,7 @@
       :tipo-cliente-filter-options="tiposClientes"
       :canal-venta-filter-options="canalesVenta"
       :tipo-documento-filter-options="tiposDocumento"
+      :almacen-options="almacenes"
       @add="toggleForm"
       @importFromExcel="showImport = true"
       @edit="editUnit"
@@ -103,7 +107,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { api } from 'boot/axios'
-import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
+import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import RegistroCliente from 'components/clientes/admin/FormCliente.vue'
 import TableCliente from 'src/components/clientes/admin/TableCliente.vue'
 import SucursalForm from 'src/components/clientes/admin/ModalSucursal.vue'
@@ -114,6 +118,7 @@ import * as XLSX from 'xlsx'
 
 const $q = useQuasar()
 const idempresa = idempresa_md5()
+const idusuario = idusuario_md5()
 const showForm = ref(false)
 const clientes = ref([])
 const canalesVenta = ref([])
@@ -121,7 +126,7 @@ const tiposClientes = ref([])
 const opcionesTipoCliente = ref([])
 const isEditing = ref(false)
 const opcionesCanalVenta = ref([])
-
+const almacenes = ref([])
 const showImport = ref(false)
 const excelFile = ref(null)
 const isUploading = ref(false)
@@ -329,6 +334,20 @@ async function eliminarCliente(client) {
     }
   })
 }
+
+async function cargarAlmacenes() {
+  try {
+    const response = await api.get(`listaResponsableAlmacen/${idempresa}`)
+    const filtrados = response.data.filter((item) => item.idusuario == idusuario)
+    almacenes.value = filtrados.map((item) => ({
+      label: item.almacen,
+      value: item.idalmacen,
+    }))
+  } catch (error) {
+    console.error('Error al cargar almacenes:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+  }
+}
 //============================================modal
 const mostrarModalSucursal = ref(false)
 const listaSucursales = ref([])
@@ -516,5 +535,6 @@ onMounted(() => {
   loadRows()
   cargarCanalesVenta()
   cargarTipoCliente()
+  cargarAlmacenes()
 })
 </script>

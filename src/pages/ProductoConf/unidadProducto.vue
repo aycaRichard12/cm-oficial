@@ -1,5 +1,16 @@
 <template>
   <q-page class="q-pa-md q-pa-md-md q-pa-lg-lg">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="straighten" size="md" class="q-mr-sm" />
+          Unidad de Producto
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de unidades de medida y equivalencias
+        </div>
+      </div>
+    </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">

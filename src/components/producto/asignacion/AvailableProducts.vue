@@ -55,6 +55,16 @@
       :filter="filter"
     >
       <template v-slot:top-right> </template>
+      <template v-slot:header-cell-seleccion="propsHeader">
+        <q-th :props="propsHeader">
+          <q-checkbox
+            :model-value="isAllSelected"
+            :indeterminate="isSomeSelected"
+            @update:model-value="onToggleAll"
+          />
+          {{ propsHeader.col.label }}
+        </q-th>
+      </template>
       <template #body-cell-imagen="props">
         <q-td :props="props">
           <q-img
@@ -99,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { imagen } from 'src/boot/url'
 // Props
 const mostrarImagen = ref(false)
@@ -109,7 +119,7 @@ const abrirModal = (img) => {
   imagenSeleccionada.value = img
   mostrarImagen.value = true
 }
-defineProps({
+const props = defineProps({
   rows: {
     type: Array,
     required: true,
@@ -127,22 +137,39 @@ const filtro = ref(null) // almacén seleccionado
 const filter = ref('') // texto del buscador
 const seleccionados = ref([])
 
+// Lógica para seleccionar todos
+const isAllSelected = computed(() => {
+  return props.rows.length > 0 && props.rows.every((row) => seleccionados.value.includes(row.id))
+})
+
+const isSomeSelected = computed(() => {
+  return seleccionados.value.length > 0 && !isAllSelected.value
+})
+
+const onToggleAll = (val) => {
+  if (val) {
+    seleccionados.value = props.rows.map((row) => row.id)
+  } else {
+    seleccionados.value = []
+  }
+}
+
 // Paginación
 
 const columns = [
   { name: 'index', label: 'N°', field: 'index', align: 'right' },
-  { name: 'codigo', label: 'Código', field: 'codigo' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria' },
-  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion' },
-  { name: 'codigo_barra', label: 'Código barra', field: 'codigo_barra' },
-  { name: 'caracteristicas', label: 'Características', field: 'caracteristicas' },
-  { name: 'estado', label: 'Estado', field: 'estado' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad' },
-  { name: 'otras', label: 'Otras características', field: 'otras' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'right' },
-  { name: 'imagen', label: 'Imagen', field: 'imagen' },
+  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
+  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left' },
+  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
+  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria', align: 'left' },
+  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'codigo_barra', label: 'Código barra', field: 'codigo_barra', align: 'left' },
+  { name: 'caracteristicas', label: 'Características', field: 'caracteristicas', align: 'left' },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'left' },
+  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
+  { name: 'otras', label: 'Otras características', field: 'otras', align: 'left' },
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left' },
+  { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
   { name: 'seleccion', label: 'Opciones', field: 'id' },
 ]
 

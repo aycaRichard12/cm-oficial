@@ -264,6 +264,7 @@ const handleSave = async (payload) => {
           ver: 'crearOperaciones',
           idmd5: IDMD5,
         }
+        console.log('Enviando payload para operación masiva:', body)
         await api.post('crearOperaciones', body)
       }
       $q.notify({

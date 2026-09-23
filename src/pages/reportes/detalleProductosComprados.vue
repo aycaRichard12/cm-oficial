@@ -1,8 +1,22 @@
 <template>
   <q-page padding>
-    <div class="titulo">Reporte Productos Comprados</div>
-    <q-form >
-      <div class="row q-col-gutter-md" style="display: flex; justify-content: center" id="filtroFechas">
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
+          Reporte Productos Comprados
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          Administración de Reporte Productos Comprados
+        </div>
+      </div>
+    </div>
+    <q-form>
+      <div
+        class="row q-col-gutter-md"
+        style="display: flex; justify-content: center"
+        id="filtroFechas"
+      >
         <div class="col-12 col-md-4">
           <label for="fechaIni">Fecha Inicial*</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
@@ -13,8 +27,19 @@
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="generarReporte"/>
-        <q-btn color="secondary" label="Exportar a Excel" @click="exportarExcel" id="exportarExcel"/>
+        <q-btn
+          color="primary"
+          label="Generar reporte"
+          @click="generarReporte"
+          class="q-mr-sm"
+          id="generarReporte"
+        />
+        <q-btn
+          color="secondary"
+          label="Exportar a Excel"
+          @click="exportarExcel"
+          id="exportarExcel"
+        />
       </div>
     </q-form>
 
@@ -59,9 +84,9 @@ const columnas = [
     dataType: 'date',
   },
   {
-    name: 'nrofactura',
+    name: 'nfactura',
     label: 'Nro. Doc.',
-    field: 'nrofactura',
+    field: 'nfactura',
     align: 'left',
 
     dataType: 'text',
@@ -97,15 +122,7 @@ const columnas = [
 
     dataType: 'text',
   },
-  {
-    name: 'costounitario',
-    label: 'Costo Unitario',
-    field: 'costounitario',
-    align: 'right',
 
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
   {
     name: 'precio',
     label: 'Precio Unitario',
@@ -132,32 +149,7 @@ const columnas = [
     format: (val) => Number(val).toFixed(2),
     dataType: 'number',
   },
-  {
-    name: 'costototal',
-    label: 'Costo Total',
-    field: 'costototal',
-    align: 'right',
 
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
-  {
-    name: 'compratotal',
-    label: 'Compra Total',
-    field: 'compratotal',
-    align: 'right',
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
-  {
-    name: 'utilidad',
-    label: 'Utilidad',
-    field: 'utilidad',
-    align: 'right',
-
-    format: (val) => Number(val).toFixed(2),
-    dataType: 'number',
-  },
   {
     name: 'usuario',
     label: 'Usuario',
@@ -241,10 +233,10 @@ const sumColumns = [
   'utilidad',
 ]
 
-
 async function generarReporte() {
   try {
     const point = `reportecomprasporproductos/${idusuario}/${startDate.value}/${endDate.value}`
+    console.log('Punto de API:', point)
     const response = await api.get(point)
     console.log(response)
     datosFiltrados.value = response.data.map((row) => ({
@@ -258,30 +250,58 @@ async function generarReporte() {
 }
 
 function exportarExcel() {
-  const dataToExport = tableRef.value ? tableRef.value.obtenerDatosFiltrados() : datosFiltrados.value
-  const worksheet = XLSX.utils.json_to_sheet(
-    dataToExport.map((item) => ({
-      Fecha: item.fecha_formateada,
-      'Nro. documento': item.nrofactura,
-      'Tipo de compra': item.tipocompra_label,
-      'Código producto': item.codigo,
-      'Código barras': item.codigobarra,
-      Descripción: item.descripcion,
-      'Costo unitario': item.costounitario,
-      'Precio unitario': item.precio,
-      Cantidad: item.cantidad,
-      Importe: item.importe,
-      'Costo total': item.costototal,
-      'Compra total': item.compratotal,
-      Utilidad: item.utilidad,
-      'Nombre usuario': item.usuario,
-      'Almacén empresa': item.almacen,
-      Proveedor: item.proveedor,
-      Unidad: item.unidad,
-      Categoría: item.categoria,
-      'Sub Categoría': item.subcategoria,
-    })),
-  )
+  // ── 1. Obtener datos y columnas visibles ─────────────────
+  const dataToExport = tableRef.value
+    ? tableRef.value.obtenerDatosFiltrados()
+    : datosFiltrados.value
+
+  const visibleColumns = tableRef.value?.obtenerColumnasVisibles
+    ? tableRef.value.obtenerColumnasVisibles()
+    : []
+
+  // ── 2. Definir todas las columnas posibles ────────────────
+  const allPossibleColumns = [
+    { header: 'Fecha', dataKey: 'fecha_formateada', width: 15, name: 'fecha_formateada' },
+    { header: 'Nro. documento', dataKey: 'nrofactura', width: 15, name: 'nrofactura' },
+    { header: 'Tipo de compra', dataKey: 'tipocompra_label', width: 15, name: 'tipocompra' },
+    { header: 'Código producto', dataKey: 'codigo', width: 15, name: 'codigo' },
+    { header: 'Código barras', dataKey: 'codigobarra', width: 15, name: 'codigobarra' },
+    { header: 'Descripción', dataKey: 'descripcion', width: 25, name: 'descripcion' },
+    { header: 'Costo unitario', dataKey: 'costounitario', width: 12, name: 'costounitario' },
+    { header: 'Precio unitario', dataKey: 'precio', width: 12, name: 'precio' },
+    { header: 'Cantidad', dataKey: 'cantidad', width: 10, name: 'cantidad' },
+    { header: 'Importe', dataKey: 'importe', width: 12, name: 'importe' },
+    { header: 'Costo total', dataKey: 'costototal', width: 12, name: 'costototal' },
+    { header: 'Compra total', dataKey: 'compratotal', width: 12, name: 'compratotal' },
+    { header: 'Utilidad', dataKey: 'utilidad', width: 10, name: 'utilidad' },
+    { header: 'Nombre usuario', dataKey: 'usuario', width: 15, name: 'usuario' },
+    { header: 'Almacén empresa', dataKey: 'almacen', width: 15, name: 'almacen' },
+    { header: 'Proveedor', dataKey: 'proveedor', width: 20, name: 'proveedor' },
+    { header: 'Unidad', dataKey: 'unidad', width: 10, name: 'unidad' },
+    { header: 'Categoría', dataKey: 'categoria', width: 12, name: 'categoria' },
+    { header: 'Sub Categoría', dataKey: 'subcategoria', width: 12, name: 'subcategoria' },
+  ]
+
+  // ── 3. Filtrar columnas según las visibles ───────────────
+  let exportColumns = allPossibleColumns
+  if (visibleColumns.length > 0) {
+    const visibleNames = visibleColumns.map((col) => col.name)
+    exportColumns = allPossibleColumns.filter((col) => visibleNames.includes(col.name))
+  }
+
+  // ── 4. Construir array de datos solo con las columnas seleccionadas ──
+  const dataForSheet = dataToExport.map((item) => {
+    const row = {}
+    exportColumns.forEach((col) => {
+      row[col.header] = item[col.dataKey] ?? ''
+    })
+    return row
+  })
+
+  // ── 5. Generar hoja de cálculo y descargar ──────────────
+  const headers = exportColumns.map((col) => col.header)
+  const worksheet = XLSX.utils.json_to_sheet(dataForSheet, { header: headers })
+  worksheet['!cols'] = exportColumns.map((col) => ({ wch: col.width }))
 
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')

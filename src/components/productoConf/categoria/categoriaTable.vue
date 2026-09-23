@@ -5,12 +5,11 @@
         color="primary"
         @click="$emit('new-item')"
         class="btn-res q-mt-lg"
-        title="Registrar Categoria"
-        id="agregarCategoria"
+        title="registrar Tipo Almacén"
+        id="add"
       >
         <q-icon name="add" class="icono" />
-
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
       <!-- <div class="col flex items-center justify-end">
         <q-input v-model="search" placeholder="Buscar" dense outlined class="q-ml-md">

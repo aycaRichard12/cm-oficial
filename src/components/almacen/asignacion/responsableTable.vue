@@ -1,8 +1,14 @@
 <template>
   <div class="flex justify-between">
-    <q-btn color="primary" @click="$emit('add')" class="btn-res q-mt-lg" id="nuevaAsignacion">
+    <q-btn
+      color="primary"
+      @click="$emit('add')"
+      class="btn-res q-mt-lg"
+      id="nuevaAsignacion"
+      title="Asignar Almacen"
+    >
       <q-icon name="add" class="icono" />
-      <span class="texto">Nueva Asignación</span>
+      <span class="texto"> <q-icon name="add" /> Nueva Asignación</span>
     </q-btn>
     <div id="buscarAsignacion">
       <label for="buscar">Buscar...</label>
@@ -48,7 +54,20 @@
 </template>
 
 <script setup>
+/**
+ * Componente de tabla para visualizar y gestionar responsables
+ * Muestra lista de responsables con opciones para eliminar o asignar almacenes
+ * @module components/TablaResponsables
+ */
+
+// ==================== DEPENDENCIAS ====================
 import { ref } from 'vue'
+
+// ==================== PROPS ====================
+/**
+ * Propiedades del componente
+ * @property {Array} rows - Datos de responsables a mostrar en la tabla (requerido)
+ */
 defineProps({
   rows: {
     type: Array,
@@ -56,12 +75,20 @@ defineProps({
     default: () => [],
   },
 })
-const search = ref('')
 
+// ==================== ESTADO REACTIVO ====================
+const search = ref('') // Término de búsqueda para filtrar la tabla (implementación pendiente)
+
+// ==================== CONFIGURACIÓN DE COLUMNAS ====================
+/**
+ * Definición de columnas para QTable
+ * Cada columna especifica nombre, etiqueta visual y campo de datos
+ */
 const columns = [
   {
     name: 'usuario',
     label: 'Usuario',
+    // Acceso anidado con operador optional chaining y fallback a string vacío
     field: (row) => row.usuario?.usuario || '',
     align: 'left',
   },
@@ -83,17 +110,27 @@ const columns = [
   {
     name: 'opciones',
     label: 'Opciones',
-    field: '',
+    field: '', // Campo vacío porque esta columna contiene botones de acción
     align: 'center',
   },
 ]
 
+// ==================== EVENTOS ====================
 const emit = defineEmits(['eliminar', 'asignar'])
 
+// ==================== MANEJADORES DE ACCIONES ====================
+/**
+ * Emite evento para eliminar un responsable
+ * @param {number|string} id - Identificador del responsable a eliminar
+ */
 function eliminar(id) {
   emit('eliminar', id)
 }
 
+/**
+ * Emite evento para asignar almacenes a un responsable
+ * @param {Object} responsable - Objeto completo del responsable seleccionado
+ */
 function asignarAlmacenes(responsable) {
   emit('asignar', responsable)
 }

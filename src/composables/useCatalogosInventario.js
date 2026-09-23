@@ -1,4 +1,3 @@
-
 import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 import { validarUsuario, normalizeText } from 'src/composables/FuncionesG'
@@ -6,9 +5,9 @@ import { validarUsuario, normalizeText } from 'src/composables/FuncionesG'
 export function useCatalogosInventario() {
   const almacenOptions = ref([])
   const clientesOptions = ref([])
-  const filteredClientesOptions = ref([]) 
+  const filteredClientesOptions = ref([])
   const sucursalOptions = ref([])
-  const filteredSucursalOptions = ref([]) 
+  const filteredSucursalOptions = ref([])
   const productosOptions = ref([])
   const filteredProductosOptions = ref([])
   const loadingProductos = ref(false)
@@ -35,10 +34,27 @@ export function useCatalogosInventario() {
         if (idusuario) {
           filteredAlmacenes = resultado.filter((u) => u.idusuario == idusuario)
         }
-        almacenOptions.value = [
-          { label: 'Seleccione un Almacén', value: '' },
-          ...filteredAlmacenes.map((key) => ({ label: key.almacen, value: String(key.idalmacen) })),
-        ]
+
+        console.log(filteredAlmacenes.length)
+        if (filteredAlmacenes.length == 1) {
+          almacenOptions.value = [
+            ...filteredAlmacenes.map((key) => ({
+              label: key.almacen,
+              value: String(key.idalmacen),
+            })),
+          ]
+        } else {
+          if (filteredAlmacenes.length > 1) {
+            almacenOptions.value = [
+              { label: 'Seleccione un Almacén', value: '' },
+              ...filteredAlmacenes.map((key) => ({
+                label: key.almacen,
+                value: String(key.idalmacen),
+              })),
+            ]
+          }
+        }
+        console.log(almacenOptions.value)
       }
     } catch (error) {
       console.error('Error al obtener lista de almacenes:', error)
@@ -104,16 +120,16 @@ export function useCatalogosInventario() {
 
   async function listaProductosDisponibles(almacenId, registroId) {
     if (!almacenId || !registroId) {
-        // Fallback for cases where we rely on localStorage
-        const datosMov = JSON.parse(localStorage.getItem('detalleInventario'))
-        if (!datosMov || !datosMov.almacen || !datosMov.idregistro) {
-            console.error('Datos de movimiento no disponibles para listar productos.')
-            productosOptions.value = []
-            filteredProductosOptions.value = []
-            return
-        }
-        almacenId = datosMov.almacen
-        registroId = datosMov.idregistro
+      // Fallback for cases where we rely on localStorage
+      const datosMov = JSON.parse(localStorage.getItem('detalleInventario'))
+      if (!datosMov || !datosMov.almacen || !datosMov.idregistro) {
+        console.error('Datos de movimiento no disponibles para listar productos.')
+        productosOptions.value = []
+        filteredProductosOptions.value = []
+        return
+      }
+      almacenId = datosMov.almacen
+      registroId = datosMov.idregistro
     }
 
     loadingProductos.value = true
@@ -139,7 +155,7 @@ export function useCatalogosInventario() {
       loadingProductos.value = false
     }
   }
-  
+
   function filterProductos(val, update) {
     if (val === '') {
       update(() => {
@@ -168,6 +184,6 @@ export function useCatalogosInventario() {
     listaCliente,
     selectSucursal,
     listaProductosDisponibles,
-    filterProductos
+    filterProductos,
   }
 }

@@ -12,6 +12,59 @@ export function obtenerHora() {
 
   return `${horas}:${minutos}:${segundos}`
 }
+// Función auxiliar para obtener primer y último día del mes anterior
+
+/**
+ * Obtiene el primer y último día del mes anterior en formato YYYY-MM-DD
+ * @returns {{ fecha_inicio: string, fecha_fin: string }}
+ */
+export const getDefaultDates = () => {
+  const hoy = new Date()
+  const año = hoy.getFullYear()
+  const mes = hoy.getMonth() // 0-indexado
+
+  // Primer día del mes actual
+  const primerDiaMesActual = new Date(año, mes, 1)
+
+  // Último día del mes anterior (restando 1 día en milisegundos)
+  const ultimoDiaMesAnterior = new Date(primerDiaMesActual.getTime() - 1)
+
+  // Primer día del mes anterior
+  const primerDiaMesAnterior = new Date(
+    ultimoDiaMesAnterior.getFullYear(),
+    ultimoDiaMesAnterior.getMonth(),
+    1,
+  )
+
+  // Función segura de formateo
+  const format = (date) => {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      console.error('getDefaultDates: Fecha inválida', date)
+      return '' // Valor por defecto para evitar undefined
+    }
+    return date.toISOString().split('T')[0]
+  }
+
+  const resultado = {
+    fecha_inicio: format(primerDiaMesAnterior),
+    fecha_fin: format(ultimoDiaMesAnterior),
+  }
+
+  // Depuración (puedes quitarlo después)
+  console.log('Fechas por defecto:', resultado)
+
+  return resultado
+}
+
+export function obtenerFechaHoy() {
+  const hoy = new Date()
+
+  const dia = String(hoy.getDate()).padStart(2, '0')
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0')
+  const anio = hoy.getFullYear()
+
+  return `${dia}/${mes}/${anio}` // Retorna "15/05/2026"
+}
 
 export function obtenerFechaHoraNumerica() {
   const ahora = new Date()
@@ -206,14 +259,12 @@ export function generarCabeceraHTML(datos) {
 }
 
 export function validarUsuario() {
-  const contenidousuario = JSON.parse(localStorage.getItem('mistersofts-cm'))
-  if (contenidousuario) {
-    return contenidousuario
-  } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
-    console.log('Los elementos no existen en localStorage')
-    localStorage.clear()
-    window.location.assign('../../app/')
+  try {
+    const data = localStorage.getItem('mistersofts-cm')
+    return data ? JSON.parse(data) : null
+  } catch (e) {
+    console.error('Error parseando datos de usuario:', e)
+    return null
   }
 }
 

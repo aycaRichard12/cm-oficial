@@ -1,5 +1,15 @@
 <template>
   <q-page>
+    <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
+      <div class="col-12 col-md-auto">
+        <div class="text-h5 text-primary text-weight-bold flex items-center">
+          <!-- Icono representativo para añadir un almacén -->
+          <q-icon name="add_business" size="md" class="q-mr-sm" />
+          Registrar Almacén
+        </div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">Alta de nuevos almacenes en el sistema</div>
+      </div>
+    </div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
@@ -39,6 +49,7 @@ import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { showDialog } from 'src/utils/dialogs'
+import { generarCodigo } from 'src/composables/FuncionesGenerales'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
@@ -49,6 +60,7 @@ const almacenes = ref([])
 const formData = ref({
   ver: 'registrarAlmacen',
   idempresa: idempresa,
+  codigo: generarCodigo(),
 })
 const tiposAlmacen = ref([])
 
@@ -103,9 +115,10 @@ async function loadSucursales() {
 }
 const toggleForm = () => {
   showForm.value = !showForm.value
-  if (!showForm.value) {
-    isEditing.value = false
+  if (showForm.value) {
     resetForm()
+  } else {
+    isEditing.value = false
   }
 }
 
@@ -126,6 +139,7 @@ function resetForm() {
   formData.value = {
     ver: 'registrarAlmacen',
     idempresa: idempresa,
+    codigo: generarCodigo(),
   }
 }
 const editUnit = (item) => {
@@ -134,6 +148,7 @@ const editUnit = (item) => {
     idempresa: idempresa,
     nombre: item.nombre,
     direccion: item.direccion,
+    codigo: item.codigo,
     id: item.id,
     email: item.email,
     tipoalmacen: item.idtipoalmacen,

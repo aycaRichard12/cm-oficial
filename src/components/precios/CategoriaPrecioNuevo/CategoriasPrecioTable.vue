@@ -7,7 +7,13 @@
     :loading="loading"
     :rows-per-page-options="[10, 25, 50, 100]"
     no-data-label="No se encontraron categorías de precios."
+    v-model:pagination="pagination"
   >
+    <template v-slot:body-cell-indice="props">
+      <q-td :props="props">
+        {{ (pagination.page - 1) * pagination.rowsPerPage + props.rowIndex + 1 }}
+      </q-td>
+    </template>
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-badge :color="props.row.estado === 1 ? 'green' : 'red'">
@@ -52,7 +58,7 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue'
-
+import { ref } from 'vue'
 // --- Definición de Props ---
 defineProps({
   categorias: {
@@ -65,15 +71,20 @@ defineProps({
   },
 })
 
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 5,
+  // ... otras opciones
+})
 // --- Definición de Emits ---
 defineEmits(['editar', 'eliminar', 'cambiar-estado'])
 
 // --- Configuración de QTable ---
 const columns = [
   {
-    name: 'id',
-    label: 'ID',
-    field: 'id',
+    name: 'indice',
+    label: 'N°',
+    field: 'indice',
     align: 'left',
     sortable: true,
   },

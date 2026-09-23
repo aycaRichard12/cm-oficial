@@ -103,7 +103,7 @@ const columns = [
   {
     name: 'razonsocial',
     align: 'left',
-    label: 'Cliente',
+    label: 'Razón Social',
     field: 'razonsocial',
   },
   {

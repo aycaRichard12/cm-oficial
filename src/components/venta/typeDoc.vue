@@ -16,7 +16,7 @@
 
       <div class="options-grid">
         <q-card
-          v-for="opcion in opciones"
+          v-for="opcion in opcionesFiltradas"
           :key="opcion.codigo"
           class="option-card"
           @click="$emit('seleccionar', opcion.codigo)"
@@ -52,6 +52,35 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+import { api } from 'src/boot/axios'
+import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
+
+const token = ref(null)
+const tipo = ref(null)
+const documentos = ref([])
+const GetDocumentoSector = async () => {
+  try {
+    const res = await api.get(`listaSucursalSin/tiposector/${token.value}/${tipo.value}/1`)
+    console.log('Documentos:', res.data)
+    const payload = res?.data
+
+    // Normaliza: [ ... ] | { data: [ ... ] } | { datos: [ ... ] } | undefined
+    let lista = []
+    if (Array.isArray(payload)) {
+      lista = payload
+    } else if (Array.isArray(payload?.data)) {
+      lista = payload.data
+    } else if (Array.isArray(payload?.datos)) {
+      lista = payload.datos
+    }
+
+    documentos.value = lista
+  } catch (error) {
+    console.error('[typeDoc] Error al obtener documentos:', error)
+    documentos.value = []
+  }
+}
 const emit = defineEmits(['continuar', 'seleccionar'])
 
 const handleContinue = () => {
@@ -67,6 +96,7 @@ const opciones = [
   //   color: 'complementary',
   // },
   {
+    codigoDocumentSector: 1,
     codigo: 'facturaCV',
     nombre: 'FACTURA COMPRA-VENTA',
     descripcion: 'Para transacciones comerciales locales',
@@ -74,6 +104,7 @@ const opciones = [
     color: 'green',
   },
   {
+    codigoDocumentSector: 3,
     codigo: 'facturaCMEX',
     nombre: 'FACTURA COMERCIAL DE EXPORTACIÓN',
     descripcion: 'Documentación para comercio exterior',
@@ -81,13 +112,41 @@ const opciones = [
     color: 'orange',
   },
   {
+    codigoDocumentSector: 2,
     codigo: 'facturaABYM',
     nombre: 'FACTURA DE ALQUILER',
     descripcion: 'Para arrendamiento de bienes inmuebles',
     icono: 'home_work',
     color: 'purple',
   },
+  {
+    codigoDocumentSector: 15,
+    codigo: 'facturaEF',
+    nombre: 'FACTURA DE ENTIDADES FINANCIERAS',
+    descripcion: 'Empresa que ofrece servicios financieros, bancarios y de financiamiento.',
+    icono: 'savings',
+    color: 'blue',
+  },
 ]
+const opcionesFiltradas = computed(() => {
+  // Guard: documentos.value podría ser undefined/null si la API falló
+  const lista = Array.isArray(documentos.value) ? documentos.value : []
+  const codigosAutorizados = new Set(
+    lista
+      .filter((doc) => doc && Number(doc.isActive) === 1 && doc.codigoDocumentSector != null)
+      .map((doc) => doc.codigoDocumentSector),
+  )
+  return opciones.filter((op) => codigosAutorizados.has(op.codigoDocumentSector))
+})
+onMounted(async () => {
+  try {
+    token.value = getToken()
+    tipo.value = getTipoFactura()
+    await GetDocumentoSector()
+  } catch (error) {
+    console.error('Error al obtener códigos:', error)
+  }
+})
 </script>
 
 <style scoped>

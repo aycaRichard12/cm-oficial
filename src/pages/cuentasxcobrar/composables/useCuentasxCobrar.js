@@ -173,6 +173,77 @@ export function useCuentasxCobrar() {
 
   const opcionesTipo = OPCIONES_TIPO
 
+  // ── Estado de edición ─────────────────────
+  const modoEdicion = ref(false)
+  const cobroAEditar = ref(null)
+
+  // Función para abrir el diálogo en modo edición
+  function abrirEdicionCobro(cobro) {
+    cobroAEditar.value = cobro
+    modoEdicion.value = true
+    mostrarForm.value = true
+  }
+
+  // Función para editar el cobro
+  async function editarCobro(onSuccess) {
+    if (parseFloat(formulario.value.saldoPorCobrar) < 0) {
+      $q.notify({ type: 'negative', message: 'Saldo por cobrar no válido' })
+      return
+    }
+
+    try {
+      let linkPdfSubido = ''
+
+      if (formulario.value.tipoArchivo === 'pdf' && formulario.value.imagenConvertida) {
+        const formDataPDF = new FormData()
+        formDataPDF.append('idpedido', formulario.value.idCredito)
+        formDataPDF.append('recibo', formulario.value.imagenConvertida)
+        formDataPDF.append('ver', 'uploadRecibo')
+
+        const resPDF = await api.post('', formDataPDF)
+        if (resPDF.data.estado === 'exito') {
+          const rutaCompleta = resPDF.data.ruta_recibo
+          const indexUploads = rutaCompleta.indexOf('uploads/')
+          linkPdfSubido = indexUploads !== -1 ? rutaCompleta.substring(indexUploads) : rutaCompleta
+        } else {
+          throw new Error('No se pudo subir el PDF: ' + resPDF.data.mensaje)
+        }
+      }
+
+      const dataForForm = {
+        ver: 'editarPagoCuentaxCobrar',
+        iddetalle_cobro: formulario.value.iddetalle_cobro,
+        idestadocobro: formulario.value.idCredito,
+        ncuotas: formulario.value.numeroCobros,
+        total: formulario.value.totalCobro,
+        saldo: formulario.value.saldoPorCobrar,
+        fecha: formulario.value.fecha,
+        idcaja_banco: formulario.value.idcajaBancoSeleccionada,
+        imagen:
+          formulario.value.tipoArchivo === 'image' ? (formulario.value.imagenConvertida ?? '') : '',
+        urlpdf: linkPdfSubido || formulario.value.urlComprobanteExistente || '',
+        idempresa: idempresa,
+      }
+
+      const datos = objectToFormData(dataForForm)
+      const response = await api.post('', datos)
+      const data = response.data
+
+      if (data.estado === 'exito') {
+        $q.notify({ type: 'positive', message: data.mensaje || 'Cobro editado correctamente' })
+        mostrarForm.value = false
+        modoEdicion.value = false
+        cobroAEditar.value = null
+        if (onSuccess) onSuccess()
+      } else {
+        throw new Error(data.mensaje || 'Error al editar el cobro')
+      }
+    } catch (error) {
+      console.error('Error en editarCobro:', error)
+      $q.notify({ type: 'negative', message: error.message })
+    }
+  }
+
   // ── Métodos de carga de datos ─────────────
 
   /**
@@ -604,5 +675,10 @@ export function useCuentasxCobrar() {
 
     // Formato
     formatoMoneda,
+
+    modoEdicion,
+    cobroAEditar,
+    abrirEdicionCobro,
+    editarCobro,
   }
 }

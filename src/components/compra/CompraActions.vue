@@ -6,15 +6,34 @@
         color="primary"
         class="btn-res"
         @click="$emit('add')"
-        icon="add"
-        label="Nuevo"
         no-caps
         id="btnNuevaCompra"
-      />
+        title="Registrar Compra"
+      >
+        <q-icon name="add" class="icono" />
+        <span class="texto"> <q-icon name="add" />Nuevo</span>
+      </q-btn>
     </div>
 
-    <div class="col-2 q-mt-lg flex justify-end" >
-      <q-btn color="info" @click="$emit('imprimirReporte')" class="btn-res" outline id="btnImprimir">
+    <div class="col-auto q-mt-lg flex justify-end q-gutter-x-sm">
+      <q-btn
+        color="primary"
+        icon="refresh"
+        @click="$emit('recargar')"
+        class="btn-res"
+        outline
+        id="btnRecargar"
+      >
+        <q-icon name="refresh" class="icono" />
+        <span class="texto">Recargar</span>
+      </q-btn>
+      <q-btn
+        color="info"
+        @click="$emit('imprimirReporte')"
+        class="btn-res"
+        outline
+        id="btnImprimir"
+      >
         <q-icon name="picture_as_pdf" class="icono" />
         <span class="texto">Vista Previa PDF</span>
       </q-btn>
@@ -23,5 +42,5 @@
 </template>
 
 <script setup>
-defineEmits(['add', 'imprimirReporte'])
+defineEmits(['add', 'imprimirReporte', 'recargar'])
 </script>

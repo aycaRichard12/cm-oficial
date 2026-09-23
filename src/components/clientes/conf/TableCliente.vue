@@ -9,7 +9,7 @@
         id="agregarTipoCliente"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">Nuevo</span>
+        <span class="texto"> <q-icon name="add" /> Nuevo </span>
       </q-btn>
 
       <!-- <div class="col flex items-center justify-end">

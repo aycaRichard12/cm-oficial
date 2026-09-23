@@ -55,3 +55,12 @@ upload_dist.bat
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/a.py
+*.py
+*.txt
+*.xlsx
+*.bat
+*.bak
+*.bak.*
+# Archivos temporales FUSE
+.fuse_hidden*
