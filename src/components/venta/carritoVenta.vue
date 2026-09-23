@@ -239,8 +239,8 @@
           </div>
 
           <SelectorVariantesProducto
-            v-if="ConfiguracionProductoVariante"
-            :idProducto="productoSeleccionado?.originalData?.id"
+            v-if="ConfiguracionProductoVariante && productoSeleccionado?.originalData?.id"
+            :idProducto="productoSeleccionado.originalData.id"
             @confirmar="recibirSeleccion"
             ref="selectorRef"
           />
@@ -676,31 +676,80 @@ const onSolicitudEnviada = (datos) => {
   })
 }
 const validarDescripcion = async (scope, row) => {
-  let carrito = JSON.parse(localStorage.getItem('carrito'))
+  const carrito = JSON.parse(localStorage.getItem('carrito'))
 
-  if (carrito && carrito.listaProductos) {
-    carrito.listaProductos = carrito.listaProductos.map((prod) => {
-      // Agregar o editar la descripción adicional
-      if (Number(prod.id) == Number(row.idproductoalmacen)) {
-        prod.descripcionAdicional = scope.value
-        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
-      }
-      return prod
-    })
-    carrito.listaProductosFactura = carrito.listaProductosFactura.map((prod) => {
-      // Agregar o editar la descripción adicional
-      if (String(prod.codigoProducto) == String(row.codigo)) {
-        prod.descripcion = row.descripcion + (scope.value ? ` (${scope.value})` : '')
-      }
-      return prod
-    })
-
-    localStorage.setItem('carrito', JSON.stringify(carrito))
-    //console.log('Descripción adicional actualizada correctamente ')
-  } else {
+  if (!carrito || !Array.isArray(carrito.listaProductos)) {
     console.warn('No se encontró la lista de productos en el localStorage')
+    scope.set()
+    return
   }
 
+  // Construye la cadena de atributos: "Talla: 36 Color: Coyote oscuro"
+  const buildAtributosStr = (atributos) => {
+    if (!Array.isArray(atributos) || atributos.length === 0) return ''
+    return atributos
+      .map((a) => {
+        const nombre = (a.atributo || a.nombre || '').toString().trim()
+        const valor = (a.valor || '').toString().trim()
+        if (!nombre && !valor) return ''
+        return `${nombre}: ${valor}`
+      })
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  const esVariante =
+    row.idproductovariante != null ||
+    (Array.isArray(row.atributos) && row.atributos.length > 0)
+
+  const atributosStr = esVariante ? buildAtributosStr(row.atributos) : ''
+  const descAdicional = scope.value || ''
+
+  // Orden final: <base> <atributos> (<descAdicional>)
+  const partes = []
+  if (row.descripcion) partes.push(row.descripcion)
+  if (atributosStr) partes.push(atributosStr)
+  if (descAdicional) partes.push(`(${descAdicional})`)
+  const descripcionFinal = partes.join(' ')
+
+  // ----- listaProductos (detalle de carrito) -----
+  carrito.listaProductos = carrito.listaProductos.map((prod) => {
+    const matchVariante =
+      prod.idproductovariante != null &&
+      row.idproductovariante != null &&
+      Number(prod.idproductovariante) === Number(row.idproductovariante)
+
+    const matchProductoBase =
+      prod.idproductovariante == null &&
+      row.idproductovariante == null &&
+      Number(prod.idproductoalmacen) === Number(row.idproductoalmacen)
+
+    if (matchVariante || matchProductoBase) {
+      prod.descripcionAdicional = descAdicional
+      prod.descripcion = descripcionFinal
+    }
+    return prod
+  })
+
+  // ----- listaProductosFactura (detalle para factura) -----
+  carrito.listaProductosFactura = carrito.listaProductosFactura.map((prod) => {
+    const matchVariante =
+      prod.idproductovariante != null &&
+      row.idproductovariante != null &&
+      Number(prod.idproductovariante) === Number(row.idproductovariante)
+
+    const matchProductoBase =
+      prod.idproductovariante == null &&
+      row.idproductovariante == null &&
+      String(prod.codigoProducto) === String(row.codigo)
+
+    if (matchVariante || matchProductoBase) {
+      prod.descripcion = descripcionFinal
+    }
+    return prod
+  })
+
+  localStorage.setItem('carrito', JSON.stringify(carrito))
   scope.set()
 }
 

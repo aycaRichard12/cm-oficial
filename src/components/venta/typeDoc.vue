@@ -60,10 +60,26 @@ const token = ref(null)
 const tipo = ref(null)
 const documentos = ref([])
 const GetDocumentoSector = async () => {
-  const res = await api.get(`listaSucursalSin/tiposector/${token.value}/${tipo.value}/1`)
-  console.log('Documentos:', res.data)
-  const data = res.data
-  documentos.value = data.data
+  try {
+    const res = await api.get(`listaSucursalSin/tiposector/${token.value}/${tipo.value}/1`)
+    console.log('Documentos:', res.data)
+    const payload = res?.data
+
+    // Normaliza: [ ... ] | { data: [ ... ] } | { datos: [ ... ] } | undefined
+    let lista = []
+    if (Array.isArray(payload)) {
+      lista = payload
+    } else if (Array.isArray(payload?.data)) {
+      lista = payload.data
+    } else if (Array.isArray(payload?.datos)) {
+      lista = payload.datos
+    }
+
+    documentos.value = lista
+  } catch (error) {
+    console.error('[typeDoc] Error al obtener documentos:', error)
+    documentos.value = []
+  }
 }
 const emit = defineEmits(['continuar', 'seleccionar'])
 
@@ -113,11 +129,13 @@ const opciones = [
   },
 ]
 const opcionesFiltradas = computed(() => {
-  // Extraemos un Set de los codigosDocumentSector devueltos por la API
+  // Guard: documentos.value podría ser undefined/null si la API falló
+  const lista = Array.isArray(documentos.value) ? documentos.value : []
   const codigosAutorizados = new Set(
-    documentos.value.filter((doc) => doc.isActive === 1).map((doc) => doc.codigoDocumentSector),
+    lista
+      .filter((doc) => doc && Number(doc.isActive) === 1 && doc.codigoDocumentSector != null)
+      .map((doc) => doc.codigoDocumentSector),
   )
-  // Filtramos el array original
   return opciones.filter((op) => codigosAutorizados.has(op.codigoDocumentSector))
 })
 onMounted(async () => {
