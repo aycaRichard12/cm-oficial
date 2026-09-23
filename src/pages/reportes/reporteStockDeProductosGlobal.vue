@@ -339,28 +339,12 @@ const columnas = [
   },
 
   {
-    name: 'costounitario',
-    label: `Costo Unitario (${divisaActiva.simbolo})`,
-    field: 'costounitario',
-    format: (val) => formatearDecimal(val),
-    align: 'right',
-    datatype: 'number',
-  },
-  {
     name: 'precioSugerido',
     label: `Precio Unitario (${divisaActiva.simbolo})`,
     field: 'precioSugerido',
     format: (val) => formatearDecimal(val),
     align: 'right',
     datatype: 'number',
-  },
-  {
-    name: 'costototal',
-    label: `Costo Total (${divisaActiva.simbolo})`,
-    align: 'right',
-    field: 'costototal',
-    datatype: 'number',
-    format: (val) => formatearDecimal(val),
   },
   {
     name: 'costototalventa',

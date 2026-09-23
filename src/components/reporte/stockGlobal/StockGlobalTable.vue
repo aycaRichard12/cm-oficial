@@ -6,9 +6,8 @@
       :rows="rows"
       :columns="visibleColumns"
       :arrayHeaders="visibleHeaders"
-      :sumColumns="['costototal', 'costototalventa']"
+      :sumColumns="['costototalventa']"
       row-key="id"
-      nombreColumnaTotales="costounitario"
     />
   </q-card>
 </template>
