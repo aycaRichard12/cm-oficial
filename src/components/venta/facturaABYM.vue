@@ -58,6 +58,18 @@
                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
                     </q-item>
                   </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="listaCLientes"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
+                  </template>
                 </q-select>
               </div>
               <div class="col-12 col-md-1 q-mt-lg">
@@ -138,6 +150,18 @@
                   <template v-slot:prepend>
                     <q-icon name="point_of_sale" color="blue" />
                   </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="cargarCanales"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
+                  </template>
                 </q-select>
               </div>
               <div class="col-12 col-md-3">
@@ -175,6 +199,18 @@
                 >
                   <template v-slot:prepend>
                     <q-icon name="store" color="blue" />
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="cargarPuntoVentas"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
                   </template>
                 </q-select>
               </div>

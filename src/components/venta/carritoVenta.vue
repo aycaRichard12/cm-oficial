@@ -58,6 +58,19 @@
                 <template v-slot:prepend>
                   <q-icon name="store" color="primary" />
                 </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarAlmacenes"
+                    :disable="cargandoAlmacenes"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
+                </template>
               </q-select>
             </div>
 
@@ -79,6 +92,19 @@
               >
                 <template v-slot:prepend>
                   <q-icon name="category" color="primary" />
+                </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarCategoriasPrecio"
+                    :disable="cargandoCategorias"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
                 </template>
               </q-select>
             </div>
@@ -119,6 +145,19 @@
                       }}
                     </q-item-section>
                   </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn
+                    icon="refresh"
+                    flat
+                    round
+                    dense
+                    color="primary"
+                    @click.stop="cargarCampanasDisponibles"
+                    :disable="cargandoCampanias"
+                  >
+                    <q-tooltip>Recargar datos</q-tooltip>
+                  </q-btn>
                 </template>
               </q-select>
             </div>

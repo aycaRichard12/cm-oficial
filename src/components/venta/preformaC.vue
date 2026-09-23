@@ -56,6 +56,18 @@
                       <q-item-section class="text-grey"> No hay resultados </q-item-section>
                     </q-item>
                   </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="listaCLientes"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
+                  </template>
                 </q-select>
               </div>
 
@@ -134,6 +146,18 @@
                 >
                   <template v-slot:prepend>
                     <q-icon name="point_of_sale" color="green" />
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      icon="refresh"
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      @click.stop="cargarCanales"
+                    >
+                      <q-tooltip>Recargar datos</q-tooltip>
+                    </q-btn>
                   </template>
                 </q-select>
               </div>
