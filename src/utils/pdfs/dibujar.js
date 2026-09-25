@@ -42,6 +42,10 @@ let cellPadding = 1
 
 async function initPdfReportGenerator() {
   contenidousuario = validarUsuario()
+  if (!contenidousuario || !contenidousuario[0]) {
+    console.warn('initPdfReportGenerator: usuario no disponible')
+    return
+  }
   datosUsuario = contenidousuario[0]
   logoEmpresa = datosUsuario.empresa.logo
   logoBase64 = await cargarLogoBase64(logoEmpresa)
@@ -64,7 +68,9 @@ export function getLogoBase64() {
   return logoBase64
 }
 
-initPdfReportGenerator()
+initPdfReportGenerator().catch((e) => {
+  console.error('initPdfReportGenerator falló:', e)
+})
 
 /**
  * Crea una fila de total general con formato de colSpan para jsPDF-autoTable

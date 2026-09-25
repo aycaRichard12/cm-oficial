@@ -275,86 +275,36 @@ const opcionesOrden = [
   { label: 'Ascendente', value: 2 },
 ]
 
-const columnas = [
+const columnas = computed(() => [
+  { name: 'numero',       label: 'N°',           align: 'center', field: 'numero',       dataType: 'text' },
+  { name: 'codigo',       label: 'Código',        align: 'left',   field: 'codigo',       dataType: 'text' },
+  { name: 'descripcion',  label: 'Descripción',   align: 'left',   field: 'descripcion',
+    style: 'min-width: 250px', dataType: 'text' },
+  { name: 'unidad',       label: 'Unidad',        align: 'left',   field: 'unidad',       dataType: 'text' },
+  { name: 'categoria',    label: 'Categoría',     align: 'left',   field: 'categoria',    dataType: 'text' },
+  { name: 'subcategoria', label: 'Subcategoría',  align: 'left',   field: 'subcategoria', dataType: 'text' },
+  // NOTA: columna 'pais' (País Origen) eliminada
   {
-    name: 'numero',
-    label: 'N°',
-    align: 'center',
-    field: 'numero',
-    datatype: 'text',
-  },
-  {
-    name: 'codigo',
-    label: 'Código',
-    field: 'codigo',
-    align: 'left',
-    datatype: 'text',
-  },
-
-  {
-    name: 'descripcion',
-    label: 'Descripción',
-    field: 'descripcion',
-    align: 'left',
-    style: 'min-width: 250px',
-    datatype: 'text',
-  },
-  {
-    name: 'unidad',
-    label: 'Unidad',
-    field: 'unidad',
-    align: 'left',
-
-    datatype: 'text',
-  },
-  {
-    name: 'categoria',
-    label: 'Categoría',
-    field: 'categoria',
-    align: 'left',
-    datatype: 'text',
-  },
-  {
-    name: 'subcategoria',
-    label: 'Subcategoría',
-    field: 'subcategoria',
-    align: 'left',
-    datatype: 'text',
-  },
-  {
-    name: 'pais',
-    label: 'País Origen',
-    field: 'pais',
-    align: 'left',
-    datatype: 'text',
-  },
-
-  {
-    name: 'stock',
-    label: 'Stock',
-    field: 'stock',
-    align: 'right',
-    datatype: 'number',
+    name: 'stock', label: 'Stock', field: 'stock', align: 'right', dataType: 'number',
     format: (val) => new Intl.NumberFormat('es-ES').format(val),
   },
-
   {
     name: 'precioSugerido',
     label: `Precio Unitario (${divisaActiva.simbolo})`,
     field: 'precioSugerido',
     format: (val) => formatearDecimal(val),
     align: 'right',
-    datatype: 'number',
+    dataType: 'number',
   },
   {
     name: 'costototalventa',
     label: `Precio Total (${divisaActiva.simbolo})`,
     align: 'right',
     field: 'costototalventa',
-    datatype: 'number',
+    dataType: 'number',
     format: (val) => formatearDecimal(val),
   },
-]
+])
 
 const sumatoriaStock = computed(() => {
   return formatearDecimal(
@@ -519,7 +469,6 @@ async function generarReporte() {
         categoria: item.categoria,
         subcategoria: item.subcategoria,
         costounitario: item.costounitario,
-        pais: item.pais,
         idstock: item.idstock ?? 0, // reemplaza null por 0
         imagen: item.imagen && item.imagen !== 'undefined' ? item.imagen : '', // reemplaza 'undefined'
         costototal: parseFloat(item.costounitario || 0) * parseFloat(item.stock || 0),
@@ -532,8 +481,10 @@ async function generarReporte() {
     filtrarYOrdenarDatos()
 
     // Guardar nombre del almacén seleccionado
-    const almacen = opcionesAlmacenes.value.find((a) => a.id === almacenSeleccionado.value)
-    nombreAlmacenSeleccionado.value = almacen ? almacen.nombre : ''
+    const almacen = opcionesAlmacenes.value.find(
+      (a) => String(a.value) === String(almacenSeleccionado.value),
+    )
+    nombreAlmacenSeleccionado.value = almacen ? almacen.label : ''
   } catch (error) {
     console.error('Error al generar reporte:', error)
     $q.notify({
