@@ -66,8 +66,21 @@
               map-options
               prepend-icon="warehouse"
               placeholder="Almacén asignado"
-              ><template v-slot:prepend><q-icon name="storefront" /></template
-            ></q-select>
+              ><template v-slot:prepend><q-icon name="storefront" /></template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!almacenOptions || almacenOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'almacen')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template></q-select>
           </div>
           <div class="col-12 col-md-3">
             <q-select
@@ -80,6 +93,20 @@
               clearable
             >
               <template v-slot:prepend><q-icon name="category" /></template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!tipoClienteFilterOptions || tipoClienteFilterOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'tipocliente')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
             </q-select>
           </div>
           <div class="col-12 col-md-3">
@@ -93,6 +120,20 @@
               clearable
             >
               <template v-slot:prepend><q-icon name="storefront" /></template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!canalVentaFilterOptions || canalVentaFilterOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'canalventa')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
             </q-select>
           </div>
           <div class="col-12 col-md-3">
@@ -106,6 +147,20 @@
               clearable
             >
               <template v-slot:prepend><q-icon name="badge" /></template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!tipoDocumentoFilterOptions || tipoDocumentoFilterOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'tipodocumento')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
             </q-select>
           </div>
         </div>
@@ -341,7 +396,7 @@ const processedRows = computed(() => {
   }))
 })
 // Emit para comunicar al componente padre
-const emit = defineEmits(['add', 'importFromExcel', 'exportToExcel', 'edit', 'delete', 'addToList'])
+const emit = defineEmits(['add', 'importFromExcel', 'exportToExcel', 'edit', 'delete', 'addToList', 'reload-options'])
 
 // Filtrar los clientes según los filtros aplicados
 const filteredClients = computed(() => {

@@ -60,6 +60,20 @@
               <template v-slot:prepend>
                 <q-icon name="groups" color="primary" />
               </template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!tipoClienteOptions || tipoClienteOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="cargarTipoCliente()"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
             </q-select>
           </div>
 
@@ -79,6 +93,20 @@
             >
               <template v-slot:prepend>
                 <q-icon name="shopping_cart" color="primary" />
+              </template>
+              <template v-slot:append>
+                <q-btn
+                  v-if="!canalVentaOptions || canalVentaOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="cargarCanalesVenta()"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
               </template>
             </q-select>
           </div>

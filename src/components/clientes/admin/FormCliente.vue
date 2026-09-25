@@ -52,7 +52,22 @@
               :rules="[(val) => !!val || 'Seleccione un tipo']"
               prepend-icon="people"
               placeholder="Seleccione tipo"
-            />
+            >
+              <template v-slot:append>
+                <q-btn
+                  v-if="!tipoClienteOptions || tipoClienteOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'tipocliente')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
+            </q-select>
           </div>
           <!-- Canal de venta -->
           <div class="col-12 col-md-3">
@@ -70,7 +85,22 @@
               :rules="[(val) => !!val || 'Seleccione un canal']"
               prepend-icon="tune"
               placeholder="Canal de venta"
-            />
+            >
+              <template v-slot:append>
+                <q-btn
+                  v-if="!canalVentaOptions || canalVentaOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'canalventa')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
+            </q-select>
           </div>
           <!-- Tipo de Documento -->
           <div class="col-12 col-md-2">
@@ -88,7 +118,22 @@
               :rules="[(val) => !!val || 'Seleccione un tipo']"
               prepend-icon="badge"
               placeholder="Doc. identidad"
-            />
+            >
+              <template v-slot:append>
+                <q-btn
+                  v-if="!tipoDocumetosOptions || tipoDocumetosOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'tipodocumento')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
+            </q-select>
           </div>
           <!-- Nro De Documento -->
           <div class="col-12 col-md-3">
@@ -119,7 +164,22 @@
               :rules="[(val) => !!val || 'Seleccione un Almacen']"
               prepend-icon="warehouse"
               placeholder="Almacén asignado"
-            />
+            >
+              <template v-slot:append>
+                <q-btn
+                  v-if="!almacenOptions || almacenOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="emit('reload-options', 'almacen')"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
+            </q-select>
           </div>
         </div>
       </q-card-section>
@@ -309,7 +369,7 @@ const props = defineProps({
   almacenOptions: Array,
 })
 
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits(['submit', 'cancel', 'reload-options'])
 const localData = ref({ ...props.modalValue })
 const { soloAlmacen, loading } = useClienteAlmacenConfig(idempresa)
 console.log('Solo Almacén:', soloAlmacen)

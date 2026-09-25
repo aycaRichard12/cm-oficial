@@ -54,7 +54,22 @@
           dense
           clearable
           :disable="!datosOriginales || datosOriginales.length === 0"
-        />
+        >
+              <template v-slot:append>
+                <q-btn
+                  v-if="!almacenesOptions || almacenesOptions.length === 0"
+                  icon="refresh"
+                  flat
+                  dense
+                  round
+                  size="sm"
+                  color="primary"
+                  @click.stop="listaAlmacenes()"
+                >
+                  <q-tooltip>Recargar opciones</q-tooltip>
+                </q-btn>
+              </template>
+        </q-select>
       </div>
 
       <div class="col-12 col-md-3" id="filtrarraizonsozialdetalle">
