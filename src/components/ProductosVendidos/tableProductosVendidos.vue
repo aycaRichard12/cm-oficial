@@ -127,14 +127,14 @@ const columnasExtensas = [
     dataType: 'text',
     sortable: true,
   },
-  {
+  /**{
     name: 'codigobarra',
     label: 'Código Barras',
     align: 'right',
     field: 'codigobarra',
     dataType: 'text',
     sortable: true,
-  },
+  },*/
   {
     name: 'descripcion',
     label: 'Descripción de Producto',
@@ -192,10 +192,10 @@ const columnasExtensas = [
     sortable: true,
   },
   {
-    name: 'idusuario',
+    name: 'vendedor',
     label: 'Nombre de Usuario',
     align: 'left',
-    field: 'idusuario',
+    field: 'vendedor',
     dataType: 'text',
     sortable: true,
   },

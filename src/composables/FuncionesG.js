@@ -317,12 +317,38 @@ export function validarNumeros(input) {
 export function cambiarFormatoFecha(fechaOriginal) {
   if (!fechaOriginal) return ''
 
-  // Separar fecha y hora si existe
-  const [fechaParte, horaParte] = fechaOriginal.split(' ')
+  const raw = String(fechaOriginal).trim()
 
-  const [anio, mes, dia] = fechaParte.split('-')
+  // Normalizar separador ISO 'T' -> ' '
+  const normalizada = raw.replace('T', ' ')
+  const [fechaParte, horaParte] = normalizada.split(' ')
 
-  const nuevaFecha = new Date(Number(anio), Number(mes) - 1, Number(dia))
+  // Parseo del bloque de fecha (soporta YYYY-MM-DD, YYYY/MM/DD, DD-MM-YYYY, DD/MM/YYYY)
+  let anio, mes, dia
+  let m = fechaParte.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/)
+  if (m) {
+    anio = Number(m[1])
+    mes = Number(m[2])
+    dia = Number(m[3])
+  } else {
+    m = fechaParte.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})$/)
+    if (m) {
+      dia = Number(m[1])
+      mes = Number(m[2])
+      anio = Number(m[3].length === 2 ? '20' + m[3] : m[3])
+    }
+  }
+
+  if (!anio || !mes || !dia) {
+    console.warn('cambiarFormatoFecha: formato no reconocido ->', fechaOriginal)
+    return ''
+  }
+
+  const nuevaFecha = new Date(anio, mes - 1, dia)
+  if (isNaN(nuevaFecha.getTime())) {
+    console.warn('cambiarFormatoFecha: fecha inválida ->', fechaOriginal)
+    return ''
+  }
 
   const diaFormateado = String(nuevaFecha.getDate()).padStart(2, '0')
   const mesFormateado = String(nuevaFecha.getMonth() + 1).padStart(2, '0')
@@ -333,8 +359,11 @@ export function cambiarFormatoFecha(fechaOriginal) {
     return `${diaFormateado}/${mesFormateado}/${anioFormateado}`
   }
 
-  // Si hay hora → formatearla
-  const [hora, minutos, segundos] = horaParte.split(':')
+  // Hora: soporta "HH:MM" y "HH:MM:SS"
+  const partesHora = horaParte.split(':')
+  const hora = partesHora[0] ?? '00'
+  const minutos = partesHora[1] ?? '00'
+  const segundos = partesHora[2] ?? '00'
 
   const horaFormateada = String(hora).padStart(2, '0')
   const minutosFormateados = String(minutos).padStart(2, '0')

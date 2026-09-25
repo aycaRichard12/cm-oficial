@@ -161,7 +161,13 @@ import { PDFreporteVentasPeriodoCompacta } from 'src/utils/pdfs/compactaProducto
 const $q = useQuasar()
 
 // Reactive state
-const fechai = ref(primerDiaDelMes().toISOString().slice(0, 10))
+const fechai = ref(
+  (() => {
+    const d = primerDiaDelMes()
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    return local.toISOString().slice(0, 10)
+  })(),
+)
 const fechaf = ref(funGeneral.obtenerFechaActualDato())
 const datosOriginales = ref([])
 const datosFiltrados = ref([])
@@ -323,6 +329,7 @@ const generarReporte = async () => {
         ...row,
         nro: index + 1,
         tipoventa: tipoVentaMap[Number(row.tipoventa)],
+        fecha: funGeneral.cambiarFormatoFecha(row.fecha),
       }))
       console.log('Datos numerados:', numerados)
 
@@ -587,7 +594,7 @@ const exportarTablaAExcel = () => {
     formularioExcel.splice(0) // Clear previous data
     resultadoFiltrado.value.forEach((key) => {
       formularioExcel.push({
-        Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
+        fecha: funGeneral.cambiarFormatoFecha(key.fecha),
         'Nro. Doc.': key.nrofactura,
         'Tipo de Venta': tipoVentaMap[Number(key.tipoventa)],
         'Código Producto': key.codigo,
@@ -632,7 +639,7 @@ const exportarTablaAExcel = () => {
     formularioExcel.splice(0) // Clear previous data
     resultadoFiltrado.value.forEach((key) => {
       formularioExcel.push({
-        Fecha: funGeneral.cambiarFormatoFecha(key.fecha),
+        fecha: funGeneral.cambiarFormatoFecha(key.fecha),
         'Nro. Doc.': key.nrofactura,
         'Nombre Comercial': key.nombrecomercial,
         'Código Producto': key.codigo,
