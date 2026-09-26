@@ -147,7 +147,7 @@ async function prepararDatosCotizacion(cot) {
   const montoTexto = numeroALetras(montoTotal, divisa.divisa)
 
   datos.push({ precio: '<b>SUBTOTAL</b>', total: '<b>' + decimas(subtotal) + '</b>' })
-  datos.push({ precio: '<b>DESCUENTO</b>', total: '<b>' + decimas(descuento) + '</b>' })
+  datos.push({ precio: 'DESCUENTO', total: decimas(descuento) })
   datos.push({
     precio: '<b>MONTO TOTAL</b>',
     total: '<b>' + decimas(montoTotal) + '</b>',

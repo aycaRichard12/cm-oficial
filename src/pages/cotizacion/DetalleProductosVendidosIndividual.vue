@@ -338,17 +338,30 @@ const generarReporte = async () => {
       datosOriginales.value = []
       datosFiltrados.value = []
     } else {
-      datosOriginales.value = data.filter((u) => u.estado == 1) // Only active items
+      // ✅ Se transforma directamente en `datosOriginales` para no perder
+      //    tipoventa / fecha / descripcion en `filtrarYOrdenarDatos`.
+      //    Se concatena la descripción adicional entre paréntesis, en una
+      //    segunda línea. El `\n` se renderiza gracias a `white-space: pre-line`.
+      datosOriginales.value = data
+        .filter((u) => u.estado == 1)
+        .map((row, index) => {
+          const adicional = (row.descripcion_adicional || '').toString().trim()
+          const descripcionConDetalle = adicional
+            ? `${row.descripcion}\n(${adicional})`
+            : row.descripcion
 
-      const numerados = datosOriginales.value.map((row, index) => ({
-        ...row,
-        nro: index + 1,
-        tipoventa: tipoVentaMap[Number(row.tipoventa)],
-        fecha: funGeneral.cambiarFormatoFecha(row.fecha),
-      }))
-      console.log('Datos numerados:', numerados)
+          return {
+            ...row,
+            nro: index + 1,
+            tipoventa: tipoVentaMap[Number(row.tipoventa)],
+            fecha: funGeneral.cambiarFormatoFecha(row.fecha),
+            descripcion: descripcionConDetalle,
+          }
+        })
 
-      datosFiltrados.value = [...numerados] // Initialize with all data
+      console.log('Datos transformados:', datosOriginales.value)
+
+      datosFiltrados.value = [...datosOriginales.value]
       $q.notify({
         type: 'positive',
         message: 'Reporte generado con éxito.',
@@ -702,5 +715,23 @@ onMounted(() => {
   background-color: white; /* Or your Quasar card background color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+}
+
+/* ✅ Permitir que el HTML <br> y <span> se rendericen dentro de la
+   celda 'descripcion' del q-table cuando la tabla use v-html. */
+/* ✅ Forzar el renderizado del salto de línea `\n` en las celdas
+   y dar un estilo más discreto a la línea secundaria si el usuario
+   la estiliza con texto plano (no aplica si la tabla escupe texto). */
+:deep(.q-table td) {
+  white-space: pre-line;
+  line-height: 1.25;
+}
+
+/* Si en algún momento se usa `<br><span>` dentro de la celda, */
+/* estos estilos cubren los dos casos. */
+:deep(.q-table td .text-grey-6) {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 2px;
 }
 </style>
