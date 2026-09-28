@@ -12,6 +12,34 @@
         </div>
       </div>
     </div>
+
+    <q-form>
+      <div
+        class="row q-col-gutter-md q-mb-md"
+        style="display: flex; justify-content: center; align-items: flex-end"
+        id="filtroFechas"
+      >
+        <div class="col-12 col-md-4">
+          <label for="fechaIni">Fecha Inicial*</label>
+          <q-input v-model="fechaInicio" type="date" dense outlined id="fechaIni" />
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="fechaFin">Fecha Final*</label>
+          <q-input v-model="fechaFinal" type="date" dense outlined id="fechaFin" />
+        </div>
+        <div class="col-12 col-md-2 flex items-end">
+          <q-btn
+            color="primary"
+            label="Filtrar"
+            icon="search"
+            @click="loadRows"
+            class="full-width"
+            no-caps
+          />
+        </div>
+      </div>
+    </q-form>
+
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary flex justify-between items-center text-h6 text-white">
@@ -154,6 +182,8 @@ const compraStore = useCompraStore()
 const $q = useQuasar()
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
+const fechaInicio = ref(null)
+const fechaFinal = ref(null)
 const almacenSeleccionado = ref(null)
 const showForm = ref(false)
 const isEditing = ref(false)
@@ -368,7 +398,11 @@ const redirectToAssignment = () => {
 
 async function loadRows() {
   try {
-    const response = await api.get(`listaCompra/${idempresa}`)
+    let point = `listaCompra/${idempresa}`
+    if (fechaInicio.value && fechaFinal.value) {
+      point = `listaCompra/${idempresa}/${fechaInicio.value}/${fechaFinal.value}`
+    }
+    const response = await api.get(point)
     compras.value = response.data
     console.log(response.data)
   } catch (error) {
@@ -550,6 +584,12 @@ async function iniciar() {
   }
 }
 onMounted(async () => {
-  iniciar()
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  fechaInicio.value = `${year}-${month}-01`
+  fechaFinal.value = `${year}-${month}-${day}`
+  await iniciar()
 })
 </script>
