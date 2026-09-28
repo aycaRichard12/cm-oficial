@@ -181,15 +181,8 @@ const visibleColumnNames = ref(
   props.columns.filter((c) => c.defaultVisible !== false).map((c) => c.name),
 )
 
-let _prevVisibleKey = ''
-let _prevVisibleResult = []
-
 const visibleColumns = computed(() => {
-  const key = visibleColumnNames.value.join('|')
-  if (key === _prevVisibleKey) return _prevVisibleResult
-  _prevVisibleKey = key
-  _prevVisibleResult = props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
-  return _prevVisibleResult
+  return props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
 })
 
 const pagination = ref({

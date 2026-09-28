@@ -944,9 +944,19 @@ export function exportarPlantillaProductos() {
 /**
  * Exporta el catálogo actual de productos a Excel.
  */
-export function exportToXLSX_CatalogoProductos(data) {
-  const headers = [
-    { header: 'N°', key: 'numero', width: 5 },
+/**
+ * Exporta el catálogo de productos a Excel.
+ * @param {Array} data - Filas a exportar.
+ * @param {Array<{name:string}>|null} visibleColumnsFromTable
+ *        Nombres de columnas visibles devueltos por BaseFilterableTable.
+ *        - `null` / `undefined`  -> exporta TODAS las columnas.
+ *        - `[]`                  -> NO se debe llamar (el padre valida antes).
+ *        - `[{name}, ...]`       -> exporta SOLO esas columnas, en ese orden.
+ */
+export function exportToXLSX_CatalogoProductos(data, visibleColumnsFromTable = null) {
+  // Definir todas las posibles columnas con su key de origen y su header de salida
+  const allPossibleColumns = [
+    { header: 'N°', key: 'numero', width: 5, valueFromIndex: true },
     { header: 'Fecha', key: 'fecha', width: 15 },
     { header: 'Código', key: 'codigo', width: 15 },
     { header: 'Nombre', key: 'nombre', width: 25 },
@@ -961,21 +971,24 @@ export function exportToXLSX_CatalogoProductos(data) {
     { header: 'Código Nandina', key: 'codigonandina', width: 15 },
   ]
 
-  const dataForExport = data.map((row, index) => ({
-    'N°': index + 1,
-    Fecha: row.fecha || '',
-    Código: row.codigo || '',
-    Nombre: row.nombre || '',
-    Descripción: row.descripcion || '',
-    'Código de Barras': row.codigobarras || '',
-    Categoría: row.categoria || '',
-    Subcategoría: row.subcategoria || '',
-    Estado: row.estadoproducto || '',
-    Unidad: row.unidad || '',
-    Característica: row.medida || '',
-    'Otras Características': row.caracteristica || '',
-    'Código Nandina': row.codigonandina || '',
-  }))
+  // Filtrar columnas respetando el orden del array original (allPossibleColumns).
+  // NOTA: solo se considera filtro cuando `visibleColumnsFromTable` es un array
+  // NO vacío. Si el padre quiere bloquear "todas ocultas" lo hace él mismo.
+  let headers = allPossibleColumns
+  if (Array.isArray(visibleColumnsFromTable) && visibleColumnsFromTable.length > 0) {
+    const visibleNames = new Set(visibleColumnsFromTable.map((c) => c.name))
+    headers = allPossibleColumns.filter((h) => visibleNames.has(h.key))
+  }
+
+  // Construir filas dinámicamente para que solo existan las claves de headers visibles.
+  // json_to_sheet usa las claves del primer objeto para generar el orden de columnas.
+  const dataForExport = data.map((row, index) => {
+    const exportRow = {}
+    headers.forEach((col) => {
+      exportRow[col.header] = col.valueFromIndex ? index + 1 : row[col.key] || ''
+    })
+    return exportRow
+  })
 
   const worksheet = XLSX.utils.json_to_sheet(dataForExport)
   worksheet['!cols'] = headers.map((h) => ({ wch: h.width }))
@@ -997,6 +1010,7 @@ export function exportToXLSX_CatalogoProductos(data) {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo Productos')
   XLSX.writeFile(workbook, 'Catalogo_Productos.xlsx', { cellStyles: true })
 }
+
 
 /**
  * Lee un archivo Excel y retorna los datos mapeados a las claves que el sistema entiende.

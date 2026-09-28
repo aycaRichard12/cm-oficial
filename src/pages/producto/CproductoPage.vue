@@ -280,7 +280,7 @@ async function loadmedidas() {
 }
 
 const handleSubmit = async (data) => {
-  const formData = objectToFormData(data)
+  const payload = objectToFormData(data)
 
   console.log('=== FormData entries ===')
   // for (let [k, v] of formData.entries()) {
@@ -289,10 +289,10 @@ const handleSubmit = async (data) => {
 
   try {
     if (isEditing.value) {
-      const response = await api.post(``, formData)
+      const response = await api.post(``, payload)
       console.log('Edit response:', response.data)
     } else {
-      const response = await api.post(``, formData)
+      const response = await api.post(``, payload)
       console.log('Create response:', response.data)
     }
     $q.notify({
@@ -513,6 +513,15 @@ const handleImport = async (data) => {
 
   loadRows()
 }
+// Handler explícito para el evento de reporte/exportación emitido por ProductoTabla.
+// Si la exportación a Excel se delega al hijo, aquí solo se registra el evento.
+// Si se requiere orquestar la descarga desde el padre, este es el punto de entrada.
+const mostrarReporte = (payload) => {
+  console.log('[CproductoPage] mostrarReporte emitido por ProductoTabla:', payload)
+  // Si ProductoTabla ya genera el Excel, no se requiere acción adicional.
+  // Si el padre debe generarlo, implementar aquí la llamada al endpoint de reporte.
+}
+
 const abrirVariantes = (row) => {
   productoVariantes.value = row
   showVariantesDialog.value = true
@@ -521,8 +530,9 @@ onMounted(() => {
   loadcategorias()
   loadestados()
   loadmedidas()
-  loadsubcategorias()
-  loadunidades()
+  // loadsubcategorias() se invoca al cambiar la categoría (evento @categoria-changed),
+  // no en el montaje, para evitar limpiar el arreglo sin contexto.
+loadunidades()
   loadRows()
   if (getTipoFactura(true)) {
     ListaProductoSin()

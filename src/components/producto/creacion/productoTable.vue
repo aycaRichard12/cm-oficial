@@ -87,8 +87,6 @@
           flat
           bordered
         >
-          <template v-slot:top-right></template>
-
           <template v-slot:body-cell-imagen="props">
             <q-td :props="props" id="imagenproducto">
               <q-img
@@ -200,6 +198,7 @@ import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
 const selectedIds = ref(new Set())
 const $q = useQuasar()
 const fileInput = ref(null)
+const reHijo = ref(null) // Template ref -> BaseFilterableTable
 
 const tipoFactura = getTipoFactura(true)
 
@@ -425,13 +424,30 @@ const exportarFormato = () => {
 }
 
 const exportarDatos = () => {
-  if (props.rows.length === 0) {
+  const rowsToExport = filteredRows.value
+  if (!rowsToExport || rowsToExport.length === 0) {
     $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
     return
   }
-  exportToXLSX_CatalogoProductos(props.rows)
-}
 
+  // Obtener nombres de columnas visibles desde el hijo (BaseFilterableTable).
+  // Si el hijo aún no montó, devolvemos null y la utilidad exportará todo.
+  const visibleColumns = reHijo.value?.obtenerColumnasVisibles?.() ?? null
+
+  // Caso límite: el usuario desmarcó TODAS las columnas.
+  // Distinguimos "no se consultó" (null) de "se consultó y quedó vacío" ([]).
+  if (Array.isArray(visibleColumns) && visibleColumns.length === 0) {
+    $q.notify({ type: 'warning', message: 'No hay columnas visibles para exportar' })
+    return
+  }
+
+  console.log(
+    '[productoTable] Exportando con columnas visibles:',
+    visibleColumns ? visibleColumns.map((c) => c.name) : '(todas)',
+  )
+
+  exportToXLSX_CatalogoProductos(rowsToExport, visibleColumns)
+}
 const emit = defineEmits([
   'add',
   'edit-item',

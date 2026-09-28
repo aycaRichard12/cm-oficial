@@ -124,7 +124,7 @@
         <div class="stat-item">
           <q-icon name="check_circle" size="14px" color="positive" class="q-mr-xs" />
           <span class="text-caption">
-            {{ modelValue.filter((s) => s.codigo).length }}
+            {{ modelValue.filter((s) => s.serie).length }}
             asignados
           </span>
         </div>
