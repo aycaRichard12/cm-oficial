@@ -188,9 +188,14 @@ const routes = [
         path: '/preciossugeridos',
         component: () => import('pages/precio/PrecioSugeridoPage.vue'),
       },
+
       {
         path: '/reportestockdeproductosindividual',
         component: () => import('pages/producto/ReporteStockProductoIndividualPage.vue'),
+      },
+      {
+        path: '/generarcatalogoproductos',
+        component: () => import('src/components/producto/reportes/ReporteCatalogoProductos.vue'),
       },
       {
         path: '/reportedeventas',

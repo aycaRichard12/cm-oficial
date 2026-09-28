@@ -37,6 +37,7 @@ export const PAGINAS = Object.freeze({
     'categoriasdeprecio',
   ]),
   administracionprecios: Object.freeze(['costounitario', 'preciossugeridos']),
+  catalogoproductos: Object.freeze(['generarcatalogoproductos']),
   registrarventa: Object.freeze([
     'registrarventaoculto',
     'registrarcotizacionoculto',
@@ -166,6 +167,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reporteproductoproveedorcompras: 'icons/gyOvw01.svg',
 
   crearcampanas: 'campaign',
+  generarcatalogoproductos: 'menu_book',
   reportedecampanas: 'summarize',
   reportedeventasporcampanas: 'sell',
   reporteVentasCampana: 'sell',
@@ -189,6 +191,7 @@ export const PAGINAS_ICONS = Object.freeze({
 })
 export const PAGINAS_SELECT = Object.freeze({
   configuraciongeneral: Object.freeze(['atajosrapidos']),
+  catalogoproductos: Object.freeze(['generarcatalogoproductos']),
   registrarventa: Object.freeze([
     'reportedeventas',
     'reportedecotizacionesocultas',
@@ -234,6 +237,7 @@ export const GRUPO_PAGINAS_DETALLE = Object.freeze({
   inventarioexterno: { label: 'Reportes', icono: 'bar_chart' },
   campanas: { label: 'Reportes', icono: 'bar_chart' },
   gestioncampanas: { label: 'Reportes', icono: 'bar_chart' },
+  catalogoproductos: { label: 'Reportes', icono: 'bar_chart' },
 })
 /**
  * Helper para verificar si una clave existe en los atributos.

@@ -64,3 +64,4 @@ upload_dist.bat
 *.bak.*
 # Archivos temporales FUSE
 .fuse_hidden*
+*.bak_*

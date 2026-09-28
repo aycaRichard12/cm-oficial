@@ -1,3 +1,4 @@
+// DEPRECATED: este helper fue reemplazado por src/modules/pdf/services/CatalogoPdfService.js
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
 import jsPDF from 'jspdf'
 import { getLogoBase64 } from '../dibujar'
