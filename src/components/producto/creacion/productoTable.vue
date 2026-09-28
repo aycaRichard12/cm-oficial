@@ -261,11 +261,10 @@ if (tipoFactura) {
     },
     {
       name: 'medida',
-      label: 'Caract.',
+      label: 'Medida',
       field: 'medida',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'estadoproducto',
@@ -273,7 +272,6 @@ if (tipoFactura) {
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'unidad',
@@ -281,7 +279,6 @@ if (tipoFactura) {
       field: 'unidad',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'caracteristica',
@@ -289,7 +286,6 @@ if (tipoFactura) {
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'productosin',
@@ -356,11 +352,10 @@ if (tipoFactura) {
     },
     {
       name: 'medida',
-      label: 'Caract.',
+      label: 'Medida',
       field: 'medida',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'estadoproducto',
@@ -368,7 +363,6 @@ if (tipoFactura) {
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'unidad',
@@ -376,7 +370,6 @@ if (tipoFactura) {
       field: 'unidad',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
     {
       name: 'caracteristica',
@@ -384,7 +377,6 @@ if (tipoFactura) {
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
-      defaultVisible: false,
     },
 
     { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },

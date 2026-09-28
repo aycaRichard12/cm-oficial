@@ -325,8 +325,14 @@ function resetForm() {
   }
 }
 const editUnit = async (row) => {
+  console.log(row)
   const tipo = getTipoFactura()
-  const endpoint = `verificarExistenciaProducto/${row.id}/${token}/${tipo}`
+  let endpoint = ``
+  if (token && tipo && getTipoFactura(true) && getToken(true)) {
+    endpoint = `verificarExistenciaProducto/${row.id}/${token}/${tipo}`
+  } else {
+    endpoint = `verificarExistenciaProducto/${row.id}/`
+  }
   console.log(endpoint)
   const response = await api.get(endpoint) // Cambia a tu ruta real
   console.log('API Response:', response.data)
@@ -334,9 +340,10 @@ const editUnit = async (row) => {
   console.log('Item data:', item)
 
   // Handle subcategoria - it might be missing, null, 0, or empty string
+  const rawSubcategoria = item?.idsubcategoria ?? null
   const subcategoriaValue =
-    item.idsubcategoria && item.idsubcategoria !== '0' && item.idsubcategoria !== 0
-      ? item.idsubcategoria
+    rawSubcategoria !== null && rawSubcategoria !== '0' && rawSubcategoria !== 0
+      ? rawSubcategoria
       : null
 
   formData.value = {
@@ -347,7 +354,7 @@ const editUnit = async (row) => {
     nombre: item.nombre,
     descripcion: item.descripcion,
     codigobarras: item.codbarras,
-    categoria: item.idcategoria,
+    categoria: item?.idcategoria ?? null,
     subcategoria: subcategoriaValue,
     estadoproductos: item.idestadoproducto,
     unidad: item.idunidad,
@@ -363,7 +370,7 @@ const editUnit = async (row) => {
   }
 
   console.log('FormData to load:', formData.value)
-  loadsubcategorias(item.idcategoria)
+  loadsubcategorias(item?.idcategoria ?? null)
   isEditing.value = true
   showForm.value = true
 }
