@@ -36,6 +36,7 @@
       v-model:formulario="formulario"
       :divisa="divisa"
       :is-compressing="isCompressing"
+      :is-saving="procesando"
       :modo-edicion="modoEdicion"
       :cobro-a-editar="cobroAEditar"
       @close="cerrarFormulario"
@@ -99,6 +100,7 @@ const {
   cobroAEditar,
   abrirEdicionCobro,
   editarCobro,
+  procesando, // ✅ nuevo: estado de envío del composable
 } = useCuentasxCobrar()
 
 // Ref tabla hija (para acceso externo si es necesario)

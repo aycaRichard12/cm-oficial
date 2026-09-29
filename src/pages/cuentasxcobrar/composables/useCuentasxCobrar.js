@@ -177,6 +177,9 @@ export function useCuentasxCobrar() {
   const modoEdicion = ref(false)
   const cobroAEditar = ref(null)
 
+  // ── Mutex de envío (anti doble submit) ────
+  const procesando = ref(false)
+
   // Función para abrir el diálogo en modo edición
   function abrirEdicionCobro(cobro) {
     cobroAEditar.value = cobro
@@ -186,11 +189,14 @@ export function useCuentasxCobrar() {
 
   // Función para editar el cobro
   async function editarCobro(onSuccess) {
+    if (procesando.value) return // 🔒 Guard: evita doble submit
+
     if (parseFloat(formulario.value.saldoPorCobrar) < 0) {
       $q.notify({ type: 'negative', message: 'Saldo por cobrar no válido' })
       return
     }
 
+    procesando.value = true
     try {
       let linkPdfSubido = ''
 
@@ -241,6 +247,8 @@ export function useCuentasxCobrar() {
     } catch (error) {
       console.error('Error en editarCobro:', error)
       $q.notify({ type: 'negative', message: error.message })
+    } finally {
+      procesando.value = false
     }
   }
 
@@ -510,6 +518,8 @@ export function useCuentasxCobrar() {
   }
 
   async function registrarCobro(onSuccess) {
+    if (procesando.value) return // 🔒 Guard: evita doble submit
+
     console.log(formulario.value)
     if (parseFloat(formulario.value.saldoPorCobrar) < 0) {
       $q.notify({
@@ -519,6 +529,7 @@ export function useCuentasxCobrar() {
       return
     }
 
+    procesando.value = true
     try {
       let linkPdfSubido = ''
 
@@ -580,6 +591,8 @@ export function useCuentasxCobrar() {
     } catch (error) {
       console.error('Error en el proceso de registro:', error)
       $q.notify({ type: 'negative', message: `${error.message}` })
+    } finally {
+      procesando.value = false
     }
   }
 
@@ -656,6 +669,7 @@ export function useCuentasxCobrar() {
     // Formulario
     formulario,
     isCompressing,
+    procesando,
 
     // Métodos de inicialización
     cargarAlmacenesAutorizados,

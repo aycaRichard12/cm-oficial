@@ -331,10 +331,17 @@
               color="primary"
               icon="check_circle"
               unelevated
-              :disable="parseFloat(localFormulario.saldoPorCobrar) < 0 || isCompressing"
-              :loading="isCompressing"
+              :disable="parseFloat(localFormulario.saldoPorCobrar) < 0 || isCompressing || enviando"
+              :loading="isCompressing || enviando"
             />
-            <q-btn label="Cancelar" color="grey-7" flat icon="close" @click="cerrar" />
+            <q-btn
+              label="Cancelar"
+              color="grey-7"
+              flat
+              icon="close"
+              :disable="enviando"
+              @click="cerrar"
+            />
           </div>
         </q-form>
       </q-card-section>
@@ -353,6 +360,7 @@ const props = defineProps({
   formulario: Object,
   divisa: String,
   isCompressing: Boolean,
+  isSaving: { type: Boolean, default: false },
   modoEdicion: { type: Boolean, default: false },
   cobroAEditar: { type: Object, default: null },
 })
@@ -386,9 +394,14 @@ watch(
   { immediate: true },
 )
 
+// ── Guard local contra doble submit ─────────
+const enviando = ref(false)
+
 function guardar() {
+  if (enviando.value) return // 🔒 Bloquea segundo clic inmediato
+  enviando.value = true
+
   if (props.modoEdicion) {
-    // Emitir evento de edición con los datos del formulario
     emit('editar', { ...localFormulario })
   } else {
     emit('submit', { ...localFormulario })
@@ -503,11 +516,23 @@ function cerrar() {
 // }
 
 watch(model, (abierto) => {
-  if (!abierto && previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
-    previewUrl.value = null
+  if (!abierto) {
+    // Reset del guard al cerrar el diálogo
+    enviando.value = false
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+      previewUrl.value = null
+    }
   }
 })
+
+// Si el composable terminó (éxito o error) y el modal sigue abierto, liberar el guard local
+watch(
+  () => props.isSaving,
+  (saving) => {
+    if (!saving) enviando.value = false
+  },
+)
 
 onMounted(() => {
   listarcajasbanco()
