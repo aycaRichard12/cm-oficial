@@ -194,7 +194,7 @@ const routes = [
         component: () => import('pages/producto/ReporteStockProductoIndividualPage.vue'),
       },
       {
-        path: '/generarcatalogoproductos',
+        path: '/generarCatalogoProductosDisponibles',
         component: () => import('src/components/producto/reportes/ReporteCatalogoProductos.vue'),
       },
       {

@@ -365,34 +365,6 @@ const props = defineProps({
   cobroAEditar: { type: Object, default: null },
 })
 
-const montoOriginal = ref(0)
-watch(
-  () => props.modelValue,
-  (abierto) => {
-    if (abierto && props.modoEdicion && props.cobroAEditar) {
-      // Precargar datos del cobro a editar en localFormulario
-      Object.assign(localFormulario, {
-        fecha: props.cobroAEditar.fecha || new Date().toISOString().split('T')[0],
-        numeroCobros: props.cobroAEditar.ncuotas || 1,
-        totalCobro: props.cobroAEditar.total || props.cobroAEditar.monto || 0,
-        idcajaBancoSeleccionada: props.cobroAEditar.idcaja_bancos || null,
-        comprobante: null, // Se cargará la URL existente en otro campo
-        urlComprobanteExistente:
-          props.cobroAEditar.imagen ||
-          props.cobroAEditar.urlpdf ||
-          props.cobroAEditar.foto_detalle_cobro ||
-          '',
-        iddetalle_cobro: props.cobroAEditar.id,
-      })
-      montoOriginal.value = parseFloat(props.cobroAEditar.total || props.cobroAEditar.monto || 0)
-      // Ajustar saldoPendiente para validaciones: saldoPendiente + montoOriginal
-      localFormulario.saldoPendiente = (
-        parseFloat(localFormulario.saldoPendiente) + montoOriginal.value
-      ).toFixed(2)
-    }
-  },
-  { immediate: true },
-)
 
 // ── Guard local contra doble submit ─────────
 const enviando = ref(false)
@@ -420,7 +392,37 @@ const emit = defineEmits([
   'update:formulario',
 ])
 
+// 1) Primero declaramos el reactive local (evita TDZ)
 const localFormulario = reactive({ ...(props.formulario || {}) })
+
+// 2) Ahora el watch puede usarlo con seguridad (incluso con immediate: true)
+const montoOriginal = ref(0)
+watch(
+  () => props.modelValue,
+  (abierto) => {
+    if (abierto && props.modoEdicion && props.cobroAEditar) {
+      Object.assign(localFormulario, {
+        fecha: props.cobroAEditar.fecha || new Date().toISOString().split('T')[0],
+        numeroCobros: props.cobroAEditar.ncuotas || 1,
+        totalCobro: props.cobroAEditar.total || props.cobroAEditar.monto || 0,
+        idcajaBancoSeleccionada: props.cobroAEditar.idcaja_bancos || null,
+        comprobante: null,
+        urlComprobanteExistente:
+          props.cobroAEditar.imagen ||
+          props.cobroAEditar.urlpdf ||
+          props.cobroAEditar.foto_detalle_cobro ||
+          '',
+        iddetalle_cobro: props.cobroAEditar.id,
+      })
+      montoOriginal.value = parseFloat(props.cobroAEditar.total || props.cobroAEditar.monto || 0)
+      localFormulario.saldoPendiente = (
+        parseFloat(localFormulario.saldoPendiente) + montoOriginal.value
+      ).toFixed(2)
+    }
+  },
+  { immediate: true },
+)
+
 async function listarcajasbanco() {
   try {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)

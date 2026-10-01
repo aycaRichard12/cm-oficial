@@ -27,7 +27,6 @@ import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import imageCompression from 'browser-image-compression'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
-const idempresa = idempresa_md5()
 // ─────────────────────────────────────────────
 // Constantes
 // ─────────────────────────────────────────────
@@ -99,6 +98,9 @@ function formularioInicial() {
 // ─────────────────────────────────────────────
 export function useCuentasxCobrar() {
   const $q = useQuasar()
+
+  // Empresa resuelta dentro del composable (tras login)
+  const idempresa = idempresa_md5()
 
   // ── Divisa ────────────────────────────────
   const currencyStore = useCurrencyStore()
@@ -602,6 +604,23 @@ export function useCuentasxCobrar() {
 
   // ── Vista de detalles ────────────────────
 
+  async function recargarDetalles() {
+    const id = detalleSeleccionado.value.id
+    if (!id) return
+    const response = await api.get(`listadetallecobros/${id}`)
+    const data = response.data
+    if (data.estado === 'error') throw new Error(data.error)
+    detallesCobros.value = data.map((item, index) => ({
+      ...item,
+      numero: index + 1,
+      imagen: item.urlpdf
+        ? `${api.defaults.baseURL}${item.urlpdf}`
+        : item.imagen
+          ? `${api.defaults.baseURL}${item.imagen}`
+          : null,
+    }))
+  }
+
   async function mostrarDetalles(dato) {
     detalleSeleccionado.value = {
       id: dato.id,
@@ -610,26 +629,62 @@ export function useCuentasxCobrar() {
     }
 
     try {
-      const response = await api.get(`listadetallecobros/${dato.id}`)
-      const data = response.data
-      console.log('detalle', data)
-
-      if (data.estado === 'error') throw new Error(data.error)
-
-      detallesCobros.value = data.map((item, index) => ({
-        ...item,
-        numero: index + 1,
-        // Construimos la URL completa usando VITE_API_URL (api.defaults.baseURL) + la ruta guadada
-        imagen: item.urlpdf
-          ? `${api.defaults.baseURL}${item.urlpdf}`
-          : item.imagen
-            ? `${api.defaults.baseURL}${item.imagen}`
-            : null,
-      }))
-
+      await recargarDetalles()
       vistaActiva.value = 'detalles'
     } catch (error) {
       $q.notify({ type: 'negative', message: `Error al cargar detalles: ${error.message}` })
+    }
+  }
+
+  async function eliminarCobro(cobro) {
+    if (procesando.value) return
+
+    if (!cobro || !cobro.id) {
+      $q.notify({ type: 'negative', message: 'Cobro inválido' })
+      return
+    }
+
+    // Confirmación explícita (operación destructiva)
+    const confirmado = await new Promise((resolve) => {
+      $q.dialog({
+        title: 'Eliminar detalle de cobro',
+        message:
+          `¿Confirma eliminar el cobro N° ${cobro.numero ?? cobro.id} por ` +
+          `${formatoMoneda(cobro.total || cobro.monto || 0)}?`,
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => resolve(true))
+        .onCancel(() => resolve(false))
+    })
+    if (!confirmado) return
+
+    procesando.value = true
+    try {
+      const dataForForm = {
+        ver: 'eliminarPagoCuentaxCobrar',
+        iddetalle_cobro: cobro.id,
+        idempresa: idempresa,
+        // forzar_restauracion: false, // opcional
+      }
+      const datos = objectToFormData(dataForForm)
+      const response = await api.post('', datos)
+      const data = response.data
+
+      if (data.estado !== 'exito') {
+        throw new Error(data.mensaje || 'Error al eliminar el cobro')
+      }
+
+      $q.notify({ type: 'positive', message: data.mensaje || 'Cobro eliminado' })
+
+      // Refrescar vista de detalles y tabla principal (saldo recalculado en back)
+      await recargarDetalles()
+      await cargarDatos()
+    } catch (error) {
+      console.error('Error en eliminarCobro:', error)
+      $q.notify({ type: 'negative', message: error.message })
+    } finally {
+      procesando.value = false
     }
   }
 
@@ -694,5 +749,6 @@ export function useCuentasxCobrar() {
     cobroAEditar,
     abrirEdicionCobro,
     editarCobro,
+    eliminarCobro,
   }
 }

@@ -65,6 +65,16 @@
             >
               <q-tooltip>Editar cobro</q-tooltip>
             </q-btn>
+            <q-btn
+              flat
+              round
+              dense
+              color="negative"
+              icon="delete"
+              @click="$emit('eliminar-cobro', props.row)"
+            >
+              <q-tooltip>Eliminar cobro</q-tooltip>
+            </q-btn>
           </div>
         </q-td>
       </template>
@@ -110,7 +120,7 @@ defineProps({
   formatoMoneda: Function,
 })
 
-defineEmits(['back', 'ver-comprobante'])
+defineEmits(['back', 'ver-comprobante', 'editar-cobro', 'eliminar-cobro'])
 
 const esArchivoPDF = (url) => {
   if (!url) return false

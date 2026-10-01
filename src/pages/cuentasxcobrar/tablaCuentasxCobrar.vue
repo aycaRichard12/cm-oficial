@@ -44,7 +44,8 @@
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
-const privilegios = obtenerPermisosPagina()
+// Fallback a [] cuando el usuario no tiene fila en state.permisos
+const privilegios = obtenerPermisosPagina() ?? []
 console.log(privilegios)
 const refHijo = ref(null)
 

@@ -28,6 +28,7 @@
       @back="vistaActiva = 'principal'"
       @ver-comprobante="mostrarImagen"
       @editar-cobro="abrirEdicionCobro"
+      @eliminar-cobro="eliminarCobro"
     />
 
     <!-- Diálogo Registrar Cobro -->
@@ -100,6 +101,7 @@ const {
   cobroAEditar,
   abrirEdicionCobro,
   editarCobro,
+  eliminarCobro, // ✅ nuevo
   procesando, // ✅ nuevo: estado de envío del composable
 } = useCuentasxCobrar()
 
@@ -111,19 +113,23 @@ function handleKeydown(e) {
   if (e.key === 'Escape') cerrarFormulario()
 }
 
+// ─── Event bus: realizar-pago ────────────────────────────────────────────────
+function handleRealizarPago(notification) {
+  const btn = document.getElementById(`btn-${notification.id}`)
+  if (btn) btn.click()
+}
+
 // ─── Ciclo de vida ───────────────────────────────────────────────────────────
 onMounted(async () => {
   window.addEventListener('keydown', handleKeydown)
   await cargarAlmacenesAutorizados()
   await cargarDatos()
 
-  emitter.on('realizar-pago', (notification) => {
-    const btn = document.getElementById(`btn-${notification.id}`)
-    if (btn) btn.click()
-  })
+  emitter.on('realizar-pago', handleRealizarPago)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
+  emitter.off('realizar-pago', handleRealizarPago)
 })
 </script>

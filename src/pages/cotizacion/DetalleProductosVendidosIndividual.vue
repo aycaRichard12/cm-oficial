@@ -624,7 +624,7 @@ const exportarTablaAExcel = () => {
       formularioExcel.push({
         fecha: funGeneral.cambiarFormatoFecha(key.fecha),
         'Nro. Doc.': key.nrofactura,
-        'Tipo de Venta': tipoVentaMap[Number(key.tipoventa)],
+        'Tipo de Venta': key.tipoventa,
         'Código Producto': key.codigo,
         'Código Barras': key.codigobarra,
         'Descripción de Producto': key.descripcion,
@@ -634,7 +634,7 @@ const exportarTablaAExcel = () => {
         Descuento: funGeneral.redondear(parseFloat(key.descuento)),
         'Venta Total': funGeneral.redondear(parseFloat(key.totalventa)),
         'Tipo Pago': key.tipopago,
-        'Nombre Usuario': key.idusuario,
+        'Nombre Usuario': key.vendedor,
         'Sucursal del Cliente': key.sucursalc,
         'Almacén Empresa': key.almacen,
         'Razón Social Empresa': key.cliente,
