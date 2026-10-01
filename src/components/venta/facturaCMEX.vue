@@ -642,6 +642,73 @@
         </q-card>
 
         <q-separator spaced="md" />
+        <!-- Sección Caja / Banco (solo pagos al contado) -->
+        <q-card v-if="!formData.credito" class="q-mb-md">
+          <q-card-section>
+            <h5 class="q-my-sm text-primary" style="font-size: 15px">
+              <q-icon name="account_balance" color="positive" class="q-mr-sm" />
+              Caja / Banco
+            </h5>
+            <div class="row q-col-gutter-md q-pt-sm">
+              <div class="col-12 col-md-6">
+                <label for="cajabanco">Caja / Banco de cobro*</label>
+                <q-select
+                  v-model="formData.cajabanco"
+                  id="cajabanco"
+                  :options="listaCajaBancos"
+                  option-label="label"
+                  option-value="value"
+                  emit-value
+                  map-options
+                  dense
+                  outlined
+                  :rules="[(val) => !!val || 'Seleccione una caja o banco (venta al contado)']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="account_balance" color="positive" />
+                  </template>
+                  <template v-slot:selected-item="scope">
+                    <div v-if="scope.opt" class="q-py-xs">
+                      <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
+                      <span class="q-ml-xs">- {{ scope.opt.nombre }}</span>
+                    </div>
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>
+                          <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                        </q-item-label>
+                        <q-item-label caption>{{ scope.opt.nombre }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:append>
+                    <q-btn
+                      round
+                      dense
+                      flat
+                      icon="refresh"
+                      color="primary"
+                      @click.stop.prevent="cargarCajaBancos"
+                    >
+                      <q-tooltip>Recargar caja/bancos</q-tooltip>
+                    </q-btn>
+                  </template>
+                </q-select>
+                <q-banner
+                  v-if="!listaCajaBancos.length"
+                  dense
+                  rounded
+                  class="bg-warning text-white q-mt-sm"
+                >
+                  No hay cajas/bancos disponibles. Registre una o pulse recargar.
+                </q-banner>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+
         <q-card class="">
           <q-card-section>
             <div class="section-header">
@@ -807,7 +874,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { api } from 'boot/axios'
+import { api, apiCt } from 'boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { defineEmits } from 'vue'
 import { useCurrencyStore, useCurrencyLeyenda } from 'src/stores/currencyStore'
@@ -860,6 +927,7 @@ const formData = ref({
   credito: false,
   tipopago: 'contado',
   metodoPago: null,
+  cajabanco: null,
   puntoventa: null,
   cantidadPagos: 0,
   montoPagos: 0,
@@ -942,6 +1010,7 @@ const clients = ref([])
 const branches = ref([])
 const salesChannels = ref([])
 const metodoPago = ref([])
+const listaCajaBancos = ref([])
 const puntosVenta = ref([])
 const typeDoc = ref([])
 const periodOptions = [
@@ -1033,6 +1102,21 @@ const cargarCanales = async () => {
     console.error('Error cargando canales:', error)
   }
 }
+const cargarCajaBancos = async () => {
+  try {
+    const response = await apiCt.get(`listar_caja_bancos/${CONSTANTES.idempresa}`)
+    listaCajaBancos.value = (response.data || []).map((item) => ({
+      label: item.codigo + ' ' + item.tipo_cuenta,
+      value: item.idcaja_bancos,
+      codigo: item.codigo,
+      nombre: item.tipo_cuenta,
+    }))
+  } catch (error) {
+    console.error('Error al cargar caja bancos:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja/bancos' })
+  }
+}
+
 const cargarMetodoPagoFactura = async () => {
   try {
     const respuesta = await validarUsuario()
@@ -1166,6 +1250,10 @@ const cargarDatosCliente = (client) => {
 }
 
 const toggleCredit = (value) => {
+  if (value) {
+    // Crédito: no se permite caja/banco
+    formData.value.cajabanco = null
+  }
   if (!value) {
     formData.value.cantidadPagos = 0
     formData.value.montoPagos = 0
@@ -1308,6 +1396,7 @@ const onSubmit = async () => {
       montoPagos,
       periodo,
       plazoPersonalizado,
+      cajabanco,
     } = formData.value
     console.log(credito)
     console.log(cliente)
@@ -1315,6 +1404,8 @@ const onSubmit = async () => {
     if (!cliente) throw { message: 'Debe seleccionar un cliente' }
     if (!sucursal || !sucursal.value) throw { message: 'Debe seleccionar una sucursal válida' }
     if (!fecha) throw { message: 'Debe seleccionar una fecha válida' }
+    if (!credito && !cajabanco)
+      throw { message: 'Debe seleccionar una caja o banco para ventas al contado' }
     if ((!canal || !canal.value) && pagosDivididos.length === 0)
       throw { message: 'Debe seleccionar un canal de venta válido' }
     if (!cartData.listaProductos || !cartData.listaProductos.length) {
@@ -1346,6 +1437,8 @@ const onSubmit = async () => {
           { metodoPago: metodoPago, monto: cartData.ventatotal, porcentaje: 100 },
         ])
     cartData.variablePago = 'dividido'
+    // Caja/Banco solo para contado; crédito siempre null
+    cartData.cajabanco = credito ? null : cajabanco
     cartData.nropagos = cantidadPagos
     cartData.fechalimite = fechaLimite
     cartData.valorpagos = montoPagos
@@ -1539,6 +1632,7 @@ const logError = (type, error, context = {}) => {
 // ====================== UTILIDADES ======================
 const resetForm = () => {
   formData.value = {
+    cajabanco: null,
     cliente: null,
     sucursal: null,
     fecha: new Date().toISOString().slice(0, 10),
@@ -1734,6 +1828,7 @@ const eliminarGastoInternacional = (id) => {
 
 onMounted(() => {
   listaCLientes()
+  cargarCajaBancos()
   cargarCanales()
   cargarMetodoPagoFactura()
   cargarPuntoVentas()
