@@ -88,13 +88,13 @@ const handleContinue = () => {
 }
 
 const opciones = [
-  // {
-  //   codigo: 'preforma',
-  //   nombre: 'VENTA PROFORMA',
-  //   descripcion: 'Documento previo a la factura formal',
-  //   icono: 'description',
-  //   color: 'complementary',
-  // },
+  {
+    codigo: 'preforma',
+    nombre: 'VENTA PROFORMA',
+    descripcion: 'Documento previo a la factura formal',
+    icono: 'description',
+    color: 'complementary',
+  },
   {
     codigoDocumentSector: 1,
     codigo: 'facturaCV',
@@ -128,15 +128,31 @@ const opciones = [
     color: 'blue',
   },
 ]
+// const opcionesFiltradas = computed(() => {
+//   // Guard: documentos.value podría ser undefined/null si la API falló
+//   const lista = Array.isArray(documentos.value) ? documentos.value : []
+//   const codigosAutorizados = new Set(
+//     lista
+//       .filter((doc) => doc && Number(doc.isActive) === 1 && doc.codigoDocumentSector != null)
+//       .map((doc) => doc.codigoDocumentSector),
+//   )
+//   return opciones.filter((op) => codigosAutorizados.has(op.codigoDocumentSector))
+// })
 const opcionesFiltradas = computed(() => {
-  // Guard: documentos.value podría ser undefined/null si la API falló
   const lista = Array.isArray(documentos.value) ? documentos.value : []
   const codigosAutorizados = new Set(
     lista
       .filter((doc) => doc && Number(doc.isActive) === 1 && doc.codigoDocumentSector != null)
       .map((doc) => doc.codigoDocumentSector),
   )
-  return opciones.filter((op) => codigosAutorizados.has(op.codigoDocumentSector))
+
+  return opciones.filter((op) => {
+    // La proforma siempre debe aparecer por defecto
+    if (op.codigo === 'preforma') return true
+
+    // Las demás opciones dependen de que su código esté autorizado por la API
+    return codigosAutorizados.has(op.codigoDocumentSector)
+  })
 })
 onMounted(async () => {
   try {
