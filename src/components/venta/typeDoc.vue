@@ -88,13 +88,13 @@ const handleContinue = () => {
 }
 
 const opciones = [
-  {
-    codigo: 'preforma',
-    nombre: 'VENTA PROFORMA',
-    descripcion: 'Documento previo a la factura formal',
-    icono: 'description',
-    color: 'complementary',
-  },
+  // {
+  //   codigo: 'preforma',
+  //   nombre: 'VENTA PROFORMA',
+  //   descripcion: 'Documento previo a la factura formal',
+  //   icono: 'description',
+  //   color: 'complementary',
+  // },
   {
     codigoDocumentSector: 1,
     codigo: 'facturaCV',
