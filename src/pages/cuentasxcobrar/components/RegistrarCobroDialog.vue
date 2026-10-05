@@ -242,6 +242,7 @@
                 map-options
                 class="premium-input"
                 :rules="[(val) => !!val || 'Campo requerido']"
+                @update:model-value="onFieldUpdate"
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="positive" />
@@ -404,7 +405,7 @@ watch(
         fecha: props.cobroAEditar.fecha || new Date().toISOString().split('T')[0],
         numeroCobros: props.cobroAEditar.ncuotas || 1,
         totalCobro: props.cobroAEditar.total || props.cobroAEditar.monto || 0,
-        idcajaBancoSeleccionada: localFormulario.cobroAEditar.idcaja_bancos || null,
+        idcajaBancoSeleccionada: props.cobroAEditar.idcaja_bancos || null,
         comprobante: null,
         urlComprobanteExistente:
           props.cobroAEditar.imagen ||
@@ -417,6 +418,9 @@ watch(
       localFormulario.saldoPendiente = (
         parseFloat(localFormulario.saldoPendiente) + montoOriginal.value
       ).toFixed(2)
+
+      // Propagar al composable para que editarCobro reciba iddetalle_cobro e idcaja_banco
+      emit('update:formulario', { ...localFormulario })
     }
   },
   { immediate: true },
