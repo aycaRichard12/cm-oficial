@@ -362,6 +362,7 @@ const generarReporte = async () => {
         estado_cobro: Number(p.estado_cobro),
         estadoCobroResumido: p.estadoCobroResumido,
         nro: index + 1,
+        numeroFactura: p.numeroFactura || '',
       })) // Initialize with all data
       $q.notify({
         type: 'positive',
@@ -518,10 +519,14 @@ const cargarPDF = async () => {
 
   loading.value = true
   try {
-    const datosTabla = refHijo.value?.obtenerDatos ? refHijo.value.obtenerDatos() : datosFiltrados.value
+    const datosTabla = refHijo.value?.obtenerDatos
+      ? refHijo.value.obtenerDatos()
+      : datosFiltrados.value
     resultadoFiltrado.value = datosTabla || []
 
-    const filterReporte = refHijo.value?.getActiveFiltersReport ? refHijo.value.getActiveFiltersReport() : {}
+    const filterReporte = refHijo.value?.getActiveFiltersReport
+      ? refHijo.value.getActiveFiltersReport()
+      : {}
     const almacen = {
       almacen: filterReporte?.almacen || 'Todos los almacenes',
     }

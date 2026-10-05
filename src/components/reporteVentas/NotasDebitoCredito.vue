@@ -1,6 +1,5 @@
 <template>
   <q-page>
-    
     <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
@@ -204,9 +203,9 @@
       class="q-ma-sm"
       :style="{ maxHeight: 'calc(100vh - 325px)', overflowY: 'auto' }"
     >
-      <template v-slot:body-cell-tipoventa="props">
+      <template v-slot:body-cell-codigoEstado="props">
         <q-td :props="props">
-          {{ tipo[Number(props.row.tipoventa)] }}
+          {{ estadoNota[Number(props.row.codigoEstado)] || props.row.codigoEstado }}
         </q-td>
       </template>
       <template #body-cell-acciones="props">
@@ -304,14 +303,17 @@ const VisibleModalNotaCredito = ref(false)
 const Factura = ref({})
 const pdfData = ref(null)
 const mostrarModal = ref(false)
-const tipo = {
-  0: 'Comprobante Venta',
-  1: 'Factura Compra-Venta',
-  2: 'Factura Alquileres',
-  3: 'Factura Comercial Exportación',
-  24: 'Nota de Crédito-Débido',
-}
 const $q = useQuasar()
+
+const estadoNota = {
+  0: 'Pendiente',
+  609: 'Emitida',
+  690: 'Validada',
+  691: 'Observada',
+  692: 'Rechazada',
+  693: 'Anulada',
+}
+
 const today = new Date()
 const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
@@ -323,9 +325,7 @@ const fechai = ref(startOfMonth.toISOString().slice(0, 10))
 // fecha fin = hoy
 const fechaf = ref(today.toISOString().slice(0, 10))
 
-// Filtros
 const almacen = ref(null)
-const sucursal = ref('')
 const canal = ref(null)
 const tipopago = ref('')
 
@@ -433,30 +433,45 @@ const clearSucursal = () => {
 // Datos de la tabla
 const columnas = [
   { name: 'nro', label: 'N°', field: 'nro', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha' },
+  { name: 'numNota', label: 'N° Nota', field: 'numNota', align: 'left' },
+  { name: 'fechaEmision', label: 'Fecha Emisión', field: 'fechaEmision' },
   { name: 'cliente', label: 'Cliente', field: 'cliente' },
-  //{ name: 'sucursal', label: 'Sucursal', field: 'sucursal' },
-  { name: 'tipoventa', label: 'Tipo-Venta', field: 'tipoventa' },
-  { name: 'tipopago', label: 'Tipo-Pago', field: 'tipopago' },
-  { name: 'nfactura', label: 'Nro.Factura', field: 'nfactura' },
-  { name: 'canal', label: 'Canal', field: 'canal' },
-  { name: 'total', label: 'Total', field: 'total' },
-  { name: 'descuento', label: 'Dscto.', field: 'descuento' },
-  { name: 'ventatotal', label: 'Monto', field: 'ventatotal' },
+  { name: 'nfactura', label: 'Nro. Factura', field: 'nfactura' },
+  { name: 'numeroFactura', label: 'Nro. SIN', field: 'numeroFactura' },
+  { name: 'monto_total_devuelto', label: 'Total Devuelto', field: 'monto_total_devuelto' },
+  {
+    name: 'monto_descuento_credito_debito',
+    label: 'Descuento',
+    field: 'monto_descuento_credito_debito',
+  },
+  {
+    name: 'monto_efectivo_credito_debito',
+    label: 'Efectivo',
+    field: 'monto_efectivo_credito_debito',
+  },
+  { name: 'codigoEstado', label: 'Estado SIN', field: 'codigoEstado' },
   { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
 ]
 
 const rows = ref([])
+const notas = ref([])
 const detalleVenta = ref([])
 
 const ir_a_factura = (row) => {
-  console.log(row)
-  // const urlPDF = 'https://example.com/factura.pdf'
-  window.open(row.shortlink, '_blank')
+  const url = row.shortLink || row.shortlink
+  if (!url) {
+    $q.notify({ type: 'warning', message: 'La nota no tiene enlace de factura' })
+    return
+  }
+  window.open(url, '_blank')
 }
 const ir_a_impuestos = (row) => {
-  console.log(row)
-  window.open(row.urlsin, '_blank')
+  const url = row.urlSin || row.urlsin
+  if (!url) {
+    $q.notify({ type: 'warning', message: 'La nota no tiene enlace del SIN' })
+    return
+  }
+  window.open(url, '_blank')
 }
 // Acciones
 const verDetalle = async (row) => {
@@ -505,6 +520,30 @@ const crearMensaje = async (row) => {
 async function enviarFacturaCorreo(idcliente) {
   PDFenviarFacturaCorreo(idcliente, detalleVenta, $q)
 }
+const cargarNotas = async () => {
+  if (!almacen.value || !almacen.value.value) {
+    $q.notify({ type: 'warning', message: 'Seleccione un almacén para continuar' })
+    return
+  }
+  const enpoint = `listarNotas/${idempresa}/${almacen.value.value}`
+  try {
+    const response = await api.get(enpoint)
+    const data = response.data
+    if (data && data.estado === 'exito') {
+      notas.value = Array.isArray(data.notas) ? data.notas : []
+      rows.value = notas.value
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: (data && data.mensaje) || 'Error al listar notas',
+      })
+    }
+  } catch (error) {
+    console.error('Error al listar notas:', error)
+    $q.notify({ type: 'negative', message: 'No se pudieron cargar las notas' })
+  }
+}
+
 const getDetalleVenta = async (id) => {
   try {
     const response = await api.get(`detallesVenta/${id}/${idempresa}`) // Cambia a tu ruta real
@@ -540,47 +579,27 @@ const exportXLSX = () => {
   exportTOXLSX_Reporte_Ventas(filteredCompra, almacen, fechai, fechaf)
 }
 const onSubmit = async () => {
-  console.log('Generar reporte con filtros:', {
-    fechai: fechai.value,
-    fechaf: fechaf.value,
-    sucursal: sucursal.value,
-    canal: canal.value,
-    almacen: almacen.value,
-    tipopago: tipopago.value,
-  })
-  try {
-    const response = await api.get(`reporteventas/${idusuario}/${fechai.value}/${fechaf.value}`) // Cambia a tu ruta real
-    const datos = response.data
-    const filtrados = datos.filter((obj) => Number(obj.estado) == 1)
-    rows.value = filtrados // Asume que la API devuelve un array
-    console.log(rows.value)
-  } catch (error) {
-    console.error('Error al cargar datos:', error)
-    $q.notify({
-      type: 'negative',
-      message: 'No se pudieron cargar los datos',
-    })
-  }
+  await cargarNotas()
 }
 const processedRows = computed(() => {
-  return rows.value.map((row, index) => ({
-    ...row,
+  return rows.value.map((nota, index) => ({
+    ...nota,
     nro: index + 1,
-    total: redondear(parseFloat(row.ventatotal) + parseFloat(row.descuento)),
+    total: redondear(
+      parseFloat(nota.monto_total_devuelto || 0) +
+        parseFloat(nota.monto_descuento_credito_debito || 0) +
+        parseFloat(nota.monto_efectivo_credito_debito || 0),
+    ),
   }))
 })
 const filteredCompra = computed(() => {
-  return processedRows.value.filter((compra) => {
-    console.log(canal.value, tipopago.value)
-    const porAlmacen = !almacen.value || compra.idalmacen == almacen.value.value
+  return processedRows.value.filter((nota) => {
+    const porAlmacen = !almacen.value || nota.idsucursal == almacen.value.value
     const porCliente =
-      !clienteSeleccionadoId.value || compra.idcliente == clienteSeleccionadoId.value
+      !clienteSeleccionadoId.value || nota.id_cliente == clienteSeleccionadoId.value
     const porSucursal =
-      !SucursalSelecionadoId.value || compra.idsucursal == SucursalSelecionadoId.value
-    const porCanal = !canal.value || compra.idcanal == canal.value?.value
-    const porTipoPago = !tipopago.value || compra.tipopago == tipopago.value?.value
-
-    return porAlmacen && porCliente && porSucursal && porCanal && porTipoPago
+      !SucursalSelecionadoId.value || nota.idsucursal == SucursalSelecionadoId.value
+    return porAlmacen && porCliente && porSucursal
   })
 })
 

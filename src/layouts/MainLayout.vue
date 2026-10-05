@@ -22,11 +22,11 @@
               <div class="logo-area">
                 <div class="row items-center justify-center q-gutter-sm">
                   <div class="logo-badge">
-                    <q-img src="favicon.ico" width="26px" height="26px" />
+                    <q-img src="favicon.png" width="45px" height="45px" fit="contain" />
                   </div>
 
                   <div class="column items-center">
-                    <div class="logo-name">MisterSofts</div>
+                    <q-img src="nombre.png" style="width: 148px; height: 23px" fit="contain" />
                     <div class="logo-sub">COMERCIAL</div>
                   </div>
                 </div>
@@ -429,8 +429,8 @@ const toggleLeftDrawer = () => {
 }
 
 .logo-sub {
-  font-size: 8.5px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #ddd209;

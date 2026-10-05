@@ -244,6 +244,14 @@ const columnas = computed(() => {
       sortable: true,
     },
     {
+      name: 'numeroFactura',
+      label: 'N° Doc',
+      align: 'left',
+      field: 'numeroFactura',
+      dataType: 'number',
+      sortable: true,
+    },
+    {
       name: 'almacen',
       label: 'Almacén',
       align: 'left',

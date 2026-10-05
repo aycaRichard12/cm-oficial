@@ -281,7 +281,14 @@ const columns = [
     dataType: 'date',
     format: (val) => (val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''),
   },
-
+  {
+    name: 'num_documento',
+    align: 'left',
+    label: 'N° Doc',
+    field: 'num_documento',
+    sortable: true,
+    dataType: 'text',
+  },
   {
     name: 'nombre_cliente',
     align: 'left',

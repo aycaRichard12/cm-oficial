@@ -137,6 +137,12 @@ const columnas = [
     format: (val) => (val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''),
   },
   {
+    name: 'num_documento',
+    label: 'N° Doc',
+    field: 'num_documento',
+    align: 'left',
+  },
+  {
     name: 'cuotas',
     label: 'N° cobros',
     field: 'ncuotas',

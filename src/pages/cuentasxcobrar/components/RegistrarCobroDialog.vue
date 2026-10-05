@@ -365,7 +365,6 @@ const props = defineProps({
   cobroAEditar: { type: Object, default: null },
 })
 
-
 // ── Guard local contra doble submit ─────────
 const enviando = ref(false)
 
@@ -405,7 +404,7 @@ watch(
         fecha: props.cobroAEditar.fecha || new Date().toISOString().split('T')[0],
         numeroCobros: props.cobroAEditar.ncuotas || 1,
         totalCobro: props.cobroAEditar.total || props.cobroAEditar.monto || 0,
-        idcajaBancoSeleccionada: props.cobroAEditar.idcaja_bancos || null,
+        idcajaBancoSeleccionada: localFormulario.cobroAEditar.idcaja_bancos || null,
         comprobante: null,
         urlComprobanteExistente:
           props.cobroAEditar.imagen ||

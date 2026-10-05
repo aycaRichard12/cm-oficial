@@ -50,33 +50,34 @@
     </template>
     <template #body-cell-acciones="props">
       <q-td align="center" :props="props">
-        <q-btn
-          id="btnverdetalle"
-          size="sm"
-          icon="visibility"
-          flat
-          @click="$emit('verDetalle', props.row)"
-        />
-        <q-btn
-          size="sm"
-          icon="email"
-          flat
-          color="primary"
-          @click="$emit('crearMensaje', props.row)"
-          class="q-ml-sm"
-          id="btncrearmensaje"
-        />
-        <q-btn-dropdown
-          color="grey-7"
-          flat
-          dense
-          round
-          dropdown-icon="more_vert"
-          no-icon-animation
-          v-if="props.row.tv >= 1"
-        >
-          <q-list style="min-width: 180px">
-            <!-- <q-item clickable v-close-popup @click="$emit('verDetalle', props.row)">
+        <div class="row items-center justify-center no-wrap q-gutter-xs">
+          <q-btn
+            id="btnverdetalle"
+            size="sm"
+            icon="visibility"
+            flat
+            @click="$emit('verDetalle', props.row)"
+          />
+          <q-btn
+            size="sm"
+            icon="email"
+            flat
+            color="primary"
+            @click="$emit('crearMensaje', props.row)"
+            class="q-ml-sm"
+            id="btncrearmensaje"
+          />
+          <q-btn-dropdown
+            color="grey-7"
+            flat
+            dense
+            round
+            dropdown-icon="more_vert"
+            no-icon-animation
+            v-if="props.row.tv >= 1"
+          >
+            <q-list style="min-width: 180px">
+              <!-- <q-item clickable v-close-popup @click="$emit('verDetalle', props.row)">
               <q-item-section avatar>
                 <q-icon name="visibility" size="xs" />
               </q-item-section>
@@ -90,32 +91,33 @@
               <q-item-section>Enviar mensaje</q-item-section>
             </q-item> -->
 
-            <template v-if="props.row.tv >= 1">
-              <q-separator />
+              <template v-if="props.row.tv >= 1">
+                <q-separator />
 
-              <q-item clickable v-close-popup @click="$emit('irAFactura', props.row)">
-                <q-item-section avatar>
-                  <q-icon name="receipt_long" color="blue" size="xs" />
-                </q-item-section>
-                <q-item-section>Ver Factura</q-item-section>
-              </q-item>
+                <q-item clickable v-close-popup @click="$emit('irAFactura', props.row)">
+                  <q-item-section avatar>
+                    <q-icon name="receipt_long" color="blue" size="xs" />
+                  </q-item-section>
+                  <q-item-section>Ver Factura</q-item-section>
+                </q-item>
 
-              <q-item clickable v-close-popup @click="$emit('irAImpuestos', props.row)">
-                <q-item-section avatar>
-                  <q-icon name="policy" color="warning" size="xs" />
-                </q-item-section>
-                <q-item-section>Ver URL SIN</q-item-section>
-              </q-item>
+                <q-item clickable v-close-popup @click="$emit('irAImpuestos', props.row)">
+                  <q-item-section avatar>
+                    <q-icon name="policy" color="warning" size="xs" />
+                  </q-item-section>
+                  <q-item-section>Ver URL SIN</q-item-section>
+                </q-item>
 
-              <q-item clickable v-close-popup @click="$emit('abrirModalNota', props.row)">
-                <q-item-section avatar>
-                  <q-icon name="account_balance_wallet" color="orange" size="xs" />
-                </q-item-section>
-                <q-item-section>Nota Crédito/Débito</q-item-section>
-              </q-item>
-            </template>
-          </q-list>
-        </q-btn-dropdown>
+                <q-item clickable v-close-popup @click="$emit('abrirModalNota', props.row)">
+                  <q-item-section avatar>
+                    <q-icon name="account_balance_wallet" color="orange" size="xs" />
+                  </q-item-section>
+                  <q-item-section>Nota Crédito/Débito</q-item-section>
+                </q-item>
+              </template>
+            </q-list>
+          </q-btn-dropdown>
+        </div>
       </q-td>
     </template>
   </BaseFilterableTable>
@@ -177,6 +179,14 @@ const columnas = [
     headerStyle: 'width: 90px',
   },
   {
+    name: 'nfactura',
+    label: 'Nro.Fact',
+    field: 'nfactura',
+    dataType: 'text',
+    style: 'width: 50px',
+    headerStyle: 'width: 50px',
+  },
+  {
     name: 'almacen',
     label: 'Almacén',
     field: 'almacen',
@@ -231,14 +241,7 @@ const columnas = [
     style: 'width: 120px',
     headerStyle: 'width: 120px',
   },
-  {
-    name: 'nfactura',
-    label: 'Nro.Fact',
-    field: 'nfactura',
-    dataType: 'text',
-    style: 'width: 50px',
-    headerStyle: 'width: 50px',
-  },
+
   {
     name: 'canal',
     label: 'Canal',

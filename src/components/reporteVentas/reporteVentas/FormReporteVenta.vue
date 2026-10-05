@@ -144,7 +144,7 @@ const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 const tipo = {
   0: 'Comprobante Venta',
-  1: 'Factura Compra-Venta',
+  1: 'Fact C-V',
   2: 'Factura Alquileres',
   3: 'Factura Comercial Exportación',
   24: 'Nota de Crédito-Débido',
