@@ -1,0 +1,174 @@
+name: Despliegue Quasar
+
+on:
+  # Servidor 1: automático todos los días a las 04:00 UTC = 04:00 Bolivia
+  schedule:
+    - cron: '0 4 * * *'
+
+  # Permite ejecutar manualmente cualquiera de los despliegues
+  workflow_dispatch:
+    inputs:
+      servidor:
+        description: 'Servidor a desplegar'
+        required: true
+        type: choice
+        options:
+          - servidor1
+          - servidor2
+
+jobs:
+  # ==========================================================
+  # SERVIDOR 1 - AUTOMÁTICO (00:00 Bolivia) + MANUAL
+  # ==========================================================
+  servidor1:
+    name: Desplegar Servidor 1
+    runs-on: ubuntu-latest
+
+    # Se ejecuta siempre en el cron, o si manualmente eliges "servidor1"
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.servidor == 'servidor1'
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # --------------------------------------------------------
+      # CREAR EL .env DEL SERVIDOR 1 DESDE EL SECRETO
+      # --------------------------------------------------------
+      - name: Crear archivo .env para Servidor 1
+        run: |
+          cat > .env << 'EOF'
+          ${{ secrets.ENV_FILE_SERVIDOR_1 }}
+          EOF
+        shell: bash
+
+      # --------------------------------------------------------
+      # BUILD SERVIDOR 1
+      # --------------------------------------------------------
+      - name: Construir PWA para Servidor 1
+        run: |
+          pnpm exec quasar clean
+          pnpm exec quasar build -m pwa
+
+      # --------------------------------------------------------
+      # LIMPIAR ASSETS DEL SERVIDOR 1
+      # --------------------------------------------------------
+      - name: Limpiar assets del Servidor 1
+        env:
+          FTP_SERVER: ${{ secrets.FTP1_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP1_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP1_PASSWORD }}
+          FTP_TARGET_DIR: ${{ secrets.FTP1_TARGET_DIR }}
+        run: |
+          python3 pyLimpiarCarpetaAssetsGithub.py
+
+      # --------------------------------------------------------
+      # SUBIR PWA AL SERVIDOR 1
+      # --------------------------------------------------------
+      - name: Subir PWA al Servidor 1
+        env:
+          FTP_SERVER: ${{ secrets.FTP1_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP1_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP1_PASSWORD }}
+          FTP_TARGET_DIR: ${{ secrets.FTP1_TARGET_DIR }}
+        run: |
+          python3 pySubirDistAlServidorGithub.py
+
+  # ==========================================================
+  # SERVIDOR 2 - SOLO MANUAL
+  # ==========================================================
+  servidor2:
+    name: Desplegar Servidor 2
+    runs-on: ubuntu-latest
+
+    # Solo se ejecuta si manualmente eliges "servidor2"
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.servidor == 'servidor2'
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+          run_install: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # --------------------------------------------------------
+      # CREAR EL .env DEL SERVIDOR 2 DESDE EL SECRETO
+      # --------------------------------------------------------
+      - name: Crear archivo .env para Servidor 2
+        run: |
+          cat > .env << 'EOF'
+          ${{ secrets.ENV_FILE_SERVIDOR_2 }}
+          EOF
+        shell: bash
+
+      # --------------------------------------------------------
+      # BUILD SERVIDOR 2
+      # --------------------------------------------------------
+      - name: Construir PWA para Servidor 2
+        run: |
+          pnpm exec quasar clean
+          pnpm exec quasar build -m pwa
+
+      # --------------------------------------------------------
+      # LIMPIAR ASSETS DEL SERVIDOR 2
+      # --------------------------------------------------------
+      - name: Limpiar assets del Servidor 2
+        env:
+          FTP_SERVER: ${{ secrets.FTP2_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP2_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP2_PASSWORD }}
+          FTP_TARGET_DIR: ${{ secrets.FTP2_TARGET_DIR }}
+        run: |
+          python3 pyLimpiarCarpetaAssetsGithub.py
+
+      # --------------------------------------------------------
+      # SUBIR PWA AL SERVIDOR 2
+      # --------------------------------------------------------
+      - name: Subir PWA al Servidor 2
+        env:
+          FTP_SERVER: ${{ secrets.FTP2_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP2_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP2_PASSWORD }}
+          FTP_TARGET_DIR: ${{ secrets.FTP2_TARGET_DIR }}
+        run: |
+          python3 pySubirDistAlServidorGithub.py
