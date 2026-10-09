@@ -2575,6 +2575,36 @@ async function enviarDatos() {
 
   carritoCO.tipoOperacion = tipoOperacion.value?.value
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Confi-conta: sólo para Cotización Preferencial (tipoOperacion === 1)
+  // Regla:
+  //   - Crédito + config "Ventas sin factura Credito" → 2, si no → 3
+  //   - Contado + config "Ventas sin factura Contado" → 2, si no → 3
+  // ─────────────────────────────────────────────────────────────────────────
+  if (Number(tipoOperacion.value?.value) === 1) {
+    let confiConta = []
+    try {
+      const rawConfi = localStorage.getItem('mistersofts-cm-confi-conta')
+      const parsedConfi = rawConfi ? JSON.parse(rawConfi) : []
+      confiConta = Array.isArray(parsedConfi) ? parsedConfi : []
+    } catch (e) {
+      console.error('[confi-conta] Error parseando configuracion:', e)
+      confiConta = []
+    }
+
+    if (carritoCO.credito) {
+      const tieneConfigCredito = confiConta.some(
+        (item) => item?.nombre_operacion === 'Ventas sin factura Credito',
+      )
+      carritoCO.mistersofts_cm_confi_conta = tieneConfigCredito ? 2 : 3
+    } else {
+      const tieneConfigContado = confiConta.some(
+        (item) => item?.nombre_operacion === 'Ventas sin factura Contado',
+      )
+      carritoCO.mistersofts_cm_confi_conta = tieneConfigContado ? 2 : 3
+    }
+  }
+
   // Preparar los datos de pago según la modalidad seleccionada
   if (carritoCO.variablePago === 'directo') {
     carritoCO.pagosDivididos = [
