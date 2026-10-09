@@ -123,6 +123,7 @@ const ocultarTabs = () => {
 const irdashboard = () => {
   localStorage.removeItem('mistersofts-cm')
   localStorage.removeItem('mistersofts-cmmenu')
+  localStorage.removeItem('mistersofts-cm-confi-conta')
   localStorage.removeItem('puedeIniciarsesion')
   sessionStorage.setItem('logoutIntencional', 'true')
   window.location.replace('login')

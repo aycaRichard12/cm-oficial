@@ -189,6 +189,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
+import { apiCt } from 'src/boot/axios'
 
 const username = ref('')
 const password = ref('')
@@ -240,6 +241,31 @@ const isAuthenticated = userData && userData !== 'undefined' && userData !== 'nu
 
 if (isAuthenticated) {
   router.push('/')
+}
+
+const CACHE_KEY_CONFI_CONTA = 'mistersofts-cm-confi-conta'
+
+// Carga la configuración contable (asientos/operaciones/módulos) desde la API
+// de contabilidad y la persiste en localStorage. Nunca propaga errores.
+const cargarConfiguracionContable = async (idempresa) => {
+  if (!idempresa) {
+    console.warn('[confi-conta] idempresa no disponible, se omite la carga')
+    return
+  }
+  try {
+    const { data } = await apiCt.get(`listar_confi_conta_integracion/${idempresa}`)
+    const lista = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+        ? data.data
+        : []
+    localStorage.setItem(CACHE_KEY_CONFI_CONTA, JSON.stringify(lista))
+    console.log('[confi-conta] Configuracion guardada:', lista)
+  } catch (error) {
+    console.error('[confi-conta] Error al obtener configuracion:', error?.message || error)
+    // Guardar arreglo vacio para no dejar datos obsoletos de una sesion previa
+    localStorage.setItem(CACHE_KEY_CONFI_CONTA, JSON.stringify([]))
+  }
 }
 
 const login = async () => {
@@ -304,6 +330,11 @@ const login = async () => {
       localStorage.setItem('mistersofts-cm', JSON.stringify(userData))
       localStorage.setItem('mistersofts-cmmenu', JSON.stringify(userMenu))
       localStorage.setItem('puedeIniciarsesion', 'true')
+
+      // Cargar configuracion contable (no bloquea el login: se ejecuta en 2do plano).
+      cargarConfiguracionContable(userData[0]?.empresa?.idempresa).catch((e) =>
+        console.error('[confi-conta] Error inesperado:', e),
+      )
       console.log('userData', userData)
       console.log('userMenu', userMenu)
 
