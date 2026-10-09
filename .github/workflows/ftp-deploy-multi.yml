@@ -1,9 +1,9 @@
 name: Despliegue Quasar
 
 on:
-  # Servidor 1: automático todos los días a las 04:00 UTC = 04:00 Bolivia
+  # Servidor 1: automático todos los días a las 00:00 UTC = 00:00 Bolivia
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 0 * * *'
 
   # Permite ejecutar manualmente cualquiera de los despliegues
   workflow_dispatch:
