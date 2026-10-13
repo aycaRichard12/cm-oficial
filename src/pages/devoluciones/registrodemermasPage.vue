@@ -812,37 +812,7 @@ async function cargarProveedores() {
     $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
   }
 }
-async function cargarComprasLotes() {
-  const d = detailForm.value
-  console.log(d)
-  try {
-    const response = await api.get(`listaLotesxProductoProveedor/${idempresa}`)
-    const res = response.data
-    const respuesta = res.data.filter(
-      (item) => Number(item.idproducto) === Number(d.idproductoalmacen),
-    )
 
-    const filtrado = respuesta.map((item) => ({
-      label:
-        'Nro Fac: ' +
-        item.nfactura +
-        ' Com: ' +
-        item.lote +
-        ' Cod: ' +
-        item.codigo +
-        ' Prov.: ' +
-        item.proveedor,
-      value: item.idingreso,
-      idproveedor: item.idproveedor,
-      idproducto: item.idproducto,
-    }))
-    ComprasOriginales.value = filtrado
-    Compras.value = filtrado
-  } catch (error) {
-    console.error('Error al cargar compras:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar las compras' })
-  }
-}
 const filtrarProductos = (val, update) => {
   update(() => {
     if (val === '') {
@@ -879,6 +849,8 @@ const resetDetailForm = () => {
     cantidad: 0,
     stock: 0,
     idalmacen: 0,
+    proveedor: null,
+    compra: null,
   }
   detailEditMode.value = false
 }
@@ -933,7 +905,10 @@ const submitDetailForm = async () => {
       idmerma: detailForm.value.idmerma,
       idproductoalmacen: detailForm.value.idproductoalmacen,
       cantidad: detailForm.value.cantidad,
-      compra: detailForm.value.compra,
+      // El backend valida y persiste contra stock_lote
+      id_lote: detailForm.value.compra,
+      // compra legacy: null para no confundir idcompra con id_lote
+      compra: null,
       CodigosUnicosSeleccionados: registrarComoProductoUnico.value
         ? CodigosUnicosSeleccionados.value
         : [],
@@ -1062,7 +1037,7 @@ const filterFn = (val, update) => {
       filteredProveedores.value = Proveedores.value
     } else {
       const needle = val.toLowerCase()
-      const paraFiltrar = filteredProveedores.value
+      const paraFiltrar = Proveedores.value
       filteredProveedores.value = paraFiltrar.filter((v) => v.label.toLowerCase().includes(needle))
     }
   })
@@ -1071,12 +1046,9 @@ const filterlotes = (val, update) => {
   update(() => {
     if (val === '') {
       filterCompras.value = Compras.value
-      console.log(filterCompras.value)
     } else {
-      const fc = filterCompras.value
       const needle = val.toLowerCase()
-
-      filterCompras.value = fc.filter((v) => v.label.toLowerCase().includes(needle))
+      filterCompras.value = Compras.value.filter((v) => v.label.toLowerCase().includes(needle))
     }
   })
 }
@@ -1131,12 +1103,63 @@ const backToMainForm = () => {
     })
 }
 
-const selectProduct = (id) => {
+const selectProduct = async (id) => {
   const product = availableProducts.value.find((p) => p.idproductoalmacen == id)
   if (product) {
     detailForm.value.stock = product.stock
   }
-  cargarComprasLotes()
+  // Al cambiar de producto se limpia el lote seleccionado
+  detailForm.value.compra = null
+  ComprasOriginales.value = []
+  Compras.value = []
+  filterCompras.value = []
+  if (id) {
+    await cargarLotesPorProducto(id)
+  }
+}
+
+const cargarLotesPorProducto = async (idproductoalmacen) => {
+  if (!idproductoalmacen) return
+  try {
+    const response = await api.get(`listarLotesPorProductoAlmacen/${idproductoalmacen}`)
+    const res = response.data
+    if (!res || res.estado !== 'exito') {
+      throw new Error((res && res.mensaje) || 'Error al cargar lotes')
+    }
+    const lotes = Array.isArray(res.data) ? res.data : []
+    const mapped = lotes.map((l) => ({
+      label:
+        'Lote #' +
+        l.id_lote +
+        ' | Fact: ' +
+        (l.nfactura || '-') +
+        ' | Prov: ' +
+        (l.proveedor_nombre || '-') +
+        ' | Disp: ' +
+        l.cantidad_disponible,
+      value: Number(l.id_lote),
+      id_lote: Number(l.id_lote),
+      idproveedor: null,
+      cantidad_disponible: Number(l.cantidad_disponible),
+      costo_unitario: Number(l.costo_unitario),
+      fecha_entrada: l.fecha_entrada,
+    }))
+    ComprasOriginales.value = mapped
+    Compras.value = mapped
+    filterCompras.value = [...mapped]
+    // Auto-seleccion PEPS: el backend ordena por fecha_entrada ASC
+    if (mapped.length > 0) {
+      detailForm.value.compra = mapped[0].value
+    }
+  } catch (error) {
+    console.error('Error al cargar lotes:', error)
+    $q.notify({
+      type: 'negative',
+      message:
+        (error.response && error.response.data && error.response.data.mensaje) ||
+        'No se pudieron cargar los lotes',
+    })
+  }
 }
 
 const validateQuantity = () => {
