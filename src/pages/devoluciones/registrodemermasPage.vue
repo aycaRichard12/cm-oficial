@@ -69,85 +69,88 @@
         </div>
 
         <!-- Tabla de Mermas -->
-        <q-table
-          id="tablamermas"
-          title="Registro de Mermas"
-          :rows="filteredTableData"
-          :columns="columns"
-          row-key="id"
-          :filter="filter"
-          :loading="loading"
-          dense
-        >
-          <template v-slot:top-right> </template>
-          <template v-slot:body-cell-autorizacion="props">
-            <q-td :props="props">
-              <q-badge
-                color="green"
-                v-if="Number(props.row.autorizacion) === 1"
-                label="Autorizado"
-                outline
-              />
-              <q-badge color="red" v-else label="No Autorizado" outline />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-detalle="props">
-            <q-td :props="props">
-              <q-btn
-                id="btnverdetallemerma"
-                dense
-                color="primary"
-                icon="shopping_cart"
-                flat
-                size="10px"
-                @click="showDetails(props.row.id, props.row.idalmacen, props.row.autorizacion)"
-              />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-actions="props">
-            <q-td :props="props">
-              <q-btn
-                id="btneditarmerma"
-                v-if="Number(props.row.autorizacion) === 2 && editar"
-                dense
-                color="primary"
-                icon="edit"
-                class="q-mr-xs"
-                flat=""
-                @click="editItem(props.row.id)"
-              />
-              <q-btn
-                id="btneliminarmerma"
-                v-if="Number(props.row.autorizacion) === 2 && eliminar"
-                dense
-                color="negative"
-                icon="delete"
-                class="q-mr-xs"
-                flat
-                @click="deleteItem(props.row.id)"
-              />
+        <div v-if="lectura">
+          <q-table
+            id="tablamermas"
+            title="Registro de Mermas"
+            :rows="filteredTableData"
+            :columns="columns"
+            row-key="id"
+            :filter="filter"
+            :loading="loading"
+            dense
+          >
+            <template v-slot:top-right> </template>
+            <template v-slot:body-cell-autorizacion="props">
+              <q-td :props="props">
+                <q-badge
+                  color="green"
+                  v-if="Number(props.row.autorizacion) === 1"
+                  label="Autorizado"
+                  outline
+                />
+                <q-badge color="red" v-else label="No Autorizado" outline />
+              </q-td>
+            </template>
+            <template v-slot:body-cell-detalle="props">
+              <q-td :props="props">
+                <q-btn
+                  id="btnverdetallemerma"
+                  dense
+                  color="primary"
+                  icon="shopping_cart"
+                  flat
+                  size="10px"
+                  @click="showDetails(props.row.id, props.row.idalmacen, props.row.autorizacion)"
+                />
+              </q-td>
+            </template>
+            <template v-slot:body-cell-actions="props">
+              <q-td :props="props">
+                <q-btn
+                  id="btneditarmerma"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
+                  dense
+                  color="primary"
+                  icon="edit"
+                  class="q-mr-xs"
+                  flat=""
+                  @click="editItem(props.row.id)"
+                />
+                <q-btn
+                  id="btneliminarmerma"
+                  v-if="Number(props.row.autorizacion) === 2 && eliminar"
+                  dense
+                  color="negative"
+                  icon="delete"
+                  class="q-mr-xs"
+                  flat
+                  @click="deleteItem(props.row.id)"
+                />
 
-              <q-btn
-                id="btncomprobantemerma"
-                v-if="Number(props.row.autorizacion) === 1"
-                dense
-                color="red"
-                icon="picture_as_pdf"
-                flat
-                @click="showComprobante(props.row)"
-              />
-              <q-btn
-                id="btncambiarestadomerma"
-                v-if="Number(props.row.autorizacion) === 2 && editar"
-                :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
-                dense
-                flat
-                :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
-                @click="togglestatus(props.row)"
-              />
-            </q-td>
-          </template>
-        </q-table>
+                <q-btn
+                  id="btncomprobantemerma"
+                  v-if="Number(props.row.autorizacion) === 1"
+                  dense
+                  color="red"
+                  icon="picture_as_pdf"
+                  flat
+                  @click="showComprobante(props.row)"
+                />
+                <q-btn
+                  id="btncambiarestadomerma"
+                  v-if="Number(props.row.autorizacion) === 2 && editar"
+                  :icon="Number(props.row.autorizacion) === 1 ? 'toggle_on' : 'toggle_off'"
+                  dense
+                  flat
+                  :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
+                  @click="togglestatus(props.row)"
+                />
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+
         <q-dialog v-model="collapseVisible" persistent>
           <q-card class="responsive-dialog">
             <q-card-section class="bg-primary text-h6 text-white flex justify-between">
@@ -390,14 +393,14 @@
                 />
               </div>
 
-              <div class="col-md-2">
+              <div class="col-12 col-md-2 flex items-end justify-end">
                 <q-btn
                   id="btnanadirdetallemerma"
                   type="submit"
                   color="primary"
-                  class="btn-res q-mt-lg"
+                  class="btn-res q-mt-md full-width"
                 >
-                  <q-icon name="save" class="icono" />
+                  <q-icon name="save" class="icono q-mr-xs" />
                   <span class="texto">{{ detailEditMode ? 'Actualizar' : 'Cargar' }}</span>
                 </q-btn>
               </div>
@@ -410,7 +413,14 @@
             row-key="id"
             class="q-mt-md"
             :loading="detailLoading"
+            :rows-per-page-options="[0]"
           >
+            <template v-slot:no-data>
+              <div class="full-width row flex-center text-grey-6 q-pa-md">
+                <q-icon name="inbox" size="sm" class="q-mr-sm" />
+                No hay productos en el detalle
+              </div>
+            </template>
             <template v-slot:body="props">
               <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
                 <q-td auto-width>
@@ -428,7 +438,9 @@
                 </q-td>
 
                 <q-td key="numero" :props="props">
-                  {{ props.row.numero }}
+                  <q-badge color="primary" outline>
+                    {{ detailData.indexOf(props.row) + 1 }}
+                  </q-badge>
                 </q-td>
                 <q-td key="codigolote" :props="props">
                   <q-chip outline color="primary" label-slot dense>
@@ -562,7 +574,6 @@ const guardarCodigosEnVenta = (codigos) => {
 const lote = ref(true)
 const listaCajaBancos = ref([])
 const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
-console.log(lectura)
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const warehouses = useAlmacenStore()
@@ -663,20 +674,14 @@ const detailColumns = [
 
 // Computed properties
 const filteredTableData = computed(() => {
-  if (!selectedWarehouse.value) return tableData.value
-  console.log(selectedWarehouse.value)
-  const almacen = selectedWarehouse.value
-  console.log(almacen)
-  if (almacen) {
-    if (almacen.value == 0) {
-      console.log(almacen)
-      return tableData.value.filter((camp) => camp.idalmacen == 0)
-    } else {
-      return tableData.value.filter((camp) => camp.idalmacen == almacen)
-    }
-  } else {
-    return []
+  if (selectedWarehouse.value === null || selectedWarehouse.value === undefined) {
+    return tableData.value
   }
+  const almacen = selectedWarehouse.value
+  if (Number(almacen) === 0) {
+    return tableData.value.filter((camp) => Number(camp.idalmacen) === 0)
+  }
+  return tableData.value.filter((camp) => Number(camp.idalmacen) === Number(almacen))
 })
 
 // Métodos
@@ -814,6 +819,10 @@ const resetDetailForm = () => {
     idalmacen: 0,
     compra: null,
   }
+  // Limpiar lotes cargados para evitar enviar un id_lote de otro producto
+  ComprasOriginales.value = []
+  Compras.value = []
+  filterCompras.value = []
   detailEditMode.value = false
 }
 
@@ -860,7 +869,6 @@ const submitForm = async () => {
 }
 
 const submitDetailForm = async () => {
-  console.log(CodigosUnicosSeleccionados.value)
   // No permitir registrar merma con cantidad 0 o invalida
   if (!detailForm.value.cantidad || Number(detailForm.value.cantidad) <= 0) {
     $q.notify({
@@ -1124,28 +1132,20 @@ const editDetailItem = async (id) => {
     const response = await api.get(`verificarExistenciaDetalleMerma/${id}`)
 
     if (response.data.estado === 'exito') {
+      const datos = response.data.datos
+      // Cargar lotes del producto para poder preseleccionar el lote existente
+      await cargarLotesPorProducto(Number(datos.idproductoalmacen))
+
       detailForm.value = {
-        id: response.data.datos.id,
+        id: datos.id,
         idmerma: detailForm.value.idmerma,
-        idproductoalmacen: {
-          idproductoalmacen: response.data.datos.idproductoalmacen,
-          label: `${response.data.datos.codigo} - ${response.data.datos.descripcion}`,
-        },
-        cantidad: response.data.datos.cantidad,
-        stock: response.data.datos.stock,
-      }
-
-      // Buscar el producto seleccionado para mostrarlo en el select
-
-      //  idproductoalmacen: Number(product.idproductoalmacen),
-      // label: `${product.codigo} - ${product.descripcion}`,
-      // stock: product.stock,
-      const product = availableProducts.value.find(
-        (p) => p.idproductoalmacen == response.data.datos.idproductoalmacen,
-      )
-
-      if (product) {
-        detailForm.value.productLabel = product.label
+        // Numero, no objeto, para que el q-select lo resuelva con option-value
+        idproductoalmacen: Number(datos.idproductoalmacen),
+        cantidad: datos.cantidad,
+        stock: datos.stock,
+        idalmacen: detailForm.value.idalmacen,
+        // Preseleccionar lote si el backend lo expone
+        compra: datos.id_lote ?? Compras.value[0]?.value ?? null,
       }
 
       detailEditMode.value = true
