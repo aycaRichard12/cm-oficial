@@ -265,9 +265,6 @@
               <div class="col-12 col-md-8" id="productodetalleextravio">
                 <div class="row items-center">
                   <!-- Label y checkbox en la misma fila -->
-                  <div class="col-auto">
-                    <label for="producto" class="q-mr-md">Producto</label>
-                  </div>
 
                   <div class="col-auto">
                     <div v-if="esProductoUnico" class="unique-product-section">
@@ -300,7 +297,6 @@
                       input-debounce="300"
                       clearable
                       @filter="filtrarProductos"
-                      @update:model-value="cargarComprasLotes"
                     >
                       <template v-slot:no-option>
                         <q-item>
@@ -330,7 +326,11 @@
                   dense
                   outlined
                   type="number"
-                  :rules="[(val) => val <= formularioDetalle.stock || 'Cantidad excede stock']"
+                  min="1"
+                  :rules="[
+                    (val) => Number(val) > 0 || 'La cantidad debe ser mayor a 0',
+                    (val) => val <= formularioDetalle.stock || 'Cantidad excede stock',
+                  ]"
                 />
               </div>
               <UniqueProductSelector
@@ -351,27 +351,7 @@
                   title="CAMBIAR TIPO REPORTE"
                 />
               </div>
-              <div class="col-12 col-md-3" v-if="lote" id="proveedordetalleextravio">
-                <label for="provedor">Filtrar por proveedor:</label>
-                <q-select
-                  v-model="formularioDetalle.proveedor"
-                  :options="filteredProveedores"
-                  id="provedor"
-                  dense
-                  outlined
-                  emit-value
-                  map-options
-                  use-input
-                  fill-input
-                  hide-selected
-                  input-debounce="0"
-                  clearable
-                  @clear="limpiarComprasFiltradas"
-                  @filter="filterFn"
-                  @update:model-value="filtrarComprasxProveedor"
-                />
-              </div>
-              <div class="col-12 col-md-9" v-if="lote" id="compradetalleextravio">
+              <div class="col-12 col-md-12" v-if="lote" id="compradetalleextravio">
                 <label for="compras">Seleccionar Lote de Compra/Producción:</label>
                 <q-select
                   v-model="formularioDetalle.compra"
@@ -391,7 +371,7 @@
               </div>
             </div>
 
-            <div class="col-12 flex justify-end q-ma-md">
+            <div class="col-12 flex justify-end q-mt-md q-mb-sm">
               <q-btn
                 id="btnanadirdetalleextravio"
                 type="submit"
@@ -416,7 +396,14 @@
             row-key="id"
             flat
             bordered
+            :rows-per-page-options="[0]"
           >
+            <template v-slot:no-data>
+              <div class="full-width row flex-center text-grey-6 q-pa-md">
+                <q-icon name="inbox" size="sm" class="q-mr-sm" />
+                No hay productos en el detalle
+              </div>
+            </template>
             <template v-slot:body="props">
               <q-tr :props="props" :class="props.expand ? 'bg-blue-1' : ''">
                 <q-td auto-width>
@@ -434,7 +421,9 @@
                 </q-td>
 
                 <q-td key="numero" :props="props">
-                  {{ props.row.numero }}
+                  <q-badge color="primary" outline>
+                    {{ detalleRobo.indexOf(props.row) + 1 }}
+                  </q-badge>
                 </q-td>
                 <q-td key="codigolote" :props="props">
                   <q-chip outline color="primary" label-slot dense>
@@ -612,8 +601,6 @@ const detalleActual = ref({})
 
 const modaldetalleProductos = ref(false)
 const autorizadoRobo = ref(false)
-const filteredProveedores = ref([])
-const Proveedores = ref([])
 const ComprasOriginales = ref([])
 const Compras = ref([])
 const filterCompras = ref([])
@@ -631,7 +618,6 @@ const formularioDetalle = ref({
   cantidad: 0,
   stock: 0,
   producto: null,
-  proveedor: null,
   compra: null,
 })
 
@@ -891,7 +877,6 @@ const mostrarDetalle = async (idRobo, idalmacen, estado, row) => {
   modaldetalleProductos.value = true
   await cargarProductosDisponibles(idRobo, idalmacen)
   await listarDetalleRobo(idRobo)
-  await cargarProveedores()
 }
 
 const cargarProductosDisponibles = async (idRobo, idalmacen) => {
@@ -913,48 +898,52 @@ const cargarProductosDisponibles = async (idRobo, idalmacen) => {
     })
   }
 }
-async function cargarProveedores() {
+async function cargarComprasLotes(idproductoalmacen) {
+  const id = idproductoalmacen ?? formularioDetalle.value.idproductoalmacen
+  if (!id) return
+  // Al cambiar de producto se limpia el lote seleccionado
+  formularioDetalle.value.compra = null
+  ComprasOriginales.value = []
+  Compras.value = []
+  filterCompras.value = []
   try {
-    const response = await api.get(`listaProveedor/${idempresa}`)
-    console.log(response)
-    Proveedores.value = response.data.map((item) => ({
-      label: item.nombre,
-      value: item.id,
-    }))
-  } catch (error) {
-    console.error('Error al cargar proveedores:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
-  }
-}
-async function cargarComprasLotes() {
-  const d = formularioDetalle.value
-  console.log(d)
-  try {
-    const response = await api.get(`listaLotesxProductoProveedor/${idempresa}`)
+    const response = await api.get(`listarLotesPorProductoAlmacen/${id}`)
     const res = response.data
-    const respuesta = res.data.filter(
-      (item) => Number(item.idproducto) === Number(d.idproductoalmacen),
-    )
-
-    const filtrado = respuesta.map((item) => ({
+    if (!res || res.estado !== 'exito') {
+      throw new Error((res && res.mensaje) || 'Error al cargar lotes')
+    }
+    const lotes = Array.isArray(res.data) ? res.data : []
+    const mapped = lotes.map((l) => ({
       label:
-        'Nro Fac: ' +
-        item.nfactura +
-        ' Com: ' +
-        item.lote +
-        ' Cod: ' +
-        item.codigo +
-        ' Prov.: ' +
-        item.proveedor,
-      value: item.idingreso,
-      idproveedor: item.idproveedor,
-      idproducto: item.idproducto,
+        'Lote #' +
+        l.id_lote +
+        ' | Fact: ' +
+        (l.nfactura || '-') +
+        ' | Prov: ' +
+        (l.proveedor_nombre || '-') +
+        ' | Disp: ' +
+        l.cantidad_disponible,
+      value: Number(l.id_lote),
+      id_lote: Number(l.id_lote),
+      cantidad_disponible: Number(l.cantidad_disponible),
+      costo_unitario: Number(l.costo_unitario),
+      fecha_entrada: l.fecha_entrada,
     }))
-    ComprasOriginales.value = filtrado
-    Compras.value = filtrado
+    ComprasOriginales.value = mapped
+    Compras.value = mapped
+    filterCompras.value = [...mapped]
+    // Auto-seleccion PEPS: el backend ordena por fecha_entrada ASC
+    if (mapped.length > 0) {
+      formularioDetalle.value.compra = mapped[0].value
+    }
   } catch (error) {
-    console.error('Error al cargar compras:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar las compras' })
+    console.error('Error al cargar lotes:', error)
+    $q.notify({
+      type: 'negative',
+      message:
+        (error.response && error.response.data && error.response.data.mensaje) ||
+        'No se pudieron cargar los lotes',
+    })
   }
 }
 
@@ -972,38 +961,13 @@ const filtrarProductos = (val, update) => {
     }
   })
 }
-const limpiarComprasFiltradas = () => {
-  Compras.value = ComprasOriginales.value
-}
-const filtrarComprasxProveedor = () => {
-  const d = formularioDetalle.value
-
-  Compras.value = ComprasOriginales.value.filter(
-    (v) => Number(v.idproveedor) === Number(d.proveedor),
-  )
-  d.compra = null
-}
-const filterFn = (val, update) => {
-  update(() => {
-    if (val === '') {
-      filteredProveedores.value = Proveedores.value
-    } else {
-      const needle = val.toLowerCase()
-      const paraFiltrar = filteredProveedores.value
-      filteredProveedores.value = paraFiltrar.filter((v) => v.label.toLowerCase().includes(needle))
-    }
-  })
-}
 const filterlotes = (val, update) => {
   update(() => {
     if (val === '') {
       filterCompras.value = Compras.value
-      console.log(filterCompras.value)
     } else {
-      const fc = filterCompras.value
       const needle = val.toLowerCase()
-
-      filterCompras.value = fc.filter((v) => v.label.toLowerCase().includes(needle))
+      filterCompras.value = Compras.value.filter((v) => v.label.toLowerCase().includes(needle))
     }
   })
 }
@@ -1026,25 +990,24 @@ const listarDetalleRobo = async (idRobo) => {
 }
 
 const registrarDetalle = async () => {
+  // No permitir registrar extravio con cantidad 0 o invalida
+  if (!formularioDetalle.value.cantidad || Number(formularioDetalle.value.cantidad) <= 0) {
+    $q.notify({
+      type: 'negative',
+      message: 'La cantidad debe ser mayor a 0',
+    })
+    return
+  }
   try {
-    const formdata = new FormData()
-    formdata.append('id', formularioDetalle.value.id)
-    formdata.append('idrobo', detalleActual.value.robo)
-    formdata.append('idproductoalmacen', formularioDetalle.value.idproductoalmacen)
-    formdata.append('cantidad', formularioDetalle.value.cantidad)
-    formdata.append('compra', formularioDetalle.value.compra || 0)
-    formularioDetalle.value.id
-      ? formdata.append('ver', 'editarDetallerobos')
-      : formdata.append('ver', 'registrarDetallerobos')
-    for (let [k, v] of formdata.entries()) {
-      console.log(`${k}: ${v}`)
-    }
     const jsonData = {
       id: formularioDetalle.value.id,
       idrobo: detalleActual.value.robo,
       idproductoalmacen: formularioDetalle.value.idproductoalmacen,
       cantidad: formularioDetalle.value.cantidad,
-      compra: formularioDetalle.value.compra || 0,
+      // El backend valida y persiste contra stock_lote
+      id_lote: formularioDetalle.value.compra,
+      // compra legacy: null para no confundir idcompra con id_lote
+      compra: null,
       idusuario: idusuario,
       CodigosUnicosSeleccionados: registrarComoProductoUnico.value
         ? CodigosUnicosSeleccionados.value
@@ -1075,23 +1038,17 @@ const editarDetalle = async (idDetalle) => {
   try {
     const response = await api.get(`verificarIDdetallerobo/${idDetalle}`)
     const detalle = response.data.datos
-    const productoSeleccionado = productosOptions.value.find(
-      (obj) => Number(obj.id) === Number(detalle.idproductoalmacen),
-    )
-    console.log(detalle)
-    console.log(productosOptions.value)
-    console.log(productoSeleccionado)
+    // Cargar lotes disponibles del producto seleccionado
+    await cargarComprasLotes(Number(detalle.idproductoalmacen))
     formularioDetalle.value = {
       id: detalle.id,
-      idproductoalmacen: {
-        id: detalle.idproductoalmacen,
-        label: `${detalle.codigo} - ${detalle.descripcion}`,
-        stock: detalle.stock,
-        ...detalle,
-      },
+      // se mantiene como numero para que el q-select lo resuelva con option-value
+      idproductoalmacen: Number(detalle.idproductoalmacen),
       cantidad: detalle.cantidad,
       stock: detalle.stock,
       producto: `${detalle.codigo} - ${detalle.descripcion}`,
+      // Preseleccionar el lote existente si el backend lo devuelve
+      compra: detalle.id_lote ?? Compras.value[0]?.value ?? null,
     }
   } catch (error) {
     console.error('Error al editar detalle:', error)
@@ -1160,7 +1117,11 @@ const resetearFormularioDetalle = () => {
     cantidad: 0,
     stock: 0,
     producto: null,
+    compra: null,
   }
+  ComprasOriginales.value = []
+  Compras.value = []
+  filterCompras.value = []
 }
 
 const generarPDF = () => {
@@ -1195,12 +1156,14 @@ watch(idAlmacenFiltro, () => {
 watch(
   () => formularioDetalle.value.idproductoalmacen,
   (newVal) => {
-    console.log(newVal, formularioDetalle.value.idproductoalmacen)
-    if (newVal) {
-      const producto = productosDisponibles.value.find((p) => p.id === newVal)
+    const idNormalizado = Number(newVal?.id ?? newVal)
+    if (idNormalizado) {
+      const producto = productosDisponibles.value.find((p) => Number(p.id) === idNormalizado)
       if (producto) {
         formularioDetalle.value.stock = producto.stock
       }
+      // Cargar lotes del producto seleccionado
+      cargarComprasLotes(idNormalizado)
     } else {
       formularioDetalle.value.stock = 0
     }
