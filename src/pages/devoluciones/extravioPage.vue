@@ -283,6 +283,8 @@
 
                   <!-- Select debajo o al lado según necesites -->
                   <div class="col-12">
+                    <label for="producto">Producto</label>
+
                     <q-select
                       v-model="formularioDetalle.idproductoalmacen"
                       :options="productosOptions"

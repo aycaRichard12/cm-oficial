@@ -281,9 +281,6 @@
               <div class="col-12 col-md-8" id="productodetallemerma">
                 <div class="row items-center">
                   <div class="col-auto">
-                    <label for="producto" class="q-mr-md">Producto</label>
-                  </div>
-                  <div class="col-auto">
                     <div v-if="esProductoUnico" class="unique-product-section">
                       <q-checkbox
                         v-model="registrarComoProductoUnico"
@@ -350,8 +347,7 @@
                   required
                   @update:model-value="validateQuantity"
                   :rules="[
-                    (val) =>
-                      (Number(val) > 0) || 'La cantidad debe ser mayor a 0',
+                    (val) => Number(val) > 0 || 'La cantidad debe ser mayor a 0',
                     (val) => val <= detailForm.stock || 'Cantidad excede stock',
                   ]"
                 />
