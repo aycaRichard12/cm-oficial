@@ -621,6 +621,7 @@ const formularioDetalle = ref({
   stock: 0,
   producto: null,
   compra: null,
+  id_detalle_ingreso: null,
 })
 
 // Privilegios del usuario
@@ -930,6 +931,7 @@ async function cargarComprasLotes(idproductoalmacen) {
       cantidad_disponible: Number(l.cantidad_disponible),
       costo_unitario: Number(l.costo_unitario),
       fecha_entrada: l.fecha_entrada,
+      id_detalle_ingreso: Number(l.id_detalle_ingreso),
     }))
     ComprasOriginales.value = mapped
     Compras.value = mapped
@@ -937,6 +939,7 @@ async function cargarComprasLotes(idproductoalmacen) {
     // Auto-seleccion PEPS: el backend ordena por fecha_entrada ASC
     if (mapped.length > 0) {
       formularioDetalle.value.compra = mapped[0].value
+      formularioDetalle.value.id_detalle_ingreso = mapped[0].id_detalle_ingreso
     }
   } catch (error) {
     console.error('Error al cargar lotes:', error)
@@ -1009,7 +1012,7 @@ const registrarDetalle = async () => {
       // El backend valida y persiste contra stock_lote
       id_lote: formularioDetalle.value.compra,
       // compra legacy: null para no confundir idcompra con id_lote
-      compra: null,
+      compra: formularioDetalle.value.id_detalle_ingreso,
       idusuario: idusuario,
       CodigosUnicosSeleccionados: registrarComoProductoUnico.value
         ? CodigosUnicosSeleccionados.value

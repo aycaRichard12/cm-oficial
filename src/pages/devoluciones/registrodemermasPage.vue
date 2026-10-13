@@ -612,6 +612,7 @@ const detailForm = ref({
   stock: 0,
   idalmacen: 0,
   compra: null,
+  id_detalle_ingreso: null,
 })
 
 // Datos de tablas
@@ -683,7 +684,14 @@ const filteredTableData = computed(() => {
   }
   return tableData.value.filter((camp) => Number(camp.idalmacen) === Number(almacen))
 })
-
+watch(lote, (activo) => {
+  if (!activo) {
+    detailForm.value.compra = null
+  } else if (detailForm.value.idproductoalmacen) {
+    // Si se reactiva y hay producto seleccionado, recargar/auto-seleccionar lote PEPS
+    cargarLotesPorProducto(detailForm.value.idproductoalmacen)
+  }
+})
 // Métodos
 const loadUserData = async () => {
   try {
@@ -877,20 +885,36 @@ const submitDetailForm = async () => {
     })
     return
   }
+
+  // Si el toggle Lote está activo, se requiere seleccionar un lote
+  if (lote.value && !detailForm.value.compra) {
+    $q.notify({
+      type: 'negative',
+      message: 'Debe seleccionar un lote',
+    })
+    return
+  }
+
   try {
     const jsonData = {
       id: detailForm.value.id,
       idmerma: detailForm.value.idmerma,
       idproductoalmacen: detailForm.value.idproductoalmacen,
       cantidad: detailForm.value.cantidad,
-      // El backend valida y persiste contra stock_lote
-      id_lote: detailForm.value.compra,
       // compra legacy: null para no confundir idcompra con id_lote
-      compra: null,
+      compra: detailForm.value.id_detalle_ingreso,
       CodigosUnicosSeleccionados: registrarComoProductoUnico.value
         ? CodigosUnicosSeleccionados.value
         : [],
     }
+
+    // Solo enviar id_lote si el toggle Lote está activo
+    if (lote.value) {
+      jsonData.id_lote = detailForm.value.compra
+    } else {
+      jsonData.id_lote = null
+    }
+
     if (detailEditMode.value) {
       jsonData['ver'] = 'editarDetallemerma'
     } else {
@@ -905,7 +929,6 @@ const submitDetailForm = async () => {
       type: 'positive',
       message: response.data.mensaje,
     })
-    console.log(detailForm.value.idmerma, detailForm.value.idalmacen)
 
     loadAvailableProducts(detailForm.value.idmerma, detailForm.value.idalmacen)
     loadDetailData(detailForm.value.idmerma)
@@ -1098,6 +1121,7 @@ const cargarLotesPorProducto = async (idproductoalmacen) => {
       cantidad_disponible: Number(l.cantidad_disponible),
       costo_unitario: Number(l.costo_unitario),
       fecha_entrada: l.fecha_entrada,
+      id_detalle_ingreso: Number(l.id_detalle_ingreso),
     }))
     ComprasOriginales.value = mapped
     Compras.value = mapped
@@ -1105,6 +1129,7 @@ const cargarLotesPorProducto = async (idproductoalmacen) => {
     // Auto-seleccion PEPS: el backend ordena por fecha_entrada ASC
     if (mapped.length > 0) {
       detailForm.value.compra = mapped[0].value
+      detailForm.value.id_detalle_ingreso = mapped[0].id_detalle_ingreso
     }
   } catch (error) {
     console.error('Error al cargar lotes:', error)
