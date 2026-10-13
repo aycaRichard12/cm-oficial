@@ -344,12 +344,16 @@
                   v-model.number="detailForm.cantidad"
                   id="cantidad"
                   type="number"
-                  min="0"
+                  min="1"
                   dense
                   outlined
                   required
                   @update:model-value="validateQuantity"
-                  :rules="[(val) => val <= detailForm.stock || 'Cantidad excede stock']"
+                  :rules="[
+                    (val) =>
+                      (Number(val) > 0) || 'La cantidad debe ser mayor a 0',
+                    (val) => val <= detailForm.stock || 'Cantidad excede stock',
+                  ]"
                 />
               </div>
 
@@ -371,27 +375,7 @@
                   title="CAMBIAR TIPO REPORTE"
                 />
               </div>
-              <div class="col-12 col-md-3" v-if="lote" id="proveedordetallemerma">
-                <label for="provedor">Filtrar por proveedor:</label>
-                <q-select
-                  v-model="detailForm.proveedor"
-                  :options="filteredProveedores"
-                  id="provedor"
-                  dense
-                  outlined
-                  emit-value
-                  map-options
-                  use-input
-                  fill-input
-                  hide-selected
-                  input-debounce="0"
-                  clearable
-                  @clear="limpiarComprasFiltradas"
-                  @filter="filterFn"
-                  @update:model-value="filtrarComprasxProveedor"
-                />
-              </div>
-              <div class="col-12 col-md-9" v-if="lote" id="compradetallemerma">
+              <div class="col-12 col-md-12" v-if="lote" id="compradetallemerma">
                 <label for="compras">Seleccionar Lote de Compra/Producción:</label>
                 <q-select
                   v-model="detailForm.compra"
@@ -599,8 +583,6 @@ const loading = ref(false)
 const detailLoading = ref(false)
 const idmd5 = ref('')
 
-const filteredProveedores = ref([])
-const Proveedores = ref([])
 const ComprasOriginales = ref([])
 const Compras = ref([])
 const filterCompras = ref([])
@@ -622,7 +604,6 @@ const detailForm = ref({
   cantidad: 0,
   stock: 0,
   idalmacen: 0,
-  proveedor: null,
   compra: null,
 })
 
@@ -799,20 +780,6 @@ const loadAvailableProducts = async (idMerma, idAlmacen) => {
   }
 }
 
-async function cargarProveedores() {
-  try {
-    const response = await api.get(`listaProveedor/${idempresa}`)
-    console.log(response)
-    Proveedores.value = response.data.map((item) => ({
-      label: item.nombre,
-      value: item.id,
-    }))
-  } catch (error) {
-    console.error('Error al cargar proveedores:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
-  }
-}
-
 const filtrarProductos = (val, update) => {
   update(() => {
     if (val === '') {
@@ -849,7 +816,6 @@ const resetDetailForm = () => {
     cantidad: 0,
     stock: 0,
     idalmacen: 0,
-    proveedor: null,
     compra: null,
   }
   detailEditMode.value = false
@@ -899,6 +865,14 @@ const submitForm = async () => {
 
 const submitDetailForm = async () => {
   console.log(CodigosUnicosSeleccionados.value)
+  // No permitir registrar merma con cantidad 0 o invalida
+  if (!detailForm.value.cantidad || Number(detailForm.value.cantidad) <= 0) {
+    $q.notify({
+      type: 'negative',
+      message: 'La cantidad debe ser mayor a 0',
+    })
+    return
+  }
   try {
     const jsonData = {
       id: detailForm.value.id,
@@ -1020,28 +994,6 @@ const deleteItem = (id) => {
 //   })
 // }
 
-const limpiarComprasFiltradas = () => {
-  Compras.value = ComprasOriginales.value
-}
-const filtrarComprasxProveedor = () => {
-  const d = detailForm.value
-
-  Compras.value = ComprasOriginales.value.filter(
-    (v) => Number(v.idproveedor) === Number(d.proveedor),
-  )
-  d.compra = null
-}
-const filterFn = (val, update) => {
-  update(() => {
-    if (val === '') {
-      filteredProveedores.value = Proveedores.value
-    } else {
-      const needle = val.toLowerCase()
-      const paraFiltrar = Proveedores.value
-      filteredProveedores.value = paraFiltrar.filter((v) => v.label.toLowerCase().includes(needle))
-    }
-  })
-}
 const filterlotes = (val, update) => {
   update(() => {
     if (val === '') {
@@ -1064,7 +1016,6 @@ const showDetails = async (id, idAlmacen, estado) => {
 
   loadDetailData(id)
   loadAvailableProducts(id, idAlmacen)
-  await cargarProveedores()
 
   showMainForm.value = true
 }
