@@ -8,7 +8,7 @@ const queue = new PQueue({ concurrency: 1 })
 
 const api = axios.create({
   baseURL: process.env.VITE_API_URL,
-  timeout: 10000,
+  timeout: 30000,
 })
 
 axiosRetry(api, {
@@ -39,7 +39,7 @@ api.interceptors.response.use(
 // ─── API secundaria (VITE_URL_APIC) ───
 const apiCt = axios.create({
   baseURL: process.env.VITE_URL_APIC,
-  timeout: 10000,
+  timeout: 30000,
 })
 
 const queueCt = new PQueue({ concurrency: 1 })
@@ -72,7 +72,7 @@ apiCt.interceptors.response.use(
 // ─── Tercera API (VITE_URL_APIP) ───
 const apiP = axios.create({
   baseURL: process.env.VITE_URL_APIP,
-  timeout: 10000,
+  timeout: 30000,
 })
 
 const queueP = new PQueue({ concurrency: 1 })
