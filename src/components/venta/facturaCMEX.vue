@@ -643,7 +643,7 @@
 
         <q-separator spaced="md" />
         <!-- Sección Caja / Banco (solo pagos al contado) -->
-        <q-card v-if="!formData.credito" class="q-mb-md">
+        <q-card v-if="!formData.credito && listaCajaBancos.length" class="q-mb-md">
           <q-card-section>
             <h5 class="q-my-sm text-primary" style="font-size: 15px">
               <q-icon name="account_balance" color="positive" class="q-mr-sm" />
@@ -1111,6 +1111,9 @@ const cargarCajaBancos = async () => {
       codigo: item.codigo,
       nombre: item.tipo_cuenta,
     }))
+    if (!listaCajaBancos.value.length) {
+      formData.value.cajabanco = null
+    }
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
     $q.notify({ type: 'negative', message: 'No se pudieron cargar caja/bancos' })
@@ -1404,7 +1407,7 @@ const onSubmit = async () => {
     if (!cliente) throw { message: 'Debe seleccionar un cliente' }
     if (!sucursal || !sucursal.value) throw { message: 'Debe seleccionar una sucursal válida' }
     if (!fecha) throw { message: 'Debe seleccionar una fecha válida' }
-    if (!credito && !cajabanco)
+    if (!credito && listaCajaBancos.value.length > 0 && !cajabanco)
       throw { message: 'Debe seleccionar una caja o banco para ventas al contado' }
     if ((!canal || !canal.value) && pagosDivididos.length === 0)
       throw { message: 'Debe seleccionar un canal de venta válido' }
