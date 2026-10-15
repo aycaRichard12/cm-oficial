@@ -190,6 +190,7 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
 import { apiCt } from 'src/boot/axios'
+import { mockAuthResponse, guardarSesionUsuario } from 'src/data/mockAuthResponse'
 
 const username = ref('')
 const password = ref('')
@@ -235,11 +236,16 @@ const installApp = async () => {
 const router = useRouter()
 const $q = useQuasar()
 
+const isLocal = import.meta.env.VITE_APP_ENV === 'local' || process.env.VITE_APP_ENV === 'local'
+
 // Si hay sesión activa (fuente de verdad: mistersofts-cm), redirigir
 const userData = localStorage.getItem('mistersofts-cm')
 const isAuthenticated = userData && userData !== 'undefined' && userData !== 'null'
 
-if (isAuthenticated) {
+if (isLocal) {
+  guardarSesionUsuario(mockAuthResponse)
+  router.push('/')
+} else if (isAuthenticated) {
   router.push('/')
 }
 
@@ -272,21 +278,26 @@ const login = async () => {
   loading.value = true
 
   try {
-    const res = await axios.post(
-      process.env.VITE_URL_AUTH,
-      {
-        action: 'login',
-        usuario: username.value,
-        password: password.value,
-        modulo: 'cm',
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-App-Token': 'APP_CM_KEY_2026',
+    let res
+    if (isLocal) {
+      res = { data: mockAuthResponse }
+    } else {
+      res = await axios.post(
+        process.env.VITE_URL_AUTH,
+        {
+          action: 'login',
+          usuario: username.value,
+          password: password.value,
+          modulo: 'cm',
         },
-      },
-    )
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-App-Token': 'APP_CM_KEY_2026',
+          },
+        },
+      )
+    }
 
     if (
       res.data &&

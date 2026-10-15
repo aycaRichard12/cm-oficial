@@ -6,8 +6,28 @@
  *
  * Para "cerrar sesión" en dev: borrar localStorage desde DevTools y recargar.
  */
+import { mockAuthResponse, guardarSesionUsuario } from 'src/data/mockAuthResponse'
+
 export default async function devAutologin() {
-  if (import.meta.env.VITE_APP_ENV !== 'pruebas') return
+  const env = import.meta.env.VITE_APP_ENV || process.env.VITE_APP_ENV
+
+  if (env === 'local') {
+    try {
+      const usuarioActual = JSON.parse(localStorage.getItem('mistersofts-cm') || '[]')
+      if (
+        localStorage.getItem('puedeIniciarsesion') &&
+        usuarioActual[0]?.idusuario === mockAuthResponse[0]?.idusuario
+      ) {
+        return
+      }
+      guardarSesionUsuario(mockAuthResponse)
+    } catch {
+      guardarSesionUsuario(mockAuthResponse)
+    }
+    return
+  }
+
+  if (env !== 'pruebas') return
   if (localStorage.getItem('puedeIniciarsesion')) return
   // Prevent auto-login if the user just logged out
   if (sessionStorage.getItem('logoutIntencional')) return
