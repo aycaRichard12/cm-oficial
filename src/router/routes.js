@@ -451,6 +451,12 @@ const routes = [
         component: () => import('src/pages/reportes/reporteProductoUnico.vue'),
       },
       {
+        path: '/informeinventario',
+        name: 'InformeInventario',
+        component: () =>
+          import('src/modules/informeInventario/pages/informeInventarioPage.vue'),
+      },
+      {
         path: '/serie',
         component: () => import('src/modules/serie/page/seriePage.vue'),
       },

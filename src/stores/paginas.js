@@ -70,6 +70,7 @@ export const PAGINAS = Object.freeze({
   // ... (otros grupos con el mismo formato)
   inventarioexterno: Object.freeze([
     'registrarinventarioexterno',
+    'informeinventario',
     // 'reportedeindicederotacion',
   ]),
   leyendasdefacturas: Object.freeze([
@@ -184,6 +185,7 @@ export const PAGINAS_ICONS = Object.freeze({
   indicesrotacion: 'rotate_right',
   reportedecaducidaddeproductos: 'event_busy',
   reporteinventarioexterior: 'inventory',
+  informeinventario: 'assessment',
   atajosrapidos: 'bolt',
 
   //extravio
