@@ -301,7 +301,7 @@ const divisaActiva = ref(null)
 const dialogDetalle = ref(false)
 const detalleActual = ref(null)
 
-const paginacion = ref({ page: 1, rowsPerPage: 25 })
+const paginacion = ref({ page: 1, rowsPerPage: 0 })
 
 const columnasPlaceholder = [
   { name: 'item', label: 'Ítem', align: 'center', field: '__index' },
@@ -322,9 +322,12 @@ const columnasPlaceholder = [
 ]
 
 const columnasMovimiento = [
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'date' },
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'text' },
   { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'nfactura', label: 'N° Factura', field: 'nfactura', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left', sortable: true, dataType: 'text' },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true, dataType: 'number' },
+  { name: 'precioUnitario', label: 'P. Unitario', field: 'precioUnitario', align: 'right', sortable: true, dataType: 'number' },
   { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
 ]
 
@@ -346,6 +349,31 @@ const DOCUMENTO_POR_CODIGO = {
   'MER VE':       'SALIDA (merma venta con factura)',
   'ANUL DIRECTA': 'SALIDA (anulación compra)',
   'MER COT':      'SALIDA (merma cotización sin factura)',
+}
+
+const CODIGO_COLORES = {
+  'VE':           '#1976d2',
+  'MOV1':         '#2e7d32',
+  'MOV2':         '#c62828',
+  'MIC':          '#1b5e20',
+  'NUE':          '#6a1b9a',
+  'COT':          '#ef6c00',
+  'MER':          '#b71c1c',
+  'AN':           '#0277bd',
+  'ANC':          '#00838f',
+  'EXT':          '#4e342e',
+  'DEV VE':       '#43a047',
+  'ANUL COMP':    '#8e0000',
+  'DEV COT':      '#66bb6a',
+  'DEV':          '#388e3c',
+  'MER VE':       '#d32f2f',
+  'ANUL DIRECTA': '#6d0000',
+  'MER COT':      '#e64a19',
+}
+
+function colorDocumento(codigo) {
+  const key = String(codigo || '').trim().toUpperCase()
+  return CODIGO_COLORES[key] || '#546e7a'
 }
 
 function descripcionDocumento(codigoODoc) {
@@ -472,14 +500,22 @@ async function generarInforme() {
 
 function abrirDetalle(row) {
   const normalize = (arr, prefix) =>
-    (arr || []).map((m, i) => ({
-      ...m,
-      id: `${prefix}-${i}`,
-      fecha: m.fecha || m.fechaMovimiento || '',
-      documento: descripcionDocumento(m.codigo || m.documento || m.numero),
-      cantidad: Number(m.cantidad ?? 0),
-      valor: Number(m.valor ?? 0),
-    }))
+    (arr || []).map((m, i) => {
+      const fechaRaw = m.fecha || m.fechaMovimiento || ''
+      const codigo = String(m.codigo || m.documento || m.numero || '').trim().toUpperCase()
+      return {
+        ...m,
+        id: `${prefix}-${i}`,
+        fecha: fechaRaw ? formatearFechaDDMMYYYY(fechaRaw) : '',
+        documento: descripcionDocumento(codigo),
+        codigo,
+        nfactura: m.nfactura || m.numeroFactura || '',
+        proveedor: m.proveedor || m.nombreProveedor || '',
+        cantidad: Number(m.cantidad ?? 0),
+        precioUnitario: Number(m.costoUnitario ?? m.precioUnitario ?? 0),
+        valor: Number(m.valor ?? 0),
+      }
+    })
   detalleActual.value = {
     ...row,
     detalle: {
@@ -581,7 +617,7 @@ onMounted(async () => {
   white-space: nowrap;
 }
 .kardex-table :deep(tbody td) {
-  border: 1px solid #90a4ae !important;
+  border: 1px solid #455a64 !important;
   font-size: 12px;
   white-space: nowrap;
 }
@@ -639,6 +675,16 @@ onMounted(async () => {
 .kardex-table :deep(thead tr th:nth-child(15)),
 .kardex-table :deep(tbody td:nth-child(15)) {
   border-left: 2px solid #607d8b !important;
+}
+
+.kdx-doc-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 @media print {
