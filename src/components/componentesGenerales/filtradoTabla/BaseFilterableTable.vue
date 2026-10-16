@@ -1,13 +1,13 @@
 <template>
   <q-table
     :title="title"
-    :rows="filteredData"
+    :rows="rowsWithIndex"
     :columns="visibleColumns"
     :row-key="rowKey"
     :filter="search"
     v-model:pagination="pagination"
     :rows-per-page-options="rowsPerPageOptions"
-    :virtual-scroll="true"
+    :virtual-scroll="!showIndex"
     wrap-cells
     :class="{ 'table-sticky-header': stickyHeader }"
     v-bind="$attrs"
@@ -147,6 +147,8 @@ const props = defineProps({
   filterMode: { type: String, default: 'client' }, // 'client' o 'server'
   rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
   stickyHeader: { type: Boolean, default: false },
+  showIndex: { type: Boolean, default: false },
+  indexLabel: { type: String, default: 'N\u00b0' },
 })
 
 //console.log(props.sumColumns)
@@ -184,13 +186,36 @@ const visibleColumnNames = ref(
 )
 
 const visibleColumns = computed(() => {
-  return props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
+  const base = props.columns.filter((c) => visibleColumnNames.value.includes(c.name))
+  if (!props.showIndex) return base
+  return [
+    {
+      name: '__index',
+      label: props.indexLabel,
+      field: '__index',
+      align: 'center',
+      sortable: false,
+      style: 'width: 48px',
+    },
+    ...base,
+  ]
 })
 
 const pagination = ref({
   sortBy: null,
   descending: false,
   rowsPerPage: 5,
+  page: 1,
+})
+
+/**
+ * Envuelve las filas anadiendo el campo `__index` calculado sobre el
+ * dataset YA FILTRADO. q-table aplica luego la paginacion, por lo que el
+ * numero mostrado corresponde a la posicion real en el listado.
+ */
+const rowsWithIndex = computed(() => {
+  if (!props.showIndex) return filteredData.value
+  return filteredData.value.map((row, i) => ({ ...row, __index: i + 1 }))
 })
 // Cálculo de totales para columnas especificadas
 
@@ -682,5 +707,15 @@ function handleSortChange(payload) {
   z-index: 2;
   background-color: #ffffff;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Modal con head verde y titulo blanco */
+.modal-head-verde .q-card__section:first-child,
+.modal-head-verde .q-dialog__title {
+  background-color: #1b5e20 !important;
+  color: #ffffff !important;
+}
+.modal-head-verde .q-card__section:first-child * {
+  color: #ffffff !important;
 }
 </style>
