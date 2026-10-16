@@ -112,7 +112,6 @@
           flat
           dense
           wrap-cells
-          hide-bottom
           class="kardex-table"
           :no-data-label="!filasKardex.length
             ? 'Seleccione almacén y rango de fechas, luego presione Generar'
@@ -262,7 +261,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 import {
@@ -329,6 +328,33 @@ const columnasMovimiento = [
   { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
 ]
 
+const DOCUMENTO_POR_CODIGO = {
+  'VE':           'SALIDA (venta facturada)',
+  'MOV1':         'ENTRADA (increase / incremento)',
+  'MOV2':         'SALIDA (decrease / decremento)',
+  'MIC':          'ENTRADA (compras)',
+  'NUE':          'NUEVO (recién creado producto stock 0)',
+  'COT':          'SALIDA (venta sin factura cotización)',
+  'MER':          'SALIDA (merma)',
+  'AN':           'ENTRADA (anular venta facturada)',
+  'ANC':          'ENTRADA (anular venta sin factura cotización)',
+  'EXT':          'SALIDA (extravío producto)',
+  'DEV VE':       'ENTRADA (devolución venta)',
+  'ANUL COMP':    'SALIDA (anulación compra)',
+  'DEV COT':      'ENTRADA (devolución venta sin factura)',
+  'DEV':          'ENTRADA (devolución venta)',
+  'MER VE':       'SALIDA (merma venta con factura)',
+  'ANUL DIRECTA': 'SALIDA (anulación compra)',
+  'MER COT':      'SALIDA (merma cotización sin factura)',
+}
+
+function descripcionDocumento(codigoODoc) {
+  const codigo = String(codigoODoc || '').trim()
+  if (!codigo) return ''
+  const desc = DOCUMENTO_POR_CODIGO[codigo.toUpperCase()]
+  return desc ? `${codigo} — ${desc}` : codigo
+}
+
 const filasKardex = computed(() =>
   filas.value.map((r, i) => transformarFilaKardex(r, i)).filter(Boolean),
 )
@@ -355,6 +381,12 @@ const offsetPaginacion = computed(() => {
   const rp = paginacion.value.rowsPerPage || 0
   if (rp <= 0) return 0
   return ((paginacion.value.page || 1) - 1) * rp
+})
+
+watch([filtroTexto, soloInconsistentes], () => {
+  if ((paginacion.value.page || 1) !== 1) {
+    paginacion.value = { ...paginacion.value, page: 1 }
+  }
 })
 
 const almacenNombre = computed(() => {
@@ -444,7 +476,7 @@ function abrirDetalle(row) {
       ...m,
       id: `${prefix}-${i}`,
       fecha: m.fecha || m.fechaMovimiento || '',
-      documento: m.documento || m.numero || '',
+      documento: descripcionDocumento(m.codigo || m.documento || m.numero),
       cantidad: Number(m.cantidad ?? 0),
       valor: Number(m.valor ?? 0),
     }))
@@ -542,14 +574,14 @@ onMounted(async () => {
 }
 
 .kardex-table :deep(thead tr th) {
-  border-color: #90a4ae !important;
+  border: 1px solid #607d8b !important;
   color: #212121;
   font-weight: 700;
   font-size: 12px;
   white-space: nowrap;
 }
 .kardex-table :deep(tbody td) {
-  border-color: #cfd8dc !important;
+  border: 1px solid #90a4ae !important;
   font-size: 12px;
   white-space: nowrap;
 }
