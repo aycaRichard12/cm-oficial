@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import emitter from 'src/event-bus'
@@ -235,12 +235,17 @@ const removeNotification = (id) => {
 // Ejemplo de cómo agregar una notificación que se autoelimina
 // autoRemoveNotification(1, 10);
 
+const handleReiniciarNotificaciones = () => {
+  getNotificaciones()
+}
+
 onMounted(() => {
   getNotificaciones()
+  emitter.on('reiniciar-notificaciones', handleReiniciarNotificaciones)
+})
 
-  emitter.on('reiniciar-notificaciones', () => {
-    getNotificaciones()
-  })
+onUnmounted(() => {
+  emitter.off('reiniciar-notificaciones', handleReiniciarNotificaciones)
 })
 </script>
 

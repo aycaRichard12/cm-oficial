@@ -9,6 +9,7 @@
     :rows-per-page-options="rowsPerPageOptions"
     :virtual-scroll="true"
     wrap-cells
+    :class="{ 'table-sticky-header': stickyHeader }"
     v-bind="$attrs"
   >
     <template v-slot:header-cell="props">
@@ -145,6 +146,7 @@ const props = defineProps({
   search: { type: String, default: '' },
   filterMode: { type: String, default: 'client' }, // 'client' o 'server'
   rowsPerPageOptions: { type: Array, default: () => [5, 10, 20, 50, 0] },
+  stickyHeader: { type: Boolean, default: false },
 })
 
 //console.log(props.sumColumns)
@@ -474,11 +476,13 @@ const filteredData = computed(() => {
   if (hasSort) {
     const sortKey = pagination.value.sortBy
     const desc = pagination.value.descending
+    // El sortBy del q-table guarda column.name; hay que resolverlo a column.field
+    const sortColumn = props.columns.find((c) => c.name === sortKey)
+    const sortField = sortColumn?.field || sortKey
 
     data.sort((a, b) => {
-      // Usar getByPath en el ordenamiento para campos anidados
-      const valA = getByPath(a, sortKey)
-      const valB = getByPath(b, sortKey)
+      const valA = getByPath(a, sortField)
+      const valB = getByPath(b, sortField)
 
       const result = universalCompare(valA, valB)
       return desc ? -result : result
@@ -665,5 +669,18 @@ function handleSortChange(payload) {
 /* Estilo para ocultar el icono de ordenación por defecto de q-table */
 .q-table th.no-sort-icon .q-table__sort-icon {
   display: none !important;
+}
+
+/* Encabezado fijo al hacer scroll */
+.table-sticky-header :deep(.q-table__middle) {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.table-sticky-header :deep(.q-table__middle thead tr) {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #ffffff;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12);
 }
 </style>

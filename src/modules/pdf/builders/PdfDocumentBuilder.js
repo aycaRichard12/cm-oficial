@@ -37,15 +37,20 @@ export class PdfDocumentBuilder {
   }
 
   addFooterInfo(firma) {
-    const y = this.doc.lastAutoTable.finalY + 5
+    const lastTable = this.doc.lastAutoTable
+    const baseY =
+      lastTable && typeof lastTable.finalY === 'number'
+        ? lastTable.finalY + 5
+        : this.doc.internal.pageSize.getHeight() - 25
+
     const fechaGeneracion = cambiarFormatoFecha(obtenerFechaActualDato())
     this.doc.setFontSize(8)
-    this.doc.text(`Fecha y Hora : ${fechaGeneracion} ${obtenerHora()}`, 14, y, {
+    this.doc.text(`Fecha y Hora : ${fechaGeneracion} ${obtenerHora()}`, 14, baseY, {
       align: 'left',
     })
 
     if (firma) {
-      this.signature.draw(firma, y)
+      this.signature.draw(firma, baseY)
     }
   }
 

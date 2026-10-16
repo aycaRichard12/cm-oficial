@@ -155,13 +155,17 @@ const emit = defineEmits(['column-filter-changed', 'column-sort-changed'])
 const tab = ref('values')
 const quickSearch = ref('')
 
+function getByPath(obj, path) {
+  if (!obj || !path) return undefined
+  if (Array.isArray(path)) return path.reduce((o, k) => (o ? o[k] : undefined), obj)
+  return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj)
+}
+
 const allUniqueValues = computed(() => {
   const values = {}
   props.rows.forEach((row) => {
-    // Usa el campo para obtener el valor
-    const rowValue = row[props.column.field]
-
-    const val = String(rowValue || '-').trim()
+    const rowValue = getByPath(row, props.column.field)
+    const val = String(rowValue ?? '-').trim()
     values[val] = (values[val] || 0) + 1
   })
   return Object.keys(values).sort()
@@ -170,7 +174,7 @@ const allUniqueValues = computed(() => {
 const valueCounts = computed(() => {
   const counts = {}
   props.rows.forEach((row) => {
-    const val = String(row[props.column.field] || '-').trim()
+    const val = String(getByPath(row, props.column.field) ?? '-').trim()
     counts[val] = (counts[val] || 0) + 1
   })
   return counts
