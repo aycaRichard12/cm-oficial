@@ -228,13 +228,22 @@
           <div class="text-subtitle2 q-mb-sm">Compras del periodo</div>
           <BaseFilterableTable
             :rows="detalleActual?.detalle?.compras || []"
-            :columns="columnasMovimiento"
+            :columns="columnasMovimientoEntrada"
             :array-headers="['documento', 'fecha']"
             :show-index="true"
             index-label="N°"
             :sticky-header="true"
             row-key="id"
-          />
+          >
+            <template v-slot:body-cell-documento="props">
+              <q-td :props="props">
+                <span
+                  class="kdx-doc-badge"
+                  :style="{ backgroundColor: colorDocumento(props.row.codigo) }"
+                >{{ props.value }}</span>
+              </q-td>
+            </template>
+          </BaseFilterableTable>
           <div v-if="!detalleActual?.detalle?.compras?.length"
                class="text-caption text-grey q-mb-md">
             Sin compras en el periodo.
@@ -243,13 +252,22 @@
           <div class="text-subtitle2 q-mt-md q-mb-sm">Salidas del periodo</div>
           <BaseFilterableTable
             :rows="detalleActual?.detalle?.salidas || []"
-            :columns="columnasMovimiento"
+            :columns="columnasMovimientoSalida"
             :array-headers="['documento', 'fecha']"
             :show-index="true"
             index-label="N°"
             :sticky-header="true"
             row-key="id"
-          />
+          >
+            <template v-slot:body-cell-documento="props">
+              <q-td :props="props">
+                <span
+                  class="kdx-doc-badge"
+                  :style="{ backgroundColor: colorDocumento(props.row.codigo) }"
+                >{{ props.value }}</span>
+              </q-td>
+            </template>
+          </BaseFilterableTable>
           <div v-if="!detalleActual?.detalle?.salidas?.length"
                class="text-caption text-grey">
             Sin salidas en el periodo.
@@ -321,11 +339,20 @@ const columnasPlaceholder = [
   { name: 'acciones', label: 'Acciones', align: 'center' },
 ]
 
-const columnasMovimiento = [
+const columnasMovimientoEntrada = [
   { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'text' },
   { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true, dataType: 'text' },
   { name: 'nfactura', label: 'N° Factura', field: 'nfactura', align: 'left', sortable: true, dataType: 'text' },
   { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true, dataType: 'number' },
+  { name: 'precioUnitario', label: 'P. Unitario', field: 'precioUnitario', align: 'right', sortable: true, dataType: 'number' },
+  { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
+]
+
+const columnasMovimientoSalida = [
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'nfactura', label: 'N° Factura', field: 'nfactura', align: 'left', sortable: true, dataType: 'text' },
   { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true, dataType: 'number' },
   { name: 'precioUnitario', label: 'P. Unitario', field: 'precioUnitario', align: 'right', sortable: true, dataType: 'number' },
   { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
