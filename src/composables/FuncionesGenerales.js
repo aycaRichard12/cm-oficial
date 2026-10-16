@@ -99,9 +99,9 @@ export async function divisaEmonedaActiva() {
   try {
     const contenidousuario = validarUsuario()
     if (!contenidousuario) throw new Error('Usuario no válido')
-    const idempresa = contenidousuario[0]?.empresa?.idempresa
-    const token = contenidousuario[0]?.factura?.access_token
-    const tipo = contenidousuario[0]?.factura?.tipo
+    const idempresa = contenidousuario[0]?.empresa?.idempresa || ''
+    const token = contenidousuario[0]?.factura?.access_token || ''
+    const tipo = contenidousuario[0]?.factura?.tipo || ''
     const endpoint = `listaDivisa/${idempresa}/${token}/${tipo}`
     console.log(endpoint)
     const { items: resultado } = useFetchList(endpoint, (key) => ({
