@@ -92,7 +92,7 @@
 
 <script setup>
 import emitter from 'src/event-bus'
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
@@ -139,7 +139,7 @@ const cargo = ref('Sin cargo')
 const items = ref([])
 const activeTabs = ref([])
 const activeTabsReportes = ref([])
-const activeTabsReportesdetalle = ref([])
+const activeTabsReportesdetalle = ref({})
 const currentTab = ref('')
 /// ================================================
 const permitidoNotificaciones = permisoNotificaciones()
@@ -167,7 +167,7 @@ const startTabsTimeout = () => {
   clearTabsTimeout() // Clear any existing timeout
   tabsTimeout = setTimeout(() => {
     if (tabsVisible.value) {
-      tabsVisible.value = true
+      tabsVisible.value = false
     }
   }, TABS_TIMEOUT_MS)
 }
@@ -328,6 +328,12 @@ function llevarPrimeraPAgina(submenu) {
   }
 }
 
+const onAbrirSubmenu = (submenu) => {
+  selectSubmenu(submenu)
+  const ruta = '/' + llevarPrimeraPAgina(submenu)
+  router.push(ruta)
+}
+
 onMounted(async () => {
   const loadData = (key, defaultValue = []) => {
     try {
@@ -352,11 +358,7 @@ onMounted(async () => {
     }
   })
 
-  emitter.on('abrir-submenu', (submenu) => {
-    selectSubmenu(submenu) // Tu lógica normal console
-    const ruta = '/' + llevarPrimeraPAgina(submenu)
-    router.push(ruta)
-  })
+  emitter.on('abrir-submenu', onAbrirSubmenu)
   console.log(idusuario)
   //initPusher(idusuario)
   // pusherActions = usePusher()
@@ -385,6 +387,10 @@ onMounted(async () => {
   // setTimeout(() => {
   //   tempInitPusher(idusuario)
   // }, 1000)
+})
+
+onUnmounted(() => {
+  emitter.off('abrir-submenu', onAbrirSubmenu)
 })
 
 const toggleLeftDrawer = () => {

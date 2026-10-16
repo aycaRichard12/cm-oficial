@@ -83,16 +83,15 @@ const createOrRetrieveSessionId = () => {
   console.log(`[Session] Dialogflow Session ID: ${sessionId.value}`)
 }
 // --- LÓGICA DE ACCIÓN Y NAVEGACIÓN ---
-const ejecutarAccion = (data) => {
+const ejecutarAccion = (data = {}) => {
   console.log(data)
-  const { intencion, respuestaPorVoz, parametros, comandoOriginal } = data
-  console.log(`[Acción] Ejecutando acción para la intención: ${intencion}`) // 1. Manejo de comando de salida
+  const { intencion, respuestaPorVoz = '', parametros = {}, comandoOriginal = '' } = data
+  console.log(`[Acción] Ejecutando acción para la intención: ${intencion}`)
   console.log(`[Acción] Comando original: ${comandoOriginal}`)
 
-  if (
-    comandoOriginal &&
-    ['salir', 'finalizar', 'detener', 'adiós'].includes(respuestaPorVoz.toLowerCase().trim())
-  ) {
+  // 1. Manejo de comando de salida (verifica comando original y/o respuesta)
+  const textoSalida = (comandoOriginal || respuestaPorVoz || '').toLowerCase().trim()
+  if (['salir', 'finalizar', 'detener', 'adiós'].includes(textoSalida)) {
     emitirVoz('Modo de voz desactivado. ¡Hasta pronto!', stopRecognition)
     return
   } // 2. Ejecución de acción (Navegación/Retroalimentación)

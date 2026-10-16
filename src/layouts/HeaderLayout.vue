@@ -224,8 +224,8 @@ const props = defineProps({
     default: () => [],
   },
   activeTabsReportesdetalle: {
-    type: Array,
-    default: () => [],
+    type: Object,
+    default: () => ({}),
   },
   permitidoNotificaciones: Boolean,
 })

@@ -252,7 +252,8 @@ async function cargarInventario() {
     if (response.data.estado === 'exito' && Array.isArray(response.data.data)) {
       const plano = []
       for (const producto of response.data.data) {
-        for (const variante of producto.variantes) {
+        const variantes = Array.isArray(producto.variantes) ? producto.variantes : []
+        for (const variante of variantes) {
           plano.push({
             id_variante: `${producto.id_productos_almacen}-${variante.id_Producto_Variante}`,
             id_productos_almacen: producto.id_productos_almacen,
