@@ -1069,26 +1069,34 @@ const onSubmit = async () => {
     // Leer y parsear la configuracion contable guardada por LoginPage
     // Estructura esperada: [{{ frecuencia_registro, nombre_operacion }}, ...]
     let confiConta = []
-    try {{
-      const rawConfi = localStorage.getItem('mistersofts-cm-confi-conta')
-      const parsedConfi = rawConfi ? JSON.parse(rawConfi) : []
-      confiConta = Array.isArray(parsedConfi) ? parsedConfi : []
-    }} catch (e) {{
-      console.error('[confi-conta] Error parseando configuracion:', e)
-      confiConta = []
-    }}
+    try {
+      {
+        const rawConfi = localStorage.getItem('mistersofts-cm-confi-conta')
+        const parsedConfi = rawConfi ? JSON.parse(rawConfi) : []
+        confiConta = Array.isArray(parsedConfi) ? parsedConfi : []
+      }
+    } catch (e) {
+      {
+        console.error('[confi-conta] Error parseando configuracion:', e)
+        confiConta = []
+      }
+    }
 
-    if (credito) {{
-      const tieneConfigCredito = confiConta.some(
-        (item) => item?.nombre_operacion === 'Ventas con factura Credito',
-      )
-      cartData.mistersofts_cm_confi_conta = tieneConfigCredito ? 2 : 3
-    }} else {{
-      const tieneConfigContado = confiConta.some(
-        (item) => item?.nombre_operacion === 'Ventas con factura Contado',
-      )
-      cartData.mistersofts_cm_confi_conta = tieneConfigContado ? 2 : 3
-    }}
+    if (credito) {
+      {
+        const tieneConfigCredito = confiConta.some(
+          (item) => item?.nombre_operacion === 'Ventas con factura Credito',
+        )
+        cartData.mistersofts_cm_confi_conta = tieneConfigCredito ? 2 : 4
+      }
+    } else {
+      {
+        const tieneConfigContado = confiConta.some(
+          (item) => item?.nombre_operacion === 'Ventas con factura Contado',
+        )
+        cartData.mistersofts_cm_confi_conta = tieneConfigContado ? 2 : 4
+      }
+    }
 
     cartData.puntoVenta = Number(puntoventa.Data.idpuntoventa)
     cartData.puntoVentaSin = puntoventa.value
