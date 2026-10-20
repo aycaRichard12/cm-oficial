@@ -152,13 +152,6 @@
                 <div class="text-weight-medium">{{ props.row.descripcion }}</div>
                 <div class="text-caption text-grey-7">
                   {{ props.row.codigo }}
-                  <q-badge v-if="props.row.advertencias && props.row.advertencias.length"
-                           color="orange" class="q-ml-xs"
-                           :label="props.row.advertencias.length + ' adv.'">
-                    <q-tooltip>
-                      <div v-for="(adv, i) in props.row.advertencias" :key="i">{{ adv }}</div>
-                    </q-tooltip>
-                  </q-badge>
                 </div>
               </q-td>
 
@@ -179,10 +172,18 @@
               <q-td class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPTotal) }}</q-td>
 
               <q-td class="kdx-center no-print">
-                <q-btn flat dense round icon="visibility" color="primary"
-                       @click="abrirDetalle(props.row)" size="sm">
-                  <q-tooltip>Ver compras / salidas del periodo</q-tooltip>
-                </q-btn>
+                <div class="row items-center justify-center no-wrap">
+                  <q-btn flat dense round icon="visibility" color="primary"
+                         @click="abrirDetalle(props.row)" size="sm">
+                    <q-tooltip>Ver compras / salidas del periodo</q-tooltip>
+                  </q-btn>
+                  <q-btn v-if="props.row.advertencias && props.row.advertencias.length"
+                         flat dense round icon="warning" color="orange-9" size="sm"
+                         class="q-ml-xs" @click="abrirAdvertencias(props.row)">
+                    <q-badge color="orange" floating>{{ props.row.advertencias.length }}</q-badge>
+                    <q-tooltip>Ver advertencias ({{ props.row.advertencias.length }})</q-tooltip>
+                  </q-btn>
+                </div>
               </q-td>
             </q-tr>
           </template>
@@ -275,6 +276,44 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="dialogAdvertencias">
+      <q-card style="min-width: 520px; max-width: 90vw">
+        <q-card-section class="row items-center bg-orange-9 text-white">
+          <q-icon name="warning" size="md" class="q-mr-sm" />
+          <div class="text-h6 text-white">Advertencias del producto</div>
+          <q-space />
+          <q-btn flat round icon="close" color="white" v-close-popup />
+        </q-card-section>
+        <q-separator />
+        <q-card-section
+          v-if="advertenciasActuales.codigo || advertenciasActuales.producto"
+          class="q-pb-none"
+        >
+          <div class="text-subtitle2 text-weight-medium">
+            {{ advertenciasActuales.codigo }} — {{ advertenciasActuales.producto }}
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-list v-if="advertenciasActuales.lista.length" separator bordered>
+            <q-item v-for="(adv, i) in advertenciasActuales.lista" :key="i">
+              <q-item-section avatar>
+                <q-icon name="error_outline" color="orange-9" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-body2">{{ adv }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="text-caption text-grey q-pa-sm">
+            Sin advertencias para este producto.
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -318,6 +357,8 @@ const divisaActiva = ref(null)
 
 const dialogDetalle = ref(false)
 const detalleActual = ref(null)
+const dialogAdvertencias = ref(false)
+const advertenciasActuales = ref({ producto: '', codigo: '', lista: [] })
 
 const paginacion = ref({ page: 1, rowsPerPage: 0 })
 
@@ -551,6 +592,21 @@ function abrirDetalle(row) {
     },
   }
   dialogDetalle.value = true
+}
+
+function abrirAdvertencias(row) {
+  const raw = row?.advertencias
+  const lista = Array.isArray(raw)
+    ? [...raw]
+    : raw
+      ? [String(raw)]
+      : []
+  advertenciasActuales.value = {
+    producto: row?.descripcion || '',
+    codigo: row?.codigo || '',
+    lista,
+  }
+  dialogAdvertencias.value = true
 }
 
 function divisaLabel() {
