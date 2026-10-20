@@ -10,7 +10,16 @@ export class ReportDataService {
     }
     const [contenido] = userData
     const empresa = contenido.empresa
-    const logoBase64 = await cargarLogoBase64(empresa.logo)
+
+    let logoBase64 = null
+    try {
+      if (empresa.logo) {
+        logoBase64 = await cargarLogoBase64(empresa.logo)
+      }
+    } catch (e) {
+      console.warn('[ReportDataService] No se pudo cargar el logo, continuando sin el:', e)
+      logoBase64 = null
+    }
 
     return {
       logoBase64,

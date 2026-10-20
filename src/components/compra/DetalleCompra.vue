@@ -577,10 +577,12 @@ const idempresa = idempresa_md5()
 
 const { config } = useProductoConfig(idempresa)
 watch(
-  () => config.value.idempresa,
-  (nuevoValor) => {
-    if (nuevoValor) {
-      productoUnico.value = Boolean(config.value.productounico)
+  () => config.value,
+  (newConfig) => {
+    if (newConfig && newConfig.idempresa) {
+      const activo = Boolean(newConfig.productounico)
+      productoUnico.value = activo
+      detalleForm.value.productoUnico = activo
     }
   },
   { deep: true },
@@ -615,7 +617,7 @@ const detalleForm = ref({
   descripcion: '',
   stockActual: 0,
   unidad: '',
-  productoUnico: true,
+  productoUnico: false,
   sinPrecio: false,
 })
 
@@ -837,6 +839,7 @@ async function onSubmit() {
           cantidad,
           idproductoalmacen: detalleForm.value.idproductoalmacen,
           idProductoVariante: variante.id_Producto_Variante,
+          productoUnico: false,
           registrarProUnico: false,
         })
         formData.append('idingreso', props.compra.id)
@@ -878,6 +881,7 @@ async function onSubmit() {
   // Convertir valores string a números con decimales antes de enviar
   const formData = objectToFormData({
     ...detalleForm.value,
+    productoUnico: Boolean(productoUnico.value && detalleForm.value.productoUnico),
     precio: parseFloat(detalleForm.value.precio) || 0,
     cantidad: parseFloat(detalleForm.value.cantidad) || 0,
   })

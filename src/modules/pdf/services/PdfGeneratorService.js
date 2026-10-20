@@ -58,7 +58,10 @@ export class PdfGeneratorService {
         persistent: true,
       })
         .onOk((data) => {
-          const [orientation, format] = data.split('-')
+          const raw = typeof data === 'string' ? data : defaultValue
+          const parts = raw.split('-')
+          const orientation = parts[0] || 'portrait'
+          const format = parts[1] || 'a4'
           const config = { orientation, format }
           this._saveConfig(config)
           resolve(config)
@@ -69,7 +72,7 @@ export class PdfGeneratorService {
     })
   }
 
-  async generateReport(options) {
+  async generateReport(options = {}) {
     // Si ya se pasaron explícitamente, se usan; si no, se pregunta al usuario
     let orientation = options.orientation
     let format = options.format

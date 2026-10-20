@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import emitter from 'src/event-bus'
@@ -93,10 +93,19 @@ const compactMode = ref(true)
 const getNotificaciones = async () => {
   const point = `getNotificaciones/${idusuario_md5()}/${idempresa_md5()}`
   console.log(point)
-  const response = await api.get(point)
-
-  console.log(response.data)
-  notifications.value = response.data
+  try {
+    const response = await api.get(point)
+    console.log(response.data)
+    notifications.value = Array.isArray(response.data) ? response.data : []
+  } catch (error) {
+    console.error('[getNotificaciones] Error:', error)
+    notifications.value = []
+    $q.notify({
+      type: 'negative',
+      message: 'No se pudieron cargar las notificaciones.',
+      position: 'top',
+    })
+  }
 }
 
 // Datos de las notificaciones
@@ -226,12 +235,17 @@ const removeNotification = (id) => {
 // Ejemplo de cómo agregar una notificación que se autoelimina
 // autoRemoveNotification(1, 10);
 
+const handleReiniciarNotificaciones = () => {
+  getNotificaciones()
+}
+
 onMounted(() => {
   getNotificaciones()
+  emitter.on('reiniciar-notificaciones', handleReiniciarNotificaciones)
+})
 
-  emitter.on('reiniciar-notificaciones', () => {
-    getNotificaciones()
-  })
+onUnmounted(() => {
+  emitter.off('reiniciar-notificaciones', handleReiniciarNotificaciones)
 })
 </script>
 
