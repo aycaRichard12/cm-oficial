@@ -117,9 +117,27 @@ export class KardexExcelService {
   }
 
   _fmtFecha(iso) {
+    // [kdx-fix-timezone] _fmtFecha (Excel) — normaliza offsets antes de formatear.
     if (!iso) return ''
-    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/)
-    if (!m) return iso
-    return `${m[3]}/${m[2]}/${m[1]}`
+    let s = ''
+    if (iso instanceof Date) {
+      if (Number.isNaN(iso.getTime())) return ''
+      s = iso.toISOString().slice(0, 10)
+    } else if (typeof iso === 'number') {
+      const dt = new Date(iso)
+      if (Number.isNaN(dt.getTime())) return ''
+      s = dt.toISOString().slice(0, 10)
+    } else {
+      s = String(iso).trim()
+    }
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+      const dt = new Date(s)
+      if (!Number.isNaN(dt.getTime())) {
+        s = dt.toISOString().slice(0, 10)
+      }
+    }
+    const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/)
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`
+    return s
   }
 }
