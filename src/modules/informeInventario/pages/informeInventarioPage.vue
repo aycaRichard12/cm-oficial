@@ -118,7 +118,7 @@
             : 'Sin productos para los filtros aplicados'"
         >
           <template v-slot:header>
-            <q-tr>
+            <q-tr key="hdr-main">
               <q-th rowspan="2" class="kdx-th kdx-th-item">N°</q-th>
               <q-th rowspan="2" class="kdx-th kdx-th-desc">Descripción</q-th>
               <q-th colspan="3" class="kdx-th kdx-head-saldo-inicial">Saldo Inicial</q-th>
@@ -127,7 +127,7 @@
               <q-th colspan="3" class="kdx-th kdx-head-saldo-final">Saldo Final</q-th>
               <q-th rowspan="2" class="kdx-th kdx-th-acciones no-print">Acciones</q-th>
             </q-tr>
-            <q-tr>
+            <q-tr key="hdr-sub">
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">Cantidad</q-th>
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Unit.</q-th>
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Total</q-th>
@@ -144,34 +144,34 @@
           </template>
 
           <template v-slot:body="props">
-            <q-tr :props="props" :class="{ 'kdx-row-inconsistente': !props.row.cuadre?.consistente }">
-              <q-td class="kdx-num">
+            <q-tr :props="props" :key="props.row.__id" :class="{ 'kdx-row-inconsistente': !props.row.cuadre?.consistente }">
+              <q-td key="item" :props="props" class="kdx-num">
                 {{ props.rowIndex + 1 + offsetPaginacion }}
               </q-td>
-              <q-td class="kdx-desc">
+              <q-td key="descripcion" :props="props" class="kdx-desc">
                 <div class="text-weight-medium">{{ props.row.descripcion }}</div>
                 <div class="text-caption text-grey-7">
                   {{ props.row.codigo }}
                 </div>
               </q-td>
 
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtCantidad(props.row.siCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPTotal) }}</q-td>
+              <q-td key="siCantidad" :props="props" class="kdx-num kdx-body-saldo-inicial">{{ fmtCantidad(props.row.siCantidad) }}</q-td>
+              <q-td key="siPUnit" :props="props" class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPUnit) }}</q-td>
+              <q-td key="siPTotal" :props="props" class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPTotal) }}</q-td>
 
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtCantidad(props.row.entCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPTotal) }}</q-td>
+              <q-td key="entCantidad" :props="props" class="kdx-num kdx-body-entradas">{{ fmtCantidad(props.row.entCantidad) }}</q-td>
+              <q-td key="entPUnit" :props="props" class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPUnit) }}</q-td>
+              <q-td key="entPTotal" :props="props" class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPTotal) }}</q-td>
 
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtCantidad(props.row.salCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPTotal) }}</q-td>
+              <q-td key="salCantidad" :props="props" class="kdx-num kdx-body-salidas">{{ fmtCantidad(props.row.salCantidad) }}</q-td>
+              <q-td key="salPUnit" :props="props" class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPUnit) }}</q-td>
+              <q-td key="salPTotal" :props="props" class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPTotal) }}</q-td>
 
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtCantidad(props.row.sfCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPTotal) }}</q-td>
+              <q-td key="sfCantidad" :props="props" class="kdx-num kdx-body-saldo-final">{{ fmtCantidad(props.row.sfCantidad) }}</q-td>
+              <q-td key="sfPUnit" :props="props" class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPUnit) }}</q-td>
+              <q-td key="sfPTotal" :props="props" class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPTotal) }}</q-td>
 
-              <q-td class="kdx-center no-print">
+              <q-td key="acciones" :props="props" class="kdx-center no-print">
                 <div class="row items-center justify-center no-wrap">
                   <q-btn flat dense round icon="visibility" color="primary"
                          @click="abrirDetalle(props.row)" size="sm">
