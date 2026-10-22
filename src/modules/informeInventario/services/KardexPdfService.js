@@ -36,9 +36,9 @@ export class KardexPdfService {
       ],
     }
 
-    docBuilder.addEncabezado()
-    docBuilder.addEncabezadoInfo(titulo, null, datosIzquierda, null, false, null)
-
+    // [kdx-fix-header-overlap-v2] El header se dibuja en willDrawPage (antes del
+    // contenido de cada pagina) y se reserva margin.top para que la tabla en
+    // paginas 2+ arranque por debajo del encabezado.
     const totales = calcularTotales(filas)
 
     const head = [
@@ -91,13 +91,16 @@ export class KardexPdfService {
       { content: fmtMoneda(totales.sfPTotal), styles: { halign: 'right', fontStyle: 'bold', fillColor: C.saldoFinal.rgb } },
     ])
 
-    const startY = orientation === 'landscape' ? 42 : 58
+    // [kdx-fix-header-overlap-v2] marginTop cubre el header completo (logo + info).
+    // Landscape: 52mm (header llega a ~48). Portrait: 62mm (header llega a ~58).
+    const marginTop = orientation === 'landscape' ? 52 : 62
 
     autoTable(doc, {
       head,
       body,
-      startY,
+      startY: marginTop,
       theme: 'grid',
+      margin: { top: marginTop, bottom: 20, left: 8, right: 8 },
       styles: {
         fontSize: 7,
         cellPadding: 1,
@@ -131,11 +134,9 @@ export class KardexPdfService {
           if (bg) data.cell.styles.fillColor = bg
         }
       },
-      didDrawPage: (data) => {
-        if (data.pageNumber > 1) {
-          docBuilder.addEncabezado()
-          docBuilder.addEncabezadoInfo(titulo, null, datosIzquierda, null, false, null)
-        }
+      willDrawPage: () => {
+        docBuilder.addEncabezado()
+        docBuilder.addEncabezadoInfo(titulo, null, datosIzquierda, null, false, null)
       },
     })
 

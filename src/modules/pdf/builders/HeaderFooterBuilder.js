@@ -191,11 +191,19 @@ export class HeaderFooterBuilder {
     const { doc } = this
     const totalPages = doc.internal.getNumberOfPages()
     const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
 
     doc.setFontSize(8).setFont(undefined, 'bold')
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i)
-      doc.text(`Pagina N° ${i} de ${totalPages}`, pageWidth - 10, 53, { align: 'right' })
+      // [kdx-fix-page-number-v2] Ancla al pie real de la pagina (no Y=53,
+      // que en landscape cae dentro de la tabla en paginas 2+).
+      doc.text(
+        `Pagina N° ${i} de ${totalPages}`,
+        pageWidth - 10,
+        pageHeight - 8,
+        { align: 'right' },
+      )
     }
   }
 }
