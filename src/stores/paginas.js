@@ -71,6 +71,7 @@ export const PAGINAS = Object.freeze({
   inventarioexterno: Object.freeze([
     'registrarinventarioexterno',
     'informeinventario',
+    'sincronizaralmacenes',
     // 'reportedeindicederotacion',
   ]),
   leyendasdefacturas: Object.freeze([
@@ -186,6 +187,7 @@ export const PAGINAS_ICONS = Object.freeze({
   reportedecaducidaddeproductos: 'event_busy',
   reporteinventarioexterior: 'inventory',
   informeinventario: 'assessment',
+  sincronizaralmacenes: 'sync_alt',
   atajosrapidos: 'bolt',
 
   //extravio

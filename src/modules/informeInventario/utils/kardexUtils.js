@@ -1,30 +1,67 @@
 // src/modules/informeInventario/utils/kardexUtils.js
 
-const LOCALE = 'es-BO'
-
 /**
  * Convierte cualquier valor a numero finito.
  */
+// [kdx-fix-number-format-v2] toNumber y fmtCantidad deterministas:
+// eliminan la dependencia de ICU y desambiguan cadenas patologicas
+// ("19.100.00" -> 19100, "191.00.." -> 19100, "1.366,00" -> 1366).
 export function toNumber(v) {
   if (v == null || v === '') return 0
   if (typeof v === 'number') return Number.isFinite(v) ? v : 0
-  const n = Number(v)
-  if (Number.isFinite(n)) return n
-  const cleaned = String(v).replace(/\./g, '').replace(',', '.')
-  const n2 = Number(cleaned)
-  return Number.isFinite(n2) ? n2 : 0
+
+  let s = String(v).trim()
+  if (!s) return 0
+
+  s = s.replace(/[^\d.,-]/g, '')
+  if (!s) return 0
+
+  const hasDot = s.includes('.')
+  const hasComma = s.includes(',')
+
+  if (hasDot && hasComma) {
+    s = s.replace(/\./g, '').replace(',', '.')
+  } else if (hasComma && !hasDot) {
+    s = s.replace(',', '.')
+  } else if (hasDot && !hasComma) {
+    const parts = s.split('.')
+    if (parts.length === 2) {
+      // "123.45" -> decimal
+    } else if (parts.length > 2) {
+      const last = parts[parts.length - 1]
+      if (last.length <= 2) {
+        s = parts.slice(0, -1).join('') + '.' + last
+      } else {
+        s = parts.join('')
+      }
+    }
+  }
+
+  const n = Number(s)
+  return Number.isFinite(n) ? n : 0
 }
 
 /**
- * Formatea una cantidad con 2 decimales fijos (locale es-BO).
+ * Formatea un numero al estilo espanol de forma DETERMINISTA:
+ * punto para miles, coma para decimales. No depende de ICU ni locale del runtime.
+ */
+export function formatNumberEs(n, decimals = 2) {
+  if (!Number.isFinite(n)) n = 0
+  const negative = n < 0
+  const abs = Math.abs(n)
+  const fixed = abs.toFixed(decimals)
+  const [intPart, decPart] = fixed.split('.')
+  const withThousands = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return (negative ? '-' : '') + withThousands + (decPart ? ',' + decPart : '')
+}
+
+/**
+ * Formatea una cantidad con 2 decimales fijos (formato espanol determinista).
  * Ej: 1471 -> "1.471,00"
  */
 export function fmtCantidad(v) {
   const n = toNumber(v)
-  return n.toLocaleString(LOCALE, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
+  return formatNumberEs(n, 2)
 }
 
 /**

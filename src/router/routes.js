@@ -470,6 +470,12 @@ const routes = [
         name: 'QuickConsult',
         component: QuickConsultPage,
       },
+      {
+        path: '/sincronizaralmacenes',
+        name: 'SincronizarAlmacenes',
+        component: () =>
+          import('src/modules/sincronizarAlmacenes/pages/sincronizarAlmacenesPage.vue'),
+      },
       ...utilidadesRoutes,
     ],
   },

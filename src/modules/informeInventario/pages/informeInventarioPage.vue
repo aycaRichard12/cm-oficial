@@ -4,33 +4,59 @@
       <q-card-section>
         <div class="row items-start justify-between q-mb-md">
           <div>
-            <div class="text-h5 text-weight-bold">
-              Reporte de Inventario Físico - Valorado
-            </div>
-            <div class="text-caption text-grey-7">
-              Kardex físico-valorado por producto
-            </div>
+            <div class="text-h5 text-weight-bold">Reporte de Inventario Físico - Valorado</div>
+            <div class="text-caption text-grey-7">Kardex físico-valorado por producto</div>
           </div>
           <div class="row q-gutter-sm no-print">
-            <q-btn outline color="green-7" icon="grid_on" label="Excel"
-                   :disable="!filasKardex.length" @click="exportarExcel" />
-            <q-btn outline color="red-7" icon="picture_as_pdf" label="PDF"
-                   :disable="!filasKardex.length" @click="exportarPdf" />
-            <q-btn outline color="primary" icon="print" label="Imprimir"
-                   :disable="!filasKardex.length" @click="imprimir" />
+            <q-btn
+              outline
+              color="green-7"
+              icon="grid_on"
+              label="Excel"
+              :disable="!filasKardex.length"
+              @click="exportarExcel"
+            />
+            <q-btn
+              outline
+              color="red-7"
+              icon="picture_as_pdf"
+              label="PDF"
+              :disable="!filasKardex.length"
+              @click="exportarPdf"
+            />
+            <q-btn
+              outline
+              color="primary"
+              icon="print"
+              label="Imprimir"
+              :disable="!filasKardex.length"
+              @click="imprimir"
+            />
           </div>
         </div>
 
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-3">
-            <q-select v-model="almacenSeleccionado" :options="opcionesAlmacenes"
-                      emit-value map-options label="Almacén" dense outlined
-                      :loading="loadingAlmacenes" :disable="loadingAlmacenes || loading">
+            <q-select
+              v-model="almacenSeleccionado"
+              :options="opcionesAlmacenes"
+              emit-value
+              map-options
+              label="Almacén"
+              dense
+              outlined
+              :loading="loadingAlmacenes"
+              :disable="loadingAlmacenes || loading"
+            >
               <template v-slot:prepend>
                 <q-icon name="store" color="primary" />
               </template>
               <template v-slot:no-option>
-                <q-item><q-item-section class="text-grey">Sin almacenes disponibles</q-item-section></q-item>
+                <q-item
+                  ><q-item-section class="text-grey"
+                    >Sin almacenes disponibles</q-item-section
+                  ></q-item
+                >
               </template>
             </q-select>
           </div>
@@ -44,15 +70,30 @@
           </div>
 
           <div class="col-12 col-md-2 flex items-center">
-            <q-btn color="primary" icon="assessment" label="Generar" class="full-width"
-                   :loading="loading" :disable="!puedeGenerar" @click="generarInforme">
+            <q-btn
+              color="primary"
+              icon="assessment"
+              label="Generar"
+              class="full-width"
+              :loading="loading"
+              :disable="!puedeGenerar"
+              @click="generarInforme"
+            >
               <q-tooltip v-if="!puedeGenerar">Seleccione almacén y un rango válido</q-tooltip>
             </q-btn>
           </div>
 
           <div class="col-12 col-md-2 flex items-center">
-            <q-btn outline dense color="primary" icon="refresh" label="Recargar"
-                   class="full-width" :loading="loadingAlmacenes" @click="cargarAlmacenes" />
+            <q-btn
+              outline
+              dense
+              color="primary"
+              icon="refresh"
+              label="Recargar"
+              class="full-width"
+              :loading="loadingAlmacenes"
+              @click="cargarAlmacenes"
+            />
           </div>
         </div>
 
@@ -63,8 +104,7 @@
           <q-chip icon="store" color="primary" text-color="white" dense>
             {{ almacenNombre }}
           </q-chip>
-          <q-chip v-if="divisaActiva" icon="attach_money" color="green-7"
-                  text-color="white" dense>
+          <q-chip v-if="divisaActiva" icon="attach_money" color="green-7" text-color="white" dense>
             {{ divisaActiva.codigosin || divisaActiva.nombre }}
           </q-chip>
           <q-chip icon="inventory_2" color="blue-grey-7" text-color="white" dense>
@@ -74,8 +114,12 @@
       </q-card-section>
     </q-card>
 
-    <q-banner v-if="advertenciasRaiz.length" dense rounded
-              class="bg-orange-1 text-orange-9 q-mb-md no-print">
+    <q-banner
+      v-if="advertenciasRaiz.length"
+      dense
+      rounded
+      class="bg-orange-1 text-orange-9 q-mb-md no-print"
+    >
       <template v-slot:avatar>
         <q-icon name="warning" color="orange-9" />
       </template>
@@ -93,12 +137,18 @@
           </q-badge>
         </div>
         <q-space />
-        <q-input v-model="filtroTexto" dense outlined placeholder="Buscar producto/código..."
-                 style="min-width: 220px" class="q-mr-sm" clearable>
+        <q-input
+          v-model="filtroTexto"
+          dense
+          outlined
+          placeholder="Buscar producto/código..."
+          style="min-width: 220px"
+          class="q-mr-sm"
+          clearable
+        >
           <template v-slot:prepend><q-icon name="search" /></template>
         </q-input>
-        <q-toggle v-model="soloInconsistentes" label="Solo inconsistentes"
-                  dense color="negative" />
+        <q-toggle v-model="soloInconsistentes" label="Solo inconsistentes" dense color="negative" />
       </div>
 
       <div class="kardex-scroll">
@@ -113,12 +163,14 @@
           dense
           wrap-cells
           class="kardex-table"
-          :no-data-label="!filasKardex.length
-            ? 'Seleccione almacén y rango de fechas, luego presione Generar'
-            : 'Sin productos para los filtros aplicados'"
+          :no-data-label="
+            !filasKardex.length
+              ? 'Seleccione almacén y rango de fechas, luego presione Generar'
+              : 'Sin productos para los filtros aplicados'
+          "
         >
           <template v-slot:header>
-            <q-tr>
+            <q-tr key="hdr-main">
               <q-th rowspan="2" class="kdx-th kdx-th-item">N°</q-th>
               <q-th rowspan="2" class="kdx-th kdx-th-desc">Descripción</q-th>
               <q-th colspan="3" class="kdx-th kdx-head-saldo-inicial">Saldo Inicial</q-th>
@@ -127,7 +179,7 @@
               <q-th colspan="3" class="kdx-th kdx-head-saldo-final">Saldo Final</q-th>
               <q-th rowspan="2" class="kdx-th kdx-th-acciones no-print">Acciones</q-th>
             </q-tr>
-            <q-tr>
+            <q-tr key="hdr-sub">
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">Cantidad</q-th>
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Unit.</q-th>
               <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Total</q-th>
@@ -144,42 +196,85 @@
           </template>
 
           <template v-slot:body="props">
-            <q-tr :props="props" :class="{ 'kdx-row-inconsistente': !props.row.cuadre?.consistente }">
-              <q-td class="kdx-num">
+            <q-tr
+              :props="props"
+              :key="props.row.__id"
+              :class="{ 'kdx-row-inconsistente': !props.row.cuadre?.consistente }"
+            >
+              <q-td key="item" :props="props" class="kdx-num">
                 {{ props.rowIndex + 1 + offsetPaginacion }}
               </q-td>
-              <q-td class="kdx-desc">
+              <q-td key="descripcion" :props="props" class="kdx-desc">
                 <div class="text-weight-medium">{{ props.row.descripcion }}</div>
                 <div class="text-caption text-grey-7">
                   {{ props.row.codigo }}
                 </div>
               </q-td>
 
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtCantidad(props.row.siCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-inicial">{{ fmtMoneda(props.row.siPTotal) }}</q-td>
+              <q-td key="siCantidad" :props="props" class="kdx-num kdx-body-saldo-inicial">{{
+                fmtCantidad(props.row.siCantidad)
+              }}</q-td>
+              <q-td key="siPUnit" :props="props" class="kdx-num kdx-body-saldo-inicial">{{
+                fmtMoneda(props.row.siPUnit)
+              }}</q-td>
+              <q-td key="siPTotal" :props="props" class="kdx-num kdx-body-saldo-inicial">{{
+                fmtMoneda(props.row.siPTotal)
+              }}</q-td>
 
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtCantidad(props.row.entCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-entradas">{{ fmtMoneda(props.row.entPTotal) }}</q-td>
+              <q-td key="entCantidad" :props="props" class="kdx-num kdx-body-entradas">{{
+                fmtCantidad(props.row.entCantidad)
+              }}</q-td>
+              <q-td key="entPUnit" :props="props" class="kdx-num kdx-body-entradas">{{
+                fmtMoneda(props.row.entPUnit)
+              }}</q-td>
+              <q-td key="entPTotal" :props="props" class="kdx-num kdx-body-entradas">{{
+                fmtMoneda(props.row.entPTotal)
+              }}</q-td>
 
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtCantidad(props.row.salCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-salidas">{{ fmtMoneda(props.row.salPTotal) }}</q-td>
+              <q-td key="salCantidad" :props="props" class="kdx-num kdx-body-salidas">{{
+                fmtCantidad(props.row.salCantidad)
+              }}</q-td>
+              <q-td key="salPUnit" :props="props" class="kdx-num kdx-body-salidas">{{
+                fmtMoneda(props.row.salPUnit)
+              }}</q-td>
+              <q-td key="salPTotal" :props="props" class="kdx-num kdx-body-salidas">{{
+                fmtMoneda(props.row.salPTotal)
+              }}</q-td>
 
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtCantidad(props.row.sfCantidad) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPUnit) }}</q-td>
-              <q-td class="kdx-num kdx-body-saldo-final">{{ fmtMoneda(props.row.sfPTotal) }}</q-td>
+              <q-td key="sfCantidad" :props="props" class="kdx-num kdx-body-saldo-final">{{
+                fmtCantidad(props.row.sfCantidad)
+              }}</q-td>
+              <q-td key="sfPUnit" :props="props" class="kdx-num kdx-body-saldo-final">{{
+                fmtMoneda(props.row.sfPUnit)
+              }}</q-td>
+              <q-td key="sfPTotal" :props="props" class="kdx-num kdx-body-saldo-final">{{
+                fmtMoneda(props.row.sfPTotal)
+              }}</q-td>
 
-              <q-td class="kdx-center no-print">
+              <q-td key="acciones" :props="props" class="kdx-center no-print">
                 <div class="row items-center justify-center no-wrap">
-                  <q-btn flat dense round icon="visibility" color="primary"
-                         @click="abrirDetalle(props.row)" size="sm">
+                  <q-btn
+                    flat
+                    dense
+                    round
+                    icon="visibility"
+                    color="primary"
+                    @click="abrirDetalle(props.row)"
+                    size="sm"
+                  >
                     <q-tooltip>Ver compras / salidas del periodo</q-tooltip>
                   </q-btn>
-                  <q-btn v-if="props.row.advertencias && props.row.advertencias.length"
-                         flat dense round icon="warning" color="orange-9" size="sm"
-                         class="q-ml-xs" @click="abrirAdvertencias(props.row)">
+                  <q-btn
+                    v-if="props.row.advertencias && props.row.advertencias.length"
+                    flat
+                    dense
+                    round
+                    icon="warning"
+                    color="orange-9"
+                    size="sm"
+                    class="q-ml-xs"
+                    @click="abrirAdvertencias(props.row)"
+                  >
                     <q-badge color="orange" floating>{{ props.row.advertencias.length }}</q-badge>
                     <q-tooltip>Ver advertencias ({{ props.row.advertencias.length }})</q-tooltip>
                   </q-btn>
@@ -193,16 +288,24 @@
               <q-td colspan="2" class="kdx-num text-weight-bold">TOTALES</q-td>
               <q-td class="kdx-num kdx-body-saldo-inicial"></q-td>
               <q-td class="kdx-num kdx-body-saldo-inicial"></q-td>
-              <q-td class="kdx-num kdx-body-saldo-inicial text-weight-bold">{{ fmtMoneda(totalesKardex.siPTotal) }}</q-td>
+              <q-td class="kdx-num kdx-body-saldo-inicial text-weight-bold">{{
+                fmtMoneda(totalesKardex.siPTotal)
+              }}</q-td>
               <q-td class="kdx-num kdx-body-entradas"></q-td>
               <q-td class="kdx-num kdx-body-entradas"></q-td>
-              <q-td class="kdx-num kdx-body-entradas text-weight-bold">{{ fmtMoneda(totalesKardex.entPTotal) }}</q-td>
+              <q-td class="kdx-num kdx-body-entradas text-weight-bold">{{
+                fmtMoneda(totalesKardex.entPTotal)
+              }}</q-td>
               <q-td class="kdx-num kdx-body-salidas"></q-td>
               <q-td class="kdx-num kdx-body-salidas"></q-td>
-              <q-td class="kdx-num kdx-body-salidas text-weight-bold">{{ fmtMoneda(totalesKardex.salPTotal) }}</q-td>
+              <q-td class="kdx-num kdx-body-salidas text-weight-bold">{{
+                fmtMoneda(totalesKardex.salPTotal)
+              }}</q-td>
               <q-td class="kdx-num kdx-body-saldo-final"></q-td>
               <q-td class="kdx-num kdx-body-saldo-final"></q-td>
-              <q-td class="kdx-num kdx-body-saldo-final text-weight-bold">{{ fmtMoneda(totalesKardex.sfPTotal) }}</q-td>
+              <q-td class="kdx-num kdx-body-saldo-final text-weight-bold">{{
+                fmtMoneda(totalesKardex.sfPTotal)
+              }}</q-td>
               <q-td class="kdx-center no-print"></q-td>
             </q-tr>
           </template>
@@ -241,12 +344,15 @@
                 <span
                   class="kdx-doc-badge"
                   :style="{ backgroundColor: colorDocumento(props.row.codigo) }"
-                >{{ props.value }}</span>
+                  >{{ props.value }}</span
+                >
               </q-td>
             </template>
           </BaseFilterableTable>
-          <div v-if="!detalleActual?.detalle?.compras?.length"
-               class="text-caption text-grey q-mb-md">
+          <div
+            v-if="!detalleActual?.detalle?.compras?.length"
+            class="text-caption text-grey q-mb-md"
+          >
             Sin compras en el periodo.
           </div>
 
@@ -265,12 +371,12 @@
                 <span
                   class="kdx-doc-badge"
                   :style="{ backgroundColor: colorDocumento(props.row.codigo) }"
-                >{{ props.value }}</span>
+                  >{{ props.value }}</span
+                >
               </q-td>
             </template>
           </BaseFilterableTable>
-          <div v-if="!detalleActual?.detalle?.salidas?.length"
-               class="text-caption text-grey">
+          <div v-if="!detalleActual?.detalle?.salidas?.length" class="text-caption text-grey">
             Sin salidas en el periodo.
           </div>
         </q-card-section>
@@ -326,7 +432,6 @@ import {
   idusuario_md5,
   divisaEmonedaActiva,
 } from 'src/composables/FuncionesGenerales'
-import { formatearFechaDDMMYYYY } from 'src/composables/useFechaRango'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import DateRangeFilter from 'src/components/componentesGenerales/filtradoTabla/DateRangeFilter.vue'
 import {
@@ -381,66 +486,159 @@ const columnasPlaceholder = [
 ]
 
 const columnasMovimientoEntrada = [
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'nfactura', label: 'N° Factura', field: 'nfactura', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true, dataType: 'number' },
-  { name: 'precioUnitario', label: 'P. Unitario', field: 'precioUnitario', align: 'right', sortable: true, dataType: 'number' },
-  { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    field: 'fecha',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'documento',
+    label: 'Documento',
+    field: 'documento',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'nfactura',
+    label: 'N° Factura',
+    field: 'nfactura',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'proveedor',
+    label: 'Proveedor',
+    field: 'proveedor',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'cantidad',
+    label: 'Cantidad',
+    field: 'cantidad',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
+  {
+    name: 'precioUnitario',
+    label: 'P. Unitario',
+    field: 'precioUnitario',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
+  {
+    name: 'valor',
+    label: 'Valor',
+    field: 'valor',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
 ]
 
 const columnasMovimientoSalida = [
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'documento', label: 'Documento', field: 'documento', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'nfactura', label: 'N° Factura', field: 'nfactura', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true, dataType: 'number' },
-  { name: 'precioUnitario', label: 'P. Unitario', field: 'precioUnitario', align: 'right', sortable: true, dataType: 'number' },
-  { name: 'valor', label: 'Valor', field: 'valor', align: 'right', sortable: true, dataType: 'number' },
+  {
+    name: 'fecha',
+    label: 'Fecha',
+    field: 'fecha',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'documento',
+    label: 'Documento',
+    field: 'documento',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'nfactura',
+    label: 'N° Factura',
+    field: 'nfactura',
+    align: 'left',
+    sortable: true,
+    dataType: 'text',
+  },
+  {
+    name: 'cantidad',
+    label: 'Cantidad',
+    field: 'cantidad',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
+  {
+    name: 'precioUnitario',
+    label: 'P. Unitario',
+    field: 'precioUnitario',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
+  {
+    name: 'valor',
+    label: 'Valor',
+    field: 'valor',
+    align: 'right',
+    sortable: true,
+    dataType: 'number',
+  },
 ]
 
 const DOCUMENTO_POR_CODIGO = {
-  'VE':           'SALIDA (venta facturada)',
-  'MOV1':         'ENTRADA (increase / incremento)',
-  'MOV2':         'SALIDA (decrease / decremento)',
-  'MIC':          'ENTRADA (compras)',
-  'NUE':          'NUEVO (recién creado producto stock 0)',
-  'COT':          'SALIDA (venta sin factura cotización)',
-  'MER':          'SALIDA (merma)',
-  'AN':           'ENTRADA (anular venta facturada)',
-  'ANC':          'ENTRADA (anular venta sin factura cotización)',
-  'EXT':          'SALIDA (extravío producto)',
-  'DEV VE':       'ENTRADA (devolución venta)',
-  'ANUL COMP':    'SALIDA (anulación compra)',
-  'DEV COT':      'ENTRADA (devolución venta sin factura)',
-  'DEV':          'ENTRADA (devolución venta)',
-  'MER VE':       'SALIDA (merma venta con factura)',
+  VE: 'SALIDA (venta facturada)',
+  MOV1: 'ENTRADA (increase / incremento)',
+  MOV2: 'SALIDA (decrease / decremento)',
+  MIC: 'ENTRADA (compras)',
+  NUE: 'NUEVO (recién creado producto stock 0)',
+  COT: 'SALIDA (venta sin factura cotización)',
+  MER: 'SALIDA (merma)',
+  AN: 'ENTRADA (anular venta facturada)',
+  ANC: 'ENTRADA (anular venta sin factura cotización)',
+  EXT: 'SALIDA (extravío producto)',
+  'DEV VE': 'ENTRADA (devolución venta)',
+  'ANUL COMP': 'SALIDA (anulación compra)',
+  'DEV COT': 'ENTRADA (devolución venta sin factura)',
+  DEV: 'ENTRADA (devolución venta)',
+  'MER VE': 'SALIDA (merma venta con factura)',
   'ANUL DIRECTA': 'SALIDA (anulación compra)',
-  'MER COT':      'SALIDA (merma cotización sin factura)',
+  'MER COT': 'SALIDA (merma cotización sin factura)',
 }
 
 const CODIGO_COLORES = {
-  'VE':           '#1976d2',
-  'MOV1':         '#2e7d32',
-  'MOV2':         '#c62828',
-  'MIC':          '#1b5e20',
-  'NUE':          '#6a1b9a',
-  'COT':          '#ef6c00',
-  'MER':          '#b71c1c',
-  'AN':           '#0277bd',
-  'ANC':          '#00838f',
-  'EXT':          '#4e342e',
-  'DEV VE':       '#43a047',
-  'ANUL COMP':    '#8e0000',
-  'DEV COT':      '#66bb6a',
-  'DEV':          '#388e3c',
-  'MER VE':       '#d32f2f',
+  VE: '#1976d2',
+  MOV1: '#2e7d32',
+  MOV2: '#c62828',
+  MIC: '#1b5e20',
+  NUE: '#6a1b9a',
+  COT: '#ef6c00',
+  MER: '#b71c1c',
+  AN: '#0277bd',
+  ANC: '#00838f',
+  EXT: '#4e342e',
+  'DEV VE': '#43a047',
+  'ANUL COMP': '#8e0000',
+  'DEV COT': '#66bb6a',
+  DEV: '#388e3c',
+  'MER VE': '#d32f2f',
   'ANUL DIRECTA': '#6d0000',
-  'MER COT':      '#e64a19',
+  'MER COT': '#e64a19',
 }
 
 function colorDocumento(codigo) {
-  const key = String(codigo || '').trim().toUpperCase()
+  const key = String(codigo || '')
+    .trim()
+    .toUpperCase()
   return CODIGO_COLORES[key] || '#546e7a'
 }
 
@@ -464,8 +662,12 @@ const filasKardexFiltradas = computed(() => {
   if (q) {
     data = data.filter(
       (f) =>
-        String(f.descripcion || '').toLowerCase().includes(q) ||
-        String(f.codigo || '').toLowerCase().includes(q),
+        String(f.descripcion || '')
+          .toLowerCase()
+          .includes(q) ||
+        String(f.codigo || '')
+          .toLowerCase()
+          .includes(q),
     )
   }
   return data
@@ -491,14 +693,66 @@ const almacenNombre = computed(() => {
 })
 
 const puedeGenerar = computed(
-  () =>
-    !!almacenSeleccionado.value &&
-    !!fechaInicio.value &&
-    !!fechaFin.value &&
-    rangoValido.value,
+  () => !!almacenSeleccionado.value && !!fechaInicio.value && !!fechaFin.value && rangoValido.value,
 )
 
-const fmtFechaDDMMYYYY = formatearFechaDDMMYYYY
+/**
+ * Convierte cualquier valor a "YYYY-MM-DD" trabajando exclusivamente con
+ * cadenas. Para objetos Date se usa toISOString().slice(0, 10), que NO
+ * depende de la zona horaria local del navegador.
+ */
+function aFechaISO(value) {
+  // [kdx-fix-timezone] Parseo robusto de fechas con/sin timezone.
+  if (value == null || value === '') return ''
+
+  // 1) Date object
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return ''
+    return value.toISOString().slice(0, 10)
+  }
+
+  // 2) Number (timestamp epoch)
+  if (typeof value === 'number') {
+    const dt = new Date(value)
+    if (Number.isNaN(dt.getTime())) return ''
+    return dt.toISOString().slice(0, 10)
+  }
+
+  // 3) String
+  if (typeof value !== 'string') return ''
+  const raw = value.trim()
+  if (!raw) return ''
+
+  // 3.a) YYYY-MM-DD exacto -> fecha-calendario literal (sin timezone)
+  const mPure = raw.match(/^(\d{4})[-/](\d{2})[-/](\d{2})$/)
+  if (mPure) return `${mPure[1]}-${mPure[2]}-${mPure[3]}`
+
+  // 3.b) DD/MM/YYYY exacto
+  const mDmy = raw.match(/^(\d{2})[-/](\d{2})[-/](\d{4})$/)
+  if (mDmy) return `${mDmy[3]}-${mDmy[2]}-${mDmy[1]}`
+
+  // 3.c) ISO con tiempo (incluye offsets -04:00 y sufijo Z):
+  //      "2025-12-16T20:00:00.000-04:00" -> "2025-12-17"
+  if (/^\d{4}-\d{2}-\d{2}T/.test(raw)) {
+    const dt = new Date(raw)
+    if (!Number.isNaN(dt.getTime())) {
+      return dt.toISOString().slice(0, 10)
+    }
+  }
+
+  // 3.d) Fallback: primer prefijo YYYY-MM-DD
+  const mPrefix = raw.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/)
+  if (mPrefix) return `${mPrefix[1]}-${mPrefix[2]}-${mPrefix[3]}`
+
+  return ''
+}
+
+function fmtFechaDDMMYYYY(value) {
+  const iso = aFechaISO(value)
+  if (!iso) return ''
+  const [y, m, d] = iso.split('-')
+  return `${d}/${m}/${y}`
+}
 
 async function cargarDivisa() {
   try {
@@ -539,7 +793,9 @@ async function generarInforme() {
   filas.value = []
   paginacion.value = { ...paginacion.value, page: 1 }
   try {
-    const url = `obtenerSaldosFinales/${fechaInicio.value}/${fechaFin.value}/${almacenSeleccionado.value}`
+    const fIni = aFechaISO(fechaInicio.value)
+    const fFin = aFechaISO(fechaFin.value)
+    const url = `obtenerSaldosFinales/${fIni}/${fFin}/${almacenSeleccionado.value}`
     const response = await api.get(url)
     const body = response.data
 
@@ -570,11 +826,13 @@ function abrirDetalle(row) {
   const normalize = (arr, prefix) =>
     (arr || []).map((m, i) => {
       const fechaRaw = m.fecha || m.fechaMovimiento || ''
-      const codigo = String(m.codigo || m.documento || m.numero || '').trim().toUpperCase()
+      const codigo = String(m.codigo || m.documento || m.numero || '')
+        .trim()
+        .toUpperCase()
       return {
         ...m,
         id: `${prefix}-${i}`,
-        fecha: fechaRaw ? formatearFechaDDMMYYYY(fechaRaw) : '',
+        fecha: fechaRaw ? fmtFechaDDMMYYYY(fechaRaw) : '',
         documento: descripcionDocumento(codigo),
         codigo,
         nfactura: m.nfactura || m.numeroFactura || '',
@@ -596,11 +854,7 @@ function abrirDetalle(row) {
 
 function abrirAdvertencias(row) {
   const raw = row?.advertencias
-  const lista = Array.isArray(raw)
-    ? [...raw]
-    : raw
-      ? [String(raw)]
-      : []
+  const lista = Array.isArray(raw) ? [...raw] : raw ? [String(raw)] : []
   advertenciasActuales.value = {
     producto: row?.descripcion || '',
     codigo: row?.codigo || '',
@@ -620,14 +874,14 @@ function exportarExcel() {
       filas: filasKardexFiltradas.value,
       titulo: 'Reporte de Inventario Físico - Valorado',
       almacenNombre: almacenNombre.value,
-      fechaInicio: fechaInicio.value,
-      fechaFin: fechaFin.value,
+      fechaInicio: aFechaISO(fechaInicio.value),
+      fechaFin: aFechaISO(fechaFin.value),
       divisaActiva: divisaLabel(),
     })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `Kardex_${fechaInicio.value}_${fechaFin.value}.xls`
+    a.download = `Kardex_${aFechaISO(fechaInicio.value)}_${aFechaISO(fechaFin.value)}.xls`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -651,13 +905,13 @@ async function exportarPdf() {
       filas: filasKardexFiltradas.value,
       titulo: 'Reporte de Inventario Físico - Valorado',
       almacenNombre: almacenNombre.value,
-      fechaInicio: fechaInicio.value,
-      fechaFin: fechaFin.value,
+      fechaInicio: aFechaISO(fechaInicio.value),
+      fechaFin: aFechaISO(fechaFin.value),
       divisaActiva: divisaLabel(),
       orientation: 'landscape',
       format: 'a4',
     })
-    doc.save(`Kardex_${fechaInicio.value}_${fechaFin.value}.pdf`)
+    doc.save(`Kardex_${aFechaISO(fechaInicio.value)}_${aFechaISO(fechaFin.value)}.pdf`)
     $q.notify({ type: 'positive', message: 'PDF generado correctamente.' })
   } catch (e) {
     console.error('[informeInventario] exportarPdf:', e)
@@ -679,8 +933,10 @@ async function imprimir() {
 onMounted(async () => {
   const hoy = new Date()
   const yyyy = hoy.getFullYear()
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0')
+  const dd = String(hoy.getDate()).padStart(2, '0')
   fechaInicio.value = `${yyyy}-01-01`
-  fechaFin.value = hoy.toISOString().slice(0, 10)
+  fechaFin.value = `${yyyy}-${mm}-${dd}`
   rangoValido.value = true
   await Promise.all([cargarAlmacenes(), cargarDivisa()])
 })
@@ -718,10 +974,18 @@ onMounted(async () => {
   height: 30px;
 }
 
-.kdx-head-saldo-inicial { background-color: #ffeb9c !important; }
-.kdx-head-entradas      { background-color: #ffcc80 !important; }
-.kdx-head-salidas       { background-color: #c8e6c9 !important; }
-.kdx-head-saldo-final   { background-color: #b3e5fc !important; }
+.kdx-head-saldo-inicial {
+  background-color: #ffeb9c !important;
+}
+.kdx-head-entradas {
+  background-color: #ffcc80 !important;
+}
+.kdx-head-salidas {
+  background-color: #c8e6c9 !important;
+}
+.kdx-head-saldo-final {
+  background-color: #b3e5fc !important;
+}
 
 .kdx-th-item,
 .kdx-th-desc,
@@ -729,21 +993,37 @@ onMounted(async () => {
   background-color: #f5f5f5 !important;
 }
 
-.kdx-body-saldo-inicial { background-color: #fff9c4 !important; }
-.kdx-body-entradas      { background-color: #ffe0b2 !important; }
-.kdx-body-salidas       { background-color: #e8f5e9 !important; }
-.kdx-body-saldo-final   { background-color: #e1f5fe !important; }
+.kdx-body-saldo-inicial {
+  background-color: #fff9c4 !important;
+}
+.kdx-body-entradas {
+  background-color: #ffe0b2 !important;
+}
+.kdx-body-salidas {
+  background-color: #e8f5e9 !important;
+}
+.kdx-body-saldo-final {
+  background-color: #e1f5fe !important;
+}
 
-.kdx-row-inconsistente { background-color: #fff3e0 !important; }
+.kdx-row-inconsistente {
+  background-color: #fff3e0 !important;
+}
 
 .kdx-totales :deep(td) {
   background-color: #e0e0e0 !important;
   border-top: 2px solid #37474f !important;
 }
 
-.kdx-num    { text-align: right; }
-.kdx-desc   { text-align: left; }
-.kdx-center { text-align: center; }
+.kdx-num {
+  text-align: right;
+}
+.kdx-desc {
+  text-align: left;
+}
+.kdx-center {
+  text-align: center;
+}
 
 .kardex-table :deep(thead tr th:nth-child(3)),
 .kardex-table :deep(thead tr th:nth-child(6)),
@@ -771,10 +1051,19 @@ onMounted(async () => {
 }
 
 @media print {
-  .no-print { display: none !important; }
-  .kardex-scroll { max-height: none; overflow: visible; }
-  .kardex-print-area { box-shadow: none !important; }
+  .no-print {
+    display: none !important;
+  }
+  .kardex-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+  .kardex-print-area {
+    box-shadow: none !important;
+  }
   .kardex-table :deep(thead tr:first-child th),
-  .kardex-table :deep(thead tr:last-child th) { position: static; }
+  .kardex-table :deep(thead tr:last-child th) {
+    position: static;
+  }
 }
 </style>
