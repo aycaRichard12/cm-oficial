@@ -1,4 +1,4 @@
-<template>
+<template class="bg-fondo">
   <q-layout view="lHh lpr lff" class="bg-fondo">
     <HeaderLayout
       v-model:current-tab="currentTab"
@@ -17,22 +17,20 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-white" style="position: fixed">
       <div>
         <router-link to="/" @click="ocultarTabs">
-          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 65px">
-            <div class="absolute-full flex flex-left bg-transparent">
+          <div class="absolute-top bg-primary" style="height: 65px">
+            <div class="absolute-full flex flex-center bg-primary">
               <div class="logo-area">
-                <div class="row items-center justify-center q-gutter-sm">
-                  <!-- <div class="logo-badge">
-                    <q-img src="favicon.png" width="45px" height="45px" fit="contain" />
-                  </div> -->
-
-                  <div class="column items-center">
-                    <q-img src="nombre.png" style="width: 148px; height: 23px" fit="contain" />
-                    <div class="logo-sub">COMERCIAL</div>
-                  </div>
+                <div class="column items-center justify-center">
+                  <q-img
+                    src="nombre.png"
+                    style="width: 148px; height: 23px"
+                    fit="contain"
+                  />
+                  <div class="logo-sub">COMERCIAL</div>
                 </div>
               </div>
             </div>
-          </q-img>
+          </div>
         </router-link>
       </div>
       <q-scroll-area
@@ -82,7 +80,7 @@
     </q-drawer>
 
     <q-page-container style="height: calc(100vh - 50px)">
-      <router-view style="background-color: #eeebe2; overflow-y: auto; height: 100%" />
+      <router-view :style="pageBackgroundStyle" />
     </q-page-container>
 
     <!-- Dialog de Notificación Recibida -->
@@ -113,6 +111,18 @@ const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
 const usuario = getUsuario()
 console.log('Usuario en MainLayout.vue:', usuario)
+
+// Fondo del area de contenido (logo mistersofts sin fondo)
+const publicBase = import.meta.env.BASE_URL
+const pageBackgroundStyle = {
+  backgroundColor: '#eeebe2',
+  backgroundImage: `url('${publicBase}fondo.jpeg')`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center center',
+  backgroundSize: 'min(60%, 900px)',
+  overflowY: 'auto',
+  height: '100%',
+}
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)

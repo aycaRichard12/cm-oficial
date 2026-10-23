@@ -81,10 +81,10 @@ import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { getShortcutByCodigo, shortcutsRegistry } from 'src/pages/AtajosConfig/shortcutsRegistry'
 
 // Assets getShortcutByCodigo
-import IconVentas from 'src/assets/Ventas.png'
-import IconPedidos from 'src/assets/Compras.png'
-import IconAdmin from 'src/assets/Productos.png'
-import IconReportes from 'src/assets/Reportes.png'
+// import IconVentas from 'src/assets/Ventas.png'
+// import IconPedidos from 'src/assets/Compras.png'
+// import IconAdmin from 'src/assets/Productos.png'
+// import IconReportes from 'src/assets/Reportes.png'
 import IconDefault from 'src/assets/icon-128.png'
 
 const $q = useQuasar()
@@ -163,47 +163,47 @@ const fetchUserShortcuts = async () => {
 }
 
 // Cajas por defecto (según permisos)
-const defaultBoxes = computed(() => {
-  const boxes = []
-  if (dashboardPerm.value) {
-    boxes.push({
-      id: 'dashboard',
-      component: ReporteComponent,
-      iconComponent: IconReportes,
-      title: 'ESTADÍSTICAS',
-      cardId: 'reportes-card',
-      colorClass: '',
-    })
-  }
-  if (ventaPerm.value) {
-    boxes.push({
-      id: 'venta',
-      component: VentaComponent,
-      iconComponent: IconVentas,
-      title: 'VENTAS',
-      cardId: 'venta-card',
-    })
-  }
-  if (compraPerm.value) {
-    boxes.push({
-      id: 'compra',
-      component: PedidoComponent,
-      iconComponent: IconPedidos,
-      title: 'COMPRAS',
-      cardId: 'compra-card',
-    })
-  }
-  if (productoPerm.value) {
-    boxes.push({
-      id: 'producto',
-      component: CrearProductos,
-      iconComponent: IconAdmin,
-      title: 'PRODUCTOS',
-      cardId: 'producto-card',
-    })
-  }
-  return boxes
-})
+// const defaultBoxes = computed(() => {
+//   const boxes = []
+//   if (dashboardPerm.value) {
+//     boxes.push({
+//       id: 'dashboard',
+//       component: ReporteComponent,
+//       iconComponent: IconReportes,
+//       title: 'ESTADÍSTICAS',
+//       cardId: 'reportes-card',
+//       colorClass: '',
+//     })
+//   }
+//   if (ventaPerm.value) {
+//     boxes.push({
+//       id: 'venta',
+//       component: VentaComponent,
+//       iconComponent: IconVentas,
+//       title: 'VENTAS',
+//       cardId: 'venta-card',
+//     })
+//   }
+//   if (compraPerm.value) {
+//     boxes.push({
+//       id: 'compra',
+//       component: PedidoComponent,
+//       iconComponent: IconPedidos,
+//       title: 'COMPRAS',
+//       cardId: 'compra-card',
+//     })
+//   }
+//   if (productoPerm.value) {
+//     boxes.push({
+//       id: 'producto',
+//       component: CrearProductos,
+//       iconComponent: IconAdmin,
+//       title: 'PRODUCTOS',
+//       cardId: 'producto-card',
+//     })
+//   }
+//   return boxes
+// })
 
 // Construir cajas a partir de atajos personalizados
 const customShortcutBoxes = computed(() => {
@@ -228,11 +228,11 @@ const finalTopBoxes = computed(() => {
 
   // Sin atajos configurados
   if (customCount === 0) {
-    return defaultBoxes.value
+    return [] //defaultBoxes.value
   }
   // 1 atajo personalizado: default + ese atajo (máx 5)
   else if (customCount === 1) {
-    const combined = [...defaultBoxes.value, ...customShortcutBoxes.value]
+    const combined = [...customShortcutBoxes.value]
     return combined.slice(0, 5)
   }
   // 2 o más atajos: solo los atajos (máx 5)

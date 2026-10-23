@@ -943,7 +943,7 @@ export const mockAuthResponse = [
       logo: 'logos/yof_d67fc1b140.jpg',
       ocelular: '+591 76548252',
       telefono: '+591 12345678',
-      ocierrefiscal: '31/12',
+      ocierrefiscal: '05/03',
       ociudad: 'Cercado',
       oestado: 'Cochababma',
       onempleador: '',
