@@ -1,4 +1,4 @@
-<template>
+<template class="bg-fondo">
   <q-layout view="lHh lpr lff" class="bg-fondo">
     <HeaderLayout
       v-model:current-tab="currentTab"

@@ -1,6 +1,6 @@
-<template>
-  <q-header class="bg-primary text-white q-mr-md">
-    <q-toolbar class="row no-wrap items-center justify-between">
+<template >
+  <q-header class="text-white" style="box-shadow: none; background-color: #eeebe2; margin-right: 10px; " >
+    <q-toolbar class="bg-primary q-pl-md q-pr-md row no-wrap items-center justify-between" style="border-radius: 15px; margin: 5px; box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
       <div class="col-auto">
         <q-btn
           dense
@@ -135,15 +135,19 @@
     </q-toolbar>
 
     <transition name="slide-down">
-      <q-tabs
-        align="left"
-        v-model="internalCurrentTab"
-        v-show="tabsVisible"
-        style="background-color: #eeebe2"
-        active-color="primary"
-        indicator-color="transparent"
-        dense
-      >
+      <div v-show="tabsVisible" class="sub-nav-tabs-wrapper">
+        <q-tabs
+          align="left"
+          v-model="internalCurrentTab"
+          style="background-color: #eeebe2"
+          active-color="primary"
+          indicator-color="transparent"
+          dense
+          inline-label
+          mobile-arrows
+          outside-arrows
+          class="sub-nav-tabs"
+        >
         <q-tab
           v-for="tab in activeTabs"
           :key="tab.codigo + '-' + tab.permiso"
@@ -197,7 +201,8 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-      </q-tabs>
+        </q-tabs>
+      </div>
     </transition>
   </q-header>
 </template>

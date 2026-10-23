@@ -84,3 +84,79 @@
     transform: translateY(0);
   }
 }
+
+/* ============================================================
+   FIX: sub-nav tabs responsivas + densidad de tabla/toolbar
+   (idempotente: aplicar solo una vez)
+   ============================================================ */
+.sub-nav-tabs-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.sub-nav-tabs-wrapper .q-tabs {
+  min-width: max-content;
+}
+.sub-nav-tabs-wrapper .q-tabs .q-tab {
+  min-height: 36px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.compact-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 8px;
+  min-height: 44px;
+  border-radius: 8px;
+  background-color: transparent;
+}
+.compact-toolbar .q-field,
+.compact-toolbar .q-btn {
+  margin: 0;
+}
+.compact-table .q-table tbody td {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+.compact-table .q-table thead th {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
+}
+.compact-table .q-table__bottom {
+  min-height: 36px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  font-size: 12px;
+}
+
+/* ============================================================
+   FIX: Bordes redondeados, espaciado de página y tabla
+   ============================================================ */
+.sub-nav-tabs-wrapper {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  overflow: hidden;
+}
+.q-page-container .q-page {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+.q-table tbody td {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  font-size: 13px !important;
+}
+.q-table thead th {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+
