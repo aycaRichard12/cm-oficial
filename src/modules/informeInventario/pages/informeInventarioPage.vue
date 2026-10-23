@@ -930,12 +930,57 @@ async function imprimir() {
   paginacion.value = original
 }
 
+/**
+ * [kdx-fix-ocierrefiscal] Calcula la fecha de INICIO del periodo fiscal:
+ * toma `empresa.ocierrefiscal` (formato "DD/MM") del localStorage
+ * `mistersofts-cm`, le suma 1 dia y la ancla al año en curso.
+ *   Ej: "31/12" -> "YYYY-01-01"  (año actual)
+ *       "30/06" -> "YYYY-07-01"
+ *       "28/02" -> "YYYY-03-01" (o "YYYY-02-29" si el año es bisiesto)
+ * Fallback: "YYYY-01-01" si no hay dato valido.
+ */
+function calcularFechaInicioFiscal(yyyy) {
+  const fallback = `${yyyy}-01-01`
+  try {
+    const raw = localStorage.getItem('mistersofts-cm')
+    if (!raw) return fallback
+    const parsed = JSON.parse(raw)
+    const arr = Array.isArray(parsed) ? parsed : [parsed]
+    const cierre = arr?.[0]?.empresa?.ocierrefiscal
+    if (!cierre || typeof cierre !== 'string') return fallback
+    const m = cierre.trim().match(/^(\d{1,2})[/-](\d{1,2})$/)
+    if (!m) return fallback
+    const dia = parseInt(m[1], 10)
+    const mes = parseInt(m[2], 10)
+    if (!Number.isFinite(dia) || !Number.isFinite(mes)) return fallback
+    if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return fallback
+    const base = new Date(yyyy, mes - 1, dia)
+    if (Number.isNaN(base.getTime())) return fallback
+    // Descarta fechas no reales (31/04, 29/02 en año no bisiesto, etc.).
+    if (
+      base.getFullYear() !== yyyy ||
+      base.getMonth() !== mes - 1 ||
+      base.getDate() !== dia
+    ) {
+      return fallback
+    }
+    base.setDate(base.getDate() + 1)
+    const mmIni = String(base.getMonth() + 1).padStart(2, '0')
+    const ddIni = String(base.getDate()).padStart(2, '0')
+    // Anclamos SIEMPRE al año en curso, aunque +1 dia desborde a enero.
+    return `${yyyy}-${mmIni}-${ddIni}`
+  } catch (e) {
+    console.warn('[informeInventario] No se pudo leer ocierrefiscal:', e)
+    return fallback
+  }
+}
+
 onMounted(async () => {
   const hoy = new Date()
   const yyyy = hoy.getFullYear()
   const mm = String(hoy.getMonth() + 1).padStart(2, '0')
   const dd = String(hoy.getDate()).padStart(2, '0')
-  fechaInicio.value = `${yyyy}-01-01`
+  fechaInicio.value = calcularFechaInicioFiscal(yyyy)
   fechaFin.value = `${yyyy}-${mm}-${dd}`
   rangoValido.value = true
   await Promise.all([cargarAlmacenes(), cargarDivisa()])
