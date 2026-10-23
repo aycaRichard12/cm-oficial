@@ -1,5 +1,5 @@
 <template>
-  <q-header class="bg-primary text-white">
+  <q-header class="bg-secondary text-white q-mr-md">
     <q-toolbar class="row no-wrap items-center justify-between">
       <div class="col-auto">
         <q-btn

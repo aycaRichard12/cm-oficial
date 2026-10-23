@@ -17,22 +17,20 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-white" style="position: fixed">
       <div>
         <router-link to="/" @click="ocultarTabs">
-          <q-img class="absolute-top" src="../assets/fondou.jpg" style="height: 65px">
-            <div class="absolute-full flex flex-left bg-transparent">
+          <div class="absolute-top bg-primary" style="height: 65px">
+            <div class="absolute-full flex flex-center bg-primary">
               <div class="logo-area">
-                <div class="row items-center justify-center q-gutter-sm">
-                  <!-- <div class="logo-badge">
-                    <q-img src="favicon.png" width="45px" height="45px" fit="contain" />
-                  </div> -->
-
-                  <div class="column items-center">
-                    <q-img src="nombre.png" style="width: 148px; height: 23px" fit="contain" />
-                    <div class="logo-sub">COMERCIAL</div>
-                  </div>
+                <div class="column items-center justify-center">
+                  <q-img
+                    src="nombre.png"
+                    style="width: 148px; height: 23px"
+                    fit="contain"
+                  />
+                  <div class="logo-sub">COMERCIAL</div>
                 </div>
               </div>
             </div>
-          </q-img>
+          </div>
         </router-link>
       </div>
       <q-scroll-area
