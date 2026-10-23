@@ -80,7 +80,7 @@
     </q-drawer>
 
     <q-page-container style="height: calc(100vh - 50px)">
-      <router-view style="background-color: #eeebe2; overflow-y: auto; height: 100%" />
+      <router-view :style="pageBackgroundStyle" />
     </q-page-container>
 
     <!-- Dialog de Notificación Recibida -->
@@ -111,6 +111,18 @@ const permisosStore = useOperacionesPermitidas()
 const idusuario = idusuario_md5()
 const usuario = getUsuario()
 console.log('Usuario en MainLayout.vue:', usuario)
+
+// Fondo del area de contenido (logo mistersofts sin fondo)
+const publicBase = import.meta.env.BASE_URL
+const pageBackgroundStyle = {
+  backgroundColor: '#eeebe2',
+  backgroundImage: `url('${publicBase}fondo.jpeg')`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center center',
+  backgroundSize: 'min(60%, 900px)',
+  overflowY: 'auto',
+  height: '100%',
+}
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)
