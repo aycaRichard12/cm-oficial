@@ -23,7 +23,7 @@
             <q-icon name="inventory_2" size="md" class="q-mr-sm" />
             Stock Productos Global
           </div>
-          <div class="text-subtitle2 text-grey-7 q-mt-xs">
+          <div class="text-subtitle2 cm-text-muted q-mt-xs">
             Administración y consulta de inventario global
           </div>
         </div>
@@ -80,7 +80,7 @@
 
             <!-- Categoría de precio -->
             <div class="col-12 col-md-3" id="categoriaPrecio">
-              <div class="text-caption text-weight-medium text-grey-7 q-mb-xs">
+              <div class="text-caption text-weight-medium cm-text-muted q-mb-xs">
                 Categoría de precio
               </div>
               <q-select

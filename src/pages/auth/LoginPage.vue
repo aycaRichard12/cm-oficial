@@ -7,7 +7,7 @@
         <!-- Right Side: Image/Branding -->
         <div
           class="col-0 col-md-7 flex flex-center relative-position overflow-hidden"
-          style="background: linear-gradient(135deg, #004d40 0%, #00251a 100%)"
+          style="background: linear-gradient(135deg, var(--cm-brand) 0%, #00251a 100%)"
         >
           <div class="absolute-full">
             <q-img
@@ -48,7 +48,7 @@
             ></div>
           </div>
 
-          <div class="text-center text-white relative-position q-pa-xl" style="z-index: 10">
+          <div class="text-center relative-position q-pa-xl" style="z-index: 10; color: var(--cm-on-primary)">
             <q-icon
               name="business"
               size="100px"
@@ -63,22 +63,22 @@
           </div>
         </div>
 
-        <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top bg-white">
+        <div class="col-12 col-md-5 flex flex-center shadow-2 relative-position z-top cm-surface">
           <div class="q-pa-xl full-width" style="max-width: 480px">
             <div class="text-center q-mb-xl">
               <q-img
                 src="~assets/IMAGOTIPO-02.png"
                 width="180px"
                 class="q-mb-md"
-                style="background-color: #004d40; border-radius: 8px"
+                style="background-color: var(--cm-brand); border-radius: 8px"
               />
               <div class="text-h4 text-weight-bolder text-primary q-mb-sm">Bienvenido</div>
-              <div class="text-subtitle1 text-grey-8">Ingresa a tu cuenta para continuar</div>
+              <div class="text-subtitle1 cm-text-muted">Ingresa a tu cuenta para continuar</div>
             </div>
 
             <q-form @submit.prevent="login" class="q-gutter-md">
               <div>
-                <div class="text-weight-bold text-grey-9 q-mb-xs">Usuario</div>
+                <div class="text-weight-bold cm-text q-mb-xs">Usuario</div>
                 <q-input
                   outlined
                   v-model="username"
@@ -98,7 +98,7 @@
 
               <div>
                 <!-- <div class="row items-center justify-between q-mb-xs">
-                  <div class="text-weight-bold text-grey-9">Contraseña</div>
+                  <div class="text-weight-bold cm-text">Contraseña</div>
                   <a
                     href="#"
                     class="text-caption text-secondary text-weight-medium"
@@ -106,7 +106,7 @@
                     >¿Olvidaste tu contraseña?</a
                   >
                 </div> -->
-                <div class="text-weight-bold text-grey-9 q-mb-xs">Contraseña</div>
+                <div class="text-weight-bold cm-text q-mb-xs">Contraseña</div>
 
                 <q-input
                   outlined
@@ -125,7 +125,7 @@
                   <template v-slot:append>
                     <q-icon
                       :name="showPassword ? 'visibility' : 'visibility_off'"
-                      class="cursor-pointer text-grey-7"
+                      class="cursor-pointer cm-text-muted"
                       @click="showPassword = !showPassword"
                     />
                   </template>
@@ -145,12 +145,12 @@
 
               <div class="relative-position q-my-lg">
                 <q-separator />
-                <div class="absolute-center bg-white q-px-md text-grey-7 text-caption">
+                <div class="absolute-center cm-surface q-px-md cm-text-muted text-caption">
                   O continúa con
                 </div>
               </div>
 
-              <div class="text-center q-mt-md text-body2 text-grey-8">
+              <div class="text-center q-mt-md text-body2 cm-text-muted">
                 ¿No tienes una cuenta?
                 <a
                   href="https://mistersofts.com/app/em/"
@@ -313,7 +313,7 @@ const login = async () => {
       if (rawMenu.length === 0) {
         $q.notify({
           color: 'warning',
-          textColor: 'white',
+          textColor: 'white', // theme-allow
           icon: 'warning',
           message: 'No se encontraron permisos asignados para este usuario.',
           position: 'top',
@@ -351,7 +351,7 @@ const login = async () => {
 
       $q.notify({
         color: 'positive',
-        textColor: 'white',
+        textColor: 'white', // theme-allow
         icon: 'check_circle',
         message: 'Bienvenido al sistema',
         position: 'top',
@@ -362,7 +362,7 @@ const login = async () => {
     } else {
       $q.notify({
         color: 'negative',
-        textColor: 'white',
+        textColor: 'white', // theme-allow
         icon: 'error',
         message: res.data[0]?.error || 'Credenciales inválidas. Intente nuevamente.',
         position: 'top',
@@ -372,7 +372,7 @@ const login = async () => {
     console.error('Error en authentication:', error)
     $q.notify({
       color: 'negative',
-      textColor: 'white',
+      textColor: 'white', // theme-allow
       icon: 'error',
       message: 'Error al conectar con el servidor',
       position: 'top',

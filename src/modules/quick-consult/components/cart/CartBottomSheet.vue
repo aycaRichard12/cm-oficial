@@ -397,7 +397,7 @@ const proceedTo = async (destination) => {
 
 /* ---------- HEADER · Deep elevation ---------- */
 .bg-primary-gradient {
-  background: linear-gradient(160deg, #004d40 0%, #00695c 60%, #00796b 100%);
+  background: linear-gradient(160deg, var(--cm-brand) 0%, #00695c 60%, #00796b 100%);
 }
 
 .premium-header {
@@ -475,7 +475,7 @@ const proceedTo = async (destination) => {
 /* ---------- CARD DE PRODUCTO ---------- */
 .product-card-wrapper {
   margin: 4px 14px;
-  background: #ffffff;
+  background: var(--cm-surface);
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow:
@@ -528,7 +528,7 @@ const proceedTo = async (destination) => {
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.06);
-  border: 2px solid #ffffff;
+  border: 2px solid var(--cm-surface);
   transition: box-shadow 0.25s;
 }
 
@@ -556,7 +556,7 @@ const proceedTo = async (destination) => {
   height: 22px;
   border-radius: 11px;
   background: #1e293b;
-  color: #ffffff;
+  color: var(--cm-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -641,8 +641,8 @@ const proceedTo = async (destination) => {
   height: 30px;
   border-radius: 50%;
   border: none;
-  background: #ffffff;
-  color: #004d40;
+  background: var(--cm-surface);
+  color: var(--cm-brand);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -724,7 +724,7 @@ const proceedTo = async (destination) => {
 }
 
 .empty-icon-animated {
-  color: #004d40;
+  color: var(--cm-brand);
   animation: iconPulse 3s ease-in-out infinite;
 }
 
@@ -791,7 +791,7 @@ const proceedTo = async (destination) => {
 
 .footer-gradient-bar {
   height: 3px;
-  background: linear-gradient(90deg, #004d40 0%, #26a69a 40%, #9c27b0 70%, #26a69a 100%);
+  background: linear-gradient(90deg, var(--cm-brand) 0%, #26a69a 40%, #9c27b0 70%, #26a69a 100%);
   opacity: 0.75;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
@@ -851,7 +851,7 @@ const proceedTo = async (destination) => {
 .grand-value {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #004d40;
+  color: var(--cm-brand);
   letter-spacing: -0.4px;
 }
 
@@ -879,8 +879,8 @@ const proceedTo = async (destination) => {
 
 /* Botón Procesar */
 .primary-action {
-  background: linear-gradient(145deg, #004d40 0%, #00695c 100%) !important;
-  color: #ffffff !important;
+  background: linear-gradient(145deg, var(--cm-brand) 0%, #00695c 100%) !important;
+  color: var(--cm-on-primary) !important;
 }
 
 .process-btn-premium {
@@ -890,10 +890,10 @@ const proceedTo = async (destination) => {
   letter-spacing: 0.2px;
   background: linear-gradient(
     145deg,
-    #004d40 0%,
+    var(--cm-brand) 0%,
     #00695c 100%
   ) !important; /* Aseguramos el gradiente */
-  color: #ffffff !important;
+  color: var(--cm-on-primary) !important;
   box-shadow:
     0 4px 16px rgba(0, 77, 64, 0.3),
     0 2px 8px rgba(0, 77, 64, 0.15);

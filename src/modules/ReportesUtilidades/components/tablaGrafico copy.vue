@@ -7,7 +7,7 @@
           <div class="text-h5 text-weight-bold text-primary text-no-wrap">
             {{ title || 'Reporte de Rentabilidad' }}
           </div>
-          <div class="text-caption text-grey-7 q-mt-xs">
+          <div class="text-caption cm-text-muted q-mt-xs">
             <q-icon name="calendar_today" size="xs" class="q-mr-xs" />
             Período: {{ periodoLabel }}
             <q-separator vertical spaced="md" />
@@ -30,7 +30,7 @@
           <q-card flat :class="['kpi-card', kpi.colorClass]">
             <q-card-section class="q-pa-md text-center">
               <q-icon :name="kpi.icon" size="28px" class="q-mb-sm" />
-              <div class="text-caption text-grey-7 text-weight-medium">
+              <div class="text-caption cm-text-muted text-weight-medium">
                 {{ kpi.label }}
               </div>
               <div class="text-h6 text-weight-bold q-mt-xs">
@@ -62,7 +62,7 @@
     <div class="row q-px-lg q-py-md items-stretch">
       <!-- Columna izquierda: Tabla -->
       <div class="col-12 col-md-6 q-pr-md-none q-pr-md-md">
-        <div class="text-subtitle1 text-weight-medium text-grey-8 q-mb-md">
+        <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
           <q-icon name="table_chart" size="sm" class="q-mr-sm text-primary" />
           Desglose por Período
         </div>
@@ -91,7 +91,7 @@
           v-if="chartSeries.length && chartSeries[0]?.data?.length"
           class="chart-section q-pa-none"
         >
-          <div class="text-subtitle1 text-weight-medium text-grey-8 q-mb-md">
+          <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
             <q-icon name="bar_chart" size="sm" class="q-mr-sm text-primary" />
             Evolución Comparativa
             <q-tooltip>Haz clic en una barra para ver el detalle en la tabla</q-tooltip>
@@ -108,8 +108,8 @@
         </q-card-section>
         <q-card-section v-else class="chart-section q-pa-md text-center">
           <q-icon name="bar_chart" size="64px" color="grey-5" />
-          <div class="text-h6 text-grey-5 q-mt-md">Sin datos para graficar</div>
-          <div class="text-caption text-grey-5 q-mt-sm">
+          <div class="text-h6 cm-text-muted q-mt-md">Sin datos para graficar</div>
+          <div class="text-caption cm-text-muted q-mt-sm">
             No se encontraron registros en el período seleccionado
           </div>
         </q-card-section>
@@ -122,6 +122,8 @@
 import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import VueApexCharts from 'vue3-apexcharts'
+import { chartTheme } from 'src/composables/useChartTheme'
+import { useThemeStore } from 'src/stores/theme'
 
 const props = defineProps({
   title: { type: String, default: 'Reporte de Rentabilidad' },
@@ -282,6 +284,9 @@ const chartSeries = computed(() => {
 /* ------------------------------------------------------------------ */
 /*  Computed: opciones del gráfico
 /* ------------------------------------------------------------------ */
+const themeStore = useThemeStore()
+const chartThemeOptions = computed(() => chartTheme(themeStore.isDark))
+
 const chartOptions = computed(() => ({
   chart: {
     type: 'bar',
@@ -308,7 +313,7 @@ const chartOptions = computed(() => ({
     },
     background: 'transparent',
   },
-  colors: ['#1565C0', '#00897B', '#E53935', '#43A047'],
+  colors: chartThemeOptions.value.palette,
   plotOptions: {
     bar: {
       horizontal: false,
@@ -334,11 +339,11 @@ const chartOptions = computed(() => ({
         fontSize: '12px',
         fontFamily: 'Roboto, "Helvetica Neue", Arial, sans-serif',
         fontWeight: 500,
-        colors: '#546E7A',
+        colors: chartThemeOptions.value.foreColor,
       },
     },
-    axisBorder: { show: true, color: '#CFD8DC' },
-    axisTicks: { show: true, color: '#CFD8DC' },
+    axisBorder: { show: true, color: chartThemeOptions.value.gridColor },
+    axisTicks: { show: true, color: chartThemeOptions.value.gridColor },
   },
   yaxis: {
     title: {
@@ -347,7 +352,7 @@ const chartOptions = computed(() => ({
         fontSize: '13px',
         fontFamily: 'Roboto, "Helvetica Neue", Arial, sans-serif',
         fontWeight: 500,
-        color: '#607D8B',
+        color: chartThemeOptions.value.foreColor,
       },
     },
     labels: {
@@ -358,12 +363,12 @@ const chartOptions = computed(() => ({
       style: {
         fontSize: '11px',
         fontFamily: 'Roboto, "Helvetica Neue", Arial, sans-serif',
-        colors: '#78909C',
+        colors: chartThemeOptions.value.foreColor,
       },
     },
   },
   tooltip: {
-    theme: 'light',
+    theme: chartThemeOptions.value.tooltipTheme,
     y: {
       formatter: (val) =>
         `${simbolo.value} ${Number(val).toLocaleString('es-BO', {
@@ -384,9 +389,10 @@ const chartOptions = computed(() => ({
     fontWeight: 500,
     markers: { radius: 12 },
     itemMargin: { horizontal: 16, vertical: 4 },
+    labels: { colors: chartThemeOptions.value.legendLabelColor },
   },
   grid: {
-    borderColor: '#ECEFF1',
+    borderColor: chartThemeOptions.value.gridColor,
     strokeDashArray: 4,
     padding: { top: 0, right: 16, bottom: 0, left: 16 },
   },
@@ -397,7 +403,7 @@ const chartOptions = computed(() => ({
     style: {
       fontSize: '16px',
       fontFamily: 'Roboto, "Helvetica Neue", Arial, sans-serif',
-      color: '#90A4AE',
+      color: chartThemeOptions.value.foreColor,
     },
   },
 }))
@@ -426,7 +432,7 @@ function onDataPointSelection(event, chartContext, config) {
 /* =========================================================== */
 .erp-report-card {
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--cm-surface);
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
@@ -441,21 +447,21 @@ function onDataPointSelection(event, chartContext, config) {
 /*  ENCABEZADO
 /* =========================================================== */
 .report-header {
-  background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+  background: linear-gradient(135deg, var(--cm-surface) 0%, var(--cm-surface-2) 100%);
 }
 
 /* =========================================================== */
 /*  TARJETAS KPI
 /* =========================================================== */
 .kpi-section {
-  background: #fafbfc;
+  background: var(--cm-surface-2);
 }
 
 .kpi-card {
   border-radius: 14px;
   border: 1px solid transparent;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1.2);
-  background: #ffffff;
+  background: var(--cm-surface);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 .kpi-card:hover {
@@ -498,13 +504,13 @@ function onDataPointSelection(event, chartContext, config) {
 /*  SECCIÓN GRÁFICO (columna derecha ahora)
 /* =========================================================== */
 .chart-section {
-  background: #ffffff;
+  background: var(--cm-surface);
   border-radius: 14px;
 }
 
 .chart-container {
   border-radius: 14px;
-  background: #fafbfc;
+  background: var(--cm-surface-2);
   padding: 16px;
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -518,7 +524,7 @@ function onDataPointSelection(event, chartContext, config) {
   overflow-y: auto;
   border-radius: 14px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  background: #fff;
+  background: var(--cm-surface);
 }
 
 .erp-table-fullwidth :deep(table) {
@@ -531,13 +537,13 @@ function onDataPointSelection(event, chartContext, config) {
 }
 
 .erp-table-fullwidth :deep(th) {
-  background: #f5f7fa;
+  background: var(--cm-surface-2);
   font-weight: 600;
   font-size: 0.82rem;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  color: #455a64;
-  border-bottom: 2px solid #e0e0e0;
+  color: var(--cm-text-muted);
+  border-bottom: 2px solid var(--cm-border);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -545,11 +551,11 @@ function onDataPointSelection(event, chartContext, config) {
 
 .erp-table-fullwidth :deep(td) {
   font-size: 0.9rem;
-  color: #37474f;
+  color: var(--cm-text);
 }
 
 .erp-table-fullwidth :deep(tr:hover td) {
-  background: #f5f8ff !important;
+  background: var(--cm-surface-2) !important;
 }
 
 /* Fila resaltada tras clic en gráfico */

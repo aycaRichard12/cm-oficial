@@ -2,7 +2,7 @@
   <q-dialog v-model="isOpen" persistent>
     <q-card style="min-width: 520px; max-width: 95vw">
       <!-- Header -->
-      <q-card-section class="bg-deep-orange flex justify-between items-center text-white q-py-sm">
+      <q-card-section class="bg-deep-orange flex justify-between items-center text-white q-py-sm"> <!-- theme-allow -->
         <div class="text-h6 flex items-center gap-2">
           <q-icon name="block" class="q-mr-sm" />
           Solicitar Anulación de Compra
@@ -35,7 +35,7 @@
 
           <!-- Motivo de anulación -->
           <div>
-            <div class="text-subtitle2 text-grey-8 q-mb-sm">
+            <div class="text-subtitle2 cm-text q-mb-sm">
               <q-icon name="edit_note" class="q-mr-xs" />
               Motivo de Anulación
             </div>
@@ -59,7 +59,7 @@
 
           <!-- Sección de notificación -->
           <div>
-            <div class="text-subtitle2 text-grey-8 q-mb-sm">
+            <div class="text-subtitle2 cm-text q-mb-sm">
               <q-icon name="notifications" class="q-mr-xs" />
               Notificar a Responsable
             </div>

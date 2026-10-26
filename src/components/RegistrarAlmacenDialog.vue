@@ -14,7 +14,7 @@
           class="q-mb-md"
         />
         <div
-          class="text-h3 text-weight-bold text-center text-grey-9 q-px-md"
+          class="text-h3 text-weight-bold text-center cm-text q-px-md"
           style="line-height: 1.2"
         >
           {{ title }}

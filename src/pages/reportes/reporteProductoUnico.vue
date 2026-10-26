@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-md bg-grey-1">
+  <q-page class="q-pa-md cm-surface-2">
     <!-- Header & Dashboard Summary Card -->
-    <q-card flat bordered class="q-mb-md bg-white text-dark shadow-2 rounded-borders">
+    <q-card flat bordered class="q-mb-md cm-surface cm-text shadow-2 rounded-borders">
       <q-card-section class="row items-center justify-between q-gutter-sm">
         <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
           <div class="col-12 col-md-auto">
@@ -9,7 +9,7 @@
               <q-icon name="qr_code_2" size="md" class="q-mr-sm" />
               Productos Únicos
             </div>
-            <div class="text-subtitle2 text-grey-7 q-mt-xs">
+            <div class="text-subtitle2 cm-text-muted q-mt-xs">
               Gestiona y rastrea el inventario único por número de serie y almacén.
             </div>
           </div>
@@ -56,7 +56,7 @@
     </q-card>
 
     <!-- Table Container -->
-    <q-card flat bordered class="shadow-2 rounded-borders bg-white">
+    <q-card flat bordered class="shadow-2 rounded-borders cm-surface">
       <!-- Loading Skeleton State -->
       <div v-if="productoUnicos === null" class="q-pa-md">
         <q-item class="q-mb-md">
@@ -94,7 +94,7 @@
             </q-td>
             <q-td key="descripcion" :props="props">
               <div class="row items-center no-wrap">
-                <q-avatar rounded size="40px" class="bg-grey-2 q-mr-sm" v-if="props.row.imagen">
+                <q-avatar rounded size="40px" class="cm-surface-2 q-mr-sm" v-if="props.row.imagen">
                   <img :src="props.row.imagen" alt="Producto" />
                 </q-avatar>
                 <q-avatar
@@ -105,11 +105,11 @@
                   v-else
                 />
                 <div>
-                  <div class="text-weight-bold text-dark text-body2">
+                  <div class="text-weight-bold cm-text text-body2">
                     {{ props.row.descripcion }}
                   </div>
                   <div
-                    class="text-caption text-grey-6 text-italic ellipsis"
+                    class="text-caption cm-text-muted text-italic ellipsis"
                     style="max-width: 250px"
                   >
                     {{ props.row.caracteristicas || 'Sin descripción adicional' }}
@@ -128,7 +128,7 @@
               >
                 {{ props.row.codigo }}
               </q-chip>
-              <div class="text-caption text-grey-6 q-mt-xs" v-if="props.row.cod_barras">
+              <div class="text-caption cm-text-muted q-mt-xs" v-if="props.row.cod_barras">
                 <q-icon name="line_weight" size="xs" /> {{ props.row.cod_barras }}
               </div>
             </q-td>
@@ -169,14 +169,14 @@
         <!-- Dynamic Grid View Cards for Mobile devices -->
         <template v-slot:item="props">
           <div class="q-pa-xs col-12 col-sm-6 font-xs">
-            <q-card flat bordered class="q-pa-sm bg-white">
+            <q-card flat bordered class="q-pa-sm cm-surface">
               <q-card-section class="q-pa-xs">
                 <div class="row justify-between items-start no-wrap q-mb-sm">
                   <div class="col">
-                    <div class="text-subtitle2 text-weight-bold text-dark">
+                    <div class="text-subtitle2 text-weight-bold cm-text">
                       {{ props.row.descripcion }}
                     </div>
-                    <div class="text-caption text-grey-6">{{ props.row.codigo }}</div>
+                    <div class="text-caption cm-text-muted">{{ props.row.codigo }}</div>
                   </div>
                   <q-badge
                     :color="
@@ -196,17 +196,17 @@
                 <q-separator dashed class="q-my-sm" />
 
                 <div class="row q-col-gutter-xs text-caption">
-                  <div class="col-6 text-grey-7">S/N Serie:</div>
+                  <div class="col-6 cm-text-muted">S/N Serie:</div>
                   <div class="col-6 text-right text-weight-medium text-purple-9">
                     {{ props.row.serie }}
                   </div>
 
-                  <div class="col-6 text-grey-7">Almacén:</div>
-                  <div class="col-6 text-right text-weight-medium text-dark">
+                  <div class="col-6 cm-text-muted">Almacén:</div>
+                  <div class="col-6 text-right text-weight-medium cm-text">
                     {{ props.row.nombre_almacen }}
                   </div>
 
-                  <div class="col-6 text-grey-7 items-center align-center">Precio:</div>
+                  <div class="col-6 cm-text-muted items-center align-center">Precio:</div>
                   <div class="col-6 text-right text-weight-bold text-primary text-body2">
                     {{ formatCurrency(props.row.precio) }}
                   </div>
@@ -218,13 +218,13 @@
 
         <!-- Beautiful Empty State template if filtering leads to no results -->
         <template v-slot:no-data="">
-          <div class="full-width row flex-center text-grey-6 q-gutter-sm q-py-xl">
+          <div class="full-width row flex-center cm-text-muted q-gutter-sm q-py-xl">
             <q-icon size="4em" name="find_in_page" color="grey-4" />
             <div class="text-center col-12">
-              <div class="text-h6 text-grey-7 text-weight-light">
+              <div class="text-h6 cm-text-muted text-weight-light">
                 No pudimos encontrar coincidencias
               </div>
-              <div class="text-caption text-grey-5">
+              <div class="text-caption cm-text-muted">
                 Prueba cambiando los términos de búsqueda o seleccionando otro almacén.
               </div>
             </div>
@@ -403,6 +403,6 @@ onMounted(async () => {
   transition: background-color 0.2s ease;
 }
 .hover-row:hover {
-  background-color: #f5f7fa !important;
+  background-color: var(--cm-surface-2) !important;
 }
 </style>

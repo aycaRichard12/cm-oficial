@@ -293,7 +293,7 @@
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
                         <q-item-label>
-                          <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                          <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                         </q-item-label>
                         <q-item-label caption>{{ scope.opt.nombre }}</q-item-label>
                       </q-item-section>
@@ -453,16 +453,16 @@
   <div class="q-pa-md q-gutter-sm">
     <q-dialog v-model="dialog" :position="position" :id="idcliente" :data="detalleVenta">
       <q-card class="dialog-card">
-        <q-card-section class="header-gradient q-pa-md text-white flex items-center">
+        <q-card-section class="header-gradient q-pa-md text-white flex items-center"> <!-- theme-allow -->
           <q-icon name="check_circle" size="md" class="q-mr-sm" />
           <div class="text-h6 text-weight-bold">Confirmación de Envío</div>
         </q-card-section>
 
         <q-card-section class="q-pt-lg q-pb-md">
-          <div class="text-body1 text-grey-8 q-mb-sm">
+          <div class="text-body1 cm-text q-mb-sm">
             La Factura ha sido generado correctamente.
           </div>
-          <div class="text-body1 text-grey-8">
+          <div class="text-body1 cm-text">
             ¿Desea enviarlo al correo electrónico del cliente?
           </div>
         </q-card-section>
@@ -1196,7 +1196,7 @@ onMounted(() => {
 
 .button-primary {
   background: linear-gradient(to right, #219286, #044e49);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 500;
   letter-spacing: 0.5px;
   padding: 8px 20px;

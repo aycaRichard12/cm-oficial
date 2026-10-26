@@ -110,7 +110,7 @@ export function exportToXLSX_Reporte_CuentasXCobrarPeriodo(
           name: 'Arial',
           sz: 11,
           bold: true,
-          color: { rgb: 'FFFFFF' }, // White text
+          color: { rgb: 'FFFFFF' }, // theme-allow White text
         }
         cellStyle.fill = {
           fgColor: { rgb: '4F81BD' }, // Dark blue background for header

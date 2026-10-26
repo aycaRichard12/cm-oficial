@@ -1,6 +1,6 @@
 <template>
   <q-card flat bordered class="code-block-card q-mb-lg">
-    <q-bar class="bg-grey-3 text-grey-8">
+    <q-bar class="cm-surface-2 cm-text-muted">
       <div>{{ title }}</div>
       <q-space />
       <q-btn flat round dense icon="content_copy" @click="copyCode">

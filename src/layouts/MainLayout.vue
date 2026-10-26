@@ -14,18 +14,14 @@
       @acultarTabs="ocultarTabs"
     />
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above class="bg-white" style="position: fixed">
+    <q-drawer v-model="leftDrawerOpen" show-if-above class="cm-surface" style="position: fixed">
       <div>
         <router-link to="/" @click="ocultarTabs">
           <div class="absolute-top bg-primary" style="height: 65px">
             <div class="absolute-full flex flex-center bg-primary">
               <div class="logo-area">
                 <div class="column items-center justify-center">
-                  <q-img
-                    src="nombre.png"
-                    style="width: 148px; height: 23px"
-                    fit="contain"
-                  />
+                  <q-img src="nombre.png" style="width: 148px; height: 23px" fit="contain" />
                   <div class="logo-sub">COMERCIAL</div>
                 </div>
               </div>
@@ -34,7 +30,11 @@
         </router-link>
       </div>
       <q-scroll-area
-        style="height: calc(100% - 65px); margin-top: 65px; border-right: 1px solid #ddd"
+        style="
+          height: calc(100% - 65px);
+          margin-top: 65px;
+          border-right: 1px solid var(--cm-border);
+        "
       >
         <q-list padding="">
           <div
@@ -45,9 +45,9 @@
             <q-expansion-item
               :label="menu.titulo"
               :icon="iconos[menu.codigo] || 'help_outline'"
-              header-class="text-weight-bold text-grey-9"
-              expand-icon-class="text-grey-6"
-              class="menu-header bg-white-1"
+              header-class="text-weight-bold cm-text"
+              expand-icon-class="cm-text-muted"
+              class="menu-header cm-surface-2"
               v-model="expandedMenu[menu.codigo]"
               @update:model-value="updateExpandedMenu(menu.codigo, $event)"
               style=""
@@ -68,7 +68,7 @@
                   <q-item-section avatar>
                     <q-icon color="blue" :name="iconos[submenu.codigo.split('-')[0]]" size="sm" />
                   </q-item-section>
-                  <q-item-section class="text-grey-8 text-body2">
+                  <q-item-section class="cm-text-muted text-body2">
                     {{ submenu.titulo }}
                   </q-item-section>
                 </q-item>
@@ -90,7 +90,7 @@
 
 <script setup>
 import emitter from 'src/event-bus'
-import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
@@ -100,9 +100,9 @@ import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import { idempresa_md5, idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 import { usePusherStore } from 'src/stores/pusher-store'
-//import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-//const $q = useQuasar()
+const $q = useQuasar()
 
 const pusherStore = usePusherStore()
 //import { LocalStorage } from 'quasar'
@@ -114,15 +114,15 @@ console.log('Usuario en MainLayout.vue:', usuario)
 
 // Fondo del area de contenido (logo mistersofts sin fondo)
 const publicBase = import.meta.env.BASE_URL
-const pageBackgroundStyle = {
-  backgroundColor: '#eeebe2',
-  backgroundImage: `url('${publicBase}fondo.jpeg')`,
+const pageBackgroundStyle = computed(() => ({
+  backgroundColor: 'var(--cm-bg)',
+  backgroundImage: `url('${publicBase}${$q.dark.isActive ? 'fondoDarck.png' : 'fondo.jpeg'}')`,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center center',
   backgroundSize: 'min(60%, 900px)',
   overflowY: 'auto',
   height: '100%',
-}
+}))
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)
@@ -409,7 +409,7 @@ const toggleLeftDrawer = () => {
 </script>
 <style lang="scss">
 .my-menu-link {
-  color: white;
+  color: #1f2937;
   background: #f2c037;
 }
 .submenu-activo {
@@ -440,7 +440,7 @@ const toggleLeftDrawer = () => {
 .logo-name {
   font-size: 15px;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--cm-on-primary);
   letter-spacing: -0.03em;
   line-height: 1.2;
 }

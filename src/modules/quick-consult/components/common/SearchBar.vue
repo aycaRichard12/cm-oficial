@@ -135,7 +135,7 @@ onMounted(() => {
 <style scoped>
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .search-bar-card {
-  background-color: white;
+  background-color: var(--cm-surface);
   border-radius: 16px;
   transition: box-shadow 0.2s ease;
   margin-bottom: 4px;
@@ -165,8 +165,8 @@ onMounted(() => {
 }
 
 .search-input :deep(.q-field__control:focus-within) {
-  background-color: white;
-  border-color: #004d40;
+  background-color: var(--cm-surface);
+  border-color: var(--cm-brand);
   box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.1);
 }
 
@@ -210,7 +210,7 @@ onMounted(() => {
   height: 10px;
   padding: 0;
   border-radius: 10px;
-  box-shadow: 0 0 0 1px white;
+  box-shadow: 0 0 0 1px var(--cm-surface);
 }
 
 /* ===== CONTADOR DE RESULTADOS ===== */
@@ -228,7 +228,7 @@ onMounted(() => {
 }
 
 .results-count span {
-  color: #004d40;
+  color: var(--cm-brand);
   font-weight: 600;
   margin-left: 4px;
 }

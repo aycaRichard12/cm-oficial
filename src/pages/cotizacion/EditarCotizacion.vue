@@ -7,7 +7,7 @@
         <div class="row items-center">
           <div class="col">
             <div class="flex items-center gap-3">
-              <div class="icon-wrapper bg-gradient-primary text-white">
+              <div class="icon-wrapper bg-gradient-primary text-white" data-theme-allow>
                 <q-icon name="request_quote" size="28px" />
               </div>
               <div>
@@ -23,7 +23,7 @@
       <q-card class="data-card q-mb-xl" flat>
         <q-card-section class="card-header">
           <div class="flex items-center gap-2">
-            <q-icon name="manage_accounts" size="20px" class="text-white" />
+            <q-icon name="manage_accounts" size="20px" class="text-white" data-theme-allow />
             <span class="card-header-title">Datos del Cliente y Configuración</span>
           </div>
         </q-card-section>
@@ -231,13 +231,13 @@
       <!-- Header Section -->
       <q-card-section class="card-header">
         <div class="flex items-center gap-2">
-          <q-icon name="shopping_cart_checkout" size="20px" class="text-white" />
+          <q-icon name="shopping_cart_checkout" size="20px" class="text-white" data-theme-allow />
           <span class="card-header-title">Añadir Productos</span>
         </div>
       </q-card-section>
 
       <!-- Product Selection Section -->
-      <q-card-section class="card-content bg-white">
+      <q-card-section class="card-content cm-surface">
         <div class="row q-col-gutter-lg items-end">
           <div class="col-12 col-md-4" id="productoCotizacion">
             <div class="flex justify-between items-center q-mb-xs">
@@ -569,7 +569,7 @@
           style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); z-index: 10"
         >
           <div class="flex items-center">
-            <div class="bg-white q-pa-xs rounded-borders q-mr-md shadow-1">
+            <div class="cm-surface q-pa-xs rounded-borders q-mr-md shadow-1">
               <q-icon name="payments" class="text-primary" size="24px" />
             </div>
             <span class="text-h6 text-weight-bold" style="font-family: 'Inter', sans-serif">
@@ -582,7 +582,7 @@
             flat
             round
             dense
-            class="bg-white text-primary shadow-1"
+            class="cm-surface text-primary shadow-1"
             size="sm"
           />
         </q-card-section>
@@ -598,7 +598,7 @@
               rounded
               padding="10px 40px"
               class="shadow-3 text-weight-bolder"
-              style="border: 1px solid #e0e0e0; font-family: 'Inter', sans-serif"
+              style="border: 1px solid var(--cm-border); font-family: 'Inter', sans-serif"
               @update:model-value="handleTipoPagoGeneralChange"
               :options="[
                 { label: 'Pago Efectivo', value: false, icon: 'payments' },
@@ -635,7 +635,7 @@
             <div v-if="variablePago === 'directo'" class="row q-col-gutter-lg q-pt-sm">
               <div class="col-12">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                 >
                   Método de pago <span class="text-negative">*</span>
@@ -662,11 +662,11 @@
               <div
                 v-for="(payment, index) in pagosDivididos"
                 :key="index"
-                class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-sm shadow-1 rounded-borders"
+                class="row q-col-gutter-md q-mb-md items-start cm-surface q-pa-sm shadow-1 rounded-borders"
                 style="border: 1px solid #eee"
               >
                 <div class="col-12 col-md-5">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
+                  <label class="text-weight-bold cm-text q-mb-xs block text-caption"
                     >Método *</label
                   >
                   <q-select
@@ -682,7 +682,7 @@
                   />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
+                  <label class="text-weight-bold cm-text q-mb-xs block text-caption"
                     >Monto ({{ divisaActiva.tipo }})</label
                   >
                   <q-input
@@ -697,7 +697,7 @@
                   />
                 </div>
                 <div class="col-12 col-md-3">
-                  <label class="text-weight-bold text-grey-9 q-mb-xs block text-caption"
+                  <label class="text-weight-bold cm-text q-mb-xs block text-caption"
                     >Porcentaje (%)</label
                   >
                   <q-input
@@ -732,7 +732,7 @@
                   color="positive"
                   outline
                   dense
-                  class="q-px-md bg-white shadow-1 text-weight-bold"
+                  class="q-px-md cm-surface shadow-1 text-weight-bold"
                   style="border-radius: 8px"
                   @click="addPaymentMethod"
                 />
@@ -750,11 +750,11 @@
                 </template>
                 <div class="row q-col-gutter-x-xl text-subtitle2">
                   <div>
-                    <span class="text-grey-8 text-caption uppercase block">Total Pagado:</span>
+                    <span class="cm-text-muted text-caption uppercase block">Total Pagado:</span>
                     <span class="text-h6">{{ totalPaidAmount.toFixed(2) }}</span>
                   </div>
                   <div>
-                    <span class="text-grey-8 text-caption uppercase block">Monto Restante:</span>
+                    <span class="cm-text-muted text-caption uppercase block">Monto Restante:</span>
                     <span class="text-h6" :class="remainingAmount < 0 ? 'text-negative' : ''">
                       {{ remainingAmount.toFixed(2) }}
                     </span>
@@ -768,7 +768,7 @@
               v-if="listaCajaBancos.length > 0"
             >
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                 style="font-size: 13px"
               >
                 Seleccione Caja o Banco <span class="text-negative">*</span>
@@ -800,7 +800,7 @@
                   <q-item v-bind="scope.itemProps">
                     <q-item-section>
                       <q-item-label>
-                        <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                        <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                       </q-item-label>
                       <q-item-label caption>
                         {{ scope.opt.nombre }}
@@ -822,7 +822,7 @@
             <div class="row q-col-gutter-lg">
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                   >Cantidad de pagos *</label
                 >
@@ -843,7 +843,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                   >Monto por pago *</label
                 >
@@ -864,7 +864,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                   >Frecuencia *</label
                 >
@@ -886,7 +886,7 @@
                 class="col-12 col-md-6 animate__animated animate__fadeIn"
               >
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                   >Plazo total (días) *</label
                 >
@@ -906,7 +906,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                   >Fecha límite *</label
                 >
@@ -929,7 +929,7 @@
 
         <q-separator />
 
-        <q-card-actions align="right" class="q-pa-lg bg-white shrink-0 shadow-up-1">
+        <q-card-actions align="right" class="q-pa-lg cm-surface shrink-0 shadow-up-1">
           <q-btn
             flat
             label="Cancelar"
@@ -997,10 +997,10 @@
         style="border-radius: 16px; overflow: hidden; width: 450px; max-width: 95vw"
       >
         <q-card-section
-          class="q-pa-lg text-white flex items-center justify-center column"
+          class="q-pa-lg text-white flex items-center justify-center column" data-theme-allow
           style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%)"
         >
-          <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
+          <div class="cm-surface q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
             <q-icon name="check" size="40px" color="positive" />
           </div>
           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
@@ -1008,8 +1008,8 @@
           </div>
         </q-card-section>
 
-        <q-card-section class="q-pa-xl text-center bg-white">
-          <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
+        <q-card-section class="q-pa-xl text-center cm-surface">
+          <div class="text-body1 cm-text q-mb-md text-weight-medium" style="font-size: 16px">
             El comprobante ha sido generado y guardado correctamente en el sistema.
           </div>
           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
@@ -1835,7 +1835,7 @@ async function anadirProductoACarrito() {
     $q.notify({
       type: 'info',
       message: 'Llene todos los campos para poder cargar productos a la lista.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -1845,7 +1845,7 @@ async function anadirProductoACarrito() {
       $q.notify({
         type: 'warning',
         message: 'La cantidad solicitada excede el stock disponible.',
-        actions: [{ icon: 'close', color: 'white', round: true }],
+        actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
       return
     } else {
@@ -1853,7 +1853,7 @@ async function anadirProductoACarrito() {
         $q.notify({
           type: 'warning',
           message: 'La cantidad solicitada excede el stock disponible.',
-          actions: [{ icon: 'close', color: 'white', round: true }],
+          actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
         })
       }
     }
@@ -1862,7 +1862,7 @@ async function anadirProductoACarrito() {
       $q.notify({
         type: 'warning',
         message: 'La cantidad solicitada excede el stock disponible.',
-        actions: [{ icon: 'close', color: 'white', round: true }],
+        actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
     }
   }
@@ -1946,7 +1946,7 @@ function aplicarDescuento() {
     $q.notify({
       type: 'warning',
       message: 'El descuento sobrepasa el subtotal.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     carritoECO.descuento = carritoECO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
   }
@@ -2073,7 +2073,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Por favor, complete todos los campos requeridos.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2083,7 +2083,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Por favor, complete todos los campos requeridos.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2092,7 +2092,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Debe añadir al menos un producto a la cotización.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2495,7 +2495,7 @@ onMounted(async () => {
 .invoice {
   font-family: 'Arial', sans-serif;
   font-size: 12px;
-  color: #333;
+  color: var(--cm-text);
 
   header {
     padding: 10px 0;
@@ -2548,7 +2548,7 @@ onMounted(async () => {
       }
 
       .text-gray-light {
-        color: #777;
+        color: var(--cm-text-muted);
       }
 
       .to {
@@ -2560,23 +2560,23 @@ onMounted(async () => {
       width: 100%;
       border-collapse: collapse;
       thead {
-        background-color: #e0e0e0;
+        background-color: var(--cm-surface-2);
         th {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           text-align: left;
         }
       }
       tbody {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
         }
       }
       tfoot {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           font-weight: bold;
         }
       }
@@ -2615,7 +2615,7 @@ onMounted(async () => {
 
 .button-primary {
   background: linear-gradient(to right, #219286, #044e49);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 500;
   letter-spacing: 0.5px;
   padding: 8px 20px;
@@ -2742,7 +2742,7 @@ onMounted(async () => {
 /* Card Styles */
 .data-card {
   border-radius: 20px;
-  background: white;
+  background: var(--cm-surface);
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.05),
     0 1px 2px rgba(0, 0, 0, 0.03);
@@ -2757,13 +2757,13 @@ onMounted(async () => {
 }
 
 .card-header {
-  background: linear-gradient(135deg, #0b6d5d 0%, #004d40 100%);
+  background: linear-gradient(135deg, #0b6d5d 0%, var(--cm-brand) 100%);
   padding: 16px 32px;
   border-bottom: none;
 }
 
 .card-header-title {
-  color: white;
+  color: white; /* theme-allow */
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -2795,7 +2795,7 @@ onMounted(async () => {
 .saas-input :deep(.q-field__control) {
   border-radius: 10px;
   transition: all 0.2s ease;
-  background-color: white;
+  background-color: var(--cm-surface);
 }
 
 .saas-input :deep(.q-field__control:hover) {
@@ -2914,7 +2914,7 @@ onMounted(async () => {
 
 .products-card {
   border-radius: 20px;
-  background: white;
+  background: var(--cm-surface);
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.05),
     0 1px 2px rgba(0, 0, 0, 0.03);
@@ -2924,12 +2924,12 @@ onMounted(async () => {
 
 /* Header Styles */
 .card-header {
-  background: linear-gradient(135deg, #047a67 0%, #004d40 100%);
+  background: linear-gradient(135deg, #047a67 0%, var(--cm-brand) 100%);
   padding: 16px 24px;
 }
 
 .card-header-title {
-  color: white;
+  color: white; /* theme-allow */
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -3023,7 +3023,7 @@ onMounted(async () => {
 
 /* Table Styles */
 .products-table {
-  background: white;
+  background: var(--cm-surface);
 }
 
 .products-table :deep(.q-table) {
@@ -3075,7 +3075,7 @@ onMounted(async () => {
 
 .quantity-badge {
   background: #26a69a;
-  color: white;
+  color: white; /* theme-allow */
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: 600;
@@ -3168,7 +3168,7 @@ onMounted(async () => {
 
 .discount-badge {
   background: #ef4444;
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 700;
   font-size: 11px;
   padding: 0 6px;
@@ -3187,7 +3187,7 @@ onMounted(async () => {
 .total-amount {
   font-size: 22px;
   font-weight: 700;
-  color: white;
+  color: white; /* theme-allow */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -3200,7 +3200,7 @@ onMounted(async () => {
 
 .summary-row.total {
   background: linear-gradient(90deg, #1976d2 0%, #1e88e5 100%);
-  color: white;
+  color: white; /* theme-allow */
 }
 
 /* Action Section */

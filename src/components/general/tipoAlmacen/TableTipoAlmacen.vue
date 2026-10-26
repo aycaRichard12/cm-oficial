@@ -20,15 +20,15 @@
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
-        title="registrar Tipo Almacén"
+        :title="t('configGeneral.tipoAlmacen.table.addTitle')"
         id="add"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" /> Nuevo </span>
+        <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
       </q-btn>
 
       <div>
-        <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ t('common.search') }}</label>
         <q-input
           v-model="search"
           dense
@@ -36,7 +36,7 @@
           outlined
           debounce="300"
           class="q-mb-md"
-          style="background-color: white"
+          style="background-color: var(--cm-surface)"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -46,7 +46,7 @@
     </div>
 
     <q-table
-      title="Tipos de Almacén"
+      :title="t('configGeneral.tipoAlmacen.table.title')"
       :rows="filteredRows"
       :columns="columns"
       row-key="id"
@@ -57,8 +57,8 @@
     >
       <template v-slot:body-cell-estado="props">
         <q-td align="center">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="t('common.active')" outline />
+          <q-badge color="red" v-else :label="t('common.inactive')" outline />
         </q-td>
       </template>
 
@@ -70,7 +70,7 @@
             dense
             flat
             @click="$emit('edit', props.row)"
-            title="Editar"
+            :title="t('common.edit')"
             id="edit"
           />
           <q-btn
@@ -79,11 +79,11 @@
             flat
             color="negative"
             @click="$emit('delete', props.row)"
-            title="Eliminar"
+            :title="t('common.delete')"
             id="delete"
           />
           <q-btn
-            title="Cambiar de estado"
+            :title="t('configGeneral.tipoAlmacen.table.toggleStatus')"
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
             dense
             flat
@@ -99,18 +99,23 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   rows: Array,
 })
 const search = ref('')
+const { t } = useI18n()
 const filteredRows = computed(() => {
   const base = props.rows || []
   const term = search.value.toLowerCase()
   const filtrado = base.filter((row) => {
     const tipo = (row.tipoalmacen || '').toLowerCase()
     const desc = (row.descripcion || '').toLowerCase()
-    const estadoText = Number(row.estado) === 1 ? 'activo' : 'inactivo'
+    const estadoText =
+      Number(row.estado) === 1
+        ? `${t('common.active')} activo`
+        : `${t('common.inactive')} inactivo`
     return tipo.includes(term) || desc.includes(term) || estadoText.includes(term)
   })
 
@@ -120,11 +125,16 @@ const filteredRows = computed(() => {
   }))
 })
 
-const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'left' },
-  { name: 'tipoalmacen', label: 'Nombre', field: 'tipoalmacen', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
-]
+const columns = computed(() => [
+  { name: 'numero', label: t('configGeneral.tipoAlmacen.table.number'), field: 'numero', align: 'left' },
+  { name: 'tipoalmacen', label: t('configGeneral.tipoAlmacen.table.name'), field: 'tipoalmacen', align: 'left' },
+  {
+    name: 'descripcion',
+    label: t('configGeneral.tipoAlmacen.table.description'),
+    field: 'descripcion',
+    align: 'left',
+  },
+  { name: 'estado', label: t('configGeneral.tipoAlmacen.table.status'), field: 'estado', align: 'center' },
+  { name: 'acciones', label: t('common.actions'), field: 'acciones', align: 'center' },
+])
 </script>

@@ -73,6 +73,6 @@ onMounted(() => {
 
 .thead-dark th {
   background-color: #343a40;
-  color: white;
+  color: var(--cm-on-primary);
 }
 </style>

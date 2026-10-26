@@ -227,7 +227,7 @@
             >
               <label
                 for="cajaBanco"
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase"
                 >Seleccione Caja o Banco <span class="text-negative">*</span></label
               >
@@ -259,7 +259,7 @@
                   <q-item v-bind="scope.itemProps">
                     <q-item-section>
                       <q-item-label>
-                        <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                        <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                       </q-item-label>
                       <q-item-label caption>
                         {{ scope.opt.nombre }}
@@ -299,7 +299,7 @@
                   <q-icon name="picture_as_pdf" size="lg" />
                   <div class="q-ml-md">
                     <div class="text-weight-bold">PDF Seleccionado</div>
-                    <div class="text-caption text-grey-9 truncate" style="max-width: 250px">
+                    <div class="text-caption cm-text truncate" style="max-width: 250px">
                       {{ localFormulario.comprobante?.name }}
                     </div>
                   </div>

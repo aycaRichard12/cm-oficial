@@ -28,7 +28,7 @@
         outlined
         debounce="300"
         class="q-mb-md"
-        style="background-color: white"
+        style="background-color: var(--cm-surface)"
       >
         <template v-slot:append>
           <q-icon name="search" />
@@ -101,7 +101,7 @@ const nombreColores = {
   '#FFA500': 'Naranja',
   '#800080': 'Morado',
   '#FFC0CB': 'Rosado',
-  '#FFFFFF': 'Blanco',
+  '#FFFFFF': 'Blanco', // theme-allow
   '#808080': 'Gris',
   '#8B4513': 'Marrón',
   '#87CEEB': 'Celeste',

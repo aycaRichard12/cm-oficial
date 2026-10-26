@@ -14,7 +14,7 @@
       <q-page class="flex flex-center bg-light">
         <q-form
           @submit.prevent="enviarFormulario"
-          class="bg-white q-pa-lg rounded-borders shadow"
+          class="cm-surface q-pa-lg rounded-borders shadow"
           style="min-width: 300px; max-width: 500px; width: 100%"
         >
           <div class="q-mb-md text-center">

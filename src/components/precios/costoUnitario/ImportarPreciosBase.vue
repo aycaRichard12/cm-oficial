@@ -94,7 +94,7 @@
               <q-icon name="description" color="green-7" size="28px" />
               <div class="q-ml-sm">
                 <div class="text-body2 text-weight-medium">plantilla_precios_base.xlsx</div>
-                <div class="text-caption text-grey-6">
+                <div class="text-caption cm-text-muted">
                   Contiene los productos del almacén seleccionado
                 </div>
               </div>
@@ -213,7 +213,7 @@
         <q-avatar icon="warning" color="warning" text-color="white" />
         <span class="q-ml-sm text-body1 text-weight-medium">Sin almacenes asignados</span>
       </q-card-section>
-      <q-card-section class="q-pt-none text-body2 text-grey-8">
+      <q-card-section class="q-pt-none text-body2 cm-text">
         No tienes almacenes asignados a tu usuario. Contacta al administrador del sistema.
       </q-card-section>
       <q-card-actions align="right">
@@ -575,9 +575,9 @@ defineExpose({ resetFormImport })
 </script>
 <style scoped lang="scss">
 // ── Variables ──────────────────────────────────────────────────
-$primary: #004d40;
+$primary: var(--cm-brand);
 $primary-soft: #e3f2fd;
-$border-color: #e0e0e0;
+$border-color: var(--cm-border);
 $radius: 12px;
 $radius-sm: 8px;
 
@@ -591,13 +591,13 @@ $radius-sm: 8px;
 
 // ── Header ─────────────────────────────────────────────────────
 .ipb-header {
-  background: linear-gradient(135deg, #004d40 0%, #054e2c 100%);
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #054e2c 100%);
   padding: 18px 20px 16px;
 
   .ipb-title {
     font-size: 16px;
     font-weight: 700;
-    color: #fff;
+    color: var(--cm-on-primary);
     display: flex;
     align-items: center;
     letter-spacing: 0.3px;
@@ -674,7 +674,7 @@ $radius-sm: 8px;
   &--done {
     .ipb-step__circle {
       background: $primary;
-      color: #fff;
+      color: var(--cm-on-primary);
     }
     .ipb-step__label {
       color: $primary;
@@ -714,7 +714,7 @@ $radius-sm: 8px;
   width: 20px;
   height: 20px;
   background: $primary;
-  color: #fff;
+  color: var(--cm-on-primary);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;

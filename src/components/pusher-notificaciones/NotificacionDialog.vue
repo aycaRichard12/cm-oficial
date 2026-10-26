@@ -12,7 +12,7 @@
     <q-form ref="formRef" class="q-gutter-md">
       <!-- Sección: Destinatario -->
       <div class="q-mb-md">
-        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+        <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
           Destinatario
         </div>
@@ -44,7 +44,7 @@
 
       <!-- Sección: Detalles de la Notificación -->
       <div class="q-mb-md">
-        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+        <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="mail" class="q-mr-xs" />
           Detalles de la Notificación
         </div>

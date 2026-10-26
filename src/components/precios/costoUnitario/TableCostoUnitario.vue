@@ -79,7 +79,7 @@
     >
       <template v-slot:top>
         <div class="full-width row justify-between items-center q-py-xs">
-          <div class="text-h6 text-white q-ml-sm">Tabla con Costos Unitarios</div>
+          <div class="text-h6 cm-text q-ml-sm">Tabla con Costos Unitarios</div>
 
           <!-- Search Input -->
           <q-input
@@ -125,7 +125,7 @@
 
       <!-- No Data State: Customizing the default 'no-data' slot overrides no-data-label, but we can keep it consistent -->
       <template v-slot:no-data>
-        <div class="full-width row flex-center text-grey-8 q-pa-md">
+        <div class="full-width row flex-center cm-text q-pa-md">
           <q-icon size="2em" name="sentiment_dissatisfied" />
           <span class="q-ml-sm">No se encontraron resultados</span>
         </div>

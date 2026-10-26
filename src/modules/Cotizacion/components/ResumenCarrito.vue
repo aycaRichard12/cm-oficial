@@ -1,7 +1,7 @@
 <template>
   <q-card-section
-    class="bg-white q-py-sm q-px-lg flex items-center justify-between"
-    style="border-bottom: 1px solid #e0e0e0"
+    class="cm-surface q-py-sm q-px-lg flex items-center justify-between"
+    style="border-bottom: 1px solid var(--cm-border)"
   >
     <div class="flex items-center text-primary">
       <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
@@ -16,7 +16,7 @@
     flat
     hide-bottom
     class="custom-table q-pt-md"
-    table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
+    table-header-class="cm-surface-2 text-weight-bolder cm-text text-uppercase"
     :pagination="{ rowsPerPage: 0 }"
   >
     <template v-slot:body="props">
@@ -44,7 +44,7 @@
           </q-chip>
         </q-td>
         <q-td key="descripcion" :props="props">
-          <div class="text-weight-bolder text-grey-10 text-subtitle2">
+          <div class="text-weight-bolder cm-text text-subtitle2">
             {{ props.row.descripcion }}
           </div>
           <div
@@ -85,7 +85,7 @@
         </q-td>
         <q-td key="precio" :props="props" class="text-right text-weight-bold text-subtitle2">
           {{ decimas(props.row.precio) }}
-          <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+          <span class="text-caption cm-text-muted q-ml-xs text-weight-regular">{{
             divisa.tipo
           }}</span>
         </q-td>
@@ -95,7 +95,7 @@
           class="text-right text-weight-bolder text-primary text-subtitle1"
         >
           {{ decimas(props.row.cantidad * props.row.precio) }}
-          <span class="text-caption text-grey-5 q-ml-xs text-weight-regular">{{
+          <span class="text-caption cm-text-muted q-ml-xs text-weight-regular">{{
             divisa.tipo
           }}</span>
         </q-td>
@@ -136,19 +136,19 @@
     </template>
 
     <template v-slot:bottom-row>
-      <q-tr class="bg-grey-1">
-        <q-td colspan="6" class="text-right text-subtitle2 text-grey-8 letter-spacing-05"
+      <q-tr class="cm-surface-2">
+        <q-td colspan="6" class="text-right text-subtitle2 cm-text letter-spacing-05"
           >SUBTOTAL:</q-td
         >
-        <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
+        <q-td class="text-right text-subtitle1 cm-text text-weight-bolder">
           {{ decimas(carrito.subtotal) }}
-          <span class="text-caption text-grey-6 text-weight-medium">{{ divisa.tipo }}</span>
+          <span class="text-caption cm-text-muted text-weight-medium">{{ divisa.tipo }}</span>
         </q-td>
         <q-td />
       </q-tr>
 
-      <q-tr class="bg-grey-1">
-        <q-td colspan="6" class="text-right text-subtitle2 text-grey-8">DESCUENTO:</q-td>
+      <q-tr class="cm-surface-2">
+        <q-td colspan="6" class="text-right text-subtitle2 cm-text">DESCUENTO:</q-td>
         <q-td class="text-right">
           <q-input
             :model-value="carrito.descuento"
@@ -181,9 +181,11 @@
         >
         <q-td class="text-right text-h5 text-weight-bolder text-shadow-light">
           {{ decimas(carrito.ventatotal) }}
-          <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
-            divisa.tipo
-          }}</span>
+          <span
+            class="text-subtitle1 text-weight-medium"
+            style="opacity: 0.9; color: var(--cm-on-primary)"
+            >{{ divisa.tipo }}</span
+          >
         </q-td>
         <q-td />
       </q-tr>

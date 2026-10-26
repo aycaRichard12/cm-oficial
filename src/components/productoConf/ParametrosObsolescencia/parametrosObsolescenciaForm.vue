@@ -80,7 +80,7 @@ const colores = ref([
   { label: 'Naranja', value: '#FFA500' },
   { label: 'Morado', value: '#800080' },
   { label: 'Rosado', value: '#FFC0CB' },
-  { label: 'Blanco', value: '#FFFFFF' },
+  { label: 'Blanco', value: '#FFFFFF' }, // theme-allow
   { label: 'Gris', value: '#808080' },
   { label: 'Marrón', value: '#8B4513' },
   { label: 'Celeste', value: '#87CEEB' },

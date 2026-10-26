@@ -309,7 +309,7 @@ const onSubmit = () => {
     0 4px 20px rgba(0, 0, 0, 0.06),
     0 1px 3px rgba(0, 0, 0, 0.08);
   transition: box-shadow 0.3s ease;
-  background: #ffffff;
+  background: var(--cm-surface);
   &:hover {
     box-shadow:
       0 8px 30px rgba(0, 0, 0, 0.1),
@@ -341,7 +341,7 @@ const onSubmit = () => {
 }
 :deep(.q-field--outlined .q-field__control) {
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--cm-surface-2);
   transition:
     border-color 0.25s ease,
     background-color 0.25s ease,
@@ -351,7 +351,7 @@ const onSubmit = () => {
   }
 }
 :deep(.q-field--outlined.q-field--focused .q-field__control) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
 }
 :deep(.q-field__prepend) {

@@ -24,7 +24,7 @@
         v-model="tab"
         dense
         align="left"
-        class="bg-white text-primary"
+        class="cm-surface text-primary"
         narrow-indicator
         active-color="primary"
       >
@@ -789,7 +789,7 @@ function confirmarEliminarVariante(row) {
 
 <style scoped>
 .q-tab-panels {
-  background: #f5f7fa;
+  background: var(--cm-surface-2);
 }
 .text-nowrap {
   white-space: nowrap;

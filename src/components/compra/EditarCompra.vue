@@ -4,7 +4,7 @@
       <!-- Header Section -->
       <div class="row items-center q-mb-md">
         <div class="col">
-          <div class="text-h6 text-grey-8">
+          <div class="text-h6 cm-text">
             <q-icon name="edit_note" size="sm" class="q-mr-sm" />
             Editar Compra
           </div>
@@ -23,7 +23,7 @@
         <div class="row q-col-gutter-md">
           <!-- Nombre Field -->
           <div class="col-12 col-md-6">
-            <label class="text-weight-medium text-grey-8 q-mb-xs block">
+            <label class="text-weight-medium cm-text q-mb-xs block">
               Nombre de la Compra*
             </label>
             <q-input
@@ -42,7 +42,7 @@
 
           <!-- Código Field -->
           <div class="col-12 col-md-6">
-            <label class="text-weight-medium text-grey-8 q-mb-xs block">
+            <label class="text-weight-medium cm-text q-mb-xs block">
               Código de Compra*
             </label>
             <q-input
@@ -61,7 +61,7 @@
 
           <!-- Proveedor Field -->
           <div class="col-12 col-md-6">
-            <label class="text-weight-medium text-grey-8 q-mb-xs block">
+            <label class="text-weight-medium cm-text q-mb-xs block">
               Proveedor*
             </label>
             <q-select
@@ -83,7 +83,7 @@
 
           <!-- Factura Field -->
           <div class="col-12 col-md-6">
-            <label class="text-weight-medium text-grey-8 q-mb-xs block">
+            <label class="text-weight-medium cm-text q-mb-xs block">
               Número de Factura
             </label>
             <q-input

@@ -32,7 +32,7 @@
         </q-table>
       </q-card-section>
 
-      <q-card-actions align="right" class="bg-white text-teal">
+      <q-card-actions align="right" class="cm-surface text-teal">
         <q-btn flat label="Cerrar" v-close-popup />
       </q-card-actions>
 

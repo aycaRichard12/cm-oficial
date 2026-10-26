@@ -7,9 +7,9 @@
         <div class="row items-center">
           <q-icon name="inventory_2" size="28px" class="q-mr-md" />
           <div>
-            <div class="text-h6">Configuración de Kardex</div>
+            <div class="text-h6">{{ t('configGeneral.kardex.title') }}</div>
             <div class="text-subtitle2 text-grey-2">
-              Define el método de valoración de inventario que usará.
+              {{ t('configGeneral.kardex.subtitle') }}
             </div>
           </div>
         </div>
@@ -21,8 +21,8 @@
       <q-card-section class="q-pt-lg">
         <div>
           <!-- Label personalizado para mejor jerarquía -->
-          <div class="text-subtitle1 text-weight-medium text-grey-9 q-mb-sm">
-            Método de valoración
+          <div class="text-subtitle1 text-weight-medium cm-text q-mb-sm">
+            {{ t('configGeneral.kardex.methodLabel') }}
             <span class="text-caption text-red-6">*</span>
           </div>
 
@@ -31,7 +31,7 @@
             id="selectTipoKardex"
             v-model="tipoSeleccionado"
             :options="opciones"
-            label="Seleccione el tipo de Kardex"
+            :label="t('configGeneral.kardex.selectLabel')"
             emit-value
             map-options
             dense
@@ -45,7 +45,7 @@
             <q-btn
               id="btnGuardarKardex"
               color="primary"
-              label="Guardar Configuración"
+              :label="t('configGeneral.kardex.save')"
               :disable="!tipoSeleccionado"
               @click="guardarConfiguracion"
               class="custom-btn"
@@ -74,8 +74,8 @@
               :class="metodo ? 'text-positive' : 'text-warning'"
             />
             <div class="col">
-              <span class="text-weight-medium">Método configurado:</span>
-              <strong class="q-ml-sm">{{ metodo || 'Pendiente de configurar' }}</strong>
+              <span class="text-weight-medium">{{ t('configGeneral.kardex.configuredMethod') }}</span>
+              <strong class="q-ml-sm">{{ metodo || t('configGeneral.kardex.pending') }}</strong>
             </div>
           </div>
         </q-banner>
@@ -97,12 +97,12 @@
 /* Mejora visual del select */
 .custom-select :deep(.q-field__control) {
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--cm-surface-2);
   transition: all 0.2s ease;
 }
 
 .custom-select :deep(.q-field__control:hover) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
 }
 
 .custom-select :deep(.q-field__control:focus-within) {
@@ -168,12 +168,14 @@
 </style>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 
 // empresa actual
 
@@ -181,11 +183,11 @@ const $q = useQuasar()
 const metodo = ref(null)
 
 // opciones de kardex
-const opciones = [
-  { label: 'PEPS (Primero en entrar, primero en salir)', value: 'PEPS' },
-  { label: 'UEPS (Último en entrar, primero en salir)', value: 'UEPS' },
-  { label: 'Promedio Ponderado', value: 'PROMEDIO' },
-]
+const opciones = computed(() => [
+  { label: t('configGeneral.kardex.options.peps'), value: 'PEPS' },
+  { label: t('configGeneral.kardex.options.ueps'), value: 'UEPS' },
+  { label: t('configGeneral.kardex.options.promedio'), value: 'PROMEDIO' },
+])
 
 const tipoSeleccionado = ref(null)
 async function getTipoKardex() {
@@ -208,7 +210,7 @@ async function guardarConfiguracion() {
   getTipoKardex()
   $q.notify({
     type: 'positive',
-    message: 'Configuración de Kardex guardada correctamente',
+    message: t('configGeneral.kardex.saved'),
   })
 }
 

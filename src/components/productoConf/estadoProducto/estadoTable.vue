@@ -28,7 +28,7 @@
           debounce="300"
           class="q-mb-md"
           flat
-          style="background-color: white"
+          style="background-color: var(--cm-surface)"
         >
           <template v-slot:append>
             <q-icon name="search" />

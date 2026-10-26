@@ -2,7 +2,7 @@
   <q-card class="document-preview q-pa-md">
     <q-card-section class="text-center">
       <div class="text-h4 text-weight-bold">Nota de Crédito/Débito</div>
-      <div class="text-subtitle1 text-grey-8">Razón Social: {{ nota.nombreRazonSocial }}</div>
+      <div class="text-subtitle1 cm-text">Razón Social: {{ nota.nombreRazonSocial }}</div>
       <div>NIT: {{ nota.numeroDocumento }}</div>
     </q-card-section>
     <q-separator inset />
@@ -285,7 +285,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item class="bg-grey-2">
+            <q-item class="cm-surface-2">
               <q-item-section>
                 <q-item-label class="text-weight-bold">MONTO TOTAL DEVUELTO</q-item-label>
               </q-item-section>
@@ -732,7 +732,7 @@ onMounted(async () => {
 .document-preview {
   max-width: 800px;
   margin: 20px auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--cm-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Roboto', sans-serif;
 }

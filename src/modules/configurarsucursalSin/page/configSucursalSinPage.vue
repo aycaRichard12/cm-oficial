@@ -6,7 +6,7 @@
       <q-icon name="store" size="2.5rem" color="primary" class="q-mr-md" />
       <div>
         <h1 class="text-h4 text-primary q-my-none">Configuración de Sucursales</h1>
-        <p class="text-subtitle2 text-grey-8 q-mt-xs q-mb-none">
+        <p class="text-subtitle2 cm-text-muted q-mt-xs q-mb-none">
           Asigne sucursales Sin a una sucursal Empresa para centralizar operaciones.
         </p>
       </div>
@@ -134,6 +134,6 @@ onMounted(() => {
 <style scoped>
 /* Fondo corporativo */
 .bg-fondo {
-  background-color: #eeebe2; /* $fondo */
+  background-color: var(--cm-bg); /* $fondo */
 }
 </style>

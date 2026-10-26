@@ -437,7 +437,7 @@ onMounted(() => {
 <style scoped>
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }
@@ -479,8 +479,8 @@ onMounted(() => {
 .invoice table td,
 .invoice table th {
   padding: 5px;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
+  background: var(--cm-surface);
+  border-bottom: 1px solid var(--cm-border);
   text-align: center;
 }
 

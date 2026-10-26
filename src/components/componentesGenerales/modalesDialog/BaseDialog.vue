@@ -25,7 +25,7 @@
           </div>
 
           <div class="col q-ml-md">
-            <div class="text-h6 text-weight-bold text-grey-9">{{ config.title }}</div>
+            <div class="text-h6 text-weight-bold cm-text">{{ config.title }}</div>
           </div>
 
           <q-btn v-close-popup flat round dense icon="close" color="grey-7" class="self-start" />
@@ -33,7 +33,7 @@
       </q-card-section>
 
       <q-card-section class="q-py-md">
-        <div class="message-container q-pa-md bg-grey-1 text-body1 text-grey-8">
+        <div class="message-container q-pa-md cm-surface-2 text-body1 cm-text">
           {{ mensaje }}
         </div>
       </q-card-section>

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md" style="background-color: #eeebe2">
+  <q-page class="q-pa-md" style="background-color: var(--cm-bg)">
     <div class="row items-center justify-between q-mb-md q-ml-sm titulo">
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
@@ -129,7 +129,7 @@
           outlined
           debounce="300"
           class="q-mb-md"
-          style="background-color: white"
+          style="background-color: var(--cm-surface)"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -551,7 +551,7 @@ onMounted(async () => {
   .q-table__top,
   thead tr:first-child th
     /* bg color is important for th; just specify one */
-    background-color: #004d40
+    background-color: var(--cm-brand)
     color: #ffff
 
   thead tr th

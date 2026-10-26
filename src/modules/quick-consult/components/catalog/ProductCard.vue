@@ -133,7 +133,7 @@ const emitAdd = () => {
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--cm-surface);
   border: 1px solid rgba(0, 77, 64, 0.08);
   box-shadow: 0 2px 12px rgba(0, 77, 64, 0.06);
   transition:
@@ -173,7 +173,7 @@ const emitAdd = () => {
 .image-placeholder {
   aspect-ratio: 4 / 3;
   width: 100%;
-  background: linear-gradient(135deg, #004d40 0%, #26a69a 100%);
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #26a69a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -209,7 +209,7 @@ const emitAdd = () => {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #eeebe2;
+  color: var(--cm-on-primary);
   z-index: 1;
 }
 
@@ -234,7 +234,7 @@ const emitAdd = () => {
 .product-name {
   font-size: 1rem;
   font-weight: 700;
-  color: #004d40;
+  color: var(--cm-brand);
   line-height: 1.3;
   margin-bottom: 4px;
 }
@@ -306,8 +306,8 @@ const emitAdd = () => {
 
 .add-to-cart-btn {
   width: 100%;
-  background-color: #004d40 !important;
-  color: white !important;
+  background-color: var(--cm-brand) !important;
+  color: var(--cm-on-primary) !important;
   border-radius: 12px;
   font-weight: 700;
   font-size: 0.9rem;

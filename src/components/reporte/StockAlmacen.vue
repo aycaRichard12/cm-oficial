@@ -44,7 +44,7 @@
             maxHeight: '500px',
           }"
         >
-          <VueApexCharts type="donut" height="100%" :options="chartOptions" :series="series" />
+          <VueApexCharts type="donut" height="100%" :options="themedChartOptions" :series="series" />
         </div>
       </q-card-section>
 
@@ -79,8 +79,11 @@ import { useQuasar } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
 import * as funGeneral from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
+import { applyChartTheme } from 'src/composables/useChartTheme'
+import { useThemeStore } from 'src/stores/theme'
 
 const $q = useQuasar()
+const themeStore = useThemeStore()
 
 // Datos reactivos
 const Lista_stock = ref([])
@@ -220,7 +223,7 @@ const chartOptions = ref({
     style: {
       fontSize: '11px',
       fontWeight: 'bold',
-      colors: ['#fff'],
+      colors: ['#fff'], // theme-allow
     },
     dropShadow: {
       enabled: true,
@@ -255,6 +258,10 @@ const chartOptions = ref({
     },
   ],
 })
+
+const themedChartOptions = computed(() =>
+  applyChartTheme(chartOptions.value, themeStore.isDark),
+)
 
 const series = ref([])
 

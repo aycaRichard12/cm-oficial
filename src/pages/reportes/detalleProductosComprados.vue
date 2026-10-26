@@ -6,7 +6,7 @@
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
           Reporte Productos Comprados
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Reporte Productos Comprados
         </div>
       </div>

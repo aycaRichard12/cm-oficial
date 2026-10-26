@@ -623,7 +623,7 @@ onMounted(async () => {
 }
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }

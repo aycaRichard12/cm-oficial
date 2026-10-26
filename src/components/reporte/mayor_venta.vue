@@ -54,7 +54,7 @@
             height: '100%',
           }"
         >
-          <VueApexCharts type="line" height="100%" :options="chartOptions" :series="series" />
+          <VueApexCharts type="line" height="100%" :options="themedChartOptions" :series="series" />
         </div>
       </q-card-section>
     </q-card>
@@ -67,8 +67,11 @@ import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales
 import VueApexCharts from 'vue3-apexcharts'
 import { useQuasar, date as qDate } from 'quasar'
 import { api } from 'src/boot/axios'
+import { applyChartTheme } from 'src/composables/useChartTheme'
+import { useThemeStore } from 'src/stores/theme'
 
 const $q = useQuasar()
+const themeStore = useThemeStore()
 const empresa = idempresa_md5()
 const idusuario = idusuario_md5()
 
@@ -140,7 +143,7 @@ const chartOptions = ref({
   xaxis: {
     categories: [],
     type: 'category',
-    labels: { rotate: -45, style: { fontSize: '11px', fontWeight: 500, color: '#546E7A' } },
+    labels: { rotate: -45, style: { fontSize: '11px', fontWeight: 500 } },
   },
   yaxis: [
     {
@@ -182,6 +185,13 @@ const chartOptions = ref({
     verticalAlign: 'middle',
     style: { fontSize: '14px', color: '#888' },
   },
+})
+
+const themedChartOptions = computed(() => {
+  const base = chartOptions.value
+  const themed = applyChartTheme(base, themeStore.isDark)
+  // applyChartTheme assumes a single yaxis object; keep the dual-axis config intact.
+  return Array.isArray(base.yaxis) ? { ...themed, yaxis: base.yaxis } : themed
 })
 
 const series = ref([

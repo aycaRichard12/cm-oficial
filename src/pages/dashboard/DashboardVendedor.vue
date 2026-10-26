@@ -171,12 +171,12 @@ onUnmounted(() => pause())
 
 <style scoped>
 .dashboard-vendedor {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, var(--cm-surface-2) 0%, var(--cm-bg) 100%);
   min-height: 100vh;
 }
 
 .header-section {
-  background: white;
+  background: var(--cm-surface);
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -188,7 +188,7 @@ onUnmounted(() => pause())
 .sync-status {
   display: flex;
   align-items: center;
-  background: #f5f7fa;
+  background: var(--cm-surface-2);
   padding: 12px 16px;
   border-radius: 8px;
   border-left: 3px solid #1976d2;
@@ -208,9 +208,9 @@ onUnmounted(() => pause())
 }
 
 .filter-card {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
   border-radius: 12px;
-  background: white;
+  background: var(--cm-surface);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
@@ -228,7 +228,7 @@ onUnmounted(() => pause())
   letter-spacing: 0.5px;
   font-weight: 600;
   background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
+  color: white; /* theme-allow */
   border-radius: 8px;
   padding: 10px 20px;
   transition: all 0.3s ease;
@@ -240,7 +240,7 @@ onUnmounted(() => pause())
 }
 
 h2 {
-  color: #2c3e50;
+  color: var(--cm-text);
   border-bottom: 2px solid #1976d2;
   padding-bottom: 12px;
   display: inline-block;

@@ -4,32 +4,32 @@
       <div class="row q-col-gutter-md">
         <!-- Nombre de la divisa -->
         <div class="col-12 col-md-4">
-          <label for="nombre">Nombre de divisa*</label>
+          <label for="nombre">{{ t('configGeneral.divisas.form.name') }}</label>
           <q-input
             v-model="localData.nombre"
             outlined
             dense
             id="nombre"
-            :rules="[(val) => !!val || 'El nombre de la divisa es obligatorio']"
+            :rules="[(val) => !!val || t('configGeneral.divisas.form.nameRequired')]"
           />
         </div>
 
         <!-- Símbolo de la divisa -->
         <div class="col-12 col-md-4">
-          <label for="simbolo">Símbolo de la divisa*</label>
+          <label for="simbolo">{{ t('configGeneral.divisas.form.symbol') }}</label>
 
           <q-input
             v-model="localData.tipo"
             id="simbolo"
             outlined
             dense
-            :rules="[(val) => !!val || 'El símbolo de la divisa es obligatorio']"
+            :rules="[(val) => !!val || t('configGeneral.divisas.form.symbolRequired')]"
           />
         </div>
 
         <!-- Moneda SIN (Dropdown) -->
         <div class="col-12 col-md-4" v-if="tipoFactura">
-          <label for="monedasin">Moneda (SIN)*</label>
+          <label for="monedasin">{{ t('configGeneral.divisas.form.sin') }}</label>
           <q-select
             use-input
             fill-input
@@ -44,14 +44,14 @@
             clearable
             outlined=""
             dense=""
-            :q-rules="[(val) => !!val || 'Debe seleccionar una moneda (SIN)']"
+            :q-rules="[(val) => !!val || t('configGeneral.divisas.form.sinRequired')]"
           />
         </div>
       </div>
 
       <q-card-actions class="flex justify-start">
-        <q-btn label="Guardar" type="submit" color="primary" />
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
+        <q-btn :label="t('common.save')" type="submit" color="primary" />
+        <q-btn :label="t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
       </q-card-actions>
     </q-form>
   </q-card-section>
@@ -59,6 +59,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -69,6 +70,7 @@ const props = defineProps({
   modalValue: Object,
 })
 const $q = useQuasar()
+const { t } = useI18n()
 
 const localData = ref({ ...props.modalValue })
 
@@ -108,7 +110,7 @@ const getDivisasSIN = async () => {
   } catch (error) {
     console.error('Error al cargar monedas SIN:', error)
 
-    let mensaje = 'Ocurrió un error al cargar las monedas SIN.'
+    let mensaje = t('configGeneral.divisas.form.sinLoadError')
 
     // Errores personalizados
     if (error.response) {

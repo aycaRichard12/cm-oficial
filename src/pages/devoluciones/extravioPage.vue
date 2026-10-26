@@ -103,7 +103,7 @@
                 >
                   <label
                     for="cajaBanco"
-                    class="text-weight-bold text-grey-9 q-mb-sm block"
+                    class="text-weight-bold cm-text q-mb-sm block"
                     style="font-size: 13px; text-transform: uppercase"
                     >Seleccione Caja o Banco <span class="text-negative">*</span></label
                   >
@@ -133,7 +133,7 @@
                       <q-item v-bind="scope.itemProps">
                         <q-item-section>
                           <q-item-label>
-                            <span class="text-weight-bolder text-grey-9">{{
+                            <span class="text-weight-bolder cm-text">{{
                               scope.opt.codigo
                             }}</span>
                           </q-item-label>
@@ -275,7 +275,7 @@
                         class="custom-checkbox text-weight-medium"
                       >
                         <template v-slot:label>
-                          <span class="text-grey-800">Producto Único</span>
+                          <span class="cm-text">Producto Único</span>
                         </template>
                       </q-checkbox>
                     </div>
@@ -1223,7 +1223,7 @@ onMounted(async () => {
 
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }
@@ -1295,7 +1295,7 @@ onMounted(async () => {
 .invoice table th {
   padding: 15px;
   background: #eee;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid var(--cm-border);
 }
 
 .invoice table th {
@@ -1321,16 +1321,16 @@ onMounted(async () => {
 .invoice table .no {
   font-size: 1.6em;
   background: #3989c6;
-  color: #fff;
+  color: #fff; /* theme-allow */
 }
 
 .invoice table .unit {
-  background: #ddd;
+  background: var(--cm-border);
 }
 
 .invoice table .total {
   background: #3989c6;
-  color: #fff;
+  color: #fff; /* theme-allow */
 }
 
 .invoice table tbody tr:last-child td {
@@ -1344,7 +1344,7 @@ onMounted(async () => {
   text-align: right;
   padding: 10px 20px;
   font-size: 1.2em;
-  border-top: 1px solid #aaa;
+  border-top: 1px solid var(--cm-text-muted);
 }
 
 .invoice table tfoot tr:first-child td {
@@ -1364,8 +1364,8 @@ onMounted(async () => {
 .invoice footer {
   width: 100%;
   text-align: center;
-  color: #777;
-  border-top: 1px solid #aaa;
+  color: var(--cm-text-muted);
+  border-top: 1px solid var(--cm-text-muted);
   padding: 8px 0;
 }
 

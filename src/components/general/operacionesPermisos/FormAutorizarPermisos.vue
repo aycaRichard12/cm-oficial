@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-avatar color="primary" text-color="white" icon="admin_panel_settings" />
-      <div class="text-h6 text-weight-bold text-grey-8 q-ml-sm">Gestionar Permiso</div>
+      <div class="text-h6 text-weight-bold cm-text-muted q-ml-sm">Gestionar Permiso</div>
     </div>
 
     <!-- Tabs -->
@@ -73,7 +73,7 @@
           </q-badge>
         </div>
 
-        <q-list bordered separator class="rounded-borders bg-white">
+        <q-list bordered separator class="rounded-borders cm-surface">
           <q-item
             v-for="opt in operacionesOpciones"
             :key="opt.value"
@@ -92,7 +92,7 @@
               <q-icon :name="opt.icon || 'settings'" color="grey-7" size="sm" />
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-weight-medium text-grey-9">{{ opt.label }}</q-item-label>
+              <q-item-label class="text-weight-medium cm-text">{{ opt.label }}</q-item-label>
               <q-item-label caption>Permiso para acceder a esta funcionalidad</q-item-label>
             </q-item-section>
           </q-item>
@@ -133,7 +133,7 @@
           </q-badge>
         </div>
 
-        <q-list bordered separator class="rounded-borders bg-white">
+        <q-list bordered separator class="rounded-borders cm-surface">
           <q-item
             v-for="opt in graficosOpciones"
             :key="opt.value"
@@ -148,7 +148,7 @@
               <q-icon :name="opt.icon || 'insert_chart'" color="grey-7" size="sm" />
             </q-item-section>
             <q-item-section>
-              <q-item-label class="text-weight-medium text-grey-9">{{ opt.label }}</q-item-label>
+              <q-item-label class="text-weight-medium cm-text">{{ opt.label }}</q-item-label>
               <q-item-label caption>Mostrar este gráfico en el panel principal</q-item-label>
             </q-item-section>
           </q-item>

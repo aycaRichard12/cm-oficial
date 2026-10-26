@@ -7,7 +7,7 @@
           <q-icon name="assessment" size="md" class="q-mr-sm" />
           Reporte Pedidos
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Reporte Pedidos
         </div>
       </div>
@@ -567,7 +567,7 @@ onMounted(async () => {
 // Estilos para el PDF, adaptados de tu HTML original
 .invoice-container {
   padding: 20px;
-  background-color: #fff;
+  background-color: #fff; // theme-allow
   border: 1px solid #ccc;
   min-height: 297mm; /* A4 height for better PDF rendering */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -617,7 +617,7 @@ onMounted(async () => {
 
       thead th {
         background-color: #e0f2f1; // Quasar teal light
-        color: #004d40; // Quasar teal dark
+        color: var(--cm-brand); // Quasar teal dark
         font-weight: bold;
         padding: 8px;
         text-align: left;

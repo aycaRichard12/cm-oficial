@@ -69,7 +69,7 @@ const kpis = computed(() => [
 
 <style scoped>
 .kpi-card {
-  background: white;
+  background: var(--cm-surface);
   border-radius: 12px;
   padding: 20px;
   border-left: 4px solid;

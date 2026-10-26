@@ -633,7 +633,7 @@ onMounted(async () => {
 .invoice-container {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  color: #333;
+  color: var(--cm-text);
 }
 
 .invoice-overflow {
@@ -678,7 +678,7 @@ header {
 /* Specific styles for the PDF content within the modal */
 #reporteH {
   padding: 20px;
-  background: #fff;
+  background: var(--cm-surface);
   border: 1px solid #ccc;
   min-height: 100%;
   box-sizing: border-box;

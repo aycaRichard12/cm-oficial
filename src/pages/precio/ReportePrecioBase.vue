@@ -93,7 +93,7 @@
           </template>
 
           <template v-slot:no-data>
-            <div class="full-width row flex-center q-pa-md text-grey-8">
+            <div class="full-width row flex-center q-pa-md cm-text-muted">
               <q-icon name="warning" size="2em" class="q-mr-sm" />
               <span>
                 {{

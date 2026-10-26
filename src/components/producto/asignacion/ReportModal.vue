@@ -125,7 +125,7 @@ export default {
 
 <style scoped>
 .invoice {
-  background: #fff;
+  background: var(--cm-surface);
   border: 1px solid #eee;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   font-size: 16px;
@@ -156,7 +156,7 @@ export default {
 .invoice table tr.top table td.title {
   font-size: 45px;
   line-height: 45px;
-  color: #333;
+  color: var(--cm-text);
 }
 
 .invoice table tr.information table td {
@@ -165,7 +165,7 @@ export default {
 
 .invoice table tr.heading td {
   background: #eee;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--cm-border);
   font-weight: bold;
 }
 
