@@ -5,17 +5,18 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para documentos/leyendas -->
           <q-icon name="text_snippet" size="md" class="q-mr-sm" />
-          Leyenda Proforma
+          {{ t('configGeneral.leyenda.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de términos y condiciones estándar
+          {{ t('configGeneral.leyenda.subtitle') }}
         </div>
       </div>
+      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Condiciones para Cotización</div>
+          <div>{{ t('configGeneral.leyenda.dialogTitle') }}</div>
           <q-btn icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -43,6 +44,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import { useQuasar } from 'quasar'
 import FormLeyenda from 'components/general/Leyenda/FormLeyenda.vue'
 import TableLeyendas from 'components/general/Leyenda/TableLeyenda.vue'
@@ -51,6 +54,7 @@ import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 const showForm = ref(false)
 const isEditing = ref(false)
 const rows = ref([])
@@ -68,7 +72,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.leyenda.messages.loadError'),
     })
   }
 }
@@ -101,14 +105,16 @@ async function handleSubmit(data) {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value
+        ? t('configGeneral.leyenda.messages.updated')
+        : t('configGeneral.leyenda.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()
@@ -127,8 +133,8 @@ function editItem(item) {
 
 async function deleteItem(item) {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Leyenda "${item.texto}"?`,
+    title: t('configGeneral.leyenda.messages.deleteTitle'),
+    message: t('configGeneral.leyenda.messages.deleteMessage', { name: item.texto }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -146,7 +152,7 @@ async function deleteItem(item) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: t('configGeneral.leyenda.messages.loadError'),
       })
     }
   })
@@ -162,7 +168,7 @@ async function changeStatus(item) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.leyenda.messages.loadError'),
     })
   }
 }

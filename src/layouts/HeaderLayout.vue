@@ -165,7 +165,7 @@
               class="q-mr-xs icono q-mt-md"
             />
             <img v-else :src="tab.icono" width="18" height="18" class="q-mr-xs q-mt-md" />
-            <span class="text-caption text-weight-bold texto q-mt-md">{{ tab.titulo }}</span>
+            <span class="text-caption text-weight-bold texto q-mt-md">{{ tabTitle(tab) }}</span>
           </div>
         </q-tab>
 
@@ -198,7 +198,7 @@
                 />
                 <img v-else :src="tab.icono" width="35" height="35" class="q-mr-xs q-mt-md" />
               </q-item-section>
-              <q-item-section>{{ tab.titulo }}</q-item-section>
+              <q-item-section>{{ tabTitle(tab) }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -210,6 +210,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 //import logo from 'src/assets/IMAGOTIPO-02.png'
 import NotificacionLayout from './NotificacionLayout.vue'
 import ComandoVoz from './ComandoVoz.vue'
@@ -217,6 +218,19 @@ import ThemeToggle from 'src/components/ThemeToggle.vue'
 import AppBreadcrumbs from 'src/components/general/AppBreadcrumbs.vue'
 
 const authStore = ref(null)
+const { t } = useI18n()
+
+const TAB_TRANSLATION_KEYS = {
+  tipodealmacen: 'configGeneral.tabs.tipodealmacen',
+  divisas: 'configGeneral.tabs.divisas',
+  leyendaproforma: 'configGeneral.tabs.leyendaproforma',
+  tipokardex: 'configGeneral.tabs.tipokardex',
+}
+
+const tabTitle = (tab) => {
+  const key = TAB_TRANSLATION_KEYS[tab.codigo]
+  return key ? t(key) : tab.titulo
+}
 
 const userInitial = computed(() => authStore.value?.nombre?.charAt(0).toUpperCase() || 'U')
 const props = defineProps({

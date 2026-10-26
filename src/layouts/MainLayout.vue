@@ -21,11 +21,7 @@
             <div class="absolute-full flex flex-center bg-primary">
               <div class="logo-area">
                 <div class="column items-center justify-center">
-                  <q-img
-                    src="nombre.png"
-                    style="width: 148px; height: 23px"
-                    fit="contain"
-                  />
+                  <q-img src="nombre.png" style="width: 148px; height: 23px" fit="contain" />
                   <div class="logo-sub">COMERCIAL</div>
                 </div>
               </div>
@@ -34,7 +30,11 @@
         </router-link>
       </div>
       <q-scroll-area
-        style="height: calc(100% - 65px); margin-top: 65px; border-right: 1px solid var(--cm-border)"
+        style="
+          height: calc(100% - 65px);
+          margin-top: 65px;
+          border-right: 1px solid var(--cm-border);
+        "
       >
         <q-list padding="">
           <div
@@ -90,7 +90,7 @@
 
 <script setup>
 import emitter from 'src/event-bus'
-import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
@@ -100,9 +100,9 @@ import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import { idempresa_md5, idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 import { usePusherStore } from 'src/stores/pusher-store'
-//import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-//const $q = useQuasar()
+const $q = useQuasar()
 
 const pusherStore = usePusherStore()
 //import { LocalStorage } from 'quasar'
@@ -114,15 +114,15 @@ console.log('Usuario en MainLayout.vue:', usuario)
 
 // Fondo del area de contenido (logo mistersofts sin fondo)
 const publicBase = import.meta.env.BASE_URL
-const pageBackgroundStyle = {
+const pageBackgroundStyle = computed(() => ({
   backgroundColor: 'var(--cm-bg)',
-  backgroundImage: `url('${publicBase}fondo.jpeg')`,
+  backgroundImage: `url('${publicBase}${$q.dark.isActive ? 'fondoDarck.png' : 'fondo.jpeg'}')`,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center center',
   backgroundSize: 'min(60%, 900px)',
   overflowY: 'auto',
   height: '100%',
-}
+}))
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)
