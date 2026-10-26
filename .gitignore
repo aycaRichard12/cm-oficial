@@ -205,3 +205,6 @@ upload_dist.bat
 .opencode/commands/specify.md
 .opencode/commands/tasks.md
 .opencode/commands/verify.md
+
+# Harness session artifacts (written by .rsc/session-memory-adapter.mjs)
+session-*.md
