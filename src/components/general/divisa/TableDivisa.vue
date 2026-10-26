@@ -6,11 +6,11 @@
           color="primary"
           @click="$emit('add')"
           class="btn-res q-mt-lg"
-          title="registrar Tipo Almacén"
+          :title="t('configGeneral.divisas.table.addTitle')"
           id="add"
         >
           <q-icon name="add" class="icono" />
-          <span class="texto"> <q-icon name="add" /> Nuevo </span>
+          <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
         </q-btn>
       </div>
     </div>
@@ -24,7 +24,7 @@
       :pagination="{ rowsPerPage: 10 }"
       class="sticky-header-table"
       bordered
-      title="Divisas"
+      :title="t('configGeneral.divisas.table.title')"
     >
       <template v-slot:body-cell-monedaSin="props" v-if="tipoFactura">
         <q-td :props="props">
@@ -33,8 +33,8 @@
       </template>
       <template v-slot:body-cell-estado="props">
         <q-td align="center">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="t('common.active')" outline />
+          <q-badge color="red" v-else :label="t('common.inactive')" outline />
         </q-td>
       </template>
       <template v-slot:body-cell-opciones="props">
@@ -46,7 +46,7 @@
             dense
             flat
             @click="$emit('edit', props.row)"
-            title="Editar"
+            :title="t('common.edit')"
           />
           <q-btn
             id="delete"
@@ -55,10 +55,10 @@
             flat
             color="negative"
             @click="$emit('delete', props.row)"
-            title="Eliminar"
+            :title="t('common.delete')"
           />
           <q-btn
-            title="Cambiar de Estado"
+            :title="t('configGeneral.divisas.table.toggleStatus')"
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
             dense
             flat
@@ -73,8 +73,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 const tipoFactura = getTipoFactura(true)
+const { t } = useI18n()
 // Initialize the Pinia store
 
 // Define component props
@@ -87,9 +89,9 @@ console.log(props.rows)
 // Computed property for table columns, which dynamically includes/excludes 'monedaSin'
 const columns = computed(() => {
   const dynamicColumns = [
-    { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
-    { name: 'nombre', label: 'Divisa', align: 'left', field: 'nombre' },
-    { name: 'tipo', label: 'Tipo', align: 'left', field: 'tipo' },
+    { name: 'nro', label: t('configGeneral.divisas.table.number'), align: 'right', field: 'nro' },
+    { name: 'nombre', label: t('configGeneral.divisas.table.currency'), align: 'left', field: 'nombre' },
+    { name: 'tipo', label: t('configGeneral.divisas.table.type'), align: 'left', field: 'tipo' },
   ]
 
   // Conditionally add the 'monedaSin' column if estadoFactura is true
@@ -97,7 +99,7 @@ const columns = computed(() => {
     // Access the value of the reactive property
     dynamicColumns.push({
       name: 'monedaSin',
-      label: 'Moneda (SIN)',
+      label: t('configGeneral.divisas.table.sin'),
       align: 'left',
       field: 'monedaSin',
     })
@@ -105,8 +107,8 @@ const columns = computed(() => {
 
   // Add the remaining common columns
   dynamicColumns.push(
-    { name: 'estado', label: 'Estado', align: 'center' },
-    { name: 'opciones', label: 'Opciones', align: 'center' },
+    { name: 'estado', label: t('configGeneral.divisas.table.status'), align: 'center' },
+    { name: 'opciones', label: t('configGeneral.divisas.table.options'), align: 'center' },
   )
 
   return dynamicColumns

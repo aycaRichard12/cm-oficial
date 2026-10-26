@@ -4,17 +4,18 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="currency_exchange" size="md" class="q-mr-sm" />
-          Gestión de Divisas
+          {{ t('configGeneral.divisas.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración y configuración de tipos de cambio
+          {{ t('configGeneral.divisas.subtitle') }}
         </div>
       </div>
+      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent class="responsive-dialog">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Divisa</div>
+          <div>{{ t('configGeneral.divisas.dialogTitle') }}</div>
           <q-btn icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -41,6 +42,8 @@
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
 import FormDivisa from 'src/components/general/divisa/FormDivisa.vue'
 import TableDivisa from 'src/components/general/divisa/TableDivisa.vue'
@@ -55,6 +58,7 @@ const idempresa = idempresa_md5()
 const showForm = ref(false)
 const listaDivisas = ref([])
 const $q = useQuasar()
+const { t } = useI18n()
 const isEditing = ref(false)
 const formData = ref({
   ver: 'registrarDivisa',
@@ -75,19 +79,19 @@ const guardarDivisa = async (data) => {
 
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Proveedor guardado correctamente',
+        message: response.data.mensaje || t('configGeneral.divisas.messages.saved'),
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar divisa',
+        message: response.data.mensaje || t('configGeneral.divisas.messages.saveError'),
       })
     }
   } catch (error) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar la divisa',
+      message: t('configGeneral.divisas.messages.saveFailed'),
     })
   }
   toggleForm()
@@ -107,7 +111,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -142,8 +146,8 @@ const resetForm = () => {
 const confirmDelete = (Divisa) => {
   console.log(Divisa)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Divisa "${Divisa.nombre}"?`,
+    title: t('configGeneral.divisas.messages.deleteTitle'),
+    message: t('configGeneral.divisas.messages.deleteMessage', { name: Divisa.nombre }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -166,7 +170,7 @@ const confirmDelete = (Divisa) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: t('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -181,7 +185,7 @@ async function changeStatus(item) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.divisas.messages.loadError'),
     })
   }
 }

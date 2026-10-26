@@ -4,17 +4,18 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="warehouse" size="md" class="q-mr-sm" />
-          Registrar Tipo de Almacén
+          {{ t('configGeneral.tipoAlmacen.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Gestión y configuración de tipos de almacenes
+          {{ t('configGeneral.tipoAlmacen.subtitle') }}
         </div>
       </div>
+      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Tipo de Almacén</div>
+          <div>{{ t('configGeneral.tipoAlmacen.dialogTitle') }}</div>
           <q-btn icon="close" flat dense round @click="showForm = false"></q-btn>
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -41,6 +42,8 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import TipoAlmacenForm from 'components/general/tipoAlmacen/FormTipoAlmacen.vue'
 import TipoAlmacenTable from 'components/general/tipoAlmacen/TableTipoAlmacen.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -48,6 +51,7 @@ import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 const showForm = ref(false)
 const isEditing = ref(false)
 const rows = ref([])
@@ -66,7 +70,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.tipoAlmacen.messages.loadError'),
     })
   }
 }
@@ -100,14 +104,16 @@ async function handleSubmit(data) {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value
+        ? t('configGeneral.tipoAlmacen.messages.updated')
+        : t('configGeneral.tipoAlmacen.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configGeneral.tipoAlmacen.messages.saveError') + error,
     })
   }
   toggleForm()
@@ -131,29 +137,29 @@ async function deleteItem(item) {
   if (esAlmacenAutomatico) {
     // Para almacén automático: diálogo con confirmación de texto
     $q.dialog({
-      title: 'Confirmar Eliminación',
-      message: `Este almacén ("${item.tipoalmacen}") fue creado automáticamente por el sistema. Su eliminación es una acción delicada que puede afectar reportes previos. Para confirmar la eliminación definitiva, escriba el nombre "${item.tipoalmacen}" abajo:`,
+      title: t('configGeneral.tipoAlmacen.messages.deleteTitle'),
+      message: t('configGeneral.tipoAlmacen.messages.autoWarehouse', { name: item.tipoalmacen }),
       prompt: {
         model: '',
         type: 'text',
-        placeholder: 'Escriba el nombre aquí...',
+        placeholder: t('configGeneral.tipoAlmacen.messages.promptPlaceholder'),
       },
       persistent: true,
       ok: {
         flat: true,
-        label: 'Eliminar definitivamente',
+        label: t('configGeneral.tipoAlmacen.messages.deletePermanently'),
         color: 'negative',
       },
       cancel: {
         flat: true,
         color: 'primary',
-        label: 'Cancelar',
+        label: t('common.cancel'),
       },
     }).onOk(async (userInput) => {
       if (userInput !== item.tipoalmacen) {
         $q.notify({
           type: 'warning',
-          message: 'El texto ingresado no coincide. Eliminación cancelada.',
+          message: t('configGeneral.tipoAlmacen.messages.mismatch'),
           icon: 'warning',
         })
         return
@@ -163,18 +169,18 @@ async function deleteItem(item) {
   } else {
     // Para almacén normal: diálogo de confirmación simple
     $q.dialog({
-      title: 'Confirmar Eliminación',
-      message: `¿Está seguro que desea eliminar el tipo de almacén "${item.tipoalmacen}"? Esta acción no se puede deshacer.`,
+      title: t('configGeneral.tipoAlmacen.messages.deleteTitle'),
+      message: t('configGeneral.tipoAlmacen.messages.deleteNormal', { name: item.tipoalmacen }),
       persistent: true,
       ok: {
         flat: true,
-        label: 'Eliminar',
+        label: t('common.delete'),
         color: 'negative',
       },
       cancel: {
         flat: true,
         color: 'primary',
-        label: 'Cancelar',
+        label: t('common.cancel'),
       },
     }).onOk(async () => {
       await procesarEliminacion(item)
@@ -189,13 +195,13 @@ async function procesarEliminacion(item) {
       loadRows()
       $q.notify({
         type: 'positive',
-        message: 'El registro fue eliminado correctamente',
+        message: t('configGeneral.tipoAlmacen.messages.deleted'),
         icon: 'check',
       })
     } else {
       $q.notify({
         type: 'warning',
-        message: `¡No permitido!, debido a registros dependientes`,
+        message: t('configGeneral.tipoAlmacen.messages.dependencyWarning'),
         icon: 'warning',
         timeout: 4000,
       })
@@ -204,7 +210,7 @@ async function procesarEliminacion(item) {
     console.error('Error al eliminar:', error)
     $q.notify({
       type: 'warning',
-      message: `¡No permitido!, debido a registros dependientes`,
+      message: t('configGeneral.tipoAlmacen.messages.dependencyWarning'),
       icon: 'warning',
       timeout: 4000,
     })
@@ -221,7 +227,7 @@ async function changeStatus(item) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configGeneral.tipoAlmacen.messages.loadError'),
     })
   }
 }
