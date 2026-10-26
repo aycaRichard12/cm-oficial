@@ -13,7 +13,7 @@
 - [sdd/decisions.md](sdd/decisions.md) — registro de decisiones SDD
 - [sdd/specs/tema-oscuro.md](sdd/specs/tema-oscuro.md) — spec de tema oscuro
 - [sdd/plans/tema-oscuro.md](sdd/plans/tema-oscuro.md) — plan técnico de tema oscuro
-- [sdd/analysis/tema-oscuro.md](sdd/analysis/tema-oscuro.md) — informe de consistencia (BLOCKED)
+- [sdd/analysis/tema-oscuro.md](sdd/analysis/tema-oscuro.md) — informe de consistencia (PASS)
 
 ## Seguridad
 - [security/route-policy.md](security/route-policy.md)

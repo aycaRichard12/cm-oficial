@@ -24,7 +24,9 @@ status: approved
 - **Contrast:** normal text ≥ 4.5:1 (WCAG AA) on its background in both themes.
 - **Preference storage key:** `mistersofts-cm-theme`; value exactly `light` or `dark`; key absent means "follow system".
 - **Theme switch:** Quasar `Dark` plugin is the single switch; dark state is `body.body--dark`.
-- **Token namespace:** CSS custom properties prefixed `--cm-` (e.g. `--cm-bg`, `--cm-surface`, `--cm-text`).
+- **Token namespace:** CSS custom properties prefixed `--cm-`; exact set: `--cm-bg`, `--cm-surface`, `--cm-surface-2`, `--cm-text`, `--cm-text-muted`, `--cm-border`, `--cm-header`.
+- **Forbidden literals in themed source (background/surface/text):** `#eeebe2`, `#fff`, `#ffffff`, `white`, `#fafafa`, `#f5f7fa`, `#e9ecef`, `#e0e0e0`, `#f0f0f0`, `#333`, `#2c3e50`, `#004d40`, `#777`, `#aaa`, `#ddd`, `text-grey-9`, `text-grey-8` — unless the line carries `theme-allow`. `text-white` on `bg-primary` is allowed and must carry `theme-allow`.
+- **Guard allowlist:** `src/utils/pdfs/**`, `src/modules/pdf/**`, `src/modules/*/services/*PdfService.js` (PDFs stay light by construction) and any line marked `theme-allow`.
 - **Print/export:** always light regardless of active theme.
 - **Naming:** files `kebab-case`; Vue components `PascalCase`; commits Conventional Commits.
 - **Branching:** feature branch → PR; `main`/`develop` protected (`config.yaml`).
@@ -70,6 +72,8 @@ src/css/theme.scss ──> :root tokens (light) + body.body--dark tokens (dark)
 - **Leaflet map / driver.js tours** (external) — third-party visuals themed through CSS and, for charts, options.
 - **Quasar Dark plugin** (external) — supplies built-in dark variants for Quasar components.
 - **jsPDF generators** (external) — draw on white internally; stay untouched.
+
+**Mounting note:** `HeaderLayout.vue` is mounted only by `MainLayout.vue` (`src/router/routes.js:56`), the sole authenticated layout. Login and `ErrorNotFound.vue` are themed but carry no toggle, as the spec requires.
 
 **Top architectural decision:** use **Quasar's `Dark` plugin as the only switch**, layered with a `--cm-*` token system, instead of a parallel custom `data-theme` system. It is chosen because Quasar already ships dark variants for its components; duplicating that with a custom attribute would double maintenance and leave components behind. The cost is fighting specificity in the compatibility layer, which is contained under `body.body--dark` and audited per screen.
 
@@ -127,6 +131,7 @@ ThemeToggle.vue
   - aria-label: "Cambiar a modo oscuro" / "Cambiar a modo claro"
   - aria-pressed reflects dark state
   - <q-tooltip> with the same text
+  - feedback: the immediate visual change is the confirmation; no toast (§7 satisfied by the observable swap)
 ```
 
 ## 4. Data model & flow
@@ -164,29 +169,29 @@ ThemeToggle.vue
 | --- | --- | --- | --- |
 | #1 no pref + OS dark → dark first render | unit + e2e | resolver returns dark/system; login page body has `body--dark` on load | fake media `matches: true`; e2e emulates `colorScheme: 'dark'` |
 | #2 no pref + OS light → light | unit + e2e | resolver returns light/system; body has no dark class | fake media `matches: false`; e2e `colorScheme: 'light'` |
-| #3 toggle → dark without reload | unit + e2e | `toggle()` applies dark and persists `dark` | fake storage/apply; e2e logged-in page |
-| #4 toggle back → light | unit + e2e | `toggle()` applies light and persists `light` | same |
+| #3 toggle → dark without reload | unit + component | `toggle()` applies dark and persists `dark`; mounted toggle flips `aria-pressed` | fake storage/apply; `happy-dom` mount with mocked store |
+| #4 toggle back → light | unit + component | `toggle()` applies light and persists `light`; mounted toggle flips back | same |
 | #5 chose dark → reopen dark | unit | controller reads stored `dark` and applies it | fake storage preloaded |
 | #6 chose light while OS dark → reopen light | unit | stored `light` wins over system | fake media `matches: true` |
 | #7 all screens no light panels, AA | static + manual audit | token guard test forbids legacy light literals in touched files; audit checklist per screen group | static scan test |
 | #8 charts/maps/tours themed | unit + manual | `chartTheme(true)` returns dark palette; map/tour visual audit | pure helper |
 | #9 two tabs sync | unit | `storage` event re-resolves and applies | fake event target |
-| #10 print/PDF light | unit + e2e | `withLightCapture` adds/removes class even on failure; print emulation keeps white background | fake DOM element; e2e `page.emulateMedia({media:'print'})` |
-| #11 keyboard + announced state | e2e | toggle reachable by Tab, Enter/Space toggles, `aria-pressed` flips | e2e |
+| #10 print/PDF light | unit + e2e | `withLightCapture` adds/removes class even on failure; print emulation on login keeps a white background | fake DOM element; e2e `page.emulateMedia({media:'print'})` |
+| #11 keyboard + announced state | component | toggle exposes accessible name, Enter/Space toggles, `aria-pressed` flips | `happy-dom` mount with mocked store |
 | #12 corrupt stored value → system | unit | resolver ignores invalid value, returns system | fake storage `'blue'` |
 | #13 no flash on reload | e2e | dark class present before app mount; no light frame in screenshot sequence | e2e with stored `dark` |
 
-- **Unit** runs in Vitest `node`; no jsdom added. Pure resolver and controller are injected with fake `storage`, `media`, `apply`, and event targets.
-- **E2E** runs in Playwright against the real app via `webServer` (`npm run dev`). Login-page checks need no credentials; authenticated checks need a test user or a session fixture — see open decisions.
+- **Unit** runs in Vitest `node`; pure resolver/controller are injected with fake `storage`, `media`, `apply` and event targets. The one component test runs with `happy-dom` per file (T036).
+- **E2E** runs in Playwright against the real app via `webServer` (`npm run dev`). The public login page covers system preference, no-flash and print emulation; no authenticated e2e is required, so no session fixture is needed.
 - **Visual coverage** of every module is a manual audit checklist (the automated line cannot prove "no light panel" across 120 files); the static token guard plus spot screenshots narrow the gap.
 - **Real dependency required:** the e2e must hit the real Quasar app and real CSS, not a mock; storage and media emulation are the only fakes.
 
 ## 6. Sequencing & dependencies
 
 1. **Foundation** — `theme.scss` tokens + compatibility layer skeleton, add `Dark` plugin, theme resolver, controller, Pinia store, `boot/theme.js`, inline pre-paint script, `ThemeToggle.vue` in header. Depends on: none. **Serial.**
-2. **Global shell theme** — `App.vue`, `MainLayout.vue`, `HeaderLayout.vue`, `LoginPage.vue`, base rules in `app.scss`. Depends on #1. **Serial.**
+2. **Global shell theme** — `App.vue`, `MainLayout.vue`, `HeaderLayout.vue`, `LoginPage.vue`, `ErrorNotFound.vue`, base rules in `app.scss`. Depends on #1. **Serial.**
 3. **Shared surfaces** — tables, forms, dialogs, menus, notifications, empty states, `.responsive-qtable-container`, `label`, `thead` overrides. Depends on #1. **Serial.**
-4. **Module page sweep** — group A ventas/cotización, B compras/inventario, C cuentas/caja, D reportes/dashboard, E configuración/auth. Depends on #2, #3. **Parallelizable across groups.**
+4. **Module page sweep** — group A ventas/cotización, B compras/inventario, C cuentas/caja, D reportes/dashboard, E configuración/auth, and a **global guard** that scans every remaining `src/pages`, `src/modules`, `src/components` and `src/layouts` file (allowlist in §0). Depends on #2, #3. **Parallelizable across groups; the guard is the completeness check.**
 5. **Third-party visuals** — `useChartTheme` + refactor 12 chart files; Leaflet controls/attribution; driver.js popover theme. Depends on #1. **Parallel with #4.**
 6. **Print/PDF guard** — `withLightCapture` around the two `html2pdf` pages; global `@media print` light rules. Depends on #1. **Parallel with #4/#5.**
 7. **Audit & regression guard** — screen-by-screen contrast audit, static token guard test, e2e suite. Depends on #4, #5, #6. **Serial.**
@@ -214,7 +219,7 @@ ThemeToggle.vue
 
 **Open decisions**
 
-- **How to authenticate Playwright for the toggle checks** — closes when a test user or a session fixture (`mistersofts-cm`) is provided. Until then, e2e covers the login page and print emulation; toggle/persistence are proven at unit level and by manual audit.
+- **Exact forbidden-literal regex for the guard** — closes in T031 by encoding background/text patterns; `text-white` on `bg-primary` is explicitly allowed. The list is fixed in §0, the pattern is implementation.
 - **Whether the Leaflet imagery needs a dark filter** — closes after the visual spike on the single map screen; if the satellite layer reads acceptably dark, no filter is added.
 
 ## Tasks
@@ -237,23 +242,38 @@ ThemeToggle.vue
 | T013 | [P] | Escribir test estático que falle del interruptor accesible | `npx vitest run tests/unit/theme-toggle.spec.js` falla: no existe `ThemeToggle.vue` ni su uso en el header | — | spec §Acceptance #11 |
 | T014 |  | Crear store Pinia `src/stores/theme.js` sobre el controlador | `npm run lint` sin errores; el store expone `mode`, `source`, `init`, `toggle`, `isDark` | T004, T012 | spec §Acceptance #3–#6, #9 |
 | T015 |  | Crear `src/components/ThemeToggle.vue` y colocarlo en `HeaderLayout.vue` | T013 en verde; `npm run lint` sin errores | T013, T014 | spec §Acceptance #3, #11 |
-| T016 |  | Sustituir colores fijos por tokens en `App.vue`, `MainLayout.vue`, `HeaderLayout.vue` y `LoginPage.vue` | `npx vitest run tests/unit/theme-guard.spec.js` no reporta literales prohibidos en esos archivos; `npm run lint` sin errores | T010, T014, T015 | spec §Acceptance #7 |
+| T016 |  | Sustituir colores fijos por tokens en `App.vue`, `MainLayout.vue`, `HeaderLayout.vue`, `LoginPage.vue` y `ErrorNotFound.vue` | `npx vitest run tests/unit/theme-guard.spec.js` no reporta literales prohibidos en esos archivos; `npm run lint` sin errores | T010, T014, T015, T031 | spec §Acceptance #7 y §Goals (login/error) |
 | T017 |  | Añadir overrides de compatibilidad para tablas, formularios, diálogos, menús y utilidades en `theme.scss` | `npx vitest run tests/unit/theme-css.spec.js` en verde con los selectores exigidos; `npm run lint` sin errores | T010 | spec §Acceptance #7 |
-| T018 | [P] | Barrer módulo ventas/cotización a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/Venta`, `src/pages/cotizacion`, `src/components/venta`, `src/components/cotizacion`; lint verde | T016, T017 | spec §Acceptance #7 |
-| T019 | [P] | Barrer módulo compras/inventario a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/compra`, `src/pages/producto`, `src/pages/inventario`, `src/components/compra`, `src/components/producto`; lint verde | T016, T017 | spec §Acceptance #7 |
-| T020 | [P] | Barrer módulo cuentas/caja a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/cuentasxcobrar`, `src/pages/cierrecaja`, `src/components/cuentasxCobrar`; lint verde | T016, T017 | spec §Acceptance #7 |
-| T021 | [P] | Barrer módulo reportes/dashboard a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/dashboard`, `src/pages/reportes`, `src/components/reporte`, `src/components/dasboardVendedor`; lint verde | T016, T017 | spec §Acceptance #7 |
-| T022 | [P] | Barrer configuración/auth/quick-consult a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/config`, `src/pages/auth`, `src/modules/quick-consult`, `src/components/actualizaciones`; lint verde | T016, T017 | spec §Acceptance #7 |
-| T023 | [P] | Hacer reactivas las opciones de ApexCharts con `chartTheme` en dashboard y reportes | `npx vitest run tests/unit/chart-theme.spec.js` en verde; `grep -rIn "background: white" src/components/reporte src/components/dasboardVendedor` sin resultados; lint verde | T006, T021 | spec §Acceptance #8 |
+| T018 | [P] | Barrer módulo ventas/cotización a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/Venta`, `src/pages/cotizacion`, `src/components/venta`, `src/components/cotizacion`; lint verde | T016, T017, T031 | spec §Acceptance #7 |
+| T019 | [P] | Barrer módulo compras/inventario a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/compra`, `src/pages/producto`, `src/pages/inventario`, `src/components/compra`, `src/components/producto`; lint verde | T016, T017, T031 | spec §Acceptance #7 |
+| T020 | [P] | Barrer módulo cuentas/caja a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/cuentasxcobrar`, `src/pages/cierrecaja`, `src/components/cuentasxCobrar`; lint verde | T016, T017, T031 | spec §Acceptance #7 |
+| T021 | [P] | Barrer módulo reportes/dashboard a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/dashboard`, `src/pages/reportes`, `src/components/reporte`, `src/components/dasboardVendedor`; lint verde | T016, T017, T031 | spec §Acceptance #7 |
+| T022 | [P] | Barrer configuración/auth/quick-consult a tokens | `npx vitest run tests/unit/theme-guard.spec.js` sin literales prohibidos en `src/pages/config`, `src/pages/auth`, `src/modules/quick-consult`, `src/components/actualizaciones`; lint verde | T016, T017, T031 | spec §Acceptance #7 |
+| T023 |  | Hacer reactivas las opciones de ApexCharts con `chartTheme` en dashboard y reportes | `npx vitest run tests/unit/chart-theme.spec.js` y `tests/unit/theme-guard.spec.js` en verde para `src/components/reporte` y `src/components/dasboardVendedor`; lint verde | T006, T021 | spec §Acceptance #8 |
 | T024 | [P] | Hacer reactivas las opciones de ApexCharts en `ReportesUtilidades` | `npx vitest run tests/unit/chart-theme.spec.js` en verde; sin fondos claros fijos en `src/modules/ReportesUtilidades`; lint verde | T006, T021 | spec §Acceptance #8 |
-| T025 |  | Tematizar controles/atribución de Leaflet y decidir el filtro de tiles | Observación: captura del mapa en oscuro sin controles ilegibles; decisión del filtro registrada en `decisions.md`; lint verde | T010 | spec §Acceptance #8 |
-| T026 |  | Tematizar popovers de driver.js en `theme.scss` | `npx vitest run tests/unit/theme-css.spec.js` en verde con selectores de tour exigidos; lint verde | T010 | spec §Acceptance #8 |
+| T025 |  | Tematizar controles/atribución de Leaflet y decidir el filtro de tiles | Captura del mapa en oscuro guardada en `02-DOCS/wiki/sdd/verifications/tema-oscuro-map.png`, sin controles ilegibles; decisión del filtro en `decisions.md`; lint verde | T010 | spec §Acceptance #8 |
+| T026 |  | Tematizar popovers de driver.js en `theme.scss` | `npx vitest run tests/unit/theme-css.spec.js` en verde con selectores de tour exigidos; lint verde | T010, T017 | spec §Acceptance #8 |
 | T027 |  | Envolver las dos capturas `html2pdf` con `withLightCapture` | `grep -rIn "withLightCapture" src/pages/reportes/reportedeindicederotacionPage.vue src/pages/reportes/rotacionGlobalPage.vue` devuelve una llamada por archivo; lint verde | T008, T017 | spec §Acceptance #10 |
-| T028 |  | Añadir reglas globales de impresión clara en `theme.scss` | `npx vitest run tests/unit/theme-css.spec.js` en verde con el bloque print forzando fondo claro; lint verde | T010, T027 | spec §Acceptance #10 |
+| T028 |  | Añadir reglas globales de impresión clara en `theme.scss` | `npx vitest run tests/unit/theme-css.spec.js` en verde con el bloque print forzando fondo claro; lint verde | T010, T017, T027 | spec §Acceptance #10 |
 | T029 |  | Escribir e2e Playwright del tema en login y del no-destello | `npx playwright test tests/e2e/theme-login.spec.js` en verde con `webServer` configurado | T012, T015 | spec §Acceptance #1, #2, #13 |
-| T030 |  | Escribir e2e Playwright de impresión clara | `npx playwright test tests/e2e/theme-print.spec.js` en verde o skip documentado si falta fixture de sesión | T027, T028 | spec §Acceptance #10 |
-| T031 |  | Añadir guard estático de literales prohibidos y auditoría de pantallas | `npx vitest run tests/unit/theme-guard.spec.js` en verde; checklist de auditoría completado en la sesión | T018–T022, T025, T026 | spec §Acceptance #7, #8 |
-| T032 |  | Regresión final y handoff a verify | `npm run lint` y `npm test` exit 0; `npx playwright test` exit 0 o skips documentados | all | spec §Acceptance (todas) |
+| T030 |  | Escribir e2e Playwright de impresión clara sobre login (pública) | `npx playwright test tests/e2e/theme-print.spec.js` en verde; emula `colorScheme: dark` y `media: print`, y comprueba fondo blanco | T029 | spec §Acceptance #10 |
+| T031 |  | Crear guard estático global de literales prohibidos (rojo) | `npx vitest run tests/unit/theme-guard.spec.js` falla y lista los archivos infractores de `src/pages`, `src/modules`, `src/components` y `src/layouts`, aplicando la allowlist de §0 | T010 | spec §Acceptance #7 |
+| T032 |  | Regresión final y handoff a verify | `npm run lint`, `npm test` y `npx playwright test` exit 0; cobertura y bundle dentro de presupuesto | T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T033, T034, T035, T036, T037, T038, T039 | spec §Acceptance (todas) |
+| T033 | [P] | Barrer páginas y módulos restantes que reporte el guard | `npx vitest run tests/unit/theme-guard.spec.js` sin infracciones en `src/pages/**` y `src/modules/**` (allowlist §0); lint verde | T016, T017, T018, T019, T020, T021, T022, T031 | spec §Acceptance #7 y §Goals ("toda la app") |
+| T034 | [P] | Barrer componentes y layouts restantes que reporte el guard | `npx vitest run tests/unit/theme-guard.spec.js` sin infracciones en `src/components/**` y `src/layouts/**` (allowlist §0); lint verde | T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T031 | spec §Acceptance #7 y §Goals ("toda la app") |
+| T035 |  | Auditar contraste AA y coherencia visual por grupo de pantallas | `test -f 02-DOCS/wiki/sdd/verifications/tema-oscuro-audit.md` y sin `PENDIENTE`; cada grupo tiene captura o medición de contraste | T018, T019, T020, T021, T022, T023, T024, T025, T026, T033, T034 | spec §Acceptance #7, #8 |
+| T036 |  | Añadir test de componente accesible del interruptor | `npx vitest run tests/unit/theme-toggle-a11y.spec.js` en verde con `@vue/test-utils` + `happy-dom`: nombre accesible, `aria-pressed`, Enter/Espacio alternan | T015 | spec §Acceptance #11 |
+| T037 |  | Añadir test unitario de contraste de tokens | `npx vitest run tests/unit/theme-contrast.spec.js` en verde: cada par texto/fondo de ambos temas ≥ 4.5:1 | T010 | spec §Acceptance #7 |
+| T038 |  | Medir cobertura con umbral del 70% en módulos tocados | `npx vitest run --coverage` exit 0 con `@vitest/coverage-v8` y thresholds configurados | T001, T003, T005, T007, T009, T011, T013, T029, T030, T036, T037 | constitution §2 |
+| T039 |  | Verificar presupuesto de bundle y registrar FCP | `npm run build` exit 0 y `node scripts/check-bundle-size.mjs` muestra total gzip ≤ 1.5 MB; FCP registrado en la auditoría | T035 | constitution §8 |
+
+**T031 — Interfaces**
+- Consumes: tokens de §0; allowlist de §0.
+- Produces: `tests/unit/theme-guard.spec.js` que recorre `.vue`, `.scss`, `.css` de `src/pages`, `src/modules`, `src/components`, `src/layouts`; falla con archivo:línea por cada literal prohibido sin `theme-allow`.
+
+**T036 — Interfaces**
+- Consumes: `ThemeToggle.vue` (T015), `useThemeStore()` (T014).
+- Produces: entorno `happy-dom` por archivo y test de montaje con Pinia; no añade un framework de test nuevo.
 
 **T002 — Interfaces**
 - Consumes: nada.
@@ -291,10 +311,11 @@ ThemeToggle.vue
 
 | Dimension | Forecast | Why |
 | --- | --- | --- |
-| Estimated changed lines | 1.800–2.800 | 337 literales en 120 archivos + store/controlador/tests/CSS nuevos |
-| Files / areas | ~135 archivos: CSS, stores, boot, utils, layouts, 5 grupos de módulos, charts, PDF, tests | barrido transversal de UI |
+| Estimated changed lines | 2.200–3.200 | 337 literales en 120+ archivos + store/controlador/tests/CSS/deps de test nuevos |
+| Files / areas | ~150 archivos: CSS, stores, boot, utils, layouts, todas las páginas/módulos/componentes, charts, PDF, tests, config de cobertura | barrido transversal completo |
 | Review risk | high | cambio visual masivo y difícil de verificar automáticamente en todas las pantallas |
 | Suggested delivery | stacked-prs (3) | supera el budget por defecto de 400 líneas; dividir en: (1) base+tokens+store+toggle, (2) barrido de módulos, (3) charts/mapas/tours/PDF/e2e |
 
 - Estrategia recomendada: 3 PRs apilados sobre `feat/tema-oscuro`, cada uno con su propio verify; el riesgo visual se revisa por grupo de pantallas.
+- Tras el gate `analyze`, se añadieron T033–T039 para cerrar la cobertura global, la accesibilidad, el contraste, la cobertura de líneas y el presupuesto de bundle.
 - El trabajo `[P]` se puede abrir en worktrees separados por grupo de módulos, pero el barrido comparte `theme.scss` y el guard test: coordinar T016/T017 antes de fan-out.
