@@ -18,6 +18,7 @@
 
       <div class="col-auto row items-center no-wrap q-gutter-x-sm">
         <ComandoVoz class="gt-xs" />
+        <LanguageSwitcher color="white" />
         <ThemeToggle />
         <q-btn icon="help_outline" color="white" flat round dense @click="$emit('iniciar-guia')">
           <q-tooltip>Ayuda</q-tooltip>
@@ -216,6 +217,7 @@ import NotificacionLayout from './NotificacionLayout.vue'
 import ComandoVoz from './ComandoVoz.vue'
 import ThemeToggle from 'src/components/ThemeToggle.vue'
 import AppBreadcrumbs from 'src/components/general/AppBreadcrumbs.vue'
+import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 
 const authStore = ref(null)
 const { t } = useI18n()

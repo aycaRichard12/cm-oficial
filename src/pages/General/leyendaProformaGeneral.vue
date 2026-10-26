@@ -11,7 +11,6 @@
           {{ t('configGeneral.leyenda.subtitle') }}
         </div>
       </div>
-      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
@@ -45,7 +44,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import { useQuasar } from 'quasar'
 import FormLeyenda from 'components/general/Leyenda/FormLeyenda.vue'
 import TableLeyendas from 'components/general/Leyenda/TableLeyenda.vue'

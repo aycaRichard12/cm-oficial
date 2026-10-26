@@ -10,7 +10,6 @@
           {{ t('configGeneral.tipoAlmacen.subtitle') }}
         </div>
       </div>
-      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
@@ -43,7 +42,6 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import TipoAlmacenForm from 'components/general/tipoAlmacen/FormTipoAlmacen.vue'
 import TipoAlmacenTable from 'components/general/tipoAlmacen/TableTipoAlmacen.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'

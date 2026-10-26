@@ -1,8 +1,5 @@
 <template>
   <div class="q-pa-md">
-    <div class="row justify-end q-mb-sm">
-      <LanguageSwitcher />
-    </div>
     <!-- Card principal con diseño profesional -->
     <q-card class="config-card" flat bordered>
       <!-- Header mejorado -->
@@ -174,7 +171,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()

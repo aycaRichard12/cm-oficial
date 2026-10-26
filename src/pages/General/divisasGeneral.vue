@@ -10,7 +10,6 @@
           {{ t('configGeneral.divisas.subtitle') }}
         </div>
       </div>
-      <LanguageSwitcher />
     </div>
     <q-dialog v-model="showForm" persistent class="responsive-dialog">
       <q-card class="responsive-dialog">
@@ -43,7 +42,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import LanguageSwitcher from 'src/components/general/LanguageSwitcher.vue'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
 import FormDivisa from 'src/components/general/divisa/FormDivisa.vue'
 import TableDivisa from 'src/components/general/divisa/TableDivisa.vue'
