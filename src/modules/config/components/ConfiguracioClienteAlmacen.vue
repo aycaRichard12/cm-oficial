@@ -101,8 +101,7 @@
   <q-dialog v-model="showDialog" persistent>
     <q-card style="min-width: 320px; max-width: 400px">
       <q-card-section
-        :class="dialogType === 'error' ? 'bg-negative' : 'bg-positive'"
-        class="text-white q-pa-md"
+        :class="dialogType === 'error' ? 'bg-negative' : 'bg-positive'" class="text-white q-pa-md"
       >
         <div class="row items-center no-wrap">
           <q-icon
@@ -112,7 +111,7 @@
           />
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
-            <div class="text-subtitle2 text-white text-weight-regular">
+            <div class="text-subtitle2 text-white text-weight-regular"><!-- theme-allow -->
               {{ dialogType === 'error' ? 'Error en la operación' : 'Operación exitosa' }}
             </div>
           </div>
@@ -120,7 +119,7 @@
       </q-card-section>
 
       <q-card-section class="q-pt-lg q-pb-md">
-        <div class="text-body1 text-grey-8" v-html="dialogMessage"></div>
+        <div class="text-body1 cm-text" v-html="dialogMessage"></div>
       </q-card-section>
 
       <q-separator />
@@ -188,17 +187,17 @@ const {
 .status-card {
   border-radius: 12px;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: linear-gradient(135deg, var(--cm-surface-2) 0%, var(--cm-surface) 100%);
 }
 
 .status-local {
   border-left: 4px solid #2196f3;
-  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #e3f2fd 0%, var(--cm-surface) 100%);
 }
 
 .status-global {
   border-left: 4px solid #9c27b0;
-  background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #f3e5f5 0%, var(--cm-surface) 100%);
 }
 
 .q-inner-loading {

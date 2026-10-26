@@ -20,7 +20,7 @@
         v-for="item in resumen"
         :key="item.valor"
         :color="filtroEstado === item.valor ? item.color : 'grey-3'"
-        :text-color="filtroEstado === item.valor ? 'white' : 'grey-8'"
+        :text-color="chipTextColor(item)"
         :icon="item.icon"
         clickable
         @click="filtroEstado = item.valor"
@@ -157,6 +157,7 @@ const { loadUsuarios, enviarNotificacion } = useNotificaciones()
 
 const loading = ref(false)
 const filtroEstado = ref('todas')
+const chipTextColor = (item) => (filtroEstado.value === item.valor ? 'white' : 'grey-8') // theme-allow
 const busqueda = ref('')
 
 const estadoConfig = {

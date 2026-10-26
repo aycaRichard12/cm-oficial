@@ -342,7 +342,7 @@ const filtroAlmacen = ref(null)
 
 // Alerta
 const alertMessage = ref('')
-const alertClass = ref('bg-green text-white')
+const alertClass = ref('bg-green text-white') // theme-allow: white text on semantic green
 
 // Búsqueda y paginación
 const search = ref('')

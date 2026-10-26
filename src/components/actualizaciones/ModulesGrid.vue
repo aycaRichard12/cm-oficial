@@ -1,5 +1,5 @@
 <template>
-  <q-card flat class="full-height bg-white shadow-1">
+  <q-card flat class="full-height cm-surface shadow-1">
     <q-card-section>
       <div class="text-h6 q-mb-md text-primary row items-center">
         <q-icon name="widgets" class="q-mr-sm" />

@@ -29,7 +29,7 @@
               size="48px"
             />
             <div class="text-h6 q-mt-md">{{ opcion.nombre }}</div>
-            <div class="text-caption q-mt-sm text-grey-7" v-if="opcion.descripcion">
+            <div class="text-caption q-mt-sm cm-text-muted" v-if="opcion.descripcion">
               {{ opcion.descripcion }}
             </div>
           </q-card-section>
@@ -221,7 +221,7 @@ onMounted(async () => {
 
 .option-card:hover .action-button {
   background-color: var(--q-primary);
-  color: white;
+  color: white; /* theme-allow */
 }
 
 @media (max-width: 600px) {

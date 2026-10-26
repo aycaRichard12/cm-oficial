@@ -712,7 +712,7 @@ onMounted(() => {
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  background-color: white; /* Or your Quasar card background color */
+  background-color: var(--cm-surface); /* Or your Quasar card background color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }

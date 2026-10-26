@@ -170,6 +170,7 @@ import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
 import { date } from 'quasar'
 import { html2pdf } from 'html2pdf.js'
+import { withLightCapture } from 'src/utils/with-light-capture'
 export default {
   setup() {
     const $q = useQuasar()
@@ -300,7 +301,7 @@ export default {
       modalVistaPrevia.value = true
     }
 
-    function descargarPDF() {
+    async function descargarPDF() {
       const element = document.getElementById('reportePDF')
       const opt = {
         margin: 0.5,
@@ -310,8 +311,7 @@ export default {
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
       }
 
-      // Necesitarás importar html2pdf.js en tu proyecto
-      html2pdf().set(opt).from(element).save()
+      await withLightCapture(element, () => html2pdf().set(opt).from(element).save())
     }
 
     return {
@@ -340,7 +340,7 @@ export default {
 <style scoped>
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }
@@ -377,17 +377,17 @@ export default {
 .table th {
   padding: 5px;
   background: #3989c6;
-  color: #fff;
-  border-bottom: 1px solid #fff;
+  color: var(--cm-on-primary);
+  border-bottom: 1px solid var(--cm-on-primary);
 }
 
 .table td {
   padding: 8px;
-  background: #fff;
-  border-bottom: 1px solid #e3e3e3;
+  background: var(--cm-surface);
+  border-bottom: 1px solid var(--cm-border);
 }
 
 .table-hover tbody tr:hover td {
-  background: #f0f0f0;
+  background: var(--cm-surface-2);
 }
 </style>

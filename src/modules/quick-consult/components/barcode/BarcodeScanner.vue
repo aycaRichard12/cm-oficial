@@ -9,7 +9,7 @@
     @show="onDialogOpen"
     @hide="onDialogClose"
   >
-    <q-card class="bg-black text-white overflow-hidden column no-wrap">
+    <q-card class="bg-black text-white overflow-hidden column no-wrap"><!-- theme-allow -->
       <!-- Header Overlay -->
       <div class="scanner-header q-pa-md row items-center justify-between">
         <div class="row items-center">

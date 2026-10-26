@@ -10,7 +10,7 @@
             class="full-height hover-card cursor-pointer q-pa-sm flex flex-center"
             style="
               background: linear-gradient(135deg, #219286 0%, #044e49 100%);
-              color: white;
+              color: white; /* theme-allow */
               border-radius: 12px;
               transition: all 0.3s ease;
             "

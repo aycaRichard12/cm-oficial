@@ -29,7 +29,7 @@ export function useProductoConfig(md5) {
       icon: 'error',
       position: 'top-right',
       color: 'negative',
-      textColor: 'white',
+      textColor: 'white', // theme-allow
       timeout: 5000,
     })
   }

@@ -56,7 +56,7 @@
 
       <template v-slot:no-option>
         <q-item>
-          <q-item-section class="text-grey-7 text-caption italic">
+          <q-item-section class="cm-text-muted text-caption italic">
             {{ loading ? 'Sincronizando inventario…' : 'Sin coincidencias' }}
           </q-item-section>
         </q-item>

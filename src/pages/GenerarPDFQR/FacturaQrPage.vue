@@ -121,7 +121,7 @@ onMounted(() => {
   flex-direction: column;
   height: calc(100vh - 64px);
   width: 100%;
-  background: #fff;
+  background: var(--cm-surface);
 }
 .status-message {
   display: flex;
@@ -138,7 +138,7 @@ onMounted(() => {
   justify-content: space-between;
   padding: 12px 16px;
   background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--cm-border);
   flex-shrink: 0;
 }
 .pdf-viewer {

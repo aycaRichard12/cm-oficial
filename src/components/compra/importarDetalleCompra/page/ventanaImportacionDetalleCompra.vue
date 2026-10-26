@@ -56,10 +56,10 @@
             <div class="row items-center">
               <q-icon name="store" color="primary" size="24px" class="q-mr-sm" />
               <div>
-                <div class="text-subtitle2 text-weight-bold text-grey-9">
+                <div class="text-subtitle2 text-weight-bold cm-text">
                   {{ almacenNombre }}
                 </div>
-                <div class="text-caption text-grey-7">
+                <div class="text-caption cm-text-muted">
                   Proveedor: {{ compra?.proveedor || 'No especificado' }}
                 </div>
               </div>
@@ -81,7 +81,7 @@
               <q-icon name="description" color="green-7" size="28px" />
               <div class="q-ml-sm">
                 <div class="text-body2 text-weight-medium">plantilla_detalle_compra.xlsx</div>
-                <div class="text-caption text-grey-6">
+                <div class="text-caption cm-text-muted">
                   Contiene los productos y variantes del almacén asignado
                 </div>
               </div>
@@ -509,9 +509,9 @@ defineExpose({ resetForm })
 </script>
 
 <style scoped lang="scss">
-$primary: #004d40;
+$primary: var(--cm-brand);
 $primary-soft: #e3f2fd;
-$border-color: #e0e0e0;
+$border-color: var(--cm-border);
 $radius: 12px;
 $radius-sm: 8px;
 
@@ -523,13 +523,13 @@ $radius-sm: 8px;
 }
 
 .dpv-header {
-  background: linear-gradient(135deg, #004d40 0%, #054e2c 100%);
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #054e2c 100%);
   padding: 18px 20px 16px;
 
   .dpv-title {
     font-size: 16px;
     font-weight: 700;
-    color: #fff;
+    color: var(--cm-on-primary);
     display: flex;
     align-items: center;
     letter-spacing: 0.3px;
@@ -603,7 +603,7 @@ $radius-sm: 8px;
   &--done {
     .dpv-step__circle {
       background: $primary;
-      color: #fff;
+      color: var(--cm-on-primary);
     }
     .dpv-step__label {
       color: $primary;
@@ -651,7 +651,7 @@ $radius-sm: 8px;
   width: 20px;
   height: 20px;
   background: $primary;
-  color: #fff;
+  color: var(--cm-on-primary);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;

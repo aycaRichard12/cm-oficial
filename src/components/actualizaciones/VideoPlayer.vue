@@ -6,7 +6,7 @@
     <!-- Header -->
     <div class="row items-center justify-between q-px-xl q-py-md bg-primary">
       <div class="row items-center">
-        <q-icon name="play_circle_filled" size="28px" class="q-mr-sm text-white" />
+        <q-icon name="play_circle_filled" size="28px" class="q-mr-sm text-white" /><!-- theme-allow: white icon on primary background -->
         <div class="text-subtitle1 text-weight-bold">{{ title }}</div>
       </div>
 

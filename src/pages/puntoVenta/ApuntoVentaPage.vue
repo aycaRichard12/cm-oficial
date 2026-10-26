@@ -26,7 +26,7 @@
     <!-- Vista 2: Gestión de Asignaciones para el usuario seleccionado -->
     <div v-else>
       <!-- Cabecera de Usuario Seleccionado -->
-      <q-card flat class="bg-white q-mb-md shadow-1 rounded-borders overflow-hidden">
+      <q-card flat class="cm-surface q-mb-md shadow-1 rounded-borders overflow-hidden">
         <q-card-section class="q-pa-md">
           <div class="row items-center no-wrap">
             <q-btn
@@ -68,7 +68,7 @@
       <!-- Tabla de Asignaciones Actuales -->
       <q-card flat class="shadow-2 rounded-borders">
         <q-card-section class="q-pa-none">
-          <div class="q-pa-md text-h6 text-grey-8 row items-center">
+          <div class="q-pa-md text-h6 cm-text-muted row items-center">
             <q-icon name="list" color="primary" class="q-mr-sm" />
             Puntos de Venta Asignados
           </div>

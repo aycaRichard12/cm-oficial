@@ -1,5 +1,5 @@
 .responsive-dialog {
-  color: #004d40;
+  color: var(--cm-brand);
   min-width: 95vw;
 }
 @media (min-width: 1000px) {
@@ -12,7 +12,7 @@
   overflow-x: auto;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  background: white;
+  background: var(--cm-surface);
 }
 .responsive-qtable-container .q-table {
   min-width: 700px;
@@ -31,11 +31,11 @@
 .title-container .title {
   font-size: 1.5rem;
   margin-bottom: 0.1rem;
-  color: #333;
+  color: var(--cm-text);
 }
 .title-container .subtitle {
   font-size: 1rem;
-  color: #777;
+  color: var(--cm-text-muted);
   font-weight: normal;
 }
 
@@ -46,13 +46,13 @@
 .title-p1 .title {
   font-size: 1rem;
   font-weight: normal;
-  color: #333;
+  color: var(--cm-text);
 }
 @media (min-width: 1000px) {
   .title-p1 .title {
     font-size: 1.5rem;
     margin-bottom: 0.1rem;
-    color: #333;
+    color: var(--cm-text);
   }
 }
 

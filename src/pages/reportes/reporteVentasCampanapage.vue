@@ -7,7 +7,7 @@
           <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
           Ventas Registradas en Campaña
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Ventas Registradas en Campaña
         </div>
       </div>

@@ -33,7 +33,7 @@
                   <div class="section-header flex items-center">
                     <div class="section-indicator bg-primary"></div>
                     <q-icon name="shopping_bag" size="sm" color="primary" class="q-mr-sm" />
-                    <h3 class="section-title text-h6 text-grey-9 q-ma-none text-weight-medium">
+                    <h3 class="section-title text-h6 cm-text q-ma-none text-weight-medium">
                       {{ esModoEdicion ? 'Editar Producto' : 'Seleccionar Producto' }}
                     </h3>
                     <q-badge
@@ -58,7 +58,7 @@
                       :disable="esModoEdicion"
                     >
                       <template v-slot:label>
-                        <span class="text-grey-800">Producto Único</span>
+                        <span class="cm-text">Producto Único</span>
                       </template>
                     </q-checkbox>
 
@@ -273,7 +273,7 @@
               >
                 <div class="section-indicator bg-primary"></div>
                 <q-icon name="price_change" size="sm" color="primary" class="q-mr-sm" />
-                <h3 class="section-title text-h6 text-grey-9 q-ma-none text-weight-medium">
+                <h3 class="section-title text-h6 cm-text q-ma-none text-weight-medium">
                   Precio y Cantidad
                 </h3>
               </div>
@@ -412,9 +412,9 @@
   </q-card-section>
 
   <!-- Table Section -->
-  <q-card-section class="q-pt-none bg-grey-1">
+  <q-card-section class="q-pt-none cm-surface-2">
     <div class="row items-center justify-between q-py-sm">
-      <div class="text-subtitle1 text-weight-bold text-grey-8 flex items-center">
+      <div class="text-subtitle1 text-weight-bold cm-text flex items-center">
         <q-icon name="list_alt" size="sm" class="q-mr-sm text-primary" />
         Detalle de Productos
       </div>
@@ -1096,7 +1096,7 @@ defineExpose({ recargarComponente })
 .sub-table-container {
   max-width: 800px;
   margin: 0 auto;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
 }
 
 /* Estilo para que el input parezca texto normal hasta que se hace focus */
@@ -1144,7 +1144,7 @@ defineExpose({ recargarComponente })
 .product-card {
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
-  background: white;
+  background: var(--cm-surface);
 }
 
 .product-card:hover {
@@ -1154,7 +1154,7 @@ defineExpose({ recargarComponente })
 
 .actions-card {
   border: 1px solid #e5e7eb;
-  background: white;
+  background: var(--cm-surface);
 }
 
 .section-header {
@@ -1209,7 +1209,7 @@ defineExpose({ recargarComponente })
 
 .currency-badge,
 .unit-badge {
-  background: white;
+  background: var(--cm-surface);
   padding: 4px 8px;
   font-weight: 600;
   border: 1px solid #e5e7eb;
@@ -1222,7 +1222,7 @@ defineExpose({ recargarComponente })
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #1a252f 100%);
   transition: transform 0.1s ease;
 }
 
@@ -1273,11 +1273,11 @@ defineExpose({ recargarComponente })
 
 /* Mejora de accesibilidad */
 :deep(.q-field__native:focus) {
-  border-color: #2c3e50;
+  border-color: var(--cm-brand);
 }
 
 :deep(.q-btn:focus-visible) {
-  outline: 2px solid #2c3e50;
+  outline: 2px solid var(--cm-brand);
   outline-offset: 2px;
 }
 </style>

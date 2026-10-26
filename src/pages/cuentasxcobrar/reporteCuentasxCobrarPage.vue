@@ -108,7 +108,7 @@
         <div class="row justify-between items-center no-wrap">
           <div class="row items-center q-gutter-x-sm">
             <q-icon name="summarize" color="primary" size="sm" />
-            <div class="text-subtitle2 text-weight-medium text-grey-8">
+            <div class="text-subtitle2 text-weight-medium cm-text-muted">
               {{
                 processedReportData.length > 0
                   ? `Total: ${processedReportData.length} registros`

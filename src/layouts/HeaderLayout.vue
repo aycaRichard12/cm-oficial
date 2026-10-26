@@ -1,5 +1,5 @@
 <template >
-  <q-header class="text-white" style="box-shadow: none; background-color: #eeebe2; margin-right: 10px; " >
+  <q-header style="box-shadow: none; background-color: var(--cm-header); color: var(--cm-on-primary); margin-right: 10px; " >
     <q-toolbar class="bg-primary q-pl-md q-pr-md row no-wrap items-center justify-between" style="border-radius: 15px; margin: 5px; box-shadow: 0 1px 5px rgba(0,0,0,0.2);">
       <div class="col-auto">
         <q-btn
@@ -18,6 +18,7 @@
 
       <div class="col-auto row items-center no-wrap q-gutter-x-sm">
         <ComandoVoz class="gt-xs" />
+        <ThemeToggle />
         <q-btn icon="help_outline" color="white" flat round dense @click="$emit('iniciar-guia')">
           <q-tooltip>Ayuda</q-tooltip>
         </q-btn>
@@ -139,7 +140,7 @@
         <q-tabs
           align="left"
           v-model="internalCurrentTab"
-          style="background-color: #eeebe2"
+          style="background-color: var(--cm-header)"
           active-color="primary"
           indicator-color="transparent"
           dense
@@ -174,7 +175,7 @@
           no-caps
           :label="activeTabsReportesdetalle.label"
           :icon="activeTabsReportesdetalle.icono"
-          :class="['tab-styled q-ma-xs text-white ', { 'active-yellow': isReportActive }]"
+          :class="['tab-styled q-ma-xs', { 'active-yellow': isReportActive }]"
           style="min-height: 36px"
         >
           <q-list style="min-width: 200px">
@@ -212,6 +213,7 @@ import { computed, onMounted, ref } from 'vue'
 //import logo from 'src/assets/IMAGOTIPO-02.png'
 import NotificacionLayout from './NotificacionLayout.vue'
 import ComandoVoz from './ComandoVoz.vue'
+import ThemeToggle from 'src/components/ThemeToggle.vue'
 import AppBreadcrumbs from 'src/components/general/AppBreadcrumbs.vue'
 
 const authStore = ref(null)
@@ -272,7 +274,7 @@ onMounted(async () => {
 .tab-styled {
   background: linear-gradient(to right, #219286, #044e49);
   border-radius: 8px;
-  color: white;
+  color: white; /* theme-allow */
   min-height: 40px;
   text-transform: none;
   transition: all 0.3s ease;
@@ -334,7 +336,7 @@ onMounted(async () => {
 .user-avatar,
 .menu-avatar {
   background: linear-gradient(135deg, #1ef106, #0b5f86);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
 }
@@ -345,7 +347,7 @@ onMounted(async () => {
 }
 
 .profile-arrow {
-  color: #ffffff;
+  color: var(--cm-on-primary);
   transition: transform 0.2s ease;
 }
 

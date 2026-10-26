@@ -15,7 +15,7 @@
                 <div class="text-subtitle1 text-weight-bold text-primary">{{ props.row.nombre }}</div>
                 <q-chip size="sm" :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'" text-color="white" :icon="Number(props.row.estado) === 1 ? 'check_circle' : 'cancel'" clickable @click="cambiarEstado(props.row.id, Number(props.row.estado) === 1 ? 2 : 1)">{{ Number(props.row.estado) === 1 ? 'Activa' : 'Inactiva' }}</q-chip>
               </div>
-              <div class="text-caption text-grey-8 q-mt-sm">
+              <div class="text-caption cm-text-muted q-mt-sm">
                 <div><q-icon name="event" class="q-mr-xs"/>{{ props.row.fechainicio }} a {{ props.row.fechafinal }}</div>
               </div>
             </q-card-section>

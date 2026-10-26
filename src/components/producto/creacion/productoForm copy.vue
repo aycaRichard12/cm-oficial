@@ -267,7 +267,7 @@
 .field-label {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--cm-text);
   letter-spacing: 0.01em;
 }
 
@@ -281,7 +281,7 @@
   background: #f8f9fa;
   border-radius: 8px;
   padding: 12px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--cm-border);
 }
 
 .preview-header {
@@ -290,7 +290,7 @@
   gap: 6px;
   margin-bottom: 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--cm-border);
 }
 
 .image-wrapper {
@@ -311,10 +311,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: white;
+  background: var(--cm-surface);
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--cm-border);
 }
 
 .action-btn {

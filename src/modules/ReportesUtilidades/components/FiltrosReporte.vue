@@ -1,11 +1,11 @@
 <template>
   <q-card class="filter-card" flat bordered>
     <!-- Encabezado con gradiente -->
-    <q-card-section class="bg-gradient text-white q-pa-sm">
+    <q-card-section class="bg-gradient q-pa-sm">
       <div class="row items-center">
         <q-icon name="filter_alt" size="md" class="q-mr-md" />
         <div>
-          <div class="text-subtitle2 text-white text-opacity-7">
+          <div class="text-subtitle2" style="opacity: 0.7">
             Seleccione los parámetros para generar el reporte.
           </div>
         </div>
@@ -294,7 +294,8 @@ const limpiarFiltros = () => {
 
 /* Fondo degradado del encabezado */
 .bg-gradient {
-  background: linear-gradient(135deg, #004d40, #26a69a);
+  background: linear-gradient(135deg, var(--cm-brand), #26a69a);
+  color: var(--cm-on-primary);
 }
 
 /* Botón "Generar reporte" con bordes más redondeados */
@@ -304,6 +305,6 @@ const limpiarFiltros = () => {
 
 /* Mejora visual en los campos al pasar el ratón */
 :deep(.q-field--outlined .q-field__control:hover) {
-  border-color: #004d40;
+  border-color: var(--cm-brand);
 }
 </style>

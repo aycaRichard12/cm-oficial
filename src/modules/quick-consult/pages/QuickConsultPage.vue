@@ -314,7 +314,7 @@ const handleAddToCart = (product) => {
     message: `${product.descripcion || product.nombre} agregado al carrito`,
     position: 'bottom',
     timeout: 1500,
-    actions: [{ icon: 'close', color: 'white' }],
+    actions: [{ icon: 'close', color: 'white' }], // theme-allow — white icon on positive notify
   })
 }
 
@@ -377,14 +377,14 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #eeebe2;
+  background-color: var(--cm-bg);
   position: relative;
 }
 
 /* Header moderno */
 .header-modern {
-  background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #00695c 100%);
+  color: var(--cm-on-primary);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
@@ -465,7 +465,7 @@ onMounted(() => {
 
 .selector-card {
   border-radius: 16px;
-  background: white;
+  background: var(--cm-surface);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.04),
     0 1px 2px rgba(0, 0, 0, 0.03);
@@ -507,7 +507,7 @@ onMounted(() => {
 }
 
 .loading-label {
-  color: #004d40;
+  color: var(--cm-brand);
   font-weight: 600;
   margin-top: 12px;
 }
@@ -521,14 +521,14 @@ onMounted(() => {
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
-  background: white;
+  background: var(--cm-surface);
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   min-height: 400px;
 }
 
 .empty-icon-wrapper {
-  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  background: linear-gradient(135deg, var(--cm-surface-2) 0%, var(--cm-border) 100%);
   border-radius: 50%;
   width: 140px;
   height: 140px;
@@ -546,7 +546,7 @@ onMounted(() => {
 .empty-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #004d40;
+  color: var(--cm-brand);
   margin-bottom: 12px;
 }
 
@@ -683,7 +683,7 @@ onMounted(() => {
 }
 
 .page-content::-webkit-scrollbar-thumb {
-  background: #004d40;
+  background: var(--cm-brand);
   border-radius: 10px;
 }
 

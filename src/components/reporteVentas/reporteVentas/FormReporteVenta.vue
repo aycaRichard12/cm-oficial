@@ -6,7 +6,7 @@
           <q-icon name="assessment" size="md" class="q-mr-sm" />
           Reporte de Ventas
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte de Ventas</div>
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">Administración de Reporte de Ventas</div>
       </div>
     </div>
     <q-form @submit.prevent="onSubmit">

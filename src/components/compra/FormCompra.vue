@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit.prevent="onSubmit" class="q-pa-lg bg-white" style="border-radius: 12px">
+  <q-form @submit.prevent="onSubmit" class="q-pa-lg cm-surface" style="border-radius: 12px">
     <div class="row q-col-gutter-lg">
       <!-- SECCION 1: Configuración de Registro -->
       <div class="col-12">
@@ -12,13 +12,13 @@
         </div>
 
         <div
-          class="row q-col-gutter-md items-center bg-grey-1 q-pa-md rounded-borders"
-          style="border: 1px solid #e0e0e0"
+          class="row q-col-gutter-md items-center cm-surface-2 q-pa-md rounded-borders"
+          style="border: 1px solid var(--cm-border)"
         >
           <div class="col-12 col-md-4">
             <label
               for="tipo"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Tipo de Registro <span class="text-negative">*</span></label
             >
@@ -28,8 +28,8 @@
               color="primary"
               dense
               id="tipo"
-              class="text-weight-medium bg-white q-pa-xs rounded-borders shadow-1"
-              style="border: 1px solid #e0e0e0; width: 100%"
+              class="text-weight-medium cm-surface q-pa-xs rounded-borders shadow-1"
+              style="border: 1px solid var(--cm-border); width: 100%"
             />
           </div>
 
@@ -37,7 +37,7 @@
           <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido">
             <label
               for="pedido"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Pedido Asociado <span class="text-negative">*</span></label
             >
@@ -88,7 +88,7 @@
           <div class="col-12 col-md-4 animate__animated animate__fadeIn" v-if="conPEdido === false">
             <label
               for="almacen"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Almacén de Destino <span class="text-negative">*</span></label
             >
@@ -150,7 +150,7 @@
           <div class="col-12 col-md-6">
             <label
               for="nombre"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Nombre <span class="text-negative">*</span></label
             >
@@ -173,7 +173,7 @@
           <div class="col-12 col-md-6">
             <label
               for="codigo"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Código <span class="text-negative">*</span></label
             >
@@ -196,7 +196,7 @@
           <div class="col-12 col-md-6">
             <label
               for="provedor"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Proveedor <span class="text-negative">*</span></label
             >
@@ -244,9 +244,9 @@
           <div class="col-12 col-md-6">
             <label
               for="factura"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Nro. Factura <span class="text-grey-5">(Opcional)</span></label
+              >Nro. Factura <span class="cm-text-muted">(Opcional)</span></label
             >
             <q-input
               v-model="localData.factura"
@@ -289,7 +289,7 @@
           >
             <label
               for="tipocompra"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Forma de Pago <span class="text-negative">*</span></label
             >
@@ -317,7 +317,7 @@
           >
             <label
               for="cajaBanco"
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
               >Seleccione Medio de Pago <span class="text-negative">*</span></label
             >
@@ -360,7 +360,7 @@
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
                     <q-item-label>
-                      <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                      <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                     </q-item-label>
                     <q-item-label caption>
                       {{ scope.opt.nombre }}
@@ -375,7 +375,7 @@
     </div>
 
     <!-- ACCIONES -->
-    <q-separator class="q-my-lg bg-grey-3" />
+    <q-separator class="q-my-lg cm-surface-2" />
     <div class="row justify-end q-gutter-x-sm">
       <q-btn
         label="Cancelar"

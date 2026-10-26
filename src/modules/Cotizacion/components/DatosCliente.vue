@@ -3,7 +3,7 @@
     <q-form ref="formClientes" class="q-mb-md">
       <div class="row q-col-gutter-lg q-mb-md">
         <div class="col-12 col-md-3">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Tipo de Operación <span class="text-negative">*</span>
           </label>
           <q-select
@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-12 col-md-3">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Fecha <span class="text-negative">*</span>
           </label>
           <q-input
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-12 col-md-6">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Cliente <span class="text-negative">*</span>
           </label>
           <div class="row no-wrap">
@@ -86,7 +86,7 @@
 
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-6">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Sucursal <span class="text-negative">*</span>
           </label>
           <q-select

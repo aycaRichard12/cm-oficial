@@ -1,0 +1,135 @@
+:root {
+  --cm-bg: #eeebe2;
+  --cm-surface: #ffffff;
+  --cm-surface-2: #fafafa;
+  --cm-text: #1f2937;
+  --cm-text-muted: #5b6472;
+  --cm-border: #e0e0e0;
+  --cm-header: #eeebe2;
+  --cm-brand: #004d40;
+  --cm-on-primary: #ffffff;
+  --cm-transition: 180ms ease;
+}
+
+body.body--dark {
+  --cm-bg: #121212;
+  --cm-surface: #1e1e1e;
+  --cm-surface-2: #252525;
+  --cm-text: #e5e7eb;
+  --cm-text-muted: #9ca3af;
+  --cm-border: #3a3a3a;
+  --cm-header: #181818;
+  --cm-brand: #004d40;
+  --cm-on-primary: #ffffff;
+  --cm-transition: 180ms ease;
+}
+
+body {
+  background-color: var(--cm-bg);
+  color: var(--cm-text);
+  transition: background-color var(--cm-transition), color var(--cm-transition);
+}
+
+.cm-surface {
+  background: var(--cm-surface) !important;
+}
+
+.cm-surface-2 {
+  background: var(--cm-surface-2) !important;
+}
+
+.cm-text {
+  color: var(--cm-text) !important;
+}
+
+.cm-text-muted {
+  color: var(--cm-text-muted) !important;
+}
+
+body.body--dark {
+  .bg-white {
+    background: var(--cm-surface) !important;
+  }
+
+  .text-grey-9,
+  .text-grey-8,
+  .text-dark {
+    color: var(--cm-text) !important;
+  }
+
+  .q-card,
+  .q-dialog .q-card,
+  .q-menu,
+  .q-table,
+  .q-table__container,
+  .q-tab-panels {
+    background: var(--cm-surface);
+    color: var(--cm-text);
+  }
+
+  .q-table tbody td {
+    color: var(--cm-text);
+    border-color: var(--cm-border);
+  }
+
+  .q-field__control {
+    background-color: var(--cm-surface-2) !important;
+    color: var(--cm-text);
+  }
+
+  .q-field__native,
+  .q-field__input,
+  .q-field__label,
+  label {
+    color: var(--cm-text);
+  }
+
+  .responsive-qtable-container,
+  .responsive-dialog {
+    background: var(--cm-surface);
+    color: var(--cm-text);
+  }
+
+  .q-separator {
+    background: var(--cm-border);
+  }
+
+  .driver-popover,
+  .quasar-driver .driver-popover {
+    background: var(--cm-surface);
+    color: var(--cm-text);
+    border: 1px solid var(--cm-border);
+  }
+}
+
+.cm-light-capture,
+.cm-light-capture * {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border-color: #dddddd !important;
+  box-shadow: none !important;
+}
+
+@media print {
+  body,
+  body.body--dark {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body.body--dark .q-card,
+  body.body--dark .q-table,
+  body.body--dark .q-table__container,
+  body.body--dark .responsive-dialog,
+  body.body--dark .responsive-qtable-container {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .cm-light-capture,
+  .cm-light-capture * {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}

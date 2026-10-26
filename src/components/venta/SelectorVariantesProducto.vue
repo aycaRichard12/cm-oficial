@@ -3,7 +3,7 @@
     <!-- Estado de carga -->
     <q-card-section v-if="loading" class="text-center q-pa-lg">
       <q-spinner color="primary" size="3em" />
-      <p class="q-mt-sm text-grey-7">Cargando información del producto...</p>
+      <p class="q-mt-sm cm-text-muted">Cargando información del producto...</p>
     </q-card-section>
 
     <!-- Error -->
@@ -54,7 +54,7 @@
               <q-chip v-if="props.row.serie" outline color="primary" dense size="sm">
                 {{ props.row.serie }}
               </q-chip>
-              <span v-else class="text-grey-6">-</span>
+              <span v-else class="cm-text-muted">-</span>
             </q-td>
           </template>
 

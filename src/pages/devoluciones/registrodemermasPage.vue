@@ -200,7 +200,7 @@
                 >
                   <label
                     for="cajaBanco"
-                    class="text-weight-bold text-grey-9 q-mb-sm block"
+                    class="text-weight-bold cm-text q-mb-sm block"
                     style="font-size: 12px; text-transform: uppercase"
                     >Seleccione Caja o Banco <span class="text-negative">*</span></label
                   >
@@ -230,7 +230,7 @@
                       <q-item v-bind="scope.itemProps">
                         <q-item-section>
                           <q-item-label>
-                            <span class="text-weight-bolder text-grey-9">{{
+                            <span class="text-weight-bolder cm-text">{{
                               scope.opt.codigo
                             }}</span>
                           </q-item-label>
@@ -292,7 +292,7 @@
                         class="custom-checkbox text-weight-medium"
                       >
                         <template v-slot:label>
-                          <span class="text-grey-800">Producto Único</span>
+                          <span class="cm-text">Producto Único</span>
                         </template>
                       </q-checkbox>
                     </div>

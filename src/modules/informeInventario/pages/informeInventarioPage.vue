@@ -315,12 +315,12 @@
 
     <q-dialog v-model="dialogDetalle" maximized>
       <q-card class="modal-head-verde" style="min-width: 900px; max-width: 95vw">
-        <q-card-section class="row items-center bg-green-10 text-white">
-          <div class="text-h6 text-white">
+        <q-card-section class="row items-center bg-green-10 text-white"><!-- theme-allow -->
+          <div class="text-h6 text-white"><!-- theme-allow -->
             {{ detalleActual?.codigo }} — {{ detalleActual?.descripcion }}
           </div>
           <q-space />
-          <div class="text-caption text-white q-mr-md">
+          <div class="text-caption text-white q-mr-md"><!-- theme-allow -->
             <q-icon name="event" />
             Del {{ fmtFechaDDMMYYYY(fechaInicio) }} al {{ fmtFechaDDMMYYYY(fechaFin) }}
           </div>
@@ -385,9 +385,9 @@
 
     <q-dialog v-model="dialogAdvertencias">
       <q-card style="min-width: 520px; max-width: 90vw">
-        <q-card-section class="row items-center bg-orange-9 text-white">
+        <q-card-section class="row items-center bg-orange-9 text-white"><!-- theme-allow -->
           <q-icon name="warning" size="md" class="q-mr-sm" />
-          <div class="text-h6 text-white">Advertencias del producto</div>
+          <div class="text-h6 text-white"><!-- theme-allow -->Advertencias del producto</div>
           <q-space />
           <q-btn flat round icon="close" color="white" v-close-popup />
         </q-card-section>
@@ -1056,7 +1056,7 @@ onMounted(async () => {
 }
 
 .kdx-totales :deep(td) {
-  background-color: #e0e0e0 !important;
+  background-color: var(--cm-surface-2) !important;
   border-top: 2px solid #37474f !important;
 }
 
@@ -1089,7 +1089,7 @@ onMounted(async () => {
   display: inline-block;
   padding: 2px 6px;
   border-radius: 4px;
-  color: #ffffff;
+  color: var(--cm-on-primary);
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;

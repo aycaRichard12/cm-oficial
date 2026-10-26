@@ -1,6 +1,6 @@
 <template>
   <!-- <div
-    class="q-pa-md flex flex-center min-h-screen bg-gradient-to-br from-primary to-secondary text-white"
+    class="q-pa-md flex flex-center min-h-screen bg-gradient-to-br from-primary to-secondary text-white" data-theme-allow
   >
     <q-card class="q-pa-xl text-center bg-transparent shadow-none">
       <div class="flex flex-col items-center space-y-4">

@@ -7,7 +7,14 @@
           Ubicación Registrada
         </div>
         <q-space />
-        <q-btn icon="close" flat round dense v-close-popup class="text-white" />
+        <q-btn
+          icon="close"
+          flat
+          round
+          dense
+          v-close-popup
+          style="color: var(--cm-on-primary)"
+        />
       </q-card-section>
 
       <q-card-section class="col q-pa-none relative-position">

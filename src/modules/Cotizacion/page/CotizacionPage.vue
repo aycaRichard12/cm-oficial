@@ -10,7 +10,7 @@
           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
           <div class="text-subtitle1 text-weight-bold">Datos del Cliente y Configuración</div>
         </div>
-        <div class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2 radius-20">
+        <div class="flex items-center cm-surface text-primary q-px-sm q-py-xs shadow-2 radius-20">
           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
           <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
           <q-btn
@@ -76,7 +76,7 @@
         <div class="text-subtitle1 text-weight-bold">Añadir Productos</div>
       </q-card-section>
 
-      <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
+      <q-card-section class="q-pa-lg cm-surface-2" style="border-bottom: 1px solid var(--cm-border)">
         <AgregarProducto
           :esProductoUnico="esProductoUnico"
           :registrarComoProductoUnico="registrarComoProductoUnico"
@@ -111,7 +111,7 @@
         @update:descripcionAdicional="handleDescripcionAdicional"
       />
 
-      <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
+      <q-card-section class="cm-surface-2 q-pa-lg" style="border-top: 1px solid var(--cm-border)">
         <div class="row justify-end items-center q-gutter-x-md">
           <q-btn
             flat
@@ -127,7 +127,7 @@
             icon="edit_note"
             label="Firma del Cliente"
             @click="handleFirmaClick"
-            class="q-px-lg bg-white btn-firma"
+            class="q-px-lg cm-surface btn-firma"
           />
           <q-btn
             label="Continuar"

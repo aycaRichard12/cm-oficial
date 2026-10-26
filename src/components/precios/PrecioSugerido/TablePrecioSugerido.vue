@@ -5,7 +5,7 @@
       <q-card-section>
         <div class="row q-col-gutter-md items-center">
           <div class="col-12 col-md-4">
-            <span class="text-subtitle2 text-grey-8 q-mb-xs db">Almacén</span>
+            <span class="text-subtitle2 cm-text q-mb-xs db">Almacén</span>
             <q-select
               v-model="filtroAlmacen"
               :options="almacenes"
@@ -22,7 +22,7 @@
             </q-select>
           </div>
           <div class="col-12 col-md-4">
-            <span class="text-subtitle2 text-grey-8 q-mb-xs db">Categoría</span>
+            <span class="text-subtitle2 cm-text q-mb-xs db">Categoría</span>
             <q-select
               id="filtroCategoria"
               v-model="filtroscategoria"
@@ -82,7 +82,7 @@
       :loading="loading"
       id="tablaPrecioSugerido"
       class="shadow-2 rounded-borders"
-      header-class="bg-grey-2 text-grey-9 text-weight-bold"
+      header-class="cm-surface-2 cm-text text-weight-bold"
     >
       <template #body-cell-opciones="props">
         <q-td :props="props" auto-width>

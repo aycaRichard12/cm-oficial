@@ -298,7 +298,7 @@ function mostrarReporte() {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  background: #fff;
+  background: var(--cm-surface);
   transition: box-shadow 0.25s ease;
   &:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

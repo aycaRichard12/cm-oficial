@@ -22,7 +22,7 @@
       <q-separator />
       <q-card-section>
         <div class="row items-center q-mb-md q-col-gutter-sm">
-          <div class="col-12 col-sm"><div class="text-subtitle2 text-grey-8">Productos Asignados</div></div>
+          <div class="col-12 col-sm"><div class="text-subtitle2 cm-text-muted">Productos Asignados</div></div>
           <div class="col-12 col-sm-auto"><q-select :model-value="filtroPrecio" @update:model-value="$emit('update:filtroPrecio', $event)" :options="categoriasOpciones" label="Filtrar categoría" option-value="id" option-label="tipo" emit-value map-options outlined dense clearable style="min-width: 200px" /></div>
         </div>
         <q-table :rows="preciosFiltrados" :columns="cols" row-key="id" flat bordered :rows-per-page-options="[5, 10, 20]" :grid="$q.screen.lt.md">
@@ -34,7 +34,7 @@
               <q-card bordered flat class="full-height flex column">
                 <q-card-section class="q-pb-none col-grow">
                   <div class="text-subtitle2 text-primary">{{ props.row.descripcion || props.row.producto }}</div>
-                  <div class="text-caption text-grey-8">Cód: {{ props.row.codigo }}</div>
+                  <div class="text-caption cm-text-muted">Cód: {{ props.row.codigo }}</div>
                 </q-card-section>
                 <q-card-section class="row items-center justify-between q-pt-sm">
                   <q-badge color="green" :label="`Bs ${props.row.precio}`" />

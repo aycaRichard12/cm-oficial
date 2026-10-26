@@ -2,11 +2,11 @@
   <div v-if="data" class="dashboard-widget">
     <!-- Encabezado del Dashboard -->
     <q-card class="header-card q-mb-md" flat bordered>
-      <q-card-section class="bg-gradient-header text-white q-pa-md">
+      <q-card-section class="bg-gradient-header q-pa-md">
         <div class="row items-center no-wrap">
           <q-icon name="analytics" size="md" class="q-mr-md" />
           <div>
-            <div class="text-caption text-white text-opacity-8">
+            <div class="text-caption" style="opacity: 0.8">
               Indicadores del período seleccionado
             </div>
           </div>
@@ -17,8 +17,8 @@
     <!-- Grid de 3 columnas: Venta, Cotización, Total -->
     <div class="cards-grid q-mb-md">
       <q-card v-for="cat in orderedCategories" :key="cat.key" class="breakdown-card" flat bordered>
-        <q-card-section class="bg-grey-2 q-px-md q-py-sm">
-          <span class="text-subtitle2 text-uppercase text-grey-8 text-weight-bold">
+        <q-card-section class="cm-surface-2 q-px-md q-py-sm">
+          <span class="text-subtitle2 text-uppercase cm-text text-weight-bold">
             {{ cat.label }}
           </span>
         </q-card-section>
@@ -31,7 +31,7 @@
               <!-- Venta Neta -->
               <tr>
                 <td
-                  class="text-subtitle1 text-weight-bold text-grey-9"
+                  class="text-subtitle1 text-weight-bold cm-text"
                   style="padding: 8px 0 8px 12px"
                 >
                   Venta neta
@@ -51,12 +51,12 @@
               <!-- Desglose: Precio venta -->
               <tr>
                 <td
-                  class="text-body2 text-grey-7"
+                  class="text-body2 cm-text-muted"
                   style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
                 >
                   Precio venta
                 </td>
-                <td class="text-right text-grey-9" style="padding: 4px 16px 4px 8px">
+                <td class="text-right cm-text" style="padding: 4px 16px 4px 8px">
                   {{ formatNumber(data[cat.key]?.venta_bruta) }}
                 </td>
               </tr>
@@ -64,7 +64,7 @@
               <!-- Desglose: Descuento -->
               <tr>
                 <td
-                  class="text-body2 text-grey-7"
+                  class="text-body2 cm-text-muted"
                   style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
                 >
                   Descuento
@@ -77,20 +77,20 @@
               <!-- Separador -->
               <tr>
                 <td colspan="3" style="padding: 0 12px">
-                  <hr style="margin: 6px 0; border: none; border-top: 1px solid #e0e0e0" />
+                  <hr style="margin: 6px 0; border: none; border-top: 1px solid var(--cm-border)" />
                 </td>
               </tr>
 
               <!-- Costo de Ventas -->
               <tr>
-                <td class="text-subtitle1 text-grey-9" style="padding: 8px 0 8px 12px">
+                <td class="text-subtitle1 cm-text" style="padding: 8px 0 8px 12px">
                   Costo de ventas
                 </td>
                 <td
                   class="text-right text-weight-bold text-primary"
                   style="padding: 8px 16px 8px 8px"
                 ></td>
-                <td class="text-right text-grey-9" style="padding: 8px 16px 8px 8px">
+                <td class="text-right cm-text" style="padding: 8px 16px 8px 8px">
                   {{ formatNumber(data[cat.key]?.costo_ventas) }}
                 </td>
               </tr>
@@ -104,7 +104,7 @@
 
               <!-- Resultado: Utilidad o Pérdida -->
               <tr>
-                <td class="text-h6 text-weight-bold text-grey-10" style="padding: 10px 0 14px 12px">
+                <td class="text-h6 text-weight-bold cm-text" style="padding: 10px 0 14px 12px">
                   Utilidad
                 </td>
                 <td
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Banner informativo -->
-    <q-banner rounded dense class="info-banner bg-grey-1 text-grey-7">
+    <q-banner rounded dense class="info-banner cm-surface-2 cm-text-muted">
       <template v-slot:avatar>
         <q-icon name="info" color="grey-6" size="sm" />
       </template>
@@ -172,7 +172,8 @@ const formatNumber = (value) => {
 }
 
 .bg-gradient-header {
-  background: linear-gradient(135deg, #004d40, #26a69a);
+  background: linear-gradient(135deg, var(--cm-brand), #26a69a);
+  color: var(--cm-on-primary);
 }
 
 /* Grid de tarjetas: 3 columnas responsivas */
@@ -196,13 +197,13 @@ const formatNumber = (value) => {
 
 /* Subítems visuales */
 .sub-items-container {
-  border-left: 3px solid #f0f0f0;
+  border-left: 3px solid var(--cm-border);
   margin-left: 16px;
 }
 
 /* Banner informativo */
 .info-banner {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
   border-radius: 8px;
 }
 

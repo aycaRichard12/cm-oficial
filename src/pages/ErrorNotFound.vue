@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen bg-gradient text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-gradient text-center q-pa-md flex flex-center" style="color: var(--cm-on-primary)">
     <div class="construction-container">
       <!-- Icono de engranaje animado -->
       <div class="gear-wrapper">

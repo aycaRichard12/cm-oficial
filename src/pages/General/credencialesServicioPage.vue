@@ -38,7 +38,7 @@
                 class="shadow-4 overflow-hidden"
                 style="border-radius: 8px; min-width: 320px;"
               >
-                <q-list class="bg-white q-py-xs" dense separator>
+                <q-list class="cm-surface q-py-xs" dense separator>
                   <q-item v-for="(val, key) in props.row.credenciales" :key="key" class="q-py-sm">
                     <q-item-section>
                       <q-item-label caption class="text-uppercase text-weight-bold text-grey-7">

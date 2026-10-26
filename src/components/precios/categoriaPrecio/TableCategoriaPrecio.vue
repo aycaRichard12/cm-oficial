@@ -5,7 +5,7 @@
         <q-icon name="label" size="md" class="q-mr-sm" />
         Asignar Categoria
       </div>
-      <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Asignar Categoria</div>
+      <div class="text-subtitle2 cm-text-muted q-mt-xs">Administración de Asignar Categoria</div>
     </div>
   </div>
   <!-- Encabezado de acciones -->
@@ -79,7 +79,7 @@
         dense
         outlined
         debounce="300"
-        class="bg-white min-w-[220px]"
+        class="cm-surface min-w-[220px]"
       >
         <template v-slot:append>
           <q-icon name="search" />

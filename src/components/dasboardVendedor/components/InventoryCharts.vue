@@ -90,7 +90,7 @@ const categoriaOptions = {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
   transition: all 0.3s ease;
 }
 
@@ -103,14 +103,14 @@ const categoriaOptions = {
   display: flex;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 2px solid #f0f0f0;
-  background: #fafafa;
+  border-bottom: 2px solid var(--cm-border);
+  background: var(--cm-surface-2);
 }
 
 .chart-header .text-h6 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--cm-text);
 }
 </style>

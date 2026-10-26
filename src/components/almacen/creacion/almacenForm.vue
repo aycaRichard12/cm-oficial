@@ -3,7 +3,7 @@
     <q-form @submit.prevent="handleSubmit">
       <!-- Header con título visual -->
       <q-card-section class="q-pb-none">
-        <div class="text-h6 text-weight-medium text-grey-9">Información del Almacén</div>
+        <div class="text-h6 text-weight-medium cm-text">Información del Almacén</div>
         <div class="text-caption text-grey-6 q-mt-xs">Complete los datos del almacén</div>
         <q-separator class="q-mt-md" />
       </q-card-section>
@@ -193,12 +193,12 @@
 }
 
 .modern-input :deep(.q-field__control:hover) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 0 0 1px rgba(66, 153, 225, 0.2);
 }
 
 .modern-input :deep(.q-field__control:focus-within) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
 }
 
@@ -220,12 +220,12 @@
 }
 
 .modern-select :deep(.q-field__control:hover) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 0 0 1px rgba(66, 153, 225, 0.2);
 }
 
 .modern-select :deep(.q-field__control:focus-within) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
 }
 
@@ -302,7 +302,7 @@
 }
 
 :deep(.q-field--error .q-field__control:hover) {
-  background-color: #ffffff !important;
+  background-color: var(--cm-surface) !important;
 }
 
 /* Estilo para campos deshabilitados si los hubiera */

@@ -6,7 +6,7 @@
         <q-card-section class="q-pa-lg">
           <div class="row items-center q-col-gutter-lg">
             <div class="col">
-              <div class="text-h6 text-weight-medium text-grey-9 q-mb-xs">
+              <div class="text-h6 text-weight-medium cm-text q-mb-xs">
                 Filtro de Asignaciones
               </div>
               <div class="text-subtitle2 text-grey-6">
@@ -82,7 +82,7 @@
         <q-card-section class="bg-grey-1">
           <div class="row items-center justify-between">
             <div class="col">
-              <div class="text-h6 text-weight-medium text-grey-9">Asignaciones Registradas</div>
+              <div class="text-h6 text-weight-medium cm-text">Asignaciones Registradas</div>
               <div class="text-caption text-grey-6">
                 {{ processedRows.length }} registros encontrados
               </div>
@@ -126,7 +126,7 @@
         >
           <!-- Header personalizado -->
           <template v-slot:header="props">
-            <q-tr :props="props" class="bg-grey-2 text-grey-8">
+            <q-tr :props="props" class="cm-surface-2 cm-text">
               <q-th
                 v-for="col in props.cols"
                 :key="col.name"

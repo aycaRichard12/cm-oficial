@@ -137,7 +137,7 @@ watch(totalAlertas, () => {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
 }
 
 .alerts-header {
@@ -153,7 +153,7 @@ watch(totalAlertas, () => {
 }
 
 .alert-item:hover {
-  background-color: #f5f7fa;
+  background-color: var(--cm-surface-2);
 }
 
 .alert-critico {
