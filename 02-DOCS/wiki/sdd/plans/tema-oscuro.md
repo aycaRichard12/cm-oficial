@@ -6,12 +6,12 @@ tags: [sdd, plan]
 timestamp: 2026-10-26T13:00:00Z
 topic: sdd
 slug: tema-oscuro
-status: draft
+status: approved
 ---
 
 # Plan — Tema oscuro con preferencia guardada
 
-> Spec: [../specs/tema-oscuro.md](../specs/tema-oscuro.md) · Constitution: [../constitution.md](../constitution.md) · Status: draft
+> Spec: [../specs/tema-oscuro.md](../specs/tema-oscuro.md) · Constitution: [../constitution.md](../constitution.md) · Status: approved
 > Last updated: 2026-10-26
 
 ## 0. Global Constraints
