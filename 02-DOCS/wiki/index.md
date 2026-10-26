@@ -10,6 +10,8 @@
 ## SDD
 - [sdd/constitution.md](sdd/constitution.md) — **ratificada v1.0.0**
 - [sdd/config.yaml](sdd/config.yaml)
+- [sdd/decisions.md](sdd/decisions.md) — registro de decisiones SDD
+- [sdd/specs/tema-oscuro.md](sdd/specs/tema-oscuro.md) — spec de tema oscuro
 
 ## Seguridad
 - [security/route-policy.md](security/route-policy.md)
