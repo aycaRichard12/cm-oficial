@@ -33,3 +33,12 @@ Registro append-only de decisiones tomadas durante el ciclo SDD. Las más recien
 - TDD en la base: tests primero para resolver, controlador, chartTheme, withLightCapture, tokens, cableado y accesibilidad.
 - Los barridos de módulos son paralelizables, pero T016/T017 (shell + compatibilidad) van antes de fan-out.
 - Entrega recomendada: 3 PRs apilados (base, módulos, visuals/PDF/e2e) por superar el budget de revisión.
+
+## 2026-10-26 — Correcciones tras el gate `analyze`
+
+- Se adelantó la creación del guard de literales (T031) y se hizo dependencia de los barridos.
+- Se añadieron T033–T034 para cubrir todas las páginas/módulos/componentes con el guard global.
+- Se añadió T036 (test de componente accesible) y se cambió el plan §5 de e2e a component para AC#3, #4 y #11.
+- Se añadieron T037 (contraste de tokens), T038 (cobertura 70%) y T039 (bundle/FCP).
+- Se fijaron en §0 la lista exacta de tokens, los literales prohibidos y la allowlist del guard.
+- Re-ejecutado `analyze`: GATE PASS con 0 CRITICAL y 0 HIGH; quedan 2 MEDIUM y 3 LOW aceptables.

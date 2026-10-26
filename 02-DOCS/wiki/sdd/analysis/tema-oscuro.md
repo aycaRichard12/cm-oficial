@@ -1,23 +1,42 @@
 ---
 type: analysis
-title: Análisis de consistencia — tema oscuro
-description: Gate pre-implementación de constitución, spec, plan y tareas para `tema-oscuro`.
+title: Análisis de consistencia — tema oscuro (re-ejecución)
+description: Segundo gate pre-implementación tras corregir plan y tareas.
 tags: [sdd, analysis]
-timestamp: 2026-10-26T14:00:00Z
+timestamp: 2026-10-26T15:00:00Z
 topic: sdd
 slug: tema-oscuro
-status: blocked
+status: passed
 ---
 
-# Análisis de consistencia — `tema-oscuro`
+# Análisis de consistencia — `tema-oscuro` (re-ejecución)
 
 > Gate pre-implementación · 2026-10-26 · Regla: reportar, no resolver.
 
 ## Veredicto
 
-**GATE: BLOCKED** — 1 CRITICAL, 5 HIGH, 4 MEDIUM, 4 LOW.
+**GATE: PASS** — 0 CRITICAL, 0 HIGH, 2 MEDIUM, 3 LOW.
 
-No hay violación de la constitución. El bloqueo viene de cobertura incompleta de "toda la app", una verificación de accesibilidad sin tarea, y contradicciones de orden/paralelización en las tareas.
+Los bloqueos de la primera pasada están cerrados. Quedan dos verificaciones débiles y tres detalles, ninguno impide implementar; el usuario debe aceptarlos conscientemente.
+
+## Correcciones aplicadas desde la primera pasada
+
+| Antes | Corrección |
+| --- | --- |
+| F1 cobertura parcial de "toda la app" | Guard global en T031 + barridos closers T033/T034 sobre todas las páginas, módulos, componentes y layouts |
+| F2 sin pantallas de error | `ErrorNotFound.vue` añadido a plan §6 y T016 |
+| F3 accesibilidad sin prueba de comportamiento | T036: test de componente con `@vue/test-utils` + `happy-dom`; plan §5 cambiado de e2e a component |
+| F4 guard creado después de usarlo | T031 redefine como creación del guard (rojo) y pasa a ser dependencia de T016/T018–T022 |
+| F5 falso `[P]` T021/T023 | `[P]` retirado de T023; dependencias de T034 ampliadas a los tasks visuales |
+| F6 tokens y prohibidos invisibles | Lista exacta de tokens y literales en plan §0 + Interfaces de T031 |
+| F7 contraste sin medición | T037: test WCAG de pares de tokens; T035 exige artefacto de auditoría |
+| F8 e2e de impresión con skip | T030 ahora es pública (login), sin skip; T032 exige Playwright verde |
+| F9 sin cobertura ni bundle | T038 (cobertura 70% con `@vitest/coverage-v8`) y T039 (bundle gzip + FCP) |
+| F10 done-checks manuales sin artefacto | T025 guarda captura; T035 exige `verifications/tema-oscuro-audit.md` sin pendientes |
+| F11 dependencias no literales | T032 y T035 listan IDs uno a uno |
+| F12 feedback no declarado | Plan §3: el cambio visual es la confirmación, sin toast |
+| F13 header no verificado | Plan §2: `HeaderLayout` solo lo monta `MainLayout` (ruta autenticada) |
+| F14 grep débil | T023 usa el guard global en vez del grep puntual |
 
 ## Mapa de cobertura
 
@@ -25,57 +44,44 @@ No hay violación de la constitución. El bloqueo viene de cobertura incompleta 
 | --- | --- | --- | --- | --- |
 | R1 | AC#1 sin pref + SO oscuro → oscuro en primer render | §2, §4, §5 | T001, T002, T011, T012, T029 | covered |
 | R2 | AC#2 sin pref + SO claro → claro | §2, §4, §5 | T001, T002, T011, T012, T029 | covered |
-| R3 | AC#3 alternar a oscuro sin recargar | §3, §4 | T003, T004, T014, T015 | covered |
-| R4 | AC#4 alternar de vuelta a claro | §3, §4 | T003, T004, T014, T015 | covered |
+| R3 | AC#3 alternar a oscuro sin recargar | §3, §4, §5 | T003, T004, T014, T015, T036 | covered |
+| R4 | AC#4 alternar de vuelta a claro | §3, §4, §5 | T003, T004, T014, T015, T036 | covered |
 | R5 | AC#5 elección oscuro persiste al reabrir | §3, §4 | T003, T004, T014 | covered |
 | R6 | AC#6 claro gana sobre SO oscuro | §3, §4 | T003, T004, T014 | covered |
-| R7 | AC#7 todas las pantallas sin paneles claros + AA 4.5:1 | §2, §6 | T016–T022, T031 | **GAP** (cobertura parcial; contraste sin check) |
-| R8 | AC#8 gráficos, mapas y tours tematizados | §2, §3, §6 | T023–T026 | covered |
+| R7 | AC#7 todas las pantallas sin paneles claros + AA | §2, §5, §6 | T016–T022, T031, T033–T035, T037 | covered |
+| R8 | AC#8 gráficos, mapas y tours | §2, §3, §6 | T023–T026, T034 | covered |
 | R9 | AC#9 sincronización entre pestañas | §3, §4 | T003, T004, T014 | covered |
-| R10 | AC#10 print/PDF siempre claro | §3, §6 | T007, T008, T027, T028, T030 | covered (con caveat de skip) |
-| R11 | AC#11 teclado + estado anunciado | §3, §5 | T013, T015 | **AMBIGUOUS** (solo atributos estáticos) |
+| R10 | AC#10 print/PDF siempre claro | §3, §6 | T007, T008, T027, T028, T030 | covered |
+| R11 | AC#11 teclado + estado anunciado | §3, §5 | T013, T015, T036 | covered |
 | R12 | AC#12 preferencia corrupta → sistema | §3 | T001, T002 | covered |
 | R13 | AC#13 sin destello al recargar | §2, §4, §5 | T011, T012, T029 | covered |
-| G1 | Login y pantallas de error tematizados | §1, §6 paso 2 | T016 (solo login) | **GAP** (404/error sin tarea) |
-| G2 | "Toda la app" incluye todos los módulos | §6 pasos 4–5 | T018–T022 | **GAP** (inventario de archivos incompleto) |
+| G1 | Login y pantallas de error tematizados | §1, §6 | T016 | covered |
+| G2 | "Toda la app" incluye todos los módulos | §6 | T033, T034 | covered |
 | B1 | Cambio del SO en vivo si no hay elección manual | §3 | T003, T004 | covered |
 | B2 | Fallo al guardar no bloquea | §3 | T003, T004 | covered |
-| B3 | Imágenes/logos legibles en oscuro | §7 (riesgo) | T031 (auditoría) | **AMBIGUOUS** (sin criterio ni tarea de activos) |
+| B3 | Imágenes/logos legibles en oscuro | §7 (riesgo) | T035 (auditoría) | **AMBIGUOUS** (sin inventario de activos) |
 
-## Hallazgos
+## Hallazgos restantes
 
 | # | Severidad | Tipo | Artefacto A (loc) | Artefacto B (loc) | Conflicto | Resolver en |
 | --- | --- | --- | --- | --- | --- | --- |
-| F1 | CRITICAL | Coverage GAP | spec §Goals, §Acceptance #7 | plan §6 pasos 4–5; tareas T018–T022 | "Toda la app" no se cubre: faltan páginas y componentes (p. ej. `src/pages/devoluciones`, `src/pages/pedidos`, `src/pages/proveedor`, `src/pages/movimiento`, `src/components/almacen`, `src/components/anulaciones`, `src/components/Modals`, `src/components/pedidos`, `src/components/proveedor`, `src/components/welcome`) | tasks |
-| F2 | HIGH | Coverage GAP | spec §Goals (login y error) | plan §6 paso 2; tarea T016 | La spec exige tematizar pantallas de error/404; ni el plan ni T016 las incluyen | plan + tasks |
-| F3 | HIGH | Coverage GAP | plan §5 (e2e para #11) | tareas T013, T015 | AC#11 exige operar por teclado y anunciar estado; solo hay test estático de atributos, no de comportamiento | tasks |
-| F4 | HIGH | Contradicción de orden | tareas T016, T018–T022 (done-check usa `theme-guard.spec.js`) | tarea T031 (crea ese test) | El done-check de siete tareas exige un archivo que se crea en una tarea posterior | tasks |
-| F5 | HIGH | Contradicción de paralelización | tarea T021 `[P]` | tarea T023 `[P]` | Comparten archivos (`src/components/reporte`, `src/components/dasboardVendedor`); un falso `[P]` provoca colisiones de merge | tasks |
-| F6 | HIGH | Ambiguity / carrier | plan §0 (solo `--cm-*` como ejemplo) | tareas T016, T018–T022 | Un implementador aislado no conoce los nombres exactos de tokens ni la lista de literales prohibidos del guard | plan |
-| F7 | MEDIUM | Ambiguity | spec §Acceptance #7 (AA 4.5:1) | plan §5; tarea T031 | "Contraste AA" y "checklist de auditoría" no tienen medición ejecutable ni artefacto durable | tasks |
-| F8 | MEDIUM | Ambiguity | spec §Acceptance #10 | tarea T030 ("o skip documentado") | La aceptación puede pasar sin ejecutar el e2e de impresión | tasks |
-| F9 | MEDIUM | Coverage GAP | constitution §2 (70%) y §8 (bundle/FCP) | plan §5; tarea T032 | No hay tarea que mida cobertura de líneas ni presupuesto de bundle/FCP | tasks |
-| F10 | MEDIUM | Ambiguity | tarea T025 ("observación: captura") | tarea T031 ("checklist completado en la sesión") | Done-checks manuales sin comando ni artefacto que los pruebe | tasks |
-| F11 | LOW | Trazabilidad | tarea T031 (`Depends-on: T018–T022`) | tarea T032 (`Depends-on: all`) | No son IDs literales; rompen la resolución automática de dependencias | tasks |
-| F12 | LOW | Constitución §7 | constitution §7 ("toda mutación da feedback") | plan §3 (toggle) | No se declara si el cambio visual cuenta como feedback o hace falta toast | plan |
-| F13 | LOW | Ambiguity | spec §Goals ("cualquier pantalla autenticada") | plan §2 (toggle en `HeaderLayout`) | No se confirma que todo layout autenticado monte el header | plan |
-| F14 | LOW | Verificación débil | tarea T023 (`grep "background: white"`) | spec §Acceptance #7 | El grep solo detecta una variante; otras (`#fff`, `#f5f7fa`, `background-color`) quedan fuera | tasks |
+| M1 | MEDIUM | Ambiguity | spec §Points to clarify ("área no formulable": imágenes/logos) | plan §7 (riesgo); T035 | La auditoría no enumera qué activos revisar ni el criterio de legibilidad | tasks (ampliar T035) |
+| M2 | MEDIUM | Verificación débil | constitution §8 (FCP ≤ 2.5 s) | T039 (registro manual de FCP) | El presupuesto de FCP no tiene medición automatizada; solo se anota | tasks (opcional: Lighthouse o aceptar riesgo) |
+| L1 | LOW | Verificación débil | T035 (`sin PENDIENTE`) | — | Un archivo de auditoría superficial podría pasar; la revisión humana de `verify` lo cubre | verify |
+| L2 | LOW | Ambiguity | plan §7 (regex exacta del guard) | plan §0 (lista fija) | El patrón concreto se decide en T031; la lista está fijada | tasks (T031) |
+| L3 | LOW | Tooling | plan §0 (stack canon) | T036/T038 (nuevas devDependencies) | `@vue/test-utils`, `happy-dom`, `@vitest/coverage-v8` no se nombran en §0; son test tooling compatible | plan (declarar permitido) |
 
-### Por qué importa (CRITICAL/HIGH)
+### Por qué importan los MEDIUM
 
-- **F1** — Si se implementa con el mapa actual, quedan pantallas claras en oscuro; incumple el criterio #7 y la promesa central de la feature. Es el fallo más caro y el más visible.
-- **F2** — El login sí está, pero una pantalla de error clara rompe la coherencia justo cuando el usuario ya está en un estado de fallo.
-- **F3** — La accesibilidad puede fallar en producción (teclado/lector) sin que ninguna prueba lo detecte; el test estático solo comprueba que los atributos existen, no que funcionan.
-- **F4** — Siete tareas no se pueden marcar como done hasta el final; el flujo TDD se rompe y el implementador puede saltarse el guard.
-- **F5** — Dos workers paralelos editan los mismos archivos; el resultado es un conflicto de merge o una pérdida de cambios.
-- **F6** — Un worker aislado inventará nombres de tokens y una lista de prohibidos distinta; el barrido se vuelve inconsistente.
+- **M1** — Un logo oscuro sobre fondo oscuro puede quedar invisible sin que el guard lo detecte, porque el color está en un PNG, no en CSS. Aceptarlo es razonable, pero debe quedar explícito en la auditoría.
+- **M2** — El FCP es un presupuesto constitucional; si solo se anota a mano, una regresión de rendimiento no se detecta automáticamente. Se puede aceptar para esta feature (el cambio es CSS + un helper) dejando el registro manual.
 
 ## Routing recomendado
 
-- **tasks** (F1, F3, F4, F5, F7, F8, F9, F10, F11, F14): crear el guard de literales antes del primer barrido, ampliar el inventario de archivos a toda la app, añadir una tarea de e2e de accesibilidad, quitar el `[P]` de T023 o secuenciarlo tras T021, añadir medición de cobertura y bundle, y hacer durables los done-checks manuales.
-- **plan** (F2, F6, F12, F13): añadir el inventario completo de superficies (incluidas 404/error), subir la lista exacta de tokens y literales prohibidos a §0 o a Interfaces, y declarar el criterio de feedback/header.
-- **spec**: no requiere cambios; el gate detectó huecos de derivación, no de intención.
+- **implement**: puede empezar. T031 (guard rojo) antes de cualquier barrido; T033/T034 cierran la cobertura global; T035/T037/T038/T039 cierran la evidencia.
+- **tasks** (si se quiere cerrar M1/M2): ampliar T035 con inventario de activos y decidir si se añade Lighthouse a T039.
+- **plan** (opcional): añadir las devDependencies de test a §0 para que el implementador aislado sepa que están permitidas.
 
-## Nota de alcance
+## Nota
 
-El informe es de solo lectura: no se editó la spec, el plan ni las tareas. Las decisiones de corrección corresponden a las fases `tasks` y `plan`.
+Informe de solo lectura sobre los artefactos; las correcciones se aplicaron en las fases `plan` y `tasks`.
