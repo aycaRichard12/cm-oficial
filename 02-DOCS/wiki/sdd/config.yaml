@@ -1,7 +1,7 @@
 # SDD operational config (cm-oficial)
 # Ver 02-DOCS/wiki/sdd/constitution.md para el merge bar.
 version: 1
-test_bar: strict          # strict | standard | lenient
+test_bar: strict # strict | standard | lenient
 require_tests: true
 require_contract_tests: true
 require_constitution_check: true
@@ -11,18 +11,18 @@ protected_branches:
   - main
   - develop
 forbidden_commands:
-  - "git reset --hard"
-  - "git clean -fdx"
-  - "rm -rf /"
-  - "mysql * DROP *"
-  - "mariadb * TRUNCATE *"
+  - 'git reset --hard'
+  - 'git clean -fdx'
+  - 'rm -rf /'
+  - 'mysql * DROP *'
+  - 'mariadb * TRUNCATE *'
 sensitive_modules:
   - id: sales
-    paths: [src/pages/venta, src/modules/quick-consult]
+    paths: [src/pages/Venta, src/modules/quick-consult]
     roles: [ADMINISTRADOR, VENTAS, PRODUCCION]
   - id: inventory
     paths: [src/pages/compra, src/pages/producto]
     roles: [ADMINISTRADOR, ALMACEN]
   - id: accounting
-    paths: [src/pages/cuentasporcobrar, src/pages/cierrecaja]
+    paths: [src/pages/cuentasxcobrar, src/pages/cierrecaja]
     roles: [ADMINISTRADOR]
