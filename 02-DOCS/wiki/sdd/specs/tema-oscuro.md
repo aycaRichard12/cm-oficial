@@ -29,10 +29,11 @@ Bajar el brillo del monitor o usar el modo oscuro del sistema operativo. No cues
 ## Goals
 
 - El usuario puede alternar toda la aplicación entre apariencia clara y oscura desde cualquier pantalla autenticada.
+- La apariencia elegida (o la del sistema) también se aplica en el acceso y en las pantallas de error, aunque el interruptor solo esté disponible tras autenticarse.
 - La elección se recuerda en el mismo dispositivo y se aplica en la siguiente apertura.
 - Si el usuario nunca eligió, la aplicación respeta la preferencia de apariencia del sistema operativo.
 - En oscuro, todas las pantallas siguen siendo legibles y coherentes: sin paneles claros sueltos ni textos que desaparecen.
-- Las facturas, reportes y PDFs exportados o impresos siguen saliendo claros y legibles.
+- Las facturas, reportes y PDFs exportados o impresos siguen saliendo claros y legibles (guard de regresión: ya ocurre y no debe romperse).
 
 ## Non-goals / out of scope
 
@@ -54,6 +55,7 @@ Usuario operativo autenticado — ventas, almacén, producción o administració
 - Edge: si la preferencia guardada no es reconocible, se ignora y se vuelve a la preferencia del sistema, sin mensaje de error.
 - Edge: si el usuario cambia la apariencia del sistema operativo mientras la aplicación está abierta y nunca eligió manualmente, la aplicación acompaña el cambio.
 - Edge: una vez que el usuario elige manualmente, su elección manda sobre el sistema operativo hasta que la cambie.
+- Edge: no hay forma de volver a "seguir al sistema" dentro de esta entrega; esa opción queda para un ciclo posterior.
 - Edge: al cargar la aplicación no se muestra un destello del tema contrario antes de aplicar el guardado.
 - Error path: si el dispositivo no permite guardar la preferencia, la aplicación sigue funcionando y cambia de tema durante la sesión, pero no lo recuerda; no se bloquea ni se muestra un error técnico.
 - Print/export path: con el tema oscuro activo, la impresión y los PDFs de facturas, reportes y documentos mantienen fondo claro, texto oscuro y contenido completo.
@@ -75,10 +77,13 @@ Usuario operativo autenticado — ventas, almacén, producción o administració
 
 ## Points to clarify
 
-- **pregunta abierta** — ¿el contraste mínimo aceptado es AA 4.5:1 o AAA 7:1 para texto normal? Recomiendo AA 4.5:1 como floor, por coste y porque ya es el estándar de accesibilidad habitual.
-- **pregunta abierta** — ¿el tema oscuro debe aplicar también en la pantalla de login (antes de autenticar) y en las pantallas de error/404? Recomiendo que sí, para evitar un salto brusco de claro a oscuro al entrar.
+- **suposición tomada** — el contraste mínimo aceptado es AA 4.5:1 para texto normal. *Base:* es el estándar de accesibilidad habitual y el coste de llegar a AAA no aporta valor operativo claro. *Riesgo:* si el equipo exige AAA 7:1, sube el esfuerzo de ajuste de paleta y algunos grises quedarían fuera.
+- **suposición tomada** — el tema oscuro aplica también en login y pantallas de error (404) para evitar saltos bruscos. *Base:* la cobertura elegida fue "toda la app". *Riesgo:* si login debe quedar siempre claro, se excluye y se ajusta la aceptación.
+- **suposición tomada** — la preferencia guardada se aplica antes del primer pintado de la interfaz. *Base:* es la única forma de cumplir el criterio de no-destello; el mecanismo concreto de guardado corresponde al plan. *Riesgo:* si la plataforma no permite aplicarla a tiempo, el criterio de no-destello se degrada a "destello mínimo".
+- **suposición tomada** — se adopta operabilidad por teclado y anuncio de estado como requisito de esta entrega, por encima del floor mínimo de §7 de la constitución. *Base:* accesibilidad estándar para un control de tema. *Riesgo:* si no se ratifica, el requisito baja a solo nombre accesible.
 - **suposición tomada** — la preferencia se guarda por navegador/perfil del dispositivo, incluyendo la PWA instalada. *Base:* es la opción elegida (por dispositivo) y no requiere backend. *Riesgo:* en navegación privada o al limpiar datos no se recuerda entre sesiones; si se exige persistencia ahí, cambia el criterio de aceptación.
 - **suposición tomada** — "toda la app" incluye diálogos, menús, tablas, notificaciones y estados vacíos, no solo páginas completas. *Base:* el alcance elegido fue cobertura total. *Riesgo:* si se descubre un componente de terceros imposible de tematizar, habría que declararlo excepción visible.
 - **decisión diferida** — sincronizar la preferencia por usuario entre dispositivos; fuera de este ciclo.
 - **decisión diferida** — atajo de teclado para alternar el tema; fuera de este ciclo.
+- **decisión diferida** — una opción explícita para volver a "seguir al sistema" tras haber elegido manualmente; fuera de este ciclo.
 - **área no formulable** — el tratamiento de imágenes, logos y fondos con transparencia que pierdan visibilidad sobre oscuro. Sé que habrá que revisarlos uno a uno, pero todavía no puedo enumerar cuáles ni con qué criterio exacto.
