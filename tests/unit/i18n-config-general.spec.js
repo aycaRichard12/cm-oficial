@@ -112,12 +112,16 @@ describe('Cableado de i18n en las páginas de Configuración → General', () =>
     'src/components/general/Leyenda/TableLeyenda.vue',
   ]
 
-  it('cada página usa useI18n y ofrece el selector de idioma', () => {
+  it('cada página usa useI18n y el selector vive solo en la cabecera', () => {
     for (const page of pages) {
       const source = readFileSync(resolve(page), 'utf8')
       expect(source, page).toContain('useI18n')
-      expect(source, page).toContain('LanguageSwitcher')
+      expect(source, page).not.toContain('LanguageSwitcher')
     }
+
+    const header = readFileSync(resolve('src/layouts/HeaderLayout.vue'), 'utf8')
+    expect(header).toContain('LanguageSwitcher')
+    expect(header).toContain('<LanguageSwitcher color="white" />')
   })
 
   it('los formularios y tablas usan claves de traducción', () => {
@@ -132,6 +136,42 @@ describe('Cableado de i18n en las páginas de Configuración → General', () =>
     const header = readFileSync(resolve('src/layouts/HeaderLayout.vue'), 'utf8')
     for (const key of ['tipodealmacen', 'divisas', 'leyendaproforma', 'tipokardex']) {
       expect(header).toContain(`configGeneral.tabs.${key}`)
+    }
+  })
+})
+
+describe('Cobertura de claves usadas por Configuración → General', () => {
+  const sources = [
+    'src/layouts/HeaderLayout.vue',
+    'src/components/general/LanguageSwitcher.vue',
+    'src/pages/General/tipoAlmacenGeneral.vue',
+    'src/pages/General/divisasGeneral.vue',
+    'src/pages/General/leyendaProformaGeneral.vue',
+    'src/pages/cotizacion/configuraciontipoKardexPage.vue',
+    'src/components/general/tipoAlmacen/FormTipoAlmacen.vue',
+    'src/components/general/tipoAlmacen/TableTipoAlmacen.vue',
+    'src/components/general/divisa/FormDivisa.vue',
+    'src/components/general/divisa/TableDivisa.vue',
+    'src/components/general/Leyenda/FormLeyenda.vue',
+    'src/components/general/Leyenda/TableLeyenda.vue',
+  ]
+
+  const usedKeys = new Set()
+  for (const source of sources) {
+    const text = readFileSync(resolve(source), 'utf8')
+    for (const match of text.matchAll(/\bt\(['"]([^'"]+)['"]/g)) {
+      usedKeys.add(match[1])
+    }
+  }
+
+  const hasKey = (messages, path) =>
+    path.split('.').every((part) => (messages = messages?.[part]) !== undefined)
+
+  it('todas las claves usadas existen en español y en inglés', () => {
+    expect(usedKeys.size).toBeGreaterThan(20)
+    for (const key of usedKeys) {
+      expect(hasKey(messages['es-ES'], key), `es-ES falta ${key}`).toBe(true)
+      expect(hasKey(messages['en-US'], key), `en-US falta ${key}`).toBe(true)
     }
   })
 })
