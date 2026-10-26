@@ -1,0 +1,6 @@
+{
+  "intencion": "abrir_ventas",
+  "respuestaPorVoz": "Abriendo el módulo de ventas.",
+  "parametros": { "menu": "registrarventa" },
+  "comandoOriginal": "abre ventas"
+}
