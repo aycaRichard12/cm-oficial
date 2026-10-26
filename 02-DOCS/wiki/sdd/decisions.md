@@ -26,3 +26,10 @@ Registro append-only de decisiones tomadas durante el ciclo SDD. Las más recien
 - Gráficos: helper `chartTheme` y opciones reactivas; mapas/tours: tema por CSS.
 - PDF por captura DOM (`html2pdf`): guard temporal `withLightCapture`; jsPDF queda intacto.
 - Tests: Vitest unitario con dependencias inyectadas (sin jsdom) + Playwright para login/print; auditoría visual manual para cobertura total.
+
+## 2026-10-26 — Tasks de `tema-oscuro`
+
+- Lista de 32 tareas con done-check ejecutable, trazada a la spec; IDs estables.
+- TDD en la base: tests primero para resolver, controlador, chartTheme, withLightCapture, tokens, cableado y accesibilidad.
+- Los barridos de módulos son paralelizables, pero T016/T017 (shell + compatibilidad) van antes de fan-out.
+- Entrega recomendada: 3 PRs apilados (base, módulos, visuals/PDF/e2e) por superar el budget de revisión.
