@@ -85,7 +85,7 @@
       @autorizarCierreCaja="autorizarCierreCaja"
     />
     <!-- Mensaje si no hay resultados -->
-    <q-banner v-if="!loading && filteredData.length === 0" class="bg-grey-3 text-grey-8 q-mt-md">
+    <q-banner v-if="!loading && filteredData.length === 0" class="cm-surface-2 cm-text-muted q-mt-md">
       <q-icon name="info" size="md" />
       No se encontraron resultados para los filtros seleccionados.
     </q-banner>

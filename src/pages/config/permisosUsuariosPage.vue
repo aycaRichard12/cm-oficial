@@ -3,7 +3,7 @@
     <!-- Header Section -->
     <div class="row q-mb-sm">
       <div class="col-12">
-        <q-card flat class="bg-white shadow-1 rounded-borders">
+        <q-card flat class="cm-surface shadow-1 rounded-borders">
           <q-card-section class="q-pa-sm q-px-md">
             <div class="row items-center">
               <q-icon name="security" color="primary" size="2.5rem" class="q-mr-md" />

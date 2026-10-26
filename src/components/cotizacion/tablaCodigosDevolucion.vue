@@ -7,7 +7,7 @@
         </q-avatar>
         <div>
           <div class="text-subtitle1 text-weight-medium">{{ title }}</div>
-          <div class="text-caption text-grey-7">Gestión de productos devueltos</div>
+          <div class="text-caption cm-text-muted">Gestión de productos devueltos</div>
         </div>
       </div>
       <q-space />
@@ -17,7 +17,7 @@
     <div class="q-px-lg q-pb-lg q-pt-sm">
       <q-markup-table flat bordered separator="cell" class="modern-table">
         <thead>
-          <tr class="bg-grey-2">
+          <tr class="cm-surface-2">
             <th style="width: 50px">N°</th>
             <th class="text-left">Código de Identificación</th>
             <th class="text-center">Estado</th>
@@ -75,7 +75,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <q-icon name="info" size="14px" color="grey-6" class="q-mr-xs" />
-        <span class="text-caption text-grey-6">
+        <span class="text-caption cm-text-muted">
           Los productos marcados como merma no retornarán al stock disponible.
         </span>
       </div>

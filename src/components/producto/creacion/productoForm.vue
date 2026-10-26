@@ -377,7 +377,7 @@ const onImageSelected = async (file) => {
     $q.notify({
       message: 'Optimizando imagen...',
       color: 'info',
-      textColor: 'white',
+      textColor: 'white', // theme-allow
       icon: 'cloud_upload',
       timeout: 1500, // Short timeout, the real indicator is the loading spinner on the input
     })

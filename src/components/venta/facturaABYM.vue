@@ -405,7 +405,7 @@
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
                         <q-item-label>
-                          <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                          <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                         </q-item-label>
                         <q-item-label caption>{{ scope.opt.nombre }}</q-item-label>
                       </q-item-section>

@@ -109,7 +109,7 @@ defineExpose({
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 5px;
-  background: white;
+  background: var(--cm-surface);
 }
 
 .signature-canvas {

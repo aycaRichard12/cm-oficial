@@ -2,7 +2,7 @@
   <q-card>
     <q-card-section>
       <div class="text-h5 text-primary q-mb-xs"></div>
-      <div class="text-subtitle1 text-grey-8">
+      <div class="text-subtitle1 cm-text-muted">
         Este token se utilizará para autenticar servicios de API. Trátelo como una contraseña.
       </div>
     </q-card-section>

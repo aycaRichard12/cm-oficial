@@ -200,7 +200,7 @@ watch(isOpen, (open) => {
 .filter-drawer-card {
   border-radius: 20px 20px 0 0;
   max-height: 85vh;
-  background-color: white;
+  background-color: var(--cm-surface);
 }
 
 /* ===== SECCIONES DE FILTRO ===== */
@@ -227,7 +227,7 @@ watch(isOpen, (open) => {
 .filter-select :deep(.q-field__control:focus-within),
 .price-input :deep(.q-field__control:focus-within) {
   box-shadow: 0 0 0 2px rgba(0, 77, 64, 0.2);
-  border-color: #004d40;
+  border-color: var(--cm-brand);
 }
 
 /* Mejora del label */

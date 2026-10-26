@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "codigo": "pedido",
+    "title": "Pedido aprobado",
+    "message": "Tu pedido #123 fue aprobado.",
+    "fecha": "2026-10-25 10:00:00",
+    "read": false
+  },
+  {
+    "id": 2,
+    "codigo": "cxc",
+    "title": "Cuenta por cobrar vencida",
+    "message": "La factura #A-991 venció ayer.",
+    "fecha": "2026-10-24 09:00:00",
+    "read": false
+  }
+]

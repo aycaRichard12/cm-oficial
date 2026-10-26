@@ -1,7 +1,7 @@
 <template>
   <div class="breadcrumb-wrapper">
     <div class="breadcrumb-scroller" ref="scrollContainer">
-      <q-breadcrumbs class="text-white" gutter="xs">
+      <q-breadcrumbs class="text-white" gutter="xs" data-theme-allow>
         <template v-slot:separator>
           <q-icon size="1em" name="chevron_right" color="white" class="separator-icon" />
         </template>
@@ -178,7 +178,7 @@ onMounted(scrollToActive)
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
-    color: white;
+    color: var(--cm-on-primary);
   }
 
   &.bc-active {

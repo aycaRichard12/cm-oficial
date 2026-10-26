@@ -8,7 +8,7 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="q-mb-sm text-caption text-grey-7">
+        <div class="q-mb-sm text-caption cm-text-muted">
           Firma para: {{ idEntidad?.nombre }} {{ idEntidad?.nombrecomercial }}
         </div>
         <canvas

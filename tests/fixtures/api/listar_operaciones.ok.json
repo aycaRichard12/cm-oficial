@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "id_operacion": 101,
+      "codigo": "shortcut_venta",
+      "operacion": "Ventas rápidas",
+      "estado": 1,
+      "md5": "abc123def456"
+    },
+    {
+      "id_operacion": 102,
+      "codigo": "shortcut_cxc",
+      "operacion": "Cuentas por cobrar",
+      "estado": 1,
+      "md5": "abc123def456"
+    }
+  ]
+}

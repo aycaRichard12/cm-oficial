@@ -13,7 +13,7 @@
             label="Monto Total del Crédito *"
             stack-label
             disable
-            input-class="text-weight-bold text-grey-9"
+            input-class="text-weight-bold cm-text"
             lazy-rules
             :rules="[
               (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
@@ -24,7 +24,7 @@
               <q-icon name="account_balance_wallet" size="xs" color="grey-7" />
             </template>
             <template v-slot:append>
-              <span class="text-grey-9 text-weight-bold text-body1">{{
+              <span class="cm-text text-weight-bold text-body1">{{
                 divisaActiva.simbolo
               }}</span>
             </template>
@@ -75,7 +75,7 @@
               <q-icon name="event_repeat" size="xs" color="grey-7" />
             </template>
             <template v-slot:hint>
-              <span class="text-grey-8">Ej: 30 (mensual), 7 (semanal)</span>
+              <span class="cm-text-muted">Ej: 30 (mensual), 7 (semanal)</span>
             </template>
           </q-input>
         </div>
@@ -106,7 +106,7 @@
         >
           <q-item class="bg-primary-1 full-width rounded-borders text-right">
             <q-item-section>
-              <q-item-label class="text-caption text-grey-7 text-weight-medium text-right"
+              <q-item-label class="text-caption cm-text-muted text-weight-medium text-right"
                 >Monto Estimado por Cuota</q-item-label
               >
               <q-item-label

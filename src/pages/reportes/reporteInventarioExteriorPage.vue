@@ -8,7 +8,7 @@
           <q-icon name="lan" size="md" class="q-mr-sm" />
           Reporte Inventario Exterior
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           En esta sección puedes generar un reporte de inventario exterior
         </div>
       </div>
@@ -88,11 +88,11 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <q-card class="bg-grey-9 text-white">
+      <q-card class="bg-grey-9" style="color: var(--cm-on-primary)">
         <q-bar>
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="bg-white text-primary">Cerrar</q-tooltip>
+            <q-tooltip class="cm-surface text-primary">Cerrar</q-tooltip>
           </q-btn>
         </q-bar>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="zoom-container" style="background-color: #eeebe2; width: 100%; height: 100vh; overflow: hidden;">
+  <div class="zoom-container" style="background-color: var(--cm-bg); width: 100%; height: 100vh; overflow: hidden;">
     <router-view />
   </div>
 </template>

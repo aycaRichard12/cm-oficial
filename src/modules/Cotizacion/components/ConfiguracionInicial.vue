@@ -3,7 +3,7 @@
     <q-form ref="cotizacionFormRef">
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-4">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Almacén origen <span class="text-negative">*</span>
           </label>
           <q-select
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Categoría de precio <span class="text-negative">*</span>
           </label>
           <q-select
@@ -45,7 +45,7 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+          <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
             Punto Venta <span class="text-negative">*</span>
           </label>
           <q-select

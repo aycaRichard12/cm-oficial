@@ -6,7 +6,7 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <q-card class="bg-white text-dark column no-wrap fit">
+      <q-card class="cm-surface cm-text column no-wrap fit">
         <q-bar>
           <q-space />
 
@@ -17,7 +17,7 @@
             @click="maximizedToggle = false"
             :disable="!maximizedToggle"
           >
-            <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimize</q-tooltip>
+            <q-tooltip v-if="maximizedToggle" class="cm-surface text-primary">Minimize</q-tooltip>
           </q-btn>
           <q-btn
             dense
@@ -26,10 +26,10 @@
             @click="maximizedToggle = true"
             :disable="maximizedToggle"
           >
-            <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximize</q-tooltip>
+            <q-tooltip v-if="!maximizedToggle" class="cm-surface text-primary">Maximize</q-tooltip>
           </q-btn>
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+            <q-tooltip class="cm-surface text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
         <header class="q-pa-md">

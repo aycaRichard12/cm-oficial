@@ -156,28 +156,28 @@
             </div>
 
             <!-- Sección de Datos Automáticos (No Editables) -->
-            <div class="q-mt-md q-pa-md bg-grey-2 rounded-borders border-blue-grey-2 shadow-1">
+            <div class="q-mt-md q-pa-md cm-surface-2 rounded-borders border-blue-grey-2 shadow-1">
               <div class="text-subtitle2 text-primary q-mb-sm flex items-center">
                 <q-icon name="auto_fix_high" class="q-mr-sm" />
                 Información de Facturación (Automática)
               </div>
               <div class="row q-col-gutter-md">
                 <div class="col-12 col-md-4">
-                  <div class="text-caption text-grey-8">Tipo de documento tributario*</div>
+                  <div class="text-caption cm-text">Tipo de documento tributario*</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="description" color="blue" class="q-mr-sm" size="20px" />
                     {{ formData.tipodoc?.label || '---' }}
                   </div>
                 </div>
                 <div class="col-12 col-md-4">
-                  <div class="text-caption text-grey-8">Nro. documento tributario*</div>
+                  <div class="text-caption cm-text">Nro. documento tributario*</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="numbers" color="blue" class="q-mr-sm" size="20px" />
                     {{ formData.nroDoc || '---' }}
                   </div>
                 </div>
                 <div class="col-12 col-md-4">
-                  <div class="text-caption text-grey-8">Fecha*</div>
+                  <div class="text-caption cm-text">Fecha*</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="event" color="blue" class="q-mr-sm" size="20px" />
                     {{ cambiarFormatoFecha(formData.fecha) || '---' }}
@@ -391,7 +391,7 @@
                     <q-item v-bind="scope.itemProps">
                       <q-item-section>
                         <q-item-label>
-                          <span class="text-weight-bolder text-grey-9">{{ scope.opt.codigo }}</span>
+                          <span class="text-weight-bolder cm-text">{{ scope.opt.codigo }}</span>
                         </q-item-label>
                         <q-item-label caption>{{ scope.opt.nombre }}</q-item-label>
                       </q-item-section>
@@ -521,7 +521,7 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <div class="text-caption text-grey-8">Fecha límite*</div>
+                <div class="text-caption cm-text">Fecha límite*</div>
                 <div class="text-subtitle2 text-weight-bold flex items-center">
                   <q-icon name="event_available" color="purple" class="q-mr-sm" size="20px" />
                   {{ formData.fechaLimite ? cambiarFormatoFecha(formData.fechaLimite) : '---' }}
@@ -1370,7 +1370,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: white; /* theme-allow */
   font-size: 1.5rem;
   z-index: 9999;
 }

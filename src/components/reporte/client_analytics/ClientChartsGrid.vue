@@ -47,6 +47,10 @@
 <script setup>
 import { computed } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
+import { applyChartTheme } from 'src/composables/useChartTheme'
+import { useThemeStore } from 'src/stores/theme'
+
+const themeStore = useThemeStore()
 
 const props = defineProps({
   topClientesPorVolumen: Array,
@@ -61,69 +65,71 @@ const props = defineProps({
 // ============================================
 // CHART 3: Mejores Clientes Históricos
 // ============================================
-const chartMejoresHistoricos = computed(() => ({
-  chart: {
-    type: 'bar',
-    height: 350,
-    toolbar: { show: true },
-  },
-  title: {
-    text: 'Mejores Clientes (Histórico)',
-    align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      borderRadius: 4,
-      columnWidth: '70%',
-      dataLabels: { position: 'top' },
+const chartMejoresHistoricos = computed(() =>
+  applyChartTheme({
+    chart: {
+      type: 'bar',
+      height: 350,
+      toolbar: { show: true },
     },
-  },
-  dataLabels: {
-    enabled: true,
-    offsetY: -20,
-    style: { fontSize: '12px', colors: ['#333'] },
-  },
-  xaxis: {
-    categories: props.mejoresClientesHistoricos.map((c) => c.nombre),
-    labels: {
-      rotate: -45,
-      style: { fontSize: '11px' },
-      formatter: (value) => (value.length > 20 ? value.substring(0, 20) + '...' : value),
+    title: {
+      text: 'Mejores Clientes (Histórico)',
+      align: 'center',
+      style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
     },
-  },
-  yaxis: {
-    title: { text: 'Total Compras' },
-  },
-  tooltip: {
-    custom: ({ dataPointIndex }) => {
-      const cliente = props.mejoresClientesHistoricos[dataPointIndex]
-      if (!cliente) return ''
-      let html = `
-        <div class="custom-tooltip">
-          <div class="tooltip-header">${cliente.nombre}</div>
-          <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
-          <div class="tooltip-row"><strong>Total Compras:</strong> ${cliente.total_compras}</div>
-          <div class="tooltip-row"><strong>Frecuencia:</strong> ${cliente.frecuencia_compra.toFixed(3)} compras/día</div>
-          <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
-          <div class="tooltip-row"><strong>Estado:</strong> ${cliente.estadoLabel}</div>
-      `
-      if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
-        html += `
-          <div class="tooltip-divider"></div>
-          <div class="tooltip-prediction">
-            <strong> Próxima compra estimada:</strong><br>
-            ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
-          </div>
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        borderRadius: 4,
+        columnWidth: '70%',
+        dataLabels: { position: 'top' },
+      },
+    },
+    dataLabels: {
+      enabled: true,
+      offsetY: -20,
+      style: { fontSize: '12px', colors: ['#1f2937'] }, // theme-allow
+    },
+    xaxis: {
+      categories: props.mejoresClientesHistoricos.map((c) => c.nombre),
+      labels: {
+        rotate: -45,
+        style: { fontSize: '11px' },
+        formatter: (value) => (value.length > 20 ? value.substring(0, 20) + '...' : value),
+      },
+    },
+    yaxis: {
+      title: { text: 'Total Compras' },
+    },
+    tooltip: {
+      custom: ({ dataPointIndex }) => {
+        const cliente = props.mejoresClientesHistoricos[dataPointIndex]
+        if (!cliente) return ''
+        let html = `
+          <div class="custom-tooltip">
+            <div class="tooltip-header">${cliente.nombre}</div>
+            <div class="tooltip-row"><strong>Teléfono:</strong> ${cliente.telefono}</div>
+            <div class="tooltip-row"><strong>Total Compras:</strong> ${cliente.total_compras}</div>
+            <div class="tooltip-row"><strong>Frecuencia:</strong> ${cliente.frecuencia_compra.toFixed(3)} compras/día</div>
+            <div class="tooltip-row"><strong>Última Compra:</strong> ${cliente.ultima_compra_formatted}</div>
+            <div class="tooltip-row"><strong>Estado:</strong> ${cliente.estadoLabel}</div>
         `
-      }
-      html += '</div>'
-      return html
+        if (cliente.estado === 'active' && cliente.proxima_compra_prediccion) {
+          html += `
+            <div class="tooltip-divider"></div>
+            <div class="tooltip-prediction">
+              <strong> Próxima compra estimada:</strong><br>
+              ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
+            </div>
+          `
+        }
+        html += '</div>'
+        return html
+      },
     },
-  },
-  colors: ['#f59e0b'],
-}))
+    colors: ['#f59e0b'],
+  }, themeStore.isDark),
+)
 
 const seriesMejoresHistoricos = computed(() => [
   {
@@ -135,59 +141,61 @@ const seriesMejoresHistoricos = computed(() => [
 // ============================================
 // CHART 4: Distribución por Estado
 // ============================================
-const chartDistribucion = computed(() => ({
-  chart: {
-    type: 'donut',
-    height: 350,
-  },
-  title: {
-    text: 'Distribución por Estado',
-    align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
-  },
-  labels: ['Activos', 'En Riesgo', 'Discontinuados'],
-  colors: ['#10b981', '#f59e0b', '#ef4444'],
-  legend: {
-    position: 'bottom',
-  },
-  dataLabels: {
-    enabled: true,
-    formatter: (val, opts) => {
-      return opts.w.config.series[opts.seriesIndex]
+const chartDistribucion = computed(() =>
+  applyChartTheme({
+    chart: {
+      type: 'donut',
+      height: 350,
     },
-  },
-  tooltip: {
-    custom: ({ dataPointIndex }) => {
-      const estados = ['active', 'risk', 'discontinued']
-      const estadoKey = estados[dataPointIndex]
-      const dist = props.distribucionPorEstado[estadoKey]
-
-      const criterios = {
-        active: 'Compró en los últimos 30 días',
-        risk: 'Sin compra entre 30-90 días',
-        discontinued: 'Más de 90 días sin compra',
-      }
-
-      let html = `
-        <div class="custom-tooltip">
-          <div class="tooltip-header">${dist.label || '-'}</div>
-          <div class="tooltip-row"><strong>Total:</strong> ${dist.count} clientes</div>
-          <div class="tooltip-row"><strong>Criterio:</strong> ${criterios[estadoKey]}</div>
-      `
-
-      if (dist.clientes.length > 0) {
-        html +=
-          '<div class="tooltip-divider"></div><div class="tooltip-subheader">Top Clientes:</div>'
-        dist.clientes.slice(0, 3).forEach((c) => {
-          html += `<div class="tooltip-row-small">• ${c.nombre} (${c.total_compras} compras)</div>`
-        })
-      }
-
-      html += '</div>'
-      return html
+    title: {
+      text: 'Distribución por Estado',
+      align: 'center',
+      style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
     },
-  },
-}))
+    labels: ['Activos', 'En Riesgo', 'Discontinuados'],
+    colors: ['#10b981', '#f59e0b', '#ef4444'],
+    legend: {
+      position: 'bottom',
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val, opts) => {
+        return opts.w.config.series[opts.seriesIndex]
+      },
+    },
+    tooltip: {
+      custom: ({ dataPointIndex }) => {
+        const estados = ['active', 'risk', 'discontinued']
+        const estadoKey = estados[dataPointIndex]
+        const dist = props.distribucionPorEstado[estadoKey]
+
+        const criterios = {
+          active: 'Compró en los últimos 30 días',
+          risk: 'Sin compra entre 30-90 días',
+          discontinued: 'Más de 90 días sin compra',
+        }
+
+        let html = `
+          <div class="custom-tooltip">
+            <div class="tooltip-header">${dist.label || '-'}</div>
+            <div class="tooltip-row"><strong>Total:</strong> ${dist.count} clientes</div>
+            <div class="tooltip-row"><strong>Criterio:</strong> ${criterios[estadoKey]}</div>
+        `
+
+        if (dist.clientes.length > 0) {
+          html +=
+            '<div class="tooltip-divider"></div><div class="tooltip-subheader">Top Clientes:</div>'
+          dist.clientes.slice(0, 3).forEach((c) => {
+            html += `<div class="tooltip-row-small">• ${c.nombre} (${c.total_compras} compras)</div>`
+          })
+        }
+
+        html += '</div>'
+        return html
+      },
+    },
+  }, themeStore.isDark),
+)
 
 const seriesDistribucion = computed(() => {
   const dist = props.distribucionPorEstado
@@ -197,58 +205,60 @@ const seriesDistribucion = computed(() => {
 // ============================================
 // CHART 5: Timeline de Ventas
 // ============================================
-const chartTimeline = computed(() => ({
-  chart: {
-    type: 'line',
-    height: 350,
-    zoom: { enabled: true },
-    toolbar: { show: true },
-  },
-  title: {
-    text: 'Evolución de Ventas',
-    align: 'center',
-    style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
-  },
-  stroke: {
-    curve: 'smooth',
-    width: 3,
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  xaxis: {
-    categories: props.ventasPorFecha.map((v) => v.fechaFormatted),
-    labels: {
-      rotate: -45,
-      style: { fontSize: '10px' },
+const chartTimeline = computed(() =>
+  applyChartTheme({
+    chart: {
+      type: 'line',
+      height: 350,
+      zoom: { enabled: true },
+      toolbar: { show: true },
     },
-  },
-  yaxis: {
-    title: { text: 'Número de Ventas' },
-  },
-  tooltip: {
-    x: {
-      formatter: (val, opts) => {
-        const fecha = props.ventasPorFecha[opts.dataPointIndex]?.fechaFormatted
-        return fecha
-          ? new Date(fecha).toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
-          : val
+    title: {
+      text: 'Evolución de Ventas',
+      align: 'center',
+      style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 3,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    xaxis: {
+      categories: props.ventasPorFecha.map((v) => v.fechaFormatted),
+      labels: {
+        rotate: -45,
+        style: { fontSize: '10px' },
       },
     },
-    y: {
-      formatter: (val) => `${val} ventas`,
+    yaxis: {
+      title: { text: 'Número de Ventas' },
     },
-  },
-  colors: ['#8b5cf6'],
-  markers: {
-    size: 4,
-    hover: { size: 6 },
-  },
-}))
+    tooltip: {
+      x: {
+        formatter: (val, opts) => {
+          const fecha = props.ventasPorFecha[opts.dataPointIndex]?.fechaFormatted
+          return fecha
+            ? new Date(fecha).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            : val
+        },
+      },
+      y: {
+        formatter: (val) => `${val} ventas`,
+      },
+    },
+    colors: ['#8b5cf6'],
+    markers: {
+      size: 4,
+      hover: { size: 6 },
+    },
+  }, themeStore.isDark),
+)
 
 const seriesTimeline = computed(() => [
   {
@@ -261,7 +271,7 @@ const seriesTimeline = computed(() => [
 <style scoped>
 /* Custom Tooltip Styles */
 :deep(.custom-tooltip) {
-  background: white;
+  background: var(--cm-surface);
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 12px;

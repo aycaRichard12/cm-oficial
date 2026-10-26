@@ -4,7 +4,7 @@
       <div class="col-12 col-lg-10">
         <q-card class="shadow-3 rounded-borders">
           <!-- Header de la Tabla con Buscador -->
-          <q-card-section class="q-pa-md bg-white text-dark">
+          <q-card-section class="q-pa-md cm-surface cm-text">
             <div class="row items-center justify-between q-col-gutter-sm">
               <div class="col-12 col-md-auto display-flex items-center">
                 <q-icon name="design_services" size="md" color="primary" class="q-mr-sm" />
@@ -312,7 +312,7 @@ const columns = [
     label: 'Nombre',
     field: 'nombre',
     sortable: true,
-    classes: 'text-weight-bold text-grey-9',
+    classes: 'text-weight-bold cm-text',
   },
   {
     name: 'slug',
@@ -334,7 +334,7 @@ const columns = [
     align: 'left',
     label: 'Descripción',
     field: 'descripcion',
-    classes: 'ellipsis text-grey-8',
+    classes: 'ellipsis cm-text-muted',
     style: 'max-width: 250px',
   },
   {

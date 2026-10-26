@@ -132,7 +132,7 @@ const handleAdd = (product) => {
 .product-list-card {
   height: 100%;
   width: 100%;
-  background-color: white;
+  background-color: var(--cm-surface);
   border-radius: 16px;
   transition: box-shadow 0.2s ease-in-out;
   overflow: hidden;

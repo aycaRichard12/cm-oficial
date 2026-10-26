@@ -15,7 +15,7 @@
         <q-tabs
           v-model="visibleChart"
           dense
-          class="bg-white text-grey-8"
+          class="cm-surface cm-text-muted"
           active-color="primary"
           indicator-color="primary"
           align="left"

@@ -27,12 +27,12 @@ const iniciarTour = () => {
 /* Estilos para el tour que coincidan con Quasar */
 .driver-popover {
   background-color: var(--q-primary) !important;
-  color: white !important;
+  color: white !important; /* theme-allow */
   border-radius: 8px !important;
 }
 
 .driver-popover-title {
   font-size: 1.2rem !important;
-  color: white !important;
+  color: white !important; /* theme-allow */
 }
 </style>

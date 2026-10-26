@@ -30,7 +30,7 @@ export const KARDEX_COLORS = Object.freeze({
     cssClass: 'kdx-saldo-final',
   },
   totales: {
-    hex: '#E0E0E0',
+    hex: '#E0E0E0', // theme-allow — export-only (Excel/PDF), no UI surface
     rgb: [224, 224, 224],
   },
 })

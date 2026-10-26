@@ -7,7 +7,7 @@
         </q-avatar>
         <div>
           <div class="text-subtitle1 text-weight-medium">{{ title }}</div>
-          <div class="text-caption text-grey-7">
+          <div class="text-caption cm-text-muted">
             {{ canEdit ? 'Modo Edición Habilitado' : 'Modo Lectura' }}
           </div>
         </div>
@@ -23,7 +23,7 @@
     <div class="q-px-lg q-pb-lg q-pt-sm">
       <q-markup-table flat bordered separator="cell" class="modern-table">
         <thead>
-          <tr class="bg-grey-2">
+          <tr class="cm-surface-2">
             <th style="width: 60px">N°</th>
             <th>Código de Identificación</th>
             <th v-if="canDelete" style="width: 80px text-center">Acciones</th>
@@ -45,7 +45,7 @@
                   size="18px"
                   class="q-mr-sm"
                 />
-                <span :class="sub.serie ? '' : 'text-grey-6 text-italic'">
+                <span :class="sub.serie ? '' : 'cm-text-muted text-italic'">
                   {{ sub.serie || 'Sin código asignado' }}
                 </span>
                 <q-tooltip v-if="canEdit">Doble clic para editar</q-tooltip>
@@ -116,7 +116,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <q-icon name="schedule" size="14px" color="grey-6" class="q-mr-xs" />
-        <span class="text-caption text-grey-6">
+        <span class="text-caption cm-text-muted">
           Última actualización: {{ new Date().toLocaleString() }}
         </span>
       </div>

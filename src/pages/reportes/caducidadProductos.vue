@@ -7,7 +7,7 @@
           <q-icon name="inventory" size="md" class="q-mr-sm" />
           Caducidad Producto
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Caducidad Producto
         </div>
       </div>
@@ -164,7 +164,7 @@ const nombrecolores = {
   '#800080': 'Morado',
   '#FFC0CB': 'Rosado',
   '#000000': 'Negro',
-  '#FFFFFF': 'Blanco',
+  '#FFFFFF': 'Blanco', // theme-allow: product colour name map (data key)
   '#808080': 'Gris',
   '#8B4513': 'Marrón',
   '#87CEEB': 'Celeste',
@@ -387,7 +387,7 @@ const cargarDatos = () => {
         rowData[`fecha_${i}`] = fila.fechavencimientos[i]
         rowData[`cantidad_${i}`] = fila.cantidades[i]
         rowData[`cantidad_${i}_style`] =
-          `background-color: ${color}; ${color === '#000000' ? 'color: #FFFFFF;' : ''}`
+          `background-color: ${color}; ${color === '#000000' ? 'color: var(--cm-on-primary);' : ''}`
 
         objtablamedidor.push({
           nro: index,

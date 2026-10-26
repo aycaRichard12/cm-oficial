@@ -7,7 +7,7 @@
             <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
             Procesar Venta
           </div>
-          <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Procesar Venta</div>
+          <div class="text-subtitle2 cm-text-muted q-mt-xs">Administración de Procesar Venta</div>
         </div>
       </div>
       <q-card class="my-card q-mb-md">
@@ -42,7 +42,7 @@
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-4" id="origenVenta">
-              <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="almacen" class="text-weight-bold cm-text q-mb-sm block"
                 >Origen de venta</label
               >
               <q-select
@@ -75,7 +75,7 @@
             </div>
 
             <div class="col-12 col-md-4" id="categoriaPrecio">
-              <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="categoria" class="text-weight-bold cm-text q-mb-sm block"
                 >Categoría de precio</label
               >
               <q-select
@@ -110,7 +110,7 @@
             </div>
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
               <div class="flex items-center justify-between q-mb-sm">
-                <label for="campana" class="text-weight-bold text-grey-8 q-ma-none"
+                <label for="campana" class="text-weight-bold cm-text q-ma-none"
                   >Categorías con Campaña</label
                 >
                 <q-checkbox v-model="mostrarCategoriasCampania" dense>
@@ -169,7 +169,7 @@
         <div class="q-pa-md">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-3" id="barcodeVenta">
-              <label for="barcode" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="barcode" class="text-weight-bold cm-text q-mb-sm block"
                 >Código de barras</label
               >
               <q-input
@@ -187,7 +187,7 @@
               </q-input>
             </div>
             <div class="col-12 col-md-7" id="buscarProductoVenta">
-              <label for="producto" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="producto" class="text-weight-bold cm-text q-mb-sm block"
                 >Buscar producto (descripción)</label
               >
               <q-select
@@ -243,7 +243,7 @@
                   height: 110px;
                   cursor: pointer;
                   border-radius: 8px;
-                  border: 1px solid #e0e0e0;
+                  border: 1px solid var(--cm-border);
                   padding: 4px;
                   margin-top: 28px;
                 "
@@ -251,7 +251,7 @@
               >
                 <template v-slot:error>
                   <div
-                    class="column items-center justify-center bg-grey-3"
+                    class="column items-center justify-center cm-surface-2"
                     style="height: 100%; width: 100%"
                   >
                     <q-icon name="image_not_supported" size="md" color="grey-7" />
@@ -286,7 +286,7 @@
 
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
-              <label for="stockdisponible" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="stockdisponible" class="text-weight-bold cm-text q-mb-sm block"
                 >Stock disponible</label
               >
               <q-input
@@ -301,7 +301,7 @@
             </div>
 
             <div class="col-12 col-sm-3" id="cantidadVenta">
-              <label for="cantidad" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="cantidad" class="text-weight-bold cm-text q-mb-sm block"
                 >Cantidad</label
               >
               <q-input
@@ -320,7 +320,7 @@
             </div>
 
             <div class="col-12 col-sm-3" id="precioVenta">
-              <label for="precio" class="text-weight-bold text-grey-8 q-mb-sm block"
+              <label for="precio" class="text-weight-bold cm-text q-mb-sm block"
                 >Precio unitario</label
               >
               <q-input
@@ -354,10 +354,10 @@
       </div>
 
       <div
-        class="row items-center q-gutter-sm q-mb-md q-pa-sm bg-grey-2"
-        style="border-radius: 8px; border: 1px solid #e0e0e0"
+        class="row items-center q-gutter-sm q-mb-md q-pa-sm cm-surface-2"
+        style="border-radius: 8px; border: 1px solid var(--cm-border)"
       >
-        <div class="text-subtitle2 q-ml-sm text-weight-bold text-grey-8">Venta sin stock</div>
+        <div class="text-subtitle2 q-ml-sm text-weight-bold cm-text">Venta sin stock</div>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
           dense
@@ -460,7 +460,7 @@
 
         <template v-slot:bottom-row>
           <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold text-grey-8">
+            <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="receipt" color="primary" class="q-mr-sm" />
               Sub Total:
             </q-td>
@@ -469,7 +469,7 @@
             >
           </q-tr>
           <q-tr id="descuento">
-            <q-td colspan="5" class="text-right text-weight-bold text-grey-8">
+            <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="discount" color="accent" class="q-mr-sm" />
               Descuento:
             </q-td>
@@ -487,7 +487,7 @@
             </q-td>
           </q-tr>
           <q-tr>
-            <q-td colspan="5" class="text-right text-weight-bold text-grey-8">
+            <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="payments" color="green-8" class="q-mr-sm" />
               Total:
             </q-td>
@@ -1787,12 +1787,12 @@ onMounted(async () => {
   background: linear-gradient(to right, #219286, #044e49);
 }
 
-.text-white {
-  color: #ffffff;
+.text-white { /* theme-allow */
+  color: var(--cm-on-primary);
 }
 
-.text-grey-8 {
-  color: #424242;
+.cm-text {
+  color: var(--cm-text);
 }
 
 .text-primary {
@@ -1814,8 +1814,8 @@ onMounted(async () => {
 
 .q-table th {
   font-weight: bold;
-  background-color: #f0f0f0;
-  color: #424242;
+  background-color: var(--cm-surface-2);
+  color: var(--cm-text);
 }
 
 .q-btn {

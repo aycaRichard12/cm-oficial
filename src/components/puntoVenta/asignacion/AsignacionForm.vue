@@ -4,7 +4,7 @@
     <div class="row items-center q-pb-md">
       <div class="col">
         <div class="text-h6 text-primary text-weight-bold">Asignar Punto de Venta</div>
-        <div class="text-subtitle2 text-grey-8">
+        <div class="text-subtitle2 cm-text">
           Usuario: <span class="text-weight-bold">{{ user.name }}</span>
         </div>
       </div>
@@ -20,7 +20,7 @@
       <div class="row q-col-gutter-md">
         <!-- Almacén -->
         <div class="col-12 col-md-6">
-          <div class="text-subtitle2 q-mb-xs text-grey-9">Almacén</div>
+          <div class="text-subtitle2 q-mb-xs cm-text">Almacén</div>
           <q-select
             v-model="warehouse"
             :options="warehouses"
@@ -43,7 +43,7 @@
 
         <!-- Punto de Venta -->
         <div class="col-12 col-md-6">
-          <div class="text-subtitle2 q-mb-xs text-grey-9">Punto de Venta</div>
+          <div class="text-subtitle2 q-mb-xs cm-text">Punto de Venta</div>
           <q-select
             v-model="pointOfSale"
             :options="pointsOfSale"
@@ -65,7 +65,7 @@
       </div>
 
       <!-- Previsualización -->
-      <q-banner v-if="warehouse && pointOfSale" dense class="bg-blue-1 text-grey-9 rounded-borders q-mt-md">
+      <q-banner v-if="warehouse && pointOfSale" dense class="cm-surface-2 cm-text rounded-borders q-mt-md">
         <template v-slot:avatar>
           <q-icon name="info" color="info" />
         </template>

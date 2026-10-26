@@ -7,7 +7,7 @@
           <q-icon name="label" size="md" class="q-mr-sm" />
           Índices de Rotación
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Índices de Rotación
         </div>
       </div>

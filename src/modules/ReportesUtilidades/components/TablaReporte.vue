@@ -109,7 +109,7 @@ const summationHeaders = [
 /* Tarjeta principal con esquinas redondeadas y sombra sutil */
 .erp-report-card {
   border-radius: 12px;
-  background: #fff;
+  background: var(--cm-surface);
   overflow: hidden;
 }
 

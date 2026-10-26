@@ -1,7 +1,7 @@
 <template>
   <q-dialog :model-value="modelValue" persistent full-width full-height>
     <q-card class="" style="height: 100%; max-width: 100%; border-radius: 10px">
-      <q-card-section class="row items-center q-pb-none bg-primary" style="color: white">
+      <q-card-section class="row items-center q-pb-none bg-primary text-white">
         <div class="text-h5 text-bold">{{ title }}</div>
         <q-space />
         <q-btn flat round icon="close" @click="$emit('close')" />

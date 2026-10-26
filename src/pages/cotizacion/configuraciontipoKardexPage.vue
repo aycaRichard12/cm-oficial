@@ -21,7 +21,7 @@
       <q-card-section class="q-pt-lg">
         <div>
           <!-- Label personalizado para mejor jerarquía -->
-          <div class="text-subtitle1 text-weight-medium text-grey-9 q-mb-sm">
+          <div class="text-subtitle1 text-weight-medium cm-text q-mb-sm">
             Método de valoración
             <span class="text-caption text-red-6">*</span>
           </div>
@@ -97,12 +97,12 @@
 /* Mejora visual del select */
 .custom-select :deep(.q-field__control) {
   border-radius: 8px;
-  background-color: #fafafa;
+  background-color: var(--cm-surface-2);
   transition: all 0.2s ease;
 }
 
 .custom-select :deep(.q-field__control:hover) {
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
 }
 
 .custom-select :deep(.q-field__control:focus-within) {

@@ -3,7 +3,7 @@
     <!-- Encabezado de la Página -->
     <div class="row items-center q-mb-lg animate__animated animate__fadeInDown">
       <div class="col-12 flex items-center">
-        <div class="q-pa-md bg-white rounded-borders q-mr-md shadow-2" style="border-radius: 12px">
+        <div class="q-pa-md cm-surface rounded-borders q-mr-md shadow-2" style="border-radius: 12px">
           <q-icon name="request_quote" size="36px" color="primary" />
         </div>
         <div>
@@ -38,7 +38,7 @@
 
         <!-- Toggle Venta sin Stock incorporado al header para ahorrar espacio y lucir elegante -->
         <div
-          class="flex items-center bg-white text-primary q-px-sm q-py-xs shadow-2"
+          class="flex items-center cm-surface text-primary q-px-sm q-py-xs shadow-2"
           style="border-radius: 20px"
           id="ventaSinStockCotizacion"
         >
@@ -64,7 +64,7 @@
           <div class="row q-col-gutter-lg q-mb-md">
             <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="tipooperacion"
                 >Tipo de Operación <span class="text-negative">*</span></label
@@ -85,7 +85,7 @@
             </div>
             <div class="col-12 col-md-3" id="fechaCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="fecha"
                 >Fecha <span class="text-negative">*</span></label
@@ -106,7 +106,7 @@
             </div>
             <div class="col-12 col-md-6" id="clienteCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="cliente"
                 >Cliente <span class="text-negative">*</span></label
@@ -173,7 +173,7 @@
           <div class="row q-col-gutter-lg">
             <div class="col-12 col-md-6" id="sucursalCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="sucursal"
                 >Sucursal <span class="text-negative">*</span></label
@@ -270,7 +270,7 @@
           <div class="row q-col-gutter-lg">
             <div class="col-12 col-md-4" id="almacenCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="almacen"
                 >Almacén origen <span class="text-negative">*</span></label
@@ -309,7 +309,7 @@
             </div>
             <div class="col-12 col-md-4" id="categoriaCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="categoria"
                 >Categoría de precio <span class="text-negative">*</span></label
@@ -347,7 +347,7 @@
             </div>
             <div class="col-12 col-md-4" id="puntoVentaCotizacion">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block"
+                class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="puntoventa"
                 >Punto Venta <span class="text-negative">*</span></label
@@ -403,12 +403,12 @@
         </div>
       </q-card-section>
 
-      <q-card-section class="q-pa-lg bg-grey-1" style="border-bottom: 1px solid #e0e0e0">
+      <q-card-section class="q-pa-lg cm-surface-2" style="border-bottom: 1px solid var(--cm-border)">
         <div class="row q-col-gutter-lg items-end">
           <div class="col-12 col-md-4" id="productoCotizacion">
             <div class="flex justify-between items-center q-mb-sm">
               <label
-                class="text-weight-bold text-grey-9 block"
+                class="text-weight-bold cm-text block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="producto"
                 >Producto o Servicio <span class="text-negative">*</span></label
@@ -464,7 +464,7 @@
 
           <div class="col-12 col-md-2" id="stockCotizacion">
             <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="stock"
               >Stock Actual</label
@@ -488,7 +488,7 @@
 
           <div class="col-12 col-md-2" id="cantidadCotizacion">
             <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="cantidad"
               >Cantidad <span class="text-negative">*</span></label
@@ -511,7 +511,7 @@
 
           <div class="col-12 col-md-3" id="precioCotizacion">
             <label
-              class="text-weight-bold text-grey-9 q-mb-sm block"
+              class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="precio"
               >Precio unitario <span class="text-negative">*</span></label
@@ -580,8 +580,8 @@
 
       <!-- Tercera Sección: Resumen de cotización (Table inside the same parent or separate) -->
       <q-card-section
-        class="bg-white q-py-sm q-px-lg flex items-center justify-between"
-        style="border-bottom: 1px solid #e0e0e0"
+        class="cm-surface q-py-sm q-px-lg flex items-center justify-between"
+        style="border-bottom: 1px solid var(--cm-border)"
       >
         <div class="flex items-center text-primary">
           <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
@@ -604,7 +604,7 @@
         flat
         hide-bottom
         class="custom-table q-pt-md"
-        table-header-class="bg-grey-1 text-weight-bolder text-grey-9 text-uppercase"
+        table-header-class="cm-surface-2 text-weight-bolder cm-text text-uppercase"
         :pagination="{ rowsPerPage: 0 }"
       >
         <template v-slot:body="props">
@@ -640,7 +640,7 @@
                 label-slot
                 dense
                 square
-                style="border-radius: 6px; border: 1px solid #e0e0e0"
+                style="border-radius: 6px; border: 1px solid var(--cm-border)"
               >
                 <span class="text-weight-bolder">{{ props.row.num }}</span>
               </q-chip>
@@ -800,7 +800,7 @@
           <q-tr class="bg-grey-1">
             <q-td
               colspan="6"
-              class="text-right text-subtitle2 text-grey-8"
+              class="text-right text-subtitle2 cm-text-muted"
               style="letter-spacing: 0.5px"
               >SUBTOTAL:</q-td
             >
@@ -816,7 +816,7 @@
           <q-tr class="bg-grey-1" id="descuentoCotizacion">
             <q-td
               colspan="6"
-              class="text-right text-subtitle2 text-grey-8"
+              class="text-right text-subtitle2 cm-text-muted"
               style="vertical-align: middle; letter-spacing: 0.5px"
               >DESCUENTO:</q-td
             >
@@ -862,7 +862,7 @@
               style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2)"
             >
               {{ decimas(carritoCO.ventatotal) }}
-              <span class="text-subtitle1 text-white text-weight-medium" style="opacity: 0.9">{{
+              <span class="text-subtitle1 text-weight-medium" style="opacity: 0.9">{{
                 divisaActiva.tipo
               }}</span>
             </q-td>
@@ -871,7 +871,7 @@
         </template>
       </q-table>
 
-      <q-card-section class="bg-grey-2 q-pa-lg" style="border-top: 1px solid #e0e0e0">
+      <q-card-section class="cm-surface-2 q-pa-lg" style="border-top: 1px solid var(--cm-border)">
         <div class="row justify-end items-center q-gutter-x-md">
           <!-- Botón Cancelar -->
           <q-btn
@@ -891,7 +891,7 @@
             icon="edit_note"
             label="Firma del Cliente"
             @click="RegistrarFirma"
-            class="q-px-lg bg-white"
+            class="q-px-lg cm-surface"
             style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
           />
 
@@ -926,10 +926,10 @@
         >
           <div class="flex items-center">
             <div
-              class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner"
+              class="bg-white/20 q-pa-sm rounded-borders q-mr-sm shadow-inner" data-theme-allow
               style="backdrop-filter: blur(8px); border-radius: 12px"
             >
-              <q-icon name="account_balance_wallet" class="text-white" size="24px" />
+              <q-icon name="account_balance_wallet" class="text-white" size="24px" data-theme-allow />
             </div>
             <div>
               <div
@@ -938,7 +938,7 @@
               >
                 Método de Pago
               </div>
-              <div class="text-caption text-white/80 text-weight-medium gt-xs">
+              <div class="text-caption text-white/80 text-weight-medium gt-xs" data-theme-allow>
                 Configure la modalidad y detalles del pago
               </div>
             </div>
@@ -949,7 +949,7 @@
             flat
             round
             dense
-            class="text-white/80 hover:text-white transition-all"
+            class="text-white/80 hover:text-white transition-all" data-theme-allow
             size="md"
           />
         </q-card-section>
@@ -1037,7 +1037,7 @@
             >
               <div class="col-12 col-md-10">
                 <label
-                  class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                   style="font-size: 12px"
                 >
                   Método de pago principal <span class="text-negative">*</span>
@@ -1073,11 +1073,11 @@
               <div
                 v-for="(payment, index) in carritoCO.pagosDivididos"
                 :key="index"
-                class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
+                class="row q-col-gutter-md q-mb-md items-start cm-surface q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
               >
                 <div class="col-12 col-md-5">
                   <label
-                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                    class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
                     >Método de Pago *</label
                   >
                   <q-select
@@ -1097,7 +1097,7 @@
                 </div>
                 <div class="col-12 col-md-3">
                   <label
-                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                    class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
                     >Monto ({{ divisaActiva.tipo }})</label
                   >
                   <q-input
@@ -1114,7 +1114,7 @@
                 </div>
                 <div class="col-12 col-md-3">
                   <label
-                    class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                    class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
                     >Porcentaje (%)</label
                   >
                   <q-input
@@ -1149,7 +1149,7 @@
                   icon="add"
                   color="primary"
                   outline
-                  class="q-px-lg bg-white shadow-1 text-weight-bold"
+                  class="q-px-lg cm-surface shadow-1 text-weight-bold"
                   style="border-radius: 10px"
                   @click="addPaymentMethod"
                 />
@@ -1206,7 +1206,7 @@
               <q-separator class="q-mb-xl" />
 
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 12px"
               >
                 Asignar a Caja o Banco <span class="text-negative">*</span>
@@ -1219,7 +1219,7 @@
                 outlined
                 emit-value
                 map-options
-                class="premium-input bg-white"
+                class="premium-input cm-surface"
                 :rules="[(val) => !!val || 'Campo requerido']"
                 style="border-radius: 8px"
               >
@@ -1230,7 +1230,7 @@
                 <template v-slot:selected-item="scope">
                   <div v-if="scope.opt" class="q-py-xs">
                     <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
-                    <span class="q-ml-xs text-grey-8">- {{ scope.opt.nombre }}</span>
+                    <span class="q-ml-xs cm-text-muted">- {{ scope.opt.nombre }}</span>
                   </div>
                 </template>
 
@@ -1272,7 +1272,7 @@
             <div class="row q-col-gutter-xl q-pt-md">
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
                   >Número de Cuotas *</label
                 >
@@ -1295,7 +1295,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
                   >Monto por Cuota</label
                 >
@@ -1316,7 +1316,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
                   >Frecuencia de Pago *</label
                 >
@@ -1340,7 +1340,7 @@
                 class="col-12 col-md-6 animate__animated animate__zoomIn"
               >
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
                   >Plazo Total (Días) *</label
                 >
@@ -1362,7 +1362,7 @@
 
               <div class="col-12 col-md-6">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                  class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
                   >Fecha de Vencimiento Estimada</label
                 >
@@ -1394,7 +1394,7 @@
         <q-separator />
 
         <!-- Acciones del Diálogo -->
-        <q-card-actions align="right" class="q-pa-md q-pa-sm-sm bg-white shrink-0 shadow-up-1">
+        <q-card-actions align="right" class="q-pa-md q-pa-sm-sm cm-surface shrink-0 shadow-up-1">
           <q-btn
             flat
             label="Regresar"
@@ -1475,10 +1475,10 @@
         style="border-radius: 16px; overflow: hidden; width: 450px; max-width: 95vw"
       >
         <q-card-section
-          class="q-pa-lg text-white flex items-center justify-center column"
+          class="q-pa-lg text-white flex items-center justify-center column" data-theme-allow
           style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%)"
         >
-          <div class="bg-white q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
+          <div class="cm-surface q-pa-sm rounded-borders q-mb-sm shadow-2" style="border-radius: 50%">
             <q-icon name="check" size="40px" color="positive" />
           </div>
           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
@@ -1486,8 +1486,8 @@
           </div>
         </q-card-section>
 
-        <q-card-section class="q-pa-xl text-center bg-white">
-          <div class="text-body1 text-grey-9 q-mb-md text-weight-medium" style="font-size: 16px">
+        <q-card-section class="q-pa-xl text-center cm-surface">
+          <div class="text-body1 cm-text q-mb-md text-weight-medium" style="font-size: 16px">
             El comprobante ha sido generado y guardado correctamente en el sistema.
           </div>
           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
@@ -2383,7 +2383,7 @@ async function anadirProductoACarrito() {
     $q.notify({
       type: 'info',
       message: 'Llene todos los campos para poder cargar productos a la lista.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2393,7 +2393,7 @@ async function anadirProductoACarrito() {
       $q.notify({
         type: 'warning',
         message: 'La cantidad solicitada excede el stock disponible.',
-        actions: [{ icon: 'close', color: 'white', round: true }],
+        actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
       return
     } else {
@@ -2401,7 +2401,7 @@ async function anadirProductoACarrito() {
         $q.notify({
           type: 'warning',
           message: 'La cantidad solicitada excede el stock disponible.',
-          actions: [{ icon: 'close', color: 'white', round: true }],
+          actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
         })
       }
     }
@@ -2410,7 +2410,7 @@ async function anadirProductoACarrito() {
       $q.notify({
         type: 'warning',
         message: 'La cantidad solicitada excede el stock disponible.',
-        actions: [{ icon: 'close', color: 'white', round: true }],
+        actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
     }
   }
@@ -2509,7 +2509,7 @@ function aplicarDescuento() {
     $q.notify({
       type: 'warning',
       message: 'El descuento sobrepasa el subtotal.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     carritoCO.descuento = carritoCO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
   }
@@ -2535,7 +2535,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Por favor, complete todos los campos requeridos.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2545,7 +2545,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Por favor, complete todos los campos requeridos.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2554,7 +2554,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Debe añadir al menos un producto a la cotización.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2568,7 +2568,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'info',
       message: 'Seleccione un método de pago antes de confirmar.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -2626,7 +2626,7 @@ async function enviarDatos() {
     $q.notify({
       type: 'warning',
       message: 'Debe seleccionar un Punto de Venta antes de registrar la cotización.',
-      actions: [{ icon: 'close', color: 'white', round: true }],
+      actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
   }
@@ -3233,7 +3233,7 @@ onMounted(async () => {
 .invoice {
   font-family: 'Arial', sans-serif;
   font-size: 12px;
-  color: #333;
+  color: var(--cm-text);
 
   header {
     padding: 10px 0;
@@ -3286,7 +3286,7 @@ onMounted(async () => {
       }
 
       .text-gray-light {
-        color: #777;
+        color: var(--cm-text-muted);
       }
 
       .to {
@@ -3298,23 +3298,23 @@ onMounted(async () => {
       width: 100%;
       border-collapse: collapse;
       thead {
-        background-color: #e0e0e0;
+        background-color: var(--cm-surface-2);
         th {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           text-align: left;
         }
       }
       tbody {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
         }
       }
       tfoot {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           font-weight: bold;
         }
       }
@@ -3353,7 +3353,7 @@ onMounted(async () => {
 
 .button-primary {
   background: linear-gradient(to right, #219286, #044e49);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 500;
   letter-spacing: 0.5px;
   padding: 8px 20px;

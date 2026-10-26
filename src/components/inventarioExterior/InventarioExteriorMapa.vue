@@ -217,7 +217,7 @@ defineExpose({
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #ccc;
+  border: 1px solid var(--cm-border);
 }
 .map-view {
   width: 100%;
@@ -226,5 +226,23 @@ defineExpose({
 }
 .map-controls {
   z-index: 2;
+}
+
+/* Popups y controles de Leaflet alineados con el tema global */
+:deep(.leaflet-popup-content-wrapper),
+:deep(.leaflet-popup-tip) {
+  background: var(--cm-surface);
+  color: var(--cm-text);
+}
+
+:deep(.leaflet-container a.leaflet-popup-close-button) {
+  color: var(--cm-text-muted);
+}
+
+:deep(.leaflet-bar a),
+:deep(.leaflet-control-attribution) {
+  background: var(--cm-surface);
+  color: var(--cm-text);
+  border-color: var(--cm-border);
 }
 </style>

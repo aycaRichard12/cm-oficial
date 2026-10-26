@@ -12,7 +12,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['dev-autologin', 'i18n', 'axios', 'error-handler', 'driver', 'pusher'],
+    boot: ['theme', 'dev-autologin', 'i18n', 'axios', 'error-handler', 'driver', 'pusher'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -120,7 +120,7 @@ export default defineConfig((ctx) => {
       // Quasar plugins
       iconSet: 'material-icons', // <-- set de iconos
 
-      plugins: ['Notify', 'Loading', 'Dialog', 'Meta'],
+      plugins: ['Notify', 'Loading', 'Dialog', 'Meta', 'Dark'],
       defaults: {
         QInput: { outlined: true },
         QSelect: { outlined: true },

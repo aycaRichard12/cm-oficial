@@ -869,7 +869,7 @@ export function crearModal({ code, type, x, y, id, header, body, footerButtons =
   app.appendChild(overlay)
   const variable = document.createElement('div')
   variable.classList.add('modal-content')
-  variable.style.backgroundColor = 'white'
+  variable.style.backgroundColor = 'var(--cm-surface)'
   variable.style.padding = '20px'
   variable.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.3)'
   variable.style.zIndex = '1001'

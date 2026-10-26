@@ -60,7 +60,7 @@ export const showDialog = ($q, tipo, mensaje) => {
           </div>
         </div>
         <div class="q-mt-md q-ml-sm" style="border-left: 3px solid var(--q-${dialogConfig.color}); padding-left: 16px;">
-          <div class="text-body1 text-weight-500" style="line-height: 1.5; color: #2c3e50; word-break: break-word;">${mensaje}</div>
+          <div class="text-body1 text-weight-500" style="line-height: 1.5; color: var(--cm-text); word-break: break-word;">${mensaje}</div>
         </div>
       </div>
     `,

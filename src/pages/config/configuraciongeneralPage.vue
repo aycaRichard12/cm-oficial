@@ -29,7 +29,7 @@
         dense
         bordered
         class="col"
-        style="background: linear-gradient(to right, #219286, #044e49); color: white"
+        style="background: linear-gradient(to right, #219286, #044e49); color: white; /* theme-allow */"
       >
         <q-item>
           <q-item-section> </q-item-section>
@@ -37,7 +37,7 @@
           <q-item-section id="compra-card">
             <q-btn
               flat
-              style="color: white"
+              style="color: white; /* theme-allow */"
               label="Ir"
               @click="cambiarComponente(PedidoComponent)"
             />
@@ -52,7 +52,7 @@
         dense
         bordered
         class="col"
-        style="background: linear-gradient(to right, #219286, #044e49); color: white"
+        style="background: linear-gradient(to right, #219286, #044e49); color: white; /* theme-allow */"
       >
         <q-item>
           <q-item-section> </q-item-section>
@@ -60,7 +60,7 @@
           <q-item-section id="producto-card">
             <q-btn
               flat
-              style="color: white"
+              style="color: white; /* theme-allow */"
               label="Ir"
               @click="cambiarComponente(CrearProductos)"
             />
@@ -75,7 +75,7 @@
         dense
         bordered
         class="col"
-        style="background: linear-gradient(to right, #219286, #044e49); color: white"
+        style="background: linear-gradient(to right, #219286, #044e49); color: white; /* theme-allow */"
       >
         <q-item>
           <q-item-section> </q-item-section>
@@ -83,7 +83,7 @@
           <q-item-section id="reportes-card">
             <q-btn
               flat
-              style="color: white"
+              style="color: white; /* theme-allow */"
               label="ir"
               @click="cambiarComponente(ReporteComponent)"
             />

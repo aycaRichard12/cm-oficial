@@ -11,7 +11,7 @@
   >
     <q-form ref="formRef" class="q-gutter-md">
       <div class="q-mb-md">
-        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+        <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
           Almacen
         </div>
@@ -54,7 +54,7 @@
 
       <!-- Sección: Destinatario -->
       <div class="q-mb-md">
-        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+        <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
           Destinatario
         </div>
@@ -99,7 +99,7 @@
 
       <!-- Sección: Detalles de la Notificación -->
       <div class="q-mb-md">
-        <div class="text-subtitle2 text-grey-8 q-mb-sm">
+        <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="mail" class="q-mr-xs" />
           Motivo de la solicitud
         </div>
@@ -134,9 +134,9 @@
       </div>
 
       <!-- Vista previa del formato -->
-      <q-card flat bordered class="bg-grey-1 q-mt-md">
+      <q-card flat bordered class="cm-surface-2 q-mt-md">
         <q-card-section>
-          <div class="text-caption text-grey-7 q-mb-sm">Vista Previa del Formato</div>
+          <div class="text-caption cm-text-muted q-mb-sm">Vista Previa del Formato</div>
           <div class="text-body2">
             <div><strong>Asunto:</strong> {{ formData.asunto || '(sin asunto)' }}</div>
             <div><strong>Mensaje:</strong> {{ formData.mensaje || '(sin mensaje)' }}</div>

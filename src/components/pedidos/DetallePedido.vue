@@ -84,9 +84,9 @@
       class="row q-col-gutter-md q-mt-sm"
     >
       <div class="col-12">
-        <q-card flat bordered class="bg-grey-50">
+        <q-card flat bordered class="cm-surface-2">
           <q-card-section>
-            <div class="text-subtitle2 text-weight-bold text-grey-8 q-mb-sm flex items-center">
+            <div class="text-subtitle2 text-weight-bold cm-text q-mb-sm flex items-center">
               <q-icon name="tune" size="xs" class="q-mr-sm" color="primary" />
               Atributos del Producto
             </div>

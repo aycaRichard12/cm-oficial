@@ -17,11 +17,11 @@
 
         <!-- Información del resumen -->
         <div class="col column justify-center">
-          <div class="text-white text-weight-bold text-subtitle1">
+          <div class="text-white text-weight-bold text-subtitle1"><!-- theme-allow -->
             {{ itemList.length }} productos | {{ totalItems }} unidades
           </div>
-          <div class="text-white text-caption opacity-80">
-            Total a pagar: <span class="text-weight-bolder text-white">{{ formattedTotal }}</span>
+          <div class="text-white text-caption opacity-80"><!-- theme-allow -->
+            Total a pagar: <span class="text-weight-bolder text-white">{{ formattedTotal }}</span><!-- theme-allow -->
           </div>
         </div>
 
@@ -65,7 +65,7 @@ const openCart = () => {
   left: 0;
   right: 0;
   z-index: 2000;
-  background: linear-gradient(135deg, #004d40 0%, #26a69a 100%);
+  background: linear-gradient(135deg, var(--cm-brand) 0%, #26a69a 100%);
   border-radius: 20px 20px 0 0;
   padding-top: 12px;
   cursor: pointer;
@@ -75,7 +75,7 @@ const openCart = () => {
 .cart-badge {
   padding: 4px 6px;
   font-size: 0.75rem;
-  border: 2px solid #004d40;
+  border: 2px solid var(--cm-brand);
 }
 
 .opacity-80 {

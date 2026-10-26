@@ -2,7 +2,7 @@
   <div class="row q-col-gutter-lg items-end">
     <div class="col-12 col-md-4">
       <div class="flex justify-between items-center q-mb-sm">
-        <label class="text-weight-bold text-grey-9 block label-cotizacion">
+        <label class="text-weight-bold cm-text block label-cotizacion">
           Producto o Servicio <span class="text-negative">*</span>
         </label>
         <q-checkbox
@@ -41,7 +41,7 @@
     </div>
 
     <div class="col-12 col-md-2">
-      <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion"
+      <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion"
         >Stock Actual</label
       >
       <q-input
@@ -61,7 +61,7 @@
     </div>
 
     <div class="col-12 col-md-2">
-      <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+      <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
         Cantidad <span class="text-negative">*</span>
       </label>
       <q-input
@@ -80,7 +80,7 @@
     </div>
 
     <div class="col-12 col-md-3">
-      <label class="text-weight-bold text-grey-9 q-mb-sm block label-cotizacion">
+      <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
         Precio unitario <span class="text-negative">*</span>
       </label>
       <q-input
@@ -98,7 +98,7 @@
       >
         <template v-slot:append>
           <div
-            class="bg-grey-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders currency-append"
+            class="cm-surface-2 text-primary text-weight-bolder text-subtitle2 q-px-sm rounded-borders currency-append"
           >
             {{ divisaActiva.tipo }}
           </div>

@@ -2,11 +2,11 @@
   <div v-if="data" class="dashboard-widget">
     <!-- Encabezado del Dashboard -->
     <q-card class="header-card q-mb-md" flat bordered>
-      <q-card-section class="bg-gradient-header text-white q-pa-md">
+      <q-card-section class="bg-gradient-header q-pa-md">
         <div class="row items-center no-wrap">
           <q-icon name="analytics" size="md" class="q-mr-md" />
           <div>
-            <div class="text-caption text-white text-opacity-8">
+            <div class="text-caption" style="opacity: 0.8">
               Indicadores del período seleccionado
             </div>
           </div>
@@ -17,8 +17,8 @@
     <!-- Grid de 3 columnas: Venta, Cotización, Total -->
     <div class="cards-grid q-mb-md">
       <q-card v-for="cat in orderedCategories" :key="cat.key" class="breakdown-card" flat bordered>
-        <q-card-section class="bg-grey-2 q-px-md q-py-sm">
-          <span class="text-subtitle2 text-uppercase text-grey-8 text-weight-bold">
+        <q-card-section class="cm-surface-2 q-px-md q-py-sm">
+          <span class="text-subtitle2 text-uppercase cm-text text-weight-bold">
             {{ cat.label }}
           </span>
         </q-card-section>
@@ -28,7 +28,7 @@
           <!-- Bloque 1: Venta Neta -->
           <q-item>
             <q-item-section>
-              <q-item-label class="text-subtitle1 text-weight-bold text-grey-9">
+              <q-item-label class="text-subtitle1 text-weight-bold cm-text">
                 Venta neta
               </q-item-label>
             </q-item-section>
@@ -43,10 +43,10 @@
           <div class="sub-items-container q-pl-md q-pr-sm q-pb-sm">
             <q-item dense>
               <q-item-section>
-                <q-item-label class="text-body2 text-grey-7">Precio venta</q-item-label>
+                <q-item-label class="text-body2 cm-text-muted">Precio venta</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
-                <q-item-label class="text-body1 text-grey-9">
+                <q-item-label class="text-body1 cm-text">
                   {{ formatNumber(data[cat.key]?.venta_bruta) }}
                 </q-item-label>
               </q-item-section>
@@ -54,7 +54,7 @@
 
             <q-item dense>
               <q-item-section>
-                <q-item-label class="text-body2 text-grey-7">Descuento</q-item-label>
+                <q-item-label class="text-body2 cm-text-muted">Descuento</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-body1 text-negative">
@@ -69,10 +69,10 @@
           <!-- Bloque 2: Costo de Ventas -->
           <q-item>
             <q-item-section>
-              <q-item-label class="text-subtitle1 text-grey-9"> Costo de ventas </q-item-label>
+              <q-item-label class="text-subtitle1 cm-text"> Costo de ventas </q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-item-label class="text-h6 text-grey-9">
+              <q-item-label class="text-h6 cm-text">
                 {{ formatNumber(data[cat.key]?.costo_ventas) }}
               </q-item-label>
             </q-item-section>
@@ -84,7 +84,7 @@
           <!-- Resultado: Utilidad o Pérdida -->
           <q-item class="q-mt-sm q-mb-xs">
             <q-item-section>
-              <q-item-label class="text-h6 text-weight-bold text-grey-10">
+              <q-item-label class="text-h6 text-weight-bold cm-text">
                 Utilidad o Pérdida
               </q-item-label>
             </q-item-section>
@@ -99,7 +99,7 @@
     </div>
 
     <!-- Banner informativo -->
-    <q-banner rounded dense class="info-banner bg-grey-1 text-grey-7">
+    <q-banner rounded dense class="info-banner cm-surface-2 cm-text-muted">
       <template v-slot:avatar>
         <q-icon name="info" color="grey-6" size="sm" />
       </template>
@@ -146,7 +146,8 @@ const formatNumber = (value) => {
 }
 
 .bg-gradient-header {
-  background: linear-gradient(135deg, #004d40, #26a69a);
+  background: linear-gradient(135deg, var(--cm-brand), #26a69a);
+  color: var(--cm-on-primary);
 }
 
 /* Grid de tarjetas: 3 columnas responsivas */
@@ -170,13 +171,13 @@ const formatNumber = (value) => {
 
 /* Subítems visuales */
 .sub-items-container {
-  border-left: 3px solid #f0f0f0;
+  border-left: 3px solid var(--cm-border);
   margin-left: 16px;
 }
 
 /* Banner informativo */
 .info-banner {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
   border-radius: 8px;
 }
 

@@ -11,11 +11,11 @@
 
           <div class="row items-center q-gutter-x-md">
             <!-- Selector de Almacén -->
-            <div class="bg-white rounded-borders shadow-1" style="min-width: 300px">
+            <div class="cm-surface rounded-borders shadow-1" style="min-width: 300px">
               <AlmacenSelector />
             </div>
 
-            <q-btn icon="close" flat round dense class="text-white" @click="onDialogHide">
+            <q-btn icon="close" flat round dense class="text-white" @click="onDialogHide"><!-- theme-allow: white icon on bg-primary header -->
               <q-tooltip>Cerrar</q-tooltip>
             </q-btn>
           </div>
@@ -110,7 +110,7 @@
       <q-separator />
 
       <!-- Footer Actions -->
-      <q-card-actions align="right" class="col-auto bg-white q-pa-md">
+      <q-card-actions align="right" class="col-auto cm-surface q-pa-md">
         <q-btn
           flat
           label="Ver Pedidos Acumulados"
@@ -272,7 +272,7 @@ const columns = [
     align: 'left',
     field: 'observacion',
     sortable: true,
-    classes: 'text-grey-8',
+    classes: 'cm-text',
     headerClasses: 'text-bold',
   },
   {
@@ -342,7 +342,7 @@ const toggleRowSelection = (row, val) => {
       message: `Solo puedes seleccionar pedidos para el destino: ${destinoSeleccionado.value}`,
       timeout: 3000,
       position: 'top',
-      actions: [{ icon: 'close', color: 'white' }],
+      actions: [{ icon: 'close', color: 'white' }], // theme-allow: white action on warning notify
     })
     return // No hacer nada, el checkbox no cambiará gracias a :model-value
   }

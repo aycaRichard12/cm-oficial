@@ -62,7 +62,7 @@
     >
       <label
         for="cajaBanco"
-        class="text-weight-bold text-grey-9 q-mb-sm block"
+        class="text-weight-bold cm-text q-mb-sm block"
         style="font-size: 13px; text-transform: uppercase"
         >Seleccione Caja o Banco <span class="text-negative">*</span></label
       >
@@ -86,7 +86,7 @@
     </div>
     <q-slide-transition>
       <div v-if="resultado.comprobante_path">
-        <q-banner inline-actions class="text-white bg-green-8 q-mt-md">
+        <q-banner inline-actions class="text-white bg-green-8 q-mt-md"> <!-- theme-allow -->
           <template v-slot:avatar>
             <q-icon name="cloud_done" color="white" />
           </template>

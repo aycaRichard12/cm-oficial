@@ -74,7 +74,7 @@
             height: '100%',
           }"
         >
-          <VueApexCharts type="bar" height="100%" :options="chartOptions" :series="series" />
+          <VueApexCharts type="bar" height="100%" :options="themedChartOptions" :series="series" />
         </div>
       </q-card-section>
     </q-card>
@@ -88,8 +88,11 @@ import GpMayorVenta from './mayor_venta.vue'
 import VueApexCharts from 'vue3-apexcharts'
 import { useQuasar, date as qDate } from 'quasar'
 import { api } from 'src/boot/axios'
+import { applyChartTheme } from 'src/composables/useChartTheme'
+import { useThemeStore } from 'src/stores/theme'
 
 const $q = useQuasar()
+const themeStore = useThemeStore()
 const empresa = idempresa_md5()
 
 // Estado Fechas
@@ -258,6 +261,10 @@ const chartOptions = ref({
     style: { fontSize: '14px' },
   },
 })
+
+const themedChartOptions = computed(() =>
+  applyChartTheme(chartOptions.value, themeStore.isDark),
+)
 
 const series = ref([{ name: 'Ingresos', data: [] }])
 

@@ -29,6 +29,17 @@
   </head>
   <body>
     <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('mistersofts-cm-theme')
+          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          var dark = stored === 'dark' || (stored !== 'light' && systemDark)
+          if (dark) document.body.classList.add('body--dark')
+          document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+        } catch (error) {}
+      })()
+    </script>
+    <script>
       window.__SESSION_WIDGET__ = {
         loginUrl: 'https://mistersofts.com/app/cm/',
         logoutUrl: 'https://mistersofts.com/app/',

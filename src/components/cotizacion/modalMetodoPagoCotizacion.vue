@@ -17,10 +17,14 @@
       >
         <div class="flex items-center">
           <div
-            class="bg-white/20 q-pa-sm rounded-borders q-mr-md shadow-inner"
-            style="backdrop-filter: blur(8px); border-radius: 12px"
+            class="q-pa-sm rounded-borders q-mr-md shadow-inner"
+            style="
+              background: rgba(255, 255, 255, 0.2);
+              backdrop-filter: blur(8px);
+              border-radius: 12px;
+            "
           >
-            <q-icon name="account_balance_wallet" class="text-white" size="28px" />
+            <q-icon name="account_balance_wallet" class="text-white" size="28px" /> <!-- theme-allow -->
           </div>
           <div>
             <div
@@ -29,7 +33,10 @@
             >
               Método de Pago
             </div>
-            <div class="text-caption text-white/80 text-weight-medium">
+            <div
+              class="text-caption text-weight-medium"
+              style="color: rgba(255, 255, 255, 0.8)"
+            >
               Configure la modalidad y detalles del pago
             </div>
           </div>
@@ -40,12 +47,13 @@
           flat
           round
           dense
-          class="text-white/80 hover:text-white transition-all"
+          class="transition-all"
+          style="color: rgba(255, 255, 255, 0.8)"
           size="md"
         />
       </q-card-section>
 
-      <q-card-section class="col scroll q-pa-xl bg-grey-1">
+      <q-card-section class="col scroll q-pa-xl cm-surface-2">
         <!-- Selector de Modalidad Principal -->
         <div class="row justify-center" style="margin-bottom: 100px">
           <q-btn-toggle
@@ -122,7 +130,7 @@
           >
             <div class="col-12 col-md-10">
               <label
-                class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 12px"
               >
                 Método de pago principal <span class="text-negative">*</span>
@@ -150,7 +158,7 @@
 
           <!-- Caso: Pago Dividido -->
           <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
-            <div class="text-caption text-grey-7 q-mb-md flex items-center">
+            <div class="text-caption cm-text-muted q-mb-md flex items-center">
               <q-icon name="info" size="xs" class="q-mr-xs" />
               Distribuya el monto total entre diferentes métodos de pago.
             </div>
@@ -158,11 +166,11 @@
             <div
               v-for="(payment, index) in carritoCO.pagosDivididos"
               :key="index"
-              class="row q-col-gutter-md q-mb-md items-start bg-white q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
+              class="row q-col-gutter-md q-mb-md items-start cm-surface q-pa-md shadow-sm rounded-borders border-grey-2 hover-shadow-md transition-all"
             >
               <div class="col-12 col-md-5">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                  class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
                   >Método de Pago *</label
                 >
                 <q-select
@@ -182,7 +190,7 @@
               </div>
               <div class="col-12 col-md-3">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                  class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
                   >Monto ({{ divisaActiva.tipo }})</label
                 >
                 <q-input
@@ -199,7 +207,7 @@
               </div>
               <div class="col-12 col-md-3">
                 <label
-                  class="text-weight-bold text-grey-8 q-mb-xs block text-caption text-uppercase ls-1"
+                  class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
                   >Porcentaje (%)</label
                 >
                 <q-input
@@ -234,7 +242,7 @@
                 icon="add"
                 color="primary"
                 outline
-                class="q-px-lg bg-white shadow-1 text-weight-bold"
+                class="q-px-lg cm-surface shadow-1 text-weight-bold"
                 style="border-radius: 10px"
                 @click="addPaymentMethod"
               />
@@ -252,7 +260,7 @@
               <div class="row items-center justify-between">
                 <div class="row q-gutter-x-xl">
                   <div class="column">
-                    <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+                    <span class="text-caption cm-text-muted text-uppercase ls-1 font-bold"
                       >Total Pagado</span
                     >
                     <span
@@ -263,7 +271,7 @@
                     </span>
                   </div>
                   <div class="column">
-                    <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
+                    <span class="text-caption cm-text-muted text-uppercase ls-1 font-bold"
                       >Monto Pendiente</span
                     >
                     <span
@@ -291,7 +299,7 @@
             <q-separator class="q-mb-xl" />
 
             <label
-              class="text-weight-bold text-grey-9 q-mb-sm block text-uppercase ls-1"
+              class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
               style="font-size: 12px"
             >
               Asignar a Caja o Banco <span class="text-negative">*</span>
@@ -304,7 +312,7 @@
               outlined
               emit-value
               map-options
-              class="premium-input bg-white"
+              class="premium-input cm-surface"
               :rules="[(val) => !!val || 'Campo requerido']"
               style="border-radius: 8px"
             >
@@ -315,7 +323,7 @@
               <template v-slot:selected-item="scope">
                 <div v-if="scope.opt" class="q-py-xs">
                   <span class="text-weight-bold text-primary">{{ scope.opt.codigo }}</span>
-                  <span class="q-ml-xs text-grey-8">- {{ scope.opt.nombre }}</span>
+                  <span class="q-ml-xs cm-text-muted">- {{ scope.opt.nombre }}</span>
                 </div>
               </template>
 
@@ -357,7 +365,7 @@
           <div class="row q-col-gutter-xl q-pt-md">
             <div class="col-12 col-md-6">
               <label
-                class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
                 >Número de Cuotas *</label
               >
@@ -380,7 +388,7 @@
 
             <div class="col-12 col-md-6">
               <label
-                class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
                 >Monto por Cuota</label
               >
@@ -389,19 +397,19 @@
                 dense
                 outlined
                 readonly
-                class="bg-grey-2"
+                class="cm-surface-2"
                 input-class="text-weight-bolder text-primary text-subtitle1"
               >
                 <template v-slot:prepend><q-icon name="paid" color="grey-6" /></template>
                 <template v-slot:append>
-                  <span class="text-subtitle2 text-grey-7">{{ divisaActiva.tipo }}</span>
+                  <span class="text-subtitle2 cm-text-muted">{{ divisaActiva.tipo }}</span>
                 </template>
               </q-input>
             </div>
 
             <div class="col-12 col-md-6">
               <label
-                class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
                 >Frecuencia de Pago *</label
               >
@@ -425,7 +433,7 @@
               class="col-12 col-md-6 animate__animated animate__zoomIn"
             >
               <label
-                class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
                 >Plazo Total (Días) *</label
               >
@@ -445,7 +453,7 @@
 
             <div class="col-12 col-md-6">
               <label
-                class="text-weight-bold text-grey-8 q-mb-sm block text-uppercase ls-1"
+                class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
                 >Fecha de Vencimiento Estimada</label
               >
@@ -455,7 +463,7 @@
                 outlined
                 type="date"
                 readonly
-                class="bg-grey-2"
+                class="cm-surface-2"
               >
                 <template v-slot:prepend><q-icon name="event_available" color="grey-6" /></template>
               </q-input>
@@ -475,7 +483,7 @@
       <q-separator />
 
       <!-- Acciones del Diálogo -->
-      <q-card-actions align="right" class="q-pa-lg bg-white shrink-0 shadow-up-1">
+      <q-card-actions align="right" class="q-pa-lg cm-surface shrink-0 shadow-up-1">
         <q-btn
           flat
           label="Regresar"
@@ -655,7 +663,7 @@ onMounted(() => {
 .invoice {
   font-family: 'Arial', sans-serif;
   font-size: 12px;
-  color: #333;
+  color: var(--cm-text);
 
   header {
     padding: 10px 0;
@@ -708,7 +716,7 @@ onMounted(() => {
       }
 
       .text-gray-light {
-        color: #777;
+        color: var(--cm-text-muted);
       }
 
       .to {
@@ -720,23 +728,23 @@ onMounted(() => {
       width: 100%;
       border-collapse: collapse;
       thead {
-        background-color: #e0e0e0;
+        background-color: var(--cm-surface-2);
         th {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           text-align: left;
         }
       }
       tbody {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
         }
       }
       tfoot {
         td {
           padding: 8px;
-          border: 1px solid #ddd;
+          border: 1px solid var(--cm-border);
           font-weight: bold;
         }
       }
@@ -775,7 +783,7 @@ onMounted(() => {
 
 .button-primary {
   background: linear-gradient(to right, #219286, #044e49);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 500;
   letter-spacing: 0.5px;
   padding: 8px 20px;

@@ -18,7 +18,7 @@
       flat
       bordered
       :pagination="{ rowsPerPage: 20 }"
-      class="bg-white rounded-borders"
+      class="cm-surface rounded-borders"
     >
       <template v-slot:body-cell-comprobante="props">
         <q-td :props="props">

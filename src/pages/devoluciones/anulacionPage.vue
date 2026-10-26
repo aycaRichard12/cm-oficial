@@ -406,7 +406,7 @@ onMounted(async () => {
 /* Note: Most styles were for invoice printing which is maybe not needed if it's in a modal or generated via PDF, but preserving just in case used elsewhere or if structure changes */
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }

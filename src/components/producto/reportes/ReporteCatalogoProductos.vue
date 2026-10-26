@@ -3,7 +3,7 @@
     <q-form @submit.prevent class="q-mb-md">
       <div class="row q-col-gutter-md justify-center" id="filtrosCatalogo">
         <div class="col-12 col-md-4">
-          <label for="almacen" class="text-weight-bold text-grey-8 q-mb-sm block">Almacén*</label>
+          <label for="almacen" class="text-weight-bold cm-text q-mb-sm block">Almacén*</label>
           <q-select
             v-model="almacenSeleccionado"
             id="almacen"
@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <label for="categoria" class="text-weight-bold text-grey-8 q-mb-sm block">
+          <label for="categoria" class="text-weight-bold cm-text q-mb-sm block">
             Categoría de precio*
           </label>
           <q-select
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-12 col-md-3">
-          <label for="fecha" class="text-weight-bold text-grey-8 q-mb-sm block">Fecha</label>
+          <label for="fecha" class="text-weight-bold cm-text q-mb-sm block">Fecha</label>
           <q-input
             v-model="fecha"
             id="fecha"

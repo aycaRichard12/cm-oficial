@@ -172,7 +172,7 @@
       </q-td>
     </template>
     <template v-slot:body-cell-descuento="props">
-      <q-td :props="props" class="text-right text-grey-7">
+      <q-td :props="props" class="text-right cm-text-muted">
         {{ formatCurrency(props.row.descuento) }}
       </q-td>
     </template>

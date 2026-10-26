@@ -17,7 +17,7 @@
             outlined
             v-model="busqueda"
             placeholder="Buscar por producto o código..."
-            class="bg-white"
+            class="cm-surface"
           >
             <template v-slot:prepend>
               <q-icon name="search" color="primary" />
@@ -34,7 +34,7 @@
             v-model="categoriaFiltro"
             :options="categoriasUnicas"
             label="Filtrar por Categoría"
-            class="bg-white"
+            class="cm-surface"
           >
             <template v-slot:prepend>
               <q-icon name="filter_alt" color="primary" />
@@ -164,20 +164,20 @@ function exportarPDF() {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
 }
 
 .table-header {
-  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  background: var(--cm-surface-2);
   padding: 16px 20px;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--cm-border);
 }
 
 .table-header .text-h6 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--cm-text);
 }
 
 .search-input {
@@ -201,11 +201,11 @@ function exportarPDF() {
 }
 
 .inventory-table :deep(.q-table__grid-content) {
-  background: white;
+  background: var(--cm-surface);
 }
 
 .inventory-table :deep(tr:hover) {
-  background-color: #f5f7fa;
+  background-color: var(--cm-surface-2);
 }
 
 .estado-badge {

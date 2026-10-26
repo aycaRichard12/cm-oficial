@@ -7,11 +7,11 @@
           <q-icon name="notifications_active" size="28px" />
         </q-avatar>
         <div class="q-ml-md">
-          <div class="text-h6 text-white">Nueva Notificación</div>
-          <div class="text-subtitle2 text-white" v-if="datosNotificacion?.nombre_usuario_notificacion">
+          <div class="text-h6 text-white">Nueva Notificación</div><!-- theme-allow: white on bg-primary -->
+          <div class="text-subtitle2 text-white" v-if="datosNotificacion?.nombre_usuario_notificacion"><!-- theme-allow: white on bg-primary -->
             De: {{ datosNotificacion.nombre_usuario_notificacion }}
           </div>
-          <div class="text-caption text-white">
+          <div class="text-caption text-white"><!-- theme-allow: white on bg-primary -->
             {{ (datosNotificacion?.fecha) }}
           </div>
         </div>
@@ -25,7 +25,7 @@
         <!-- Asunto -->
         <div class="q-mb-md">
           <div class="text-overline text-grey-7">Asunto</div>
-          <div class="text-h6 text-grey-9">
+          <div class="text-h6 cm-text">
             {{ datosNotificacion?.asunto || 'Sin asunto' }}
           </div>
         </div>
@@ -35,7 +35,7 @@
         <!-- Descripción/Mensaje -->
         <div class="q-mb-md">
           <div class="text-overline text-grey-7">Descripción</div>
-          <div class="text-body1 text-grey-9" style="white-space: pre-wrap">
+          <div class="text-body1 cm-text" style="white-space: pre-wrap">
             {{ datosNotificacion?.descripcion || 'Sin contenido' }}
           </div>
         </div>

@@ -38,7 +38,7 @@
       </q-th>
     </template>
     <template v-slot:bottom-row>
-      <q-tr class="text-weight-bold bg-white-3">
+      <q-tr class="text-weight-bold cm-surface-2">
         <q-td
           v-for="(col, index) in visibleColumns"
           :key="col.name"
@@ -705,7 +705,7 @@ function handleSortChange(payload) {
   position: sticky;
   top: 0;
   z-index: 2;
-  background-color: #ffffff;
+  background-color: var(--cm-surface);
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12);
 }
 
@@ -713,9 +713,9 @@ function handleSortChange(payload) {
 .modal-head-verde .q-card__section:first-child,
 .modal-head-verde .q-dialog__title {
   background-color: #1b5e20 !important;
-  color: #ffffff !important;
+  color: #ffffff !important; /* theme-allow: white on green modal head */
 }
 .modal-head-verde .q-card__section:first-child * {
-  color: #ffffff !important;
+  color: #ffffff !important; /* theme-allow: white on green modal head */
 }
 </style>

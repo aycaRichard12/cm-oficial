@@ -8,7 +8,7 @@
           <q-icon name="assessment" size="md" class="q-mr-sm" />
           Reporte de Índice de Rotación Global
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">
           Administración de Reporte de Índice de Rotación Global
         </div>
       </div>
@@ -195,6 +195,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { html2pdf } from 'html2pdf.js'
+import { withLightCapture } from 'src/utils/with-light-capture'
 import { cambiarFormatoFecha, validarUsuario } from 'src/composables/FuncionesG'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { PDF_REPORTE_DE_ROTACION_POR_GLOBAL } from 'src/utils/pdfReportGenerator'
@@ -334,7 +335,7 @@ function mostrarVistaPrevia() {
   mostrarModal.value = true
 }
 
-function descargarPDF() {
+async function descargarPDF() {
   const element = document.getElementById('reportePDF')
   const opt = {
     margin: 0.5,
@@ -344,15 +345,14 @@ function descargarPDF() {
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
   }
 
-  // Necesitarás importar html2pdf.js en tu proyecto
-  html2pdf().set(opt).from(element).save()
+  await withLightCapture(element, () => html2pdf().set(opt).from(element).save())
 }
 </script>
 
 <style scoped>
 .invoice {
   position: relative;
-  background-color: #fff;
+  background-color: var(--cm-surface);
   min-height: 680px;
   padding: 15px;
 }
@@ -389,17 +389,17 @@ function descargarPDF() {
 .table th {
   padding: 5px;
   background: #3989c6;
-  color: #fff;
-  border-bottom: 1px solid #fff;
+  color: var(--cm-on-primary);
+  border-bottom: 1px solid var(--cm-on-primary);
 }
 
 .table td {
   padding: 8px;
-  background: #fff;
-  border-bottom: 1px solid #e3e3e3;
+  background: var(--cm-surface);
+  border-bottom: 1px solid var(--cm-border);
 }
 
 .table-hover tbody tr:hover td {
-  background: #f0f0f0;
+  background: var(--cm-surface-2);
 }
 </style>

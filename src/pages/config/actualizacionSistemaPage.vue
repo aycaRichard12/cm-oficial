@@ -18,7 +18,7 @@
 
         <!-- Navegación de versiones -->
         <div
-          class="bg-white shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm"
+          class="cm-surface shadow-1 rounded-borders q-pa-xs row q-gutter-x-sm"
           id="navegadorVersiones"
         >
           <q-btn
@@ -49,14 +49,14 @@
           <div :key="selectedVersion.id">
             <!-- Version Status Banner -->
             <div
-              class="row items-center justify-between q-mb-lg bg-white q-pa-md shadow-1 rounded-borders"
+              class="row items-center justify-between q-mb-lg cm-surface q-pa-md shadow-1 rounded-borders"
               id="estadoVersion"
             >
               <div class="row items-center q-gutter-x-md">
                 <div class="text-h5 text-weight-bold text-primary">
                   {{ selectedVersion.title }}
                 </div>
-                <div class="text-caption text-grey-8 bg-grey-3 q-px-sm q-py-xs rounded-borders">
+                <div class="text-caption cm-text-muted cm-surface-2 q-px-sm q-py-xs rounded-borders">
                   <q-icon name="event" size="14px" class="q-mr-xs" />
                   {{ selectedVersion.date }}
                 </div>
@@ -97,7 +97,7 @@
             <!-- Content: Future -->
             <div
               v-else
-              class="column flex-center q-pa-xl text-center bg-white shadow-1 rounded-borders q-my-lg"
+              class="column flex-center q-pa-xl text-center cm-surface shadow-1 rounded-borders q-my-lg"
             >
               <q-avatar
                 size="100px"
@@ -107,7 +107,7 @@
                 icon="engineering"
                 class="q-mb-md"
               />
-              <div class="text-h4 text-grey-8 text-weight-bold">En Desarrollo</div>
+              <div class="text-h4 cm-text-muted text-weight-bold">En Desarrollo</div>
               <p class="text-grey-6 text-body1 q-mt-md" style="max-width: 400px">
                 Estamos cocinando las próximas mejoras. ¡Pronto verás novedades aquí!
               </p>

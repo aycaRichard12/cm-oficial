@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-lg bg-white">
+  <q-page class="q-pa-lg cm-surface">
     <q-form @submit="onSubmit" class="q-gutter-y-lg">
       <q-card-section>
         <div class="row q-col-gutter-md">
@@ -262,13 +262,13 @@
 
           <div class="q-mt-lg bg-grey-1 q-pa-md rounded-borders border-grey">
             <div class="row items-center">
-              <div class="col-6 text-subtitle1 text-grey-8">Total Pagado:</div>
+              <div class="col-6 text-subtitle1 cm-text-muted">Total Pagado:</div>
               <div class="col-6 text-right text-subtitle1 text-weight-medium text-primary-dark">
                 {{ totalPaidAmount.toFixed(2) }} {{ divisaActiva.simbolo }}
               </div>
             </div>
             <div class="row items-center">
-              <div class="col-6 text-subtitle1 text-grey-8">Restante por Pagar:</div>
+              <div class="col-6 text-subtitle1 cm-text-muted">Restante por Pagar:</div>
               <div
                 class="col-6 text-right text-subtitle1"
                 :class="remainingAmount !== 0 ? 'text-negative' : 'text-primary-green'"
@@ -325,7 +325,7 @@
               label-color="grey-7"
             >
               <template v-slot:append>
-                <div class="text-caption text-grey-8">
+                <div class="text-caption cm-text-muted">
                   {{ divisaActiva.simbolo }}
                 </div>
               </template>
@@ -407,7 +407,7 @@
 /* Fuentes */
 .q-page {
   font-family: 'Roboto', sans-serif;
-  color: #333;
+  color: var(--cm-text);
 }
 
 /* Colores personalizados */
@@ -429,20 +429,20 @@
 
 .button-primary {
   background: linear-gradient(to right, #219286, #044e49);
-  color: white;
+  color: white; /* theme-allow */
   font-weight: 500;
 }
 
 /* Estilos de la tarjeta */
 .card-section {
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--cm-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .section-header {
   padding: 12px 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--cm-border);
 }
 
 .text-subtitle1 {

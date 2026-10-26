@@ -11,7 +11,7 @@
       </q-card-section>
       <q-separator />
       <q-card-section>
-        <div class="text-subtitle2 text-grey-8 q-mb-md">Categorías Asignadas</div>
+        <div class="text-subtitle2 cm-text-muted q-mb-md">Categorías Asignadas</div>
         <q-table :rows="categoriasCampana" :columns="columns" row-key="id" flat bordered :rows-per-page-options="[5, 10]" :grid="$q.screen.lt.md">
           <template v-slot:body-cell-tipo="props"><q-td :props="props"><q-chip color="primary" text-color="white" icon="label">{{ props.row.tipo }}</q-chip></q-td></template>
           <template v-slot:body-cell-opciones="props"><q-td :props="props"><q-btn flat dense round color="negative" icon="delete" @click="eliminarCategoriaCampana(props.row.id)" /></q-td></template>

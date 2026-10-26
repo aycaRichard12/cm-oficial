@@ -31,7 +31,7 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <q-card class="shadow-3 bg-teal text-white">
+          <q-card class="shadow-3 bg-teal text-white" data-theme-allow>
             <q-card-section class="row flex justify-between">
               <div class="text-body2">Costo Unitario Promedio</div>
               <div class="text-h6 text-weight-bold">

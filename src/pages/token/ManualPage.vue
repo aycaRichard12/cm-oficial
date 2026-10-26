@@ -46,7 +46,7 @@
               v-ripple
               :active="selectedApi && selectedApi.id === api.id"
               @click="selectApi(api)"
-              active-class="bg-teal-1 text-grey-8"
+              active-class="bg-teal-1 cm-text-muted"
             >
               <q-item-section>
                 <q-item-label>{{ api.name }}</q-item-label>
@@ -80,7 +80,7 @@
           >
             <div>
               <q-icon name="hub" color="primary" size="100px" />
-              <div class="text-h4 q-mt-md text-grey-8">Documentación Interactiva de API</div>
+              <div class="text-h4 q-mt-md cm-text-muted">Documentación Interactiva de API</div>
               <p class="text-subtitle1 q-mt-sm text-grey-6">
                 Selecciona un endpoint del menú de la izquierda para ver sus detalles.
               </p>
