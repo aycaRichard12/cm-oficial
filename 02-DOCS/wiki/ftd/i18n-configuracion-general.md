@@ -51,4 +51,4 @@ Fuera:
 
 ## Next
 
-Revisar los cambios en `feat/i18n-config-general` y confirmar si se commitean y abren PR.
+PR #100 abierto: https://github.com/aycaRichard12/cm-oficial/pull/100 (rama `feat/i18n-config-general` → `develop`).
