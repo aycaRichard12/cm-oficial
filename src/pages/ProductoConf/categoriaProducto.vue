@@ -5,10 +5,10 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para categorías o grupos -->
           <q-icon name="category" size="md" class="q-mr-sm" />
-          Categoría de Producto
+          {{ t('configProducto.categoriaProducto.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de grupos y clasificaciones de productos
+          {{ t('configProducto.categoriaProducto.subtitle') }}
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@
       <q-card class="responsive-dialog">
         <q-card class="my-card">
           <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-            <div>Registrar Categoria Producto</div>
+            <div>{{ t('configProducto.categoriaProducto.dialogTitle') }}</div>
             <q-btn color="" icon="close" @click="mostrarDialogo = false" flat round dense />
           </q-card-section>
           <q-card-section class="q-pa-none q-ma-md">
@@ -47,6 +47,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
 import CategoriaForm from 'src/components/productoConf/categoria/categoriaForm.vue'
 import TablaCategorias from 'src/components/productoConf/categoria/categoriaTable.vue'
@@ -55,6 +56,7 @@ import { useQuasar } from 'quasar'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 // Datos
 const categorias = ref([])
 const categoriasPadre = ref([])
@@ -70,7 +72,10 @@ async function getCategorias() {
     categorias.value = response.data
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({
+      type: 'negative',
+      message: t('configProducto.categoriaProducto.messages.loadError'),
+    })
   }
 }
 // Estado del diálogo y formulario
@@ -123,10 +128,16 @@ async function guardarCategoria(data) {
   if (response.data.estado === 'exito') {
     mostrarDialogo.value = false
     getCategorias()
-    $q.notify({ type: 'positive', message: response.data.mensaje || 'Categoria Guardado' })
+    $q.notify({
+      type: 'positive',
+      message: response.data.mensaje || t('configProducto.categoriaProducto.messages.saved'),
+    })
     return response
   } else {
-    $q.notify({ type: 'negative', message: response.data.mensaje || 'Categoria No Guardado' })
+    $q.notify({
+      type: 'negative',
+      message: response.data.mensaje || t('configProducto.categoriaProducto.messages.saveError'),
+    })
   }
 }
 
@@ -139,8 +150,8 @@ function cerrarDialogo() {
 function eliminarCategoria(item) {
   console.log(item)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Categoria?`,
+    title: t('configProducto.categoriaProducto.messages.deleteTitle'),
+    message: t('configProducto.categoriaProducto.messages.deleteMessage'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -164,7 +175,7 @@ function eliminarCategoria(item) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: t('configProducto.categoriaProducto.messages.loadError'),
       })
     }
   })
@@ -180,7 +191,7 @@ async function changeStatus(item) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.categoriaProducto.messages.loadError'),
     })
   }
 }
