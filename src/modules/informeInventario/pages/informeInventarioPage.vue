@@ -693,7 +693,13 @@ const almacenNombre = computed(() => {
 })
 
 const puedeGenerar = computed(
-  () => !!almacenSeleccionado.value && !!fechaInicio.value && !!fechaFin.value && rangoValido.value,
+  () =>
+    almacenSeleccionado.value !== null &&
+    almacenSeleccionado.value !== undefined &&
+    almacenSeleccionado.value !== '' &&
+    !!fechaInicio.value &&
+    !!fechaFin.value &&
+    rangoValido.value,
 )
 
 /**
@@ -769,13 +775,17 @@ async function cargarAlmacenes() {
     const response = await api.get(`listaResponsableAlmacenReportes/${idempresa}`)
     if (Array.isArray(response.data)) {
       const filtrados = response.data.filter((obj) => obj.idusuario == idusuario)
-      opcionesAlmacenes.value = filtrados.map((item) => ({
-        label: item.almacen,
-        value: item.idalmacen,
-      }))
+      opcionesAlmacenes.value = [
+        { label: 'Todos los almacenes', value: 0 },
+        ...filtrados.map((item) => ({
+          label: item.almacen,
+          value: item.idalmacen,
+        })),
+      ]
       const existe = opcionesAlmacenes.value.some((o) => o.value === almacenSeleccionado.value)
-      if (!existe && opcionesAlmacenes.value.length > 0) {
-        almacenSeleccionado.value = opcionesAlmacenes.value[0].value
+      if (!existe) {
+        const primerAlmacenReal = opcionesAlmacenes.value.find((o) => o.value !== 0)
+        almacenSeleccionado.value = primerAlmacenReal ? primerAlmacenReal.value : 0
       }
     }
   } catch (error) {
@@ -795,7 +805,8 @@ async function generarInforme() {
   try {
     const fIni = aFechaISO(fechaInicio.value)
     const fFin = aFechaISO(fechaFin.value)
-    const url = `obtenerSaldosFinales/${fIni}/${fFin}/${almacenSeleccionado.value}`
+    const idAlmacen = almacenSeleccionado.value ?? 0
+    const url = `obtenerSaldosFinales/${fIni}/${fFin}/${idAlmacen}/${idempresa}`
     const response = await api.get(url)
     const body = response.data
 
