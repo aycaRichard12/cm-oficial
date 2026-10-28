@@ -5,8 +5,8 @@
       <div class="row items-center">
         <q-icon name="settings" size="24px" class="q-mr-md" />
         <div>
-          <div class="text-h6">Configuración de Producto Único</div>
-          <div class="text-subtitle2 text-primary-light">Control de gestión de productos</div>
+          <div class="text-h6">{{ t('configProducto.configuracionProductoUnico.title') }}</div>
+          <div class="text-subtitle2 text-primary-light">{{ t('configProducto.configuracionProductoUnico.subtitle') }}</div>
         </div>
       </div>
     </q-card-section>
@@ -16,19 +16,19 @@
       <!-- Header de configuración -->
       <div class="row items-center justify-between q-mb-lg">
         <div class="col">
-          <div class="text-h6 text-weight-medium q-mb-xs">Modo Producto Único</div>
+          <div class="text-h6 text-weight-medium q-mb-xs">{{ t('configProducto.configuracionProductoUnico.modoTitle') }}</div>
           <div class="text-body2 text-grey-7">
             {{
               config.productounico
-                ? '✓ Cada producto tendrá un identificador único e irrepetible'
-                : '✓ Gestión por lotes: productos agrupados sin identificador individual'
+                ? t('configProducto.configuracionProductoUnico.descStatusActivo')
+                : t('configProducto.configuracionProductoUnico.descStatusInactivo')
             }}
           </div>
         </div>
 
         <div class="col-auto">
           <div class="text-caption text-grey-6 q-mb-xs text-center">
-            {{ config.productounico ? 'Activo' : 'Inactivo' }}
+            {{ config.productounico ? t('configProducto.configuracionProductoUnico.activo') : t('configProducto.configuracionProductoUnico.inactivo') }}
           </div>
           <q-toggle
             v-model="config.productounico"
@@ -42,13 +42,13 @@
             <q-tooltip :delay="500">
               <div class="text-center">
                 <div class="text-weight-bold q-mb-xs">
-                  {{ config.productounico ? 'Desactivar' : 'Activar' }} modo producto único
+                  {{ config.productounico ? t('configProducto.configuracionProductoUnico.tooltipDesactivar') : t('configProducto.configuracionProductoUnico.tooltipActivar') }}
                 </div>
                 <div class="text-caption">
                   {{
                     config.productounico
-                      ? 'Los productos se manejarán individualmente'
-                      : 'Los productos se agruparán por lotes'
+                      ? t('configProducto.configuracionProductoUnico.descActivar')
+                      : t('configProducto.configuracionProductoUnico.descDesactivar')
                   }}
                 </div>
               </div>
@@ -75,15 +75,15 @@
                   <div class="text-subtitle1 text-weight-bold">
                     {{
                       config.productounico
-                        ? 'Modo Producto Único Activado'
-                        : 'Modo Gestión por Lotes Activado'
+                        ? t('configProducto.configuracionProductoUnico.statusActivo')
+                        : t('configProducto.configuracionProductoUnico.statusInactivo')
                     }}
                   </div>
                   <div class="text-caption q-mt-xs">
                     {{
                       config.productounico
-                        ? 'Cada producto tiene su propio identificador para trazabilidad completa'
-                        : 'Productos agrupados para una gestión más eficiente por lotes'
+                        ? t('configProducto.configuracionProductoUnico.descStatusActivo')
+                        : t('configProducto.configuracionProductoUnico.descStatusInactivo')
                     }}
                   </div>
                 </div>
@@ -98,7 +98,7 @@
     <q-inner-loading :showing="loading" color="primary" class="rounded-borders">
       <div class="flex column items-center">
         <q-spinner-dots size="50px" color="primary" />
-        <div class="text-caption q-mt-sm text-grey-7">Actualizando configuración...</div>
+        <div class="text-caption q-mt-sm text-grey-7">{{ t('configProducto.configuracionProductoUnico.loading') }}</div>
       </div>
     </q-inner-loading>
   </q-card>
@@ -119,7 +119,7 @@
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
             <div class="text-subtitle2 text-weight-regular">
-              {{ dialogType === 'error' ? 'Error en la operación' : 'Operación exitosa' }}
+              {{ dialogType === 'error' ? t('configProducto.configuracionProductoUnico.dialog.errorTitle') : t('configProducto.configuracionProductoUnico.dialog.successTitle') }}
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? 'Entendido' : 'Continuar'"
+          :label="dialogType === 'error' ? t('configProducto.configuracionProductoUnico.dialog.okButton') : t('configProducto.configuracionProductoUnico.dialog.cancelButton')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"
@@ -145,6 +145,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useProductoConfig } from 'src/composables/productoUnico/useProductoConfig'
 
 // Props
@@ -154,6 +155,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const { t } = useI18n()
 const { config, loading, showDialog, dialogType, dialogTitle, dialogMessage, toggleProductoUnico } =
   useProductoConfig(props.md5)
 </script>

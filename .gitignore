@@ -3,6 +3,7 @@
 node_modules
 .agent
 .agents
+.antigravity
 /skills-lock.json
 # Quasar core related directories
 .quasar

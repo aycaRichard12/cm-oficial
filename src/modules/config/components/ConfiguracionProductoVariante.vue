@@ -5,8 +5,8 @@
       <div class="row items-center">
         <q-icon name="category" size="24px" class="q-mr-md" />
         <div>
-          <div class="text-h6">Configuración de Producto Variante</div>
-          <div class="text-subtitle2 text-primary-light">Control de uso de variantes</div>
+          <div class="text-h6">{{ t('configProducto.configuracionProductoVariante.title') }}</div>
+          <div class="text-subtitle2 text-primary-light">{{ t('configProducto.configuracionProductoVariante.subtitle') }}</div>
         </div>
       </div>
     </q-card-section>
@@ -15,19 +15,19 @@
     <q-card-section class="q-pa-lg">
       <div class="row items-center justify-between q-mb-lg">
         <div class="col">
-          <div class="text-h6 text-weight-medium q-mb-xs">Modo de producto variante</div>
+          <div class="text-h6 text-weight-medium q-mb-xs">{{ t('configProducto.configuracionProductoVariante.modoTitle') }}</div>
           <div class="text-body2 text-grey-7">
             {{
               usarVariante
-                ? '✓ Se permite crear productos con variantes'
-                : '✓ No se permite usar variantes en productos'
+                ? t('configProducto.configuracionProductoVariante.permite')
+                : t('configProducto.configuracionProductoVariante.noPermite')
             }}
           </div>
         </div>
 
         <div class="col-auto">
           <div class="text-caption text-grey-6 q-mb-xs text-center">
-            {{ usarVariante ? 'Activado' : 'Desactivado' }}
+            {{ usarVariante ? t('configProducto.configuracionProductoVariante.activo') : t('configProducto.configuracionProductoVariante.inactivo') }}
           </div>
           <q-toggle
             :model-value="usarVariante"
@@ -41,13 +41,13 @@
             <q-tooltip :delay="500">
               <div class="text-center">
                 <div class="text-weight-bold q-mb-xs">
-                  {{ usarVariante ? 'Desactivar' : 'Activar' }}
+                  {{ usarVariante ? t('configProducto.configuracionProductoVariante.tooltipDesactivar') : t('configProducto.configuracionProductoVariante.tooltipActivar') }}
                 </div>
                 <div class="text-caption">
                   {{
                     usarVariante
-                      ? 'Se deshabilitará el uso de variantes'
-                      : 'Se habilitará el uso de variantes'
+                      ? t('configProducto.configuracionProductoVariante.descDesactivar')
+                      : t('configProducto.configuracionProductoVariante.descActivar')
                   }}
                 </div>
               </div>
@@ -67,13 +67,13 @@
                 <q-icon :name="usarVariante ? 'check_circle' : 'block'" size="32px" />
                 <div>
                   <div class="text-subtitle1 text-weight-bold">
-                    {{ usarVariante ? 'Variantes habilitadas' : 'Variantes deshabilitadas' }}
+                    {{ usarVariante ? t('configProducto.configuracionProductoVariante.statusHabilitado') : t('configProducto.configuracionProductoVariante.statusDeshabilitado') }}
                   </div>
                   <div class="text-caption q-mt-xs">
                     {{
                       usarVariante
-                        ? 'Los productos podrán tener múltiples variantes.'
-                        : 'Los productos no podrán tener variantes.'
+                        ? t('configProducto.configuracionProductoVariante.descStatusHabilitado')
+                        : t('configProducto.configuracionProductoVariante.descStatusDeshabilitado')
                     }}
                   </div>
                 </div>
@@ -88,7 +88,7 @@
     <q-inner-loading :showing="loading" color="primary" class="rounded-borders">
       <div class="flex column items-center">
         <q-spinner-dots size="50px" color="primary" />
-        <div class="text-caption q-mt-sm text-grey-7">Actualizando configuración...</div>
+        <div class="text-caption q-mt-sm text-grey-7">{{ t('configProducto.configuracionProductoVariante.loading') }}</div>
       </div>
     </q-inner-loading>
   </q-card>
@@ -108,7 +108,7 @@
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
             <div class="text-subtitle2 text-white text-weight-regular"><!-- theme-allow -->
-              {{ dialogType === 'error' ? 'Error en la operación' : 'Operación exitosa' }}
+              {{ dialogType === 'error' ? t('configProducto.configuracionProductoVariante.dialog.errorTitle') : t('configProducto.configuracionProductoVariante.dialog.successTitle') }}
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? 'Entendido' : 'Continuar'"
+          :label="dialogType === 'error' ? t('configProducto.configuracionProductoVariante.dialog.okButton') : t('configProducto.configuracionProductoVariante.dialog.cancelButton')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"
@@ -134,6 +134,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useProductoVarianteConfig } from '../composables/useProductoVarianteConfig'
 
 const props = defineProps({
@@ -143,6 +144,7 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
 const {
   usarVariante,
   loading,

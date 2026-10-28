@@ -4,12 +4,12 @@
       color="primary"
       @click="$emit('add')"
       class="btn-res q-mt-lg"
-      title="Registrar Parametro"
+      :title="t('configProducto.parametroObsolescencia.table.title')"
       id="agregarParametro"
     >
       <q-icon name="add" class="icono" />
 
-      <span class="texto"> <q-icon name="add" /> Nuevo </span>
+      <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
     </q-btn>
 
     <!-- <div class="col flex items-center justify-end">
@@ -20,7 +20,7 @@
       </q-input>
     </div> -->
     <div id="buscarParametro">
-      <label for="buscar"> Buscar...</label>
+      <label for="buscar">{{ t('common.search') }}</label>
       <q-input
         v-model="search"
         id="buscar"
@@ -46,7 +46,7 @@
     :pagination="pagination"
     flat
     bordered
-    title="Parámetros de Obsolescencia"
+    :title="t('configProducto.parametroObsolescencia.table.title')"
   >
     <template v-slot:body-cell-color="props">
       <q-td :props="props">
@@ -62,7 +62,7 @@
           dense
           class="q-mr-sm"
           @click="$emit('edit-item', props.row)"
-          title="Editar"
+          :title="t('common.edit')"
           flat
           id="editarParametro"
         />
@@ -71,7 +71,7 @@
           color="negative"
           dense
           @click="$emit('delete-item', props.row)"
-          title="Eliminar"
+          :title="t('common.delete')"
           flat
           id="eliminarParametro"
         />
@@ -82,6 +82,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   rows: {
@@ -92,6 +93,8 @@ const props = defineProps({
 })
 
 defineEmits(['add', 'edit-item', 'delete-item'])
+
+const { t } = useI18n()
 
 const nombreColores = {
   '#FF0000': 'Rojo',
@@ -107,28 +110,28 @@ const nombreColores = {
   '#87CEEB': 'Celeste',
 }
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'numero',
-    label: 'N°',
+    label: t('configProducto.parametroObsolescencia.table.number'),
     field: (row) => row.numero,
     align: 'center',
   },
   {
     name: 'nombre',
-    label: 'Nombre',
+    label: t('configProducto.parametroObsolescencia.table.nombre'),
     field: 'nombre',
     align: 'left',
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: t('configProducto.parametroObsolescencia.table.descripcion'),
     field: 'descripcion',
     align: 'left',
   },
   {
     name: 'valor',
-    label: 'Valor',
+    label: t('configProducto.parametroObsolescencia.table.valor'),
     field: 'valor',
     align: 'center',
   },
@@ -140,17 +143,17 @@ const columns = [
   // },
   {
     name: 'color',
-    label: 'Color',
+    label: t('configProducto.parametroObsolescencia.table.color'),
     field: 'color',
     align: 'center',
   },
   {
     name: 'opciones',
-    label: 'Opciones',
+    label: t('configProducto.parametroObsolescencia.table.opciones'),
     field: 'opciones',
     align: 'center',
   },
-]
+])
 
 const search = ref('')
 const pagination = ref({

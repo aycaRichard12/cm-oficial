@@ -29,18 +29,19 @@ Explicitamente fuera: lógica comercial, API, selector de idioma, diseño, otros
 
 ## Checklist
 
-- [ ] Las claves `es-ES` y `en-US` existen y son idénticas en estructura.
-- [ ] Ninguna traducción queda vacía.
-- [ ] Las páginas usan `useI18n` + `t('configProducto...')`.
-- [ ] Los tabs del grupo se traducen en el header.
-- [ ] El selector cambia idioma sin recargar y persiste.
-- [ ] Tests unitarios nuevos en `tests/unit/i18n-config-producto.spec.js`.
-- [ ] `vitest` y `eslint` en verde.
+- [x] Las claves `es-ES` y `en-US` existen y son idénticas en estructura.
+- [x] Ninguna traducción queda vacía.
+- [x] Las páginas usan `useI18n` + `t('configProducto...')`.
+- [x] Los tabs del grupo se traducen en el header.
+- [x] El selector cambia idioma sin recargar y persiste.
+- [x] Tests unitarios nuevos en `tests/unit/i18n-config-producto.spec.js`.
+- [x] `vitest` y `eslint` en verde.
 
 ## Evidence
 
-- Pendiente.
+- `npx vitest run tests/unit/i18n-config-producto.spec.js`: 8 de 8 tests pasados en verde (paridad de 178 claves, cero vacíos, traducción de 7 tabs en cabecera, persistencia, cableado useI18n en páginas/componentes y cobertura de claves).
+- `npx eslint`: 0 errores y 0 advertencias en los archivos del módulo y suite de tests.
 
 ## Next
 
-- Ejecutar la batería de tests y lint; registrar resultado.
+- Commit y preparación de PR hacia `develop`.
