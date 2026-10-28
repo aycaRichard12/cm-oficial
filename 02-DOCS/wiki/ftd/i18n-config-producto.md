@@ -44,4 +44,4 @@ Explicitamente fuera: lógica comercial, API, selector de idioma, diseño, otros
 
 ## Next
 
-- Commit y preparación de PR hacia `develop`.
+- PR #103 abierto hacia `develop`: https://github.com/aycaRichard12/cm-oficial/pull/103 (pendiente revisión y merge).
