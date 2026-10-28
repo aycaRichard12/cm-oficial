@@ -35,7 +35,7 @@ export default {
       },
       table: {
         title: 'Warehouse Types',
-        number: 'No.',
+        number: 'N°',
         name: 'Name',
         description: 'Description',
         status: 'Status',
@@ -75,7 +75,7 @@ export default {
       table: {
         title: 'Currencies',
         addTitle: 'Register Currency',
-        number: 'No.',
+        number: 'N°',
         currency: 'Currency',
         type: 'Type',
         sin: 'Currency (SIN)',
@@ -102,7 +102,7 @@ export default {
       table: {
         title: 'Legends',
         addTitle: 'Register Legend',
-        number: 'No.',
+        number: 'N°',
         text: 'Legend',
         status: 'Status',
         options: 'Options',
@@ -162,7 +162,7 @@ export default {
       },
       table: {
         title: 'Categories',
-        number: 'No.',
+        number: 'N°',
         categoria: 'Categories',
         subcategoria: 'Subcategories',
         descripcion: 'Description',
@@ -192,7 +192,7 @@ export default {
       },
       table: {
         title: 'Product Status',
-        number: 'No.',
+        number: 'N°',
         nombre: 'Status',
         descripcion: 'Description',
         estado: 'Status',
@@ -221,7 +221,7 @@ export default {
       },
       table: {
         title: 'Units',
-        number: 'No.',
+        number: 'N°',
         nombre: 'Unit',
         descripcion: 'Description',
         estado: 'Status',
@@ -250,7 +250,7 @@ export default {
       },
       table: {
         title: 'Features',
-        number: 'No.',
+        number: 'N°',
         nombre: 'Feature',
         descripcion: 'Description',
         estado: 'Status',
@@ -295,7 +295,7 @@ export default {
       },
       table: {
         title: 'Obsolescence Parameters',
-        number: 'No.',
+        number: 'N°',
         nombre: 'Name',
         descripcion: 'Description',
         valor: 'Value',
