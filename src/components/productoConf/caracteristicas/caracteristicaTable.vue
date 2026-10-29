@@ -8,7 +8,7 @@
       id="add"
     >
       <q-icon name="add" class="icono" />
-      <span class="texto"> <q-icon name="add" /> Nuevo </span>
+      <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
     </q-btn>
 
     <!-- <div class="col flex items-center justify-end">
@@ -19,7 +19,7 @@
       </q-input>
     </div> -->
     <div id="buscarCaracteristicaProducto">
-      <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ t('common.search') }}</label>
       <q-input
         v-model="search"
         id="buscar"
@@ -37,7 +37,7 @@
   </div>
 
   <q-table
-    title="Caracteristicas"
+    :title="t('configProducto.caracteristicaProducto.table.title')"
     :rows="ordenados"
     :columns="columns"
     row-key="id"
@@ -47,8 +47,8 @@
   >
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
-        <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-        <q-badge color="red" v-else label="Inactivo" outline />
+        <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="t('common.active')" outline />
+        <q-badge color="red" v-else :label="t('common.inactive')" outline />
       </q-td>
     </template>
 
@@ -59,8 +59,8 @@
           color="primary"
           dense
           class="q-mr-sm"
-          @click="$emit('edit-item', props.row)"
-          title="Editar"
+            @click="$emit('edit-item', props.row)"
+            :title="t('common.edit')"
           flat
           id="editarCaracteristica"
         />
@@ -68,8 +68,8 @@
           icon="delete"
           color="negative"
           dense
-          @click="$emit('delete-item', props.row)"
-          title="Eliminar"
+            @click="$emit('delete-item', props.row)"
+            :title="t('common.delete')"
           flat
           id="eliminarCaracteristica"
         />
@@ -78,17 +78,17 @@
           dense
           flat
           :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
-          @click="$emit('toggle-status', props.row)"
-          title="Cambiar Estado"
+            @click="$emit('toggle-status', props.row)"
+            :title="t('configProducto.caracteristicaProducto.table.toggleStatus')"
           id="cambiarEstadoCaracteristica"
         />
       </q-td>
     </template>
   </q-table>
 </template>
-
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   rows: {
@@ -97,15 +97,18 @@ const props = defineProps({
     default: () => [],
   },
 })
+
 defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 
-const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'right' },
-  { name: 'nombre', label: 'Característica', field: 'nombre', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Opciones', align: 'center' },
-]
+const { t } = useI18n()
+
+const columns = computed(() => [
+  { name: 'numero', label: t('configProducto.caracteristicaProducto.table.number'), field: 'numero', align: 'right' },
+  { name: 'nombre', label: t('configProducto.caracteristicaProducto.table.nombre'), field: 'nombre', align: 'left' },
+  { name: 'descripcion', label: t('configProducto.caracteristicaProducto.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'estado', label: t('configProducto.caracteristicaProducto.table.estado'), field: 'estado', align: 'center' },
+  { name: 'opciones', label: t('configProducto.caracteristicaProducto.table.opciones'), align: 'center' },
+])
 const ordenados = computed(() =>
   props.rows.map((row, index) => ({
     ...row,

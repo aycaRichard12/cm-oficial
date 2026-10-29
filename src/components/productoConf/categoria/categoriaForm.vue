@@ -2,29 +2,29 @@
   <q-form @submit="submitForm" ref="formRef">
     <div class="row q-col-gutter-md">
       <div class="col-12 col-md-5">
-        <label for="nombre">Nombre*</label>
+        <label for="nombre">{{ t('configProducto.categoriaProducto.form.name') }}*</label>
         <q-input
           v-model="localData.nombre"
           id="nombre"
           dense
           outlined
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || t('configProducto.categoriaProducto.form.required')]"
         />
       </div>
 
       <div class="col-12 col-md-7">
-        <label for="descripcion">Descripción*</label>
+        <label for="descripcion">{{ t('configProducto.categoriaProducto.form.description') }}*</label>
         <q-input
           v-model="localData.descripcion"
           id="descripcion"
           dense
           outlined
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || t('configProducto.categoriaProducto.form.required')]"
         />
       </div>
 
       <div class="col-12 col-md-4">
-        <label for="tipo">Tipo de registro*</label>
+        <label for="tipo">{{ t('configProducto.categoriaProducto.form.type') }}*</label>
         <q-select
           v-model="localData.tipoCP"
           id="tipo"
@@ -33,12 +33,12 @@
           :options="typeOptions"
           emit-value
           map-options
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || t('configProducto.categoriaProducto.form.required')]"
           @update:model-value="handleTypeChange"
         />
       </div>
       <div class="col-12 col-md-4" v-if="localData.tipoCP == 1">
-        <label for="subcategoria">Categoría padre*</label>
+        <label for="subcategoria">{{ t('configProducto.categoriaProducto.form.subcategoria') }}*</label>
         <q-select
           v-model="localData.idp"
           :options="props.parentCategories"
@@ -47,7 +47,7 @@
           map-options
           dense
           outlined
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || t('configProducto.categoriaProducto.form.required')]"
         />
       </div>
       <!-- Aseguramos que el tipoCP sea numérico para la comparación -->
@@ -64,14 +64,15 @@
           </div> -->
     </div>
     <q-card-actions class="flex justify-start">
-      <q-btn label="Guardar" type="submit" color="primary" />
-      <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
+      <q-btn :label="t('configProducto.categoriaProducto.form.save')" type="submit" color="primary" />
+      <q-btn :label="t('configProducto.categoriaProducto.form.cancel')" flat color="negative" @click="$emit('cancel')" />
     </q-card-actions>
   </q-form>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   editing: Boolean,
@@ -81,9 +82,10 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['submit', 'cancel'])
+const { t } = useI18n()
 const typeOptions = [
-  { value: 1, label: 'Sub Categoría' },
-  { value: 2, label: 'Categoría' },
+  { value: 1, label: t('configProducto.categoriaProducto.types.subcategoria') },
+  { value: 2, label: t('configProducto.categoriaProducto.types.categoria') },
 ]
 
 // Inicializa con tipoCP = 2 (Categoría) para que el campo padre no aparezca al inicio

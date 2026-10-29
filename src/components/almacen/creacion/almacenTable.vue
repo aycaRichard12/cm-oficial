@@ -1,5 +1,5 @@
 <template>
-  <div class="almacenes-container q-pa-md">
+  <div class="almacenes-container q-pa-md ">
     <!-- Cabecera con título y botones de acción -->
     <div class="section-header q-mb-lg">
       <div class="section-title">
