@@ -21,7 +21,7 @@
         <LanguageSwitcher color="white" />
         <ThemeToggle />
         <q-btn icon="help_outline" color="white" flat round dense @click="$emit('iniciar-guia')">
-          <q-tooltip>Ayuda</q-tooltip>
+          <q-tooltip>{{ $t('layouts.help') }}</q-tooltip>
         </q-btn>
 
         <notificacion-layout v-if="permitidoNotificaciones" />
@@ -41,7 +41,7 @@
                 :class="['text-body2 text-weight-bold ellipsis', 'text-grey-1']"
                 style="max-width: 140px; line-height: 1.1"
               >
-                {{ authStore?.nombre || 'Usuario' }}
+                {{ authStore?.nombre || $t('layouts.user') }}
               </span>
             </div>
 
@@ -73,11 +73,11 @@
 
                 <div class="q-ml-md">
                   <div class="text-subtitle2 text-weight-bold">
-                    {{ authStore?.nombre || 'Usuario' }}
+                    {{ authStore?.nombre || $t('layouts.user') }}
                   </div>
 
                   <div class="text-caption text-orange">
-                    {{ authStore?.cargo || 'Administrador' }}
+                    {{ authStore?.cargo || $t('layouts.administrator') }}
                   </div>
                   <div class="text-caption text-blue">
                     {{ authStore?.empresa?.nombre || '' }}
@@ -94,7 +94,7 @@
                     <q-icon name="person_outline" size="18px" />
                   </q-item-section>
 
-                  <q-item-section> Mi Perfil </q-item-section>
+                  <q-item-section> {{ $t('layouts.myProfile') }} </q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup class="menu-item">
