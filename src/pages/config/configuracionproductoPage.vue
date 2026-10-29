@@ -1,20 +1,21 @@
 <template>
   <q-page class="q-pa-md">
     <div class="container">
-      <h2>Bienvenido a Configuracion Producto</h2>
-      <p>Este es un ejemplo básico de una página en Quasar.</p>
+      <h2>{{ $t('ui.bienvenido-a-configuracion-producto-5a57e0') }}</h2>
+      <p>{{ $t('ui.este-es-un-ejemplo-basico-de-una-pagina-en-quasar-8cf44b') }}</p>
 
       <!-- Botón que muestra una alerta al hacer clic -->
-      <q-btn label="Haz clic" color="primary" @click="mostrarAlerta" />
+      <q-btn :label="$t('ui.haz-clic-cd37a9')" color="primary" @click="mostrarAlerta" />
     </div>
   </q-page>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import {} from 'vue'
 
 const mostrarAlerta = () => {
-  alert('¡Botón clickeado!')
+  alert(i18nT('ui.boton-clickeado-31e4de'))
 }
 </script>
 

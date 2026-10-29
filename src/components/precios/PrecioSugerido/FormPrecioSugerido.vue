@@ -4,18 +4,18 @@
       <div class="col-12 col-md-4 q-pa-sm">
         <q-toggle
           v-model="localData.afectarTodosAlmacenes"
-          label="Afectar Todos los Almacenes"
+          :label="$t('ui.afectar-todos-los-almacenes-a72c66')"
           size="md"
           color="primary"
           dense
         />
       </div>
       <div class="col-12 col-md-4">
-        <label for="producto">Descripción del producto*</label>
+        <label for="producto">{{ $t('ui.descripcion-del-producto-2d2cdb') }}</label>
         <q-input v-model="localData.descripcion" id="producto" dense="" outlined="" disable />
       </div>
       <div class="col-12 col-md-4">
-        <label for="preciosug">Actual precio sugerido</label>
+        <label for="preciosug">{{ $t('ui.actual-precio-sugerido-39bd5f') }}</label>
         <q-input
           v-model="localData.precioActual"
           id="preciosug"
@@ -26,7 +26,7 @@
         />
       </div>
       <div class="col-12 col-md-4">
-        <label for="nuevoprecio">Nuevo precio sugerido*</label>
+        <label for="nuevoprecio">{{ $t('ui.nuevo-precio-sugerido-165a37') }}</label>
         <q-input
           v-model="localData.precio"
           id="nuevoprecio"
@@ -35,14 +35,14 @@
           lazy-rules
           dense
           outlined
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
         />
       </div>
     </div>
 
     <q-card-actions class="flex justify-start">
-      <q-btn label="Guardar" type="submit" color="primary" />
-      <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
+      <q-btn :label="$t('common.save')" type="submit" color="primary" />
+      <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
     </q-card-actions>
   </q-form>
 </template>

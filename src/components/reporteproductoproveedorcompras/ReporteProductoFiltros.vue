@@ -9,7 +9,7 @@
           :options="productosOptions"
           option-value="idProducto"
           option-label="nombreProducto"
-          label="Producto *"
+          :label="$t('ui.producto-814df9')"
           outlined
           dense
           use-input
@@ -27,7 +27,7 @@
 
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> Sin resultados </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.sin-resultados-926bea') }} </q-item-section>
             </q-item>
           </template>
         </q-select>
@@ -39,10 +39,10 @@
           :model-value="fechaInicio"
           @update:model-value="updateFechaInicio"
           type="date"
-          label="Fecha inicial *"
+          :label="$t('ui.fecha-inicial-888f9e')"
           dense
           outlined
-          :rules="[(val) => !!val || 'Fecha inicial requerida']"
+          :rules="[(val) => !!val || $t('ui.fecha-inicial-requerida-8ce168')]"
           class="full-width"
         >
           <template v-slot:prepend>
@@ -57,10 +57,10 @@
           :model-value="fechaFin"
           @update:model-value="updateFechaFin"
           type="date"
-          label="Fecha final *"
+          :label="$t('ui.fecha-final-a0c4b4')"
           dense
           outlined
-          :rules="[(val) => !!val || 'Fecha final requerida']"
+          :rules="[(val) => !!val || $t('ui.fecha-final-requerida-0fd8d4')]"
           class="full-width"
         >
           <template v-slot:prepend>
@@ -73,7 +73,7 @@
       <div class="col-12 col-md-2 flex items-end" id="filtroBoton">
         <q-btn
           color="primary"
-          label="Generar"
+          :label="$t('ui.generar-1f31a1')"
           icon="search"
           :loading="loading"
           :disable="!productoSeleccionado || !fechaInicio || !fechaFin"

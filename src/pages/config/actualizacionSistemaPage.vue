@@ -7,11 +7,11 @@
           <div class="col-12 col-md-auto">
             <div class="text-h5 text-primary text-weight-bold flex items-center">
               <q-icon name="history_edu" size="md" class="q-mr-sm" />
-              Notas de la Versión
+              {{ $t('ui.notas-de-la-version-3db10a') }}
             </div>
             <div class="text-subtitle2 text-grey-7 q-mt-xs">
-              Explora las últimas novedades del
-              <span class="text-primary text-weight-bold">Sistema Comercial Mistersofts</span>
+              {{ $t('ui.explora-las-ultimas-novedades-del-199496') }}
+              <span class="text-primary text-weight-bold">{{ $t('ui.sistema-comercial-mistersofts-037d5b') }}</span>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@
                 v-if="selectedVersion.videoUrl"
                 :video-url="selectedVersion.videoUrl"
                 :title="`Video de Novedades ${selectedVersion.title}`"
-                badge="Actualización"
+                :badge="$t('ui.actualizacion-3c7ba8')"
               />
             </div>
 
@@ -107,9 +107,9 @@
                 icon="engineering"
                 class="q-mb-md"
               />
-              <div class="text-h4 cm-text-muted text-weight-bold">En Desarrollo</div>
+              <div class="text-h4 cm-text-muted text-weight-bold">{{ $t('ui.en-desarrollo-fd566b') }}</div>
               <p class="text-grey-6 text-body1 q-mt-md" style="max-width: 400px">
-                Estamos cocinando las próximas mejoras. ¡Pronto verás novedades aquí!
+                {{ $t('ui.estamos-cocinando-las-proximas-mejoras-pronto-veras-648c51') }}
               </p>
             </div>
           </div>

@@ -7,7 +7,7 @@
           <div class="col-md-4">
             <q-input
               v-model="fechaInicio"
-              label="Fecha Inicial*"
+              :label="$t('ui.fecha-inicial-2b461a')"
               type="date"
               outlined
               dense
@@ -17,7 +17,7 @@
           <div class="col-md-4">
             <q-input
               v-model="fechaFin"
-              label="Fecha Final*"
+              :label="$t('ui.fecha-final-33d0e8')"
               type="date"
               outlined
               dense
@@ -28,14 +28,14 @@
 
         <div class="row justify-center q-mt-sm">
           <q-btn
-            label="Generar reporte"
+            :label="$t('ui.generar-reporte-eeafce')"
             color="primary"
             class="q-mr-sm"
             @click="generarReporte"
             :disable="!fechasValidas"
           />
           <q-btn
-            label="Vista previa del Reporte"
+            :label="$t('ui.vista-previa-del-reporte-60d956')"
             color="primary"
             @click="mostrarVistaPrevia"
             :disable="!datosFiltrados || datosFiltrados.length === 0"
@@ -67,7 +67,7 @@
     <q-dialog v-model="modalVistaPrevia" full-width persistent>
       <q-card style="min-width: 800px">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">REPORTE DE ÍNDICE DE ROTACIÓN GLOBAL</div>
+          <div class="text-h6">{{ $t('ui.reporte-de-indice-de-rotacion-global-3b74f4') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -93,10 +93,10 @@
 
                   <div class="col text-center">
                     <h6 class="text-center">
-                      <strong>REPORTE DE INDICE DE ROTACION GLOBAL</strong>
+                      <strong>{{ $t('ui.reporte-de-indice-de-rotacion-global-35b273') }}</strong>
                     </h6>
                     <div class="col-form-label text-center">
-                      Entre <span>{{ formatearFecha(fechaInicio) }}</span> Y
+                      {{ $t('ui.entre-4ea354') }} <span>{{ formatearFecha(fechaInicio) }}</span> {{ $t('ui.y-2b1f3c') }}
                       <span>{{ formatearFecha(fechaFin) }}</span>
                     </div>
                   </div>
@@ -110,13 +110,13 @@
               <main>
                 <div class="row contacts">
                   <div class="col invoice-to">
-                    <div><strong>DATOS DEL REPORTE:</strong></div>
+                    <div><strong>{{ $t('ui.datos-del-reporte-c7e471') }}</strong></div>
                     <div class="date">
-                      <strong>Fecha de Impresión:</strong> {{ fechaActualFormateada }}
+                      <strong>{{ $t('ui.fecha-de-impresion-709027') }}</strong> {{ fechaActualFormateada }}
                     </div>
                   </div>
                   <div class="col invoice-details">
-                    <div><strong>DATOS DEL ENCARGADO:</strong></div>
+                    <div><strong>{{ $t('ui.datos-del-encargado-6be170') }}</strong></div>
                     <div>{{ usuario.nombre }}</div>
                     <div class="date">{{ usuario.cargo }}</div>
                   </div>
@@ -125,15 +125,15 @@
                 <table class="table" border="0" cellspacing="0" cellpadding="0">
                   <thead class="table-success">
                     <tr>
-                      <th>N°</th>
-                      <th>Código</th>
-                      <th>Producto</th>
-                      <th>Categoría</th>
-                      <th>Descripción</th>
-                      <th>Unidad</th>
-                      <th>Cant. ventas</th>
-                      <th>Inv.externo</th>
-                      <th>Rotación</th>
+                      <th>{{ $t('cotizacion.table.number') }}</th>
+                      <th>{{ $t('ui.codigo-c35510') }}</th>
+                      <th>{{ $t('inventario.product') }}</th>
+                      <th>{{ $t('configProducto.categoriaProducto.types.categoria') }}</th>
+                      <th>{{ $t('configuracion.servicios.table.descripcion') }}</th>
+                      <th>{{ $t('configProducto.unidadProducto.table.nombre') }}</th>
+                      <th>{{ $t('ui.cant-ventas-651db0') }}</th>
+                      <th>{{ $t('ui.extension-inventory-4c0f1a') }}</th>
+                      <th>{{ $t('ui.rotacion-fb6a5f') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -156,8 +156,8 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="Cerrar" color="secondary" v-close-popup />
-          <q-btn label="Descargar PDF" color="primary" @click="descargarPDF" />
+          <q-btn :label="$t('ui.cerrar-4b0816')" color="secondary" v-close-popup />
+          <q-btn :label="$t('ui.descargar-pdf-40863e')" color="primary" @click="descargarPDF" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -183,15 +184,15 @@ export default {
     const usuario = ref({})
 
     const columnas = [
-      { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-      { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-      { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-      { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-      { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-      { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-      { name: 'cantidadventas', label: 'Cant. ventas', field: 'cantidadventas', align: 'right' },
-      { name: 'cantidadIE', label: 'Inv.externo', field: 'cantidadIE', align: 'right' },
-      { name: 'rotacion', label: 'Rotación', field: 'rotacion', align: 'right' },
+      { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+      { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+      { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left' },
+      { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left' },
+      { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+      { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left' },
+      { name: 'cantidadventas', label: i18nT('ui.cant-ventas-651db0'), field: 'cantidadventas', align: 'right' },
+      { name: 'cantidadIE', label: i18nT('ui.extension-inventory-4c0f1a'), field: 'cantidadIE', align: 'right' },
+      { name: 'rotacion', label: i18nT('ui.rotacion-fb6a5f'), field: 'rotacion', align: 'right' },
     ]
 
     const pagination = {
@@ -247,7 +248,7 @@ export default {
         if (inicio > fin) {
           $q.notify({
             type: 'negative',
-            message: 'La fecha de inicio no puede ser mayor que la fecha de fin',
+            message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-32b79c'),
           })
           fechaFin.value = fechaInicio.value
         }
@@ -259,7 +260,7 @@ export default {
         if (!fechasValidas.value) {
           $q.notify({
             type: 'warning',
-            message: 'Ingrese todas las fechas válidas',
+            message: i18nT('ui.ingrese-todas-las-fechas-validas-7cd759'),
           })
           return
         }
@@ -279,13 +280,13 @@ export default {
 
         $q.notify({
           type: 'positive',
-          message: 'Reporte generado con éxito',
+          message: i18nT('ui.reporte-generado-con-exito-73ac5d'),
         })
       } catch (error) {
         console.error('Error al generar reporte:', error)
         $q.notify({
           type: 'negative',
-          message: 'Error al generar el reporte',
+          message: i18nT('ui.error-al-generar-el-reporte-01d807'),
         })
       }
     }
@@ -294,7 +295,7 @@ export default {
       if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
         $q.notify({
           type: 'info',
-          message: 'No se generó ningún reporte',
+          message: i18nT('ui.no-se-genero-ningun-reporte-816b8f'),
         })
         return
       }

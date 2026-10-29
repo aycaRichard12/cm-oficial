@@ -5,7 +5,7 @@
       <div class="row justify-left q-pa-lg">
         <q-btn
           color="primary"
-          label="Volver a Stock Global"
+          :label="$t('ui.volver-a-stock-global-1a45e3')"
           icon="arrow_back"
           @click="mostrarVariantes = false"
           outline
@@ -21,10 +21,10 @@
         <div class="col-12 col-md-auto">
           <div class="text-h5 text-primary text-weight-bold flex items-center">
             <q-icon name="inventory_2" size="md" class="q-mr-sm" />
-            Stock Productos Global
+            {{ $t('ui.stock-productos-global-bc8329') }}
           </div>
           <div class="text-subtitle2 cm-text-muted q-mt-xs">
-            Administración y consulta de inventario global
+            {{ $t('ui.administracion-y-consulta-de-inventario-global-74cde4') }}
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
       <!-- Almacén seleccionado como chip moderno -->
       <div v-if="nombreAlmacenSeleccionado" class="row justify-center q-mb-lg">
         <q-chip outline color="primary" icon="warehouse" class="q-px-md">
-          Almacén: {{ nombreAlmacenSeleccionado }}
+          {{ $t('ui.almacen-7049f1') }} {{ nombreAlmacenSeleccionado }}
         </q-chip>
       </div>
 
@@ -45,7 +45,7 @@
             <div class="col-12 col-md-2" id="fechaFinal">
               <q-input
                 v-model="fechaFin"
-                label="Fecha Final*"
+                :label="$t('ui.fecha-final-33d0e8')"
                 type="date"
                 stack-label
                 outlined
@@ -66,7 +66,7 @@
                 :options="opcionesAlmacenes"
                 emit-value
                 map-options
-                label="Almacén*"
+                :label="$t('ui.almacen-3e3724')"
                 dense
                 outlined
                 class="rounded-borders"
@@ -81,7 +81,7 @@
             <!-- Categoría de precio -->
             <div class="col-12 col-md-3" id="categoriaPrecio">
               <div class="text-caption text-weight-medium cm-text-muted q-mb-xs">
-                Categoría de precio
+                {{ $t('ui.categoria-de-precio-f572ba') }}
               </div>
               <q-select
                 v-model="categoriaPrecioSeleccionada"
@@ -107,7 +107,7 @@
               <q-select
                 v-model="filtroEstado"
                 :options="opcionesEstado"
-                label="Estado"
+                :label="$t('cotizacion.table.status')"
                 dense
                 outlined
                 emit-value
@@ -126,7 +126,7 @@
               <q-select
                 v-model="ordenStock"
                 :options="opcionesOrden"
-                label="Ordenar Stock"
+                :label="$t('ui.ordenar-stock-8f508f')"
                 dense
                 outlined
                 emit-value
@@ -145,7 +145,7 @@
           <div class="row justify-between items-center q-mt-lg">
             <q-btn
               color="secondary"
-              label="Ver Stock Variantes"
+              :label="$t('ui.ver-stock-variantes-fa53a6')"
               icon="style"
               @click="mostrarVariantes = true"
               class="rounded-borders shadow-1 q-px-md"
@@ -154,7 +154,7 @@
             />
             <q-btn
               color="primary"
-              label="Vista previa del Reporte"
+              :label="$t('ui.vista-previa-del-reporte-60d956')"
               icon="picture_as_pdf"
               icon-right="chevron_right"
               class="rounded-borders shadow-1 q-px-md"
@@ -233,6 +233,7 @@
 </style>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -265,27 +266,27 @@ const idempresa = idempresa_md5()
 const idusuario = idusuario_md5()
 
 const opcionesEstado = [
-  { label: 'Todos', value: 0 },
-  { label: 'Activos', value: 1 },
-  { label: 'Inactivos', value: 2 },
+  { label: i18nT('ui.todos-a4114a'), value: 0 },
+  { label: i18nT('ui.activos-520347'), value: 1 },
+  { label: i18nT('ui.inactivos-0d99e0'), value: 2 },
 ]
 
 const opcionesOrden = [
-  { label: 'Descendente', value: 1 },
-  { label: 'Ascendente', value: 2 },
+  { label: i18nT('ui.descendente-a12960'), value: 1 },
+  { label: i18nT('ui.ascendente-977850'), value: 2 },
 ]
 
 const columnas = computed(() => [
-  { name: 'numero',       label: 'N°',           align: 'center', field: 'numero',       dataType: 'text' },
-  { name: 'codigo',       label: 'Código',        align: 'left',   field: 'codigo',       dataType: 'text' },
-  { name: 'descripcion',  label: 'Descripción',   align: 'left',   field: 'descripcion',
+  { name: 'numero',       label: i18nT('cotizacion.table.number'),           align: 'center', field: 'numero',       dataType: 'text' },
+  { name: 'codigo',       label: i18nT('ui.codigo-c35510'),        align: 'left',   field: 'codigo',       dataType: 'text' },
+  { name: 'descripcion',  label: i18nT('configuracion.servicios.table.descripcion'),   align: 'left',   field: 'descripcion',
     style: 'min-width: 250px', dataType: 'text' },
-  { name: 'unidad',       label: 'Unidad',        align: 'left',   field: 'unidad',       dataType: 'text' },
-  { name: 'categoria',    label: 'Categoría',     align: 'left',   field: 'categoria',    dataType: 'text' },
-  { name: 'subcategoria', label: 'Subcategoría',  align: 'left',   field: 'subcategoria', dataType: 'text' },
+  { name: 'unidad',       label: i18nT('configProducto.unidadProducto.table.nombre'),        align: 'left',   field: 'unidad',       dataType: 'text' },
+  { name: 'categoria',    label: i18nT('configProducto.categoriaProducto.types.categoria'),     align: 'left',   field: 'categoria',    dataType: 'text' },
+  { name: 'subcategoria', label: i18nT('ui.subcategoria-78a946'),  align: 'left',   field: 'subcategoria', dataType: 'text' },
   // NOTA: columna 'pais' (País Origen) eliminada
   {
-    name: 'stock', label: 'Stock', field: 'stock', align: 'right', dataType: 'number',
+    name: 'stock', label: i18nT('inventario.stock'), field: 'stock', align: 'right', dataType: 'number',
     format: (val) => new Intl.NumberFormat('es-ES').format(val),
   },
   {
@@ -334,7 +335,7 @@ onMounted(async () => {
     console.error('Error en onMounted:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los datos iniciales',
+      message: i18nT('ui.error-al-cargar-los-datos-iniciales-29cbad'),
     })
   }
 })
@@ -350,7 +351,7 @@ async function cargarCategoriasPrecio() {
       const { data } = await api.get(endpoint)
       console.log('categoriasPrecio', data)
 
-      if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
+      if (data[0] === 'error') throw new Error(data.error || i18nT('ui.error-al-cargar-categorias-4a2cfd'))
 
       categoriasPrecio.value = data
         .filter((item) => item.estado == 1 && Number(item.idalmacen) == idalmacen)
@@ -370,7 +371,7 @@ async function cargarCategoriasPrecio() {
       console.error('Error al cargar categorías:', error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar las categorías de precio',
+        message: i18nT('ui.error-al-cargar-las-categorias-de-precio-0b805b'),
       })
     } finally {
       cargandoCategorias.value = false
@@ -412,7 +413,7 @@ async function cargarAlmacenes() {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar la lista de almacenes',
+      message: i18nT('ui.error-al-cargar-la-lista-de-almacenes-d3452f'),
     })
   }
 }
@@ -423,7 +424,7 @@ async function generarReporte() {
     datosFiltrados.value = []
     // $q.notify({
     //   type: 'warning',
-    //   message: 'Seleccione un almacén',
+    //   message: Seleccione un almacén,
     // })
     return
   }
@@ -489,7 +490,7 @@ async function generarReporte() {
     console.error('Error al generar reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el reporte',
+      message: i18nT('ui.error-al-generar-el-reporte-01d807'),
     })
   }
 }
@@ -527,7 +528,7 @@ async function mostrarVistaPrevia() {
   if (!almacenSeleccionado.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione un almacén',
+      message: i18nT('ui.seleccione-un-almacen-27ab34'),
     })
     return
   }
@@ -535,7 +536,7 @@ async function mostrarVistaPrevia() {
   if (!datosFiltrados.value.length) {
     $q.notify({
       type: 'warning',
-      message: 'No hay datos para mostrar',
+      message: i18nT('ui.no-hay-datos-para-mostrar-2581c7'),
     })
     return
   }

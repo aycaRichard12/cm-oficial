@@ -9,12 +9,12 @@
           id="btnregistrarcompra"
           to="/categoriasdeprecio"
           icon="arrow_back"
-          label="Volver"
+          :label="$t('ui.volver-84a715')"
           no-caps
         />
 
         <!-- Título -->
-        <div class="titulo q-ma-md">Reporte de Precios Base</div>
+        <div class="titulo q-ma-md">{{ $t('ui.reporte-de-precios-base-3a8ded') }}</div>
       </div>
     </div>
 
@@ -27,7 +27,7 @@
           class="q-mx-sm"
         /> -->
         <q-btn
-          label="Vista previa del Reporte"
+          :label="$t('ui.vista-previa-del-reporte-60d956')"
           color="primary"
           @click="descargarPDF"
           class="q-mx-sm"
@@ -39,7 +39,7 @@
       <q-form>
         <div class="row justify-center q-col-gutter-x-md">
           <div class="col-12 col-md-4">
-            <label for="almacen">Almacén*</label>
+            <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
@@ -65,7 +65,7 @@
       >
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
-            <span> No hay datos para mostrar. Genere un reporte primero. </span>
+            <span> {{ $t('ui.no-hay-datos-para-mostrar-genere-un-reporte-primero-358c32') }} </span>
           </div>
         </template>
       </q-table>
@@ -75,7 +75,7 @@
       <q-dialog v-model="mostrarModal" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -96,6 +96,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -110,7 +111,7 @@ const mostrarModal = ref(false)
 // --- Estados Reactivos ---
 const fechaInicio = ref(obtenerFechaActualDato())
 const fechaFin = ref(obtenerFechaActualDato())
-const almacenSeleccionado = ref({ label: 'Todos los almacenes', value: '0' }) // "0" para "Todos los almacenes"
+const almacenSeleccionado = ref({ label: i18nT('ui.todos-los-almacenes-949f2c'), value: '0' }) // "0" para "Todos los almacenes"
 const opcionesAlmacenes = ref([])
 const datosOriginales = ref([])
 const datosFiltrados = ref([])
@@ -121,22 +122,22 @@ const autorization = { 1: 'activo', 2: 'inactivo' }
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
   const selected = opcionesAlmacenes.value.find((op) => op.value === almacenSeleccionado.value)
-  return selected ? selected.label : 'Todos los almacenes'
+  return selected ? selected.label : i18nT('ui.todos-los-almacenes-949f2c')
 })
 
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'center' },
-  { name: 'nombre', label: 'Categoria	', field: 'nombre', align: 'left' },
-  { name: 'porcentaje', label: 'Porcentaje', field: 'porcentaje', align: 'left' },
+  { name: 'n', label: i18nT('cotizacion.table.number'), field: 'n', align: 'center' },
+  { name: 'nombre', label: i18nT('ui.categoria-5966b0'), field: 'nombre', align: 'left' },
+  { name: 'porcentaje', label: i18nT('ui.porcentaje-47bcdf'), field: 'porcentaje', align: 'left' },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     align: 'left',
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     align: 'left',
   },
@@ -167,12 +168,12 @@ async function cargarListaAlmacenes() {
       console.error('Error al cargar almacenes:', resultado.error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar almacenes.',
+        message: i18nT('ui.error-al-cargar-almacenes-420531'),
         position: 'top',
       })
     } else {
       opcionesAlmacenes.value = []
-      opcionesAlmacenes.value.push({ label: 'Todos los almacenes', value: '0' })
+      opcionesAlmacenes.value.push({ label: i18nT('ui.todos-los-almacenes-949f2c'), value: '0' })
       const use = resultado.filter((u) => u.idusuario == idusuario)
       use.forEach((key) => {
         opcionesAlmacenes.value.push({
@@ -186,7 +187,7 @@ async function cargarListaAlmacenes() {
     console.error('Error en cargarListaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al cargar los almacenes.',
+      message: i18nT('ui.ocurrio-un-error-al-cargar-los-almacenes-06e9b8'),
       position: 'top',
     })
   }
@@ -203,14 +204,14 @@ async function generarReporte() {
   if (!fechaInicio.value || !fechaFin.value) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, seleccione ambas fechas para generar el reporte.',
+      message: i18nT('ui.por-favor-seleccione-ambas-fechas-para-generar-el-re-04ec5a'),
       position: 'top',
     })
     return
   }
 
   $q.loading.show({
-    message: 'Generando reporte...',
+    message: i18nT('ui.generando-reporte-f36ceb'),
   })
 
   try {
@@ -235,13 +236,13 @@ async function generarReporte() {
       almacenSeleccionado.value = '0' // Reinicia el filtro de almacén
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar el reporte: ' + (data.error || 'Mensaje desconocido'),
+        message: i18nT('ui.error-al-generar-el-reporte-596b95') + (data.error || i18nT('ui.mensaje-desconocido-c37e4e')),
         position: 'top',
       })
     }
@@ -249,7 +250,7 @@ async function generarReporte() {
     console.error('Error en generarReporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al generar el reporte.',
+      message: i18nT('ui.ocurrio-un-error-al-generar-el-reporte-eddf13'),
       position: 'top',
     })
   } finally {

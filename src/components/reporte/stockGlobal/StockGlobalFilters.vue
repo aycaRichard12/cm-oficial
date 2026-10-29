@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-center q-col-gutter-md">
     <div class="col-12 col-md-6">
-      <label for="porestado">Filtrar por estado del producto</label>
+      <label for="porestado">{{ $t('ui.filtrar-por-estado-del-producto-b20dea') }}</label>
       <q-select
         :model-value="filtroEstado"
         @update:model-value="
@@ -19,7 +19,7 @@
       />
     </div>
     <div class="col-12 col-md-6">
-      <label for="porstock">Ordenar por stock</label>
+      <label for="porstock">{{ $t('ui.ordenar-por-stock-c4e9f4') }}</label>
       <q-select
         :model-value="ordenStock"
         @update:model-value="
@@ -40,6 +40,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   filtroEstado: {
     type: Number,
@@ -54,13 +55,13 @@ defineProps({
 defineEmits(['update:filtroEstado', 'update:ordenStock', 'generar'])
 
 const opcionesEstado = [
-  { label: 'Todos', value: 0 },
-  { label: 'Activos', value: 1 },
-  { label: 'Inactivos', value: 2 },
+  { label: i18nT('ui.todos-a4114a'), value: 0 },
+  { label: i18nT('ui.activos-520347'), value: 1 },
+  { label: i18nT('ui.inactivos-0d99e0'), value: 2 },
 ]
 
 const opcionesOrden = [
-  { label: 'Descendente', value: 1 },
-  { label: 'Ascendente', value: 2 },
+  { label: i18nT('ui.descendente-a12960'), value: 1 },
+  { label: i18nT('ui.ascendente-977850'), value: 2 },
 ]
 </script>

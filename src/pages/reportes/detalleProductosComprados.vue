@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
-          Reporte Productos Comprados
+          {{ $t('ui.reporte-productos-comprados-57ab99') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte Productos Comprados
+          {{ $t('ui.administracion-de-reporte-productos-comprados-076143') }}
         </div>
       </div>
     </div>
@@ -18,25 +18,25 @@
         id="filtroFechas"
       >
         <div class="col-12 col-md-4">
-          <label for="fechaIni">Fecha Inicial*</label>
+          <label for="fechaIni">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
         </div>
         <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input v-model="endDate" type="date" dense outlined="" class="col-md-4" />
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
         <q-btn
           color="primary"
-          label="Generar reporte"
+          :label="$t('ui.generar-reporte-eeafce')"
           @click="generarReporte"
           class="q-mr-sm"
           id="generarReporte"
         />
         <q-btn
           color="secondary"
-          label="Exportar a Excel"
+          :label="$t('ui.exportar-a-excel-1569c7')"
           @click="exportarExcel"
           id="exportarExcel"
         />
@@ -46,7 +46,7 @@
     <BaseFilterableTable
       id="reporteProductosComprados"
       ref="tableRef"
-      title="Reporte de Productos Comprados"
+      :title="$t('ui.reporte-de-productos-comprados-43e04a')"
       :rows="datosFiltrados"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { date } from 'quasar'
@@ -78,14 +79,14 @@ const columnas = [
   {
     //convertir directamente a objeto y no enviar field
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha_formateada',
     align: 'left',
     dataType: 'date',
   },
   {
     name: 'nfactura',
-    label: 'Nro. Doc.',
+    label: i18nT('ui.nro-doc-54aa60'),
     field: 'nfactura',
     align: 'left',
 
@@ -93,7 +94,7 @@ const columnas = [
   },
   {
     name: 'tipocompra',
-    label: 'Tipo de Compra',
+    label: i18nT('ui.tipo-de-compra-61ef0a'),
     field: 'tipocompra_label',
     align: 'left',
 
@@ -101,7 +102,7 @@ const columnas = [
   },
   {
     name: 'codigo',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     field: 'codigo',
     align: 'left',
 
@@ -109,14 +110,14 @@ const columnas = [
   },
   {
     name: 'codigobarra',
-    label: 'Código Barras',
+    label: i18nT('ui.codigo-barras-5b224c'),
     field: 'codigobarra',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     align: 'left',
 
@@ -125,7 +126,7 @@ const columnas = [
 
   {
     name: 'precio',
-    label: 'Precio Unitario',
+    label: i18nT('ui.precio-unitario-fd8ab0'),
     field: 'precio',
     align: 'right',
 
@@ -134,7 +135,7 @@ const columnas = [
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     field: 'cantidad',
     align: 'right',
     format: (val) => Number(val).toFixed(2),
@@ -142,7 +143,7 @@ const columnas = [
   },
   {
     name: 'importe',
-    label: 'Importe',
+    label: i18nT('ui.importe-4476a5'),
     field: 'importe',
     align: 'right',
 
@@ -152,7 +153,7 @@ const columnas = [
 
   {
     name: 'usuario',
-    label: 'Usuario',
+    label: i18nT('auth.user'),
     field: 'usuario',
     align: 'left',
 
@@ -160,7 +161,7 @@ const columnas = [
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     align: 'left',
 
@@ -168,7 +169,7 @@ const columnas = [
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
 
@@ -176,7 +177,7 @@ const columnas = [
   },
   {
     name: 'unidad',
-    label: 'Unidad',
+    label: i18nT('configProducto.unidadProducto.table.nombre'),
     field: 'unidad',
     align: 'left',
 
@@ -184,7 +185,7 @@ const columnas = [
   },
   {
     name: 'categoria',
-    label: 'Categoría',
+    label: i18nT('configProducto.categoriaProducto.types.categoria'),
     field: 'categoria',
     align: 'left',
 
@@ -192,7 +193,7 @@ const columnas = [
   },
   {
     name: 'subcategoria',
-    label: 'Sub Categoría',
+    label: i18nT('configProducto.categoriaProducto.types.subcategoria'),
     field: 'subcategoria',
     align: 'left',
 
@@ -261,25 +262,25 @@ function exportarExcel() {
 
   // ── 2. Definir todas las columnas posibles ────────────────
   const allPossibleColumns = [
-    { header: 'Fecha', dataKey: 'fecha_formateada', width: 15, name: 'fecha_formateada' },
-    { header: 'Nro. documento', dataKey: 'nrofactura', width: 15, name: 'nrofactura' },
-    { header: 'Tipo de compra', dataKey: 'tipocompra_label', width: 15, name: 'tipocompra' },
-    { header: 'Código producto', dataKey: 'codigo', width: 15, name: 'codigo' },
-    { header: 'Código barras', dataKey: 'codigobarra', width: 15, name: 'codigobarra' },
-    { header: 'Descripción', dataKey: 'descripcion', width: 25, name: 'descripcion' },
-    { header: 'Costo unitario', dataKey: 'costounitario', width: 12, name: 'costounitario' },
-    { header: 'Precio unitario', dataKey: 'precio', width: 12, name: 'precio' },
-    { header: 'Cantidad', dataKey: 'cantidad', width: 10, name: 'cantidad' },
-    { header: 'Importe', dataKey: 'importe', width: 12, name: 'importe' },
-    { header: 'Costo total', dataKey: 'costototal', width: 12, name: 'costototal' },
-    { header: 'Compra total', dataKey: 'compratotal', width: 12, name: 'compratotal' },
-    { header: 'Utilidad', dataKey: 'utilidad', width: 10, name: 'utilidad' },
-    { header: 'Nombre usuario', dataKey: 'usuario', width: 15, name: 'usuario' },
-    { header: 'Almacén empresa', dataKey: 'almacen', width: 15, name: 'almacen' },
-    { header: 'Proveedor', dataKey: 'proveedor', width: 20, name: 'proveedor' },
-    { header: 'Unidad', dataKey: 'unidad', width: 10, name: 'unidad' },
-    { header: 'Categoría', dataKey: 'categoria', width: 12, name: 'categoria' },
-    { header: 'Sub Categoría', dataKey: 'subcategoria', width: 12, name: 'subcategoria' },
+    { header: i18nT('cotizacion.table.date'), dataKey: 'fecha_formateada', width: 15, name: 'fecha_formateada' },
+    { header: i18nT('ui.nro-documento-f86654'), dataKey: 'nrofactura', width: 15, name: 'nrofactura' },
+    { header: i18nT('ui.tipo-de-compra-0b2291'), dataKey: 'tipocompra_label', width: 15, name: 'tipocompra' },
+    { header: i18nT('ui.codigo-producto-c80af1'), dataKey: 'codigo', width: 15, name: 'codigo' },
+    { header: i18nT('ui.codigo-barras-49abb3'), dataKey: 'codigobarra', width: 15, name: 'codigobarra' },
+    { header: i18nT('configuracion.servicios.table.descripcion'), dataKey: 'descripcion', width: 25, name: 'descripcion' },
+    { header: i18nT('ui.costo-unitario-0a3ad6'), dataKey: 'costounitario', width: 12, name: 'costounitario' },
+    { header: i18nT('ui.precio-unitario-d3780c'), dataKey: 'precio', width: 12, name: 'precio' },
+    { header: i18nT('ui.cantidad-b5b6f8'), dataKey: 'cantidad', width: 10, name: 'cantidad' },
+    { header: i18nT('ui.importe-4476a5'), dataKey: 'importe', width: 12, name: 'importe' },
+    { header: i18nT('ui.costo-total-3a5878'), dataKey: 'costototal', width: 12, name: 'costototal' },
+    { header: i18nT('ui.compra-total-88e82d'), dataKey: 'compratotal', width: 12, name: 'compratotal' },
+    { header: i18nT('ui.utilidad-64a80d'), dataKey: 'utilidad', width: 10, name: 'utilidad' },
+    { header: i18nT('ui.nombre-usuario-a114f2'), dataKey: 'usuario', width: 15, name: 'usuario' },
+    { header: i18nT('ui.almacen-empresa-6e98a8'), dataKey: 'almacen', width: 15, name: 'almacen' },
+    { header: i18nT('compras.supplier'), dataKey: 'proveedor', width: 20, name: 'proveedor' },
+    { header: i18nT('configProducto.unidadProducto.table.nombre'), dataKey: 'unidad', width: 10, name: 'unidad' },
+    { header: i18nT('configProducto.categoriaProducto.types.categoria'), dataKey: 'categoria', width: 12, name: 'categoria' },
+    { header: i18nT('configProducto.categoriaProducto.types.subcategoria'), dataKey: 'subcategoria', width: 12, name: 'subcategoria' },
   ]
 
   // ── 3. Filtrar columnas según las visibles ───────────────
@@ -304,7 +305,7 @@ function exportarExcel() {
   worksheet['!cols'] = exportColumns.map((col) => ({ wch: col.width }))
 
   const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte')
+  XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.reporte-431e46'))
   XLSX.writeFile(
     workbook,
     `Reporte_Productos_Comprados_${new Date().toISOString().split('T')[0]}.xlsx`,

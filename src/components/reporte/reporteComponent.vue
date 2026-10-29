@@ -24,15 +24,15 @@
           mobile-arrows
           :inline-label="$q.screen.gt.xs"
         >
-          <q-tab v-if="permClientes" name="clientes" label="Clientes" icon="people" />
-          <q-tab v-if="permCategoria" name="categoria" label="Categorías" icon="category" />
-          <q-tab v-if="permPreferido" name="preferido" label="Preferidos" icon="star" />
-          <q-tab v-if="permMonetario" name="monetario" label="Monetario" icon="payments" />
+          <q-tab v-if="permClientes" name="clientes" :label="$t('ui.clientes-e84b64')" icon="people" />
+          <q-tab v-if="permCategoria" name="categoria" :label="$t('configProducto.categoriaProducto.table.title')" icon="category" />
+          <q-tab v-if="permPreferido" name="preferido" :label="$t('ui.preferidos-565aa9')" icon="star" />
+          <q-tab v-if="permMonetario" name="monetario" :label="$t('ui.monetario-0c47fc')" icon="payments" />
           <!-- <q-tab v-if="permMayorVenta" name="mayor_venta" label="Evolución" icon="timeline" /> -->
-          <q-tab v-if="permAlmacen" name="almacen" label="Almacén" icon="store" />
+          <q-tab v-if="permAlmacen" name="almacen" :label="$t('inventario.warehouse')" icon="store" />
 
-          <q-tab v-if="permInventario" name="inventario" label="Inventario" icon="dashboard" />
-          <q-tab v-if="permTodos" name="todos" label="Todos" icon="dashboard" />
+          <q-tab v-if="permInventario" name="inventario" :label="$t('ui.inventario-b8e886')" icon="dashboard" />
+          <q-tab v-if="permTodos" name="todos" :label="$t('ui.todos-a4114a')" icon="dashboard" />
         </q-tabs>
       </div>
 
@@ -50,7 +50,7 @@
       <!-- Pantalla de bloqueo -->
       <div v-else class="text-center q-pa-xl text-grey-6 text-h6">
         <q-icon name="lock" size="4rem" class="q-mb-md color-grey-4" />
-        <div>No tienes permisos para visualizar los cuadros estadísticos.</div>
+        <div>{{ $t('ui.no-tienes-permisos-para-visualizar-los-cuadros-estad-03dca7') }}</div>
       </div>
     </template>
   </q-page>

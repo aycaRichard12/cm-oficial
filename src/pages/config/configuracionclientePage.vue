@@ -1,13 +1,14 @@
 <template>
   <q-page>
-    <q-btn label="Iniciar Tour" @click="iniciarTour" id="some-element" />
+    <q-btn :label="$t('ui.iniciar-tour-62e5b0')" @click="iniciarTour" id="some-element" />
 
-    <div id="tour-elemento-1" class="q-mt-md">Elemento 1</div>
-    <q-input id="tour-elemento-2" v-model="texto" label="Ejemplo" />
+    <div id="tour-elemento-1" class="q-mt-md">{{ $t('ui.elemento-1-d8bff0') }}</div>
+    <q-input id="tour-elemento-2" v-model="texto" :label="$t('ui.ejemplo-26ddea')" />
   </q-page>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
 
@@ -16,8 +17,8 @@ const iniciarTour = () => {
   driverObj.highlight({
     element: '#some-element',
     popover: {
-      title: 'Title',
-      description: 'Description',
+      title: i18nT('ui.title-768e0c'),
+      description: i18nT('ui.description-55f8eb'),
     },
   })
 }

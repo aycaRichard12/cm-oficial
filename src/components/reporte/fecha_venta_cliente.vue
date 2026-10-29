@@ -6,10 +6,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-weight-bold flex items-center q-mb-xs">
           <q-icon name="analytics" class="q-mr-sm text-h4" />
-          <span class="text-h5 text-md-h4">Análisis de Clientes</span>
+          <span class="text-h5 text-md-h4">{{ $t('ui.analisis-de-clientes-e6e8e9') }}</span>
         </div>
         <div class="text-subtitle2 text-grey-6 text-caption text-sm-subtitle2">
-          Dashboard de comportamiento y ventas
+          {{ $t('ui.dashboard-de-comportamiento-y-ventas-66278d') }}
         </div>
       </div>
 
@@ -18,13 +18,13 @@
         <div class="row q-col-gutter-sm items-center">
           <div class="col-6 col-sm-auto">
             <!-- Date Pickers -->
-            <q-input v-model="fechaInicio" dense outlined label="Inicio" mask="##/##/####">
+            <q-input v-model="fechaInicio" dense outlined :label="$t('ui.inicio-4f70d8')" mask="##/##/####">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -34,13 +34,13 @@
           </div>
 
           <div class="col-6 col-sm-auto">
-            <q-input v-model="fechaFin" dense outlined label="Fin" mask="##/##/####">
+            <q-input v-model="fechaFin" dense outlined :label="$t('ui.fin-425106')" mask="##/##/####">
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-date v-model="fechaFin" mask="DD/MM/YYYY">
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -53,7 +53,7 @@
             <q-btn
               color="primary"
               icon="search"
-              label="Consultar"
+              :label="$t('ui.consultar-2af080')"
               unelevated
               :loading="loading"
               @click="consultar"

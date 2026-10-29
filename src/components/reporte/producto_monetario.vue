@@ -12,13 +12,13 @@
           <div class="col-12 col-md-auto">
             <div class="row items-center">
               <q-icon name="trending_up" color="primary" size="1.5rem" class="q-mr-sm" />
-              <div class="text-h6 text-weight-medium">Ingresos por Producto</div>
+              <div class="text-h6 text-weight-medium">{{ $t('ui.ingresos-por-producto-bfb041') }}</div>
             </div>
             <div
               class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block"
             >
               <q-icon name="event" class="q-mr-xs" />
-              <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
+              <span class="text-weight-bold">{{ $t('ui.periodo-6993ec') }}</span> {{ periodoInfo }}
             </div>
           </div>
 
@@ -31,7 +31,7 @@
                   type="date"
                   dense
                   outlined
-                  label="Inicio"
+                  :label="$t('ui.inicio-4f70d8')"
                   mask="##/##/####"
                 >
                 </q-input>
@@ -43,7 +43,7 @@
                   type="date"
                   dense
                   outlined
-                  label="Fin"
+                  :label="$t('ui.fin-425106')"
                   mask="##/##/####"
                 >
                 </q-input>
@@ -53,7 +53,7 @@
                 <q-btn
                   color="primary"
                   icon="search"
-                  label="Consultar"
+                  :label="$t('ui.consultar-2af080')"
                   unelevated
                   :loading="loading"
                   @click="consultarFechas"
@@ -82,6 +82,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import GpMayorVenta from './mayor_venta.vue'
@@ -124,7 +125,7 @@ const consultarFechas = async () => {
     }
   } catch (error) {
     console.error('Error al cargar reportes:', error)
-    $q.notify({ type: 'negative', message: 'Error cargando datos de indicadores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-cargando-datos-de-indicadores-187809') })
     rawDataAPI.value = []
   } finally {
     loading.value = false
@@ -200,7 +201,7 @@ const chartOptions = ref({
     tickPlacement: 'on',
   },
   yaxis: {
-    title: { text: 'Ingresos (Bs)', style: { fontSize: '12px', fontWeight: 600 } },
+    title: { text: i18nT('ui.ingresos-bs-0e3eef'), style: { fontSize: '12px', fontWeight: 600 } },
     labels: {
       formatter: function (val) {
         return val ? val.toFixed(2) : '0.00'
@@ -216,7 +217,7 @@ const chartOptions = ref({
       formatter: function (val) {
         return `${val.toFixed(2)} Bs`
       },
-      title: { formatter: () => 'Ingresos:' },
+      title: { formatter: () => i18nT('ui.ingresos-33730f') },
     },
   },
   colors: [
@@ -255,7 +256,7 @@ const chartOptions = ref({
     },
   ],
   noData: {
-    text: 'Cargando datos...',
+    text: i18nT('ui.cargando-datos-6acb41'),
     align: 'center',
     verticalAlign: 'middle',
     style: { fontSize: '14px' },

@@ -4,7 +4,7 @@
       <q-card class="chart-card" flat>
         <q-card-section class="chart-header">
           <q-icon name="pie_chart" color="primary" size="24px" class="q-mr-md" />
-          <div class="text-h6">Distribución de Inventario</div>
+          <div class="text-h6">{{ $t('ui.distribucion-de-inventario-6da390') }}</div>
         </q-card-section>
         <apexchart type="donut" :options="donutOptions" :series="distribucion.series" />
       </q-card>
@@ -13,7 +13,7 @@
       <q-card class="chart-card" flat>
         <q-card-section class="chart-header">
           <q-icon name="trending_down" color="negative" size="24px" class="q-mr-md" />
-          <div class="text-h6">Top 10 Menor Stock</div>
+          <div class="text-h6">{{ $t('ui.top-10-menor-stock-30ce1d') }}</div>
         </q-card-section>
         <apexchart
           type="bar"
@@ -26,7 +26,7 @@
       <q-card class="chart-card" flat>
         <q-card-section class="chart-header">
           <q-icon name="trending_up" color="positive" size="24px" class="q-mr-md" />
-          <div class="text-h6">Top 10 Mayor Stock</div>
+          <div class="text-h6">{{ $t('ui.top-10-mayor-stock-4c7f2f') }}</div>
         </q-card-section>
         <apexchart
           type="bar"
@@ -39,7 +39,7 @@
       <q-card class="chart-card" flat>
         <q-card-section class="chart-header">
           <q-icon name="category" color="info" size="24px" class="q-mr-md" />
-          <div class="text-h6">Cantidad por Categoría</div>
+          <div class="text-h6">{{ $t('ui.cantidad-por-categoria-edc05f') }}</div>
         </q-card-section>
         <apexchart
           type="bar"
@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 import { useStock } from '../composables/useStock'
 
@@ -74,7 +75,7 @@ const donutOptions = {
 const barMinOptions = {
   xaxis: { categories: topMenor.value.map((t) => t.nombre), labels: { rotate: -45 } },
   colors: ['#e74c3c'],
-  title: { text: 'Unidades' },
+  title: { text: i18nT('configProducto.unidadProducto.table.title') },
 }
 const barMaxOptions = {
   xaxis: { categories: topMayor.value.map((t) => t.nombre), labels: { rotate: -45 } },
