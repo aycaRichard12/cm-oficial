@@ -10,6 +10,7 @@
           <div class="text-subtitle2 text-grey-7 q-mt-xs">
             Administración de Kardex de Productos
           </div>
+
         </div>
       </div>
       <q-card-section>
@@ -84,6 +85,7 @@
               </q-select>
             </div>
           </div>
+
           <div class="row q-mt-md justify-center">
             <q-btn
               id="btngenerarreportekardex"

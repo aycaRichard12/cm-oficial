@@ -5,8 +5,8 @@
       <div class="row items-center">
         <q-icon name="store" size="24px" class="q-mr-md" />
         <div>
-          <div class="text-h6">Configuración de Cliente Almacén</div>
-          <div class="text-subtitle2 text-primary-light">Alcance de visualización de clientes</div>
+          <div class="text-h6">{{ t('configuracion.clienteAlmacen.title') }}</div>
+          <div class="text-subtitle2 text-primary-light">{{ t('configuracion.clienteAlmacen.subtitle') }}</div>
         </div>
       </div>
     </q-card-section>
@@ -15,19 +15,19 @@
     <q-card-section class="q-pa-lg">
       <div class="row items-center justify-between q-mb-lg">
         <div class="col">
-          <div class="text-h6 text-weight-medium q-mb-xs">Modo de listado de clientes</div>
+          <div class="text-h6 text-weight-medium q-mb-xs">{{ t('configuracion.clienteAlmacen.modeTitle') }}</div>
           <div class="text-body2 text-grey-7">
             {{
               soloAlmacen
-                ? '✓ Solo se mostrarán los clientes asignados a este almacén'
-                : '✓ Se listarán todos los clientes de la empresa (global)'
+                ? t('configuracion.clienteAlmacen.modeDescLocal')
+                : t('configuracion.clienteAlmacen.modeDescGlobal')
             }}
           </div>
         </div>
 
         <div class="col-auto">
           <div class="text-caption text-grey-6 q-mb-xs text-center">
-            {{ soloAlmacen ? 'Local' : 'Global' }}
+            {{ soloAlmacen ? t('configuracion.clienteAlmacen.toggleLabelLocal') : t('configuracion.clienteAlmacen.toggleLabelGlobal') }}
           </div>
           <q-toggle
             v-model="soloAlmacen"
@@ -41,13 +41,13 @@
             <q-tooltip :delay="500">
               <div class="text-center">
                 <div class="text-weight-bold q-mb-xs">
-                  {{ soloAlmacen ? 'Cambiar a Global' : 'Cambiar a Local' }}
+                  {{ soloAlmacen ? t('configuracion.clienteAlmacen.toggleTooltipGlobal') : t('configuracion.clienteAlmacen.toggleTooltipLocal') }}
                 </div>
                 <div class="text-caption">
                   {{
                     soloAlmacen
-                      ? 'Se verán solo los clientes del almacén actual'
-                      : 'Se verán todos los clientes de la empresa'
+                      ? t('configuracion.clienteAlmacen.toggleDescGlobal')
+                      : t('configuracion.clienteAlmacen.toggleDescLocal')
                   }}
                 </div>
               </div>
@@ -71,13 +71,13 @@
                 <q-icon :name="soloAlmacen ? 'warehouse' : 'public'" size="32px" />
                 <div>
                   <div class="text-subtitle1 text-weight-bold">
-                    {{ soloAlmacen ? 'Listado por Almacén' : 'Listado Global' }}
+                    {{ soloAlmacen ? t('configuracion.clienteAlmacen.statusLocalTitle') : t('configuracion.clienteAlmacen.statusGlobalTitle') }}
                   </div>
                   <div class="text-caption q-mt-xs">
                     {{
                       soloAlmacen
-                        ? 'Solo los clientes vinculados a este almacén aparecerán en las listas'
-                        : 'Todos los clientes registrados en la empresa estarán disponibles'
+                        ? t('configuracion.clienteAlmacen.statusLocalDesc')
+                        : t('configuracion.clienteAlmacen.statusGlobalDesc')
                     }}
                   </div>
                 </div>
@@ -92,7 +92,7 @@
     <q-inner-loading :showing="loading" color="primary" class="rounded-borders">
       <div class="flex column items-center">
         <q-spinner-dots size="50px" color="primary" />
-        <div class="text-caption q-mt-sm text-grey-7">Actualizando configuración...</div>
+        <div class="text-caption q-mt-sm text-grey-7">{{ t('configuracion.clienteAlmacen.loading') }}</div>
       </div>
     </q-inner-loading>
   </q-card>
@@ -111,9 +111,6 @@
           />
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
-            <div class="text-subtitle2 text-white text-weight-regular"><!-- theme-allow -->
-              {{ dialogType === 'error' ? 'Error en la operación' : 'Operación exitosa' }}
-            </div>
           </div>
         </div>
       </q-card-section>
@@ -127,7 +124,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? 'Entendido' : 'Continuar'"
+          :label="dialogType === 'error' ? t('configuracion.clienteAlmacen.dialog.okButtonError') : t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"
@@ -138,8 +135,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useClienteAlmacenConfig } from '../composables/useClienteAlmacenConfig'
 
+const { t } = useI18n()
 const props = defineProps({
   md5: {
     type: String,

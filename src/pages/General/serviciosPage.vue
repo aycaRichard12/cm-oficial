@@ -8,7 +8,7 @@
             <div class="row items-center justify-between q-col-gutter-sm">
               <div class="col-12 col-md-auto display-flex items-center">
                 <q-icon name="design_services" size="md" color="primary" class="q-mr-sm" />
-                <span class="text-h6 text-weight-bold">Gestión de Servicios</span>
+                <span class="text-h6 text-weight-bold">{{ t('configuracion.servicios.title') }}</span>
               </div>
               <div class="col-12 col-md-auto row q-gutter-sm items-center no-wrap">
                 <q-input
@@ -17,7 +17,7 @@
                   dense
                   outlined
                   rounded
-                  placeholder="Buscar servicio..."
+                  :placeholder="t('configuracion.servicios.search')"
                   class="bg-grey-1"
                   color="primary"
                 >
@@ -31,10 +31,10 @@
                   @click="handleCreate"
                   class="btn-res"
                   id="agregarservicio"
-                  title="Registrar Servicio"
+                  :title="t('configuracion.servicios.add')"
                 >
                   <q-icon name="add" class="icono" />
-                  <span class="texto"> <q-icon name="add" /> Nuevo </span>
+                  <span class="texto"> <q-icon name="add" /> {{ t('configuracion.servicios.add') }} </span>
                 </q-btn>
               </div>
             </div>
@@ -85,7 +85,7 @@
                   size="sm"
                   class="text-weight-medium cursor-pointer"
                 >
-                  {{ props.row.estado == 1 ? 'Activo' : 'Inactivo' }}
+                  {{ props.row.estado == 1 ? t('common.active') : t('common.inactive') }}
                 </q-chip>
               </q-td>
             </template>
@@ -102,7 +102,7 @@
                     icon="edit"
                     @click="handleEdit(props.row)"
                   >
-                    <q-tooltip anchor="top middle" self="bottom middle">Editar</q-tooltip>
+                    <q-tooltip anchor="top middle" self="bottom middle">{{ t('common.edit') }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -112,7 +112,7 @@
                     icon="delete"
                     @click="handleDelete(props.row)"
                   >
-                    <q-tooltip anchor="top middle" self="bottom middle">Eliminar</q-tooltip>
+                    <q-tooltip anchor="top middle" self="bottom middle">{{ t('common.delete') }}</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -127,7 +127,7 @@
             <template v-slot:no-data>
               <div class="full-width row flex-center q-pa-lg text-grey-6">
                 <q-icon name="sentiment_dissatisfied" size="sm" class="q-mr-sm" />
-                <span>No se encontraron servicios</span>
+                <span>{{ t('configuracion.servicios.messages.loadError') }}</span>
               </div>
             </template>
           </q-table>
@@ -143,7 +143,7 @@
             <q-icon :name="isEditing ? 'edit' : 'add'" size="24px" />
           </q-avatar>
           <q-toolbar-title class="text-subtitle1 text-weight-bold">
-            {{ isEditing ? 'Editar Servicio' : 'Nuevo Servicio' }}
+            {{ isEditing ? t('configuracion.servicios.dialog.editTitle') : t('configuracion.servicios.dialog.createTitle') }}
           </q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
@@ -154,11 +154,11 @@
               <div class="col-12 col-sm-6">
                 <q-input
                   v-model="form.nombre"
-                  label="Nombre *"
+                  :label="t('configuracion.servicios.dialog.nombre')"
                   outlined
                   dense
                   color="primary"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || t('common.required')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="badge" color="grey-6" />
@@ -168,16 +168,16 @@
               <div class="col-12 col-sm-6">
                 <q-input
                   v-model="form.slug"
-                  label="Slug *"
+                  :label="t('configuracion.servicios.dialog.slug')"
                   outlined
                   dense
                   color="primary"
-                  hint="Solo letras, números y guiones bajos (_)"
+                  :hint="t('configuracion.servicios.dialog.slugHint')"
                   @input="formatSlug"
                   :rules="[
-                    (val) => !!val || 'Requerido',
+                    (val) => !!val || t('common.required'),
                     (val) =>
-                      /^[a-z0-9_]+$/.test(val) || 'Solo minúsculas, números y guiones bajos (_)',
+                      /^[a-z0-9_]+$/.test(val) || t('configuracion.servicios.dialog.slugHint'),
                   ]"
                 >
                   <template v-slot:prepend>
@@ -189,7 +189,7 @@
 
             <q-input
               v-model="form.descripcion"
-              label="Descripción"
+              :label="t('configuracion.servicios.dialog.descripcion')"
               outlined
               dense
               color="primary"
@@ -201,7 +201,7 @@
               </template>
             </q-input>
 
-            <q-input v-model="form.email" label="Email" outlined dense color="primary" type="email">
+            <q-input v-model="form.email" :label="t('configuracion.servicios.dialog.email')" outlined dense color="primary" type="email">
               <template v-slot:prepend>
                 <q-icon name="email" color="grey-6" />
               </template>
@@ -209,7 +209,7 @@
 
             <q-input
               v-model="form.documentacion"
-              label="URL Documentación"
+              :label="t('configuracion.servicios.dialog.documentacion')"
               outlined
               dense
               color="primary"
@@ -222,11 +222,11 @@
 
             <q-input
               v-model="form.icono"
-              label="Icono (Material Symbols)"
+              :label="t('configuracion.servicios.dialog.icono')"
               outlined
               dense
               color="primary"
-              hint="Ej: settings, home, build"
+              :hint="t('configuracion.servicios.dialog.iconoHint')"
             >
               <template v-slot:prepend>
                 <q-icon :name="form.icono || 'help_outline'" color="primary" />
@@ -241,7 +241,7 @@
                   href="https://fonts.google.com/icons"
                   target="_blank"
                 >
-                  <q-tooltip>Buscar iconos</q-tooltip>
+                  <q-tooltip>{{ t('configuracion.servicios.dialog.searchIcons') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-input>
@@ -250,7 +250,7 @@
 
             <div class="row justify-end q-gutter-sm q-mt-sm">
               <q-btn
-                label="Cancelar"
+                :label="t('common.cancel')"
                 flat
                 color="grey-8"
                 v-close-popup
@@ -258,7 +258,7 @@
                 class="text-weight-medium"
               />
               <q-btn
-                :label="isEditing ? 'Actualizar' : 'Guardar'"
+                :label="isEditing ? t('configuracion.servicios.dialog.update') : t('configuracion.servicios.dialog.save')"
                 type="submit"
                 color="primary"
                 unelevated
@@ -276,10 +276,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 
+const { t } = useI18n()
 const $q = useQuasar()
 
 // Estado
@@ -302,14 +304,14 @@ const form = ref({
 })
 
 // Columnas
-const columns = [
-  { name: 'id', align: 'left', label: '#', field: 'id', sortable: true, style: 'width: 60px' },
-  { name: 'icono', align: 'center', label: 'Icono', field: 'icono', style: 'width: 70px' },
-  { name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true },
+const columns = computed(() => [
+  { name: 'id', align: 'left', label: t('configuracion.servicios.table.id'), field: 'id', sortable: true, style: 'width: 60px' },
+  { name: 'icono', align: 'center', label: t('configuracion.servicios.table.icono'), field: 'icono', style: 'width: 70px' },
+  { name: 'email', align: 'center', label: t('configuracion.servicios.table.email'), field: 'email', sortable: true },
   {
     name: 'nombre',
     align: 'left',
-    label: 'Nombre',
+    label: t('configuracion.servicios.table.nombre'),
     field: 'nombre',
     sortable: true,
     classes: 'text-weight-bold cm-text',
@@ -317,7 +319,7 @@ const columns = [
   {
     name: 'slug',
     align: 'left',
-    label: 'Slug',
+    label: t('configuracion.servicios.table.slug'),
     field: 'slug',
     sortable: true,
     classes: 'text-caption text-grey-7',
@@ -325,14 +327,14 @@ const columns = [
   {
     name: 'documentacion',
     align: 'center',
-    label: 'Documentación',
+    label: t('configuracion.servicios.table.documentacion'),
     field: 'documentacion',
     sortable: true,
   },
   {
     name: 'descripcion',
     align: 'left',
-    label: 'Descripción',
+    label: t('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     classes: 'ellipsis cm-text-muted',
     style: 'max-width: 250px',
@@ -340,12 +342,12 @@ const columns = [
   {
     name: 'estado',
     align: 'center',
-    label: 'Estado',
+    label: t('configuracion.servicios.table.estado'),
     field: 'estado',
     sortable: true,
   },
-  { name: 'actions', align: 'right', label: 'Acciones' },
-]
+  { name: 'actions', align: 'right', label: t('configuracion.servicios.table.actions') },
+])
 
 // Cargar Servicios
 const fetchServices = async () => {

@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para canales de distribución -->
           <q-icon name="hub" size="md" class="q-mr-sm" />
-          Canales de Venta
+          {{ t('configuracion.canalesDeVenta.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de puntos y plataformas de comercialización
+          {{ t('configuracion.canalesDeVenta.subtitle') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Registrar Canal Venta</div>
+          <div>{{ t('configuracion.canalesDeVenta.dialogTitle') }}</div>
           <q-btn color="" icon="close" @click="showForm = false" dense round flat />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -41,6 +41,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CanalVentaForm from 'src/components/canalVenta/config/FormCanalVenta.vue'
 import CanalVentaTable from 'src/components/canalVenta/config/TableCanalVenta.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -48,6 +49,7 @@ import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 
+const { t } = useI18n()
 const idempresa = idempresa_md5()
 const $q = useQuasar()
 const showForm = ref(false)
@@ -99,8 +101,8 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Estado "${item.canal}"?`,
+    title: t('configuracion.canalesDeVenta.messages.deleteTitle'),
+    message: t('configuracion.canalesDeVenta.messages.deleteMessage', { name: item.canal }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -114,13 +116,13 @@ const confirmDelete = (item) => {
           message: response.data.mensaje,
         })
       }
-    } catch (error) {
-      console.error('Error al cargar datos:', error)
-      $q.notify({
-        type: 'negative',
-        message: 'No se pudieron cargar los datos',
-      })
-    }
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: t('configuracion.canalesDeVenta.messages.loadError'),
+    })
+  }
   })
 }
 
@@ -154,14 +156,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? t('configuracion.canalesDeVenta.messages.updated') : t('configuracion.canalesDeVenta.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configuracion.canalesDeVenta.messages.saveError') + error,
     })
   }
   toggleForm()
