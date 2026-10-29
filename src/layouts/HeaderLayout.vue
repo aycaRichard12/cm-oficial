@@ -227,6 +227,13 @@ const TAB_TRANSLATION_KEYS = {
   divisas: 'configGeneral.tabs.divisas',
   leyendaproforma: 'configGeneral.tabs.leyendaproforma',
   tipokardex: 'configGeneral.tabs.tipokardex',
+  categoriadeproducto: 'configProducto.tabs.categoriadeproducto',
+  estadodeproducto: 'configProducto.tabs.estadodeproducto',
+  unidaddeproducto: 'configProducto.tabs.unidaddeproducto',
+  caracteristicadeproducto: 'configProducto.tabs.caracteristicadeproducto',
+  parametrosdeobsolescencia: 'configProducto.tabs.parametrosdeobsolescencia',
+  configuracionproductounico: 'configProducto.tabs.configuracionproductounico',
+  configuracionproductovariante: 'configProducto.tabs.configuracionproductovariante',
 }
 
 const tabTitle = (tab) => {

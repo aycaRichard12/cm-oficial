@@ -5,12 +5,12 @@
         color="primary"
         @click="$emit('new-item')"
         class="btn-res q-mt-lg"
-        title="registrar Tipo Almacén"
-        id="add"
-      >
-        <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" /> Nuevo </span>
-      </q-btn>
+          :title="t('configProducto.categoriaProducto.table.addTitle')"
+          id="add"
+        >
+          <q-icon name="add" class="icono" />
+          <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
+        </q-btn>
       <!-- <div class="col flex items-center justify-end">
         <q-input v-model="search" placeholder="Buscar" dense outlined class="q-ml-md">
           <template v-slot:append>
@@ -19,7 +19,7 @@
         </q-input>
       </div> -->
       <div id="buscarCategoria">
-        <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ t('common.search') }}</label>
         <q-input
           v-model="search"
           id="buscar"
@@ -41,14 +41,14 @@
       :columns="columns"
       row-key="id"
       :filter="search"
-      title="Categorias"
+      :title="t('configProducto.categoriaProducto.table.title')"
       id="tablaCategorias"
     >
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
         <q-td align="center">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+        <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="t('common.active')" outline />
+        <q-badge color="red" v-else :label="t('common.inactive')" outline />
         </q-td>
       </template>
 
@@ -60,7 +60,7 @@
             dense
             class="q-mr-sm"
             @click="$emit('edit-item', props.row)"
-            title="Editar"
+            :title="t('common.edit')"
             flat
             id="editarCategoria"
           />
@@ -69,7 +69,7 @@
             color="negative"
             dense
             @click="$emit('delete-item', props.row)"
-            title="Eliminar"
+            :title="t('common.delete')"
             flat
             id="eliminarCategoria"
           />
@@ -79,7 +79,7 @@
             flat
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
-            title="Cambiar de Estado"
+            :title="t('configProducto.categoriaProducto.table.toggleStatus')"
             id="cambiarEstadoCategoria"
           />
         </q-td>
@@ -90,6 +90,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 const props = defineProps({
   rows: {
     type: Array,
@@ -98,16 +99,18 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
+
 defineEmits(['new-item', 'edit-item', 'delete-item', 'status-change'])
 
-const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'categoria', label: 'Categorías', field: 'categoria', align: 'left' },
-  { name: 'subcategoria', label: 'Sub Categorías', field: 'subcategoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
-]
+const columns = computed(() => [
+  { name: 'numero', label: t('configProducto.categoriaProducto.table.number'), field: 'numero', align: 'center' },
+  { name: 'categoria', label: t('configProducto.categoriaProducto.table.categoria'), field: 'categoria', align: 'left' },
+  { name: 'subcategoria', label: t('configProducto.categoriaProducto.table.subcategoria'), field: 'subcategoria', align: 'left' },
+  { name: 'descripcion', label: t('configProducto.categoriaProducto.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'estado', label: t('configProducto.categoriaProducto.table.estado'), field: 'estado', align: 'center' },
+  { name: 'opciones', label: t('configProducto.categoriaProducto.table.opciones'), field: 'opciones', align: 'center' },
+])
 
 const search = ref('')
 

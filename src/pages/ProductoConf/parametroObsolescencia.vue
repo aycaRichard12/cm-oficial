@@ -5,22 +5,22 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para obsolescencia o ciclos de vida -->
           <q-icon name="history_toggle_off" size="md" class="q-mr-sm" />
-          Parámetros de Obsolescencia
+          {{ t('configProducto.parametroObsolescencia.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Gestión de criterios y reglas de ciclo de vida del producto
+          {{ t('configProducto.parametroObsolescencia.subtitle') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Parametros de Obsolescencia</div>
+          <div>{{ t('configProducto.parametroObsolescencia.dialogTitle') }}</div>
           <q-btn color="" icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
           <parametro-form
-            :titulo="isEditing ? 'Editar Registro' : 'Nuevo Registro'"
+            :titulo="isEditing ? t('common.edit') : t('common.new')"
             :isEditing="isEditing"
             :model-value="formData"
             @submit="handleSubmit"
@@ -41,6 +41,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ParametroForm from 'components/productoConf/ParametrosObsolescencia/parametrosObsolescenciaForm.vue'
 import ParametrosTable from 'components/productoConf/ParametrosObsolescencia/parametrosObsolescenciaTable.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -50,6 +51,7 @@ import { objectToFormData } from 'src/composables/FuncionesGenerales'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 const showForm = ref(false)
 const isEditing = ref(false)
 const parametros = ref([])
@@ -67,7 +69,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.parametroObsolescencia.messages.loadError'),
     })
   }
 }
@@ -102,8 +104,8 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Parámetro "${item.nombre}"?`,
+    title: t('configProducto.parametroObsolescencia.messages.deleteTitle'),
+    message: t('configProducto.parametroObsolescencia.messages.deleteMessage', { name: item.nombre }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -114,14 +116,14 @@ const confirmDelete = (item) => {
         loadRows()
         $q.notify({
           type: 'positive',
-          message: response.data.mensaje,
+          message: response.data.mensaje || t('configProducto.parametroObsolescencia.messages.saved'),
         })
       }
     } catch (error) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: t('configProducto.parametroObsolescencia.messages.loadError'),
       })
     }
   })
@@ -142,14 +144,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: t('configProducto.parametroObsolescencia.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configProducto.parametroObsolescencia.messages.saveError'),
     })
   }
   toggleForm()

@@ -3,6 +3,7 @@
 node_modules
 .agent
 .agents
+.antigravity
 /skills-lock.json
 # Quasar core related directories
 .quasar
@@ -208,3 +209,8 @@ upload_dist.bat
 
 # Harness session artifacts (written by .rsc/session-memory-adapter.mjs)
 session-*.md
+
+# rsc local state (hooks, seals, logs) and managed skill links — machine-local
+.github/rsc/ux
+.dsh/skills/ux
+.opencode/rsc/ux

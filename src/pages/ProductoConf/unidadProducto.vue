@@ -4,17 +4,17 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="straighten" size="md" class="q-mr-sm" />
-          Unidad de Producto
+          {{ t('configProducto.unidadProducto.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de unidades de medida y equivalencias
+          {{ t('configProducto.unidadProducto.subtitle') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Unidades para Productos</div>
+          <div>{{ t('configProducto.unidadProducto.dialogTitle') }}</div>
           <q-btn icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -40,6 +40,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ProductUnitForm from 'src/components/productoConf/unidadProducto/unidadForm.vue'
 import ProductUnitTable from 'src/components/productoConf/unidadProducto/unidadTable.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -49,6 +50,7 @@ import { objectToFormData } from 'src/composables/FuncionesGenerales'
 
 const idempresa = idempresa_md5()
 const $q = useQuasar()
+const { t } = useI18n()
 const showForm = ref(false)
 const isEditing = ref(false)
 const productUnits = ref([])
@@ -65,7 +67,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.unidadProducto.messages.loadError'),
     })
   }
 }
@@ -98,8 +100,8 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Estado "${item.nombre}"?`,
+    title: t('configProducto.unidadProducto.messages.deleteTitle'),
+    message: t('configProducto.unidadProducto.messages.deleteMessage', { name: item.nombre }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -117,7 +119,7 @@ const confirmDelete = (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: t('configProducto.unidadProducto.messages.loadError'),
       })
     }
   })
@@ -133,7 +135,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.unidadProducto.messages.loadError'),
     })
   }
 }
@@ -153,14 +155,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: t('configProducto.unidadProducto.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configProducto.unidadProducto.messages.saveError') + error,
     })
   }
   toggleForm()

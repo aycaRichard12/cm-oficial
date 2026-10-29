@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para atributos o propiedades -->
           <q-icon name="tune" size="md" class="q-mr-sm" />
-          Característica de Producto
+          {{ t('configProducto.caracteristicaProducto.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de atributos y especificaciones técnicas
+          {{ t('configProducto.caracteristicaProducto.subtitle') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Caracteristica Producto</div>
+          <div>{{ t('configProducto.caracteristicaProducto.dialogTitle') }}</div>
           <q-btn icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -41,6 +41,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import CaracteristicaProductoForm from 'components/productoConf/caracteristicas/caracteristicaForm.vue'
 import CaracteristicaProductoTable from 'components/productoConf/caracteristicas/caracteristicaTable.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -54,6 +55,7 @@ const showForm = ref(false)
 const isEditing = ref(false)
 const CaracteristicaProd = ref([])
 const notify = useNotify()
+const { t } = useI18n()
 const formData = ref({
   ver: 'registrarCaracteristicaProducto',
   idempresa: idempresa,
@@ -66,7 +68,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.caracteristicaProducto.messages.loadError'),
     })
   }
 }
@@ -100,7 +102,9 @@ const editUnit = (item) => {
 const confirmDelete = async (item) => {
   console.log('Iniciando confirmación para:', item.nombre)
 
-  const confirmed = await notify.question(`¿Eliminar Característica "${item.nombre}"?`)
+  const confirmed = await notify.question(
+    t('configProducto.caracteristicaProducto.messages.deleteMessage', { name: item.nombre }),
+  )
 
   console.log('Resultado de la confirmación:', confirmed) // Si esto no sale, el problema es useNotify
 
@@ -152,7 +156,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: t('configProducto.caracteristicaProducto.messages.loadError'),
     })
   }
 }
@@ -172,14 +176,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+        message: t('configProducto.caracteristicaProducto.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+        message: t('configProducto.caracteristicaProducto.messages.saveError') + error,
     })
   }
   toggleForm()
