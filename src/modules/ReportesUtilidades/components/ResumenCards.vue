@@ -7,7 +7,7 @@
           <q-icon name="analytics" size="md" class="q-mr-md" />
           <div>
             <div class="text-caption" style="opacity: 0.8">
-              Indicadores del período seleccionado
+              {{ $t('ui.indicadores-del-periodo-seleccionado-cec308') }}
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
                   class="text-subtitle1 text-weight-bold cm-text"
                   style="padding: 8px 0 8px 12px"
                 >
-                  Venta neta
+                  {{ $t('ui.venta-neta-157fa4') }}
                 </td>
                 <td
                   class="text-right text-h6 text-weight-bold text-primary"
@@ -54,7 +54,7 @@
                   class="text-body2 cm-text-muted"
                   style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
                 >
-                  Precio venta
+                  {{ $t('ui.precio-venta-1d5cc1') }}
                 </td>
                 <td class="text-right cm-text" style="padding: 4px 16px 4px 8px">
                   {{ formatNumber(data[cat.key]?.venta_bruta) }}
@@ -67,7 +67,7 @@
                   class="text-body2 cm-text-muted"
                   style="padding-left: 32px; padding-top: 4px; padding-bottom: 4px"
                 >
-                  Descuento
+                  {{ $t('ventas.discount') }}
                 </td>
                 <td class="text-right text-negative" style="padding: 4px 16px 4px 8px">
                   - {{ formatNumber(data[cat.key]?.descuentos) }}
@@ -84,7 +84,7 @@
               <!-- Costo de Ventas -->
               <tr>
                 <td class="text-subtitle1 cm-text" style="padding: 8px 0 8px 12px">
-                  Costo de ventas
+                  {{ $t('ui.costo-de-ventas-065727') }}
                 </td>
                 <td
                   class="text-right text-weight-bold text-primary"
@@ -105,7 +105,7 @@
               <!-- Resultado: Utilidad o Pérdida -->
               <tr>
                 <td class="text-h6 text-weight-bold cm-text" style="padding: 10px 0 14px 12px">
-                  Utilidad
+                  {{ $t('ui.utilidad-64a80d') }}
                 </td>
                 <td
                   class="text-right text-h6 text-weight-bold text-primary"
@@ -130,13 +130,14 @@
         <q-icon name="info" color="grey-6" size="sm" />
       </template>
       <span class="text-caption">
-        Los indicadores corresponden al rango de fechas y filtros seleccionados.
+        {{ $t('ui.los-indicadores-corresponden-al-rango-de-fechas-y-fi-6af045') }}
       </span>
     </q-banner>
   </div>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   data: { type: Object, default: () => ({}) },
   divisa: { type: Object, default: () => ({}) },
@@ -145,9 +146,9 @@ defineProps({
 
 // Orden específico: Venta, Cotización, Total
 const orderedCategories = [
-  { key: 'venta', label: 'Venta' },
-  { key: 'cotizacion', label: 'Cotización' },
-  { key: 'total', label: 'Total' },
+  { key: 'venta', label: i18nT('ui.venta-3b19a7') },
+  { key: 'cotizacion', label: i18nT('ui.cotizacion-58685c') },
+  { key: 'total', label: i18nT('ventas.total') },
 ]
 
 // Función para formatear números (2 decimales fijos y separador de miles si es necesario)

@@ -11,7 +11,7 @@
             <q-btn
               color="primary"
               icon="picture_as_pdf"
-              label="Descargar PDF"
+              :label="$t('ui.descargar-pdf-40863e')"
               outline
               rounded
               @click="emit('descargar-p-d-f')"
@@ -19,7 +19,7 @@
             <q-btn
               color="primary"
               icon="table_view"
-              label="Descargar Excel"
+              :label="$t('ui.descargar-excel-af6e96')"
               outline
               rounded
               @click="emit('descargar-excel')"
@@ -27,7 +27,7 @@
             <q-btn
               color="primary"
               icon="close"
-              label="cerrar"
+              :label="$t('ui.cerrar-13c4f0')"
               outline
               rounded
               @click="emit('cerrar')"
