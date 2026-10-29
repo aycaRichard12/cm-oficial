@@ -13,16 +13,16 @@
           <q-icon name="check" size="40px" color="positive" />
         </div>
         <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
-          ¡Cotización Exitosa!
+          {{ $t('ui.cotizacion-exitosa-10d1c0') }}
         </div>
       </q-card-section>
 
       <q-card-section class="q-pa-xl text-center cm-surface">
         <div class="text-body1 cm-text q-mb-md text-weight-medium" style="font-size: 16px">
-          El comprobante ha sido generado y guardado correctamente en el sistema.
+          {{ $t('ui.el-comprobante-ha-sido-generado-y-guardado-correctam-50d0b1') }}
         </div>
         <div class="text-subtitle2 cm-text-muted" style="line-height: 1.5">
-          ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
+          {{ $t('ui.desea-enviar-una-copia-en-formato-pdf-al-correo-elec-00d095') }}
         </div>
       </q-card-section>
 
@@ -30,14 +30,14 @@
       <q-card-actions align="center" class="q-pa-md cm-surface-2">
         <q-btn
           flat
-          label="No, gracias"
+          :label="$t('ui.no-gracias-ec7892')"
           color="grey-7"
           @click="$emit('cancelar')"
           class="q-px-md text-weight-bold radius-8"
         />
         <q-btn
           unelevated
-          label="Enviar PDF por Correo"
+          :label="$t('ui.enviar-pdf-por-correo-1a3769')"
           color="positive"
           icon="send"
           class="q-px-md text-weight-bold shadow-3 q-ml-sm radius-8"

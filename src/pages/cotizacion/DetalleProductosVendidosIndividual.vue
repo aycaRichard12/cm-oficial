@@ -4,17 +4,17 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="inventory" size="md" class="q-mr-sm" />
-          Reporte Productos Vendidos
+          {{ $t('ui.reporte-productos-vendidos-ec4622') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Reporte Productos Vendidos
+          {{ $t('ui.administracion-de-reporte-productos-vendidos-ecbc7f') }}
         </div>
       </div>
     </div>
 
     <div class="row justify-center q-col-gutter-x-md">
       <div class="col-12 col-md-3" id="fechainidetalleproductos">
-        <label for="fechaini">Fecha Inicial *</label>
+        <label for="fechaini">{{ $t('ui.fecha-inicial-4e1b5c') }}</label>
         <q-input
           v-model="fechai"
           id="fechaini"
@@ -26,7 +26,7 @@
         />
       </div>
       <div class="col-12 col-md-3" id="fechafindetalleproductos">
-        <label for="fechafin">Fecha Final*</label>
+        <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
         <q-input
           v-model="fechaf"
           id="fechafin"
@@ -41,7 +41,7 @@
 
     <div class="row justify-center q-col-gutter-x-md">
       <div class="col-12 col-md-3" id="filtraralmacendetalle">
-        <label for="almacen">Filtrar por almacén</label>
+        <label for="almacen">{{ $t('ui.filtrar-por-almacen-eeba00') }}</label>
         <q-select
           v-model="almacenSeleccionado"
           :options="almacenesOptions"
@@ -66,14 +66,14 @@
                   color="primary"
                   @click.stop="listaAlmacenes()"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
         </q-select>
       </div>
 
       <div class="col-12 col-md-3" id="filtrarraizonsozialdetalle">
-        <label for="razonsocial">Filtrar por razón social</label>
+        <label for="razonsocial">{{ $t('ui.filtrar-por-razon-social-06617e') }}</label>
         <q-input
           v-model="clienteSearchTerm"
           id="razonsocial"
@@ -110,7 +110,7 @@
       </div>
 
       <div class="col-12 col-md-3" id="filtrarsucursaldetalle">
-        <label for="sucursal">Filtrar por sucursal</label>
+        <label for="sucursal">{{ $t('ui.filtrar-por-sucursal-961f92') }}</label>
         <q-input
           v-model="sucursalSearchTerm"
           id="sucursal"
@@ -160,6 +160,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
@@ -293,7 +294,7 @@ const validarFechas = () => {
   if (fechaInicio.getTime() > fechaFin.getTime()) {
     $q.notify({
       type: 'info',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-32b79c'),
       position: 'top',
     })
     // Opcional: ajustar la fecha de fin o inicio si hay error
@@ -306,7 +307,7 @@ const generarReporte = async () => {
   if (!fechai.value || !fechaf.value) {
     $q.notify({
       type: 'negative',
-      message: 'Por favor, seleccione las fechas de inicio y fin.',
+      message: i18nT('ui.por-favor-seleccione-las-fechas-de-inicio-y-fin-a11e23'),
       position: 'top',
     })
     loading.value = false
@@ -317,7 +318,7 @@ const generarReporte = async () => {
   if (!idusuario) {
     $q.notify({
       type: 'negative',
-      message: 'Información de usuario no disponible.',
+      message: i18nT('ui.informacion-de-usuario-no-disponible-443299'),
       position: 'top',
     })
     loading.value = false
@@ -364,7 +365,7 @@ const generarReporte = async () => {
       datosFiltrados.value = [...datosOriginales.value]
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
       })
       // Load related data for filters after report generation
@@ -375,7 +376,7 @@ const generarReporte = async () => {
     console.error('Error al generar el reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error al generar el reporte. Inténtelo de nuevo.',
+      message: i18nT('ui.hubo-un-error-al-generar-el-reporte-intentelo-de-nue-75956d'),
       position: 'top',
     })
   } finally {
@@ -392,7 +393,7 @@ const listaAlmacenes = async () => {
     if (!idempresa || !idusuario) {
       $q.notify({
         type: 'negative',
-        message: 'Información de empresa o usuario no disponible para listar almacenes.',
+        message: i18nT('ui.informacion-de-empresa-o-usuario-no-disponible-para-79ea50'),
         position: 'top',
       })
       loading.value = false
@@ -423,7 +424,7 @@ const listaAlmacenes = async () => {
     console.error('Error en listaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes. Inténtelo de nuevo.',
+      message: i18nT('ui.error-al-cargar-los-almacenes-intentelo-de-nuevo-607989'),
       position: 'top',
     })
   } finally {
@@ -437,7 +438,7 @@ const listaClientes = async () => {
   if (!idempresa) {
     $q.notify({
       type: 'negative',
-      message: 'Información de empresa no disponible para listar clientes.',
+      message: i18nT('ui.informacion-de-empresa-no-disponible-para-listar-cli-71b092'),
       position: 'top',
     })
     loading.value = false
@@ -463,7 +464,7 @@ const listaClientes = async () => {
     console.error('Error en listaClientes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los clientes. Inténtelo de nuevo.',
+      message: i18nT('ui.error-al-cargar-los-clientes-intentelo-de-nuevo-5374af'),
       position: 'top',
     })
   } finally {
@@ -502,7 +503,7 @@ const selectSucursal = async (idcliente) => {
       if (data.length === 0) {
         $q.notify({
           type: 'info',
-          message: 'No existen sucursales registradas para el cliente seleccionado.',
+          message: i18nT('ui.no-existen-sucursales-registradas-para-el-cliente-se-1cd986'),
           position: 'top',
         })
       }
@@ -511,7 +512,7 @@ const selectSucursal = async (idcliente) => {
     console.error('Error en selectSucursal:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las sucursales. Inténtelo de nuevo.',
+      message: i18nT('ui.error-al-cargar-las-sucursales-intentelo-de-nuevo-1f764d'),
       position: 'top',
     })
   } finally {
@@ -585,15 +586,15 @@ const generarPDF = () => {
     almacenSeleccionado.value
       ? almacenesOptions.value.find(
           (a) => Number(a.idalmacen) === Number(almacenSeleccionado.value),
-        )?.almacen || 'Todos los almacenes'
+        )?.almacen || i18nT('ui.todos-los-almacenes-949f2c')
       : 'Todos los almacenes',
     clienteSeleccionadoId.value
       ? clientesOptions.value.find((c) => c.id === clienteSeleccionadoId.value)?.nombre ||
-          'Todos los clientes'
+          i18nT('ui.todos-los-clientes-cd2b70')
       : 'Todos los clientes',
     sucursalSeleccionadaId.value
       ? sucursalesClienteOptions.value.find((s) => s.id === sucursalSeleccionadaId.value)?.nombre ||
-          'Todas las sucursales'
+          i18nT('ui.todas-las-sucursales-892983')
       : 'Todas las sucursales',
   )
 
@@ -608,7 +609,7 @@ const exportarTablaAExcel = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No hay datos para exportar a Excel.',
+      message: i18nT('ui.no-hay-datos-para-exportar-a-excel-09b2bd'),
       position: 'top',
     })
     return
@@ -657,7 +658,7 @@ const exportarTablaAExcel = () => {
 
     $q.notify({
       type: 'positive',
-      message: 'Reporte exportado a Excel con éxito.',
+      message: i18nT('ui.reporte-exportado-a-excel-con-exito-7c885b'),
       position: 'top',
     })
   } else {
@@ -688,7 +689,7 @@ const exportarTablaAExcel = () => {
 
     $q.notify({
       type: 'positive',
-      message: 'Reporte exportado a Excel con éxito.',
+      message: i18nT('ui.reporte-exportado-a-excel-con-exito-7c885b'),
       position: 'top',
     })
   }

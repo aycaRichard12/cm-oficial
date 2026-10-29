@@ -3,7 +3,7 @@
     <q-dialog v-model="mostrarFormulario" persistent class="responsive-dialog">
       <q-card style="min-width: 100px; max-width: 1000px; width: 400px" class="dialog-card">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Leyendas de Factura</div>
+          <div class="text-h6">{{ $t('ui.leyendas-de-factura-ccdf6b') }}</div>
           <q-space />
           <q-btn icon="close" flat round v-close-popup @click="toggleFormulario" />
         </q-card-section>
@@ -11,8 +11,8 @@
           <q-form @submit.prevent="handleSubmit">
             <q-input
               v-model="formData.nombre"
-              label="Nombre de Leyenda"
-              :rules="[(val) => (val && val.length > 0) || 'Por favor, ingrese un nombre']"
+              :label="$t('ui.nombre-de-leyenda-1f1a52')"
+              :rules="[(val) => (val && val.length > 0) || $t('ui.por-favor-ingrese-un-nombre-bae6ed')]"
               dense
               outlined
               color="warning"
@@ -22,7 +22,7 @@
             <q-select
               v-model="selectedLeyendaSIN"
               :options="leyendasSINOptions"
-              label="Leyenda SIN"
+              :label="$t('ui.leyenda-sin-31f3df')"
               option-value="codigo"
               option-label="descripcion"
               emit-value
@@ -33,7 +33,7 @@
               color="warning"
               class="q-ma-lg"
               :rules="[
-                (val) => (val !== null && val !== '') || 'Por favor, seleccione una leyenda SIN',
+                (val) => (val !== null && val !== '') || $t('ui.por-favor-seleccione-una-leyenda-sin-5c5546'),
               ]"
             >
               <template v-slot:option="scope">
@@ -51,14 +51,14 @@
               v-if="false"
               filled
               v-model="formData.codigoSINLF"
-              label="Código SIN"
+              :label="$t('ui.codigo-sin-415904')"
               disable
-              hint="Este campo se autocompleta al seleccionar una Leyenda SIN"
+              :hint="$t('ui.este-campo-se-autocompleta-al-seleccionar-una-leyend-7e5905')"
             />
 
             <q-card-actions align="right">
               <q-btn
-                label="Cancelar"
+                :label="$t('common.cancel')"
                 flat
                 round
                 v-close-popup
@@ -66,7 +66,7 @@
                 color="negative"
                 @click="toggleFormulario"
               />
-              <q-btn label="Guardar" type="submit" color="positive" class="q-mt-md q-ml-sm" />
+              <q-btn :label="$t('common.save')" type="submit" color="positive" class="q-mt-md q-ml-sm" />
             </q-card-actions>
           </q-form>
         </q-card-section>
@@ -87,11 +87,11 @@
         @click="toggleFormulario"
         class="btn-res q-mt-lg"
         id="agregarCanalDeVenta"
-        title="Registrar Leyenda"
+        :title="$t('configGeneral.leyenda.table.addTitle')"
       >
         <q-icon name="add" class="icono" />
         <span class="texto">
-          <q-icon name="add" /> {{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}
+          <q-icon name="add" /> {{ mostrarFormulario ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}
         </span>
       </q-btn>
     </div>
@@ -105,10 +105,10 @@
 
       <q-table
         :rows="filteredLeyendas"
-        title="Leyendas Factura"
+        :title="$t('ui.leyendas-factura-8f5cf5')"
         :columns="columns"
         row-key="id"
-        no-data-label="No hay datos disponibles"
+        :no-data-label="$t('ui.no-hay-datos-disponibles-baee26')"
         flat
         dense
         :filter="searchText"
@@ -116,7 +116,7 @@
         <template v-slot:top-right>
           <q-input
             v-model="searchTerm"
-            placeholder="Buscar..."
+            :placeholder="$t('common.search')"
             dense
             outlined
             debounce="300"
@@ -132,8 +132,8 @@
 
         <template v-slot:body-cell-estado="props">
           <q-td align="center">
-            <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-            <q-badge color="red" v-else label="Inactivo" outline />
+            <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="$t('common.active')" outline />
+            <q-badge color="red" v-else :label="$t('common.inactive')" outline />
           </q-td>
         </template>
 
@@ -148,7 +148,7 @@
               @click="actualizar(props.row.id)"
               class="q-mr-sm"
             >
-              <q-tooltip>Editar</q-tooltip>
+              <q-tooltip>{{ $t('common.edit') }}</q-tooltip>
             </q-btn>
             <q-btn
               v-if="privilegios[3] === 1"
@@ -158,7 +158,7 @@
               icon="delete"
               @click="confirmDelete(props.row.id)"
             >
-              <q-tooltip>Eliminar</q-tooltip>
+              <q-tooltip>{{ $t('common.delete') }}</q-tooltip>
             </q-btn>
 
             <q-btn
@@ -187,6 +187,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
@@ -220,7 +221,7 @@ const columns = [
   {
     name: 'nombre',
     required: true,
-    label: 'Nombre',
+    label: i18nT('configGeneral.tipoAlmacen.form.name'),
     align: 'left',
     field: 'nombre',
     sortable: true,
@@ -228,12 +229,12 @@ const columns = [
   {
     name: 'descripcionSIN',
     align: 'left',
-    label: 'Leyenda SIN',
+    label: i18nT('ui.leyenda-sin-31f3df'),
     field: (row) => row.leyendasin.descripcion,
     sortable: true,
   },
-  { name: 'estado', align: 'center', label: 'Estado', field: 'estado', sortable: true },
-  { name: 'acciones', align: 'center', label: 'Acciones' },
+  { name: 'estado', align: 'center', label: i18nT('cotizacion.table.status'), field: 'estado', sortable: true },
+  { name: 'acciones', align: 'center', label: i18nT('common.actions') },
 ]
 
 // Computed property para filtrar la tabla
@@ -280,7 +281,7 @@ const selectLeyendaSIN = async () => {
       if (token) {
         $q.notify({
           type: 'negative',
-          message: resultado.error || 'Error al cargar leyendas SIN',
+          message: resultado.error || i18nT('ui.error-al-cargar-leyendas-sin-889429'),
         })
       }
     } else {
@@ -296,7 +297,7 @@ const selectLeyendaSIN = async () => {
     if (contenidousuario[0]?.factura?.access_token) {
       $q.notify({
         type: 'negative',
-        message: 'Error de red al cargar leyendas SIN',
+        message: i18nT('ui.error-de-red-al-cargar-leyendas-sin-dfa2c2'),
       })
     }
   }
@@ -321,7 +322,7 @@ const handleSubmit = async () => {
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: 'Registro guardado exitosamente',
+        message: i18nT('ui.registro-guardado-exitosamente-133a83'),
       })
       await listarDatos()
       resetearFormulario()
@@ -329,14 +330,14 @@ const handleSubmit = async () => {
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al guardar el registro',
+        message: data.mensaje || i18nT('ui.error-al-guardar-el-registro-167beb'),
       })
     }
   } catch (error) {
     console.error('Error:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de red al guardar el registro',
+      message: i18nT('ui.error-de-red-al-guardar-el-registro-c921a3'),
     })
   }
 }
@@ -353,7 +354,7 @@ const listarDatos = async () => {
       if (token) {
         $q.notify({
           type: 'negative',
-          message: resultado.error || 'Error al cargar datos',
+          message: resultado.error || i18nT('ui.error-al-cargar-datos-0bc6a2'),
         })
       }
     } else {
@@ -365,7 +366,7 @@ const listarDatos = async () => {
     if (contenidousuario[0]?.factura?.access_token) {
       $q.notify({
         type: 'negative',
-        message: 'Error de red al listar datos',
+        message: i18nT('ui.error-de-red-al-listar-datos-e7ad18'),
       })
     }
   }
@@ -393,22 +394,22 @@ const actualizar = async (id) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: resultado.mensaje || 'Error al obtener datos para actualizar',
+        message: resultado.mensaje || i18nT('ui.error-al-obtener-datos-para-actualizar-fad232'),
       })
     }
   } catch (error) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Error de red al actualizar',
+      message: i18nT('ui.error-de-red-al-actualizar-598dc4'),
     })
   }
 }
 
 const confirmDelete = (id) => {
   $q.dialog({
-    title: 'Confirmar Eliminación',
-    message: '¿Está seguro de que desea eliminar este registro? No podrá recuperarlo.',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-de-que-desea-eliminar-este-registro-no-p-9dbfc6'),
     cancel: true,
     persistent: true,
     color: 'warning',
@@ -424,12 +425,12 @@ const eliminar = async (id) => {
     if (resultado.estado === 'error') {
       $q.notify({
         type: 'negative',
-        message: resultado.mensaje || 'Error al eliminar el registro',
+        message: resultado.mensaje || i18nT('ui.error-al-eliminar-el-registro-7896aa'),
       })
     } else {
       $q.notify({
         type: 'positive',
-        message: resultado.mensaje || 'Registro eliminado exitosamente',
+        message: resultado.mensaje || i18nT('ui.registro-eliminado-exitosamente-c09101'),
       })
       await listarDatos()
     }
@@ -437,7 +438,7 @@ const eliminar = async (id) => {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Error de red al eliminar',
+      message: i18nT('ui.error-de-red-al-eliminar-8f758b'),
     })
   }
 }
@@ -449,12 +450,12 @@ const cambiarEstado = async (id, estado) => {
     if (resultado.estado === 'error') {
       $q.notify({
         type: 'negative',
-        message: resultado.mensaje || 'Error al cambiar el estado',
+        message: resultado.mensaje || i18nT('ui.error-al-cambiar-el-estado-bbb6bd'),
       })
     } else {
       $q.notify({
         type: 'positive',
-        message: resultado.mensaje || 'Estado actualizado exitosamente',
+        message: resultado.mensaje || i18nT('ui.estado-actualizado-exitosamente-67f13d'),
       })
       await listarDatos()
     }
@@ -462,7 +463,7 @@ const cambiarEstado = async (id, estado) => {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Error de red al cambiar el estado',
+      message: i18nT('ui.error-de-red-al-cambiar-el-estado-c4fd08'),
     })
   }
 }

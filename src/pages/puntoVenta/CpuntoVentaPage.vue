@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para puntos de venta o cajas -->
           <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
-          Registrar Punto de Venta
+          {{ $t('ui.registrar-punto-de-venta-693f75') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Alta de nuevas sucursales o terminales de venta
+          {{ $t('ui.alta-de-nuevas-sucursales-o-terminales-de-venta-1db547') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Punto de Venta</div>
+          <div>{{ $t('ui.registrar-punto-de-venta-693f75') }}</div>
           <q-btn color="" icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -32,8 +32,8 @@
 
     <RegistrarAlmacenDialog
       v-model="showWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import FormularioRegistroPDV from 'components/puntoVenta/creacion/puntoVentaForm.vue'
 import TablaPDV from 'components/puntoVenta/creacion/puntoVentaTable.vue'
@@ -97,7 +98,7 @@ const cargarTiposAlmacen = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -127,7 +128,7 @@ const cargarPuntosPorTipo = async (tipo) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los Puntos de Venta',
+      message: i18nT('ui.no-se-pudieron-cargar-los-puntos-de-venta-f15448'),
     })
   }
 }
@@ -162,7 +163,7 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar Almacen "${item.nombre}"?`,
     cancel: true,
     persistent: true,
@@ -181,7 +182,7 @@ const confirmDelete = (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -197,7 +198,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -228,7 +229,7 @@ const handleSubmit = async (data) => {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: i18nT('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()

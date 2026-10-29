@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           size="sm"
-          label="Volver"
+          :label="$t('ui.volver-84a715')"
           @click="handleContinue"
           icon="arrow_back"
           class="back-button"
@@ -38,7 +38,7 @@
 
           <q-card-actions align="center" class="card-actions">
             <q-btn
-              label="Seleccionar"
+              :label="$t('ui.seleccionar-2b8319')"
               color="primary"
               outline
               class="action-button"
@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'src/boot/axios'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
@@ -90,40 +91,40 @@ const handleContinue = () => {
 const opciones = [
   {
     codigo: 'preforma',
-    nombre: 'VENTA PROFORMA',
-    descripcion: 'Documento previo a la factura formal',
+    nombre: i18nT('ui.venta-proforma-b94b7d'),
+    descripcion: i18nT('ui.documento-previo-a-la-factura-formal-19889a'),
     icono: 'description',
     color: 'complementary',
   },
   {
     codigoDocumentSector: 1,
     codigo: 'facturaCV',
-    nombre: 'FACTURA COMPRA-VENTA',
-    descripcion: 'Para transacciones comerciales locales',
+    nombre: i18nT('ui.factura-compra-venta-05fca4'),
+    descripcion: i18nT('ui.para-transacciones-comerciales-locales-985827'),
     icono: 'receipt',
     color: 'green',
   },
   {
     codigoDocumentSector: 3,
     codigo: 'facturaCMEX',
-    nombre: 'FACTURA COMERCIAL DE EXPORTACIÓN',
-    descripcion: 'Documentación para comercio exterior',
+    nombre: i18nT('ui.factura-comercial-de-exportacion-043f5c'),
+    descripcion: i18nT('ui.documentacion-para-comercio-exterior-0f33f1'),
     icono: 'flight_takeoff',
     color: 'orange',
   },
   {
     codigoDocumentSector: 2,
     codigo: 'facturaABYM',
-    nombre: 'FACTURA DE ALQUILER',
-    descripcion: 'Para arrendamiento de bienes inmuebles',
+    nombre: i18nT('ui.factura-de-alquiler-650570'),
+    descripcion: i18nT('ui.para-arrendamiento-de-bienes-inmuebles-a3af5e'),
     icono: 'home_work',
     color: 'purple',
   },
   {
     codigoDocumentSector: 15,
     codigo: 'facturaEF',
-    nombre: 'FACTURA DE ENTIDADES FINANCIERAS',
-    descripcion: 'Empresa que ofrece servicios financieros, bancarios y de financiamiento.',
+    nombre: i18nT('ui.factura-de-entidades-financieras-037322'),
+    descripcion: i18nT('ui.empresa-que-ofrece-servicios-financieros-bancarios-y-6a35e3'),
     icono: 'savings',
     color: 'blue',
   },

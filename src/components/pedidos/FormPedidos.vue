@@ -4,21 +4,21 @@
       <q-card-section class="row q-col-gutter-x-md">
         <!-- Fecha -->
         <div class="col-12 col-md-3">
-          <label for="fecha">Fecha*</label>
+          <label for="fecha">{{ $t('ui.fecha-659648') }}</label>
           <q-input
             v-model="localData.fecha"
             type="date"
             id="fecha"
             dense
             outlined
-            :rules="[(val) => !!val || 'La fecha es requerida']"
+            :rules="[(val) => !!val || $t('ui.la-fecha-es-requerida-4a4376')]"
             lazy-rules
           />
         </div>
 
         <!-- Tipo de Pedido -->
         <div class="col-12 col-md-3">
-          <label for="tipopedido">Tipo de Pedido*</label>
+          <label for="tipopedido">{{ $t('ui.tipo-de-pedido-119ba5') }}</label>
           <q-select
             v-model="localData.tipo"
             :options="tiposPedido"
@@ -27,7 +27,7 @@
             option-value="value"
             emit-value
             map-options
-            :rules="[(val) => !!val || 'Seleccione un tipo de pedido']"
+            :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-de-pedido-2e5a9c')]"
             lazy-rules
             dense
             outlined
@@ -37,7 +37,7 @@
 
         <!-- Almacén Destino (visible siempre) -->
         <div class="col-12 col-md-3">
-          <label for="destino">Almacén Destino*</label>
+          <label for="destino">{{ $t('ui.almacen-destino-53277e') }}</label>
           <q-select
             v-model="localData.almacendestino"
             :options="almacenes"
@@ -48,7 +48,7 @@
             option-value="value"
             emit-value
             map-options
-            :rules="[(val) => !!val || 'Seleccione el almacén destino']"
+            :rules="[(val) => !!val || $t('ui.seleccione-el-almacen-destino-44a654')]"
             lazy-rules
             @update:model-value="updateFiltrado"
           />
@@ -56,7 +56,7 @@
 
         <!-- Almacén Origen (solo para movimientos) -->
         <div class="col-12 col-md-3" v-if="localData.tipo === TIPOS_PEDIDO.MOVIMIENTO">
-          <label for="almacenorigen">Almacén Origen*</label>
+          <label for="almacenorigen">{{ $t('ui.almacen-origen-0ecf81') }}</label>
           <q-select
             v-model="localData.almacenorigen"
             :options="filtrado"
@@ -67,7 +67,7 @@
             option-value="value"
             emit-value
             map-options
-            :rules="[(val) => !!val || 'Seleccione el almacén origen']"
+            :rules="[(val) => !!val || $t('ui.seleccione-el-almacen-origen-cf1c70')]"
             lazy-rules
             :loading="loadingAlmacenes"
           />
@@ -75,11 +75,11 @@
 
         <!-- Observación -->
         <div class="col-12 col-md-3">
-          <label for="observacion">Observación*</label>
+          <label for="observacion">{{ $t('ui.observacion-05b5d2') }}</label>
           <q-input
             v-model="localData.observacion"
             id="observacion"
-            :rules="[(val) => !!val || 'La observación es requerida']"
+            :rules="[(val) => !!val || $t('ui.la-observacion-es-requerida-aa6833')]"
             lazy-rules
             dense
             outlined
@@ -88,9 +88,9 @@
       </q-card-section>
 
       <q-card-actions class="flex justify-start">
-        <q-btn label="Guardar" type="submit" color="primary" :loading="submitting" />
+        <q-btn :label="$t('common.save')" type="submit" color="primary" :loading="submitting" />
         <q-btn
-          label="Cancelar"
+          :label="$t('common.cancel')"
           flat
           color="negative"
           @click="$emit('cancel')"
@@ -102,6 +102,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -127,9 +128,9 @@ const TIPOS_PEDIDO = Object.freeze({
 })
 
 const tiposPedido = [
-  { label: 'Pedido de Compra', value: TIPOS_PEDIDO.COMPRA },
-  { label: 'Pedido de Movimiento', value: TIPOS_PEDIDO.MOVIMIENTO },
-  { label: 'Pedidos de Producción', value: TIPOS_PEDIDO.PRODUCCION },
+  { label: i18nT('ui.pedido-de-compra-271dfb'), value: TIPOS_PEDIDO.COMPRA },
+  { label: i18nT('ui.pedido-de-movimiento-d15293'), value: TIPOS_PEDIDO.MOVIMIENTO },
+  { label: i18nT('ui.pedidos-de-produccion-b22175'), value: TIPOS_PEDIDO.PRODUCCION },
 ]
 
 // State
@@ -171,7 +172,7 @@ async function getAlmacenesOrigen() {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes',
+      message: i18nT('ui.error-al-cargar-los-almacenes-5919ff'),
       caption: error.message,
     })
   } finally {

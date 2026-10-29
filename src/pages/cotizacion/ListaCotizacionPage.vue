@@ -7,17 +7,17 @@
         @click="$emit('registrarcotizacion')"
         no-caps
         id="btnNuevaCompra"
-        title="Registrar Cotización"
+        :title="$t('ui.registrar-cotizacion-89a93b')"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" />Registrar Cotización</span>
+        <span class="texto"> <q-icon name="add" />{{ $t('ui.registrar-cotizacion-89a93b') }}</span>
       </q-btn>
 
       <div class="row items-center q-gutter-x-sm">
         <q-btn
           color="primary"
           icon="refresh"
-          label="Cargar Datos"
+          :label="$t('ui.cargar-datos-9b7245')"
           id="btnCargarDatosCotizacion"
           @click="recargarDatos"
           outline
@@ -25,7 +25,7 @@
           :loading="cargandoManual"
           :disable="loading"
         >
-          <q-tooltip>Recargar la lista de cotizaciones</q-tooltip>
+          <q-tooltip>{{ $t('ui.recargar-la-lista-de-cotizaciones-b9be73') }}</q-tooltip>
         </q-btn>
         <q-btn
           color="negative"
@@ -48,7 +48,7 @@
     />
 
     <q-loading :showing="loading" />
-    <modal-r v-model="mostrar" title="Facturar" @close="mostrar = false">
+    <modal-r v-model="mostrar" :title="$t('ui.facturar-0c8fd3')" @close="mostrar = false">
       <FacturarCotizacion
         :cotizacion="cotizacionSeleccionada"
         @venta-registrada="closeModalFactura"
@@ -58,7 +58,7 @@
     <q-dialog v-model="showPdfModal" full-width full-height>
       <q-card class="q-pa-none" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup />
         </q-card-section>
@@ -74,10 +74,10 @@
           <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
             <q-icon name="check_circle" color="positive" size="2em" />
             <p>
-              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+              {{ $t('ui.comprobante-generado-si-no-se-abrio-automaticamente-878377') }}
             </p>
             <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
-              Descargar comprobante
+              {{ $t('ui.descargar-comprobante-388c59') }}
             </a>
           </div>
         </q-card-section>
@@ -89,7 +89,7 @@
       flat
       color="primary"
       icon="arrow_back"
-      label="Volver a la lista"
+      :label="$t('ui.volver-a-la-lista-2a41f5')"
       @click="showEditModal = false"
     />
     <EditarCotizacion
@@ -102,6 +102,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch'
@@ -137,7 +138,7 @@ const facturarVenta = async (id) => {
   if (!idempresa) {
     $q.notify({
       type: 'negative',
-      message: 'Información de empresa no disponible para generar comprobante.',
+      message: i18nT('ui.informacion-de-empresa-no-disponible-para-generar-co-13763c'),
       position: 'top',
     })
     loading.value = false
@@ -157,7 +158,7 @@ const facturarVenta = async (id) => {
     console.error('Error al generar comprobante PDF:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error al generar el comprobante. Inténtelo de nuevo.',
+      message: i18nT('ui.hubo-un-error-al-generar-el-comprobante-intentelo-de-004928'),
       position: 'top',
     })
   }
@@ -293,7 +294,7 @@ const generarReporte = async ({ manual = false } = {}) => {
     if (!idusuario) {
       $q.notify({
         type: 'negative',
-        message: 'Información de usuario no disponible.',
+        message: i18nT('ui.informacion-de-usuario-no-disponible-443299'),
         position: 'top',
       })
       loading.value = false
@@ -306,10 +307,10 @@ const generarReporte = async ({ manual = false } = {}) => {
       const data = response.data
 
       if (!Array.isArray(data) || data[0] === 'error') {
-        console.error(data?.error || 'Respuesta inesperada del servidor')
+        console.error(data?.error || i18nT('ui.respuesta-inesperada-del-servidor-713545'))
         $q.notify({
           type: 'negative',
-          message: `Error al generar el reporte: ${data?.error || 'respuesta inválida'}`,
+          message: `Error al generar el reporte: ${data?.error || i18nT('ui.respuesta-invalida-637b6e')}`,
           position: 'top',
         })
         datosOriginales.value = []
@@ -342,7 +343,7 @@ const generarReporte = async ({ manual = false } = {}) => {
 
       $q.notify({
         type: 'positive',
-        message: manual ? 'Datos recargados correctamente.' : 'Reporte generado con éxito.',
+        message: manual ? i18nT('ui.datos-recargados-correctamente-344634') : i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
         timeout: 1500,
       })
@@ -353,7 +354,7 @@ const generarReporte = async ({ manual = false } = {}) => {
       console.error('Error al generar el reporte:', error)
       $q.notify({
         type: 'negative',
-        message: 'Hubo un error al generar el reporte. Inténtelo de nuevo.',
+        message: i18nT('ui.hubo-un-error-al-generar-el-reporte-intentelo-de-nue-75956d'),
         position: 'top',
       })
     } finally {
@@ -387,7 +388,7 @@ const listaAlmacenes = async () => {
     if (!idempresa || !idusuario) {
       $q.notify({
         type: 'negative',
-        message: 'Información de empresa o usuario no disponible para listar almacenes.',
+        message: i18nT('ui.informacion-de-empresa-o-usuario-no-disponible-para-79ea50'),
         position: 'top',
       })
       loading.value = false
@@ -418,7 +419,7 @@ const listaAlmacenes = async () => {
     console.error('Error en listaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes. Inténtelo de nuevo.',
+      message: i18nT('ui.error-al-cargar-los-almacenes-intentelo-de-nuevo-607989'),
       position: 'top',
     })
   } finally {
@@ -432,7 +433,7 @@ const listaCLientes = async () => {
   if (!idempresa) {
     $q.notify({
       type: 'negative',
-      message: 'Información de empresa no disponible para listar clientes.',
+      message: i18nT('ui.informacion-de-empresa-no-disponible-para-listar-cli-71b092'),
       position: 'top',
     })
     loading.value = false
@@ -458,7 +459,7 @@ const listaCLientes = async () => {
     console.error('Error en listaClientes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los clientes. Inténtelo de nuevo.',
+      message: i18nT('ui.error-al-cargar-los-clientes-intentelo-de-nuevo-5374af'),
       position: 'top',
     })
   } finally {
@@ -504,7 +505,7 @@ const cargarPDF = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No se generó ningún reporte para la vista previa.',
+      message: i18nT('ui.no-se-genero-ningun-reporte-para-la-vista-previa-b4c681'),
       position: 'top',
     })
     return
@@ -513,7 +514,7 @@ const cargarPDF = () => {
   resultadoFiltrado.value = refHijo.value.obtenerDatos()
   const filterReporte = refHijo.value.getActiveFiltersReport()
   const almacen = {
-    almacen: filterReporte.almacen || 'Todos los almacenes',
+    almacen: filterReporte.almacen || i18nT('ui.todos-los-almacenes-949f2c'),
   }
   const dSimbolo = divisa.value?.tipo || divisa.value?.simbolo || '$'
 
@@ -528,7 +529,7 @@ const generarComprobantePDF = async (id) => {
   if (!idempresa) {
     $q.notify({
       type: 'negative',
-      message: 'Información de empresa no disponible para generar comprobante.',
+      message: i18nT('ui.informacion-de-empresa-no-disponible-para-generar-co-13763c'),
       position: 'top',
     })
     loading.value = false
@@ -584,7 +585,7 @@ const generarComprobantePDF = async (id) => {
     console.error('Error al generar comprobante PDF:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error al generar el comprobante. Inténtelo de nuevo.',
+      message: i18nT('ui.hubo-un-error-al-generar-el-comprobante-intentelo-de-004928'),
       position: 'top',
     })
   } finally {

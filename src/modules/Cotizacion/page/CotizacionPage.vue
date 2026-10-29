@@ -8,11 +8,11 @@
       >
         <div class="flex items-center">
           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
-          <div class="text-subtitle1 text-weight-bold">Datos del Cliente y Configuración</div>
+          <div class="text-subtitle1 text-weight-bold">{{ $t('ui.datos-del-cliente-y-configuracion-525339') }}</div>
         </div>
         <div class="flex items-center cm-surface text-primary q-px-sm q-py-xs shadow-2 radius-20">
           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
-          <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
+          <div class="text-caption text-weight-bold q-mr-sm">{{ $t('ui.venta-sin-stock-7cf41b') }}</div>
           <q-btn
             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
             dense
@@ -73,7 +73,7 @@
         class="bg-secondary text-white q-py-md q-px-lg flex items-center bg-secondary-gradient"
       >
         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
-        <div class="text-subtitle1 text-weight-bold">Añadir Productos</div>
+        <div class="text-subtitle1 text-weight-bold">{{ $t('ui.anadir-productos-fc64fa') }}</div>
       </q-card-section>
 
       <q-card-section class="q-pa-lg cm-surface-2" style="border-bottom: 1px solid var(--cm-border)">
@@ -117,7 +117,7 @@
             flat
             color="negative"
             icon="close"
-            label="Cancelar"
+            :label="$t('common.cancel')"
             @click="$emit('cancelarregistro')"
             class="q-px-md btn-rounded-100"
           />
@@ -125,12 +125,12 @@
             outline
             color="primary"
             icon="edit_note"
-            label="Firma del Cliente"
+            :label="$t('ui.firma-del-cliente-581c1d')"
             @click="handleFirmaClick"
             class="q-px-lg cm-surface btn-firma"
           />
           <q-btn
-            label="Continuar"
+            :label="$t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
             color="primary"
             icon="task_alt"
             size="lg"
@@ -184,6 +184,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, onMounted, reactive } from 'vue'
 
 // Importar Componentes Faltantes
@@ -213,10 +214,10 @@ const idempresa = idempresa_md5()
 const permisosStore = useOperacionesPermitidas()
 const fecha = ref(obtenerFechaActualDato())
 const modalfirmaActivo = ref(false)
-const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
+const tipoOperacion = ref({ value: 0, label: i18nT('ui.cotizacion-normal-a2a950') })
 const optionOperacion = ref([
-  { value: 0, label: 'Cotización Normal' },
-  { value: 1, label: 'Cotización Preferencial' },
+  { value: 0, label: i18nT('ui.cotizacion-normal-a2a950') },
+  { value: 1, label: i18nT('ui.cotizacion-preferencial-cc346c') },
 ])
 const filtroAlmacenCO = ref(null)
 const filtroCategoriaCO = ref(null)
@@ -451,7 +452,7 @@ const handleFirmaClick = () => {
   if (!selectedClient.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione un cliente antes de firmar.',
+      message: i18nT('ui.seleccione-un-cliente-antes-de-firmar-06b5b8'),
     })
     return
   }

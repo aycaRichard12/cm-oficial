@@ -66,6 +66,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, shallowRef, markRaw, defineAsyncComponent, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import ReporteVentaInicio from 'src/components/reporteVentas/ReporteVentaInicio.vue'
@@ -161,7 +162,7 @@ const defaultBoxes = computed(() => {
       id: 'dashboard',
       component: ReporteComponent,
       iconComponent: IconReportes,
-      title: 'ESTADÍSTICAS',
+      title: i18nT('ui.estadisticas-c367bc'),
       cardId: 'reportes-card',
       colorClass: '',
     })
@@ -171,7 +172,7 @@ const defaultBoxes = computed(() => {
       id: 'venta',
       component: VentaComponent,
       iconComponent: IconVentas,
-      title: 'VENTAS',
+      title: i18nT('ui.ventas-cf06f8'),
       cardId: 'venta-card',
     })
   }
@@ -180,7 +181,7 @@ const defaultBoxes = computed(() => {
       id: 'compra',
       component: PedidoComponent,
       iconComponent: IconPedidos,
-      title: 'COMPRAS',
+      title: i18nT('ui.compras-1df50e'),
       cardId: 'compra-card',
     })
   }
@@ -189,7 +190,7 @@ const defaultBoxes = computed(() => {
       id: 'producto',
       component: CrearProductos,
       iconComponent: IconAdmin,
-      title: 'PRODUCTOS',
+      title: i18nT('ui.productos-77bd69'),
       cardId: 'producto-card',
     })
   }
@@ -206,7 +207,7 @@ const customShortcutBoxes = computed(() => {
       id: registryItem?.id || shortcut.codigo,
       component: registryItem?.component || componentsMap[shortcut.codigo] || inicialComponent,
       iconComponent: registryItem?.icon || IconDefault,
-      title: shortcut.operacion || registryItem?.title || 'Acceso directo',
+      title: shortcut.operacion || registryItem?.title || i18nT('ui.acceso-directo-6edb38'),
       cardId: `shortcut-${shortcut.id_operacion}`,
       isCustom: true,
     }
@@ -239,7 +240,7 @@ onMounted(async () => {
   if (contenidoUsuario && contenidoMenus) {
     try {
       const parsedData = JSON.parse(contenidoUsuario)
-      nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
+      nombreUsuario.value = parsedData[0]?.nombre || i18nT('ui.usuario-desconocido-b61c02')
 
       dashboardPerm.value = verificarexistenciapagina('dashboard')
       ventaPerm.value = verificarexistenciapagina('registrarventaoculto')

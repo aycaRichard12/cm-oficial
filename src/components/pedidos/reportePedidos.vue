@@ -5,17 +5,17 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte Pedidos
+          {{ $t('ui.reporte-pedidos-c2cb14') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte Pedidos
+          {{ $t('ui.administracion-de-reporte-pedidos-df6156') }}
         </div>
       </div>
     </div>
     <q-form @submit.prevent="handleGenerarReporte">
       <div class="row justify-center q-col-gutter-x-md" id="pedidos">
         <div class="col-12 col-md-4">
-          <label for="fechaIni">Fecha Inicial*</label>
+          <label for="fechaIni">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input
             v-model="fechaInicio"
             id="fechaIni"
@@ -26,7 +26,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input
             v-model="fechaFin"
             id="fechafin"
@@ -39,14 +39,14 @@
       </div>
       <div class="row justify-center q-pt-md">
         <q-btn
-          label="Generar reporte"
+          :label="$t('ui.generar-reporte-eeafce')"
           color="primary"
           @click="handleGenerarReporte"
           class="q-mx-sm"
           id="generarreporte"
         />
         <q-btn
-          label="Vista previa del Reporte"
+          :label="$t('ui.vista-previa-del-reporte-60d956')"
           color="primary"
           @click="descargarPDF"
           class="q-mx-sm"
@@ -59,7 +59,7 @@
       <q-form>
         <div class="row justify-center q-col-gutter-x-md">
           <div class="col-12 col-md-4" id="almacen">
-            <label for="almacen">Almacén*</label>
+            <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
@@ -82,7 +82,7 @@
                   :loading="recargandoAlmacenes"
                   @click.stop.prevent="recargarAlmacenes"
                 >
-                  <q-tooltip>Recargar almacenes</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -93,14 +93,14 @@
         <q-btn
           color="primary"
           icon="refresh"
-          label="Recargar Tabla"
+          :label="$t('ui.recargar-tabla-4f363d')"
           outline
           no-caps
           id="btnRecargarTablaReporte"
           :loading="recargandoTabla"
           @click.stop.prevent="recargarTabla"
         >
-          <q-tooltip>Volver a generar el reporte</q-tooltip>
+          <q-tooltip>{{ $t('ui.volver-a-generar-el-reporte-66c03c') }}</q-tooltip>
         </q-btn>
       </div>
       <q-table
@@ -114,7 +114,7 @@
       >
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
-            <span> No hay datos para mostrar. Genere un reporte primero. </span>
+            <span> {{ $t('ui.no-hay-datos-para-mostrar-genere-un-reporte-primero-358c32') }} </span>
           </div>
         </template>
         <template v-slot:body-cell-acciones="props">
@@ -122,12 +122,12 @@
             <div class="q-pa-none">
               <template v-if="Number(props.row.autorizacion) === 2">
                 <q-btn id="verpedido" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
-                  <q-tooltip>Ver Pedido</q-tooltip>
+                  <q-tooltip>{{ $t('ui.ver-pedido-87d476') }}</q-tooltip>
                 </q-btn>
               </template>
               <template v-else>
                 <q-btn id="verpedido" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense>
-                  <q-tooltip>Ver Pedido</q-tooltip>
+                  <q-tooltip>{{ $t('ui.ver-pedido-87d476') }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   id="enviarpdf"
@@ -138,7 +138,7 @@
                   @click="enviarPDFPorWhatsApp(props.row)"
                   dense
                 >
-                  <q-tooltip>Enviar PDF por WhatsApp</q-tooltip>
+                  <q-tooltip>{{ $t('ui.enviar-pdf-por-whatsapp-6edec0') }}</q-tooltip>
                 </q-btn>
               </template>
             </div>
@@ -151,7 +151,7 @@
       <q-dialog v-model="mostrarModal" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -172,6 +172,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -206,54 +207,54 @@ const recargandoTabla = ref(false)
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
   const selected = opcionesAlmacenes.value.find((op) => op.value === almacenSeleccionado.value)
-  return selected ? selected.label : 'Todos los almacenes'
+  return selected ? selected.label : i18nT('ui.todos-los-almacenes-949f2c')
 })
 
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'center' },
+  { name: 'n', label: i18nT('cotizacion.table.number'), field: 'n', align: 'center' },
 
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
   },
 
-  { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left' },
+  { name: 'codigo', label: i18nT('ui.codigo-b77b7c'), field: 'codigo', align: 'left' },
   { name: 'nropedido', label: 'Nro.Pedido', field: 'nropedido', align: 'left' },
   {
     name: 'tipopedido',
-    label: 'Tipo',
+    label: i18nT('configGeneral.divisas.table.type'),
     field: 'tipopedido',
     align: 'left',
   },
   {
     name: 'almacenorigen',
-    label: 'Almacen Origen',
+    label: i18nT('ui.almacen-origen-0c4c31'),
     field: 'almacenorigen',
     align: 'left',
   },
   {
     name: 'almacen',
-    label: 'Almacen',
+    label: i18nT('ui.almacen-673013'),
     field: 'almacen',
     align: 'left',
   },
   {
     name: 'observacion',
-    label: 'Observación',
+    label: i18nT('ui.observacion-1d0d99'),
     field: 'observacion',
     align: 'left',
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     align: 'left',
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'center',
     sortable: false,
@@ -285,12 +286,12 @@ async function cargarListaAlmacenes() {
       console.error('Error al cargar almacenes:', resultado.error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar almacenes.',
+        message: i18nT('ui.error-al-cargar-almacenes-420531'),
         position: 'top',
       })
     } else {
       opcionesAlmacenes.value = []
-      opcionesAlmacenes.value.push({ label: 'Todos los almacenes', value: '0' })
+      opcionesAlmacenes.value.push({ label: i18nT('ui.todos-los-almacenes-949f2c'), value: '0' })
       const use = resultado.filter((u) => u.idusuario == idusuario)
       use.forEach((key) => {
         opcionesAlmacenes.value.push({
@@ -304,7 +305,7 @@ async function cargarListaAlmacenes() {
     console.error('Error en cargarListaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al cargar los almacenes.',
+      message: i18nT('ui.ocurrio-un-error-al-cargar-los-almacenes-06e9b8'),
       position: 'top',
     })
   }
@@ -320,7 +321,7 @@ function validarFechas() {
   if (inicio.getTime() > fin.getTime()) {
     $q.notify({
       type: 'info',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-48706f'),
       position: 'top',
     })
     // Se podría resetear la fecha o ajustar para corregir el error
@@ -335,14 +336,14 @@ async function generarReporte() {
   if (!fechaInicio.value || !fechaFin.value) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, seleccione ambas fechas para generar el reporte.',
+      message: i18nT('ui.por-favor-seleccione-ambas-fechas-para-generar-el-re-04ec5a'),
       position: 'top',
     })
     return
   }
 
   $q.loading.show({
-    message: 'Generando reporte...',
+    message: i18nT('ui.generando-reporte-f36ceb'),
   })
 
   try {
@@ -372,13 +373,13 @@ async function generarReporte() {
       almacenSeleccionado.value = '0' // Reinicia el filtro de almacén
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar el reporte: ' + (data.error || 'Mensaje desconocido'),
+        message: i18nT('ui.error-al-generar-el-reporte-596b95') + (data.error || i18nT('ui.mensaje-desconocido-c37e4e')),
         position: 'top',
       })
     }
@@ -386,7 +387,7 @@ async function generarReporte() {
     console.error('Error en generarReporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al generar el reporte.',
+      message: i18nT('ui.ocurrio-un-error-al-generar-el-reporte-eddf13'),
       position: 'top',
     })
   } finally {
@@ -425,7 +426,7 @@ const verDetalle = async (row) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedido  sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
   }
 }
@@ -438,7 +439,7 @@ function imprimirReporte() {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedido  sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
   }
 }
@@ -466,7 +467,7 @@ const getDatallePedido = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -477,7 +478,7 @@ const enviarPDFPorWhatsApp = async (row) => {
   if (!detallePedido.value) {
     $q.notify({
       type: 'negative',
-      message: 'Pedido sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
     return
   }
@@ -516,7 +517,7 @@ const enviarPDFPorWhatsApp = async (row) => {
     throw new Error(result)
   }
   if (!response.ok) {
-    throw new Error(result || 'Error al subir el PDF')
+    throw new Error(result || i18nT('ui.error-al-subir-el-pdf-5a202e'))
   }
 
   // WhatsApp después de la subida exitosa
@@ -531,7 +532,7 @@ const recargarAlmacenes = async () => {
   recargandoAlmacenes.value = true
   try {
     await cargarListaAlmacenes()
-    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.almacenes-recargados-5f8af7'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar almacenes:', err)
   } finally {
@@ -544,7 +545,7 @@ const recargarTabla = async () => {
   recargandoTabla.value = true
   try {
     await generarReporte()
-    $q.notify({ type: 'positive', message: 'Tabla recargada', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.tabla-recargada-a604bf'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar tabla:', err)
   } finally {

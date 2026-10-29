@@ -11,7 +11,7 @@
     <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
       <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
         <div class="text-h6 flex items-center q-px-sm">
-          <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de PDF
+          <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> {{ $t('ui.vista-previa-de-pdf-978f4e') }}
         </div>
         <q-space />
         <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
@@ -27,10 +27,10 @@
         <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
           <q-icon name="check_circle" color="positive" size="2em" />
           <p>
-            Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+            {{ $t('ui.comprobante-generado-si-no-se-abrio-automaticamente-878377') }}
           </p>
           <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link"
-            >Descargar comprobante</a
+            >{{ $t('ui.descargar-comprobante-388c59') }}</a
           >
         </div>
       </q-card-section>

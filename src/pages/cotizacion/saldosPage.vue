@@ -8,13 +8,13 @@
             class="btn-res"
             id="btnregistrarcompra"
             icon="arrow_back"
-            label="Volver"
+            :label="$t('ui.volver-84a715')"
             @click="$emit('close')"
             no-caps
           />
         </div>
         <div class="col-md-4 col-12">
-          <q-input dense v-model="filter" placeholder="Buscar...">
+          <q-input dense v-model="filter" :placeholder="$t('common.search')">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -22,13 +22,13 @@
         </div>
       </div>
       <q-table
-        title="Saldos Registrados"
+        :title="$t('ui.saldos-registrados-38b509')"
         :rows="saldos"
         :columns="columns"
         row-key="id_saldo"
         :loading="loading"
         :filter="filter"
-        no-data-label="No se encontraron saldos iniciales."
+        :no-data-label="$t('ui.no-se-encontraron-saldos-iniciales-141eb6')"
         :rows-per-page-options="[10, 25, 50, 0]"
       >
         <template v-slot:top-right> </template>
@@ -43,7 +43,7 @@
               round
               dense
               @click="openDialog('edit', props.row)"
-              title="Editar saldo"
+              :title="$t('ui.editar-saldo-26be69')"
             />
             <q-btn
               icon="delete"
@@ -53,7 +53,7 @@
               round
               dense
               @click="confirmDelete(props.row.id_saldo)"
-              title="Eliminar saldo"
+              :title="$t('ui.eliminar-saldo-714824')"
             />
           </q-td>
         </template>
@@ -64,7 +64,7 @@
       <q-card style="width: 700px; max-width: 80vw">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">
-            {{ isEditing ? 'Editar Saldo' : 'Nuevo Saldo Inicial' }}
+            {{ isEditing ? $t('ui.editar-saldo-a96387') : $t('ui.nuevo-saldo-inicial-7b2ced') }}
           </div>
         </q-card-section>
 
@@ -72,47 +72,47 @@
           <q-card-section class="q-gutter-md">
             <q-input
               v-model="currentSaldo.fecha"
-              label="Fecha *"
+              :label="$t('ui.fecha-0aff00')"
               type="date"
               filled
-              :rules="[(val) => !!val || 'La fecha es requerida']"
+              :rules="[(val) => !!val || $t('ui.la-fecha-es-requerida-4a4376')]"
             />
 
             <q-select
               v-model="currentSaldo.metodo"
-              label="Método *"
+              :label="$t('ui.metodo-9d5bbb')"
               filled
               :options="['PEPS', 'UEPS', 'PROMEDIO']"
-              :rules="[(val) => !!val || 'El método es requerido']"
+              :rules="[(val) => !!val || $t('ui.el-metodo-es-requerido-b8f20b')]"
             />
 
             <q-input
               v-model.number="currentSaldo.cantidad"
-              label="Cantidad *"
+              :label="$t('ui.cantidad-a5de18')"
               type="number"
               filled
               step="0.01"
               :rules="[
-                (val) => val != null || 'La cantidad es requerida',
-                (val) => val > 0 || 'Debe ser un número positivo',
+                (val) => val != null || $t('ui.la-cantidad-es-requerida-b4b75e'),
+                (val) => val > 0 || $t('ui.debe-ser-un-numero-positivo-daaec1'),
               ]"
             />
 
             <q-input
               v-model.number="currentSaldo.costo_unitario"
-              label="Costo Unitario *"
+              :label="$t('ui.costo-unitario-5f63f1')"
               type="number"
               filled
               step="0.0001"
               :rules="[
-                (val) => val != null || 'El costo es requerido',
-                (val) => val > 0 || 'Debe ser un número positivo',
+                (val) => val != null || $t('ui.el-costo-es-requerido-7db03a'),
+                (val) => val > 0 || $t('ui.debe-ser-un-numero-positivo-daaec1'),
               ]"
             />
 
             <q-input
               :model-value="calculatedCostoTotal"
-              label="Costo Total"
+              :label="$t('ui.costo-total-ba6044')"
               filled
               readonly
               disable
@@ -121,9 +121,9 @@
           </q-card-section>
 
           <q-card-actions align="right" class="q-pa-md bg-grey-2">
-            <q-btn label="Cancelar" color="grey-7" flat @click="dialogVisible = false" />
+            <q-btn :label="$t('common.cancel')" color="grey-7" flat @click="dialogVisible = false" />
             <q-btn
-              :label="isEditing ? 'Guardar Cambios' : 'Crear Saldo'"
+              :label="isEditing ? $t('ui.guardar-cambios-7d2fd7') : $t('ui.crear-saldo-5e77ee')"
               color="primary"
               :loading="saving"
               @click="saveSaldo"
@@ -136,6 +136,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import saldosService from 'src/services/saldo.service'
@@ -194,7 +195,7 @@ const columns = [
 
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     format: (val) => new Date(val).toLocaleDateString(),
     align: 'left',
@@ -202,14 +203,14 @@ const columns = [
   },
   {
     name: 'metodo',
-    label: 'Método',
+    label: i18nT('ui.metodo-49ddd8'),
     field: 'metodo',
     align: 'left',
     sortable: true,
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     field: 'cantidad',
     format: (val) => Number(val).toFixed(2),
     align: 'right',
@@ -217,7 +218,7 @@ const columns = [
   },
   {
     name: 'costo_unitario',
-    label: 'Costo Unitario',
+    label: i18nT('ui.costo-unitario-4ec928'),
     field: 'costo_unitario',
     format: (val) => Number(val).toFixed(4),
     align: 'right',
@@ -225,13 +226,13 @@ const columns = [
   },
   {
     name: 'costo_total',
-    label: 'Costo Total',
+    label: i18nT('ui.costo-total-ba6044'),
     field: 'costo_total',
     format: (val) => Number(val).toFixed(4),
     align: 'right',
     sortable: true,
   },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 // --- FUNCIONES CRUD ---
@@ -310,7 +311,7 @@ async function saveSaldo() {
       }
       $q.notify({
         type: 'positive',
-        message: 'Saldo actualizado con éxito.',
+        message: i18nT('ui.saldo-actualizado-con-exito-4fd01c'),
         color: 'green-7',
         position: 'top',
       })
@@ -336,12 +337,12 @@ async function saveSaldo() {
  */
 function confirmDelete(id_saldo) {
   $q.dialog({
-    title: 'Confirmar Eliminación',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
     message: `¿Está seguro de que desea eliminar el saldo con ID ${id_saldo}? Esta acción es irreversible.`,
     cancel: true,
     persistent: true,
     ok: {
-      label: 'Eliminar',
+      label: i18nT('common.delete'),
       color: 'negative',
     },
   }).onOk(() => {
@@ -356,7 +357,7 @@ function confirmDelete(id_saldo) {
  */
 async function deleteSaldo(id_saldo) {
   try {
-    $q.loading.show({ message: 'Eliminando saldo...' })
+    $q.loading.show({ message: i18nT('ui.eliminando-saldo-a90ccb') })
     await saldosService.deleteSaldo(id_saldo)
 
     $q.notify({

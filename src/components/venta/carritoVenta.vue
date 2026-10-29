@@ -5,9 +5,9 @@
         <div class="col-12 col-md-auto">
           <div class="text-h5 text-primary text-weight-bold flex items-center">
             <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
-            Procesar Venta
+            {{ $t('ui.procesar-venta-10d4d1') }}
           </div>
-          <div class="text-subtitle2 cm-text-muted q-mt-xs">Administración de Procesar Venta</div>
+          <div class="text-subtitle2 cm-text-muted q-mt-xs">{{ $t('ui.administracion-de-procesar-venta-102ad1') }}</div>
         </div>
       </div>
       <q-card class="my-card q-mb-md">
@@ -32,7 +32,7 @@
               size="15px"
             >
               <q-icon name="arrow_forward" class="icono" />
-              <span class="texto">Continuar</span>
+              <span class="texto">{{ $t('configuracion.clienteAlmacen.dialog.okButtonSuccess') }}</span>
             </q-btn>
           </div>
         </div>
@@ -43,7 +43,7 @@
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-4" id="origenVenta">
               <label for="almacen" class="text-weight-bold cm-text q-mb-sm block"
-                >Origen de venta</label
+                >{{ $t('ui.origen-de-venta-3c8d99') }}</label
               >
               <q-select
                 v-model="almacenSeleccionado"
@@ -68,7 +68,7 @@
                     @click.stop="cargarAlmacenes"
                     :disable="cargandoAlmacenes"
                   >
-                    <q-tooltip>Recargar datos</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -76,7 +76,7 @@
 
             <div class="col-12 col-md-4" id="categoriaPrecio">
               <label for="categoria" class="text-weight-bold cm-text q-mb-sm block"
-                >Categoría de precio</label
+                >{{ $t('ui.categoria-de-precio-f572ba') }}</label
               >
               <q-select
                 v-model="categoriaPrecioSeleccionada"
@@ -103,7 +103,7 @@
                     @click.stop="cargarCategoriasPrecio"
                     :disable="cargandoCategorias"
                   >
-                    <q-tooltip>Recargar datos</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -111,12 +111,12 @@
             <div class="col-12 col-md-4 flex column justify-end" id="categoriaCampania">
               <div class="flex items-center justify-between q-mb-sm">
                 <label for="campana" class="text-weight-bold cm-text q-ma-none"
-                  >Categorías con Campaña</label
+                  >{{ $t('ui.categorias-con-campana-d29d09') }}</label
                 >
                 <q-checkbox v-model="mostrarCategoriasCampania" dense>
                   <template v-slot:default>
                     <label class="text-emerald" style="font-size: 13px">{{
-                      mostrarCategoriasCampania ? 'Ocultar' : 'Activar'
+                      mostrarCategoriasCampania ? $t('ui.ocultar-4f5841') : $t('configProducto.configuracionProductoUnico.tooltipActivar')
                     }}</label>
                   </template>
                 </q-checkbox>
@@ -140,8 +140,8 @@
                     <q-item-section class="text-grey">
                       {{
                         mostrarCategoriasCampania
-                          ? 'No hay campañas disponibles'
-                          : 'Active la opción para ver campañas'
+                          ? $t('ui.no-hay-campanas-disponibles-2ef237')
+                          : $t('ui.active-la-opcion-para-ver-campanas-665320')
                       }}
                     </q-item-section>
                   </q-item>
@@ -156,7 +156,7 @@
                     @click.stop="cargarCampanasDisponibles"
                     :disable="cargandoCampanias"
                   >
-                    <q-tooltip>Recargar datos</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -170,7 +170,7 @@
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-3" id="barcodeVenta">
               <label for="barcode" class="text-weight-bold cm-text q-mb-sm block"
-                >Código de barras</label
+                >{{ $t('ui.codigo-de-barras-9e517a') }}</label
               >
               <q-input
                 v-model="barcodeInput"
@@ -178,7 +178,7 @@
                 outlined
                 dense
                 @keyup.enter="buscarPorCodigoBarra"
-                placeholder="Escanee o ingrese código"
+                :placeholder="$t('ui.escanee-o-ingrese-codigo-9e8fc7')"
                 :disable="!categoriaPrecioSeleccionada"
               >
                 <template v-slot:prepend>
@@ -188,7 +188,7 @@
             </div>
             <div class="col-12 col-md-7" id="buscarProductoVenta">
               <label for="producto" class="text-weight-bold cm-text q-mb-sm block"
-                >Buscar producto (descripción)</label
+                >{{ $t('ui.buscar-producto-descripcion-44b878') }}</label
               >
               <q-select
                 v-model="productoSeleccionado"
@@ -213,7 +213,7 @@
                     icon="refresh"
                     color="primary"
                     :disable="!almacenSeleccionado"
-                    title="Refrescar Productos"
+                    :title="$t('ui.refrescar-productos-df9db1')"
                     @click="cargarProductosDisponibles"
                     flat
                     round
@@ -224,8 +224,8 @@
                     <q-item-section class="text-grey">
                       {{
                         categoriaPrecioSeleccionada
-                          ? 'No se encontraron productos'
-                          : 'Seleccione una categoría primero'
+                          ? $t('ui.no-se-encontraron-productos-fd0da8')
+                          : $t('ui.seleccione-una-categoria-primero-64e4c5')
                       }}
                     </q-item-section>
                   </q-item>
@@ -262,7 +262,7 @@
               <q-dialog v-model="mostrarGrande">
                 <q-card class="responsive-dialog">
                   <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-                    <div>Vista previa de imagen</div>
+                    <div>{{ $t('ui.vista-previa-de-imagen-52d0fe') }}</div>
                     <q-btn icon="close" flat dense round @click="mostrarGrande = false" />
                   </q-card-section>
                   <q-card-section>
@@ -287,7 +287,7 @@
           <div v-if="productoSeleccionado" class="row q-col-gutter-md q-mt-sm">
             <div class="col-12 col-sm-3" id="stockVenta">
               <label for="stockdisponible" class="text-weight-bold cm-text q-mb-sm block"
-                >Stock disponible</label
+                >{{ $t('ui.stock-disponible-4b5080') }}</label
               >
               <q-input
                 v-model="productoSeleccionado.originalData.stock"
@@ -302,7 +302,7 @@
 
             <div class="col-12 col-sm-3" id="cantidadVenta">
               <label for="cantidad" class="text-weight-bold cm-text q-mb-sm block"
-                >Cantidad</label
+                >{{ $t('ui.cantidad-b5b6f8') }}</label
               >
               <q-input
                 v-model.number="cantidad"
@@ -310,8 +310,8 @@
                 type="number"
                 :disable="productoTieneVariantes"
                 :rules="[
-                  (val) => val > 0 || 'Ingrese cantidad válida',
-                  (val) => val <= productoSeleccionado.originalData.stock || 'Supera el stock',
+                  (val) => val > 0 || $t('ui.ingrese-cantidad-valida-4e458f'),
+                  (val) => val <= productoSeleccionado.originalData.stock || $t('ui.supera-el-stock-2ed034'),
                 ]"
                 outlined
                 dense
@@ -321,13 +321,13 @@
 
             <div class="col-12 col-sm-3" id="precioVenta">
               <label for="precio" class="text-weight-bold cm-text q-mb-sm block"
-                >Precio unitario</label
+                >{{ $t('ui.precio-unitario-d3780c') }}</label
               >
               <q-input
                 v-model="precioUnitario"
                 id="precio"
                 :prefix="currencyStore.simbolo"
-                :rules="[(val) => val > 0 || 'Ingrese precio válido']"
+                :rules="[(val) => val > 0 || $t('ui.ingrese-precio-valido-e6277a')]"
                 outlined
                 dense
                 :disable="productoTieneVariantes"
@@ -346,7 +346,7 @@
                 :disable="!puedeAgregarProducto"
               >
                 <q-icon name="add" class="icono" />
-                <span class="texto">Añadir al carrito</span>
+                <span class="texto">{{ $t('ui.anadir-al-carrito-6f31c8') }}</span>
               </q-btn>
             </div>
           </div>
@@ -357,19 +357,19 @@
         class="row items-center q-gutter-sm q-mb-md q-pa-sm cm-surface-2"
         style="border-radius: 8px; border: 1px solid var(--cm-border)"
       >
-        <div class="text-subtitle2 q-ml-sm text-weight-bold cm-text">Venta sin stock</div>
+        <div class="text-subtitle2 q-ml-sm text-weight-bold cm-text">{{ $t('ui.venta-sin-stock-7cf41b') }}</div>
         <q-btn
           :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
           dense
           flat
           :color="permitirStock ? 'green' : 'grey'"
-          :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
+          :title="permitirStock ? $t('ui.desactivar-venta-sin-stock-4b2c0b') : $t('ui.activar-venta-sin-stock-41be28')"
           @click="permitirStockvacio()"
           id="ventaSinStock"
         />
         <q-btn
           icon="key"
-          label="Ver mis permisos"
+          :label="$t('ui.ver-mis-permisos-174bed')"
           color="primary"
           @click="showPermisos = true"
           outline
@@ -382,8 +382,8 @@
         :columns="columnasCarrito"
         row-key="id"
         flat
-        title="Lista de items cargados"
-        no-data-label="Aún no se han añadido productos"
+        :title="$t('ui.lista-de-items-cargados-2983e2')"
+        :no-data-label="$t('ui.aun-no-se-han-anadido-productos-e98e43')"
       >
         <template v-slot:body-cell-acciones="props">
           <q-td :props="props">
@@ -437,7 +437,7 @@
               "
             >
               <q-popup-edit v-model="props.row.descripcionAdicional" v-slot="scope">
-                <label for="desAdicional">Añadir Descripción Adicional</label>
+                <label for="desAdicional">{{ $t('ui.anadir-descripcion-adicional-20ed97') }}</label>
                 <q-input
                   v-model="scope.value"
                   outlined
@@ -462,7 +462,7 @@
           <q-tr>
             <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="receipt" color="primary" class="q-mr-sm" />
-              Sub Total:
+              {{ $t('ui.sub-total-d25591') }}
             </q-td>
             <q-td class="text-center text-weight-bold text-primary"
               >{{ currencyStore.simbolo }}{{ subTotal }}</q-td
@@ -471,7 +471,7 @@
           <q-tr id="descuento">
             <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="discount" color="accent" class="q-mr-sm" />
-              Descuento:
+              {{ $t('ui.descuento-74bd7c') }}
             </q-td>
             <q-td class="text-center">
               <q-input
@@ -489,7 +489,7 @@
           <q-tr>
             <q-td colspan="5" class="text-right text-weight-bold cm-text">
               <q-icon name="payments" color="green-8" class="q-mr-sm" />
-              Total:
+              {{ $t('ui.total-d8e717') }}
             </q-td>
             <q-td class="text-center text-weight-bold text-h6 text-green-8"
               >{{ currencyStore.simbolo }}{{ total }}</q-td
@@ -500,8 +500,8 @@
     </div>
     <RegistrarAlmacenDialog
       v-model="showWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Para desbloquear las funcionalidades del sistema, debes crear y asignarte un almacén o asignar un almacén y un punto de venta a otros usuarios."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-para-desbloquear-las-f-70f354')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -516,6 +516,7 @@
   </div>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, defineExpose, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -599,7 +600,7 @@ const handleBack = () => {
     console.error('Error al continuar venta:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error al procesar los datos para continuar.',
+      message: i18nT('ui.hubo-un-error-al-procesar-los-datos-para-continuar-e65596'),
     })
   }
 }
@@ -635,24 +636,24 @@ const router = useRouter()
 
 // Columnas para la tabla del carritoPrueba sucursal
 const columnasCarrito = [
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'center' },
   {
     name: 'precio',
-    label: 'Precio Unit.',
+    label: i18nT('ui.precio-unit-2591ea'),
     field: 'precio',
     align: 'right',
     format: (val) => ` ${currencyStore.simbolo} ${Number(val).toFixed(2)}`, //${val.toFixed(2)}
   },
   {
     name: 'subtotal',
-    label: 'Subtotal',
+    label: i18nT('ventas.subtotal'),
     field: 'subtotal',
     align: 'right',
     format: (val) => `${currencyStore.simbolo} ${val.toFixed(2)}`,
   },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 function recibirSeleccion(datos) {
@@ -688,7 +689,7 @@ function recibirSeleccion(datos) {
 
   $q.notify({
     type: 'positive',
-    message: `${datos.variantes.length} ${datos.variantes.length === 1 ? 'variante agregada' : 'variantes agregadas'} al carrito`,
+    message: `${datos.variantes.length} ${datos.variantes.length === 1 ? i18nT('ui.variante-agregada-56c694') : i18nT('ui.variantes-agregadas-1831a1')} al carrito`,
   })
 
   resetearCamposProducto()
@@ -869,7 +870,7 @@ const permitirStockvacio = async () => {
     const resultado = await showDialog(
       $q,
       'Q',
-      'No tiene permiso habilitado para realizar ventas sin stock. Puede solicitar la aprobación al administrador para continuar. ¿Desea enviar la solicitud ahora?',
+      i18nT('ui.no-tiene-permiso-habilitado-para-realizar-ventas-sin-f2b921'),
     )
     if (resultado) {
       solicitarPermisoVentaSinStock()
@@ -923,7 +924,7 @@ async function cargarAlmacenes() {
 
     const { data } = await api.get(endpoint)
     console.log('DESPUÉS DE LA PETICIÓN', new Date().toISOString())
-    if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
+    if (data[0] === 'error') throw new Error(data.error || i18nT('ui.error-al-cargar-almacenes-f88f6f'))
     console.log(data)
     // Filtrar por usuario y mapear
     const filter = data
@@ -941,7 +942,7 @@ async function cargarAlmacenes() {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes disponibles',
+      message: i18nT('ui.error-al-cargar-los-almacenes-disponibles-cc7e3f'),
     })
   } finally {
     cargandoAlmacenes.value = false
@@ -976,7 +977,7 @@ async function cargarCategoriasPrecio() {
       const { data } = await api.get(endpoint)
       console.log('Respuesta de categorías de precio:', data)
 
-      if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
+      if (data[0] === 'error') throw new Error(data.error || i18nT('ui.error-al-cargar-categorias-4a2cfd'))
 
       categoriasPrecio.value = data
         .filter((item) => item.estado == 1 && item.idalmacen == almacenSeleccionado.value?.value)
@@ -995,7 +996,7 @@ async function cargarCategoriasPrecio() {
       console.error('Error al cargar categorías:', error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar las categorías de precio',
+        message: i18nT('ui.error-al-cargar-las-categorias-de-precio-0b805b'),
       })
     } finally {
       cargandoCategorias.value = false
@@ -1020,7 +1021,7 @@ async function cargarCampanasDisponibles() {
 
     // Verificar si hay error en la respuesta
     if (data[0] === 'error') {
-      throw new Error(data.error || 'Error al cargar campañas')
+      throw new Error(data.error || i18nT('ui.error-al-cargar-campanas-1346a7'))
     }
 
     // Filtrar campañas por almacén, estado activo y vigencia de fechas
@@ -1056,7 +1057,7 @@ async function cargarCampanasDisponibles() {
     if (categoriasCampania.value.length === 0) {
       $q.notify({
         type: 'info',
-        message: 'No hay campañas activas disponibles para este almacén',
+        message: i18nT('ui.no-hay-campanas-activas-disponibles-para-este-almace-ca193e'),
         position: 'top',
       })
     }
@@ -1065,7 +1066,7 @@ async function cargarCampanasDisponibles() {
     categoriasCampania.value = []
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las campañas disponibles',
+      message: i18nT('ui.error-al-cargar-las-campanas-disponibles-9d7328'),
     })
   } finally {
     cargandoCampanias.value = false
@@ -1102,7 +1103,7 @@ async function cargarPreciosCampana() {
       preciosCampana.value.clear()
       $q.notify({
         type: 'warning',
-        message: 'Esta campaña no tiene precios para la categoría seleccionada',
+        message: i18nT('ui.esta-campana-no-tiene-precios-para-la-categoria-sele-bc9502'),
         position: 'top',
       })
       return
@@ -1135,7 +1136,7 @@ async function cargarPreciosCampana() {
     preciosCampana.value.clear()
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar precios de campaña',
+      message: i18nT('ui.error-al-cargar-precios-de-campana-e8e343'),
     })
   }
 }
@@ -1247,7 +1248,7 @@ function reinicia() {
 //     const endpoint = `/listaCategoriaPrecio/${usuario.value.empresa.idempresa}`
 //     const { data } = await api.get(endpoint)
 
-//     if (data[0] === 'error') throw new Error(data.error || 'Error al cargar categorías')
+//     if (data[0] === 'error') throw new Error(data.error || Error al cargar categorías)
 
 //     categoriasPrecio.value = data
 //       .filter((item) => item.estado == 1 && item.idalmacen == almacenSeleccionado.value?.value)
@@ -1259,7 +1260,7 @@ function reinicia() {
 //     console.error('Error al cargar categorías:', error)
 //     $q.notify({
 //       type: 'negative',
-//       message: 'Error al cargar las categorías de precio',
+//       message: Error al cargar las categorías de precio,
 //     })
 //   } finally {
 //     cargandoCategorias.value = false
@@ -1288,7 +1289,7 @@ async function cargarProductosDisponibles() {
     const { data } = await api.get(endpoint)
     console.log(data)
 
-    if (data[0] === 'error') throw new Error(data.error || 'Error al cargar productos')
+    if (data[0] === 'error') throw new Error(data.error || i18nT('ui.error-al-cargar-productos-5868af'))
 
     // Filtrar productos como en la lógica original
     let productosDisponibles = data.datos.filter((u) => u.idporcentaje == idporcentajeventa)
@@ -1340,7 +1341,7 @@ async function cargarProductosDisponibles() {
     console.error('Error al cargar productos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los productos disponibles',
+      message: i18nT('ui.error-al-cargar-los-productos-disponibles-ccc8f4'),
     })
   } finally {
     cargandoProductos.value = false
@@ -1399,7 +1400,7 @@ function buscarPorCodigoBarra() {
   } else {
     $q.notify({
       type: 'warning',
-      message: 'No se encontró el código: ' + codigo,
+      message: i18nT('ui.no-se-encontro-el-codigo-6a5134') + codigo,
       position: 'top',
     })
   }
@@ -1538,7 +1539,7 @@ function agregarAlCarrito() {
   localStorage.setItem('carrito', JSON.stringify(datos))
   $q.notify({
     type: 'positive',
-    message: 'Producto agregado al carrito',
+    message: i18nT('ui.producto-agregado-al-carrito-1227a2'),
   })
 
   resetearCamposProducto()
@@ -1562,7 +1563,7 @@ function eliminarDelCarrito(item) {
 
   $q.notify({
     type: 'info',
-    message: 'Producto eliminado del carritoPrueba',
+    message: i18nT('ui.producto-eliminado-del-carritoprueba-45019c'),
   })
 }
 
@@ -1574,7 +1575,7 @@ function resetearCamposProducto() {
 function continuarVenta() {
   $q.notify({
     type: 'positive',
-    message: 'Procediendo al registro de la venta...',
+    message: i18nT('ui.procediendo-al-registro-de-la-venta-19cb7d'),
   })
 
   // Aquí iría la lógica para continuar con el proceso de venta
@@ -1592,7 +1593,7 @@ function validarUsuario() {
   if (contenidousuario) {
     return contenidousuario
   } else {
-    alert('Hubo un problema con la sesion, Por favor vuelva a iniciar sesion.')
+    alert(i18nT('ui.hubo-un-problema-con-la-sesion-por-favor-vuelva-a-in-4caf86'))
     console.log('Los elementos no existen en localStorage')
     localStorage.clear()
     window.location.assign('../../app/')
@@ -1644,7 +1645,7 @@ async function crearCarritoVenta() {
     console.error('Error al crear carritoDos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al preparar datos de venta',
+      message: i18nT('ui.error-al-preparar-datos-de-venta-36471a'),
     })
     return false
   }
@@ -1659,7 +1660,7 @@ function eliminarCarrito() {
   // Notifica al usuario
   $q.notify({
     type: 'positive',
-    message: 'Listo para añadir al carrito ',
+    message: i18nT('ui.listo-para-anadir-al-carrito-702d2d'),
   })
 }
 async function consumirPermisoVentaSinStock(idalmacen) {
@@ -1767,7 +1768,7 @@ onMounted(async () => {
     console.error('Error en inicialización:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al inicializar componente',
+      message: i18nT('ui.error-al-inicializar-componente-2d5c6d'),
     })
   } finally {
     // Pequeño delay para asegurar que los watches iniciales se ignoren
