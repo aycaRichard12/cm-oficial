@@ -4,14 +4,14 @@
       <q-scroll-area class="fit">
         <div class="q-pa-md">
           <div class="flex justify-between">
-            <div class="text-h6 q-mb-md">APIs Disponibles</div>
+            <div class="text-h6 q-mb-md">{{ $t('ui.apis-disponibles-46fa92') }}</div>
           </div>
 
           <q-input
             dense
             outlined
             v-model="searchTerm"
-            placeholder="Buscar API..."
+            :placeholder="$t('ui.buscar-api-db70da')"
             clearable
             class="q-mb-md"
           >
@@ -67,7 +67,7 @@
       <q-page padding>
         <div class="row flex justify-end">
           <div class="col-12 col-md-4">
-            <label for="server">Servers</label>
+            <label for="server">{{ $t('ui.servers-acca64') }}</label>
             <q-select v-model="model_server" :options="options" dense outlined />
           </div>
         </div>
@@ -80,9 +80,9 @@
           >
             <div>
               <q-icon name="hub" color="primary" size="100px" />
-              <div class="text-h4 q-mt-md cm-text-muted">Documentación Interactiva de API</div>
+              <div class="text-h4 q-mt-md cm-text-muted">{{ $t('ui.documentacion-interactiva-de-api-e50d25') }}</div>
               <p class="text-subtitle1 q-mt-sm text-grey-6">
-                Selecciona un endpoint del menú de la izquierda para ver sus detalles.
+                {{ $t('ui.selecciona-un-endpoint-del-menu-de-la-izquierda-para-0f14c9') }}
               </p>
             </div>
           </div>
@@ -112,7 +112,7 @@
               <q-table
                 :rows="selectedApi.params"
                 :columns="paramColumns"
-                title="Parámetros Requeridos"
+                :title="$t('ui.parametros-requeridos-b81138')"
                 row-key="name"
                 flat
                 hide-bottom
@@ -120,7 +120,7 @@
                 <template v-slot:body-cell-required="props">
                   <q-td :props="props">
                     <q-badge :color="props.value ? 'red' : 'grey-5'">
-                      {{ props.value ? 'Sí' : 'No' }}
+                      {{ props.value ? $t('ui.si-873caa') : $t('ui.no-816c52') }}
                     </q-badge>
                   </q-td>
                 </template>
@@ -131,7 +131,7 @@
               <div class="col-12 col-md-6">
                 <CodeBlock
                   v-if="selectedApi.requestExample"
-                  title="Ejemplo de Request"
+                  :title="$t('ui.ejemplo-de-request-594781')"
                   :code="selectedApi.requestExample"
                   language="json"
                 />
@@ -139,7 +139,7 @@
               <div class="col-12 col-md-6">
                 <CodeBlock
                   v-if="selectedApi.responseExample"
-                  title="Ejemplo de Response (Éxito)"
+                  :title="$t('ui.ejemplo-de-response-exito-3224bb')"
                   :code="selectedApi.responseExample"
                   language="json"
                 />
@@ -153,7 +153,7 @@
               v-if="selectedApi.errors && selectedApi.errors.length"
             >
               <q-card-section class="bg-negative text-white text-h6">
-                <div class="text-h6">Respuestas de Error Posibles</div>
+                <div class="text-h6">{{ $t('ui.respuestas-de-error-posibles-4f8f8d') }}</div>
               </q-card-section>
               <q-list separator>
                 <q-item v-for="error in selectedApi.errors" :key="error.code">
@@ -169,7 +169,7 @@
 
             <q-card flat bordered class="q-mb-lg" v-if="selectedApi.notes">
               <q-card-section>
-                <div class="text-h6">Notas Adicionales</div>
+                <div class="text-h6">{{ $t('ui.notas-adicionales-4c4c35') }}</div>
                 <p class="text-body1 q-mt-sm text-grey-7">{{ selectedApi.notes }}</p>
               </q-card-section>
             </q-card>
@@ -181,6 +181,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 
 import { apiGroups, methodColors } from 'src/data/apis' // Asegúrate que la ruta sea correcta
@@ -238,10 +239,10 @@ const selectApi = (api) => {
 
 // Columnas para la tabla de parámetros
 const paramColumns = [
-  { name: 'name', label: 'Nombre', field: 'name', align: 'left', sortable: true },
-  { name: 'type', label: 'Tipo', field: 'type', align: 'left', sortable: true },
-  { name: 'required', label: 'Requerido', field: 'required', align: 'center' },
-  { name: 'example', label: 'Ejemplo', field: 'example', align: 'left' },
+  { name: 'name', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'name', align: 'left', sortable: true },
+  { name: 'type', label: i18nT('configGeneral.divisas.table.type'), field: 'type', align: 'left', sortable: true },
+  { name: 'required', label: i18nT('common.required'), field: 'required', align: 'center' },
+  { name: 'example', label: i18nT('ui.ejemplo-26ddea'), field: 'example', align: 'left' },
 ]
 
 // --- Componente reusble para Bloques de Código ---
@@ -257,7 +258,7 @@ const paramColumns = [
 //       copyToClipboard(props.code)
 //         .then(() => {
 //           $q.notify({
-//             message: 'Copiado al portapapeles',
+//             message: Copiado al portapapeles,
 //             color: 'positive',
 //             icon: 'check',
 //             position: 'top-right',
@@ -266,7 +267,7 @@ const paramColumns = [
 //         })
 //         .catch(() => {
 //           $q.notify({
-//             message: 'Error al copiar',
+//             message: Error al copiar,
 //             color: 'negative',
 //             icon: 'error',
 //             position: 'top-right',

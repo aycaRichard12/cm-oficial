@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="text-h6 q-mb-md text-primary row items-center">
         <q-icon name="widgets" class="q-mr-sm" />
-        <div>Módulos Impactados</div>
+        <div>{{ $t('ui.modulos-impactados-c50c24') }}</div>
       </div>
 
       <q-separator class="q-mb-md" />

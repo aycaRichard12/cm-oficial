@@ -61,7 +61,7 @@
                           :color="props.row.visibility && props.row.visibility[key] ? 'grey' : 'primary'"
                           @click.stop="toggleVisibility(props.row, key)"
                         >
-                          <q-tooltip>{{ props.row.visibility && props.row.visibility[key] ? t('common.hide') || 'Ocultar' : t('common.show') || 'Mostrar' }}</q-tooltip>
+                          <q-tooltip>{{ props.row.visibility && props.row.visibility[key] ? t('common.hide') || $t('ui.ocultar-4f5841') : t('common.show') || $t('ui.mostrar-906dc6') }}</q-tooltip>
                         </q-btn>
                         <q-btn
                           flat
@@ -151,6 +151,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
@@ -236,7 +237,7 @@ const copiarTexto = async (texto) => {
     await copyToClipboard(texto)
     $q.notify({
       type: 'positive',
-      message: 'Copiado al portapapeles',
+      message: i18nT('configuracion.credencialesServicio.dialog.copied'),
       icon: 'check',
       timeout: 1000,
     })
@@ -244,7 +245,7 @@ const copiarTexto = async (texto) => {
     console.error('Error al copiar al portapapeles:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al copiar',
+      message: i18nT('configuracion.credencialesServicio.dialog.errorCopy'),
       icon: 'error',
     })
   }
@@ -296,7 +297,7 @@ async function getCredencialesServicios() {
     console.error('Error al cargar credenciales:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las credenciales',
+      message: i18nT('configuracion.credencialesServicio.messages.loadError'),
       icon: 'report_problem',
     })
   } finally {
@@ -324,7 +325,7 @@ const confirmDelete = (credential) => {
       flat: true,
     },
     ok: {
-      label: t('configuracion.servicios.dialog.delete') || 'Eliminar',
+      label: t('configuracion.servicios.dialog.delete') || i18nT('common.delete'),
       color: 'negative',
       flat: true,
     },

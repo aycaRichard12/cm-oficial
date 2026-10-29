@@ -58,7 +58,7 @@
             class="font-bold"
             style="white-space: nowrap"
           >
-            Total General :
+            {{ $t('ui.total-general-7aa6a8') }}
           </span>
           <span v-else></span>
         </q-td>
@@ -99,11 +99,11 @@
         icon="view_column"
         class="q-ml-sm"
         style="height: 40px"
-        title="Mostrar/Ocultar columnas"
+        :title="$t('ui.mostrar-ocultar-columnas-0a433d')"
       >
         <q-menu>
           <q-list style="min-width: 21rem" dense>
-            <q-item-label header>Columnas</q-item-label>
+            <q-item-label header>{{ $t('ui.columnas-4e4a68') }}</q-item-label>
             <q-item v-for="col in columns" :key="col.name" tag="label" v-ripple>
               <q-item-section side top>
                 <q-checkbox v-model="visibleColumnNames" :val="col.name" />

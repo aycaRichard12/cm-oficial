@@ -4,19 +4,19 @@
       <q-card-section class="bg-primary text-white">
         <div class="text-h6">
           <q-icon name="notifications" class="q-mr-sm" />
-          Sistema de Notificaciones
+          {{ $t('ui.sistema-de-notificaciones-e1f588') }}
         </div>
       </q-card-section>
 
       <q-card-section>
         <div class="text-body1 q-mb-md">
-          Envíe notificaciones a los usuarios responsables del sistema.
+          {{ $t('ui.envie-notificaciones-a-los-usuarios-responsables-del-be67e3') }}
         </div>
 
         <q-btn
           color="primary"
           icon="send"
-          label="Nueva Notificación"
+          :label="$t('ui.nueva-notificacion-fc4a17')"
           unelevated
           @click="mostrarDialogNotificacion = true"
         />
@@ -26,13 +26,14 @@
     <!-- Dialog de Notificación -->
     <NotificacionDialog
       v-model="mostrarDialogNotificacion"
-      title="Enviar Notificación"
+      :title="$t('ui.enviar-notificacion-a4632e')"
       @notificacion-enviada="onNotificacionEnviada"
     />
   </div>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
 import NotificacionDialog from './NotificacionDialog.vue'
@@ -45,7 +46,7 @@ function onNotificacionEnviada(datos) {
   
   $q.notify({
     type: 'positive',
-    message: 'La notificación ha sido enviada exitosamente',
+    message: i18nT('ui.la-notificacion-ha-sido-enviada-exitosamente-957b6a'),
     position: 'top',
     icon: 'check_circle',
     timeout: 2000

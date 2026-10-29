@@ -119,7 +119,7 @@
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
             <div class="text-subtitle2 text-weight-regular">
-              {{ dialogType === 'error' ? t('configProducto.configuracionProductoUnico.dialog.errorTitle') : t('configProducto.configuracionProductoUnico.dialog.successTitle') }}
+              {{ dialogType === $t('ui.error-11f957') ? t('configProducto.configuracionProductoUnico.dialog.errorTitle') : t('configProducto.configuracionProductoUnico.dialog.successTitle') }}
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? t('configProducto.configuracionProductoUnico.dialog.okButton') : t('configProducto.configuracionProductoUnico.dialog.cancelButton')"
+          :label="dialogType === $t('ui.error-11f957') ? t('configProducto.configuracionProductoUnico.dialog.okButton') : t('configProducto.configuracionProductoUnico.dialog.cancelButton')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"

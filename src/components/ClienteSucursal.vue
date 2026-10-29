@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <div class="row q-col-gutter-x-md">
       <div class="col-12 col-md-8">
-        <label for="cliente">Cliente*</label>
+        <label for="cliente">{{ $t('ui.cliente-39ec2b') }}</label>
         <q-select
           v-model="selectedClient"
           id="cliente"
@@ -14,19 +14,19 @@
           use-input
           @filter="filterClientes"
           @update:model-value="handleClientChange"
-          :rules="[(val) => !!val || 'Seleccione un cliente']"
+          :rules="[(val) => !!val || $t('ui.seleccione-un-cliente-f08b74')]"
           clearable
         >
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay resultados </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
             </q-item>
           </template>
         </q-select>
       </div>
 
       <div class="col-12 col-md-4">
-        <label for="sucursal">Sucursal*</label>
+        <label for="sucursal">{{ $t('ui.sucursal-80e67a') }}</label>
         <q-select
           v-model="selectedBranch"
           id="sucursal"
@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'src/boot/axios' // Assuming you have axios configured
 import { useQuasar } from 'quasar'
@@ -100,7 +101,7 @@ const showError = (message, error) => {
   $q.notify({
     type: 'negative',
     message: message,
-    caption: error?.message || 'Ha ocurrido un error',
+    caption: error?.message || i18nT('ui.ha-ocurrido-un-error-1f69d9'),
   })
 }
 
@@ -143,7 +144,7 @@ const fetchClients = async () => {
       filteredClients.value = clients.value // Initialize filtered clients
     }
   } catch (error) {
-    showError('Error al cargar clientes', error)
+    showError(i18nT('ui.error-al-cargar-clientes-3c0d3b'), error)
   }
 }
 
@@ -159,7 +160,7 @@ const fetchBranches = async (clientId) => {
       selectedBranch.value = branches.value[0]
     }
   } catch (error) {
-    showError('Error al cargar sucursales', error)
+    showError(i18nT('ui.error-al-cargar-sucursales-a6a650'), error)
   }
 }
 

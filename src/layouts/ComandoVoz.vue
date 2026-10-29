@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, getCurrentInstance } from 'vue'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { obtenerFechaHoraNumerica } from 'src/composables/FuncionesG'
@@ -113,10 +114,10 @@ const ejecutarAccion = (data = {}) => {
     emitirVoz(respuestaPorVoz, onActionComplete)
   } else {
     $q.loading.show({
-      message: 'El comando ingresado no fue reconocido o no cuenta con los permisos necesarios.',
+      message: i18nT('ui.el-comando-ingresado-no-fue-reconocido-o-no-cuenta-c-a31860'),
     })
     notify(
-      'El comando ingresado no fue reconocido o no cuenta con los permisos necesarios',
+      i18nT('ui.el-comando-ingresado-no-fue-reconocido-o-no-cuenta-c-8c99d3'),
       'negative',
     )
     emitirVoz(
@@ -134,7 +135,7 @@ const ejecutarAccion = (data = {}) => {
 const setupSpeechRecognition = () => {
   if (!SpeechRecognition) {
     console.error('ERROR: Tu navegador no soporta el reconocimiento de voz.')
-    notify('El control por voz no está disponible en este navegador.', 'negative')
+    notify(i18nT('ui.el-control-por-voz-no-esta-disponible-en-este-navega-f5023e'), 'negative')
     return
   }
 
@@ -146,7 +147,7 @@ const setupSpeechRecognition = () => {
 
   recognition.value.onstart = () => {
     isListening.value = true
-    notify('Modo de escucha activado. Di un comando.')
+    notify(i18nT('ui.modo-de-escucha-activado-di-un-comando-3082da'))
   }
 
   recognition.value.onresult = (event) => {
@@ -189,7 +190,7 @@ const startRecognition = () => {
     try {
       recognition.value.start()
     } catch (e) {
-      notify('Asegúrate de conceder permiso al micrófono.', 'negative')
+      notify(i18nT('ui.asegurate-de-conceder-permiso-al-microfono-82b652'), 'negative')
       console.error('Error al iniciar micrófono:', e)
       isContinuousMode.value = false
     }
@@ -202,7 +203,7 @@ const stopRecognition = (resetMode = true) => {
     recognition.value.stop()
     if (resetMode) {
       isContinuousMode.value = false
-      notify('Modo de voz desactivado.', 'info')
+      notify(i18nT('ui.modo-de-voz-desactivado-0f08fe'), 'info')
     }
   } else if (resetMode) {
     isContinuousMode.value = false
@@ -212,7 +213,7 @@ const stopRecognition = (resetMode = true) => {
 const restartRecognition = () => {
   if (isContinuousMode.value && !isListening.value && !isProcessing.value) {
     console.log('[Voz] Reiniciando la escucha para el siguiente comando...')
-    notify('Di tu siguiente comando...', 'info')
+    notify(i18nT('ui.di-tu-siguiente-comando-0a3576'), 'info')
     startRecognition()
   }
 }
@@ -231,7 +232,7 @@ const toggleListening = () => {
 
 const sendToDialogflow = async (command) => {
   isProcessing.value = true
-  notify('Procesando comando...', 'info')
+  notify(i18nT('ui.procesando-comando-18fb1e'), 'info')
 
   try {
     const response = await $axios.post(PHP_ENDPOINT_URL, {
@@ -244,7 +245,7 @@ const sendToDialogflow = async (command) => {
 
     ejecutarAccion(data)
   } catch (error) {
-    notify('Error de comunicación con el servidor. Revisar consola.', 'negative')
+    notify(i18nT('ui.error-de-comunicacion-con-el-servidor-revisar-consol-13fd44'), 'negative')
     emitirVoz('Lo siento, no pude comunicarme con el servidor.', () => {
       if (isContinuousMode.value) restartRecognition()
     })

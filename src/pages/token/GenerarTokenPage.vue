@@ -72,6 +72,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import { useQuasar, copyToClipboard } from 'quasar'
 import { useI18n } from 'vue-i18n'
@@ -106,7 +107,7 @@ const generarToken = async () => {
         icon: 'check_circle',
       })
     } else {
-      const mensajeError = response.data?.mensaje || 'La respuesta de la API no es válida.'
+      const mensajeError = response.data?.mensaje || i18nT('ui.la-respuesta-de-la-api-no-es-valida-426bde')
       throw new Error(mensajeError)
     }
   } catch (error) {

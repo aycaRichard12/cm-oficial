@@ -7,7 +7,7 @@
         </template>
 
         <q-breadcrumbs-el
-          label="Inicio"
+          :label="$t('ui.inicio-4f70d8')"
           icon="home"
           class="bc-link cursor-pointer"
           @click="goToHome"

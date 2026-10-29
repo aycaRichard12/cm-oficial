@@ -7,9 +7,9 @@
           <q-icon name="notifications_active" size="28px" />
         </q-avatar>
         <div class="q-ml-md">
-          <div class="text-h6 text-white">Nueva Notificación</div><!-- theme-allow: white on bg-primary -->
+          <div class="text-h6 text-white">{{ $t('ui.nueva-notificacion-fc4a17') }}</div><!-- theme-allow: white on bg-primary -->
           <div class="text-subtitle2 text-white" v-if="datosNotificacion?.nombre_usuario_notificacion"><!-- theme-allow: white on bg-primary -->
-            De: {{ datosNotificacion.nombre_usuario_notificacion }}
+            {{ $t('ui.de-c17818') }} {{ datosNotificacion.nombre_usuario_notificacion }}
           </div>
           <div class="text-caption text-white"><!-- theme-allow: white on bg-primary -->
             {{ (datosNotificacion?.fecha) }}
@@ -24,9 +24,9 @@
       <q-card-section class="q-pt-md">
         <!-- Asunto -->
         <div class="q-mb-md">
-          <div class="text-overline text-grey-7">Asunto</div>
+          <div class="text-overline text-grey-7">{{ $t('ui.asunto-72d7a5') }}</div>
           <div class="text-h6 cm-text">
-            {{ datosNotificacion?.asunto || 'Sin asunto' }}
+            {{ datosNotificacion?.asunto || $t('ui.sin-asunto-a4b238') }}
           </div>
         </div>
 
@@ -34,9 +34,9 @@
 
         <!-- Descripción/Mensaje -->
         <div class="q-mb-md">
-          <div class="text-overline text-grey-7">Descripción</div>
+          <div class="text-overline text-grey-7">{{ $t('configuracion.servicios.table.descripcion') }}</div>
           <div class="text-body1 cm-text" style="white-space: pre-wrap">
-            {{ datosNotificacion?.descripcion || 'Sin contenido' }}
+            {{ datosNotificacion?.descripcion || $t('ui.sin-contenido-44f28d') }}
           </div>
         </div>
       </q-card-section>
@@ -45,11 +45,11 @@
 
       <!-- Acciones -->
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="Cerrar" color="grey-7" @click="cerrarNotificacion" v-close-popup />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" color="grey-7" @click="cerrarNotificacion" v-close-popup />
         <q-btn
           v-if="datosNotificacion?.url_de_envio"
           unelevated
-          label="Ir a la página"
+          :label="$t('ui.ir-a-la-pagina-d187b6')"
           color="secondary"
           @click="irAPagina"
           icon="arrow_forward"
@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
@@ -123,7 +124,7 @@ function irAPagina() {
     
     $q.notify({
       type: 'info',
-      message: 'Redirigiendo a la página...',
+      message: i18nT('ui.redirigiendo-a-la-pagina-bb0f35'),
       position: 'top',
       timeout: 1500
     })
@@ -135,7 +136,7 @@ function irAPagina() {
 
 //   $q.notify({
 //     type: 'positive',
-//     message: 'Notificación marcada como leída',
+//     message: Notificación marcada como leída,
 //     position: 'top',
 //     timeout: 1500,
 //   })

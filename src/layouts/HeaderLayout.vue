@@ -8,7 +8,7 @@
           round
           icon="menu"
           @click="$emit('toggle-left-drawer')"
-          aria-label="Menu"
+          :aria-label="$t('ui.menu-57f5f5')"
         />
       </div>
 
@@ -102,7 +102,7 @@
                     <q-icon name="settings" size="18px" />
                   </q-item-section>
 
-                  <q-item-section> Configuración </q-item-section>
+                  <q-item-section> {{ $t('layouts.settings') }} </q-item-section>
                 </q-item>
 
                 <q-separator class="q-my-sm" />
@@ -118,7 +118,7 @@
                   </q-item-section>
 
                   <q-item-section class="text-negative text-weight-medium">
-                    Cerrar Sesión
+                    {{ $t('layouts.logout') }}
                   </q-item-section>
                 </q-item>
               </q-list>

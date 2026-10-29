@@ -16,6 +16,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { defineProps } from 'vue'
 
 defineProps({
@@ -26,7 +27,7 @@ defineProps({
   title: {
     // Renamed 'titulo' to 'title' for better English readability
     type: String,
-    default: 'Modal',
+    default: i18nT('ui.modal-d44c2c'),
   },
 })
 </script>

@@ -14,7 +14,7 @@
       >
         <q-list style="min-width: 300px">
           <q-item-label header class="">
-            Notificaciones
+            {{ $t('ui.notificaciones-6b3d32') }}
             <q-toggle
               v-model="compactMode"
               checked-icon="minimize"
@@ -43,11 +43,11 @@
 
               <q-item-section>
                 <q-item-label class="text-subtitle2" :lines="1">
-                  {{ notification.title }} {{ 'en fecha ' + notification.fecha }}
+                  {{ notification.title }} {{ $t('ui.en-fecha-1b2091') + notification.fecha }}
                   <q-btn
                     v-if="notification.codigo == 'importacion_pendiente'"
                     color="primary"
-                    label="Aprobar"
+                    :label="$t('ui.aprobar-c2505a')"
                     @click="aprobarImportacion(notification)"
                   />
                 </q-item-label>
@@ -69,7 +69,7 @@
           </template>
           <template v-else>
             <q-item>
-              <q-item-section class="text-center text-grey"> No hay notificaciones </q-item-section>
+              <q-item-section class="text-center text-grey"> {{ $t('ui.no-hay-notificaciones-ebcd17') }} </q-item-section>
             </q-item>
           </template>
         </q-list>
@@ -79,6 +79,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -102,7 +103,7 @@ const getNotificaciones = async () => {
     notifications.value = []
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar las notificaciones.',
+      message: i18nT('ui.no-se-pudieron-cargar-las-notificaciones-0bf6a8'),
       position: 'top',
     })
   }
@@ -113,29 +114,29 @@ const notifications = ref([
   {
     id: 1,
     type: 'success',
-    title: 'Pedido Aprobado',
-    message: 'Tu pedido #123 fue aprobado y se está preparando para el envío.',
+    title: i18nT('ui.pedido-aprobado-c3815f'),
+    message: i18nT('ui.tu-pedido-123-fue-aprobado-y-se-esta-preparando-para-a40cfd'),
     read: false,
   },
   {
     id: 2,
     type: 'info',
-    title: 'Actualización del sistema',
-    message: 'Hemos lanzado una nueva versión con mejoras de rendimiento.',
+    title: i18nT('ui.actualizacion-del-sistema-3013a4'),
+    message: i18nT('ui.hemos-lanzado-una-nueva-version-con-mejoras-de-rendi-582558'),
     read: false,
   },
   {
     id: 3,
     type: 'warning',
-    title: 'Credenciales a punto de expirar',
-    message: 'Tu contraseña caducará en 7 días. Por favor, actualízala.',
+    title: i18nT('ui.credenciales-a-punto-de-expirar-f345c6'),
+    message: i18nT('ui.tu-contrasena-caducara-en-7-dias-por-favor-actualiza-85e1ed'),
     read: true,
   },
   {
     id: 4,
     type: 'error',
-    title: 'Fallo en la transacción',
-    message: 'Hubo un error al procesar tu último pago. Revisa tus datos.',
+    title: i18nT('ui.fallo-en-la-transaccion-ec4aa4'),
+    message: i18nT('ui.hubo-un-error-al-procesar-tu-ultimo-pago-revisa-tus-a0b8f5'),
     read: false,
   },
 ])
@@ -196,7 +197,7 @@ const aprobarImportacion = async (notif) => {
     if (data.status === 'ok') {
       $q.notify({
         type: 'positive',
-        message: 'Importación autorizada y procesada correctamente.',
+        message: i18nT('ui.importacion-autorizada-y-procesada-correctamente-d61e89'),
         icon: 'check_circle',
         timeout: 3000,
         position: 'top',
@@ -204,7 +205,7 @@ const aprobarImportacion = async (notif) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al autorizar la importación.',
+        message: data.mensaje || i18nT('ui.error-al-autorizar-la-importacion-24b55f'),
         icon: 'error',
         timeout: 5000,
         position: 'top',
@@ -217,7 +218,7 @@ const aprobarImportacion = async (notif) => {
     console.error('[aprobarImportacion]', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al procesar la solicitud.',
+      message: i18nT('ui.error-de-conexion-al-procesar-la-solicitud-dc2402'),
       icon: 'error',
       timeout: 5000,
       position: 'top',

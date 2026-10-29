@@ -146,12 +146,12 @@
               <div class="relative-position q-my-lg">
                 <q-separator />
                 <div class="absolute-center cm-surface q-px-md cm-text-muted text-caption">
-                  O continúa con
+                  {{ $t('ui.o-continua-con-519ddd') }}
                 </div>
               </div>
 
               <div class="text-center q-mt-md text-body2 cm-text-muted">
-                ¿No tienes una cuenta?
+                {{ $t('ui.no-tienes-una-cuenta-0cb9ce') }}
                 <a
                   href="https://mistersofts.com/app/em/"
                   target="_blank"
@@ -159,7 +159,7 @@
                   class="text-weight-bold text-primary"
                   style="text-decoration: none"
                 >
-                  Regístrate
+                  {{ $t('ui.registrate-aab95f') }}
                 </a>
               </div>
               <div v-if="deferredPrompt" class="text-center q-mt-sm">
@@ -170,7 +170,7 @@
                   color="grey-5"
                   text-color="grey-8"
                   icon="get_app"
-                  label="Instalar aplicación"
+                  :label="$t('ui.instalar-aplicacion-4515fb')"
                   @click="installApp"
                   class="text-caption text-weight-medium q-px-sm"
                   style="border-radius: 6px"
@@ -185,6 +185,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -315,7 +316,7 @@ const login = async () => {
           color: 'warning',
           textColor: 'white', // theme-allow
           icon: 'warning',
-          message: 'No se encontraron permisos asignados para este usuario.',
+          message: i18nT('ui.no-se-encontraron-permisos-asignados-para-este-usuar-0d0de4'),
           position: 'top',
         })
         return
@@ -353,7 +354,7 @@ const login = async () => {
         color: 'positive',
         textColor: 'white', // theme-allow
         icon: 'check_circle',
-        message: 'Bienvenido al sistema',
+        message: i18nT('auth.loginSuccess'),
         position: 'top',
       })
 
@@ -364,7 +365,7 @@ const login = async () => {
         color: 'negative',
         textColor: 'white', // theme-allow
         icon: 'error',
-        message: res.data[0]?.error || 'Credenciales inválidas. Intente nuevamente.',
+        message: res.data[0]?.error || i18nT('ui.credenciales-invalidas-intente-nuevamente-055da3'),
         position: 'top',
       })
     }
@@ -374,7 +375,7 @@ const login = async () => {
       color: 'negative',
       textColor: 'white', // theme-allow
       icon: 'error',
-      message: 'Error al conectar con el servidor',
+      message: i18nT('ui.error-al-conectar-con-el-servidor-e9c460'),
       position: 'top',
     })
   } finally {
