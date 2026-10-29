@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para segmentación o grupos de personas -->
           <q-icon name="groups" size="md" class="q-mr-sm" />
-          Tipos de Clientes
+          {{ t('configuracion.tiposDeClientes.title') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de clasificaciones y segmentos de clientes
+          {{ t('configuracion.tiposDeClientes.subtitle') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Tipo Cliente</div>
+          <div>{{ t('configuracion.tiposDeClientes.dialogTitle') }}</div>
           <q-btn color="" icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -41,6 +41,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import TipoClienteForm from 'src/components/clientes/conf/FormCliente.vue'
 import TipoClienteTable from 'src/components/clientes/conf/TableCliente.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -48,6 +49,7 @@ import { useQuasar } from 'quasar'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 
+const { t } = useI18n()
 const idempresa = idempresa_md5()
 const $q = useQuasar()
 const showForm = ref(false)
@@ -100,8 +102,8 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Estado "${item.nombre}"?`,
+    title: t('configuracion.tiposDeClientes.messages.deleteTitle'),
+    message: t('configuracion.tiposDeClientes.messages.deleteMessage', { name: item.nombre || item.tipo }),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -115,13 +117,13 @@ const confirmDelete = (item) => {
           message: response.data.mensaje,
         })
       }
-    } catch (error) {
-      console.error('Error al cargar datos:', error)
-      $q.notify({
-        type: 'negative',
-        message: 'No se pudieron cargar los datos',
-      })
-    }
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+    $q.notify({
+      type: 'negative',
+      message: t('configuracion.tiposDeClientes.messages.loadError'),
+    })
+  }
   })
 }
 
@@ -155,14 +157,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? t('configuracion.tiposDeClientes.messages.updated') : t('configuracion.tiposDeClientes.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: t('configuracion.tiposDeClientes.messages.saveError') + error,
     })
   }
   toggleForm()

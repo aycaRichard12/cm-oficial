@@ -6,21 +6,14 @@
         @click="$emit('add')"
         class="btn-res q-mt-lg"
         id="agregarCanalDeVenta"
-        title="Registrar Canal Venta"
+        :title="t('configuracion.canalesDeVenta.table.addTitle')"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" /> Nuevo </span>
+        <span class="texto"> <q-icon name="add" /> {{ t('common.new') }} </span>
       </q-btn>
 
-      <!-- <div class="col flex items-center justify-end">
-        <q-input v-model="search" placeholder="Buscar" dense outlined class="q-ml-md">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div> -->
       <div id="buscarCanalDeVenta">
-        <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ t('common.search') }}</label>
         <q-input
           v-model="search"
           id="buscar"
@@ -28,6 +21,7 @@
           outlined
           debounce="300"
           class="q-mb-md"
+          :placeholder="t('common.search')"
           style="background-color: var(--cm-surface)"
         >
           <template v-slot:append>
@@ -47,13 +41,13 @@
       :loading="loading"
       :filter="search"
       class="sticky-table"
-      title="Canal Venta"
+      :title="t('configuracion.canalesDeVenta.table.title')"
     >
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="t('common.active')" outline />
+          <q-badge color="red" v-else :label="t('common.inactive')" outline />
         </q-td>
       </template>
 
@@ -66,6 +60,7 @@
             class="q-mr-sm"
             @click="$emit('edit-item', props.row)"
             flat
+            :title="t('configuracion.canalesDeVenta.table.edit')"
             id="editarCanalDeVenta"
           />
           <q-btn
@@ -74,6 +69,7 @@
             dense
             @click="$emit('delete-item', props.row)"
             flat
+            :title="t('configuracion.canalesDeVenta.table.delete')"
             id="eliminarCanalDeVenta"
           />
           <q-btn
@@ -82,6 +78,7 @@
             flat
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
+            :title="t('configuracion.canalesDeVenta.table.toggleStatus')"
             id="cambiarEstadoCanalDeVenta"
           />
         </q-td>
@@ -92,6 +89,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   rows: {
@@ -103,18 +103,18 @@ const props = defineProps({
 
 defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'numero',
     label: 'N°',
     field: (row) => row.numero,
     align: 'center',
   },
-  { name: 'canal', label: 'Canal', field: 'canal', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Opciones', align: 'center' },
-]
+  { name: 'canal', label: t('configuracion.canalesDeVenta.table.canal'), field: 'canal', align: 'left' },
+  { name: 'descripcion', label: t('configuracion.canalesDeVenta.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'estado', label: t('configuracion.canalesDeVenta.table.estado'), field: 'estado', align: 'center' },
+  { name: 'opciones', label: t('configuracion.canalesDeVenta.table.opciones'), align: 'center' },
+])
 
 const search = ref('')
 

@@ -2,7 +2,7 @@
   <q-page class="q-pa-md">
     <q-card class="shadow-2 rounded-borders">
       <q-table
-        title="Credenciales de Servicios"
+        :title="t('configuracion.credencialesServicio.title')"
         :rows="rows"
         :columns="columns"
         row-key="id_empresa_soft"
@@ -15,7 +15,7 @@
             id="btnNuevaCredencial"
             color="primary"
             icon="add"
-            label="Nuevo"
+            :label="t('common.new')"
             @click="openNewDialog"
             unelevated
           />
@@ -28,7 +28,7 @@
               flat
               dense
               icon="vpn_key"
-              label="Ver Credenciales"
+              :label="t('configuracion.credencialesServicio.ver')"
               no-caps
               class="bg-indigo-1 rounded-borders q-px-sm"
             >
@@ -61,7 +61,7 @@
                           :color="props.row.visibility && props.row.visibility[key] ? 'grey' : 'primary'"
                           @click.stop="toggleVisibility(props.row, key)"
                         >
-                          <q-tooltip>{{ props.row.visibility && props.row.visibility[key] ? 'Ocultar' : 'Mostrar' }}</q-tooltip>
+                          <q-tooltip>{{ props.row.visibility && props.row.visibility[key] ? t('common.hide') || 'Ocultar' : t('common.show') || 'Mostrar' }}</q-tooltip>
                         </q-btn>
                         <q-btn
                           flat
@@ -72,7 +72,7 @@
                           color="secondary"
                           @click.stop="copiarTexto(val)"
                         >
-                          <q-tooltip>Copiar {{ key }}</q-tooltip>
+                          <q-tooltip>{{ t('configuracion.credencialesServicio.dialog.copy') }} {{ key }}</q-tooltip>
                         </q-btn>
                       </div>
                     </q-item-section>
@@ -85,7 +85,7 @@
                         color="indigo"
                         size="sm"
                         icon="data_object"
-                        label="Copiar JSON completo"
+                        :label="t('configuracion.credencialesServicio.dialog.copy') + ' JSON'"
                         class="full-width rounded-borders"
                         @click.stop="copiarTexto(JSON.stringify(props.row.credenciales, null, 2))"
                       />
@@ -104,10 +104,10 @@
               clickable
               @click="handleToggleStatus(props.row)"
               :color="props.value == 1 ? 'green' : 'red'"
-              :label="props.value == 1 ? 'Activo' : 'Inactivo'"
+              :label="props.value == 1 ? t('common.active') : t('common.inactive')"
               class="cursor-pointer"
             >
-              <q-tooltip>Clic para cambiar estado</q-tooltip>
+              <q-tooltip>{{ t('configuracion.canalesDeVenta.table.toggleStatus') }}</q-tooltip>
             </q-badge>
           </q-td>
         </template>
@@ -123,7 +123,7 @@
               color="primary"
               @click="openEditDialog(props.row)"
             >
-              <q-tooltip>Editar credenciales</q-tooltip>
+              <q-tooltip>{{ t('common.edit') }}</q-tooltip>
             </q-btn>
             <q-btn
               flat
@@ -133,7 +133,7 @@
               color="negative"
               @click="confirmDelete(props.row)"
             >
-              <q-tooltip>Eliminar credenciales</q-tooltip>
+              <q-tooltip>{{ t('common.delete') }}</q-tooltip>
             </q-btn>
           </q-td>
         </template>
@@ -151,7 +151,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
@@ -159,6 +160,7 @@ import { copyToClipboard, useQuasar } from 'quasar'
 import CredencialesServicioDialog from 'src/components/general/credencialesServicio/CredencialesServicioDialog.vue'
 import { useCredencialesServicioForm } from 'src/composables/useCredencialesServicioForm'
 
+const { t } = useI18n()
 const $q = useQuasar()
 const rows = ref([])
 const loading = ref(false)
@@ -175,11 +177,11 @@ const selectedCredential = ref(null)
 // Get toggleStatus from composable
 const { toggleStatus, deleteCredential } = useCredencialesServicioForm()
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'numero',
     align: 'left',
-    label: '#',
+    label: t('configuracion.credencialesServicio.table.id'),
     field: 'numero',
     sortable: true,
     style: 'width: 50px',
@@ -187,7 +189,7 @@ const columns = [
   {
     name: 'servicio',
     align: 'left',
-    label: 'Servicio',
+    label: t('configuracion.credencialesServicio.table.servicio'),
     field: 'id_soft_externo',
     sortable: true,
     classes: 'text-weight-bold text-primary',
@@ -196,7 +198,7 @@ const columns = [
   {
     name: 'software_nombre',
     align: 'left',
-    label: 'Software',
+    label: t('configuracion.credencialesServicio.table.software'),
     field: 'software_nombre',
     sortable: true,
     classes: 'text-weight-bold',
@@ -204,7 +206,7 @@ const columns = [
   {
     name: 'slug',
     align: 'left',
-    label: 'Slug',
+    label: t('configuracion.credencialesServicio.table.slug'),
     field: 'slug',
     sortable: true,
     classes: 'text-caption text-grey-7',
@@ -212,21 +214,21 @@ const columns = [
   {
     name: 'credenciales',
     align: 'left',
-    label: 'Credenciales',
+    label: t('configuracion.credencialesServicio.table.credenciales'),
     field: 'credenciales',
     style: 'width: 400px',
   },
-  { name: 'estado', align: 'center', label: 'Estado', field: 'estado', sortable: true },
+  { name: 'estado', align: 'center', label: t('configuracion.credencialesServicio.table.estado'), field: 'estado', sortable: true },
   {
     name: 'fecha_instalacion',
     align: 'left',
-    label: 'Fecha Instalación',
+    label: t('configuracion.credencialesServicio.table.fechaInstalacion'),
     field: 'fecha_instalacion',
     sortable: true,
     format: (val) => (val ? cambiarFormatoFecha(val.split(' ')[0]) : ''),
   },
-  { name: 'acciones', align: 'center', label: 'Acciones', field: 'acciones' },
-]
+  { name: 'acciones', align: 'center', label: t('configuracion.credencialesServicio.table.acciones'), field: 'acciones' },
+])
 
 // Función para copiar texto al portapapeles
 const copiarTexto = async (texto) => {
@@ -314,15 +316,15 @@ const handleToggleStatus = async (row) => {
 // Confirm delete with dialog
 const confirmDelete = (credential) => {
   $q.dialog({
-    title: 'Confirmar eliminación',
-    message: `¿Está seguro que desea eliminar las credenciales del servicio "${getServiceName(credential.id_soft_externo)}"?`,
+    title: t('configuracion.credencialesServicio.messages.deleteTitle'),
+    message: t('configuracion.credencialesServicio.messages.deleteMessage', { name: getServiceName(credential.id_soft_externo) }),
     cancel: {
-      label: 'Cancelar',
+      label: t('configuracion.credencialesServicio.dialog.cancel'),
       color: 'grey',
       flat: true,
     },
     ok: {
-      label: 'Eliminar',
+      label: t('configuracion.servicios.dialog.delete') || 'Eliminar',
       color: 'negative',
       flat: true,
     },

@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="text-h5 text-primary q-mb-xs"></div>
       <div class="text-subtitle1 cm-text-muted">
-        Este token se utilizará para autenticar servicios de API. Trátelo como una contraseña.
+        {{ t('configuracion.tokensApis.subtitle') }}
       </div>
     </q-card-section>
 
@@ -11,20 +11,9 @@
 
     <q-card-section>
       <q-form @submit.prevent="generarToken">
-        <!-- <q-input
-            v-model="idmd5"
-            label="IDMD5 del Usuario"
-            outlined
-            dense
-            lazy-rules
-            :rules="[(val) => !!val || 'Este campo es requerido']"
-            class="q-mb-md"
-            data-cy="idmd5-input"
-          /> -->
-
         <q-btn
           type="submit"
-          label="Generar Token"
+          :label="t('configuracion.tokensApis.btn')"
           color="primary"
           class="full-width"
           :loading="cargando"
@@ -33,7 +22,7 @@
         >
           <template v-slot:loading>
             <q-spinner-hourglass class="on-left" />
-            Generando...
+            {{ t('configuracion.tokensApis.loading') }}
           </template>
         </q-btn>
       </q-form>
@@ -42,10 +31,10 @@
     <template v-if="tokenGenerado">
       <q-separator spaced />
       <q-card-section>
-        <div class="text-h6 text-positive q-mb-sm">¡Token generado con éxito!</div>
+        <div class="text-h6 text-positive q-mb-sm">{{ t('configuracion.tokensApis.success') }}</div>
         <q-input
           v-model="tokenGenerado"
-          label="Token JWT Generado"
+          :label="t('configuracion.tokensApis.tokenLabel')"
           outlined
           readonly
           dense
@@ -65,18 +54,17 @@
               icon="content_copy"
               @click="copiarToken"
               class="q-ml-sm"
-              aria-label="Copiar token"
+              :aria-label="t('configuracion.tokensApis.copy')"
               data-cy="copy-button"
             >
-              <q-tooltip>Copiar al portapapeles</q-tooltip>
+              <q-tooltip>{{ t('configuracion.tokensApis.copy') }}</q-tooltip>
             </q-btn>
           </template>
         </q-input>
 
         <div class="text-caption text-red q-mt-md text-center">
           <q-icon name="warning" class="q-mr-xs" />
-          <strong>Advertencia:</strong> Mantenga este token en un lugar seguro. No lo comparta
-          públicamente.
+          <strong>{{ t('configuracion.tokensApis.warning') }}</strong> {{ t('configuracion.tokensApis.warningDesc') }}
         </div>
       </q-card-section>
     </template>
@@ -86,62 +74,54 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar, copyToClipboard } from 'quasar'
-
+import { useI18n } from 'vue-i18n'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
 import { expires_in } from 'src/composables/FuncionesGenerales'
+
+const { t } = useI18n()
 const idmd5 = idempresa_md5()
 const fecha_expriation = expires_in()
-// Referencia a Quasar para usar plugins como Notify y Clipboard
 const $q = useQuasar()
-
-// --- ESTADO REACTIVO ---
-
 const tokenGenerado = ref('')
 const cargando = ref(false)
 const mostrarToken = ref(false)
 
-// --- MÉTODOS ---
-
-/**
- * Llama a la API para generar un nuevo token JWT.
- */
 const generarToken = async () => {
-  tokenGenerado.value = '' // Resetea el token anterior
-  console.log('IDMD5 del usuario:', idmd5)
-
+  tokenGenerado.value = ''
+  cargando.value = true
+  
   const datos = {
     ver: 'generarTokenJWT',
     idmd5: idmd5,
     fecha_final: fecha_expriation,
   }
-
-  const response = await api.post('out/', datos)
-  console.log('Respuesta de la API:', response.data)
-  // Validar la respuesta de la API
-  if (response.data && response.data.estado === 'success' && response.data.token) {
-    tokenGenerado.value = response.data.token
-    $q.notify({
-      type: 'positive',
-      message: 'Token generado exitosamente.',
-      icon: 'check_circle',
-    })
-  } else {
-    // Si la respuesta no tiene el formato esperado
-    const mensajeError = response.data?.mensaje || 'La respuesta de la API no es válida.'
-    throw new Error(mensajeError)
+  try {
+    const response = await api.post('out/', datos)
+    if (response.data && response.data.estado === 'success' && response.data.token) {
+      tokenGenerado.value = response.data.token
+      $q.notify({
+        type: 'positive',
+        message: t('configuracion.tokensApis.success'),
+        icon: 'check_circle',
+      })
+    } else {
+      const mensajeError = response.data?.mensaje || 'La respuesta de la API no es válida.'
+      throw new Error(mensajeError)
+    }
+  } catch (error) {
+    $q.notify({ type: 'negative', message: error.message || t('configuracion.tokensApis.error') })
+  } finally {
+    cargando.value = false
   }
 }
 
-/**
- * Copia el token generado al portapapeles del usuario.
- */
 const copiarToken = () => {
   copyToClipboard(tokenGenerado.value)
     .then(() => {
       $q.notify({
         type: 'positive',
-        message: '¡Token copiado al portapapeles!',
+        message: t('configuracion.tokensApis.copied'),
         icon: 'content_paste',
         position: 'top',
       })
@@ -149,7 +129,7 @@ const copiarToken = () => {
     .catch(() => {
       $q.notify({
         type: 'negative',
-        message: 'Error al intentar copiar el token.',
+        message: t('configuracion.tokensApis.error'),
         icon: 'error',
       })
     })
