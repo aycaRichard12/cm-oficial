@@ -7,13 +7,13 @@
         <div class="header-logo-section">
           <q-icon name="inventory_2" size="28px" class="header-icon" />
           <div class="header-text">
-            <div class="header-title">Consulta Rápida de Productos</div>
-            <div class="header-subtitle">Gestión de inventario y ventas</div>
+            <div class="header-title">{{ $t('ui.consulta-rapida-de-productos-1143ee') }}</div>
+            <div class="header-subtitle">{{ $t('ui.gestion-de-inventario-y-ventas-a58b7f') }}</div>
           </div>
         </div>
         <div class="row q-gutter-x-sm">
           <q-btn flat round dense icon="qr_code_scanner" class="cart-button" @click="openScanner">
-            <q-tooltip>Escanear código</q-tooltip>
+            <q-tooltip>{{ $t('ui.escanear-codigo-0cec6e') }}</q-tooltip>
           </q-btn>
           <q-btn flat round dense icon="shopping_cart" class="cart-button" @click="toggleCartSheet">
             <q-badge
@@ -40,7 +40,7 @@
                 <q-select
                   v-model="selectedWarehouse"
                   :options="warehouses"
-                  label="Almacén"
+                  :label="$t('inventario.warehouse')"
                   outlined
                   dense
                   bg-color="white"
@@ -57,7 +57,7 @@
                 <q-select
                   v-model="selectedCategory"
                   :options="priceCategories"
-                  label="Categoría de Precio"
+                  :label="$t('ui.categoria-de-precio-7fa2f6')"
                   outlined
                   dense
                   bg-color="white"
@@ -90,7 +90,7 @@
       <!-- Loading mejorado -->
       <q-inner-loading
         :showing="uiStore.isLoadingProducts || isLoadingWarehouses || isLoadingCategories"
-        label="Cargando productos..."
+        :label="$t('ui.cargando-productos-b158b6')"
         label-class="loading-label"
         class="custom-loading"
       />
@@ -105,14 +105,14 @@
           <div class="empty-icon-wrapper">
             <q-icon name="search_off" size="80px" color="grey-4" />
           </div>
-          <div class="empty-title">No se encontraron productos</div>
+          <div class="empty-title">{{ $t('ui.no-se-encontraron-productos-fd0da8') }}</div>
           <div class="empty-description">
-            No hay productos que coincidan con los criterios de búsqueda o filtros
+            {{ $t('ui.no-hay-productos-que-coincidan-con-los-criterios-de-3cf883') }}
           </div>
           <q-btn
             flat
             color="primary"
-            label="Limpiar filtros"
+            :label="$t('ui.limpiar-filtros-d3126b')"
             @click="productStore.clearFilters()"
             class="empty-button"
             no-caps
@@ -137,6 +137,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { onMounted, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useQuickConsultProductStore } from '../stores/productStore'
@@ -202,7 +203,7 @@ const setupInitialData = async () => {
     }
   } catch (error) {
     console.error('Error al cargar almacenes iniciales:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   } finally {
     isLoadingWarehouses.value = false
   }
@@ -235,7 +236,7 @@ const fetchCategoriesForWarehouse = async (almacenId) => {
     }
   } catch (error) {
     console.error('Error al cargar categorías de precio:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar categorías de precio' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-categorias-de-precio-d0719b') })
   } finally {
     isLoadingCategories.value = false
   }
@@ -272,7 +273,7 @@ const loadProductsData = async () => {
     }
   } catch (error) {
     console.error('Error al cargar productos:', error)
-    $q.notify({ type: 'negative', message: 'Error al actualizar lista de productos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-actualizar-lista-de-productos-e6f7ca') })
   } finally {
     uiStore.setLoading(false)
   }
@@ -326,7 +327,7 @@ const openScanner = () => {
   if (!selectedWarehouse.value || !selectedCategory.value) {
     $q.notify({
       type: 'warning',
-      message: 'Selecciona almacén y categoría primero',
+      message: i18nT('ui.selecciona-almacen-y-categoria-primero-2ca62d'),
     })
     return
   }
@@ -350,7 +351,7 @@ const handleBarcodeScan = (barcode) => {
     } else {
       $q.notify({
         type: 'warning',
-        message: 'Producto sin stock',
+        message: i18nT('ui.producto-sin-stock-12c273'),
         caption: product.descripcion,
         position: 'top',
       })
@@ -358,7 +359,7 @@ const handleBarcodeScan = (barcode) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Producto no encontrado',
+      message: i18nT('ui.producto-no-encontrado-d69b59'),
       caption: `Código: ${barcode}`,
       position: 'top',
       timeout: 2000,

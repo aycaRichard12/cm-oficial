@@ -6,7 +6,7 @@
         <div class="row items-center justify-between q-mb-md">
           <div class="text-h6 text-primary row items-center">
             <q-icon name="inventory_2" class="q-mr-sm" />
-            Movimientos de Almacén
+            {{ $t('ui.movimientos-de-almacen-eac050') }}
           </div>
           <div>
             <q-btn
@@ -18,7 +18,7 @@
             >
               <q-icon name="add" class="icono" />
               <span class="texto">
-                <q-icon name="add" />{{ collapseVisible ? 'Cancelar Registro' : 'Nuevo' }}</span
+                <q-icon name="add" />{{ collapseVisible ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}</span
               >
             </q-btn>
           </div>
@@ -34,7 +34,7 @@
               v-model="selectedFilterStore"
               :options="filterStores"
               id="almacen"
-              label="Seleccione un Almacén"
+              :label="$t('ui.seleccione-un-almacen-fc2f9e')"
               map-options
               dense
               outlined
@@ -52,7 +52,7 @@
           <div class="col-12 col-md-4" id="inputBuscarMovimiento">
             <q-input
               v-model="searchQuery"
-              placeholder="Buscar por descripción..."
+              :placeholder="$t('ui.buscar-por-descripcion-1b60e5')"
               dense
               outlined
               debounce="300"
@@ -69,27 +69,27 @@
             <q-btn
               color="secondary"
               icon="assessment"
-              label="Reporte"
+              :label="$t('ui.reporte-431e46')"
               id="reportedepreciosbase"
               to="/reportedemovimientos"
               outline
               no-caps
               dense
             >
-              <q-tooltip>Ir al Reporte de Movimientos</q-tooltip>
+              <q-tooltip>{{ $t('ui.ir-al-reporte-de-movimientos-fe02ee') }}</q-tooltip>
             </q-btn>
 
             <q-btn
               color="secondary"
               icon="list_alt"
-              label="Pedidos"
+              :label="$t('ui.pedidos-6170d2')"
               id="listaPedidosMOV"
               @click="showOrderList"
               outline
               no-caps
               dense
             >
-              <q-tooltip>Ver Lista de Pedidos</q-tooltip>
+              <q-tooltip>{{ $t('ui.ver-lista-de-pedidos-ab66e8') }}</q-tooltip>
             </q-btn>
 
             <q-btn
@@ -102,7 +102,7 @@
               no-caps
               dense
             >
-              <q-tooltip>Vista Previa PDF</q-tooltip>
+              <q-tooltip>{{ $t('ui.vista-previa-pdf-9db3ed') }}</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -154,7 +154,7 @@
                 size="sm"
                 @click="$emit('viewProductDetails', props.row)"
               >
-                <q-tooltip>Añadir Productos Carrito</q-tooltip>
+                <q-tooltip>{{ $t('ui.anadir-productos-carrito-1ddabf') }}</q-tooltip>
               </q-btn>
             </q-td>
           </template>
@@ -172,7 +172,7 @@
                   size="sm"
                   @click="verDetalle(props.row)"
                 >
-                  <q-tooltip>Ver comprobante</q-tooltip>
+                  <q-tooltip>{{ $t('ui.ver-comprobante-91511a') }}</q-tooltip>
                 </q-btn>
 
                 <div v-if="Number(props.row.autorizacion) === 2" class="row no-wrap q-gutter-xs">
@@ -186,7 +186,7 @@
                     size="sm"
                     @click="$emit('editRecord', props.row)"
                   >
-                    <q-tooltip>Editar movimiento</q-tooltip>
+                    <q-tooltip>{{ $t('ui.editar-movimiento-f73291') }}</q-tooltip>
                   </q-btn>
 
                   <q-btn
@@ -199,7 +199,7 @@
                     size="sm"
                     @click="$emit('deleteRecord', props.row)"
                   >
-                    <q-tooltip>Eliminar movimiento</q-tooltip>
+                    <q-tooltip>{{ $t('ui.eliminar-movimiento-74a30c') }}</q-tooltip>
                   </q-btn>
 
                   <q-btn
@@ -212,7 +212,7 @@
                     color="grey-7"
                     @click="$emit('toggleStatus', props.row)"
                   >
-                    <q-tooltip>Activar movimiento</q-tooltip>
+                    <q-tooltip>{{ $t('ui.activar-movimiento-65c521') }}</q-tooltip>
                   </q-btn>
                 </div>
               </div>
@@ -226,7 +226,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="column full-height">
         <q-card-section class="row items-center q-pb-none bg-grey-2">
-          <div class="text-h6 cm-text">Vista previa de PDF</div>
+          <div class="text-h6 cm-text">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup color="negative" />
         </q-card-section>
@@ -254,8 +254,8 @@
 
     <RegistrarAlmacenDialog
       v-model="ShowWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -263,6 +263,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useMovementStore } from 'src/stores/movement-store'
@@ -354,38 +355,38 @@ watch(
 
 // Define table columns
 const columns = [
-  { name: 'indice', label: 'N°', align: 'left', field: 'indice', sortable: true },
-  { name: 'Fecha', label: 'Fecha', align: 'center', field: 'fecha', sortable: true },
+  { name: 'indice', label: i18nT('cotizacion.table.number'), align: 'left', field: 'indice', sortable: true },
+  { name: 'Fecha', label: i18nT('cotizacion.table.date'), align: 'center', field: 'fecha', sortable: true },
   {
     name: 'Almacén origen',
-    label: 'Almacén origen',
+    label: i18nT('ui.almacen-origen-3ef997'),
     align: 'left',
     field: 'almacenOrigenName',
     sortable: true,
   },
   {
     name: 'Almacén destino',
-    label: 'Almacén destino',
+    label: i18nT('ui.almacen-destino-80fb1d'),
     align: 'left',
     field: 'almacenDestinoName',
     sortable: true,
   },
   {
     name: 'Descripción',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     align: 'left',
     field: 'descripcion',
     sortable: true,
   },
   {
     name: 'Autorizacion',
-    label: 'Autorización',
+    label: i18nT('ui.autorizacion-077400'),
     align: 'center',
     field: 'autorizacionStatus',
     sortable: true,
   },
-  { name: 'Detalle', label: 'Detalle', align: 'center', field: 'id', sortable: false },
-  { name: 'Opciones', label: 'Opciones', align: 'center', field: 'id', sortable: false },
+  { name: 'Detalle', label: i18nT('ui.detalle-be605b'), align: 'center', field: 'id', sortable: false },
+  { name: 'Opciones', label: i18nT('configGeneral.divisas.table.options'), align: 'center', field: 'id', sortable: false },
 ]
 
 // Filter table rows based on selectedFilterStore
@@ -437,14 +438,14 @@ const printFilteredTable = () => {
     console.error('Error al generar el PDF:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el PDF de movimientos.',
+      message: i18nT('ui.error-al-generar-el-pdf-de-movimientos-17bfed'),
     })
   }
 }
 
 const showOrderList = () => {
   $q.notify({
-    message: 'Mostrando Lista de Pedidos...',
+    message: i18nT('ui.mostrando-lista-de-pedidos-356fdd'),
     color: 'purple-7',
   })
   isModalOpen.value = true
@@ -481,14 +482,14 @@ const verDetalle = async (row) => {
     } else {
       $q.notify({
         type: 'warning',
-        message: 'No se encontraron detalles para este movimiento.',
+        message: i18nT('ui.no-se-encontraron-detalles-para-este-movimiento-534667'),
       })
     }
   } catch (error) {
     console.error('Error al obtener el movimiento:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error en la comunicación al obtener el detalle del movimiento.',
+      message: i18nT('ui.error-en-la-comunicacion-al-obtener-el-detalle-del-m-6788be'),
     })
   }
 }
@@ -497,7 +498,7 @@ const verDetalle = async (row) => {
 
 const isModalOpen = ref(false)
 const modalTitle = computed(() => {
-  return selectedAlmacen.value?.label || 'Todos los almacenes'
+  return selectedAlmacen.value?.label || i18nT('ui.todos-los-almacenes-949f2c')
 })
 
 const handleModalOk = () => {
@@ -520,7 +521,7 @@ onMounted(async () => {
     await movementStore.fetchOriginStores() // Dispatch Pinia action to load filter options
     // If there was an error in the store action, catch it here to show user feedback
     if (movementStore.errorOriginStores) {
-      $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes de origen.' })
+      $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-de-origen-7b39d3') })
     }
 
     console.log('Almacenes de origen cargados:', movementStore.originStores)
@@ -532,7 +533,7 @@ onMounted(async () => {
     console.error('Error al cargar los almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error en la comunicación al cargar almacenes de origen.',
+      message: i18nT('ui.error-en-la-comunicacion-al-cargar-almacenes-de-orig-9216a1'),
     })
   }
 })

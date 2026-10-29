@@ -23,7 +23,7 @@
         <q-td :props="props" auto-width>
           <q-btn flat dense color="primary" icon="link" @click="$emit('asignar', props.row)">
             <q-tooltip>
-              {{ props.row.asignada ? 'Cambiar sucursal Sin' : 'Asignar a sucursal Sin' }}
+              {{ props.row.asignada ? $t('ui.cambiar-sucursal-sin-13207c') : $t('ui.asignar-a-sucursal-sin-f23e54') }}
             </q-tooltip>
           </q-btn>
           <q-btn
@@ -36,7 +36,7 @@
             :loading="props.row.quitting"
             :disable="props.row.quitting"
           >
-            <q-tooltip>Quitar asignación</q-tooltip>
+            <q-tooltip>{{ $t('ui.quitar-asignacion-9c7938') }}</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -45,7 +45,7 @@
       <template #no-data>
         <div class="full-width row flex-center q-pa-lg text-grey-7">
           <q-icon name="info" size="2rem" class="q-mr-sm" />
-          <div class="text-subtitle1">No se encontraron sucursales con los filtros actuales</div>
+          <div class="text-subtitle1">{{ $t('ui.no-se-encontraron-sucursales-con-los-filtros-actuale-baac2d') }}</div>
         </div>
       </template>
     </q-table>
@@ -68,6 +68,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import EstadoBadge from './EstadoBadge.vue'
 
 defineProps({
@@ -78,21 +79,21 @@ defineProps({
 defineEmits(['asignar', 'quitar'])
 
 const columns = [
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', sortable: true },
-  { name: 'pais', label: 'País', field: 'pais', align: 'left', sortable: true },
-  { name: 'municipio', label: 'Municipio', field: 'municipio', align: 'left', sortable: true },
-  { name: 'codigosucursal', label: 'Código Sucursal', field: 'codigosucursal', align: 'left' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left', sortable: true },
+  { name: 'pais', label: i18nT('ui.pais-0c664f'), field: 'pais', align: 'left', sortable: true },
+  { name: 'municipio', label: i18nT('ui.municipio-9e8609'), field: 'municipio', align: 'left', sortable: true },
+  { name: 'codigosucursal', label: i18nT('ui.codigo-sucursal-5ffc6b'), field: 'codigosucursal', align: 'left' },
   {
     name: 'sucursalGrande',
-    label: 'Sucursal Sin Asignada',
+    label: i18nT('ui.sucursal-sin-asignada-344fff'),
     field: (row) =>
       row.sucursalGrande
         ? `${row.sucursalGrande.codigoSucursal} - ${row.sucursalGrande.municipio} - ${row.sucursalGrande.pais}`
         : '—',
     align: 'left',
   },
-  { name: 'estado', label: 'Estado', field: 'asignada', align: 'center', sortable: true },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center', sortable: false },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'asignada', align: 'center', sortable: true },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center', sortable: false },
 ]
 </script>
 

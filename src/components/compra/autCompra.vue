@@ -3,7 +3,7 @@
     <div>
       <div class="row q-col-gutter-x-md flex justify-between q-mb-md">
         <div class="col-12 col-md-4" id="filtrosAlmacen">
-          <label for="almacen">Seleccione un Almacén</label>
+          <label for="almacen">{{ $t('ui.seleccione-un-almacen-fc2f9e') }}</label>
           <q-select
             v-model="filtroAlmacen"
             :options="almacenes"
@@ -14,7 +14,7 @@
           />
         </div>
         <div class="col-12 col-md-2" id="filtrosProducto">
-          <label for="buscar">Buscar...</label>
+          <label for="buscar">{{ $t('common.search') }}</label>
           <q-input dense debounce="300" v-model="busqueda" id="buscar" outlined>
             <template v-slot:append>
               <q-icon name="search" />
@@ -27,7 +27,7 @@
                 :loading="loading"
                 @click.stop.prevent="$emit('recargar')"
               >
-                <q-tooltip>Recargar compras</q-tooltip>
+                <q-tooltip>{{ $t('ui.recargar-compras-eba6c9') }}</q-tooltip>
               </q-btn>
             </template>
           </q-input>
@@ -37,7 +37,7 @@
       <!-- Tabla -->
       <q-table
         id="tablaCompras"
-        title="Compras"
+        :title="$t('ui.compras-43a802')"
         :rows="processedRows"
         :columns="columnas"
         row-key="id"
@@ -50,15 +50,15 @@
             <q-badge
               color="green"
               v-if="Number(props.row.autorizacion) === 1"
-              label="Autorizado"
+              :label="$t('ui.autorizado-b4fb49')"
               outline
             />
-            <q-badge color="red" v-else label="No Autorizado" outline />
+            <q-badge color="red" v-else :label="$t('ui.no-autorizado-988c4e')" outline />
           </q-td>
         </template>
         <template v-slot:body-cell-tipocompra="props">
           <q-td :props="props">
-            {{ Number(props.row.tipocompra) === 2 ? 'Contado' : 'A crédito' }}
+            {{ Number(props.row.tipocompra) === 2 ? $t('ui.contado-447b89') : $t('ui.a-credito-d25cc3') }}
           </q-td>
         </template>
 
@@ -66,7 +66,7 @@
           <q-td :props="props">
             <q-btn
               id="anadirCarrito"
-              title="Añadir Carrito "
+              :title="$t('ui.anadir-carrito-881812')"
               icon="shopping_cart"
               color="primary"
               dense
@@ -76,7 +76,7 @@
             <q-btn
               id="detalleCredito"
               v-if="Number(props.row.tipocompra) === 1"
-              title="Detelle Credito"
+              :title="$t('ui.detelle-credito-1b7c8f')"
               icon="payment"
               color="blue"
               flat=""
@@ -105,7 +105,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -124,7 +124,7 @@
     <q-dialog v-model="credito">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div class="text-h6">Registrar Datos para Credito</div>
+          <div class="text-h6">{{ $t('ui.registrar-datos-para-credito-2b96e8') }}</div>
           <q-btn icon="close" dense flat round @click="credito = false" />
         </q-card-section>
         <q-card-section>
@@ -136,6 +136,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 
 import pagosCredito from './pagosCredito.vue'
@@ -166,17 +167,17 @@ const mostrarModal = ref(false)
 const credito = ref(false)
 const compra = ref({})
 const columnas = [
-  { name: 'numero', label: 'N°', align: 'right', field: 'numero' },
-  { name: 'fecha', label: 'Fecha', align: 'right', field: 'fecha' },
-  { name: 'proveedor', label: 'Proveedor', field: 'proveedor', align: 'left' },
-  { name: 'lote', label: 'Nombre lote', field: 'lote', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo' },
-  { name: 'nfactura', label: 'N° Factura', align: 'right', field: 'nfactura' },
-  { name: 'tipocompra', label: 'Tipo compra', field: 'tipocompra', align: 'center' },
-  { name: 'total', label: 'Total compra', align: 'right', field: 'total' },
-  { name: 'autorizacion', label: 'Autorización', field: 'autorizacion', align: 'center' },
-  { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'right' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), align: 'right', field: 'numero' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), align: 'right', field: 'fecha' },
+  { name: 'proveedor', label: i18nT('compras.supplier'), field: 'proveedor', align: 'left' },
+  { name: 'lote', label: i18nT('ui.nombre-lote-c7e013'), field: 'lote', align: 'left' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo' },
+  { name: 'nfactura', label: i18nT('ui.n-factura-5a62ff'), align: 'right', field: 'nfactura' },
+  { name: 'tipocompra', label: i18nT('ui.tipo-compra-7e2b47'), field: 'tipocompra', align: 'center' },
+  { name: 'total', label: i18nT('ui.total-compra-51fdc9'), align: 'right', field: 'total' },
+  { name: 'autorizacion', label: i18nT('ui.autorizacion-077400'), field: 'autorizacion', align: 'center' },
+  { name: 'detalle', label: i18nT('ui.detalle-be605b'), field: 'detalle', align: 'right' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 defineEmits(['add', 'repDesglosado', 'repCompras', 'edit', 'delete', 'recargar'])
 
@@ -219,7 +220,7 @@ async function FormularioCredito(c) {
     const result = await showDialog(
       $q,
       'W',
-      'Advertencia: La compra está en espera de autorización. Debe validarse antes de proceder.',
+      i18nT('ui.advertencia-la-compra-esta-en-espera-de-autorizacion-f7c8b2'),
     )
     console.log('Warning dialog result:', result)
   }

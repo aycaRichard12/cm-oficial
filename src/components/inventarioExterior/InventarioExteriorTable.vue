@@ -2,7 +2,7 @@
 <template>
   <q-table
   id="tableExterno"
-    title="Inventario Externo"
+    :title="$t('ui.inventario-externo-b41a8a')"
     :rows="rows"
     :columns="columns"
     row-key="id"
@@ -22,7 +22,7 @@
           icon="thumb_down_alt"
           size="sm"
         >
-          <q-tooltip>Click para autorizar</q-tooltip>
+          <q-tooltip>{{ $t('ui.click-para-autorizar-b14f5e') }}</q-tooltip>
         </q-btn>
         <q-btn
           v-else
@@ -34,15 +34,15 @@
           disable
           style="cursor: default; opacity: 1"
         >
-          <q-tooltip>Ya autorizado — no se puede desactivar</q-tooltip>
+          <q-tooltip>{{ $t('ui.ya-autorizado-no-se-puede-desactivar-a6d396') }}</q-tooltip>
         </q-btn>
       </q-td>
     </template>
 
     <template v-slot:body-cell-Detalle="props">
       <q-td :props="props" class="text-center">
-        <q-btn color="primary" label="Productos" @click="$emit('showDetail', props.row)" size="sm" id="btnDetalle">
-          <q-tooltip>Ver Productos</q-tooltip>
+        <q-btn color="primary" :label="$t('ui.productos-14e2a6')" @click="$emit('showDetail', props.row)" size="sm" id="btnDetalle">
+          <q-tooltip>{{ $t('ui.ver-productos-247831') }}</q-tooltip>
         </q-btn>
       </q-td>
     </template>

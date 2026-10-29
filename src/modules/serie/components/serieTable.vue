@@ -2,16 +2,16 @@
   <div>
     <q-table :rows="rows" :columns="columns" row-key="idserie" :loading="loading" flat bordered>
       <template v-slot:top>
-        <div class="text-h6">Series</div>
+        <div class="text-h6">{{ $t('ui.series-40c20d') }}</div>
         <q-space />
         <q-btn
           color="primary"
           icon="upload_file"
-          label="Importar Masivo"
+          :label="$t('ui.importar-masivo-2a43e3')"
           @click="$emit('import')"
           class="q-mr-sm"
         />
-        <q-btn color="primary" icon="add" label="Nuevo" @click="$emit('add')" />
+        <q-btn color="primary" icon="add" :label="$t('common.new')" @click="$emit('add')" />
       </template>
 
       <template v-slot:header="props">
@@ -59,7 +59,7 @@
                   icon="edit"
                   @click="$emit('edit-item', props.row)"
                 >
-                  <q-tooltip>Editar</q-tooltip>
+                  <q-tooltip>{{ $t('common.edit') }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   dense
@@ -69,7 +69,7 @@
                   icon="delete"
                   @click="$emit('delete-item', props.row)"
                 >
-                  <q-tooltip>Eliminar</q-tooltip>
+                  <q-tooltip>{{ $t('common.delete') }}</q-tooltip>
                 </q-btn>
               </div>
             </template>
@@ -81,12 +81,12 @@
 
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%" class="bg-grey-2 q-pa-md">
-            <div class="text-subtitle2 q-mb-sm">Variantes de la serie</div>
+            <div class="text-subtitle2 q-mb-sm">{{ $t('ui.variantes-de-la-serie-3fc61c') }}</div>
             <div
               v-if="!props.row.variantes || props.row.variantes.length === 0"
               class="text-caption text-grey"
             >
-              No hay variantes asignadas.
+              {{ $t('ui.no-hay-variantes-asignadas-36917c') }}
             </div>
             <q-table
               v-else
@@ -119,7 +119,7 @@
                       <span
                         v-if="!varProps.row.valores || varProps.row.valores.length === 0"
                         class="text-caption text-grey"
-                        >Sin atributos</span
+                        >{{ $t('ui.sin-atributos-9c3300') }}</span
                       >
                     </div>
                   </q-td>
@@ -127,7 +127,7 @@
                   <q-td key="activo" :props="varProps">
                     <q-badge
                       :color="varProps.row.activo == 1 ? 'positive' : 'grey'"
-                      :label="varProps.row.activo == 1 ? 'Activo' : 'Inactivo'"
+                      :label="varProps.row.activo == 1 ? $t('common.active') : $t('common.inactive')"
                     />
                   </q-td>
                   <q-td key="acciones_var" :props="varProps">
@@ -146,7 +146,7 @@
                         })
                       "
                     >
-                      <q-tooltip>Quitar variante de la serie</q-tooltip>
+                      <q-tooltip>{{ $t('ui.quitar-variante-de-la-serie-7052bd') }}</q-tooltip>
                     </q-btn>
                   </q-td>
                 </q-tr>
@@ -160,6 +160,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 const props = defineProps({
   rows: {
     type: Array,
@@ -178,21 +179,21 @@ const props = defineProps({
 defineEmits(['add', 'edit-item', 'delete-item', 'toggleStatus', 'import', 'delete-variante'])
 
 const columns = [
-  { name: 'indice', label: 'N°', field: 'indice', align: 'left', sortable: true },
-  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
-  { name: 'producto', label: 'Producto', field: 'producto_idproducto', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left', sortable: true },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'indice', label: i18nT('cotizacion.table.number'), field: 'indice', align: 'left', sortable: true },
+  { name: 'serie', label: i18nT('ui.serie-986812'), field: 'serie', align: 'left', sortable: true },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto_idproducto', align: 'left' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha', align: 'left', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 const varianteColumns = [
-  { name: 'indice', label: 'N°', field: 'indice', align: 'left', sortable: true },
+  { name: 'indice', label: i18nT('cotizacion.table.number'), field: 'indice', align: 'left', sortable: true },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
-  { name: 'codigo_barras', label: 'Cód. Barras', field: 'codigo_barras', align: 'left' },
-  { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'precio_base', label: 'Precio', field: 'precio_base', align: 'left', sortable: true },
-  { name: 'activo', label: 'Estado', field: 'activo', align: 'center' },
+  { name: 'codigo_barras', label: i18nT('ui.cod-barras-a99c05'), field: 'codigo_barras', align: 'left' },
+  { name: 'atributos', label: i18nT('ui.atributos-bd9731'), align: 'left' },
+  { name: 'precio_base', label: i18nT('ui.precio-18e070'), field: 'precio_base', align: 'left', sortable: true },
+  { name: 'activo', label: i18nT('cotizacion.table.status'), field: 'activo', align: 'center' },
   { name: 'acciones_var', label: '', align: 'center' },
 ]
 

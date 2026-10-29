@@ -6,12 +6,12 @@
         <div class="col">
           <div class="text-h6 cm-text">
             <q-icon name="edit_note" size="sm" class="q-mr-sm" />
-            Editar Compra
+            {{ $t('ui.editar-compra-7f9132') }}
           </div>
         </div>
         <div class="col-auto">
           <q-chip color="primary" text-color="white" icon="shopping_cart">
-            Modo Edición
+            {{ $t('ui.modo-edicion-551680') }}
           </q-chip>
         </div>
       </div>
@@ -24,7 +24,7 @@
           <!-- Nombre Field -->
           <div class="col-12 col-md-6">
             <label class="text-weight-medium cm-text q-mb-xs block">
-              Nombre de la Compra*
+              {{ $t('ui.nombre-de-la-compra-1e2160') }}
             </label>
             <q-input
               v-model="localData.nombre"
@@ -32,7 +32,7 @@
               dense
               outlined
               clearable
-              placeholder="Ingrese el nombre de la compra"
+              :placeholder="$t('ui.ingrese-el-nombre-de-la-compra-757b1e')"
             >
               <template v-slot:prepend>
                 <q-icon name="label" size="xs" />
@@ -43,7 +43,7 @@
           <!-- Código Field -->
           <div class="col-12 col-md-6">
             <label class="text-weight-medium cm-text q-mb-xs block">
-              Código de Compra*
+              {{ $t('ui.codigo-de-compra-64d5a8') }}
             </label>
             <q-input
               v-model="localData.codigo"
@@ -51,7 +51,7 @@
               dense
               outlined
               clearable
-              placeholder="Ingrese el código"
+              :placeholder="$t('ui.ingrese-el-codigo-66c4a3')"
             >
               <template v-slot:prepend>
                 <q-icon name="tag" size="xs" />
@@ -62,7 +62,7 @@
           <!-- Proveedor Field -->
           <div class="col-12 col-md-6">
             <label class="text-weight-medium cm-text q-mb-xs block">
-              Proveedor*
+              {{ $t('ui.proveedor-b71a8c') }}
             </label>
             <q-select
               v-model="localData.proveedor"
@@ -73,7 +73,7 @@
               dense
               outlined
               clearable
-              placeholder="Seleccione un proveedor"
+              :placeholder="$t('ui.seleccione-un-proveedor-ea0bb1')"
             >
               <template v-slot:prepend>
                 <q-icon name="business" size="xs" />
@@ -84,14 +84,14 @@
           <!-- Factura Field -->
           <div class="col-12 col-md-6">
             <label class="text-weight-medium cm-text q-mb-xs block">
-              Número de Factura
+              {{ $t('ui.numero-de-factura-4f1ab6') }}
             </label>
             <q-input
               v-model="localData.factura"
               dense
               outlined
               clearable
-              placeholder="Ingrese el número de factura (opcional)"
+              :placeholder="$t('ui.ingrese-el-numero-de-factura-opcional-cd425f')"
             >
               <template v-slot:prepend>
                 <q-icon name="receipt" size="xs" />
@@ -105,7 +105,7 @@
         
         <div class="row justify-end q-gutter-sm">
           <q-btn
-            label="Cancelar"
+            :label="$t('common.cancel')"
             icon="close"
             flat
             color="grey-7"
@@ -113,10 +113,10 @@
             no-caps
             class="q-px-lg"
           >
-            <q-tooltip>Cancelar y cerrar</q-tooltip>
+            <q-tooltip>{{ $t('ui.cancelar-y-cerrar-930819') }}</q-tooltip>
           </q-btn>
           <q-btn
-            label="Guardar Cambios"
+            :label="$t('ui.guardar-cambios-7d2fd7')"
             icon="save"
             type="submit"
             color="primary"
@@ -124,7 +124,7 @@
             no-caps
             class="q-px-lg"
           >
-            <q-tooltip>Guardar los cambios realizados</q-tooltip>
+            <q-tooltip>{{ $t('ui.guardar-los-cambios-realizados-8a72c0') }}</q-tooltip>
           </q-btn>
         </div>
       </q-form>
@@ -133,6 +133,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -140,7 +141,7 @@ const props = defineProps({
   modalValue: Object,
   proveedores: Array,
 })
-const requiredRule = (val) => !!val || 'Campo requerido'
+const requiredRule = (val) => !!val || i18nT('configProducto.estadoProducto.form.required')
 
 const emit = defineEmits(['submit', 'cancel', 'recargarProveedores'])
 const localData = ref({ ...props.modalValue })

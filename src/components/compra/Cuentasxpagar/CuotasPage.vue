@@ -18,7 +18,7 @@
           dense
           class="text-weight-bold"
         >
-          {{ Number(props.row.estado) === 1 ? 'Concluido' : 'En Proceso' }}
+          {{ Number(props.row.estado) === 1 ? $t('ui.concluido-123dfa') : $t('ui.en-proceso-875ad4') }}
         </q-chip>
       </q-td>
     </template>
@@ -26,19 +26,19 @@
     <!-- Slot para personalizar la celda de Acción -->
     <template v-slot:body-cell-accion="props">
       <q-td :props="props" v-if="Number(props.row.estado) === 2">
-        <q-btn color="primary" label="Pagar" size="sm" @click="realizarPago(props.row)" />
+        <q-btn color="primary" :label="$t('ui.pagar-2faf5e')" size="sm" @click="realizarPago(props.row)" />
       </q-td>
     </template>
     <template v-slot:no-data>
       <div class="full-width row flex-center text-primary q-gutter-sm text-body1">
-        <span> No se encontraron resultados para los filtros seleccionados. </span>
+        <span> {{ $t('ui.no-se-encontraron-resultados-para-los-filtros-selecc-512c0a') }} </span>
       </div>
     </template>
   </q-table>
   <q-dialog v-model="mdpagarCueota">
     <q-card class="responsive-dialog">
       <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-        <div>Registrar Pago</div>
+        <div>{{ $t('ui.registrar-pago-e6ce75') }}</div>
         <q-btn icon="close" dense flat rounded @click="mdpagarCueota = false" />
       </q-card-section>
       <q-card-section>
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -65,10 +66,10 @@ const mdpagarCueota = ref(false)
 const allRows = ref([]) // Almacena todos los datos originales de la API
 const cuota = ref({})
 const columns = [
-  { name: 'nro_cuota', label: 'N°', align: 'left', field: 'nro_cuota', sortable: true },
+  { name: 'nro_cuota', label: i18nT('cotizacion.table.number'), align: 'left', field: 'nro_cuota', sortable: true },
   {
     name: 'monto_cuota',
-    label: 'Monto Cuota',
+    label: i18nT('ui.monto-cuota-53ed49'),
     align: 'left',
     field: 'monto_cuota',
     sortable: true,
@@ -76,29 +77,29 @@ const columns = [
   },
   {
     name: 'fecha_vencimiento',
-    label: 'Fecha Vencimiento',
+    label: i18nT('ui.fecha-vencimiento-821fd4'),
     align: 'left',
     field: 'fecha_vencimiento',
     sortable: true,
   },
   {
     name: 'fecha_pago',
-    label: 'Fecha Pago',
+    label: i18nT('ui.fecha-pago-716ad0'),
     align: 'center',
     field: 'fecha_pago',
     sortable: true,
   },
   {
     name: 'monto_pagado',
-    label: 'Monto Pagado',
+    label: i18nT('ui.monto-pagado-1f8b4b'),
     align: 'left',
     field: 'monto_pagado',
     sortable: true,
     format: (val) => `${parseFloat(val).toFixed(2)}`,
   },
 
-  { name: 'estado', label: 'Estado', align: 'center', field: 'estado', sortable: true },
-  { name: 'accion', label: 'Acción', align: 'center', field: 'accion' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), align: 'center', field: 'estado', sortable: true },
+  { name: 'accion', label: i18nT('ui.accion-d7927a'), align: 'center', field: 'accion' },
 ]
 const emit = defineEmits(['actualizar'])
 // --- Opciones para los Selects de Filtro ---
@@ -121,7 +122,7 @@ async function fetchData() {
     $q.notify({
       color: 'negative',
       position: 'top',
-      message: 'No se pudieron cargar los datos. Por favor, intente más tarde.',
+      message: i18nT('ui.no-se-pudieron-cargar-los-datos-por-favor-intente-ma-e60bf9'),
       icon: 'report_problem',
     })
   } finally {

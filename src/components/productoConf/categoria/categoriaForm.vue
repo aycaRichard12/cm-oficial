@@ -96,7 +96,7 @@ const localData = ref({
   idp: null,
 })
 console.log(props.parentCategories)
-// Debería verse como: [{ value: 1, label: "Nombre" }, ...]
+// Debería verse como: [{ value: 1, label: Nombre }, ...]
 watch(
   () => props.modalValue,
   (newVal) => {

@@ -9,7 +9,7 @@
     
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="$emit('update:mostrarModal', false)" />
         </q-card-section>
@@ -34,7 +34,7 @@
         <q-card-section class="bg-primary text-white text-h6 flex justify-between items-center q-px-lg">
           <div class="text-h6 flex items-center">
             <q-icon name="request_quote" size="sm" class="q-mr-sm" />
-            Generación de Plan de Pagos
+            {{ $t('ui.generacion-de-plan-de-pagos-9aca5e') }}
           </div>
           <q-btn icon="close" dense flat round @click="$emit('update:credito', false)" />
         </q-card-section>

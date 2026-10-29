@@ -6,10 +6,10 @@
         <div class="col">
           <div class="text-h6 text-weight-medium text-primary">
             <q-icon name="inventory_2" class="q-mr-sm" />
-            Lista de productos
+            {{ $t('ui.lista-de-productos-dd3620') }}
           </div>
           <div class="text-caption text-grey-7">
-            Visualización optimizada con desplazamiento virtual
+            {{ $t('ui.visualizacion-optimizada-con-desplazamiento-virtual-4a4979') }}
           </div>
         </div>
         <div class="col-auto">
@@ -20,7 +20,7 @@
             class="q-px-md q-py-sm text-body2"
             style="font-weight: 500"
           >
-            <q-tooltip class="bg-accent"> Total de productos cargados </q-tooltip>
+            <q-tooltip class="bg-accent"> {{ $t('ui.total-de-productos-cargados-97e35d') }} </q-tooltip>
           </q-badge>
         </div>
       </div>
@@ -35,9 +35,9 @@
         <q-card flat class="empty-card">
           <q-card-section class="column items-center q-pa-xl">
             <q-icon name="category" size="64px" color="grey-5" />
-            <div class="text-h6 text-grey-7 q-mt-md">No hay productos</div>
+            <div class="text-h6 text-grey-7 q-mt-md">{{ $t('ui.no-hay-productos-0d7421') }}</div>
             <div class="text-caption text-grey-5">
-              Agrega productos desde el módulo de inventario
+              {{ $t('ui.agrega-productos-desde-el-modulo-de-inventario-75b15e') }}
             </div>
           </q-card-section>
         </q-card>

@@ -1,7 +1,7 @@
 <template>
   <q-form @submit.prevent="onSubmit" @reset="onReset" class="row q-col-gutter-x-md">
     <div class="col-12 col-md-6">
-      <label for="monto">Monto a Pagar *</label>
+      <label for="monto">{{ $t('ui.monto-a-pagar-359056') }}</label>
       <q-input
         v-model.number="form.monto_pagado"
         id="monto"
@@ -11,28 +11,28 @@
         dense=""
         outlined=""
         :rules="[
-          (val) => (val !== null && val !== '') || 'Este campo es requerido',
-          (val) => val > 0 || 'El monto debe ser mayor a cero',
+          (val) => (val !== null && val !== '') || $t('ui.este-campo-es-requerido-493c13'),
+          (val) => val > 0 || $t('ui.el-monto-debe-ser-mayor-a-cero-9c6613'),
         ]"
       />
     </div>
 
     <div class="col-12 col-md-6">
-      <label for="referencia">Referencia (Opcional)</label>
+      <label for="referencia">{{ $t('ui.referencia-opcional-198c8c') }}</label>
       <q-input
         dense
         outlined=""
         v-model="form.referencia"
         id="referencia"
-        hint="Ej: Nro. de transacción, código de recibo"
+        :hint="$t('ui.ej-nro-de-transaccion-codigo-de-recibo-d77a5d')"
       />
     </div>
     <div class="col-12">
-      <label for="obs">Observaciones (Opcional)</label>
+      <label for="obs">{{ $t('ui.observaciones-opcional-e4d83c') }}</label>
       <q-input v-model="form.observaciones" id="obs" type="textarea" autogrow dense outlined="" />
     </div>
     <div class="col-12 col-md-6">
-      <label for="imagen">Comprobante (Opcional, máx 5MB)</label>
+      <label for="imagen">{{ $t('ui.comprobante-opcional-max-5mb-882b94') }}</label>
       <q-file
         v-model="form.comprobanteFile"
         dense
@@ -64,7 +64,7 @@
         for="cajaBanco"
         class="text-weight-bold cm-text q-mb-sm block"
         style="font-size: 13px; text-transform: uppercase"
-        >Seleccione Caja o Banco <span class="text-negative">*</span></label
+        >{{ $t('ui.seleccione-caja-o-banco-b3521c') }} <span class="text-negative">*</span></label
       >
       <q-select
         v-model="form.cajabanco"
@@ -77,7 +77,7 @@
         map-options
         class="premium-input"
         hide-bottom-space
-        :rules="[(val) => !!val || 'Campo requerido']"
+        :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
       >
         <template v-slot:prepend>
           <q-icon name="account_balance" color="positive" />
@@ -90,21 +90,22 @@
           <template v-slot:avatar>
             <q-icon name="cloud_done" color="white" />
           </template>
-          <p class="text-bold q-mb-xs">¡Comprobante subido con éxito!</p>
+          <p class="text-bold q-mb-xs">{{ $t('ui.comprobante-subido-con-exito-f09e69') }}</p>
           <p class="text-caption" style="word-break: break-all">
-            Ruta: {{ resultado.comprobante_path }}
+            {{ $t('ui.ruta-e7ea63') }} {{ resultado.comprobante_path }}
           </p>
         </q-banner>
       </div>
     </q-slide-transition>
     <div class="q-mt-lg">
-      <q-btn label="Registrar Pago" type="submit" color="primary" :loading="loading" />
-      <q-btn label="Limpiar" type="reset" color="primary" flat class="q-ml-sm" />
+      <q-btn :label="$t('ui.registrar-pago-e6ce75')" type="submit" color="primary" :loading="loading" />
+      <q-btn :label="$t('ui.limpiar-f3b225')" type="reset" color="primary" flat class="q-ml-sm" />
     </div>
   </q-form>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { idusuario_md5, idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -190,7 +191,7 @@ const onSubmit = async () => {
     $q.notify({
       color: 'positive',
       icon: 'check_circle',
-      message: response.data.mensaje || 'Pago registrado con éxito.',
+      message: response.data.mensaje || i18nT('ui.pago-registrado-con-exito-df5efd'),
     })
 
     // Opcional: limpiar formulario después del éxito
@@ -226,7 +227,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   } finally {
     loadingCajas.value = false
   }

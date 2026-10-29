@@ -4,9 +4,9 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="inventory" size="md" class="q-mr-sm" />
-          Asignar Producto
+          {{ $t('ui.asignar-producto-bb45ee') }}
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Asignar Producto</div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">{{ $t('ui.administracion-de-asignar-producto-da9899') }}</div>
       </div>
     </div>
     <div class="row q-col-gutter-md">
@@ -48,8 +48,8 @@
 
     <RegistrarAlmacenDialog
       v-model="showWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -66,6 +66,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import ProductList from 'components/producto/asignacion/ProductList.vue'
 import AvailableProducts from 'components/producto/asignacion/AvailableProducts.vue'
@@ -124,7 +125,7 @@ const getAlmacenes = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -142,7 +143,7 @@ const getProductoAlmacen = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -152,8 +153,8 @@ function handleEditar(item) {
 function handleEliminar(item) {
   console.log('Eliminar:', item.id)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Producto?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-producto-f1b476')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -170,14 +171,14 @@ function handleEliminar(item) {
       } else {
         $q.notify({
           type: 'negative',
-          message: response.data.mensaje || 'Error al eliminar el producto',
+          message: response.data.mensaje || i18nT('ui.error-al-eliminar-el-producto-8159ca'),
         })
       }
     } catch (error) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -194,15 +195,15 @@ async function cambiarEstado(item) {
   const mensajeConfirmacion = `¿Estás seguro de que deseas ${nuevoEstado} el producto "${item.descripcion}"?`
 
   $q.dialog({
-    title: 'Confirmar cambio de estado',
+    title: i18nT('ui.confirmar-cambio-de-estado-7b7ff4'),
     message: mensajeConfirmacion,
     cancel: {
-      label: 'Cancelar',
+      label: i18nT('common.cancel'),
       color: 'negative',
       flat: true,
     },
     ok: {
-      label: 'Confirmar',
+      label: i18nT('configGeneral.divisas.messages.deleteTitle'),
       color: 'primary',
     },
     persistent: true,
@@ -220,14 +221,14 @@ async function cambiarEstado(item) {
 
         $q.notify({
           type: 'positive',
-          message: response.data.mensaje || 'Estado actualizado correctamente',
+          message: response.data.mensaje || i18nT('ui.estado-actualizado-correctamente-c97758'),
           position: 'top',
           timeout: 3000,
         })
       } else {
         $q.notify({
           type: 'negative',
-          message: response.data.mensaje || 'No se pudo cambiar el estado',
+          message: response.data.mensaje || i18nT('ui.no-se-pudo-cambiar-el-estado-be260e'),
           position: 'top',
           timeout: 5000,
         })
@@ -285,7 +286,7 @@ const almacenSeleccionadoAP = async (almacenId) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -328,13 +329,13 @@ const saveProduct = async (formularioDetalles) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.estado.mensaje || 'Error al registrar productos',
+        message: response.data.estado.mensaje || i18nT('ui.error-al-registrar-productos-c02e77'),
       })
     }
   } catch (error) {
     console.error('Error al guardar:', error)
     console.error('Error al registrar productos:', error)
-    $q.notify({ type: 'negative', message: 'Fallo al enviar los datos al servidor' })
+    $q.notify({ type: 'negative', message: i18nT('ui.fallo-al-enviar-los-datos-al-servidor-1e9771') })
   }
 }
 onMounted(() => {

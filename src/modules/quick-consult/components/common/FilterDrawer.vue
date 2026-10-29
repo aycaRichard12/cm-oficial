@@ -6,14 +6,14 @@
       <q-toolbar class="bg-primary text-white q-px-md q-py-sm">
         <q-icon name="filter_alt" size="24px" class="q-mr-sm" />
         <q-toolbar-title class="text-weight-medium">
-          Filtros avanzados
+          {{ $t('ui.filtros-avanzados-edeeed') }}
           <span class="text-caption text-weight-regular q-ml-sm" style="opacity: 0.8">
-            Refina tu búsqueda
+            {{ $t('ui.refina-tu-busqueda-2e5929') }}
           </span>
         </q-toolbar-title>
         <q-btn flat round dense icon="close" v-close-popup>
           <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]">
-            Cerrar panel
+            {{ $t('ui.cerrar-panel-e9f9b4') }}
           </q-tooltip>
         </q-btn>
       </q-toolbar>
@@ -24,12 +24,12 @@
         <div class="filter-section">
           <div class="filter-section-header row items-center q-mb-sm">
             <q-icon name="category" size="20px" color="primary" class="q-mr-sm" />
-            <span class="text-subtitle1 text-weight-medium">Categoría</span>
+            <span class="text-subtitle1 text-weight-medium">{{ $t('configProducto.categoriaProducto.types.categoria') }}</span>
           </div>
           <q-select
             v-model="localCategory"
             :options="categoryOptions"
-            label="Seleccionar categoría"
+            :label="$t('ui.seleccionar-categoria-75c969')"
             dense
             outlined
             clearable
@@ -50,7 +50,7 @@
               />
             </template>
             <q-tooltip anchor="top middle" self="bottom middle">
-              Filtra productos por su categoría
+              {{ $t('ui.filtra-productos-por-su-categoria-8dcdc3') }}
             </q-tooltip>
           </q-select>
         </div>
@@ -61,14 +61,14 @@
         <div class="filter-section">
           <div class="filter-section-header row items-center q-mb-sm">
             <q-icon name="attach_money" size="20px" color="primary" class="q-mr-sm" />
-            <span class="text-subtitle1 text-weight-medium">Rango de precio</span>
+            <span class="text-subtitle1 text-weight-medium">{{ $t('ui.rango-de-precio-43ae39') }}</span>
           </div>
           <div class="row q-col-gutter-md">
             <div class="col-12 col-sm-6">
               <q-input
                 v-model.number="localMinPrice"
                 type="number"
-                label="Precio mínimo"
+                :label="$t('ui.precio-minimo-74938e')"
                 dense
                 outlined
                 clearable
@@ -78,7 +78,7 @@
                   <q-icon name="trending_up" size="18px" color="grey-6" />
                 </template>
                 <q-tooltip anchor="top middle" self="bottom middle">
-                  Precio mínimo (mayor o igual)
+                  {{ $t('ui.precio-minimo-mayor-o-igual-660b73') }}
                 </q-tooltip>
               </q-input>
             </div>
@@ -86,7 +86,7 @@
               <q-input
                 v-model.number="localMaxPrice"
                 type="number"
-                label="Precio máximo"
+                :label="$t('ui.precio-maximo-5ab7a7')"
                 dense
                 outlined
                 clearable
@@ -96,7 +96,7 @@
                   <q-icon name="trending_down" size="18px" color="grey-6" />
                 </template>
                 <q-tooltip anchor="top middle" self="bottom middle">
-                  Precio máximo (menor o igual)
+                  {{ $t('ui.precio-maximo-menor-o-igual-46d6c4') }}
                 </q-tooltip>
               </q-input>
             </div>
@@ -110,19 +110,19 @@
       <q-card-actions align="right" class="q-pa-md q-gutter-sm">
         <q-btn
           flat
-          label="Limpiar todo"
+          :label="$t('ui.limpiar-todo-c8fa73')"
           icon="delete_sweep"
           @click="clearAll"
           color="negative"
           no-caps
         >
           <q-tooltip anchor="top middle" self="bottom middle">
-            Eliminar todos los filtros
+            {{ $t('ui.eliminar-todos-los-filtros-ad4005') }}
           </q-tooltip>
         </q-btn>
-        <q-btn flat label="Cancelar" icon="close" v-close-popup color="grey-7" no-caps />
+        <q-btn flat :label="$t('common.cancel')" icon="close" v-close-popup color="grey-7" no-caps />
         <q-btn
-          label="Aplicar"
+          :label="$t('ui.aplicar-4ac3b3')"
           icon="check"
           color="primary"
           @click="applyFilters"
@@ -130,7 +130,7 @@
           no-caps
           class="apply-btn"
         >
-          <q-tooltip anchor="top middle" self="bottom middle"> Aplicar filtros y cerrar </q-tooltip>
+          <q-tooltip anchor="top middle" self="bottom middle"> {{ $t('ui.aplicar-filtros-y-cerrar-8d3746') }} </q-tooltip>
         </q-btn>
       </q-card-actions>
     </q-card>

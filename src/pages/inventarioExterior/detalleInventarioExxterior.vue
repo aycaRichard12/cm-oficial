@@ -2,10 +2,10 @@
   <q-card style="min-width: 800px; max-width: 90vw">
     <div class="row col-12 q-mb-md items-center">
       <div class="col-md-8">
-        <h4 class="q-ma-none">Detalle de Inventario Externo</h4>
+        <h4 class="q-ma-none">{{ $t('ui.detalle-de-inventario-externo-d51296') }}</h4>
       </div>
       <div class="col-md-4">
-        <q-btn label="Salir" color="negative" flat @click="$emit('close')" />
+        <q-btn :label="$t('ui.salir-e089c6')" color="negative" flat @click="$emit('close')" />
       </div>
     </div>
     <q-card-section v-if="compra.autorizacion == 2">
@@ -44,7 +44,7 @@
               hide-selected
               fill-input
               input-debounce="0"
-              label="Producto*"
+              :label="$t('ui.producto-a10475')"
               :options="filteredProductosOptions"
               @filter="filterProductos"
               @update:model-value="selectProductOption"
@@ -57,7 +57,7 @@
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -70,7 +70,7 @@
               name="cantidad"
               id="cantidadDINV"
               v-model="detalleFormData.cantidad"
-              label="Cantidad*"
+              :label="$t('ui.cantidad-8a5a36')"
               required
               :disable="detalleFormData.estado === 1"
             />
@@ -83,19 +83,19 @@
               name="fecha"
               id="fechaDINV"
               v-model="detalleFormData.fecha"
-              label="Fecha*"
+              :label="$t('ui.fecha-659648')"
               required
               :disable="detalleFormData.estado === 1"
             />
           </div>
 
           <div class="col-md-2 d-flex items-center" v-if="detalleFormData.estado !== 1">
-            <q-btn label="Añadir" type="submit" color="primary" />
+            <q-btn :label="$t('ui.anadir-41261d')" type="submit" color="primary" />
           </div>
 
           <div class="col-md-12 text-center" v-if="detalleFormData.estado !== 1">
             <q-btn
-              label="Cancelar"
+              :label="$t('common.cancel')"
               type="reset"
               color="negative"
               @click="resetearDetalleFormulario"
@@ -114,14 +114,14 @@
         row-key="id"
         flat
         bordered
-        no-data-label="Aún no se han añadido productos a esta compra."
+        :no-data-label="$t('ui.aun-no-se-han-anadido-productos-a-esta-compra-cc82c2')"
       >
         <template v-slot:body-cell-precio="props">
-          <q-td :props="props"> {{ decimas(props.row.precio) }} Bs </q-td>
+          <q-td :props="props"> {{ decimas(props.row.precio) }} {{ $t('ui.bs-43c494') }} </q-td>
         </template>
 
         <template v-slot:body-cell-subtotal="props">
-          <q-td :props="props"> {{ (props.row.precio * props.row.cantidad).toFixed(2) }} Bs </q-td>
+          <q-td :props="props"> {{ (props.row.precio * props.row.cantidad).toFixed(2) }} {{ $t('ui.bs-43c494') }} </q-td>
         </template>
 
         <template v-slot:body-cell-opciones="props" v-if="compra.autorizacion == 2">
@@ -132,7 +132,7 @@
               color="primary"
               flat
               @click="iniciarEdicion(props.row)"
-              aria-label="Editar"
+              :aria-label="$t('common.edit')"
             />
             <q-btn
               dense
@@ -140,7 +140,7 @@
               color="negative"
               flat
               @click="confirmarEliminar(props.row)"
-              aria-label="Eliminar"
+              :aria-label="$t('common.delete')"
             />
           </q-td>
         </template>

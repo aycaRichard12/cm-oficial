@@ -3,8 +3,8 @@
     <q-card flat bordered class="form-card">
       <!-- Header con título -->
       <q-card-section class="bg-grey-2 q-pb-md">
-        <div class="text-h6 text-primary">Datos del Producto</div>
-        <div class="text-caption text-grey-7">Complete la información del producto</div>
+        <div class="text-h6 text-primary">{{ $t('ui.datos-del-producto-4dd018') }}</div>
+        <div class="text-caption text-grey-7">{{ $t('ui.complete-la-informacion-del-producto-1bef6f') }}</div>
       </q-card-section>
 
       <!-- Separador -->
@@ -16,12 +16,12 @@
           <!-- Código Producto -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Código Producto</label>
+              <label class="field-label required">{{ $t('ui.codigo-producto-24251e') }}</label>
               <q-input
                 v-model="localData.codigo"
                 dense
                 outlined
-                placeholder="Ingrese código"
+                :placeholder="$t('ui.ingrese-codigo-737eab')"
                 hide-bottom-space
               />
             </div>
@@ -30,12 +30,12 @@
           <!-- Nombre Producto -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Nombre del Producto</label>
+              <label class="field-label required">{{ $t('ui.nombre-del-producto-3eb9f6') }}</label>
               <q-input
                 v-model="localData.nombre"
                 dense
                 outlined
-                placeholder="Ingrese nombre"
+                :placeholder="$t('ui.ingrese-nombre-260147')"
                 hide-bottom-space
               />
             </div>
@@ -44,12 +44,12 @@
           <!-- Descripción -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Descripción</label>
+              <label class="field-label required">{{ $t('configuracion.servicios.table.descripcion') }}</label>
               <q-input
                 v-model="localData.descripcion"
                 dense
                 outlined
-                placeholder="Ingrese descripción"
+                :placeholder="$t('ui.ingrese-descripcion-5dd4f0')"
                 hide-bottom-space
               />
             </div>
@@ -58,12 +58,12 @@
           <!-- Código de Barras -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label">Código de Barras</label>
+              <label class="field-label">{{ $t('ui.codigo-de-barras-edc5fc') }}</label>
               <q-input
                 v-model="localData.codigobarras"
                 dense
                 outlined
-                placeholder="Opcional"
+                :placeholder="$t('ui.opcional-7a5984')"
                 hide-bottom-space
               />
             </div>
@@ -72,7 +72,7 @@
           <!-- Categorías -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Categorías</label>
+              <label class="field-label required">{{ $t('configProducto.categoriaProducto.table.title') }}</label>
               <q-select
                 v-model="localData.categoria"
                 :options="categorias"
@@ -80,7 +80,7 @@
                 outlined
                 emit-value
                 map-options
-                placeholder="Seleccione categoría"
+                :placeholder="$t('ui.seleccione-categoria-f7c1fd')"
                 hide-bottom-space
                 @update:model-value="
                   (val) => {
@@ -96,7 +96,7 @@
           <!-- Sub Categorías -->
           <div class="col-12 col-md-4" v-if="subcategorias.length > 0">
             <div class="field-wrapper">
-              <label class="field-label required">Sub Categorías</label>
+              <label class="field-label required">{{ $t('configProducto.categoriaProducto.table.subcategoria') }}</label>
               <q-select
                 v-model="localData.subcategoria"
                 :options="subcategorias"
@@ -104,7 +104,7 @@
                 outlined
                 emit-value
                 map-options
-                placeholder="Seleccione subcategoría"
+                :placeholder="$t('ui.seleccione-subcategoria-19633d')"
                 hide-bottom-space
               />
             </div>
@@ -113,7 +113,7 @@
           <!-- Estados del Producto -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Estados del Producto</label>
+              <label class="field-label required">{{ $t('ui.estados-del-producto-39d741') }}</label>
               <q-select
                 v-model="localData.estadoproductos"
                 :options="estados"
@@ -121,7 +121,7 @@
                 outlined
                 emit-value
                 map-options
-                placeholder="Seleccione estado"
+                :placeholder="$t('ui.seleccione-estado-eea911')"
                 hide-bottom-space
               />
             </div>
@@ -130,7 +130,7 @@
           <!-- Unidad -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Unidad</label>
+              <label class="field-label required">{{ $t('configProducto.unidadProducto.table.nombre') }}</label>
               <q-select
                 v-model="localData.unidad"
                 :options="unidades"
@@ -138,7 +138,7 @@
                 outlined
                 emit-value
                 map-options
-                placeholder="Seleccione unidad"
+                :placeholder="$t('ui.seleccione-unidad-f82681')"
                 hide-bottom-space
               />
             </div>
@@ -147,7 +147,7 @@
           <!-- Característica -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label required">Característica</label>
+              <label class="field-label required">{{ $t('configProducto.caracteristicaProducto.table.nombre') }}</label>
               <q-select
                 v-model="localData.medida"
                 :options="medidas"
@@ -155,7 +155,7 @@
                 outlined
                 emit-value
                 map-options
-                placeholder="Seleccione característica"
+                :placeholder="$t('ui.seleccione-caracteristica-8d1d93')"
                 hide-bottom-space
               />
             </div>
@@ -164,12 +164,12 @@
           <!-- Otras Características -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label">Otras Características</label>
+              <label class="field-label">{{ $t('ui.otras-caracteristicas-832f7d') }}</label>
               <q-input
                 v-model="localData.otraCaracteristica"
                 dense
                 outlined
-                placeholder="Especificaciones adicionales"
+                :placeholder="$t('ui.especificaciones-adicionales-cf6240')"
                 hide-bottom-space
               />
             </div>
@@ -178,12 +178,12 @@
           <!-- Imagen del producto -->
           <div class="col-12 col-md-4">
             <div class="field-wrapper">
-              <label class="field-label">Imagen del Producto</label>
+              <label class="field-label">{{ $t('ui.imagen-del-producto-79f5a9') }}</label>
               <q-file
                 v-model="localData.imagen"
                 dense
                 outlined
-                label="Seleccionar archivo"
+                :label="$t('ui.seleccionar-archivo-58ed72')"
                 accept="image/*"
                 hide-bottom-space
               >
@@ -201,7 +201,7 @@
         <div class="image-preview-container">
           <div class="preview-header">
             <q-icon name="image" size="sm" class="text-grey-7" />
-            <span class="text-caption text-grey-7">Vista previa</span>
+            <span class="text-caption text-grey-7">{{ $t('ui.vista-previa-432932') }}</span>
           </div>
           <div class="image-wrapper">
             <q-img
@@ -225,7 +225,7 @@
       <!-- Botones de acción -->
       <q-card-actions class="q-pa-md" align="left">
         <q-btn
-          label="Guardar"
+          :label="$t('common.save')"
           type="submit"
           color="primary"
           unelevated
@@ -233,7 +233,7 @@
           class="action-btn"
         />
         <q-btn
-          label="Cancelar"
+          :label="$t('common.cancel')"
           flat
           color="negative"
           @click="$emit('cancel')"

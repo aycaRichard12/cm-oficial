@@ -3,7 +3,7 @@
     <q-dialog v-model="showForm">
       <q-card style="min-width: 400px">
         <q-card-section class="bg-primary text-white flex justify-between">
-          <div class="text-h6">{{ isEditing ? 'Editar Serie' : 'Nueva Serie' }}</div>
+          <div class="text-h6">{{ isEditing ? $t('ui.editar-serie-52d0fa') : $t('ui.nueva-serie-0041a9') }}</div>
           <q-btn icon="close" dense flat round @click="toggleForm" />
         </q-card-section>
         <q-card-section>
@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api, apiP } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -106,7 +107,7 @@ async function loadSeries() {
     }))
   } catch (error) {
     console.error('Error al cargar series:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar las series' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-las-series-d4f0e3') })
   } finally {
     cargando.value = false
   }
@@ -132,19 +133,19 @@ const handleSubmit = async (data) => {
     if (res && res[0] === 'success') {
       $q.notify({
         type: 'positive',
-        message: res[1] || 'Guardado correctamente',
+        message: res[1] || i18nT('ui.guardado-correctamente-ab0571'),
       })
       loadSeries()
       toggleForm()
     } else {
       $q.notify({
         type: 'negative',
-        message: res && res[1] ? res[1] : 'Ocurrió un error al guardar',
+        message: res && res[1] ? res[1] : i18nT('configGeneral.leyenda.messages.saveError'),
       })
     }
   } catch (error) {
     console.error('Error al guardar:', error)
-    $q.notify({ type: 'negative', message: 'Error en la petición' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-en-la-peticion-129bfc') })
   }
 }
 
@@ -163,7 +164,7 @@ const editItem = (row) => {
 
 const confirmDelete = (row) => {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar serie "${row.serie}"?`,
     cancel: true,
     persistent: true,
@@ -179,7 +180,7 @@ const confirmDelete = (row) => {
       }
     } catch (error) {
       console.error('Error al eliminar:', error)
-      $q.notify({ type: 'negative', message: 'Error al eliminar serie' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-eliminar-serie-567c9a') })
     }
   })
 }
@@ -191,19 +192,19 @@ const toggleStatus = async (row) => {
     if (res && res[0] === 'success') {
       $q.notify({ type: 'positive', message: res[1] })
     } else {
-      $q.notify({ type: 'negative', message: res[1] || 'Error al cambiar estado' })
+      $q.notify({ type: 'negative', message: res[1] || i18nT('ui.error-al-cambiar-estado-2ffda4') })
       loadSeries() // revert local change
     }
   } catch (error) {
     console.error('Error al cambiar estado:', error)
-    $q.notify({ type: 'negative', message: 'Error al cambiar estado' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cambiar-estado-2ffda4') })
     loadSeries()
   }
 }
 
 const confirmDeleteVariante = (payload) => {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Quitar la variante "${payload.sku || payload.id_Producto_Variante}" de esta serie?`,
     cancel: true,
     persistent: true,
@@ -217,11 +218,11 @@ const confirmDeleteVariante = (payload) => {
         $q.notify({ type: 'positive', message: res[1] })
         loadSeries()
       } else {
-        $q.notify({ type: 'negative', message: res[1] || 'Error al quitar variante' })
+        $q.notify({ type: 'negative', message: res[1] || i18nT('ui.error-al-quitar-variante-065434') })
       }
     } catch (error) {
       console.error('Error al quitar variante:', error)
-      $q.notify({ type: 'negative', message: 'Error al quitar variante de la serie' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-quitar-variante-de-la-serie-af9002') })
     }
   })
 }

@@ -4,9 +4,9 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
-          Reporte Compras
+          {{ $t('ui.reporte-compras-68944e') }}
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Reporte Compras</div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">{{ $t('ui.administracion-de-reporte-compras-7ff7a3') }}</div>
       </div>
     </div>
     <q-form>
@@ -16,18 +16,18 @@
         id="filtroFechas"
       >
         <div class="col-12 col-md-4">
-          <label for="fechaIni">Fecha Inicial*</label>
+          <label for="fechaIni">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input v-model="startDate" type="date" class="col-md-4" dense outlined />
         </div>
         <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input v-model="endDate" type="date" dense outlined="" class="col-md-4" />
         </div>
       </div>
       <div class="q-mt-md" style="display: flex; justify-content: center">
         <q-btn
           color="primary"
-          label="Generar reporte"
+          :label="$t('ui.generar-reporte-eeafce')"
           @click="generarReporte"
           class="q-mr-sm"
           id="generarReporte"
@@ -50,7 +50,7 @@
         <q-toolbar class="bg-primary text-white">
           <q-toolbar-title>
             <q-icon name="picture_as_pdf" size="sm" class="q-mr-sm" />
-            Detalle de Compra - PDF
+            {{ $t('ui.detalle-de-compra-pdf-a9e657') }}
           </q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
@@ -60,7 +60,7 @@
             v-if="pdfUrl"
             :src="pdfUrl"
             style="width: 100%; height: 100%; border: none"
-            title="Detalle de Compra PDF"
+            :title="$t('ui.detalle-de-compra-pdf-02d641')"
           />
         </q-card-section>
       </q-card>

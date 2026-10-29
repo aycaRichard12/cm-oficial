@@ -12,10 +12,10 @@
         <div class="col">
           <div class="dpv-title">
             <q-icon name="upload_file" size="22px" class="q-mr-sm" />
-            Importar Detalle de Compra
+            {{ $t('ui.importar-detalle-de-compra-d589cf') }}
           </div>
           <div class="dpv-subtitle">
-            Compra: {{ compra?.codigo || 'S/C' }} · Factura: {{ compra?.nfactura || 'S/N' }}
+            {{ $t('ui.compra-a4dbc1') }} {{ compra?.codigo || 'S/C' }} {{ $t('ui.factura-0eede1') }} {{ compra?.nfactura || 'S/N' }}
           </div>
         </div>
         <q-btn icon="close" flat round dense color="white" v-close-popup :disable="isUploading" />
@@ -49,7 +49,7 @@
         <div class="dpv-section">
           <div class="dpv-section__label">
             <span class="dpv-badge">1</span>
-            Almacén asignado a la compra
+            {{ $t('ui.almacen-asignado-a-la-compra-ec26ee') }}
           </div>
 
           <div class="dpv-almacen-info q-mt-sm row items-center justify-between">
@@ -60,12 +60,12 @@
                   {{ almacenNombre }}
                 </div>
                 <div class="text-caption cm-text-muted">
-                  Proveedor: {{ compra?.proveedor || 'No especificado' }}
+                  {{ $t('ui.proveedor-e2f30c') }} {{ compra?.proveedor || $t('ui.no-especificado-981b0c') }}
                 </div>
               </div>
             </div>
             <q-chip dense color="primary" text-color="white" icon="check" size="sm">
-              Asignado
+              {{ $t('ui.asignado-06097f') }}
             </q-chip>
           </div>
         </div>
@@ -74,7 +74,7 @@
         <div class="dpv-section" :class="{ 'dpv-section--disabled': !idalmacen }">
           <div class="dpv-section__label">
             <span class="dpv-badge" :class="{ 'dpv-badge--inactive': !idalmacen }">2</span>
-            Descargar plantilla Excel
+            {{ $t('ui.descargar-plantilla-excel-f10fce') }}
           </div>
           <div class="dpv-download-area q-mt-sm">
             <div class="dpv-download-info">
@@ -82,12 +82,12 @@
               <div class="q-ml-sm">
                 <div class="text-body2 text-weight-medium">plantilla_detalle_compra.xlsx</div>
                 <div class="text-caption cm-text-muted">
-                  Contiene los productos y variantes del almacén asignado
+                  {{ $t('ui.contiene-los-productos-y-variantes-del-almacen-asign-f8c67b') }}
                 </div>
               </div>
             </div>
             <q-btn
-              label="Descargar"
+              :label="$t('ui.descargar-8b98cb')"
               icon="download"
               color="green-7"
               unelevated
@@ -107,12 +107,12 @@
         <div class="dpv-section" :class="{ 'dpv-section--disabled': !idalmacen }">
           <div class="dpv-section__label">
             <span class="dpv-badge" :class="{ 'dpv-badge--inactive': !idalmacen }">3</span>
-            Subir archivo editado
+            {{ $t('ui.subir-archivo-editado-bf136b') }}
           </div>
 
           <q-file
             v-model="archivoExcel"
-            label="Selecciona tu archivo Excel completado"
+            :label="$t('ui.selecciona-tu-archivo-excel-completado-291ecb')"
             outlined
             dense
             accept=".xlsx, .xls"
@@ -171,9 +171,9 @@
 
       <!-- ── FOOTER ────────────────────────────────────────────── -->
       <q-card-actions align="right" class="q-px-lg q-pb-lg q-pt-sm">
-        <q-btn flat label="Cancelar" color="grey-7" :disable="isUploading" v-close-popup />
+        <q-btn flat :label="$t('common.cancel')" color="grey-7" :disable="isUploading" v-close-popup />
         <q-btn
-          label="Importar Detalle"
+          :label="$t('ui.importar-detalle-8d6dea')"
           icon="cloud_upload"
           color="primary"
           unelevated
@@ -184,7 +184,7 @@
         >
           <template #loading>
             <q-spinner-dots size="18px" class="q-mr-sm" />
-            Procesando...
+            {{ $t('ui.procesando-e72aae') }}
           </template>
         </q-btn>
       </q-card-actions>
@@ -193,6 +193,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
@@ -269,7 +270,7 @@ const canSubmit = computed(() => {
  */
 async function descargarPlantilla() {
   if (!idalmacen.value) {
-    statusMessage.value = { type: 'error', text: 'La compra no tiene un almacén válido asignado.' }
+    statusMessage.value = { type: 'error', text: i18nT('ui.la-compra-no-tiene-un-almacen-valido-asignado-2daccc') }
     return
   }
 
@@ -281,7 +282,7 @@ async function descargarPlantilla() {
     const { data } = await api.get(url)
 
     if (data.estado === 'error') {
-      throw new Error(data.mensaje || 'Error al obtener productos para exportar.')
+      throw new Error(data.mensaje || i18nT('ui.error-al-obtener-productos-para-exportar-e65828'))
     }
 
     if (!Array.isArray(data.data) || data.data.length === 0) {
@@ -304,7 +305,7 @@ async function descargarPlantilla() {
     // Crear libro de cálculo
     const worksheet = XLSX.utils.json_to_sheet(filas)
     const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'DetalleCompra')
+    XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.detallecompra-39deda'))
 
     // Descargar archivo
     const nombreDescarga = `plantilla_detalle_compra_${props.compra?.codigo || idalmacen.value}.xlsx`
@@ -312,19 +313,19 @@ async function descargarPlantilla() {
 
     statusMessage.value = {
       type: 'success',
-      text: 'Plantilla generada correctamente. Rellena precio_unitario y cantidad en los productos deseados.',
+      text: i18nT('ui.plantilla-generada-correctamente-rellena-precio-unit-bfcc86'),
     }
 
     $q.notify({
       type: 'positive',
-      message: 'Plantilla de compra descargada',
+      message: i18nT('ui.plantilla-de-compra-descargada-c5cc6e'),
       icon: 'download_done',
     })
   } catch (err) {
     console.error('[descargarPlantilla Detalle Compra]', err)
     statusMessage.value = {
       type: 'error',
-      text: err?.response?.data?.mensaje || err.message || 'Error al generar la plantilla.',
+      text: err?.response?.data?.mensaje || err.message || i18nT('ui.error-al-generar-la-plantilla-ee4d2c'),
     }
   } finally {
     isDownloading.value = false
@@ -347,7 +348,7 @@ async function onFileSelected(file) {
     fileStatus.value = {
       type: 'error',
       icon: 'error_outline',
-      text: 'El archivo debe ser .xlsx o .xls',
+      text: i18nT('ui.el-archivo-debe-ser-xlsx-o-xls-c572e6'),
     }
     archivoExcel.value = null
     return
@@ -461,7 +462,7 @@ async function procesarYEnviar() {
     console.log('Respuesta servidor importar detalle compra:', data)
 
     if (data.estado === 'error') {
-      throw new Error(data.mensaje || 'Error en el registro del detalle de compra.')
+      throw new Error(data.mensaje || i18nT('ui.error-en-el-registro-del-detalle-de-compra-84f209'))
     }
 
     $q.notify({
@@ -479,7 +480,7 @@ async function procesarYEnviar() {
     mostrarError(
       err?.response?.data?.mensaje ||
         err?.message ||
-        'Ocurrió un error al procesar el archivo. Intenta de nuevo.',
+        i18nT('ui.ocurrio-un-error-al-procesar-el-archivo-intenta-de-n-646551'),
     )
   } finally {
     isUploading.value = false

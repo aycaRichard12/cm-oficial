@@ -108,7 +108,7 @@
           <div>
             <div class="text-h6 q-mb-xs">{{ dialogTitle }}</div>
             <div class="text-subtitle2 text-white text-weight-regular"><!-- theme-allow -->
-              {{ dialogType === 'error' ? t('configProducto.configuracionProductoVariante.dialog.errorTitle') : t('configProducto.configuracionProductoVariante.dialog.successTitle') }}
+              {{ dialogType === $t('ui.error-11f957') ? t('configProducto.configuracionProductoVariante.dialog.errorTitle') : t('configProducto.configuracionProductoVariante.dialog.successTitle') }}
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? t('configProducto.configuracionProductoVariante.dialog.okButton') : t('configProducto.configuracionProductoVariante.dialog.cancelButton')"
+          :label="dialogType === $t('ui.error-11f957') ? t('configProducto.configuracionProductoVariante.dialog.okButton') : t('configProducto.configuracionProductoVariante.dialog.cancelButton')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"

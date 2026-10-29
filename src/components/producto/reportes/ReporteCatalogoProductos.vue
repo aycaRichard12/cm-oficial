@@ -3,7 +3,7 @@
     <q-form @submit.prevent class="q-mb-md">
       <div class="row q-col-gutter-md justify-center" id="filtrosCatalogo">
         <div class="col-12 col-md-4">
-          <label for="almacen" class="text-weight-bold cm-text q-mb-sm block">Almacén*</label>
+          <label for="almacen" class="text-weight-bold cm-text q-mb-sm block">{{ $t('ui.almacen-3e3724') }}</label>
           <q-select
             v-model="almacenSeleccionado"
             id="almacen"
@@ -22,7 +22,7 @@
 
         <div class="col-12 col-md-4">
           <label for="categoria" class="text-weight-bold cm-text q-mb-sm block">
-            Categoría de precio*
+            {{ $t('ui.categoria-de-precio-db0bcd') }}
           </label>
           <q-select
             v-model="categoriaSeleccionada"
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-12 col-md-3">
-          <label for="fecha" class="text-weight-bold cm-text q-mb-sm block">Fecha</label>
+          <label for="fecha" class="text-weight-bold cm-text q-mb-sm block">{{ $t('cotizacion.table.date') }}</label>
           <q-input
             v-model="fecha"
             id="fecha"
@@ -57,7 +57,7 @@
       <div class="row justify-center q-mt-lg q-gutter-sm">
         <q-btn
           color="secondary"
-          label="Vista Previa"
+          :label="$t('ui.vista-previa-58a2c3')"
           icon="visibility"
           :loading="cargandoProductos"
           :disable="!almacenSeleccionado || !categoriaSeleccionada"
@@ -66,7 +66,7 @@
         <q-btn
           id="descargarCatalogo"
           color="primary"
-          label="Descargar Catálogo"
+          :label="$t('ui.descargar-catalogo-e8e2c4')"
           icon="picture_as_pdf"
           :loading="generando"
           :disable="!almacenSeleccionado || !categoriaSeleccionada || datosCatalogo.length === 0"
@@ -85,7 +85,7 @@
       flat
       :loading="cargandoProductos"
       :pagination="{ rowsPerPage: 10 }"
-      no-data-label="Seleccione almacén y categoría para ver la vista previa"
+      :no-data-label="$t('ui.seleccione-almacen-y-categoria-para-ver-la-vista-pre-944753')"
     >
       <template v-slot:body-cell-imagen="props">
         <q-td :props="props">
@@ -106,7 +106,7 @@
 
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
-          {{ Number(props.row.estado) === 1 ? 'Activo' : 'Inactivo' }}
+          {{ Number(props.row.estado) === 1 ? $t('common.active') : $t('common.inactive') }}
         </q-td>
       </template>
 
@@ -120,6 +120,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -148,21 +149,21 @@ const cargandoProductos = ref(false)
 const generando = ref(false)
 
 const columnasCatalogo = [
-  { name: 'imagen', label: 'Img', field: 'imagen', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'subcategoria', label: 'Subcategoría', field: 'subcategoria', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'stock', label: 'Stock', field: 'stock', align: 'right', sortable: true },
+  { name: 'imagen', label: i18nT('ui.img-3ff51c'), field: 'imagen', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left', sortable: true },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left' },
+  { name: 'subcategoria', label: i18nT('ui.subcategoria-78a946'), field: 'subcategoria', align: 'left' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left' },
+  { name: 'stock', label: i18nT('inventario.stock'), field: 'stock', align: 'right', sortable: true },
   {
     name: 'precioSugerido',
-    label: 'Precio Sugerido',
+    label: i18nT('ui.precio-sugerido-dbaa32'),
     field: 'precioSugerido',
     align: 'right',
     sortable: true,
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
 ]
 
 async function cargarAlmacenes() {
@@ -173,7 +174,7 @@ async function cargarAlmacenes() {
 
     if (lista.length === 0) {
       almacenes.value = []
-      $q.notify({ type: 'info', message: 'No hay almacenes asignados a su usuario' })
+      $q.notify({ type: 'info', message: i18nT('ui.no-hay-almacenes-asignados-a-su-usuario-2d3fb5') })
       return
     }
 
@@ -191,7 +192,7 @@ async function cargarAlmacenes() {
     }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   } finally {
     cargandoAlmacenes.value = false
   }
@@ -219,12 +220,12 @@ async function cargarCategoriasPrecio() {
     if (categoriasPrecio.value.length === 0) {
       $q.notify({
         type: 'info',
-        message: 'No hay categorías de precio activas para este almacén',
+        message: i18nT('ui.no-hay-categorias-de-precio-activas-para-este-almace-d45071'),
       })
     }
   } catch (error) {
     console.error('Error al cargar categorías de precio:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar las categorías de precio' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-las-categorias-de-precio-0b805b') })
   } finally {
     cargandoCategorias.value = false
   }
@@ -254,7 +255,7 @@ async function cargarProductos() {
   } catch (error) {
     console.error('Error al cargar productos:', error)
     datosCatalogo.value = []
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-productos-4c41c2') })
   } finally {
     cargandoProductos.value = false
   }
@@ -262,14 +263,14 @@ async function cargarProductos() {
 
 async function descargarCatalogo() {
   if (!almacenSeleccionado.value || !categoriaSeleccionada.value) {
-    $q.notify({ type: 'warning', message: 'Seleccione almacén y categoría de precio' })
+    $q.notify({ type: 'warning', message: i18nT('ui.seleccione-almacen-y-categoria-de-precio-d366dc') })
     return
   }
 
   if (datosCatalogo.value.length === 0) {
     await cargarProductos()
     if (datosCatalogo.value.length === 0) {
-      $q.notify({ type: 'info', message: 'No hay productos para exportar' })
+      $q.notify({ type: 'info', message: i18nT('ui.no-hay-productos-para-exportar-7fd8c9') })
       return
     }
   }
@@ -277,7 +278,7 @@ async function descargarCatalogo() {
   generando.value = true
   try {
     const almacenNombre =
-      almacenes.value.find((a) => a.value === almacenSeleccionado.value)?.label || 'Todos'
+      almacenes.value.find((a) => a.value === almacenSeleccionado.value)?.label || i18nT('ui.todos-a4114a')
 
     const service = new CatalogoPdfService()
     const doc = await service.generate({
@@ -296,10 +297,10 @@ async function descargarCatalogo() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    $q.notify({ type: 'positive', message: 'Catálogo descargado correctamente' })
+    $q.notify({ type: 'positive', message: i18nT('ui.catalogo-descargado-correctamente-0bdd72') })
   } catch (error) {
     console.error('Error al generar el catálogo:', error)
-    $q.notify({ type: 'negative', message: 'Error al generar el catálogo' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-generar-el-catalogo-685dff') })
   } finally {
     generando.value = false
   }
