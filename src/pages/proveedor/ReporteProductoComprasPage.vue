@@ -5,7 +5,7 @@
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>
           <q-icon name="shopping_cart" size="sm" class="q-mr-sm" />
-          Reporte de Compras según Producto
+          {{ $t('ui.reporte-de-compras-segun-producto-f74b71') }}
         </q-toolbar-title>
       </q-toolbar>
 
@@ -33,7 +33,7 @@
         <BaseFilterableTable
           id="reporteTabla"
           ref="miTabla"
-          title="Listado de Compras del Producto"
+          :title="$t('ui.listado-de-compras-del-producto-2cdd5c')"
           :rows="compras"
           :columns="columnas"
           :array-headers="arrayHeaders"
@@ -46,7 +46,7 @@
             <q-td :props="props">
               <q-badge
                 :color="props.row.estadoIngreso == 1 ? 'positive' : 'negative'"
-                :label="props.row.estadoIngreso == 1 ? 'Activo' : 'Inactivo'"
+                :label="props.row.estadoIngreso == 1 ? $t('common.active') : $t('common.inactive')"
               />
             </q-td>
           </template>
@@ -55,7 +55,7 @@
             <q-td :props="props">
               <q-badge
                 :color="props.row.autorizacion == '1' ? 'green' : 'orange'"
-                :label="props.row.autorizacion == '1' ? 'Autorizado' : 'No Autorizado'"
+                :label="props.row.autorizacion == '1' ? $t('ui.autorizado-b4fb49') : $t('ui.no-autorizado-988c4e')"
               />
             </q-td>
           </template>
@@ -64,7 +64,7 @@
             <q-td :props="props">
               <q-badge
                 :color="props.row.tipoCompra == 1 ? 'blue' : 'purple'"
-                :label="props.row.tipoCompra == 1 ? 'Crédito' : 'Contado'"
+                :label="props.row.tipoCompra == 1 ? $t('ui.credito-f05ef4') : $t('ui.contado-447b89')"
               />
             </q-td>
           </template>
@@ -99,7 +99,7 @@
                 @click="verDetallePDF(props.row.idIngreso)"
                 :loading="loadingDetalle && selectedIdIngreso === props.row.idIngreso"
               >
-                <q-tooltip>Previsualizar PDF</q-tooltip>
+                <q-tooltip>{{ $t('ui.previsualizar-pdf-05088d') }}</q-tooltip>
               </q-btn>
             </q-td>
           </template>
@@ -113,6 +113,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import { ref, onMounted } from 'vue'
 import { useReporteProductoCompras } from 'src/composables/reporteproductoproveedorcompras/useReporteProductoCompras'
@@ -166,13 +167,13 @@ const sumColumns = ['total', 'cantidad', 'precioUnitario']
 const columnas = [
   {
     name: 'indice',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'indice',
     align: 'center',
   },
   {
     name: 'fechaIngreso',
-    label: 'Fecha Ingreso',
+    label: i18nT('ui.fecha-ingreso-83de8b'),
     field: 'fechaIngreso',
     align: 'center',
 
@@ -180,43 +181,43 @@ const columnas = [
   },
   {
     name: 'codigoProveedor',
-    label: 'Cód. Proveedor',
+    label: i18nT('ui.cod-proveedor-523886'),
     field: 'codigoProveedor',
     align: 'left',
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
   },
   {
     name: 'nombreIngreso',
-    label: 'Lote Ingreso',
+    label: i18nT('ui.lote-ingreso-359f4d'),
     field: 'nombreIngreso',
     align: 'left',
   },
   {
     name: 'nFactura',
-    label: 'N° Factura',
+    label: i18nT('ui.n-factura-5a62ff'),
     field: 'nFactura',
     align: 'center',
   },
   {
     name: 'tipoCompra',
-    label: 'Tipo Compra',
+    label: i18nT('ui.tipo-compra-7a683f'),
     field: 'tipoCompra',
     align: 'center',
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     align: 'left',
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     field: 'cantidad',
     align: 'right',
     dataType: 'number',
@@ -237,20 +238,20 @@ const columnas = [
   },
   {
     name: 'autorizacion',
-    label: 'Autorización',
+    label: i18nT('ui.autorizacion-077400'),
     field: 'autorizacion',
     align: 'center',
     dataType: 'text',
   },
   {
     name: 'estadoIngreso',
-    label: 'Estado Ingreso',
+    label: i18nT('ui.estado-ingreso-2bd19e'),
     field: 'estadoIngreso',
     align: 'center',
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'center',
   },
@@ -295,7 +296,7 @@ const verDetallePDF = async (idIngreso) => {
 const handleExportarExcel = () => {
   const nombreProducto =
     productosOptions.value.find((p) => p.idProducto === productoSeleccionado.value)
-      ?.nombreProducto || 'Producto'
+      ?.nombreProducto || i18nT('inventario.product')
 
   exportarExcel(compras.value, nombreProducto, fechaInicio.value, fechaFin.value)
 }
@@ -303,7 +304,7 @@ const handleExportarExcel = () => {
 const handleExportarPDF = () => {
   const nombreProducto =
     productosOptions.value.find((p) => p.idProducto === productoSeleccionado.value)
-      ?.nombreProducto || 'Producto'
+      ?.nombreProducto || i18nT('inventario.product')
 
   // Obtener las columnas visibles de la tabla
   const visibleColumnsFromTable = miTabla.value?.obtenerColumnasVisibles() || []

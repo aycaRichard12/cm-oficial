@@ -4,7 +4,7 @@
       <q-card-section class="bg-primary text-white row items-center q-py-sm">
         <q-icon :name="esPdf ? 'picture_as_pdf' : 'image'" size="sm" class="q-mr-sm" />
         <div class="text-subtitle1 text-weight-bold">
-          Visor de {{ esPdf ? 'PDF' : 'Imagen' }}
+          {{ $t('ui.visor-de-67b669') }} {{ esPdf ? 'PDF' : $t('ui.imagen-100f99') }}
         </div>
         <q-space />
         <q-btn flat round dense icon="close" v-close-popup />
@@ -18,7 +18,7 @@
             :src="imagenSeleccionada"
             class="full-width full-height border-none"
             style="min-height: 100%; position: absolute; top: 0; left: 0;"
-            title="Visor PDF"
+            :title="$t('ui.visor-pdf-3bb3dc')"
           ></iframe>
           <q-img 
             v-else 
@@ -29,7 +29,7 @@
         </template>
         <div v-else class="full-width full-height flex flex-center text-grey-7">
           <q-icon name="error_outline" size="md" class="q-mr-sm" />
-          No se ha seleccionado ningún archivo
+          {{ $t('ui.no-se-ha-seleccionado-ningun-archivo-700dee') }}
         </div>
       </q-card-section>
     </q-card>

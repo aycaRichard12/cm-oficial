@@ -8,7 +8,7 @@
         dense
         round
         flat
-        title="Generar Comprobante PDF"
+        :title="$t('ui.generar-comprobante-pdf-b2cabe')"
         @click="$emit('pdf', row)"
       />
     </template>
@@ -21,7 +21,7 @@
         dense
         round
         flat
-        title="Generar Comprobante PDF"
+        :title="$t('ui.generar-comprobante-pdf-b2cabe')"
         @click="$emit('pdf', row)"
       />
       <q-btn
@@ -31,7 +31,7 @@
         rounded
         flat
         color="blue"
-        title="Ver Factura"
+        :title="$t('ui.ver-factura-3d5c6a')"
         @click="$emit('ver-factura', row.shortlink)"
       />
       <q-btn
@@ -41,7 +41,7 @@
         rounded
         flat
         color="warning"
-        title="Ver Factura Siat"
+        :title="$t('ui.ver-factura-siat-278b05')"
         @click="$emit('ver-siat', row.urlsin)"
       />
     </template>

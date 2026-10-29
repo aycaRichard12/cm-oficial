@@ -5,10 +5,10 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para mermas o reducción de inventario -->
           <q-icon name="remove_shopping_cart" size="md" class="q-mr-sm" />
-          Reporte de Mermas
+          {{ $t('ui.reporte-de-mermas-2450a5') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Seguimiento de productos dañados, caducados o pérdidas operativas
+          {{ $t('ui.seguimiento-de-productos-danados-caducados-o-perdida-cc226f') }}
         </div>
       </div>
     </div>
@@ -18,23 +18,23 @@
         <div class="col-md-4" id="fechainicioreportemerma">
           <q-input
             v-model="fechaInicio"
-            label="Fecha Inicial*"
+            :label="$t('ui.fecha-inicial-2b461a')"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo obligatorio']"
+            :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
           />
         </div>
         <div class="col-md-4" id="fechafinreportemerma">
           <q-input
             v-model="fechaFin"
-            label="Fecha Final*"
+            :label="$t('ui.fecha-final-33d0e8')"
             type="date"
             outlined
             dense
             :rules="[
-              (val) => !!val || 'Campo obligatorio',
-              (val) => validarFechas(val) || 'Fecha final debe ser mayor o igual a la inicial',
+              (val) => !!val || $t('configuracion.canalesDeVenta.form.required'),
+              (val) => validarFechas(val) || $t('ui.fecha-final-debe-ser-mayor-o-igual-a-la-inicial-543555'),
             ]"
           />
         </div>
@@ -43,14 +43,14 @@
       <div class="row justify-center q-mt-md">
         <q-btn
           id="btngenerarreportemerma"
-          label="Generar Reporte"
+          :label="$t('reportes.generate')"
           type="submit"
           color="primary"
           class="q-mr-sm"
         />
         <q-btn
           id="btnvistapreviareportemerma"
-          label="Vista Previa"
+          :label="$t('ui.vista-previa-58a2c3')"
           color="secondary"
           @click="mostrarVistaPrevia"
           :disable="!datosFiltrados || datosFiltrados.length === 0"
@@ -61,14 +61,14 @@
           <q-select
             v-model="almacenSeleccionado"
             :options="almacenesOptions"
-            label="Almacén*"
+            :label="$t('ui.almacen-3e3724')"
             outlined
             dense
             option-value="idalmacen"
             option-label="almacen"
             emit-value
             map-options
-            :rules="[(val) => val >= 0 || 'Campo obligatorio']"
+            :rules="[(val) => val >= 0 || $t('configuracion.canalesDeVenta.form.required')]"
           />
         </div>
       </div>
@@ -79,12 +79,12 @@
       <div class="table-responsive">
         <BaseFilterableTable
           id="tablareportemerma"
-          title="Reporte de Merma"
+          :title="$t('ui.reporte-de-merma-76246d')"
           ref="tableRef"
           :rows="datosFiltrados"
           :columns="columnas"
           :arrayHeaders="arrayHeaders"
-          no-data-label="No hay datos"
+          :no-data-label="$t('ui.no-hay-datos-0f3172')"
           row-key="codigo"
           flat
           bordered
@@ -111,7 +111,7 @@
       <q-dialog v-model="mostrarModal" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -132,7 +132,7 @@
     <q-dialog v-model="modalDetalleMerma" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary flex justify-between text-h6 text-white">
-          <div>Lista de Productos</div>
+          <div>{{ $t('ui.lista-de-productos-f84a55') }}</div>
           <q-btn color="white" icon="close" @click="modalDetalleMerma = false" flat round dense />
         </q-card-section>
         <q-card-section>
@@ -151,7 +151,7 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" @click="modalDetalleMerma = false" />
+          <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" @click="modalDetalleMerma = false" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -159,6 +159,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -182,27 +183,27 @@ const cargando = ref(false)
 const modalDetalleMerma = ref(false)
 const productosDetalleMerma = ref([])
 const columnsMerma = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left', dataType: 'number' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center', dataType: 'text' },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left', dataType: 'number' },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left', dataType: 'text' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'center', dataType: 'text' },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'caracteristica',
-    label: 'Característica',
+    label: i18nT('configProducto.caracteristicaProducto.table.nombre'),
     field: 'caracteristica',
     align: 'left',
     dataType: 'text',
   },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', dataType: 'number' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right', dataType: 'number' },
   {
     name: 'codigolote',
-    label: 'Código Lote',
+    label: i18nT('ui.codigo-lote-04fcf6'),
     field: 'codigolote',
     align: 'center',
     dataType: 'text',
@@ -226,24 +227,24 @@ const tipo = { 1: 'Autorizado', 2: 'No autorizado' }
 
 // Configuración de la tabla
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'index', align: 'left', dataType: 'number' },
-  { name: 'fecha', label: 'fecha', field: 'fecha', align: 'left', dataType: 'date' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left', dataType: 'number' },
+  { name: 'fecha', label: i18nT('ui.fecha-c01a46'), field: 'fecha', align: 'left', dataType: 'date' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left', dataType: 'text' },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'autorizacion',
-    label: 'Autorizacion',
+    label: i18nT('ui.autorizacion-f525a8'),
     field: 'autorizacion',
     align: 'left',
     dataType: 'text',
   },
-  { name: 'actions', label: 'Opciones', field: 'actions', align: 'left' },
+  { name: 'actions', label: i18nT('configGeneral.divisas.table.options'), field: 'actions', align: 'left' },
 ]
 
 const arrayHeaders = ['numero', 'fecha', 'almacen', 'descripcion', 'autorizacion']
@@ -305,7 +306,7 @@ const cargarAlmacenes = async () => {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes',
+      message: i18nT('ui.error-al-cargar-los-almacenes-5919ff'),
       caption: error.message,
     })
   }
@@ -316,8 +317,8 @@ const generarReporte = async () => {
     if (!fechaInicio.value || !fechaFin.value || almacenSeleccionado.value === null) {
       $q.notify({
         type: 'warning',
-        message: 'Error',
-        caption: 'Ingrese todos los datos necesarios',
+        message: i18nT('configProducto.configuracionProductoUnico.messages.error'),
+        caption: i18nT('ui.ingrese-todos-los-datos-necesarios-0aff9f'),
       })
       return
     }
@@ -353,7 +354,7 @@ const generarReporte = async () => {
     console.error('Error al generar reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el reporte',
+      message: i18nT('ui.error-al-generar-el-reporte-01d807'),
       caption: error.message,
     })
   } finally {
@@ -365,8 +366,8 @@ const mostrarVistaPrevia = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'Error',
-      caption: 'No se generó ningún reporte',
+      message: i18nT('configProducto.configuracionProductoUnico.messages.error'),
+      caption: i18nT('ui.no-se-genero-ningun-reporte-816b8f'),
     })
     return
   }
@@ -399,7 +400,7 @@ const showComprobante = async (item) => {
     console.error('Error al cargar comprobante:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar comprobante',
+      message: i18nT('ui.error-al-cargar-comprobante-7d80b6'),
     })
   }
 }

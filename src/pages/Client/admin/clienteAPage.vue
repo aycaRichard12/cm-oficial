@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="group" size="md" class="q-mr-sm" />
-          Gestión de Clientes
+          {{ $t('ui.gestion-de-clientes-ac85a5') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Directorio y administración de cartera de clientes
+          {{ $t('ui.directorio-y-administracion-de-cartera-de-clientes-5bf129') }}
         </div>
       </div>
     </div>
@@ -19,7 +19,7 @@
         <q-card-section class="bg-primary text-h6 text-white row items-center justify-between">
           <div>
             <q-icon name="person" class="q-mr-sm" />
-            {{ isEditing ? 'Editar Cliente' : 'Nuevo Cliente' }}
+            {{ isEditing ? $t('ui.editar-cliente-073989') : $t('ui.nuevo-cliente-0f0b5a') }}
           </div>
           <q-btn icon="close" @click="toggleForm" flat dense round />
         </q-card-section>
@@ -40,17 +40,17 @@
     <q-dialog v-model="showImport" persistent>
       <q-card style="min-width: 350px">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Importar Clientes</div>
+          <div class="text-h6">{{ $t('ui.importar-clientes-9143e4') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup @click="resetForm" />
         </q-card-section>
 
         <q-card-section class="q-pt-md">
-          <p>Seleccione el archivo .xlsx o .csv con el formato requerido.</p>
+          <p>{{ $t('ui.seleccione-el-archivo-xlsx-o-csv-con-el-formato-requ-0ae9d9') }}</p>
 
           <q-file
             v-model="excelFile"
-            label="Elegir archivo Excel"
+            :label="$t('ui.elegir-archivo-excel-917dd0')"
             outlined
             accept=".xlsx, .xls, .csv"
             :loading="isUploading"
@@ -66,10 +66,10 @@
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancelar" v-close-popup @click="resetForm" />
+          <q-btn flat :label="$t('common.cancel')" v-close-popup @click="resetForm" />
           <q-btn
             color="primary"
-            label="Procesar Importación"
+            :label="$t('ui.procesar-importacion-0c6085')"
             :loading="isUploading"
             @click="procesarExcel"
           />
@@ -105,6 +105,7 @@
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -171,21 +172,21 @@ async function guardarCliente(data) {
     if (response.data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.cliente-guardado-correctamente-d0df06'),
       })
       loadRows()
       showForm.value = false
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-cliente-a235d2'),
       })
     }
   } catch (error) {
     console.error('Error al guardar cliente:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar el cliente',
+      message: i18nT('ui.no-se-pudo-guardar-el-cliente-8c0922'),
     })
   }
 }
@@ -247,7 +248,7 @@ const cargarTipoCliente = async () => {
     }))
     // Agregar opción "Todos (Canal Venta)" al inicio
     formateado.unshift({
-      label: 'Todos (Tipo Cliente)',
+      label: i18nT('ui.todos-tipo-cliente-677c54'),
       value: '0',
     })
 
@@ -256,7 +257,7 @@ const cargarTipoCliente = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -275,7 +276,7 @@ const cargarCanalesVenta = async () => {
     }))
     // Agregar opción "Todos (Canal Venta)" al inicio
     formateado.unshift({
-      label: 'Todos (Canal Venta)',
+      label: i18nT('ui.todos-canal-venta-2c1652'),
       value: '0',
     })
 
@@ -284,7 +285,7 @@ const cargarCanalesVenta = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -298,14 +299,14 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
 async function eliminarCliente(client) {
   console.log(client)
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar Cliente "${client.nombre}"?`,
     cancel: true,
     persistent: true,
@@ -329,7 +330,7 @@ async function eliminarCliente(client) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -345,7 +346,7 @@ async function cargarAlmacenes() {
     }))
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   }
 }
 //============================================modal
@@ -363,7 +364,7 @@ const getSucursal = async (client) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -399,7 +400,7 @@ const guardarSucursal = async (sucursal) => {
     if (response.data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Sucursal guardada correctamente',
+        message: response.data.mensaje || i18nT('ui.sucursal-guardada-correctamente-781ad8'),
       })
       getSucursal(sucursal.idcliente)
       // Reset form for next entry
@@ -413,14 +414,14 @@ const guardarSucursal = async (sucursal) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar la sucursal',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-la-sucursal-31c05a'),
       })
     }
   } catch (error) {
     console.error('Error al guardar sucursal:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar la sucursal',
+      message: i18nT('ui.no-se-pudo-guardar-la-sucursal-d2e223'),
     })
   } finally {
     loadingSucursal.value = false
@@ -442,8 +443,8 @@ const editSucursal = (sucursal) => {
 const eliminarSucursal = (sucursal) => {
   console.log(sucursal)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Sucursal ?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-sucursal-921632')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -466,7 +467,7 @@ const eliminarSucursal = (sucursal) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })

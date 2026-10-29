@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="warning_amber" size="md" class="q-mr-sm" />
-          Registrar Extravío
+          {{ $t('ui.registrar-extravio-c089ad') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración y registro de productos extraviados
+          {{ $t('ui.administracion-y-registro-de-productos-extraviados-c09d13') }}
         </div>
       </div>
     </div>
@@ -22,11 +22,11 @@
               @click="toggleFormulario"
               no-caps
               id="btnnuevoextravio"
-              title="Registrar Extravio"
+              :title="$t('ui.registrar-extravio-eaa511')"
             >
               <q-icon name="add" class="icono" />
               <span class="texto">
-                <q-icon name="add" />{{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}</span
+                <q-icon name="add" />{{ mostrarFormulario ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}</span
               >
             </q-btn>
           </div>
@@ -35,7 +35,7 @@
         <!-- Filtros -->
         <div class="row q-col-gutter-x-md">
           <div class="col-12 col-md-4" id="filtroalmacenextravio">
-            <label for="almacen">Seleccione un Almacén</label>
+            <label for="almacen">{{ $t('ui.seleccione-un-almacen-fc2f9e') }}</label>
             <q-select
               v-model="idAlmacenFiltro"
               :options="almacenesOptions"
@@ -56,7 +56,7 @@
               class="btn-res q-mt-lg"
             >
               <q-icon name="mdi-file-pdf-box" class="icono" />
-              <span class="texto">Vista Previa PDF</span>
+              <span class="texto">{{ $t('ui.vista-previa-pdf-9db3ed') }}</span>
             </q-btn>
           </div>
         </div>
@@ -65,18 +65,18 @@
         <q-dialog v-model="mostrarFormulario" persistent>
           <q-card class="responsive-dialog">
             <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-              <div>Registrar Extravio</div>
+              <div>{{ $t('ui.registrar-extravio-eaa511') }}</div>
               <q-btn icon="close" @click="cancelarRegistro" dense flat round />
             </q-card-section>
 
             <q-card-section>
               <q-form @submit="registrarRobo" class="row q-col-gutter-x-md">
                 <div class="col-12 col-md-4" id="fechaformextravio">
-                  <label for="fecha">Fecha</label>
+                  <label for="fecha">{{ $t('cotizacion.table.date') }}</label>
                   <q-input v-model="formulario.fecha" id="fecha" type="date" dense outlined />
                 </div>
                 <div class="col-12 col-md-4" id="almacenformextravio">
-                  <label for="almacen">Almacén</label>
+                  <label for="almacen">{{ $t('inventario.warehouse') }}</label>
                   <q-select
                     v-model="formulario.almacen"
                     :options="almacenesOptions"
@@ -88,7 +88,7 @@
                   />
                 </div>
                 <div class="col-12 col-md-4" id="descripcionformextravio">
-                  <label for="description">Descripción</label>
+                  <label for="description">{{ $t('configuracion.servicios.table.descripcion') }}</label>
                   <q-input
                     v-model="formulario.descripcion"
                     id="description"
@@ -105,7 +105,7 @@
                     for="cajaBanco"
                     class="text-weight-bold cm-text q-mb-sm block"
                     style="font-size: 13px; text-transform: uppercase"
-                    >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                    >{{ $t('ui.seleccione-caja-o-banco-b3521c') }} <span class="text-negative">*</span></label
                   >
                   <q-select
                     v-model="formulario.idcaja_banco"
@@ -116,7 +116,7 @@
                     emit-value
                     map-options
                     class="premium-input"
-                    :rules="[(val) => !!val || 'Campo requerido']"
+                    :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   >
                     <template v-slot:prepend>
                       <q-icon name="account_balance" color="positive" />
@@ -149,10 +149,10 @@
                   <q-btn
                     id="btnregistrarformextravio"
                     type="submit"
-                    label="Registrar"
+                    :label="$t('ui.registrar-caacc6')"
                     color="primary"
                   />
-                  <q-btn flat label="Cancelar" color="negative" @click="cancelarRegistro" />
+                  <q-btn flat :label="$t('common.cancel')" color="negative" @click="cancelarRegistro" />
                 </div>
               </q-form>
             </q-card-section>
@@ -160,8 +160,8 @@
         </q-dialog>
         <div class="row flex justify-end">
           <div id="buscarfiltroextravio">
-            <label for="buscaar">Buscar...</label>
-            <q-input v-model="filtroTabla" dense debounce="300" placeholder="Buscar">
+            <label for="buscaar">{{ $t('common.search') }}</label>
+            <q-input v-model="filtroTabla" dense debounce="300" :placeholder="$t('ui.buscar-a62405')">
               <template v-slot:append>
                 <q-icon name="search" />
               </template>
@@ -174,7 +174,7 @@
       <q-card-section>
         <q-table
           id="tablaextravios"
-          title="Extraviados"
+          :title="$t('ui.extraviados-9e221d')"
           :rows="datosTabla"
           :columns="columnasTabla"
           row-key="id"
@@ -233,7 +233,7 @@
                   flat
                   :color="Number(props.row.autorizacion) === 1 ? 'green' : 'grey'"
                   @click="cambiarEstado(props.row)"
-                  title="Cambiar Estado"
+                  :title="$t('configGeneral.leyenda.table.toggleStatus')"
                 />
                 <q-btn
                   id="btngenerarcomprobanteextravio"
@@ -256,7 +256,7 @@
     <q-dialog v-model="modaldetalleProductos">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Productos Extraviados</div>
+          <div>{{ $t('ui.productos-extraviados-f0f99c') }}</div>
           <q-btn icon="close" @click="volverALista" dense flat round />
         </q-card-section>
         <q-card-section>
@@ -270,12 +270,12 @@
                     <div v-if="esProductoUnico" class="unique-product-section">
                       <q-checkbox
                         v-model="registrarComoProductoUnico"
-                        label="Producto Único"
+                        :label="$t('ui.producto-unico-b16503')"
                         color="primary"
                         class="custom-checkbox text-weight-medium"
                       >
                         <template v-slot:label>
-                          <span class="cm-text">Producto Único</span>
+                          <span class="cm-text">{{ $t('ui.producto-unico-b16503') }}</span>
                         </template>
                       </q-checkbox>
                     </div>
@@ -283,7 +283,7 @@
 
                   <!-- Select debajo o al lado según necesites -->
                   <div class="col-12">
-                    <label for="producto">Producto</label>
+                    <label for="producto">{{ $t('inventario.product') }}</label>
 
                     <q-select
                       v-model="formularioDetalle.idproductoalmacen"
@@ -302,7 +302,7 @@
                     >
                       <template v-slot:no-option>
                         <q-item>
-                          <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                          <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                         </q-item>
                       </template>
                     </q-select>
@@ -310,7 +310,7 @@
                 </div>
               </div>
               <div class="col-12 col-md-2" id="stockdetalleextravio">
-                <label for="stock">Stock</label>
+                <label for="stock">{{ $t('inventario.stock') }}</label>
                 <q-input
                   v-model.number="formularioDetalle.stock"
                   id="stock"
@@ -321,7 +321,7 @@
                 />
               </div>
               <div class="col-12 col-md-2" id="cantidaddetalleextravio">
-                <label for="cantidad">Cantidad</label>
+                <label for="cantidad">{{ $t('ui.cantidad-b5b6f8') }}</label>
                 <q-input
                   v-model.number="formularioDetalle.cantidad"
                   id="cantidad"
@@ -330,8 +330,8 @@
                   type="number"
                   min="1"
                   :rules="[
-                    (val) => Number(val) > 0 || 'La cantidad debe ser mayor a 0',
-                    (val) => val <= formularioDetalle.stock || 'Cantidad excede stock',
+                    (val) => Number(val) > 0 || $t('ui.la-cantidad-debe-ser-mayor-a-0-eb7edc'),
+                    (val) => val <= formularioDetalle.stock || $t('ui.cantidad-excede-stock-cae0f5'),
                   ]"
                 />
               </div>
@@ -347,14 +347,14 @@
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
                   dense
                   flat
-                  label="Lote"
+                  :label="$t('ui.lote-7530a3')"
                   :color="lote ? 'green' : 'grey'"
                   @click="lote = !lote"
-                  title="CAMBIAR TIPO REPORTE"
+                  :title="$t('ui.cambiar-tipo-reporte-8a29ad')"
                 />
               </div>
               <div class="col-12 col-md-12" v-if="lote" id="compradetalleextravio">
-                <label for="compras">Seleccionar Lote de Compra/Producción:</label>
+                <label for="compras">{{ $t('ui.seleccionar-lote-de-compra-produccion-2eb467') }}</label>
                 <q-select
                   v-model="formularioDetalle.compra"
                   :options="filterCompras"
@@ -377,13 +377,13 @@
               <q-btn
                 id="btnanadirdetalleextravio"
                 type="submit"
-                label="Añadir"
+                :label="$t('ui.anadir-41261d')"
                 color="primary"
                 :disable="!formularioDetalle.idproductoalmacen || !formularioDetalle.cantidad"
               />
               <q-btn
                 flat
-                label="Cerrar"
+                :label="$t('ui.cerrar-4b0816')"
                 color="negative"
                 class="q-mr-md"
                 @click="modaldetalleProductos = false"
@@ -403,7 +403,7 @@
             <template v-slot:no-data>
               <div class="full-width row flex-center text-grey-6 q-pa-md">
                 <q-icon name="inbox" size="sm" class="q-mr-sm" />
-                No hay productos en el detalle
+                {{ $t('ui.no-hay-productos-en-el-detalle-3a40b0') }}
               </div>
             </template>
             <template v-slot:body="props">
@@ -418,7 +418,7 @@
                     @click="props.expand = !props.expand"
                     :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
                   >
-                    <q-tooltip>Ver detalles de códigos</q-tooltip>
+                    <q-tooltip>{{ $t('ui.ver-detalles-de-codigos-9e0689') }}</q-tooltip>
                   </q-btn>
                 </q-td>
 
@@ -522,7 +522,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -542,6 +542,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'boot/axios'
@@ -630,21 +631,21 @@ const formularioDetalle = ref({
 const columnasTabla = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => datosTabla.value.indexOf(row) + 1,
     align: 'center',
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'estado', label: 'Detalle', field: 'autorizacion', align: 'center' },
-  { name: 'acciones', label: 'Acciones', align: 'center' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'estado', label: i18nT('ui.detalle-be605b'), field: 'autorizacion', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'center' },
 ]
 // data: [
 //       {
@@ -668,15 +669,15 @@ const columnasDetalle = [
 
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => detalleRobo.value.indexOf(row) + 1,
     align: 'center',
   },
-  { name: 'codigolote', label: 'Código Lote', field: 'codigolote', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
-  { name: 'acciones', label: 'Acciones', align: 'center' },
+  { name: 'codigolote', label: i18nT('ui.codigo-lote-04fcf6'), field: 'codigolote', align: 'left' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'center' },
 ]
 
 // Paginación
@@ -701,7 +702,7 @@ const cargarAlmacenes = async () => {
     // 2. Aplicamos la lógica condicional
     if (almacenesFiltrados.length > 1) {
       // Si hay más de uno, agregamos "Todos" al inicio
-      almacenesOptions.value = [{ label: 'Todos Los Almacenes', value: 0 }, ...almacenesFiltrados]
+      almacenesOptions.value = [{ label: i18nT('ui.todos-los-almacenes-ca930b'), value: 0 }, ...almacenesFiltrados]
     } else {
       // Si hay uno o ninguno, usamos solo los filtrados
       almacenesOptions.value = almacenesFiltrados
@@ -715,7 +716,7 @@ const cargarAlmacenes = async () => {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los almacenes',
+      message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2'),
     })
   }
 }
@@ -734,7 +735,7 @@ const cargarRobos = async () => {
     console.error('Error al listar robos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al listar robos',
+      message: i18nT('ui.error-al-listar-robos-669c86'),
     })
   }
 }
@@ -777,7 +778,7 @@ const registrarRobo = async () => {
     console.error('Error al registrar robo:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.mensaje || 'Error al registrar robo',
+      message: error.response?.data?.mensaje || i18nT('ui.error-al-registrar-robo-c9e768'),
     })
   }
 }
@@ -798,15 +799,15 @@ const editarRobo = async (id) => {
     console.error('Error al editar robo:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar datos del robo',
+      message: i18nT('ui.error-al-cargar-datos-del-robo-665403'),
     })
   }
 }
 
 const eliminarRobo = (id) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro de eliminar este registro?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-de-eliminar-este-registro-289b10'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -821,7 +822,7 @@ const eliminarRobo = (id) => {
       console.error('Error al eliminar robo:', error)
       $q.notify({
         type: 'negative',
-        message: error.response?.data?.mensaje || 'Error al eliminar robo',
+        message: error.response?.data?.mensaje || i18nT('ui.error-al-eliminar-robo-7b0701'),
       })
     }
   })
@@ -829,8 +830,8 @@ const eliminarRobo = (id) => {
 
 const cambiarEstado = (row) => {
   $q.dialog({
-    title: 'Confirmar Cambio de Estado',
-    message: '¿Autorizar Documento?',
+    title: i18nT('ui.confirmar-cambio-de-estado-d0fd45'),
+    message: i18nT('ui.autorizar-documento-568831'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -856,7 +857,7 @@ const cambiarEstado = (row) => {
       console.error('Error al cambiar estado:', error)
       $q.notify({
         type: 'negative',
-        message: error.response?.data?.mensaje || 'Error al cambiar estado',
+        message: error.response?.data?.mensaje || i18nT('ui.error-al-cambiar-estado-2ffda4'),
       })
     }
   })
@@ -897,7 +898,7 @@ const cargarProductosDisponibles = async (idRobo, idalmacen) => {
     console.error('Error al cargar productos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar productos disponibles',
+      message: i18nT('ui.error-al-cargar-productos-disponibles-71531c'),
     })
   }
 }
@@ -913,18 +914,18 @@ async function cargarComprasLotes(idproductoalmacen) {
     const response = await api.get(`listarLotesPorProductoAlmacen/${id}`)
     const res = response.data
     if (!res || res.estado !== 'exito') {
-      throw new Error((res && res.mensaje) || 'Error al cargar lotes')
+      throw new Error((res && res.mensaje) || i18nT('ui.error-al-cargar-lotes-32004d'))
     }
     const lotes = Array.isArray(res.data) ? res.data : []
     const mapped = lotes.map((l) => ({
       label:
-        'Lote #' +
+        i18nT('ui.lote-3388a7') +
         l.id_lote +
-        ' | Fact: ' +
+        i18nT('ui.fact-94daed') +
         (l.nfactura || '-') +
-        ' | Prov: ' +
+        i18nT('ui.prov-fbb0c6') +
         (l.proveedor_nombre || '-') +
-        ' | Disp: ' +
+        i18nT('ui.disp-1acc6f') +
         l.cantidad_disponible,
       value: Number(l.id_lote),
       id_lote: Number(l.id_lote),
@@ -947,7 +948,7 @@ async function cargarComprasLotes(idproductoalmacen) {
       type: 'negative',
       message:
         (error.response && error.response.data && error.response.data.mensaje) ||
-        'No se pudieron cargar los lotes',
+        i18nT('ui.no-se-pudieron-cargar-los-lotes-2ade23'),
     })
   }
 }
@@ -989,7 +990,7 @@ const listarDetalleRobo = async (idRobo) => {
     console.error('Error al listar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al listar detalle del robo',
+      message: i18nT('ui.error-al-listar-detalle-del-robo-cd8a74'),
     })
   }
 }
@@ -999,7 +1000,7 @@ const registrarDetalle = async () => {
   if (!formularioDetalle.value.cantidad || Number(formularioDetalle.value.cantidad) <= 0) {
     $q.notify({
       type: 'negative',
-      message: 'La cantidad debe ser mayor a 0',
+      message: i18nT('ui.la-cantidad-debe-ser-mayor-a-0-eb7edc'),
     })
     return
   }
@@ -1034,7 +1035,7 @@ const registrarDetalle = async () => {
     console.error('Error al registrar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.mensaje || 'Error al registrar detalle',
+      message: error.response?.data?.mensaje || i18nT('ui.error-al-registrar-detalle-9ad3bb'),
     })
   }
 }
@@ -1059,15 +1060,15 @@ const editarDetalle = async (idDetalle) => {
     console.error('Error al editar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar detalle',
+      message: i18nT('ui.error-al-cargar-detalle-db0644'),
     })
   }
 }
 
 const eliminarDetalle = (idDetalle) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro de eliminar este detalle?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-de-eliminar-este-detalle-8edef0'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -1083,7 +1084,7 @@ const eliminarDetalle = (idDetalle) => {
       console.error('Error al eliminar detalle:', error)
       $q.notify({
         type: 'negative',
-        message: error.response?.data?.mensaje || 'Error al eliminar detalle',
+        message: error.response?.data?.mensaje || i18nT('ui.error-al-eliminar-detalle-0de80c'),
       })
     }
   })
@@ -1133,7 +1134,7 @@ const generarPDF = () => {
   if (datosTabla.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No hay datos para generar el reporte',
+      message: i18nT('ui.no-hay-datos-para-generar-el-reporte-5a1bf6'),
     })
     return
   }
@@ -1184,7 +1185,7 @@ async function listarcajasbanco() {
     const response = await apiCt.get(`listar_caja_bancos/${idempresa}`)
     console.log(response.data)
     if (response.data.length === 0) {
-      $q.notify({ type: 'warning', message: 'No hay cajas o bancos registrados' })
+      $q.notify({ type: 'warning', message: i18nT('ui.no-hay-cajas-o-bancos-registrados-7bec77') })
       return
     }
     listaCajaBancos.value = response.data.map((item) => ({
@@ -1196,7 +1197,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   }
 }
 onMounted(() => {

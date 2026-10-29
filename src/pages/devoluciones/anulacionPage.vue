@@ -2,14 +2,14 @@
   <q-page class="q-pa-md">
     <!-- Contenedor principal con tabs -->
     <q-tabs v-model="tab" align="left" class="text-primary" id="anulacionpagetabs">
-      <q-tab id="tabvalidas" name="validas" label="Válidas" />
-      <q-tab id="tabanuladas" name="anuladas" label="Anuladas" />
-      <q-tab id="tabdevueltas" name="devueltas" label="Devueltas" />
+      <q-tab id="tabvalidas" name="validas" :label="$t('ui.validas-8d39e4')" />
+      <q-tab id="tabanuladas" name="anuladas" :label="$t('ui.anuladas-4e60b0')" />
+      <q-tab id="tabdevueltas" name="devueltas" :label="$t('ui.devueltas-72e511')" />
       <q-tab
         id="tabdetalledevolucion"
         v-if="showDevolucionDetail"
         name="detalleDevolucion"
-        label="Detalle Devolución"
+        :label="$t('ui.detalle-devolucion-d7b88d')"
       />
     </q-tabs>
 
@@ -86,7 +86,7 @@
     <q-dialog v-model="modalEstadoFactura">
       <q-card style="min-width: 300px">
         <q-card-section>
-          <div class="text-h6">Estado de Factura</div>
+          <div class="text-h6">{{ $t('ui.estado-de-factura-376ecc') }}</div>
         </q-card-section>
 
         <q-card-section>
@@ -94,7 +94,7 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+          <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -109,6 +109,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
@@ -205,7 +206,7 @@ const cargarConfiguracion = async () => {
       }))
 
     almacenesOptions.value =
-      opciones.length > 1 ? [{ value: 0, label: 'Seleccione un Almacén' }, ...opciones] : opciones
+      opciones.length > 1 ? [{ value: 0, label: i18nT('ui.seleccione-un-almacen-fc2f9e') }, ...opciones] : opciones
 
     // Cargar tipos de venta
     if (token && tipoFactura && getToken(true) && getTipoFactura(true)) {
@@ -235,8 +236,8 @@ const cargarConfiguracion = async () => {
       console.log(datosFiltrados)
 
       tiposVentaOptions.value = [
-        { value: 0, label: 'comprobante de venta' },
-        { value: -1, label: 'cotizacion de venta' },
+        { value: 0, label: i18nT('ui.comprobante-de-venta-923544') },
+        { value: -1, label: i18nT('ui.cotizacion-de-venta-3cc824') },
         ...datosFiltrados.map((key) => ({
           value: key.codigoDocumentSector,
           label: key.documentoSector.toLowerCase(),
@@ -244,8 +245,8 @@ const cargarConfiguracion = async () => {
       ]
     } else {
       tiposVentaOptions.value = [
-        { value: 0, label: 'comprobante de venta' },
-        { value: -1, label: 'cotizacion de venta' },
+        { value: 0, label: i18nT('ui.comprobante-de-venta-923544') },
+        { value: -1, label: i18nT('ui.cotizacion-de-venta-3cc824') },
       ]
     }
   } catch (error) {
@@ -315,7 +316,7 @@ const onConfirmarAnulacion = async () => {
 const abrirDetalleExistente = (idDevolucion) => {
   $q.notify({
     type: 'info',
-    message: 'Su registro de devolución se inició. Debe concluir con los pasos siguientes...',
+    message: i18nT('ui.su-registro-de-devolucion-se-inicio-debe-concluir-co-5a34e9'),
   })
   showDevolucionDetail.value = true
   idDevolucionActual.value = idDevolucion
@@ -352,7 +353,7 @@ const generarComprobantePDF = async (row) => {
 
   try {
     const idempresa = idempresa_md5()
-    $q.loading.show({ message: 'Generando comprobante...' })
+    $q.loading.show({ message: i18nT('ui.generando-comprobante-76e34b') })
 
     const endpoint =
       Number(row.tipoventa) === -1
@@ -363,7 +364,7 @@ const generarComprobantePDF = async (row) => {
     const data = response.data
 
     if (!Array.isArray(data) || data[0] === 'error') {
-      throw new Error(data.error || 'Respuesta inválida del servidor.')
+      throw new Error(data.error || i18nT('ui.respuesta-invalida-del-servidor-473cbd'))
     }
 
     let doc
