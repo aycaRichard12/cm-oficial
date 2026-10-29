@@ -5,15 +5,15 @@
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
-        title="Registrar Punto Venta"
+        :title="$t('ui.registrar-punto-venta-dca702')"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" /> Nuevo </span>
+        <span class="texto"> <q-icon name="add" /> {{ $t('common.new') }} </span>
       </q-btn>
     </div>
 
     <div class="col-12 col-md-3" id="tipoAlmacen">
-      <label for="almacen">Almacén</label>
+      <label for="almacen">{{ $t('inventario.warehouse') }}</label>
       <q-select
         v-model="filtroTipoAlmacen"
         :options="tiposAlmacen"
@@ -44,7 +44,7 @@
   </div>
 
   <BaseFilterableTable
-    title="Puntos Ventas"
+    :title="$t('ui.puntos-ventas-4bce59')"
     :rows="props.rows"
     :columns="columns"
     :arrayHeaders="ArrayHeaders"
@@ -98,6 +98,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 import { getTipoFactura } from 'src/composables/FuncionesG'
 import modalPuntoVentaFacturacion from './modalPuntoVentaFacturacion.vue'
@@ -168,11 +169,11 @@ const emit = defineEmits([
 ])
 
 const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'nombre', label: 'Punto de venta', field: 'nombre', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'tipo', label: 'Tipo', field: 'tipo', align: 'center' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+  { name: 'nombre', label: i18nT('ui.punto-de-venta-f50489'), field: 'nombre', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'tipo', label: i18nT('configGeneral.divisas.table.type'), field: 'tipo', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 const ArrayHeaders = ['numero', 'nombre', 'descripcion', 'tipo']

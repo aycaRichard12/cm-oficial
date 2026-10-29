@@ -3,9 +3,9 @@
     <!-- Header -->
     <div class="row items-center q-pb-md">
       <div class="col">
-        <div class="text-h6 text-primary text-weight-bold">Asignar Punto de Venta</div>
+        <div class="text-h6 text-primary text-weight-bold">{{ $t('ui.asignar-punto-de-venta-5b3562') }}</div>
         <div class="text-subtitle2 cm-text">
-          Usuario: <span class="text-weight-bold">{{ user.name }}</span>
+          {{ $t('ui.usuario-5a75b0') }} <span class="text-weight-bold">{{ user.name }}</span>
         </div>
       </div>
       <div class="col-auto">
@@ -20,7 +20,7 @@
       <div class="row q-col-gutter-md">
         <!-- Almacén -->
         <div class="col-12 col-md-6">
-          <div class="text-subtitle2 q-mb-xs cm-text">Almacén</div>
+          <div class="text-subtitle2 q-mb-xs cm-text">{{ $t('inventario.warehouse') }}</div>
           <q-select
             v-model="warehouse"
             :options="warehouses"
@@ -33,7 +33,7 @@
             option-label="name"
             @update:model-value="$emit('load', warehouse)"
             :loading="warehouses.length === 0"
-            :rules="[val => !!val || 'Seleccione un almacén']"
+            :rules="[val => !!val || $t('ui.seleccione-un-almacen-27ab34')]"
           >
             <template v-slot:prepend>
               <q-icon name="inventory_2" color="primary" />
@@ -43,7 +43,7 @@
 
         <!-- Punto de Venta -->
         <div class="col-12 col-md-6">
-          <div class="text-subtitle2 q-mb-xs cm-text">Punto de Venta</div>
+          <div class="text-subtitle2 q-mb-xs cm-text">{{ $t('ui.punto-de-venta-ee4115') }}</div>
           <q-select
             v-model="pointOfSale"
             :options="pointsOfSale"
@@ -55,7 +55,7 @@
             option-value="id"
             option-label="name"
             :disable="!warehouse"
-            :rules="[val => !!val || 'Seleccione un punto de venta']"
+            :rules="[val => !!val || $t('ui.seleccione-un-punto-de-venta-fb4cf3')]"
           >
             <template v-slot:prepend>
               <q-icon name="point_of_sale" color="primary" />
@@ -69,14 +69,14 @@
         <template v-slot:avatar>
           <q-icon name="info" color="info" />
         </template>
-        Asignando acceso al punto de venta seleccionado para <strong>{{ user.name }}</strong>.
+        {{ $t('ui.asignando-acceso-al-punto-de-venta-seleccionado-para-8f146d') }} <strong>{{ user.name }}</strong>.
       </q-banner>
 
       <!-- Botones -->
       <div class="row justify-end q-mt-lg q-gutter-x-sm">
         <q-btn
           flat
-          label="Cancelar"
+          :label="$t('common.cancel')"
           color="grey-7"
           @click="$emit('volver')"
           v-close-popup
@@ -84,7 +84,7 @@
         <q-btn
           type="submit"
           color="primary"
-          label="Guardar Asignación"
+          :label="$t('ui.guardar-asignacion-fdaca0')"
           icon="check"
           unelevated
           :loading="submitting"
