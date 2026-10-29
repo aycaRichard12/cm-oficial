@@ -3,7 +3,7 @@
     <q-toolbar class="bg-primary text-white">
       <q-toolbar-title>
         <q-icon name="person_add" class="q-mr-sm" size="28px" />
-        Nuevo Registro de Cliente
+        {{ $t('ui.nuevo-registro-de-cliente-3ea242') }}
       </q-toolbar-title>
       <q-btn flat round dense icon="close" v-close-popup @click="$emit('cancel')" />
     </q-toolbar>
@@ -17,9 +17,9 @@
               outlined
               dense
               v-model="localData.nombre"
-              label="Razón Social *"
-              placeholder="Ej: Juan Pérez o Empresa S.A."
-              :rules="[(val) => !!val || 'Campo Obligatorio']"
+              :label="$t('ui.razon-social-abb099')"
+              :placeholder="$t('ui.ej-juan-perez-o-empresa-s-a-f0e781')"
+              :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
             >
               <template v-slot:prepend>
                 <q-icon name="business" color="primary" />
@@ -33,9 +33,9 @@
               outlined
               dense
               v-model="localData.nombrecomercial"
-              label="Nombre Comercial *"
-              placeholder="Ej: Mi Negocio"
-              :rules="[(val) => !!val || 'Campo Obligatorio']"
+              :label="$t('ui.nombre-comercial-c235f1')"
+              :placeholder="$t('ui.ej-mi-negocio-561492')"
+              :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
             >
               <template v-slot:prepend>
                 <q-icon name="storefront" color="primary" />
@@ -50,12 +50,12 @@
               dense
               v-model="localData.tipocliente"
               :options="tipoClienteOptions"
-              label="Tipo de Cliente *"
+              :label="$t('ui.tipo-de-cliente-4296d0')"
               option-value="value"
               option-label="label"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un tipo']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
             >
               <template v-slot:prepend>
                 <q-icon name="groups" color="primary" />
@@ -71,7 +71,7 @@
                   color="primary"
                   @click.stop="cargarTipoCliente()"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -84,12 +84,12 @@
               dense
               v-model="localData.canalventa"
               :options="canalVentaOptions"
-              label="Canal de venta *"
+              :label="$t('ui.canal-de-venta-42adfe')"
               option-label="label"
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un canal']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
             >
               <template v-slot:prepend>
                 <q-icon name="shopping_cart" color="primary" />
@@ -105,7 +105,7 @@
                   color="primary"
                   @click.stop="cargarCanalesVenta()"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -118,12 +118,12 @@
               dense
               v-model="localData.tipodocumento"
               :options="tipoDocumetosOptions"
-              label="Tipo de Documentos *"
+              :label="$t('ui.tipo-de-documentos-3eb36c')"
               option-label="label"
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un tipo']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
             >
               <template v-slot:prepend>
                 <q-icon name="badge" color="primary" />
@@ -137,8 +137,8 @@
               outlined
               dense
               v-model="localData.nrodocumento"
-              label="Nro De Documento *"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :label="$t('ui.nro-de-documento-6e2cd7')"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="numbers" color="primary" />
@@ -152,8 +152,8 @@
               outlined
               dense
               v-model="localData.telefono"
-              label="Teléfono"
-              placeholder="Ej: 71234567"
+              :label="$t('ui.telefono-99af37')"
+              :placeholder="$t('ui.ej-71234567-0efc2d')"
             >
               <template v-slot:prepend>
                 <q-icon name="phone" color="primary" />
@@ -166,7 +166,7 @@
 
         <div class="row justify-end q-gutter-sm">
           <q-btn
-            label="Cancelar"
+            :label="$t('common.cancel')"
             flat
             color="grey-7"
             v-close-popup
@@ -174,7 +174,7 @@
             class="q-px-md"
           />
           <q-btn
-            label="Guardar Cliente"
+            :label="$t('ui.guardar-cliente-079fd8')"
             type="submit"
             color="primary"
             unelevated

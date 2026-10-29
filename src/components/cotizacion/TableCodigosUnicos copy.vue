@@ -8,7 +8,7 @@
         <div>
           <div class="text-subtitle1 text-weight-medium">{{ title }}</div>
           <div class="text-caption cm-text-muted">
-            {{ canEdit ? 'Modo Edición Habilitado' : 'Modo Lectura' }}
+            {{ canEdit ? $t('ui.modo-edicion-habilitado-4c968f') : $t('ui.modo-lectura-edbb4a') }}
           </div>
         </div>
       </div>
@@ -24,9 +24,9 @@
       <q-markup-table flat bordered separator="cell" class="modern-table">
         <thead>
           <tr class="cm-surface-2">
-            <th style="width: 60px">N°</th>
-            <th>Código de Identificación</th>
-            <th v-if="canDelete" style="width: 80px text-center">Acciones</th>
+            <th style="width: 60px">{{ $t('cotizacion.table.number') }}</th>
+            <th>{{ $t('ui.codigo-de-identificacion-222649') }}</th>
+            <th v-if="canDelete" style="width: 80px text-center">{{ $t('common.actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -46,9 +46,9 @@
                   class="q-mr-sm"
                 />
                 <span :class="sub.serie ? '' : 'cm-text-muted text-italic'">
-                  {{ sub.serie || 'Sin código asignado' }}
+                  {{ sub.serie || $t('ui.sin-codigo-asignado-a24201') }}
                 </span>
-                <q-tooltip v-if="canEdit">Doble clic para editar</q-tooltip>
+                <q-tooltip v-if="canEdit">{{ $t('ui.doble-clic-para-editar-11cc6c') }}</q-tooltip>
               </div>
 
               <q-input
@@ -75,7 +75,7 @@
                       @click.stop="confirmarEdicion(sub)"
                       class="editor-action-btn"
                     >
-                      <q-tooltip>Guardar (Enter)</q-tooltip>
+                      <q-tooltip>{{ $t('ui.guardar-enter-3bbd5f') }}</q-tooltip>
                     </q-btn>
                     <q-btn
                       flat
@@ -87,7 +87,7 @@
                       @click.stop="cancelarEdicion(sub)"
                       class="editor-action-btn"
                     >
-                      <q-tooltip>Cancelar (Esc)</q-tooltip>
+                      <q-tooltip>{{ $t('ui.cancelar-esc-40b562') }}</q-tooltip>
                     </q-btn>
                   </div>
                 </template>
@@ -104,7 +104,7 @@
                 size="sm"
                 @click="gestionarEliminacion(sub)"
               >
-                <q-tooltip>Eliminar este registro</q-tooltip>
+                <q-tooltip>{{ $t('ui.eliminar-este-registro-94c7a9') }}</q-tooltip>
               </q-btn>
             </td>
           </tr>
@@ -117,7 +117,7 @@
       <div class="footer-info">
         <q-icon name="schedule" size="14px" color="grey-6" class="q-mr-xs" />
         <span class="text-caption cm-text-muted">
-          Última actualización: {{ new Date().toLocaleString() }}
+          {{ $t('ui.ultima-actualizacion-e272ac') }} {{ new Date().toLocaleString() }}
         </span>
       </div>
       <div class="footer-stats">
@@ -125,7 +125,7 @@
           <q-icon name="check_circle" size="14px" color="positive" class="q-mr-xs" />
           <span class="text-caption">
             {{ modelValue.filter((s) => s.codigo).length }}
-            asignados
+            {{ $t('ui.asignados-34292c') }}
           </span>
         </div>
       </div>
@@ -134,6 +134,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -143,7 +144,7 @@ const copiaRespaldo = ref('') // Para almacenar el valor original antes de edita
 const props = defineProps({
   modelValue: { type: Array, required: true }, // Lista de códigos (productos_detallados)
   parentRow: { type: Object, required: true }, // Fila de la tabla padre para actualizar cantidad
-  title: { type: String, default: 'Desglose de Identificadores' },
+  title: { type: String, default: i18nT('ui.desglose-de-identificadores-98905f') },
   canEdit: { type: Boolean, default: false },
   canDelete: { type: Boolean, default: false },
   apiMode: { type: Boolean, default: true }, // TRUE: API + Local, FALSE: Solo Local
@@ -183,10 +184,10 @@ const cancelarEdicion = (sub) => {
 
 const gestionarEliminacion = (sub) => {
   $q.dialog({
-    title: 'Confirmar eliminación',
+    title: i18nT('configuracion.credencialesServicio.messages.deleteTitle'),
     message: `¿Deseas eliminar el código ${sub.serie || 'seleccionado'}? Esto reducirá la cantidad del producto principal.`,
     cancel: true,
-    ok: { color: 'negative', label: 'Eliminar' },
+    ok: { color: 'negative', label: i18nT('common.delete') },
     persistent: true,
   }).onOk(async () => {
     if (props.apiMode) {
@@ -207,7 +208,7 @@ function eliminarLocal(sub) {
   // 2. En lugar de props.parentRow.cantidad = ..., emitimos un evento
   emit('update-parent-quantity', nuevaLista.length)
 
-  $q.notify({ type: 'info', message: 'Eliminado de la lista', timeout: 800 })
+  $q.notify({ type: 'info', message: i18nT('ui.eliminado-de-la-lista-3db064'), timeout: 800 })
 }
 
 // 2. ELIMINACIÓN API (Base de datos + Tabla)
@@ -219,10 +220,10 @@ async function eliminarSubCodigoAPI(sub) {
     if (response.data.estado === 'exito') {
       // Reutilizamos la lógica local tras el éxito de la API
       eliminarLocal(sub)
-      $q.notify({ type: 'positive', message: 'Eliminado de la base de datos' })
+      $q.notify({ type: 'positive', message: i18nT('ui.eliminado-de-la-base-de-datos-36c6be') })
     }
   } catch (error) {
-    $q.notify({ type: 'negative', message: 'Error de servidor al eliminar' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-de-servidor-al-eliminar-11458b') })
     console.error(error)
   } finally {
     $q.loading.hide()
@@ -238,7 +239,7 @@ async function actualizarCodigoIndividual(subProducto) {
 
     const response = await api.post('', formData)
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: 'Código actualizado', timeout: 800 })
+      $q.notify({ type: 'positive', message: i18nT('ui.codigo-actualizado-db627a'), timeout: 800 })
     }
   } catch (error) {
     console.error('Error al actualizar sub-código', error)

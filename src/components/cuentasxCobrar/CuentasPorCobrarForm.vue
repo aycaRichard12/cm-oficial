@@ -2,26 +2,26 @@
   <div class="q-pa-md">
     <q-form @submit="onSubmit" id="areascuentasporcobrar">
       <q-card-section class="text-h6 text-primary">
-        Registro de Pago de Cuenta por Cobrar
+        {{ $t('ui.registro-de-pago-de-cuenta-por-cobrar-c08790') }}
       </q-card-section>
       <div class="row q-col-gutter-md">
         <div class="col-md-6 col-sm-12 col-xs-12">
           <div class="row q-col-gutter-md">
             <div class="col-12">
-              <q-input v-model="formData.cliente" label="Cliente" outlined dense disable />
+              <q-input v-model="formData.cliente" :label="$t('ventas.client')" outlined dense disable />
             </div>
             <div class="col-12">
-              <q-input v-model="formData.sucursal" label="Sucursal" outlined dense disable />
+              <q-input v-model="formData.sucursal" :label="$t('ui.sucursal-07d782')" outlined dense disable />
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
-              <q-input v-model="formData.deudatotal" label="Total venta" outlined dense disable>
+              <q-input v-model="formData.deudatotal" :label="$t('ui.total-venta-3aa5b3')" outlined dense disable>
                 <template v-slot:append>
                   <span class="text-grey-7">P$</span>
                 </template>
               </q-input>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
-              <q-input v-model="formData.saldopendiente" label="Saldo" outlined dense disable>
+              <q-input v-model="formData.saldopendiente" :label="$t('ui.saldo-8b0fcd')" outlined dense disable>
                 <template v-slot:append>
                   <span class="text-grey-7">P$</span>
                 </template>
@@ -30,7 +30,7 @@
             <div class="col-md-6 col-sm-12 col-xs-12">
               <q-input
                 v-model="formData.cobrospendiente"
-                label="Cuotas pendiente"
+                :label="$t('ui.cuotas-pendiente-83affb')"
                 outlined
                 dense
                 disable
@@ -39,7 +39,7 @@
             <div class="col-md-6 col-sm-12 col-xs-12">
               <q-input
                 v-model="formData.valorcuotas"
-                label="Cuota individual"
+                :label="$t('ui.cuota-individual-a9ab06')"
                 outlined
                 dense
                 disable
@@ -57,7 +57,7 @@
             <div class="col-12">
               <q-input
                 v-model="formData.fecha"
-                label="Fecha*"
+                :label="$t('ui.fecha-659648')"
                 type="date"
                 outlined
                 dense
@@ -67,7 +67,7 @@
             <div class="col-md-6 col-sm-12 col-xs-12">
               <q-input
                 v-model="formData.ncuotas"
-                label="N°.Cobros*"
+                :label="$t('ui.n-cobros-73e664')"
                 type="number"
                 outlined
                 dense
@@ -78,7 +78,7 @@
             <div class="col-md-6 col-sm-12 col-xs-12">
               <q-input
                 v-model="formData.total"
-                label="Total a Cobrar*"
+                :label="$t('ui.total-a-cobrar-82eff8')"
                 type="number"
                 step="0.01"
                 outlined
@@ -92,7 +92,7 @@
               </q-input>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
-              <q-input v-model="saldoPorCobrar" label="Saldo por Cobrar" outlined dense disable>
+              <q-input v-model="saldoPorCobrar" :label="$t('ui.saldo-por-cobrar-fb1845')" outlined dense disable>
                 <template v-slot:append>
                   <span class="text-grey-7">P$</span>
                 </template>
@@ -101,7 +101,7 @@
             <div class="col-12">
               <q-file
                 v-model="formData.comprobante"
-                label="Comprobante (.JPG, .JPEG, .PNG)"
+                :label="$t('ui.comprobante-jpg-jpeg-png-9fd4ed')"
                 outlined
                 dense
                 accept=".png, .jpg, .jpeg"
@@ -117,8 +117,8 @@
       </div>
 
       <q-card-actions align="right">
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn label="Guardar" type="submit" color="primary" />
+        <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
+        <q-btn :label="$t('common.save')" type="submit" color="primary" />
       </q-card-actions>
     </q-form>
   </div>

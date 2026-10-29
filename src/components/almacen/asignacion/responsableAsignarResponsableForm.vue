@@ -6,7 +6,7 @@
         color="primary"
         flat
         icon="arrow_back"
-        label="Volver"
+        :label="$t('ui.volver-84a715')"
         size="sm"
         @click="$emit('volver')"
         id="volverListado"
@@ -17,7 +17,7 @@
     <q-card flat bordered class="form-card">
       <!-- Header -->
       <q-card-section class="bg-grey-1">
-        <div class="text-h6 text-weight-bold">Asignación de Almacenes</div>
+        <div class="text-h6 text-weight-bold">{{ $t('ui.asignacion-de-almacenes-bc5586') }}</div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs" id="nombreResponsable">
           {{ `${responsableNombre.usuario.usuario} ${responsableNombre.usuario.nombre}` }}
         </div>
@@ -31,7 +31,7 @@
           <div class="row q-col-gutter-md">
             <!-- Columna izquierda -->
             <div class="col-12 col-md-5">
-              <label for="almacen">Almacén a asignar</label>
+              <label for="almacen">{{ $t('ui.almacen-a-asignar-61a940') }}</label>
               <q-select
                 v-model="localData.almacen"
                 :options="almacenes"
@@ -43,7 +43,7 @@
                 emit-value
                 map-options
                 id="almacen"
-                :rules="[(val) => !!val || 'Seleccione un almacén']"
+                :rules="[(val) => !!val || $t('ui.seleccione-un-almacen-27ab34')]"
               />
             </div>
           </div>
@@ -52,7 +52,7 @@
           <div class="row q-mt-lg">
             <div class="col-12 col-md-5">
               <q-btn
-                label="Asignar Almacén"
+                :label="$t('ui.asignar-almacen-5d1362')"
                 type="submit"
                 color="primary"
                 icon="check"

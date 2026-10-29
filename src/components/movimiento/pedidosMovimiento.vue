@@ -16,7 +16,7 @@
             </div>
 
             <q-btn icon="close" flat round dense class="text-white" @click="onDialogHide"><!-- theme-allow: white icon on bg-primary header -->
-              <q-tooltip>Cerrar</q-tooltip>
+              <q-tooltip>{{ $t('ui.cerrar-4b0816') }}</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -61,7 +61,7 @@
                     dense
                     @click="emitAction('view', props.row)"
                   >
-                    <q-tooltip>Ver Pedido</q-tooltip>
+                    <q-tooltip>{{ $t('ui.ver-pedido-87d476') }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     icon="cancel"
@@ -70,7 +70,7 @@
                     dense
                     @click="emitAction('discard', props.row)"
                   >
-                    <q-tooltip>Descartar Pedido</q-tooltip>
+                    <q-tooltip>{{ $t('ui.descartar-pedido-15b247') }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     icon="check_circle"
@@ -79,7 +79,7 @@
                     dense
                     @click="emitAction('process', props.row)"
                   >
-                    <q-tooltip>Procesar Pedido</q-tooltip>
+                    <q-tooltip>{{ $t('ui.procesar-pedido-c12d3e') }}</q-tooltip>
                   </q-btn>
                 </q-btn-group>
 
@@ -92,7 +92,7 @@
                   color="primary"
                 >
                   <q-tooltip v-if="!canSelectRow(props.row)" class="bg-warning text-black">
-                    Destino diferente al seleccionado
+                    {{ $t('ui.destino-diferente-al-seleccionado-2cc0da') }}
                   </q-tooltip>
                 </q-checkbox>
               </div>
@@ -113,17 +113,17 @@
       <q-card-actions align="right" class="col-auto cm-surface q-pa-md">
         <q-btn
           flat
-          label="Ver Pedidos Acumulados"
+          :label="$t('ui.ver-pedidos-acumulados-62bf50')"
           color="primary"
           icon="list"
           @click="verAcumulados"
         />
-        <q-btn flat label="Cerrar" color="grey-8" icon="close" @click="onDialogHide" />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" color="grey-8" icon="close" @click="onDialogHide" />
         <q-btn
           unelevated
           color="primary"
           icon="send"
-          label="Enviar Pedidos"
+          :label="$t('ui.enviar-pedidos-b877c6')"
           :disable="selected.length === 0"
           :loading="loadingObj"
           @click="enviarPedidos"
@@ -139,7 +139,7 @@
     <q-dialog v-model="showAcumuladosDialog">
       <q-card style="min-width: 700px; max-width: 80vw">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Pedidos y Productos Acumulados</div>
+          <div class="text-h6">{{ $t('ui.pedidos-y-productos-acumulados-4f34b7') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -147,8 +147,8 @@
         <q-card-section class="q-pa-md">
           <div v-if="pedidosAcumulados.length === 0" class="text-center text-grey-6 q-pa-lg">
             <q-icon name="shopping_cart" size="4em" />
-            <div class="text-h6 q-mt-md">No hay productos acumulados</div>
-            <div>Seleccione pedidos para acumular sus productos</div>
+            <div class="text-h6 q-mt-md">{{ $t('ui.no-hay-productos-acumulados-8a2098') }}</div>
+            <div>{{ $t('ui.seleccione-pedidos-para-acumular-sus-productos-6ff564') }}</div>
           </div>
 
           <q-table
@@ -169,7 +169,7 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+          <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -177,7 +177,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -197,6 +197,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, defineEmits, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -218,10 +219,10 @@ const pedidosAcumulados = ref([])
 
 const columnsAcumulados = [
   { name: 'indice', label: '#', field: 'indice', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', sortable: true },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left', sortable: true },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left', sortable: true },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right', sortable: true },
 ]
 
 const verAcumulados = () => {
@@ -240,7 +241,7 @@ const columns = [
   {
     name: 'indice',
     required: true,
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     align: 'center',
     field: 'indice',
     sortable: true,
@@ -268,7 +269,7 @@ const columns = [
   {
     name: 'observacion',
     required: true,
-    label: 'OBSERVACIÓN',
+    label: i18nT('ui.observacion-dc265c'),
     align: 'left',
     field: 'observacion',
     sortable: true,
@@ -277,7 +278,7 @@ const columns = [
   },
   {
     name: 'opciones',
-    label: 'ACCIONES',
+    label: i18nT('ui.acciones-f6f89a'),
     align: 'center',
     field: 'opciones',
     required: true,
@@ -418,7 +419,7 @@ async function desacumularPedidos(idPedido) {
     console.error('Error al desacumular pedidos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al actualizar productos acumulados',
+      message: i18nT('ui.error-al-actualizar-productos-acumulados-7d1f75'),
     })
   }
 }
@@ -443,17 +444,17 @@ const emitAction = (actionType, row) => {
 async function processing(row) {
   console.log(row)
   $q.dialog({
-    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.',
-    message: 'Esto creara un nuevo registro de movimiento con los datos del pedido',
+    title: i18nT('ui.estas-seguro-de-que-deseas-realizar-esta-accion-es-i-7a9bcb'),
+    message: i18nT('ui.esto-creara-un-nuevo-registro-de-movimiento-con-los-2b1a29'),
     persistent: true,
     color: 'positive',
     ok: {
-      label: 'Sí, continuar',
+      label: i18nT('ui.si-continuar-08fee7'),
       color: 'positive',
       flat: false,
     },
     cancel: {
-      label: 'No, cancelar',
+      label: i18nT('ui.no-cancelar-c97628'),
       color: 'negative',
       flat: true,
     },
@@ -464,8 +465,8 @@ async function processing(row) {
       const resultado = result.data
       console.log(result)
       $q.dialog({
-        title: 'Pedido Registrado',
-        message: resultado.detalles.lista || 'El pedido ha sido descartado exitosamente.',
+        title: i18nT('ui.pedido-registrado-2513d9'),
+        message: resultado.detalles.lista || i18nT('ui.el-pedido-ha-sido-descartado-exitosamente-42d1f2'),
         color: 'positive',
         ok: true,
         persistent: false,
@@ -476,7 +477,7 @@ async function processing(row) {
     .onCancel(() => {
       $q.notify({
         type: 'info',
-        message: 'Acción cancelada.',
+        message: i18nT('ui.accion-cancelada-69a320'),
         icon: 'cancel',
       })
     })
@@ -485,22 +486,22 @@ async function processing(row) {
 async function discarding(row) {
   console.log(row)
   $q.dialog({
-    title: '¿Estás seguro de que deseas realizar esta acción? Es irreversible.',
-    message: 'No podra usar este pedido al descartarlo',
+    title: i18nT('ui.estas-seguro-de-que-deseas-realizar-esta-accion-es-i-7a9bcb'),
+    message: i18nT('ui.no-podra-usar-este-pedido-al-descartarlo-b101ce'),
     persistent: true,
     color: 'negative',
     ok: {
-      label: 'Sí, continuar',
+      label: i18nT('ui.si-continuar-08fee7'),
       color: 'positive',
       flat: false,
     },
     cancel: {
-      label: 'No, cancelar',
+      label: i18nT('ui.no-cancelar-c97628'),
       color: 'negative',
       flat: true,
     },
     verAcumulado: {
-      label: 'Ver acumulado',
+      label: i18nT('ui.ver-acumulado-dc5b11'),
       color: 'bluestyle',
       flat: true,
     },
@@ -511,8 +512,8 @@ async function discarding(row) {
       const resultado = result.data
       console.log(result)
       $q.dialog({
-        title: 'Pedido Descartado',
-        message: resultado.detalles || 'El pedido ha sido descartado exitosamente.',
+        title: i18nT('ui.pedido-descartado-53d279'),
+        message: resultado.detalles || i18nT('ui.el-pedido-ha-sido-descartado-exitosamente-42d1f2'),
         color: 'positive',
         ok: true,
         persistent: false,
@@ -521,7 +522,7 @@ async function discarding(row) {
     .onCancel(() => {
       $q.notify({
         type: 'info',
-        message: 'Acción cancelada.',
+        message: i18nT('ui.accion-cancelada-69a320'),
         icon: 'cancel',
       })
     })
@@ -537,7 +538,7 @@ const verDetalle = async (row) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedido  sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
   }
 }
@@ -551,7 +552,7 @@ const getDatallePedido = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -582,7 +583,7 @@ const getPedidos = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -609,7 +610,7 @@ const getPedidos = async () => {
 const enviarPedidos = async () => {
   // Validación básica
   if (selected.value.length === 0) {
-    $q.notify('Seleccione pedidos primero')
+    $q.notify(i18nT('ui.seleccione-pedidos-primero-078e8f'))
     return
   }
 
@@ -644,7 +645,7 @@ const enviarPedidos = async () => {
     $q.notify({
       icon: 'error',
       color: 'negative',
-      message: 'Error al enviar pedidos',
+      message: i18nT('ui.error-al-enviar-pedidos-c5a521'),
     })
   }
 }

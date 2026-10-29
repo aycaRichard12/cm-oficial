@@ -3,7 +3,7 @@
     <!-- Estado de carga -->
     <q-card-section v-if="loading" class="text-center q-pa-lg">
       <q-spinner color="primary" size="3em" />
-      <p class="q-mt-sm cm-text-muted">Cargando información del producto...</p>
+      <p class="q-mt-sm cm-text-muted">{{ $t('ui.cargando-informacion-del-producto-c481f2') }}</p>
     </q-card-section>
 
     <!-- Error -->
@@ -17,7 +17,7 @@
       <!-- Información general del producto -->
       <q-card-section class="bg-primary text-white">
         <div class="text-h6">{{ producto.nombre }}</div>
-        <div class="text-subtitle2"><strong>Código:</strong> {{ producto.codigo }}</div>
+        <div class="text-subtitle2"><strong>{{ $t('ui.codigo-943f7c') }}</strong> {{ producto.codigo }}</div>
         <div class="text-body2 q-mt-xs">{{ producto.descripcion }}</div>
       </q-card-section>
 
@@ -25,7 +25,7 @@
 
       <!-- Vista de selección (antes de confirmar) -->
       <q-card-section v-if="!confirmado">
-        <div class="text-subtitle1 q-mb-md">Selecciona las variantes y cantidades</div>
+        <div class="text-subtitle1 q-mb-md">{{ $t('ui.selecciona-las-variantes-y-cantidades-16894c') }}</div>
 
         <!-- Tabla de variantes con filtros avanzados -->
         <BaseFilterableTable
@@ -101,8 +101,8 @@
                 :min="1"
                 :max="props.row.stock"
                 :rules="[
-                  (val) => val > 0 || 'Mínimo 1',
-                  (val) => val <= props.row.stock || `Máx. ${props.row.stock}`,
+                  (val) => val > 0 || $t('ui.minimo-1-55d08a'),
+                  (val) => val <= props.row.stock || $t('ui.max-n-7c4d1e', { n: props.row.stock }),
                 ]"
                 @update:model-value="onCantidadChange(props.row)"
                 style="max-width: 100px"
@@ -114,7 +114,7 @@
         <!-- Botón confirmar -->
         <div class="row justify-end q-mt-lg">
           <q-btn
-            label="Confirmar selección"
+            :label="$t('ui.confirmar-seleccion-90df78')"
             color="primary"
             icon="check_circle"
             :disable="!haySeleccionValida"
@@ -125,7 +125,7 @@
 
       <!-- Vista resumen (después de confirmar) -->
       <q-card-section v-else>
-        <div class="text-subtitle1 q-mb-md">Variantes seleccionadas</div>
+        <div class="text-subtitle1 q-mb-md">{{ $t('ui.variantes-seleccionadas-d796a7') }}</div>
 
         <q-list separator bordered>
           <q-item v-for="variante in seleccionConfirmada" :key="variante.id_producto_variante">
@@ -133,13 +133,13 @@
               <q-item-label class="text-weight-medium">
                 SKU: {{ variante.sku }}
                 <q-chip v-if="variante.serie" outline color="primary" dense size="sm" class="q-ml-sm">
-                  Serie: {{ variante.serie }}
+                  {{ $t('ui.serie-389a46') }} {{ variante.serie }}
                 </q-chip>
               </q-item-label>
               <q-item-label caption>
-                Cantidad: {{ variante.cantidad_seleccionada }}
-                <span v-if="variante.stock !== undefined">| Stock: {{ variante.stock }}</span>
-                <span v-if="variante.atributos_str">| Atributos: {{ variante.atributos_str }}</span>
+                {{ $t('ui.cantidad-a8de9e') }} {{ variante.cantidad_seleccionada }}
+                <span v-if="variante.stock !== undefined">{{ $t('ui.stock-8c203f') }} {{ variante.stock }}</span>
+                <span v-if="variante.atributos_str">{{ $t('ui.atributos-0b9e65') }} {{ variante.atributos_str }}</span>
               </q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -150,15 +150,15 @@
 
         <div class="row justify-between items-center q-mt-lg">
           <q-btn
-            label="Volver a editar"
+            :label="$t('ui.volver-a-editar-de7820')"
             color="grey-8"
             flat
             icon="edit"
             @click="confirmado = false"
           />
           <div class="text-subtitle1">
-            <span class="text-weight-bold">Total variantes:</span> {{ totalVariantes }} |
-            <span class="text-weight-bold">Cantidad total:</span> {{ cantidadTotal }}
+            <span class="text-weight-bold">{{ $t('ui.total-variantes-669f1f') }}</span> {{ totalVariantes }} |
+            <span class="text-weight-bold">{{ $t('ui.cantidad-total-6713ff') }}</span> {{ cantidadTotal }}
           </div>
         </div>
       </q-card-section>
@@ -167,6 +167,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -204,19 +205,19 @@ const variantes = ref([])
 
 // Columnas para BaseFilterableTable
 const columnas = [
-  { name: 'seleccion', label: 'Seleccionar', align: 'center', field: 'seleccionada', sortable: false },
-  { name: 'serie', label: 'Serie', align: 'left', field: 'serie', sortable: true, dataType: 'text' },
+  { name: 'seleccion', label: i18nT('ui.seleccionar-2b8319'), align: 'center', field: 'seleccionada', sortable: false },
+  { name: 'serie', label: i18nT('ui.serie-986812'), align: 'left', field: 'serie', sortable: true, dataType: 'text' },
   { name: 'sku', label: 'SKU', align: 'left', field: 'sku', sortable: true, dataType: 'text' },
-  { name: 'stock', label: 'Stock', align: 'center', field: 'stock', sortable: true, dataType: 'number' },
+  { name: 'stock', label: i18nT('inventario.stock'), align: 'center', field: 'stock', sortable: true, dataType: 'number' },
   {
     name: 'atributos',
-    label: 'Atributos',
+    label: i18nT('ui.atributos-bd9731'),
     align: 'left',
     field: 'atributos_str',
     sortable: true,
     dataType: 'text',
   },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad_seleccionada', sortable: false },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'center', field: 'cantidad_seleccionada', sortable: false },
 ]
 
 const columnasFiltrables = ['serie', 'sku', 'stock', 'atributos']

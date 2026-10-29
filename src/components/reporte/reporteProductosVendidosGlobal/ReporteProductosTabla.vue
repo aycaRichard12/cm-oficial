@@ -4,7 +4,7 @@
       ref="localTableRef"
       flat
       bordered
-      title="Productos Vendidos"
+      :title="$t('ui.productos-vendidos-f14079')"
       :rows="rows"
       :columns="columns"
       :arrayHeaders="arrayHeaders"
@@ -13,7 +13,7 @@
       virtual-scroll
       style="max-height: calc(100vh - 265px)"
       :loading="loading"
-      no-data-label="No se Genero el Reporte"
+      :no-data-label="$t('ui.no-se-genero-el-reporte-9b2760')"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -60,7 +60,7 @@
 
       <template v-slot:bottom-row>
         <q-tr>
-          <q-td colspan="9" class="text-right">Sumatorias</q-td>
+          <q-td colspan="9" class="text-right">{{ $t('ui.sumatorias-4ca8e5') }}</q-td>
           <q-td class="text-right">{{ formatearNumero(sumatorias.cantidad) }}</q-td>
           <q-td class="text-right">{{ formatearNumero(sumatorias.importe) }}</q-td>
           <q-td class="text-right">{{ formatearNumero(sumatorias.descuento) }}</q-td>

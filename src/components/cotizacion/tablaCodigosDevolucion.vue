@@ -7,7 +7,7 @@
         </q-avatar>
         <div>
           <div class="text-subtitle1 text-weight-medium">{{ title }}</div>
-          <div class="text-caption cm-text-muted">Gestión de productos devueltos</div>
+          <div class="text-caption cm-text-muted">{{ $t('ui.gestion-de-productos-devueltos-6610df') }}</div>
         </div>
       </div>
       <q-space />
@@ -18,11 +18,11 @@
       <q-markup-table flat bordered separator="cell" class="modern-table">
         <thead>
           <tr class="cm-surface-2">
-            <th style="width: 50px">N°</th>
-            <th class="text-left">Código de Identificación</th>
-            <th class="text-center">Estado</th>
-            <th class="text-center">¿Es Merma?</th>
-            <th v-if="canDelete" style="width: 80px" class="text-center">Acciones</th>
+            <th style="width: 50px">{{ $t('cotizacion.table.number') }}</th>
+            <th class="text-left">{{ $t('ui.codigo-de-identificacion-222649') }}</th>
+            <th class="text-center">{{ $t('cotizacion.table.status') }}</th>
+            <th class="text-center">{{ $t('ui.es-merma-c553f6') }}</th>
+            <th v-if="canDelete" style="width: 80px" class="text-center">{{ $t('common.actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -48,7 +48,7 @@
                 color="negative"
                 @update:model-value="(val) => toggleMerma(sub, val)"
               >
-                <q-tooltip>Marcar como pérdida/dañado</q-tooltip>
+                <q-tooltip>{{ $t('ui.marcar-como-perdida-danado-eb7d77') }}</q-tooltip>
               </q-checkbox>
             </td>
 
@@ -62,7 +62,7 @@
                 size="sm"
                 @click="gestionarEliminacion(sub)"
               >
-                <q-tooltip>Eliminar de la devolución</q-tooltip>
+                <q-tooltip>{{ $t('ui.eliminar-de-la-devolucion-a6df6d') }}</q-tooltip>
               </q-btn>
             </td>
           </tr>
@@ -76,14 +76,14 @@
       <div class="footer-info">
         <q-icon name="info" size="14px" color="grey-6" class="q-mr-xs" />
         <span class="text-caption cm-text-muted">
-          Los productos marcados como merma no retornarán al stock disponible.
+          {{ $t('ui.los-productos-marcados-como-merma-no-retornaran-al-s-5d8fe4') }}
         </span>
       </div>
       <div class="footer-stats">
         <div class="stat-item">
           <q-icon name="warning" size="14px" color="negative" class="q-mr-xs" />
           <span class="text-caption">
-            {{ modelValue.filter((s) => s.es_merma === 1).length }} Mermas
+            {{ modelValue.filter((s) => s.es_merma === 1).length }} {{ $t('ui.mermas-cf8d3d') }}
           </span>
         </div>
       </div>
@@ -92,6 +92,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
 
@@ -100,7 +101,7 @@ const $q = useQuasar()
 const props = defineProps({
   modelValue: { type: Array, required: true },
   parentRow: { type: Object, required: true },
-  title: { type: String, default: 'Desglose de Identificadores' },
+  title: { type: String, default: i18nT('ui.desglose-de-identificadores-98905f') },
   canDelete: { type: Boolean, default: true },
   icon: { type: String, default: 'assignment_return' },
 })
@@ -119,14 +120,14 @@ async function toggleMerma(sub, valor) {
     if (response.data.estado === 'exito') {
       $q.notify({
         type: valor === 1 ? 'warning' : 'positive',
-        message: valor === 1 ? 'Producto marcado como merma' : 'Producto restaurado',
+        message: valor === 1 ? i18nT('ui.producto-marcado-como-merma-c79624') : i18nT('ui.producto-restaurado-3d4ff4'),
         timeout: 1000,
       })
       emit('update-parent-quantity', props.modelValue.length)
     } else {
       // Si falla en servidor, revertimos el cambio localmente
       sub.es_merma = valor === 1 ? 0 : 1
-      $q.notify({ type: 'negative', message: 'No se pudo actualizar el estado' })
+      $q.notify({ type: 'negative', message: i18nT('configuracion.servicios.messages.statusUpdateError') })
     }
   } catch (error) {
     sub.es_merma = valor === 1 ? 0 : 1
@@ -139,10 +140,10 @@ async function toggleMerma(sub, valor) {
  */
 const gestionarEliminacion = (sub) => {
   $q.dialog({
-    title: 'Confirmar eliminación',
+    title: i18nT('configuracion.credencialesServicio.messages.deleteTitle'),
     message: `¿Deseas quitar el código ${sub.serie} de esta devolución?`,
     cancel: true,
-    ok: { color: 'negative', label: 'Eliminar' },
+    ok: { color: 'negative', label: i18nT('common.delete') },
     persistent: true,
   }).onOk(async () => {
     await eliminarSubCodigoAPI(sub)
@@ -161,11 +162,11 @@ async function eliminarSubCodigoAPI(sub) {
     if (response.data.estado === 'success') {
       emit('update-parent-quantity', props.modelValue.length)
 
-      $q.notify({ type: 'positive', message: 'Registro eliminado correctamente' })
+      $q.notify({ type: 'positive', message: i18nT('ui.registro-eliminado-correctamente-363294') })
     }
   } catch (error) {
     console.error('Error al eliminar el registro', error)
-    $q.notify({ type: 'negative', message: 'Error al eliminar el registro' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-eliminar-el-registro-7896aa') })
   } finally {
     $q.loading.hide()
   }

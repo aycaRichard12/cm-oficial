@@ -2,7 +2,7 @@
   <q-dialog :model-value="modelValue" persistent @update:model-value="$emit('update:modelValue', $event)">
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Motivo de Anulación</div>
+        <div class="text-h6">{{ $t('ui.motivo-de-anulacion-171518') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -10,7 +10,7 @@
           :model-value="motivo"
           @update:model-value="$emit('update:motivo', $event)"
           :options="opciones"
-          label="Seleccione un motivo"
+          :label="$t('ui.seleccione-un-motivo-c536c3')"
           outlined
           dense
           emit-value
@@ -19,8 +19,8 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancelar" color="negative" @click="$emit('cancelar')" />
-        <q-btn flat label="Confirmar" color="primary" @click="$emit('confirmar')" />
+        <q-btn flat :label="$t('common.cancel')" color="negative" @click="$emit('cancelar')" />
+        <q-btn flat :label="$t('configGeneral.divisas.messages.deleteTitle')" color="primary" @click="$emit('confirmar')" />
       </q-card-actions>
     </q-card>
   </q-dialog>

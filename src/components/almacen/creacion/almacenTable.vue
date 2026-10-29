@@ -4,27 +4,27 @@
     <div class="section-header q-mb-lg">
       <div class="section-title">
         <q-icon name="warehouse" size="sm" class="q-mr-xs" />
-        Gestión de Almacenes
+        {{ $t('ui.gestion-de-almacenes-85831f') }}
       </div>
       <div class="action-buttons">
         <q-btn
           color="primary"
           @click="$emit('add')"
           class="modern-btn q-mr-sm"
-          title="Registrar Almacén"
+          :title="$t('ui.registrar-almacen-12ab43')"
         >
           <q-icon name="add" size="xs" class="q-mr-xs" />
-          <span>Nuevo</span>
+          <span>{{ $t('common.new') }}</span>
         </q-btn>
         <q-btn
           color="info"
           outline
           @click="mostrarReporte"
           class="modern-btn"
-          title="Vista previa PDF"
+          :title="$t('ui.vista-previa-pdf-46ad39')"
         >
           <q-icon name="picture_as_pdf" size="xs" class="q-mr-xs" />
-          <span>Vista previa PDF</span>
+          <span>{{ $t('ui.vista-previa-pdf-46ad39') }}</span>
         </q-btn>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <BaseFilterableTable
         ref="tableRef"
         id="tablaAlmacenes"
-        title="Almacenes"
+        :title="$t('ui.almacenes-10df99')"
         :rows="decoratedRows"
         :columns="columnas"
         :arrayHeaders="ArrayHeaders"
@@ -51,7 +51,7 @@
             <q-badge
               v-if="Number(props.row.id) === almacenPrincipalId"
               color="negative"
-              label="Principal"
+              :label="$t('ui.principal-f3b86b')"
               class="q-mr-sm text-uppercase"
             />
             <span
@@ -79,7 +79,7 @@
           <q-td :props="props" class="text-center">
             <q-badge
               :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
-              :label="Number(props.row.estado) === 1 ? 'Activo' : 'Inactivo'"
+              :label="Number(props.row.estado) === 1 ? $t('common.active') : $t('common.inactive')"
               outline
               class="q-px-sm q-py-xs"
             />
@@ -97,7 +97,7 @@
               round
               class="q-mr-xs"
               @click="$emit('edit-item', props.row)"
-              title="Editar"
+              :title="$t('common.edit')"
             />
             <q-btn
               icon="delete"
@@ -107,7 +107,7 @@
               round
               class="q-mr-xs"
               @click="$emit('delete-item', props.row)"
-              title="Eliminar"
+              :title="$t('common.delete')"
             />
             <q-btn
               :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
@@ -116,7 +116,7 @@
               round
               :color="Number(props.row.estado) === 1 ? 'positive' : 'grey'"
               @click="$emit('toggle-status', props.row)"
-              title="Cambiar estado"
+              :title="$t('ui.cambiar-estado-b8bafd')"
             />
           </q-td>
         </template>
@@ -127,7 +127,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="pdf-modal-card">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -145,6 +145,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { PDFalmacenes } from 'src/utils/pdfReportGenerator'
@@ -181,11 +182,11 @@ const decoratedRows = computed(() => {
 })
 
 const columnas = [
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', dataType: 'text' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', dataType: 'text' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left', dataType: 'text' },
   {
     name: 'direccion',
-    label: 'Dirección',
+    label: i18nT('ui.direccion-04f478'),
     field: 'direccion',
     align: 'left',
     dataType: 'text',
@@ -193,7 +194,7 @@ const columnas = [
   },
   {
     name: 'telefono',
-    label: 'Teléfono',
+    label: i18nT('ui.telefono-99af37'),
     field: 'telefono',
     align: 'left',
     dataType: 'text',
@@ -201,7 +202,7 @@ const columnas = [
   },
   {
     name: 'email',
-    label: 'Email',
+    label: i18nT('configuracion.servicios.table.email'),
     field: 'email',
     align: 'left',
     dataType: 'text',
@@ -209,16 +210,16 @@ const columnas = [
   },
   {
     name: 'tipoalmacen',
-    label: 'Tipo almacén',
+    label: i18nT('ui.tipo-almacen-8f4e01'),
     field: 'tipoalmacen',
     align: 'left',
     dataType: 'text',
   },
-  { name: 'stockmin', label: 'Stock mín.', field: 'stockmin', dataType: 'number' },
-  { name: 'stockmax', label: 'Stock máx.', field: 'stockmax', dataType: 'number' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursalValor', align: 'left', dataType: 'text' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', dataType: 'number' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'stockmin', label: i18nT('ui.stock-min-fa3e8d'), field: 'stockmin', dataType: 'number' },
+  { name: 'stockmax', label: i18nT('ui.stock-max-c0dc10'), field: 'stockmax', dataType: 'number' },
+  { name: 'sucursal', label: i18nT('ui.sucursal-07d782'), field: 'sucursalValor', align: 'left', dataType: 'text' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', dataType: 'number' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 const ArrayHeaders = [

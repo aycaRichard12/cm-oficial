@@ -11,10 +11,10 @@
             class="text-h4 text-weight-bolder q-my-none text-primary"
             style="letter-spacing: -0.5px"
           >
-            Emisión de Cotización
+            {{ $t('ui.emision-de-cotizacion-d2592e') }}
           </h1>
           <div class="text-subtitle1 text-grey-7 q-mt-xs">
-            Registre los detalles de la nueva cotización y añada productos
+            {{ $t('ui.registre-los-detalles-de-la-nueva-cotizacion-y-anada-4058b8') }}
           </div>
         </div>
       </div>
@@ -32,7 +32,7 @@
         <div class="flex items-center">
           <q-icon name="manage_accounts" size="sm" class="q-mr-sm" />
           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-            Datos del Cliente y Configuración
+            {{ $t('ui.datos-del-cliente-y-configuracion-525339') }}
           </div>
         </div>
 
@@ -43,14 +43,14 @@
           id="ventaSinStockCotizacion"
         >
           <q-icon name="inventory_2" size="xs" class="q-mr-xs" />
-          <div class="text-caption text-weight-bold q-mr-sm">Venta sin stock</div>
+          <div class="text-caption text-weight-bold q-mr-sm">{{ $t('ui.venta-sin-stock-7cf41b') }}</div>
           <q-btn
             :icon="permitirStock ? 'toggle_on' : 'toggle_off'"
             dense
             flat
             :color="permitirStock ? 'positive' : 'grey'"
             size="md"
-            :title="permitirStock ? 'Desactivar venta sin stock' : 'Activar venta sin stock'"
+            :title="permitirStock ? $t('ui.desactivar-venta-sin-stock-4b2c0b') : $t('ui.activar-venta-sin-stock-41be28')"
             @click="permitirStockvacio()"
             class="q-pa-none"
             style="transition: all 0.3s"
@@ -67,14 +67,14 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="tipooperacion"
-                >Tipo de Operación <span class="text-negative">*</span></label
+                >{{ $t('ui.tipo-de-operacion-db446a') }} <span class="text-negative">*</span></label
               >
               <q-select
                 v-model="tipoOperacion"
                 :options="optionOperacion"
                 id="tipooperacion"
                 map-options
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 @update:model-value="handleTipoOperacionChange"
                 outlined
                 dense
@@ -88,14 +88,14 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="fecha"
-                >Fecha <span class="text-negative">*</span></label
+                >{{ $t('cotizacion.table.date') }} <span class="text-negative">*</span></label
               >
               <q-input
                 v-model="fecha"
                 id="fecha"
                 type="date"
                 map-options
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 @update:model-value="cambioFecha"
                 outlined
                 dense
@@ -109,7 +109,7 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="cliente"
-                >Cliente <span class="text-negative">*</span></label
+                >{{ $t('ventas.client') }} <span class="text-negative">*</span></label
               >
               <div class="row no-wrap">
                 <q-select
@@ -126,7 +126,7 @@
                   @update:model-value="elegirUnCliente"
                   option-value="id"
                   option-label="display"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   outlined
                   dense
                   bg-color="white"
@@ -143,12 +143,12 @@
                       :loading="recargandoClientes"
                       @click.stop.prevent="recargarClientes"
                     >
-                      <q-tooltip>Recargar clientes</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-clientes-9bf175') }}</q-tooltip>
                     </q-btn>
                   </template>
                   <template v-slot:no-option>
                     <q-item>
-                      <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                      <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                     </q-item>
                   </template>
                 </q-select>
@@ -162,7 +162,7 @@
                     @click="RegistrarCliente"
                   >
                     <q-tooltip class="bg-primary text-caption shadow-4"
-                      >Registrar Nuevo Cliente</q-tooltip
+                      >{{ $t('ui.registrar-nuevo-cliente-e19240') }}</q-tooltip
                     >
                   </q-btn>
                 </div>
@@ -176,7 +176,7 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="sucursal"
-                >Sucursal <span class="text-negative">*</span></label
+                >{{ $t('ui.sucursal-07d782') }} <span class="text-negative">*</span></label
               >
               <q-select
                 v-model="selectedSucursal"
@@ -191,7 +191,7 @@
                 @update:model-value="elegirUnaSucursal"
                 option-value="id"
                 option-label="nombre"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 outlined
                 dense
                 bg-color="white"
@@ -209,19 +209,19 @@
                     :loading="recargandoSucursales"
                     @click.stop.prevent="recargarSucursales"
                   >
-                    <q-tooltip>Recargar sucursales</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-sucursales-cc4401') }}</q-tooltip>
                   </q-btn>
                 </template>
                 <template v-slot:no-option>
                   <q-item>
-                    <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                    <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                   </q-item>
                 </template>
               </q-select>
               <input type="hidden" v-model="idsucursalCOS" name="idsucursal" />
             </div>
             <div class="col-8 col-md-6">
-              <label for="canalVenta">Canal de venta*</label>
+              <label for="canalVenta">{{ $t('ui.canal-de-venta-05df83') }}</label>
               <q-select
                 v-model="canalventa"
                 id="canalVenta"
@@ -231,7 +231,7 @@
                 option-label="label"
                 option-value="value"
                 required
-                :rules="[(val) => !!val || 'Seleccione un canal']"
+                :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
               >
                 <template v-slot:append>
                   <q-btn
@@ -244,7 +244,7 @@
                     :loading="recargandoCanales"
                     @click.stop.prevent="recargarCanales"
                   >
-                    <q-tooltip>Recargar canales</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-canales-459b2e') }}</q-tooltip>
                   </q-btn>
                 </template>
                 <template v-slot:prepend>
@@ -273,7 +273,7 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="almacen"
-                >Almacén origen <span class="text-negative">*</span></label
+                >{{ $t('ui.almacen-origen-3ef997') }} <span class="text-negative">*</span></label
               >
               <q-select
                 v-model="filtroAlmacenCO"
@@ -283,7 +283,7 @@
                 map-options
                 option-value="idalmacen"
                 option-label="almacen"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 @update:model-value="listaCategoria"
                 outlined
                 dense
@@ -302,7 +302,7 @@
                     :loading="recargandoAlmacenes"
                     @click.stop.prevent="recargarAlmacenes"
                   >
-                    <q-tooltip>Recargar almacenes</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -312,7 +312,7 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="categoria"
-                >Categoría de precio <span class="text-negative">*</span></label
+                >{{ $t('ui.categoria-de-precio-f572ba') }} <span class="text-negative">*</span></label
               >
               <q-select
                 v-model="filtroCategoriaCO"
@@ -322,7 +322,7 @@
                 map-options
                 option-value="id"
                 option-label="nombre"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 outlined
                 dense
                 bg-color="white"
@@ -340,7 +340,7 @@
                     :loading="recargandoCategorias"
                     @click.stop.prevent="recargarCategorias"
                   >
-                    <q-tooltip>Recargar categorías</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-categorias-34a66a') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -350,7 +350,7 @@
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="puntoventa"
-                >Punto Venta <span class="text-negative">*</span></label
+                >{{ $t('ui.punto-venta-612259') }} <span class="text-negative">*</span></label
               >
               <q-select
                 v-model="puntoVenta"
@@ -360,7 +360,7 @@
                 map-options
                 option-value="value"
                 option-label="label"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 outlined
                 dense
                 bg-color="white"
@@ -378,7 +378,7 @@
                     :loading="recargandoPuntosVenta"
                     @click.stop.prevent="recargarPuntosVenta"
                   >
-                    <q-tooltip>Recargar puntos de venta</q-tooltip>
+                    <q-tooltip>{{ $t('ui.recargar-puntos-de-venta-cd3066') }}</q-tooltip>
                   </q-btn>
                 </template>
               </q-select>
@@ -399,7 +399,7 @@
       >
         <q-icon name="shopping_cart_checkout" size="sm" class="q-mr-sm" />
         <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-          Añadir Productos
+          {{ $t('ui.anadir-productos-fc64fa') }}
         </div>
       </q-card-section>
 
@@ -411,13 +411,13 @@
                 class="text-weight-bold cm-text block"
                 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
                 for="producto"
-                >Producto o Servicio <span class="text-negative">*</span></label
+                >{{ $t('ui.producto-o-servicio-2b9fe2') }} <span class="text-negative">*</span></label
               >
               <q-checkbox
                 v-if="esProductoUnico"
                 v-model="registrarComoProductoUnico"
                 size="xs"
-                label="Producto Único"
+                :label="$t('ui.producto-unico-b16503')"
                 color="secondary"
                 class="text-caption text-weight-bold text-secondary q-mb-none"
               />
@@ -451,12 +451,12 @@
                   :loading="recargandoProductos"
                   @click.stop.prevent="recargarProductos"
                 >
-                  <q-tooltip>Recargar productos</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-productos-894528') }}</q-tooltip>
                 </q-btn>
               </template>
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -467,7 +467,7 @@
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="stock"
-              >Stock Actual</label
+              >{{ $t('ui.stock-actual-a1d4ec') }}</label
             >
             <q-input
               id="stock"
@@ -491,13 +491,13 @@
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="cantidad"
-              >Cantidad <span class="text-negative">*</span></label
+              >{{ $t('ui.cantidad-b5b6f8') }} <span class="text-negative">*</span></label
             >
             <q-input
               id="cantidad"
               v-model.number="cantidadCO"
               type="number"
-              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              :rules="[(val) => val > 0 || $t('ui.debe-ser-mayor-a-0-48dea0')]"
               :readonly="esProductoUnico && registrarComoProductoUnico"
               :disable="productoTieneVariantes"
               required
@@ -514,13 +514,13 @@
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px"
               for="precio"
-              >Precio unitario <span class="text-negative">*</span></label
+              >{{ $t('ui.precio-unitario-d3780c') }} <span class="text-negative">*</span></label
             >
             <q-input
               id="precio"
               v-model.number="precioCO"
               type="number"
-              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              :rules="[(val) => val > 0 || $t('ui.debe-ser-mayor-a-0-48dea0')]"
               required
               outlined
               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
@@ -555,7 +555,7 @@
                 class="bg-secondary text-subtitle2 shadow-4"
                 anchor="top middle"
                 self="bottom middle"
-                >Añadir al carrito</q-tooltip
+                >{{ $t('ui.anadir-al-carrito-6f31c8') }}</q-tooltip
               >
             </q-btn>
           </div>
@@ -586,7 +586,7 @@
         <div class="flex items-center text-primary">
           <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
           <div class="text-subtitle1 text-weight-bold" style="font-family: 'Inter', sans-serif">
-            Resumen de Cotización
+            {{ $t('ui.resumen-de-cotizacion-eb51dd') }}
           </div>
         </div>
       </q-card-section>
@@ -699,7 +699,7 @@
               >
                 <q-icon name="edit_note" size="16px" class="q-mr-xs" />
                 <span class="text-weight-medium">{{
-                  props.row.descripcionAdicional || 'Añadir nota adicional...'
+                  props.row.descripcionAdicional || $t('ui.anadir-nota-adicional-eda646')
                 }}</span>
 
                 <q-popup-edit
@@ -763,7 +763,7 @@
                 class="hover-shake"
               >
                 <q-tooltip class="bg-negative text-weight-medium shadow-3"
-                  >Quitar producto</q-tooltip
+                  >{{ $t('ui.quitar-producto-328479') }}</q-tooltip
                 >
               </q-btn>
             </q-td>
@@ -802,7 +802,7 @@
               colspan="6"
               class="text-right text-subtitle2 cm-text-muted"
               style="letter-spacing: 0.5px"
-              >SUBTOTAL:</q-td
+              >{{ $t('ui.subtotal-b1b3d2') }}</q-td
             >
             <q-td class="text-right text-subtitle1 text-grey-10 text-weight-bolder">
               {{ decimas(carritoCO.subtotal) }}
@@ -818,7 +818,7 @@
               colspan="6"
               class="text-right text-subtitle2 cm-text-muted"
               style="vertical-align: middle; letter-spacing: 0.5px"
-              >DESCUENTO:</q-td
+              >{{ $t('ui.descuento-c7f95d') }}</q-td
             >
             <q-td class="text-right">
               <q-input
@@ -855,7 +855,7 @@
               colspan="6"
               class="text-right text-h6 text-weight-bolder text-uppercase"
               style="letter-spacing: 1px"
-              >TOTAL GENERAL:</q-td
+              >{{ $t('ui.total-general-f6e204') }}</q-td
             >
             <q-td
               class="text-right text-h5 text-weight-bolder"
@@ -878,7 +878,7 @@
             flat
             color="negative"
             icon="close"
-            label="Cancelar"
+            :label="$t('common.cancel')"
             @click="$emit('cancelarregistro')"
             class="q-px-md"
             style="border-radius: 100px; font-weight: 500"
@@ -889,7 +889,7 @@
             outline
             color="primary"
             icon="edit_note"
-            label="Firma del Cliente"
+            :label="$t('ui.firma-del-cliente-581c1d')"
             @click="RegistrarFirma"
             class="q-px-lg cm-surface"
             style="border-radius: 40px; font-weight: 600; border-width: 1.5px"
@@ -897,7 +897,7 @@
 
           <!-- Botón Registrar Cotización -->
           <q-btn
-            label="Continuar"
+            :label="$t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
             color="primary"
             icon="task_alt"
             size="lg"
@@ -936,10 +936,10 @@
                 class="text-h6 text-weight-bolder"
                 style="font-family: 'Inter', sans-serif; line-height: 1.2"
               >
-                Método de Pago
+                {{ $t('ui.metodo-de-pago-112f5f') }}
               </div>
               <div class="text-caption text-white/80 text-weight-medium gt-xs" data-theme-allow>
-                Configure la modalidad y detalles del pago
+                {{ $t('ui.configure-la-modalidad-y-detalles-del-pago-43371f') }}
               </div>
             </div>
           </div>
@@ -980,7 +980,7 @@
                   style="padding: 4px 12px"
                 >
                   <q-icon name="payments" size="18px" />
-                  <span>Efectivo</span>
+                  <span>{{ $t('ui.efectivo-4a9fab') }}</span>
                 </div>
               </template>
 
@@ -990,7 +990,7 @@
                   style="padding: 4px 12px"
                 >
                   <q-icon name="credit_score" size="18px" />
-                  <span>Crédito</span>
+                  <span>{{ $t('ui.credito-f05ef4') }}</span>
                 </div>
               </template>
             </q-btn-toggle>
@@ -1004,11 +1004,11 @@
                 style="border-left: 4px solid #1976d2"
               >
                 <q-icon name="payments" class="q-mr-sm" />
-                MODALIDAD: EFECTIVO
+                {{ $t('ui.modalidad-efectivo-045d82') }}
               </div>
 
               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-                Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+                {{ $t('ui.total-d8e717') }} {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
               </div>
             </div>
 
@@ -1018,14 +1018,14 @@
                 v-model="carritoCO.variablePago"
                 val="directo"
                 color="positive"
-                label="Pago Único"
+                :label="$t('ui.pago-unico-fc784b')"
                 class="text-weight-bolder text-subtitle2"
               />
               <q-radio
                 v-model="carritoCO.variablePago"
                 val="dividido"
                 color="orange-8"
-                label="Pago Dividido"
+                :label="$t('ui.pago-dividido-1f5506')"
                 class="text-weight-bolder text-subtitle2"
               />
             </div>
@@ -1040,7 +1040,7 @@
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                   style="font-size: 12px"
                 >
-                  Método de pago principal <span class="text-negative">*</span>
+                  {{ $t('ui.metodo-de-pago-principal-d3756d') }} <span class="text-negative">*</span>
                 </label>
                 <q-select
                   v-model="carritoCO.metodoPago"
@@ -1052,7 +1052,7 @@
                   map-options
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un método de pago']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-metodo-de-pago-77a850')]"
                   class="premium-input"
                   style="border-radius: 8px"
                 >
@@ -1067,7 +1067,7 @@
             <div v-else-if="carritoCO.variablePago === 'dividido'" class="q-pt-sm">
               <div class="text-caption text-grey-7 q-mb-md flex items-center">
                 <q-icon name="info" size="xs" class="q-mr-xs" />
-                Distribuya el monto total entre diferentes métodos de pago.
+                {{ $t('ui.distribuya-el-monto-total-entre-diferentes-metodos-d-e790b4') }}
               </div>
 
               <div
@@ -1078,7 +1078,7 @@
                 <div class="col-12 col-md-5">
                   <label
                     class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
-                    >Método de Pago *</label
+                    >{{ $t('ui.metodo-de-pago-6f04c3') }}</label
                   >
                   <q-select
                     v-model="payment.metodoPago"
@@ -1090,7 +1090,7 @@
                     map-options
                     option-label="label"
                     option-value="value"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                     class="rounded-borders"
                   />
@@ -1098,7 +1098,7 @@
                 <div class="col-12 col-md-3">
                   <label
                     class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
-                    >Monto ({{ divisaActiva.tipo }})</label
+                    >{{ $t('ui.monto-154bf6') }}{{ divisaActiva.tipo }})</label
                   >
                   <q-input
                     v-model="payment.monto"
@@ -1107,7 +1107,7 @@
                     outlined
                     bg-color="grey-1"
                     @update:model-value="calculateRemainingAmount(index)"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                     class="rounded-borders"
                   />
@@ -1115,7 +1115,7 @@
                 <div class="col-12 col-md-3">
                   <label
                     class="text-weight-bold cm-text-muted q-mb-xs block text-caption text-uppercase ls-1"
-                    >Porcentaje (%)</label
+                    >{{ $t('ui.porcentaje-452cef') }}</label
                   >
                   <q-input
                     v-model="payment.porcentaje"
@@ -1124,7 +1124,7 @@
                     outlined
                     bg-color="grey-1"
                     @update:model-value="calculateAmountFromPercentage(index)"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                     class="rounded-borders"
                   />
@@ -1145,7 +1145,7 @@
 
               <div class="flex justify-end q-mt-md">
                 <q-btn
-                  label="Añadir Método"
+                  :label="$t('ui.anadir-metodo-b6d8a2')"
                   icon="add"
                   color="primary"
                   outline
@@ -1168,7 +1168,7 @@
                   <div class="row q-gutter-x-xl">
                     <div class="column">
                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
-                        >Total Pagado</span
+                        >{{ $t('ui.total-pagado-38b2c1') }}</span
                       >
                       <span
                         class="text-h6 text-weight-bolder"
@@ -1179,7 +1179,7 @@
                     </div>
                     <div class="column">
                       <span class="text-caption text-grey-7 text-uppercase ls-1 font-bold"
-                        >Monto Pendiente</span
+                        >{{ $t('ui.monto-pendiente-5e9bde') }}</span
                       >
                       <span
                         class="text-h6 text-weight-bolder"
@@ -1209,7 +1209,7 @@
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 12px"
               >
-                Asignar a Caja o Banco <span class="text-negative">*</span>
+                {{ $t('ui.asignar-a-caja-o-banco-7feda9') }} <span class="text-negative">*</span>
               </label>
 
               <q-select
@@ -1220,7 +1220,7 @@
                 emit-value
                 map-options
                 class="premium-input cm-surface"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 style="border-radius: 8px"
               >
                 <template v-slot:prepend>
@@ -1261,11 +1261,11 @@
                 style="border-left: 4px solid #1976d2"
               >
                 <q-icon name="credit_score" class="q-mr-sm" />
-                MODALIDAD: CRÉDITO
+                {{ $t('ui.modalidad-credito-456d32') }}
               </div>
 
               <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-                Monto Total: {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
+                {{ $t('ui.monto-total-d3e85d') }} {{ decimas(carritoCO.ventatotal) }} {{ divisaActiva.tipo }}
               </div>
             </div>
 
@@ -1274,7 +1274,7 @@
                 <label
                   class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
-                  >Número de Cuotas *</label
+                  >{{ $t('ui.numero-de-cuotas-a1fc8b') }}</label
                 >
                 <q-input
                   v-model="carritoCO.cantidadPagos"
@@ -1284,7 +1284,7 @@
                   outlined
                   bg-color="white"
                   @update:model-value="(calculatePayments(), calculateDueDate())"
-                  :rules="[(val) => (!!val && val > 0) || 'Requerido']"
+                  :rules="[(val) => (!!val && val > 0) || $t('common.required')]"
                   class="rounded-borders"
                 >
                   <template v-slot:prepend
@@ -1297,7 +1297,7 @@
                 <label
                   class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
-                  >Monto por Cuota</label
+                  >{{ $t('ui.monto-por-cuota-6be916') }}</label
                 >
                 <q-input
                   v-model="carritoCO.montoPagos"
@@ -1318,7 +1318,7 @@
                 <label
                   class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
-                  >Frecuencia de Pago *</label
+                  >{{ $t('ui.frecuencia-de-pago-c5e539') }}</label
                 >
                 <q-select
                   v-model="carritoCO.periodo"
@@ -1342,7 +1342,7 @@
                 <label
                   class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
-                  >Plazo Total (Días) *</label
+                  >{{ $t('ui.plazo-total-dias-7f3667') }}</label
                 >
                 <q-input
                   v-model="carritoCO.plazoPersonalizado"
@@ -1351,7 +1351,7 @@
                   outlined
                   bg-color="white"
                   @update:model-value="calculateDueDate"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   class="rounded-borders"
                 >
                   <template v-slot:prepend
@@ -1364,7 +1364,7 @@
                 <label
                   class="text-weight-bold cm-text-muted q-mb-sm block text-uppercase ls-1"
                   style="font-size: 11px"
-                  >Fecha de Vencimiento Estimada</label
+                  >{{ $t('ui.fecha-de-vencimiento-estimada-4aa486') }}</label
                 >
                 <q-input
                   v-model="carritoCO.fechaLimite"
@@ -1384,8 +1384,7 @@
             <div class="q-mt-xl q-pa-md bg-blue-50 rounded-borders border-blue flex items-center">
               <q-icon name="info" color="primary" size="sm" class="q-mr-md" />
               <div class="text-caption text-blue-9 text-weight-medium">
-                La fecha de vencimiento se calcula automáticamente según la frecuencia y el número
-                de cuotas desde la fecha de emisión.
+                {{ $t('ui.la-fecha-de-vencimiento-se-calcula-automaticamente-s-9d5056') }}
               </div>
             </div>
           </div>
@@ -1397,14 +1396,14 @@
         <q-card-actions align="right" class="q-pa-md q-pa-sm-sm cm-surface shrink-0 shadow-up-1">
           <q-btn
             flat
-            label="Regresar"
+            :label="$t('ui.regresar-9e5b8e')"
             color="grey-8"
             v-close-popup
             class="q-px-md text-weight-bold rounded-pill"
           />
           <q-btn
             unelevated
-            label="Confirmar Cotización"
+            :label="$t('ui.confirmar-cotizacion-b27d2d')"
             color="primary"
             icon="task_alt"
             class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"
@@ -1434,8 +1433,7 @@
       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
           <div class="text-h6 flex items-center q-px-sm">
-            <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de
-            PDF
+            <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> {{ $t('ui.vista-previa-de-pdf-978f4e') }}
           </div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
@@ -1452,10 +1450,10 @@
           <div v-else-if="isMobile && mobileFallbackUrl" class="mobile-success">
             <q-icon name="check_circle" color="positive" size="2em" />
             <p>
-              Comprobante generado. Si no se abrió automáticamente, podés descargarlo manualmente.
+              {{ $t('ui.comprobante-generado-si-no-se-abrio-automaticamente-878377') }}
             </p>
             <a :href="mobileFallbackUrl" download="comprobante.pdf" class="download-link">
-              Descargar comprobante
+              {{ $t('ui.descargar-comprobante-388c59') }}
             </a>
           </div>
         </q-card-section>
@@ -1482,16 +1480,16 @@
             <q-icon name="check" size="40px" color="positive" />
           </div>
           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
-            ¡Cotización Exitosa!
+            {{ $t('ui.cotizacion-exitosa-10d1c0') }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-pa-xl text-center cm-surface">
           <div class="text-body1 cm-text q-mb-md text-weight-medium" style="font-size: 16px">
-            El comprobante ha sido generado y guardado correctamente en el sistema.
+            {{ $t('ui.el-comprobante-ha-sido-generado-y-guardado-correctam-50d0b1') }}
           </div>
           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
-            ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
+            {{ $t('ui.desea-enviar-una-copia-en-formato-pdf-al-correo-elec-00d095') }}
           </div>
         </q-card-section>
 
@@ -1500,7 +1498,7 @@
         <q-card-actions align="center" class="q-pa-md bg-grey-1" style="border-top: 1px solid #eee">
           <q-btn
             flat
-            label="No, gracias"
+            :label="$t('ui.no-gracias-ec7892')"
             color="grey-7"
             @click="cancelar()"
             class="q-px-md text-weight-bold"
@@ -1508,7 +1506,7 @@
           />
           <q-btn
             unelevated
-            label="Enviar PDF por Correo"
+            :label="$t('ui.enviar-pdf-por-correo-1a3769')"
             color="positive"
             icon="send"
             class="q-px-md text-weight-bold shadow-3 q-ml-sm"
@@ -1525,6 +1523,7 @@
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
@@ -1611,18 +1610,18 @@ const isMobile = ref(false)
 const mobileFallbackUrl = ref(null) // enlace de descarga manual para móvil
 
 // Tipo de operación: cotizacion o venta
-const tipoOperacion = ref({ value: 0, label: 'Cotización Normal' })
+const tipoOperacion = ref({ value: 0, label: i18nT('ui.cotizacion-normal-a2a950') })
 const optionOperacion = ref([
-  { value: 0, label: 'Cotización Normal' },
-  { value: 1, label: 'Cotización Preferencial' },
+  { value: 0, label: i18nT('ui.cotizacion-normal-a2a950') },
+  { value: 1, label: i18nT('ui.cotizacion-preferencial-cc346c') },
 ])
 
 const periodOptions = [
-  { label: 'Personalizado', value: 0 },
-  { label: '15 días', value: 15 },
-  { label: '30 días', value: 30 },
-  { label: '60 días', value: 60 },
-  { label: '90 días', value: 90 },
+  { label: i18nT('ui.personalizado-738665'), value: 0 },
+  { label: i18nT('ui.15-dias-977c82'), value: 15 },
+  { label: i18nT('ui.30-dias-7f2d58'), value: 30 },
+  { label: i18nT('ui.60-dias-376f5a'), value: 60 },
+  { label: i18nT('ui.90-dias-a64b09'), value: 90 },
 ]
 
 // Datos del formulario
@@ -1690,7 +1689,7 @@ const RegistrarFirma = () => {
   } else {
     $q.notify({
       type: 'warning',
-      message: 'Por favor, selecciona un cliente antes de continuar.',
+      message: i18nT('ui.por-favor-selecciona-un-cliente-antes-de-continuar-5422d3'),
       position: 'top',
     })
   }
@@ -1707,7 +1706,7 @@ const alTerminarFirma = (respuesta) => {
   // 3. Notificación de Quasar (Feedback visual)
   $q.notify({
     type: 'positive',
-    message: 'Documento firmado correctamente',
+    message: i18nT('ui.documento-firmado-correctamente-04a2cf'),
     caption: `ID de Firma: ${respuesta.id_firma || 'N/A'}`,
     position: 'top-right',
   })
@@ -1773,28 +1772,28 @@ const permitirStockvacio = () => {
 const carritoColumns = [
   { name: 'exp', label: '', align: 'left' },
 
-  { name: 'num', label: 'N°', align: 'left', field: 'num' },
-  { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
+  { name: 'num', label: i18nT('cotizacion.table.number'), align: 'left', field: 'num' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), align: 'center', field: 'codigo' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), align: 'left', field: 'descripcion' },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     align: 'center',
     field: (row) => decimas(row.cantidad),
   },
   {
     name: 'precio',
-    label: 'Precio unitario',
+    label: i18nT('ui.precio-unitario-d3780c'),
     align: 'center',
     field: (row) => decimas(row.precio),
   },
   {
     name: 'total',
-    label: 'Total',
+    label: i18nT('ventas.total'),
     align: 'center',
     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
   },
-  { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
+  { name: 'options', label: i18nT('configGeneral.divisas.table.options'), align: 'center', field: 'options' },
 ]
 
 // Columnas para la tabla del comprobante
@@ -2123,7 +2122,7 @@ async function listaProductosDisponibles() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   if (!idempresa) {
-    $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-no-se-pudo-obtener-la-empresa-bc48c7') })
     return
   }
   if (!idporcentajeventa.value) {
@@ -2168,7 +2167,7 @@ async function listaCLientes() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   if (!idempresa) {
-    $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-no-se-pudo-obtener-la-empresa-bc48c7') })
     return
   }
   const endpoint = `listaCliente/${idempresa}`
@@ -2219,7 +2218,7 @@ async function selectSucursal(clientId) {
     if (data.length === 0) {
       $q.notify({
         type: 'info',
-        message: 'No existen sucursales registradas del cliente seleccionado.',
+        message: i18nT('ui.no-existen-sucursales-registradas-del-cliente-selecc-a35ef7'),
       })
       sucursalesOptions.value = []
       selectedSucursal.value = null
@@ -2382,7 +2381,7 @@ async function anadirProductoACarrito() {
   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
     $q.notify({
       type: 'info',
-      message: 'Llene todos los campos para poder cargar productos a la lista.',
+      message: i18nT('ui.llene-todos-los-campos-para-poder-cargar-productos-a-8e56f9'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2392,7 +2391,7 @@ async function anadirProductoACarrito() {
     if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
       $q.notify({
         type: 'warning',
-        message: 'La cantidad solicitada excede el stock disponible.',
+        message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
         actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
       return
@@ -2400,7 +2399,7 @@ async function anadirProductoACarrito() {
       if (cantidadCO.value > cantidaddisponibleCO.value && permitirStock.value) {
         $q.notify({
           type: 'warning',
-          message: 'La cantidad solicitada excede el stock disponible.',
+          message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
           actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
         })
       }
@@ -2409,7 +2408,7 @@ async function anadirProductoACarrito() {
     if (Number(tipoOperacion.value?.value) === 2 && cantidadCO.value > cantidaddisponibleCO.value) {
       $q.notify({
         type: 'warning',
-        message: 'La cantidad solicitada excede el stock disponible.',
+        message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
         actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
     }
@@ -2508,7 +2507,7 @@ function aplicarDescuento() {
   if (carritoCO.descuento > carritoCO.subtotal) {
     $q.notify({
       type: 'warning',
-      message: 'El descuento sobrepasa el subtotal.',
+      message: i18nT('ui.el-descuento-sobrepasa-el-subtotal-2f51ae'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     carritoCO.descuento = carritoCO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
@@ -2534,7 +2533,7 @@ async function enviarDatos() {
   if (!isValid) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, complete todos los campos requeridos.',
+      message: i18nT('ui.por-favor-complete-todos-los-campos-requeridos-5232b8'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2544,7 +2543,7 @@ async function enviarDatos() {
   if (!isValidCliente) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, complete todos los campos requeridos.',
+      message: i18nT('ui.por-favor-complete-todos-los-campos-requeridos-5232b8'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2553,7 +2552,7 @@ async function enviarDatos() {
   if (carritoCO.listaProductos.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'Debe añadir al menos un producto a la cotización.',
+      message: i18nT('ui.debe-anadir-al-menos-un-producto-a-la-cotizacion-91dcd1'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2567,7 +2566,7 @@ async function enviarDatos() {
   ) {
     $q.notify({
       type: 'info',
-      message: 'Seleccione un método de pago antes de confirmar.',
+      message: i18nT('ui.seleccione-un-metodo-de-pago-antes-de-confirmar-4f8c76'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2625,7 +2624,7 @@ async function enviarDatos() {
     $q.loading.hide()
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar un Punto de Venta antes de registrar la cotización.',
+      message: i18nT('ui.debe-seleccionar-un-punto-de-venta-antes-de-registra-322891'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2658,7 +2657,7 @@ async function enviarDatos() {
   // console.log(carritoCO)
 
   $q.loading.show({
-    message: 'Registrando cotización...',
+    message: i18nT('ui.registrando-cotizacion-9f7ecf'),
   })
   try {
     datosFormulario.forEach((valor, clave) => console.log(`${clave}: ${valor}`))
@@ -2675,7 +2674,7 @@ async function enviarDatos() {
       resetFormulario()
       $q.notify({
         type: 'positive',
-        message: 'Cotización realizada exitosamente.',
+        message: i18nT('ui.cotizacion-realizada-exitosamente-7a580a'),
       })
       cotizacionFormRef.value.resetValidation() // Resetear validación
 
@@ -2683,8 +2682,8 @@ async function enviarDatos() {
       let confirmado = false
 
       $q.dialog({
-        title: 'Cotización Exitosa',
-        message: 'Su comprobante está listo. ¿Desea verlo?',
+        title: i18nT('ui.cotizacion-exitosa-ce1b07'),
+        message: i18nT('ui.su-comprobante-esta-listo-desea-verlo-1cf7a9'),
         cancel: true,
         persistent: true,
       })
@@ -2706,14 +2705,14 @@ async function enviarDatos() {
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al registrar la cotización.',
+        message: data.mensaje || i18nT('ui.error-al-registrar-la-cotizacion-113093'),
       })
     }
   } catch (error) {
     console.error('Error al realizar la solicitud:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error de conexión o en el servidor.',
+      message: i18nT('ui.hubo-un-error-de-conexion-o-en-el-servidor-6dd6fd'),
     })
     $q.loading.hide()
   }
@@ -2777,14 +2776,14 @@ async function generarComprobante(id) {
   if (!idempresa) {
     $q.notify({
       type: 'negative',
-      message: 'Error: No se pudo obtener la empresa para el comprobante.',
+      message: i18nT('ui.error-no-se-pudo-obtener-la-empresa-para-el-comproba-b264a5'),
     })
     return
   }
   modalmetodopago.value = false
 
   $q.loading.show({
-    message: 'Generando comprobante...',
+    message: i18nT('ui.generando-comprobante-76e34b'),
   })
 
   try {
@@ -2794,7 +2793,7 @@ async function generarComprobante(id) {
 
     if (data[0] === 'error') {
       console.error(data.error)
-      $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-los-detalles-del-comprobante-d83876') })
       emit('reiniciar')
     } else {
       $q.loading.hide()
@@ -2826,7 +2825,7 @@ async function generarComprobante(id) {
     }
   } catch (error) {
     console.error('Error al generar comprobante:', error)
-    $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.hubo-un-error-al-generar-el-comprobante-a656ee') })
     emit('reiniciar')
   } finally {
     // Salvaguarda: si por alguna rama (early return / excepción) el spinner
@@ -2874,7 +2873,7 @@ const handleRecordCreated = async (newRecordData) => {
       RegistrarCliente()
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.cliente-guardado-correctamente-d0df06'),
       })
       // Optionally, refresh your data or add the new client to your list
       // For example, if you have a method to fetch clients:
@@ -2882,7 +2881,7 @@ const handleRecordCreated = async (newRecordData) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-cliente-a235d2'),
       })
     }
   } catch (error) {
@@ -2891,8 +2890,8 @@ const handleRecordCreated = async (newRecordData) => {
     $q.notify({
       color: 'negative',
       message:
-        'Error al registrar: ' +
-        (error.response?.data?.mensaje || error.message || 'Error desconocido'),
+        i18nT('ui.error-al-registrar-c13a59') +
+        (error.response?.data?.mensaje || error.message || i18nT('ui.error-desconocido-9c256e')),
       icon: 'error',
     })
   }
@@ -2944,7 +2943,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   }
 }
 async function recibirSeleccionCotizacion(datos) {
@@ -2997,7 +2996,7 @@ const recargarClientes = async () => {
   recargandoClientes.value = true
   try {
     await listaCLientes()
-    $q.notify({ type: 'positive', message: 'Clientes recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.clientes-recargados-318aac'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar clientes:', err)
   } finally {
@@ -3010,7 +3009,7 @@ const recargarSucursales = async () => {
   if (!idclienteCO.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione un cliente antes de recargar sucursales.',
+      message: i18nT('ui.seleccione-un-cliente-antes-de-recargar-sucursales-1a35ef'),
       position: 'top',
       timeout: 1500,
     })
@@ -3019,7 +3018,7 @@ const recargarSucursales = async () => {
   recargandoSucursales.value = true
   try {
     await selectSucursal(idclienteCO.value)
-    $q.notify({ type: 'positive', message: 'Sucursales recargadas', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.sucursales-recargadas-0f8717'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar sucursales:', err)
   } finally {
@@ -3032,7 +3031,7 @@ const recargarCanales = async () => {
   recargandoCanales.value = true
   try {
     await cargarCanales()
-    $q.notify({ type: 'positive', message: 'Canales recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.canales-recargados-9e953f'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar canales:', err)
   } finally {
@@ -3045,7 +3044,7 @@ const recargarAlmacenes = async () => {
   recargandoAlmacenes.value = true
   try {
     await listaAlmacenes()
-    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.almacenes-recargados-5f8af7'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar almacenes:', err)
   } finally {
@@ -3058,7 +3057,7 @@ const recargarCategorias = async () => {
   if (!idalmacenfiltro.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione un almacén antes de recargar categorías.',
+      message: i18nT('ui.seleccione-un-almacen-antes-de-recargar-categorias-34767e'),
       position: 'top',
       timeout: 1500,
     })
@@ -3067,7 +3066,7 @@ const recargarCategorias = async () => {
   recargandoCategorias.value = true
   try {
     await listaCategoria()
-    $q.notify({ type: 'positive', message: 'Categorías recargadas', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.categorias-recargadas-d7e9f6'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar categorías:', err)
   } finally {
@@ -3080,7 +3079,7 @@ const recargarPuntosVenta = async () => {
   if (!idalmacenfiltro.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione un almacén antes de recargar puntos de venta.',
+      message: i18nT('ui.seleccione-un-almacen-antes-de-recargar-puntos-de-ve-89c8bc'),
       position: 'top',
       timeout: 1500,
     })
@@ -3091,7 +3090,7 @@ const recargarPuntosVenta = async () => {
     await cargarPuntoVentas()
     $q.notify({
       type: 'positive',
-      message: 'Puntos de venta recargados',
+      message: i18nT('ui.puntos-de-venta-recargados-42e227'),
       position: 'top',
       timeout: 1200,
     })
@@ -3107,7 +3106,7 @@ const recargarProductos = async () => {
   if (!idporcentajeventa.value) {
     $q.notify({
       type: 'warning',
-      message: 'Seleccione una categoría antes de recargar productos.',
+      message: i18nT('ui.seleccione-una-categoria-antes-de-recargar-productos-995084'),
       position: 'top',
       timeout: 1500,
     })
@@ -3116,7 +3115,7 @@ const recargarProductos = async () => {
   recargandoProductos.value = true
   try {
     await listaProductosDisponibles()
-    $q.notify({ type: 'positive', message: 'Productos recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.productos-recargados-4b590a'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar productos:', err)
   } finally {
@@ -3153,7 +3152,7 @@ onMounted(async () => {
       console.log('Procesando datos de Quick Consult en CotizacionPage:', data)
 
       if (data.destination === 'quotation') {
-        tipoOperacion.value = { value: 1, label: 'Cotización Preferencial' }
+        tipoOperacion.value = { value: 1, label: i18nT('ui.cotizacion-preferencial-cc346c') }
         const user = await getUserData()
         carritoCO.idusuario = user?.idusuario
         carritoCO.idempresa = idempresa
@@ -3203,7 +3202,7 @@ onMounted(async () => {
         localStorage.removeItem('quickConsult')
         $q.notify({
           type: 'positive',
-          message: 'Productos de Consulta Rápida cargados correctamente',
+          message: i18nT('ui.productos-de-consulta-rapida-cargados-correctamente-cf30ff'),
         })
       }
     } else {

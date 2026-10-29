@@ -2,29 +2,29 @@
   <q-form @submit.prevent="handleSubmit">
     <q-card-section class="row q-col-gutter-x-md">
       <div class="col-12 col-md-4">
-        <label for="puntoventa">Punto de venta*</label>
+        <label for="puntoventa">{{ $t('ui.punto-de-venta-6d9630') }}</label>
         <q-input
           v-model="localData.nombre"
           id="puntoventa"
           outlined
           dense
           autocomplete="off"
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
         />
       </div>
       <div class="col-12 col-md-4">
-        <label for="descripcion">Descripción*</label>
+        <label for="descripcion">{{ $t('ui.descripcion-f2005b') }}</label>
         <q-input
           v-model="localData.descripcion"
           id="descripcion"
           outlined
           dense
           autocomplete="off"
-          :rules="[(val) => !!val || 'Campo requerido']"
+          :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
         />
       </div>
       <div class="col-12 col-md-4">
-        <label for="almacen">Almacén*</label>
+        <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
         <q-select
           v-model="localData.idalmacen"
           :options="almacenes"
@@ -33,14 +33,14 @@
           map-options
           outlined
           dense
-          :rules="[(val) => !!val || 'Seleccione un tipo']"
+          :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
         />
       </div>
     </q-card-section>
 
     <q-card-actions class="flex justify-start">
-      <q-btn label="Guardar" type="submit" color="primary" />
-      <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
+      <q-btn :label="$t('common.save')" type="submit" color="primary" />
+      <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
     </q-card-actions>
   </q-form>
 </template>

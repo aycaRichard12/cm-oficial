@@ -2,7 +2,7 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Enviar por WhatsApp</div>
+        <div class="text-h6">{{ $t('ui.enviar-por-whatsapp-af6ee0') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -18,19 +18,19 @@
           map-options
           clearable
           outlined
-          label="Buscar y seleccionar proveedor"
+          :label="$t('ui.buscar-y-seleccionar-proveedor-11a71b')"
         >
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay resultados </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
             </q-item>
           </template>
         </q-select>
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancelar" @click="onDialogCancel" />
-        <q-btn flat label="Seleccionar" @click="QonDialogOK" :disable="!selectedProvider" />
+        <q-btn flat :label="$t('common.cancel')" @click="onDialogCancel" />
+        <q-btn flat :label="$t('ui.seleccionar-2b8319')" @click="QonDialogOK" :disable="!selectedProvider" />
       </q-card-actions>
     </q-card>
   </q-dialog>

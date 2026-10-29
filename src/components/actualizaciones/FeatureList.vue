@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="text-h6 q-mb-md text-primary row items-center">
         <q-icon name="stars" class="q-mr-sm" />
-        <div>Novedades Principales</div>
+        <div>{{ $t('ui.novedades-principales-715618') }}</div>
       </div>
       <q-separator class="q-mb-md" />
       <q-list class="q-gutter-y-sm">

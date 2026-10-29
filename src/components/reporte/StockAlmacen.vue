@@ -15,7 +15,7 @@
         <q-select
           v-model="almacenSeleccionado"
           :options="opcionesAlmacenes"
-          label="Seleccionar almacén"
+          :label="$t('ui.seleccionar-almacen-797780')"
           outlined
           emit-value
           map-options
@@ -28,7 +28,7 @@
           </template>
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay almacenes disponibles </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-almacenes-disponibles-6339fe') }} </q-item-section>
             </q-item>
           </template>
         </q-select>
@@ -60,12 +60,12 @@
           <div class="text-h6 text-grey-7">
             {{
               hayProductosConStockCero
-                ? 'Todos los productos tienen stock cero'
-                : 'No hay productos en este almacén'
+                ? $t('ui.todos-los-productos-tienen-stock-cero-22a805')
+                : $t('ui.no-hay-productos-en-este-almacen-07d169')
             }}
           </div>
           <div class="text-caption text-grey-6 q-mt-sm">
-            {{ almacenSeleccionado || 'Seleccione un almacén para ver el stock' }}
+            {{ almacenSeleccionado || $t('ui.seleccione-un-almacen-para-ver-el-stock-121bee') }}
           </div>
         </div>
       </q-card-section>
@@ -74,6 +74,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import VueApexCharts from 'vue3-apexcharts'
@@ -95,10 +96,10 @@ const hayProductosConStockCero = ref(false)
 // Computed properties
 const stockPorAlmacen = computed(() => {
   return Lista_stock.value.reduce((acc, item) => {
-    const almacen = item.almacen?.trim() || 'Sin Almacén'
+    const almacen = item.almacen?.trim() || i18nT('ui.sin-almacen-cd6a5f')
     if (!acc[almacen]) acc[almacen] = []
     acc[almacen].push({
-      producto: item.producto?.trim() || 'Sin nombre',
+      producto: item.producto?.trim() || i18nT('ui.sin-nombre-4b9a18'),
       stock: Number(item.stock) || 0,
       codigo: item.codigo?.trim() || 'S/C',
     })
@@ -137,7 +138,7 @@ const chartOptions = ref({
     },
   },
   title: {
-    text: 'Stock por Almacén',
+    text: i18nT('ui.stock-por-almacen-2260d5'),
     align: 'center',
     style: {
       fontSize: '16px',
@@ -146,7 +147,7 @@ const chartOptions = ref({
     }
   },
   subtitle: {
-    text: 'Distribución de inventario por producto',
+    text: i18nT('ui.distribucion-de-inventario-por-producto-db5f03'),
     align: 'center',
     style: {
       fontSize: '12px',
@@ -205,7 +206,7 @@ const chartOptions = ref({
           },
           total: {
             show: true,
-            label: 'Total Stock',
+            label: i18nT('ui.total-stock-215534'),
             fontSize: '14px',
             fontWeight: 600,
             color: '#304758',
@@ -276,7 +277,7 @@ async function cargarDatos() {
       console.error('ID de empresa no encontrado.')
       $q.notify({
         type: 'negative',
-        message: 'No se pudo obtener la información de la empresa',
+        message: i18nT('ui.no-se-pudo-obtener-la-informacion-de-la-empresa-f04f18'),
       })
       return
     }
@@ -316,14 +317,14 @@ async function cargarDatos() {
     } else {
       $q.notify({
         type: 'info',
-        message: 'No hay datos de stock en los almacenes a los que tienes acceso',
+        message: i18nT('ui.no-hay-datos-de-stock-en-los-almacenes-a-los-que-tie-d77979'),
       })
     }
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los datos de stock',
+      message: i18nT('ui.error-al-cargar-los-datos-de-stock-d88d29'),
     })
   }
 }

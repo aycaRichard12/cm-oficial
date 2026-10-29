@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="recycling" size="md" class="q-mr-sm" />
-          Registrar Merma
+          {{ $t('ui.registrar-merma-869f40') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración y registro de productos perdidos o dañados
+          {{ $t('ui.administracion-y-registro-de-productos-perdidos-o-da-38be12') }}
         </div>
       </div>
     </div>
@@ -22,17 +22,17 @@
             @click="toggleCollapse"
             no-caps
             id="btnnuevamerma"
-            title="Registrar Merma"
+            :title="$t('ui.registrar-merma-869f40')"
           >
             <q-icon name="add" class="icono" />
             <span class="texto">
-              <q-icon name="add" />{{ collapseVisible ? 'Cancelar Registro' : 'Nuevo' }}</span
+              <q-icon name="add" />{{ collapseVisible ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}</span
             >
           </q-btn>
         </div>
         <div class="row q-col-gutter-x-md q-mb-md">
           <div class="col-12 col-md-3" id="filtroalmacenmerma">
-            <label for="almacen">Seleccione un Almacén</label>
+            <label for="almacen">{{ $t('ui.seleccione-un-almacen-fc2f9e') }}</label>
             <q-select
               v-model="selectedWarehouse"
               :options="almacenOptions"
@@ -53,13 +53,13 @@
               outline
             >
               <q-icon name="mdi-file-pdf-box" class="icono" />
-              <span class="texto">Vista Previa PDF</span>
+              <span class="texto">{{ $t('ui.vista-previa-pdf-9db3ed') }}</span>
             </q-btn>
           </div>
           <div class="col-6 col-md-5 flex justify-end">
             <div id="buscarfiltromerma">
-              <label for="buscar">Buscar...</label>
-              <q-input v-model="filter" dense debounce="300" placeholder="Buscar" class="q-mr-sm">
+              <label for="buscar">{{ $t('common.search') }}</label>
+              <q-input v-model="filter" dense debounce="300" :placeholder="$t('ui.buscar-a62405')" class="q-mr-sm">
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>
@@ -72,7 +72,7 @@
         <div v-if="lectura">
           <q-table
             id="tablamermas"
-            title="Registro de Mermas"
+            :title="$t('ui.registro-de-mermas-5da574')"
             :rows="filteredTableData"
             :columns="columns"
             row-key="id"
@@ -86,10 +86,10 @@
                 <q-badge
                   color="green"
                   v-if="Number(props.row.autorizacion) === 1"
-                  label="Autorizado"
+                  :label="$t('ui.autorizado-b4fb49')"
                   outline
                 />
-                <q-badge color="red" v-else label="No Autorizado" outline />
+                <q-badge color="red" v-else :label="$t('ui.no-autorizado-988c4e')" outline />
               </q-td>
             </template>
             <template v-slot:body-cell-detalle="props">
@@ -154,7 +154,7 @@
         <q-dialog v-model="collapseVisible" persistent>
           <q-card class="responsive-dialog">
             <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-              <div>{{ editMode ? 'Editar Registro' : 'Nuevo Registro' }}</div>
+              <div>{{ editMode ? $t('ui.editar-registro-8a96de') : $t('ui.nuevo-registro-02abe0') }}</div>
               <q-btn icon="close" @click="collapseVisible = false" flat dense round />
             </q-card-section>
             <q-card-section>
@@ -166,7 +166,7 @@
                   :value="editMode ? 'editarmerma' : 'registrarmerma'"
                 />
                 <div class="col-12 col-md-4" id="fechaformmerma">
-                  <label for="fecha">Fecha</label>
+                  <label for="fecha">{{ $t('cotizacion.table.date') }}</label>
                   <q-input
                     v-model="formData.fecha"
                     id="fecha"
@@ -178,7 +178,7 @@
                 </div>
 
                 <div class="col-12 col-md-4" id="almacenformmerma">
-                  <label for="almacen">Almacén</label>
+                  <label for="almacen">{{ $t('inventario.warehouse') }}</label>
 
                   <q-select
                     v-model="formData.almacen"
@@ -191,7 +191,7 @@
                   />
                 </div>
                 <div class="col-12 col-md-4" id="descripcionformmerma">
-                  <label for="descripcion">Descripción</label>
+                  <label for="descripcion">{{ $t('configuracion.servicios.table.descripcion') }}</label>
                   <q-input v-model="formData.descripcion" dense outlined id="descripcion" />
                 </div>
                 <div
@@ -202,7 +202,7 @@
                     for="cajaBanco"
                     class="text-weight-bold cm-text q-mb-sm block"
                     style="font-size: 12px; text-transform: uppercase"
-                    >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                    >{{ $t('ui.seleccione-caja-o-banco-b3521c') }} <span class="text-negative">*</span></label
                   >
                   <q-select
                     v-model="formData.idcaja_banco"
@@ -213,7 +213,7 @@
                     emit-value
                     map-options
                     class="premium-input"
-                    :rules="[(val) => !!val || 'Campo requerido']"
+                    :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   >
                     <template v-slot:prepend>
                       <q-icon name="account_balance" color="positive" />
@@ -248,12 +248,12 @@
                     id="btnguardarformmerma"
                     type="submit"
                     color="primary"
-                    :label="editMode ? 'Actualizar' : 'Guardar'"
+                    :label="editMode ? $t('configuracion.servicios.dialog.update') : $t('common.save')"
                   />
                   <q-btn
                     type="reset"
                     color="negative"
-                    label="Cancelar"
+                    :label="$t('common.cancel')"
                     class="q-ml-sm"
                     @click="toggleCollapse"
                   />
@@ -272,11 +272,11 @@
     <q-dialog v-model="showMainForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Detalle Mermas</div>
+          <div>{{ $t('ui.detalle-mermas-fe4f7c') }}</div>
           <q-btn dense round flat icon="close" @click="showMainForm = false" />
         </q-card-section>
         <q-card-section v-if="Number(currentDetailStatus) === 2 && eliminar">
-          <q-btn color="negative" icon="delete_sweep" label="Eliminar" @click="backToMainForm" />
+          <q-btn color="negative" icon="delete_sweep" :label="$t('common.delete')" @click="backToMainForm" />
         </q-card-section>
         <q-card-section>
           <q-form @submit="submitDetailForm" v-if="Number(currentDetailStatus) === 2 && escritura">
@@ -287,18 +287,18 @@
                     <div v-if="esProductoUnico" class="unique-product-section">
                       <q-checkbox
                         v-model="registrarComoProductoUnico"
-                        label="Producto Único"
+                        :label="$t('ui.producto-unico-b16503')"
                         color="primary"
                         class="custom-checkbox text-weight-medium"
                       >
                         <template v-slot:label>
-                          <span class="cm-text">Producto Único</span>
+                          <span class="cm-text">{{ $t('ui.producto-unico-b16503') }}</span>
                         </template>
                       </q-checkbox>
                     </div>
                   </div>
                   <div class="col-12" id="productodetallemerma">
-                    <label for="producto">Producto</label>
+                    <label for="producto">{{ $t('inventario.product') }}</label>
 
                     <q-select
                       v-model="detailForm.idproductoalmacen"
@@ -318,7 +318,7 @@
                       <template v-slot:no-option>
                         <q-item>
                           <q-item-section class="text-grey">
-                            No hay productos disponibles
+                            {{ $t('ui.no-hay-productos-disponibles-249511') }}
                           </q-item-section>
                         </q-item>
                       </template>
@@ -328,7 +328,7 @@
               </div>
 
               <div class="col-6 col-md-3" id="stockdetallemerma">
-                <label for="stock">Stock</label>
+                <label for="stock">{{ $t('inventario.stock') }}</label>
                 <q-input
                   v-model.number="detailForm.stock"
                   type="number"
@@ -339,7 +339,7 @@
                 />
               </div>
               <div class="col-6 col-md-3" id="cantidaddetallemerma">
-                <label for="cantidad">Cantidad</label>
+                <label for="cantidad">{{ $t('ui.cantidad-b5b6f8') }}</label>
                 <q-input
                   v-model.number="detailForm.cantidad"
                   id="cantidad"
@@ -350,8 +350,8 @@
                   required
                   @update:model-value="validateQuantity"
                   :rules="[
-                    (val) => Number(val) > 0 || 'La cantidad debe ser mayor a 0',
-                    (val) => val <= detailForm.stock || 'Cantidad excede stock',
+                    (val) => Number(val) > 0 || $t('ui.la-cantidad-debe-ser-mayor-a-0-eb7edc'),
+                    (val) => val <= detailForm.stock || $t('ui.cantidad-excede-stock-cae0f5'),
                   ]"
                 />
               </div>
@@ -368,14 +368,14 @@
                   :icon="lote ? 'toggle_on' : 'toggle_off'"
                   dense
                   flat
-                  label="Lote"
+                  :label="$t('ui.lote-7530a3')"
                   :color="lote ? 'green' : 'grey'"
                   @click="lote = !lote"
-                  title="CAMBIAR TIPO REPORTE"
+                  :title="$t('ui.cambiar-tipo-reporte-8a29ad')"
                 />
               </div>
               <div class="col-12 col-md-12" v-if="lote" id="compradetallemerma">
-                <label for="compras">Seleccionar Lote de Compra/Producción:</label>
+                <label for="compras">{{ $t('ui.seleccionar-lote-de-compra-produccion-2eb467') }}</label>
                 <q-select
                   v-model="detailForm.compra"
                   :options="filterCompras"
@@ -401,7 +401,7 @@
                   class="btn-res q-mt-md full-width"
                 >
                   <q-icon name="save" class="icono q-mr-xs" />
-                  <span class="texto">{{ detailEditMode ? 'Actualizar' : 'Cargar' }}</span>
+                  <span class="texto">{{ detailEditMode ? $t('configuracion.servicios.dialog.update') : $t('ui.cargar-e97b1c') }}</span>
                 </q-btn>
               </div>
             </div>
@@ -418,7 +418,7 @@
             <template v-slot:no-data>
               <div class="full-width row flex-center text-grey-6 q-pa-md">
                 <q-icon name="inbox" size="sm" class="q-mr-sm" />
-                No hay productos en el detalle
+                {{ $t('ui.no-hay-productos-en-el-detalle-3a40b0') }}
               </div>
             </template>
             <template v-slot:body="props">
@@ -433,7 +433,7 @@
                     @click="props.expand = !props.expand"
                     :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
                   >
-                    <q-tooltip>Ver detalles de códigos</q-tooltip>
+                    <q-tooltip>{{ $t('ui.ver-detalles-de-codigos-9e0689') }}</q-tooltip>
                   </q-btn>
                 </q-td>
 
@@ -511,7 +511,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -531,6 +531,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'boot/axios'
@@ -631,46 +632,46 @@ const availableProducts = ref([])
 const columns = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => tableData.value.indexOf(row) + 1,
     align: 'right',
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: (row) => cambiarFormatoFecha(row.fecha),
     align: 'center',
   },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
   {
     name: 'autorizacion',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'autorizacion',
     align: 'left',
   },
   {
     name: 'detalle',
-    label: 'Detalle',
+    label: i18nT('ui.detalle-be605b'),
     field: 'detalle',
     align: 'center',
   },
-  { name: 'actions', label: 'Acciones', align: 'center' },
+  { name: 'actions', label: i18nT('common.actions'), align: 'center' },
 ]
 
 const detailColumns = [
   { name: 'exp', label: '', align: 'left' },
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => detailData.value.indexOf(row) + 1,
     align: 'right',
   },
-  { name: 'codigolote', label: 'Código Lote', field: 'codigolote', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
-  { name: 'actions', label: 'Acciones', align: 'center' },
+  { name: 'codigolote', label: i18nT('ui.codigo-lote-04fcf6'), field: 'codigolote', align: 'left' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right' },
+  { name: 'actions', label: i18nT('common.actions'), align: 'center' },
 ]
 
 // Computed properties
@@ -701,7 +702,7 @@ const loadUserData = async () => {
     console.error('Error al cargar datos del usuario:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar datos del usuario',
+      message: i18nT('ui.error-al-cargar-datos-del-usuario-c008fc'),
     })
   }
 }
@@ -717,7 +718,7 @@ const almacenOptions = computed(() => {
 
   // Si hay más de uno, añadimos la opción "Todos" al principio
   if (opcionesMapeadas.length > 1) {
-    return [{ label: 'Todos los almacenes', value: 0 }, ...opcionesMapeadas]
+    return [{ label: i18nT('ui.todos-los-almacenes-949f2c'), value: 0 }, ...opcionesMapeadas]
   }
 
   return opcionesMapeadas
@@ -743,7 +744,7 @@ const loadTableData = async () => {
     console.error('Error al cargar datos de mermas:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar datos de mermas',
+      message: i18nT('ui.error-al-cargar-datos-de-mermas-eb66f9'),
     })
   } finally {
     loading.value = false
@@ -760,7 +761,7 @@ const loadDetailData = async (idMerma) => {
     console.error('Error al cargar detalles de merma:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar detalles de merma',
+      message: i18nT('ui.error-al-cargar-detalles-de-merma-006597'),
     })
   } finally {
     detailLoading.value = false
@@ -784,7 +785,7 @@ const loadAvailableProducts = async (idMerma, idAlmacen) => {
     console.error('Error al cargar productos disponibles:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar productos disponibles',
+      message: i18nT('ui.error-al-cargar-productos-disponibles-71531c'),
     })
   }
 }
@@ -859,7 +860,7 @@ const submitForm = async () => {
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error desconocido',
+        message: data.mensaje || i18nT('ui.error-desconocido-9c256e'),
       })
     }
 
@@ -871,7 +872,7 @@ const submitForm = async () => {
     console.error('Error al guardar merma:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.mensaje || 'Error al guardar merma',
+      message: error.response?.data?.mensaje || i18nT('ui.error-al-guardar-merma-a73faf'),
     })
   }
 }
@@ -881,7 +882,7 @@ const submitDetailForm = async () => {
   if (!detailForm.value.cantidad || Number(detailForm.value.cantidad) <= 0) {
     $q.notify({
       type: 'negative',
-      message: 'La cantidad debe ser mayor a 0',
+      message: i18nT('ui.la-cantidad-debe-ser-mayor-a-0-eb7edc'),
     })
     return
   }
@@ -890,7 +891,7 @@ const submitDetailForm = async () => {
   if (lote.value && !detailForm.value.compra) {
     $q.notify({
       type: 'negative',
-      message: 'Debe seleccionar un lote',
+      message: i18nT('ui.debe-seleccionar-un-lote-b1d298'),
     })
     return
   }
@@ -937,7 +938,7 @@ const submitDetailForm = async () => {
     console.error('Error al guardar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.mensaje || 'Error al guardar detalle',
+      message: error.response?.data?.mensaje || i18nT('ui.error-al-guardar-detalle-04b164'),
     })
   }
 }
@@ -964,15 +965,15 @@ const editItem = async (id) => {
     console.error('Error al cargar merma para editar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar merma para editar',
+      message: i18nT('ui.error-al-cargar-merma-para-editar-8f305d'),
     })
   }
 }
 
 const deleteItem = (id) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro que desea eliminar este registro? No podrá recuperarlo.',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-que-desea-eliminar-este-registro-no-podr-4175d5'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -989,7 +990,7 @@ const deleteItem = (id) => {
       console.error('Error al eliminar merma:', error)
       $q.notify({
         type: 'negative',
-        message: error.response?.data?.mensaje || 'Error al eliminar merma',
+        message: error.response?.data?.mensaje || i18nT('ui.error-al-eliminar-merma-0f0075'),
       })
     }
   })
@@ -997,8 +998,8 @@ const deleteItem = (id) => {
 
 // const changeStatus = (id, estado) => {
 //   $q.dialog({
-//     title: 'Confirmar',
-//     message: '¿Está seguro que desea cambiar el estado? No podrá revertir esta acción.',
+//     title: Confirmar,
+//     message: ¿Está seguro que desea cambiar el estado? No podrá revertir esta acción.,
 //     cancel: true,
 //     persistent: true,
 //   }).onOk(async () => {
@@ -1015,7 +1016,7 @@ const deleteItem = (id) => {
 //       console.error('Error al cambiar estado:', error)
 //       $q.notify({
 //         type: 'negative',
-//         message: error.response?.data?.mensaje || 'Error al cambiar estado',
+//         message: error.response?.data?.mensaje || Error al cambiar estado,
 //       })
 //     }
 //   })
@@ -1049,8 +1050,8 @@ const showDetails = async (id, idAlmacen, estado) => {
 
 const backToMainForm = () => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Está seguro? Esta acción eliminará todos los productos añadidos en la merma.',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-esta-accion-eliminara-todos-los-producto-a22357'),
     cancel: true,
     persistent: true,
   })
@@ -1072,7 +1073,7 @@ const backToMainForm = () => {
         console.error('Error al cancelar merma:', error)
         $q.notify({
           type: 'negative',
-          message: 'Error al cancelar merma',
+          message: i18nT('ui.error-al-cancelar-merma-6e6a66'),
         })
       }
     })
@@ -1102,18 +1103,18 @@ const cargarLotesPorProducto = async (idproductoalmacen) => {
     const response = await api.get(`listarLotesPorProductoAlmacen/${idproductoalmacen}`)
     const res = response.data
     if (!res || res.estado !== 'exito') {
-      throw new Error((res && res.mensaje) || 'Error al cargar lotes')
+      throw new Error((res && res.mensaje) || i18nT('ui.error-al-cargar-lotes-32004d'))
     }
     const lotes = Array.isArray(res.data) ? res.data : []
     const mapped = lotes.map((l) => ({
       label:
-        'Lote #' +
+        i18nT('ui.lote-3388a7') +
         l.id_lote +
-        ' | Fact: ' +
+        i18nT('ui.fact-94daed') +
         (l.nfactura || '-') +
-        ' | Prov: ' +
+        i18nT('ui.prov-fbb0c6') +
         (l.proveedor_nombre || '-') +
-        ' | Disp: ' +
+        i18nT('ui.disp-1acc6f') +
         l.cantidad_disponible,
       value: Number(l.id_lote),
       id_lote: Number(l.id_lote),
@@ -1137,7 +1138,7 @@ const cargarLotesPorProducto = async (idproductoalmacen) => {
       type: 'negative',
       message:
         (error.response && error.response.data && error.response.data.mensaje) ||
-        'No se pudieron cargar los lotes',
+        i18nT('ui.no-se-pudieron-cargar-los-lotes-2ade23'),
     })
   }
 }
@@ -1146,7 +1147,7 @@ const validateQuantity = () => {
   if (detailForm.value.cantidad > detailForm.value.stock) {
     $q.notify({
       type: 'warning',
-      message: 'La cantidad ingresada sobrepasa al stock actual',
+      message: i18nT('ui.la-cantidad-ingresada-sobrepasa-al-stock-actual-be26be'),
     })
     detailForm.value.cantidad = 0
   }
@@ -1179,7 +1180,7 @@ const editDetailItem = async (id) => {
     console.error('Error al cargar detalle para editar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar detalle para editar',
+      message: i18nT('ui.error-al-cargar-detalle-para-editar-fa4e55'),
     })
   }
 }
@@ -1199,7 +1200,7 @@ const deleteDetailItem = async (row) => {
     console.error('Error al eliminar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.mensaje || 'Error al eliminar detalle',
+      message: error.response?.data?.mensaje || i18nT('ui.error-al-eliminar-detalle-0de80c'),
     })
   }
 }
@@ -1229,7 +1230,7 @@ const showComprobante = async (item) => {
     console.error('Error al cargar comprobante:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar comprobante',
+      message: i18nT('ui.error-al-cargar-comprobante-7d80b6'),
     })
   }
 }
@@ -1238,8 +1239,8 @@ const togglestatus = (row) => {
   console.log(row)
 
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Esta Seguro? No podra revertir esta acción',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-no-podra-revertir-esta-accion-6dc7d4'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -1259,14 +1260,14 @@ const togglestatus = (row) => {
       } else {
         $q.notify({
           type: 'negative',
-          message: data.mensaje || 'Error desconocido',
+          message: data.mensaje || i18nT('ui.error-desconocido-9c256e'),
         })
       }
     } catch (error) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -1289,7 +1290,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   }
 }
 
@@ -1313,7 +1314,7 @@ onMounted(async () => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'ID MD5 no encontrado. Asegúrate de iniciar sesión correctamente.',
+      message: i18nT('ui.id-md5-no-encontrado-asegurate-de-iniciar-sesion-cor-e2a61f'),
       timeout: 5000,
     })
   }

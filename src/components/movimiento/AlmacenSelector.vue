@@ -2,7 +2,7 @@
   <q-select
     v-model="localSelected"
     :options="options"
-    label="Seleccione un Almacén"
+    :label="$t('ui.seleccione-un-almacen-fc2f9e')"
     map-options
     dense
     outlined

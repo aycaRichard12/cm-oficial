@@ -4,7 +4,7 @@
       <div class="row q-col-gutter-lg q-mb-md">
         <div class="col-12 col-md-3">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Tipo de Operación <span class="text-negative">*</span>
+            {{ $t('ui.tipo-de-operacion-db446a') }} <span class="text-negative">*</span>
           </label>
           <q-select
             :model-value="tipoOperacion"
@@ -22,7 +22,7 @@
 
         <div class="col-12 col-md-3">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Fecha <span class="text-negative">*</span>
+            {{ $t('cotizacion.table.date') }} <span class="text-negative">*</span>
           </label>
           <q-input
             :model-value="fecha"
@@ -39,7 +39,7 @@
 
         <div class="col-12 col-md-6">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Cliente <span class="text-negative">*</span>
+            {{ $t('ventas.client') }} <span class="text-negative">*</span>
           </label>
           <div class="row no-wrap">
             <q-select
@@ -63,7 +63,7 @@
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -76,7 +76,7 @@
                 @click="$emit('registrar-cliente')"
               >
                 <q-tooltip class="bg-primary text-caption shadow-4">
-                  Registrar Nuevo Cliente
+                  {{ $t('ui.registrar-nuevo-cliente-e19240') }}
                 </q-tooltip>
               </q-btn>
             </div>
@@ -87,7 +87,7 @@
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-6">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Sucursal <span class="text-negative">*</span>
+            {{ $t('ui.sucursal-07d782') }} <span class="text-negative">*</span>
           </label>
           <q-select
             :model-value="selectedSucursal"
@@ -110,14 +110,14 @@
           >
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
               </q-item>
             </template>
           </q-select>
         </div>
 
         <div class="col-8 col-md-6">
-          <label for="canalVenta" class="label-cotizacion">Canal de venta*</label>
+          <label for="canalVenta" class="label-cotizacion">{{ $t('ui.canal-de-venta-05df83') }}</label>
           <q-select
             :model-value="canalventa"
             @update:model-value="$emit('update:canalventa', $event)"

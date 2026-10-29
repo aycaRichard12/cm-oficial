@@ -4,16 +4,16 @@
     <div class="header-section q-mb-lg">
       <div class="row items-center justify-between">
         <div>
-          <h1 class="text-h4 q-my-none">Dashboard de Inventario</h1>
+          <h1 class="text-h4 q-my-none">{{ $t('ui.dashboard-de-inventario-5646ea') }}</h1>
           <p class="text-subtitle2 text-grey q-mt-sm">
-            Gestión de almacén y stock en tiempo real
+            {{ $t('ui.gestion-de-almacen-y-stock-en-tiempo-real-85cf55') }}
           </p>
         </div>
         <div class="text-right">
           <div class="sync-status">
             <q-icon :name="store.loading ? 'sync' : 'check_circle'" :color="store.loading ? 'primary' : 'green'" size="24px" :class="{ 'spin': store.loading }" />
             <div class="text-caption q-ml-sm">
-              <div class="text-weight-medium">Última sincronización</div>
+              <div class="text-weight-medium">{{ $t('ui.ultima-sincronizacion-140b86') }}</div>
               <div class="text-grey">{{ formatTime(store.lastSync) }}</div>
             </div>
           </div>
@@ -28,7 +28,7 @@
           <q-select
             v-model="store.almacenSeleccionado"
             :options="store.almacenes"
-            label="Almacén"
+            :label="$t('inventario.warehouse')"
             dense
             outlined
             emit-value
@@ -45,7 +45,7 @@
           <q-select
             v-model="store.categoriaPrecioSeleccionada"
             :options="store.categoriasPrecio"
-            label="Categoría Precio"
+            :label="$t('ui.categoria-precio-30f1a7')"
             dense
             outlined
             emit-value
@@ -61,7 +61,7 @@
         <div class="col-xs-12 col-sm-6 col-md-2">
           <q-input
             v-model="store.fechaFin"
-            label="Fecha"
+            :label="$t('cotizacion.table.date')"
             type="date"
             dense
             outlined
@@ -80,7 +80,7 @@
             :loading="store.loading"
             color="primary"
             unelevated
-            label="Refrescar"
+            :label="$t('ui.refrescar-513362')"
             class="refresh-btn"
           />
         </div>
@@ -89,13 +89,13 @@
 
     <!-- KPIs -->
     <div class="q-mb-lg">
-      <h2 class="text-h6 q-mb-md text-weight-medium">Indicadores clave</h2>
+      <h2 class="text-h6 q-mb-md text-weight-medium">{{ $t('ui.indicadores-clave-b87fd5') }}</h2>
       <DashboardStats />
     </div>
 
     <!-- Gráficos -->
     <div class="q-mb-lg">
-      <h2 class="text-h6 q-mb-md text-weight-medium">Análisis de inventario</h2>
+      <h2 class="text-h6 q-mb-md text-weight-medium">{{ $t('ui.analisis-de-inventario-a8fa61') }}</h2>
       <InventoryCharts />
     </div>
 

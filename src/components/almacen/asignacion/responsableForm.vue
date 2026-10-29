@@ -3,7 +3,7 @@
     <q-form @submit.prevent="handleSubmit">
       <q-card-section class="row q-col-gutter-x-md">
         <div class="col-12 col-md-4">
-          <label for="usuario">Usuario*</label>
+          <label for="usuario">{{ $t('ui.usuario-5cc8ea') }}</label>
           <q-select
             v-model="formData.usuario"
             :options="usuarios"
@@ -12,32 +12,33 @@
             emit-value
             map-options
             id="usuario"
-            :rules="[(val) => !!val || 'Seleccione un usuario']"
+            :rules="[(val) => !!val || $t('ui.seleccione-un-usuario-6d0bc4')]"
           />
         </div>
         <div class="col-12 col-md-4">
-          <label for="nombre">Nombre</label>
+          <label for="nombre">{{ $t('configGeneral.tipoAlmacen.form.name') }}</label>
           <q-input v-model="nombre" outlined disable dense id="nombre" />
         </div>
         <div class="col-12 col-md-4">
-          <label for="apellido">Apellido</label>
+          <label for="apellido">{{ $t('ui.apellido-45b89a') }}</label>
           <q-input v-model="apellido" id="apellido" dense outlined disable />
         </div>
         <div class="col-12 col-md-4">
-          <label for="cargo">Cargo</label>
+          <label for="cargo">{{ $t('ui.cargo-6c98e8') }}</label>
           <q-input v-model="cargo" id="cargo" dense outlined disable />
         </div>
       </q-card-section>
 
       <q-card-actions class="flex justify-end">
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn label="Aprobar" type="submit" color="primary" :disable="!formData.usuario" />
+        <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
+        <q-btn :label="$t('ui.aprobar-c2505a')" type="submit" color="primary" :disable="!formData.usuario" />
       </q-card-actions>
     </q-form>
   </q-card>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 /**
  * Componente para gestión de responsables de empresa
  * Permite seleccionar usuarios existentes y registrar/editar su información
@@ -100,7 +101,7 @@ async function loadUsuarios() {
     console.error('Error al cargar usuarios:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -142,7 +143,7 @@ const handleSubmit = async () => {
   if (!formData.value.usuario) {
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar un usuario',
+      message: i18nT('ui.debe-seleccionar-un-usuario-5015d6'),
     })
     return
   }
@@ -165,7 +166,7 @@ const handleSubmit = async () => {
     // Notificación según modo (edición o registro)
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
     })
 
     emit('registroExitoso') // 🔔 Notifica al componente padre para actualizar listas/estados
@@ -173,7 +174,7 @@ const handleSubmit = async () => {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar',
+      message: i18nT('configGeneral.leyenda.messages.saveError'),
     })
   }
 }

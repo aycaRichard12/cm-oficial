@@ -4,10 +4,10 @@
       <div class="row items-center justify-between">
         <div class="text-h6 q-my-none">
           <q-icon name="notifications_active" class="q-mr-md" />
-          Alertas Inteligentes
+          {{ $t('ui.alertas-inteligentes-7f149b') }}
         </div>
         <q-badge v-if="!sinAlertas" :label="totalAlertas" color="red" />
-        <q-badge v-else label="OK" color="green" />
+        <q-badge v-else :label="$t('ui.ok-9ce3bd')" color="green" />
       </div>
     </q-card-section>
 
@@ -42,7 +42,7 @@
           <q-item-section>
             <q-item-label lines="1" class="text-weight-bold">{{ alerta.nombre }}</q-item-label>
             <q-item-label caption>
-              Código: {{ alerta.codigo }} | Stock: {{ alerta.stock }}
+              {{ $t('ui.codigo-943f7c') }} {{ alerta.codigo }} {{ $t('ui.stock-8c203f') }} {{ alerta.stock }}
             </q-item-label>
           </q-item-section>
           <q-item-section side>
@@ -51,7 +51,7 @@
                 alerta.tipo === 'critico' ? 'red' : alerta.tipo === 'bajo' ? 'orange' : 'dark'
               "
               :label="
-                alerta.tipo === 'critico' ? 'Crítico' : alerta.tipo === 'bajo' ? 'Bajo' : 'Agotado'
+                alerta.tipo === 'critico' ? $t('ui.critico-da0fb5') : alerta.tipo === 'bajo' ? $t('ui.bajo-bb90d1') : $t('ui.agotado-c5b0f9')
               "
               class="badge-alert"
             />
@@ -65,9 +65,9 @@
           <q-item-section class="text-center">
             <div class="text-center q-gutter-md">
               <q-icon name="check_circle" size="64px" color="green" />
-              <div class="text-subtitle2 text-weight-medium">No hay alertas activas</div>
+              <div class="text-subtitle2 text-weight-medium">{{ $t('ui.no-hay-alertas-activas-c1fc27') }}</div>
               <div class="text-caption text-grey">
-                Todos los productos tienen niveles de stock adecuados
+                {{ $t('ui.todos-los-productos-tienen-niveles-de-stock-adecuado-b7791b') }}
               </div>
             </div>
           </q-item-section>

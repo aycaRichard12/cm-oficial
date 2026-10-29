@@ -11,7 +11,7 @@
       :loading="loading"
     >
       <q-icon name="refresh" class="icono" />
-      <span class="texto">Recargar</span>
+      <span class="texto">{{ $t('ui.recargar-9d2c9d') }}</span>
     </q-btn>
 
     <!-- PDF -->
@@ -23,7 +23,7 @@
       id="btnImprimirPDF"
     >
       <q-icon name="picture_as_pdf" class="icono" />
-      <span class="texto">Vista Previa PDF</span>
+      <span class="texto">{{ $t('ui.vista-previa-pdf-9db3ed') }}</span>
     </q-btn>
 
     <!-- Excel -->
@@ -35,7 +35,7 @@
       id="btnExportarExcel"
     >
       <q-icon name="table_view" class="icono" />
-      <span class="texto">Exportar Excel</span>
+      <span class="texto">{{ $t('reportes.exportExcel') }}</span>
     </q-btn>
   </div>
 </template>

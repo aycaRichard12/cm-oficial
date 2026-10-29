@@ -7,7 +7,7 @@
             <q-icon name="store" size="2rem" class="q-mr-md" />
             <div>
               <div class="text-h6">{{ loading ? '...' : totalSmall }}</div>
-              <div class="text-caption">Sucursales Empresa</div>
+              <div class="text-caption">{{ $t('ui.sucursales-empresa-74002c') }}</div>
             </div>
           </div>
         </q-card-section>
@@ -23,7 +23,7 @@
             <q-icon name="apartment" size="2rem" class="q-mr-md" />
             <div>
               <div class="text-h6">{{ loading ? '...' : totalBig }}</div>
-              <div class="text-caption">Sucursales Sin</div>
+              <div class="text-caption">{{ $t('ui.sucursales-sin-d57c67') }}</div>
             </div>
           </div>
         </q-card-section>
@@ -39,7 +39,7 @@
             <q-icon name="link" size="2rem" class="q-mr-md" />
             <div>
               <div class="text-h6">{{ loading ? '...' : totalAssigned }}</div>
-              <div class="text-caption">Asignadas</div>
+              <div class="text-caption">{{ $t('ui.asignadas-c5e188') }}</div>
             </div>
           </div>
         </q-card-section>

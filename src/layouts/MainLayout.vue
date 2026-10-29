@@ -80,7 +80,7 @@
     </q-drawer>
 
     <q-page-container style="height: calc(100vh - 50px)">
-      <router-view :style="pageBackgroundStyle" />
+      <router-view :key="$i18n.locale" :style="pageBackgroundStyle" />
     </q-page-container>
 
     <!-- Dialog de Notificación Recibida -->
@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import emitter from 'src/event-bus'
 import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -356,8 +357,8 @@ onMounted(async () => {
 
   const userData = loadData('mistersofts-cm')
   if (userData[0]) {
-    nombreUsuario.value = userData[0].nombre || 'Usuario'
-    cargo.value = userData[0].cargo || 'Sin cargo'
+    nombreUsuario.value = userData[0].nombre || i18nT('auth.user')
+    cargo.value = userData[0].cargo || i18nT('ui.sin-cargo-646167')
   }
   const menuPrincipal = menuStore.obtenerMenuPrincipal
   items.value = menuPrincipal

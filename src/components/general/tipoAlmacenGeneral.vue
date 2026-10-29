@@ -3,7 +3,7 @@
     <!-- Form Section -->
     <q-card class="q-mb-md" v-if="showForm">
       <q-card-section>
-        <div class="text-h6">Nuevo Registro</div>
+        <div class="text-h6">{{ $t('ui.nuevo-registro-02abe0') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -17,39 +17,39 @@
             <div class="col-12">
               <q-input
                 v-model="formData.nombre"
-                label="Tipo de almacén*"
+                :label="$t('ui.tipo-de-almacen-083e60')"
                 outlined
                 dense
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               />
             </div>
 
             <div class="col-12">
               <q-input
                 v-model="formData.descripcion"
-                label="Descripción del tipo de almacén*"
+                :label="$t('ui.descripcion-del-tipo-de-almacen-4250f1')"
                 outlined
                 dense
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               />
             </div>
 
             <div class="col-12 text-center">
-              <q-btn label="Registrar" type="submit" color="primary" class="q-mt-md" />
+              <q-btn :label="$t('ui.registrar-caacc6')" type="submit" color="primary" class="q-mt-md" />
             </div>
           </div>
         </q-form>
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn label="Cancelar Registro" color="negative" @click="toggleForm" flat />
+        <q-btn :label="$t('ui.cancelar-registro-2dee20')" color="negative" @click="toggleForm" flat />
       </q-card-actions>
     </q-card>
 
     <!-- Table Section -->
     <div class="row table-topper q-mb-md">
       <div class="col flex items-center">
-        <q-btn v-if="!showForm" label="Nuevo Registro" color="primary" @click="toggleForm" />
+        <q-btn v-if="!showForm" :label="$t('ui.nuevo-registro-02abe0')" color="primary" @click="toggleForm" />
       </div>
 
       <!-- <div class="col flex items-center justify-end">
@@ -72,7 +72,7 @@
       <template v-slot:top-right>
         <q-input
           v-model="search"
-          placeholder="Buscar..."
+          :placeholder="$t('common.search')"
           dense
           outlined
           debounce="300"
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 const $q = useQuasar()
@@ -131,11 +132,11 @@ export default {
     ])
 
     const columns = [
-      { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-      { name: 'tipo', label: 'Tipos', field: 'tipo', align: 'center' },
-      { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'center' },
-      { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-      { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+      { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+      { name: 'tipo', label: i18nT('ui.tipos-3a3df0'), field: 'tipo', align: 'center' },
+      { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'center' },
+      { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+      { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
     ]
 
     const pagination = ref({
@@ -198,7 +199,7 @@ export default {
 
     function confirmDelete(item) {
       $q.dialog({
-        title: 'Confirmar',
+        title: i18nT('configGeneral.divisas.messages.deleteTitle'),
         message: `¿Estás seguro de eliminar el tipo de almacén "${item.tipo}"?`,
         cancel: true,
         persistent: true,

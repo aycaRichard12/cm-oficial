@@ -5,7 +5,7 @@
   >
     <div class="flex items-center text-primary">
       <q-icon name="receipt_long" size="sm" class="q-mr-sm" />
-      <div class="text-subtitle1 text-weight-bold">Resumen de Cotización</div>
+      <div class="text-subtitle1 text-weight-bold">{{ $t('ui.resumen-de-cotizacion-eb51dd') }}</div>
     </div>
   </q-card-section>
 
@@ -53,7 +53,7 @@
           >
             <q-icon name="edit_note" size="16px" class="q-mr-xs" />
             <span class="text-weight-medium">{{
-              props.row.descripcionAdicional || 'Añadir nota adicional...'
+              props.row.descripcionAdicional || $t('ui.anadir-nota-adicional-eda646')
             }}</span>
             <q-popup-edit
               :model-value="props.row.descripcionAdicional"
@@ -110,7 +110,7 @@
             @click="$emit('eliminar-producto', props.row.idproductoalmacen)"
             class="hover-shake"
           >
-            <q-tooltip class="bg-negative text-weight-medium shadow-3">Quitar producto</q-tooltip>
+            <q-tooltip class="bg-negative text-weight-medium shadow-3">{{ $t('ui.quitar-producto-328479') }}</q-tooltip>
           </q-btn>
         </q-td>
       </q-tr>
@@ -138,7 +138,7 @@
     <template v-slot:bottom-row>
       <q-tr class="cm-surface-2">
         <q-td colspan="6" class="text-right text-subtitle2 cm-text letter-spacing-05"
-          >SUBTOTAL:</q-td
+          >{{ $t('ui.subtotal-b1b3d2') }}</q-td
         >
         <q-td class="text-right text-subtitle1 cm-text text-weight-bolder">
           {{ decimas(carrito.subtotal) }}
@@ -148,7 +148,7 @@
       </q-tr>
 
       <q-tr class="cm-surface-2">
-        <q-td colspan="6" class="text-right text-subtitle2 cm-text">DESCUENTO:</q-td>
+        <q-td colspan="6" class="text-right text-subtitle2 cm-text">{{ $t('ui.descuento-c7f95d') }}</q-td>
         <q-td class="text-right">
           <q-input
             :model-value="carrito.descuento"
@@ -177,7 +177,7 @@
 
       <q-tr class="bg-primary text-white bg-primary-gradient-row">
         <q-td colspan="6" class="text-right text-h6 text-weight-bolder text-uppercase"
-          >TOTAL GENERAL:</q-td
+          >{{ $t('ui.total-general-f6e204') }}</q-td
         >
         <q-td class="text-right text-h5 text-weight-bolder text-shadow-light">
           {{ decimas(carrito.ventatotal) }}
@@ -194,6 +194,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import TableCodigosUnicos from 'src/components/cotizacion/TableCodigosUnicos.vue'
 import { decimas, redondear } from 'src/composables/FuncionesG'
 
@@ -221,22 +222,22 @@ const validarDescripcion = (scope, row) => {
 
 const carritoColumns = [
   { name: 'exp', label: '', align: 'left' },
-  { name: 'num', label: 'N°', align: 'left', field: 'num' },
-  { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: (row) => decimas(row.cantidad) },
+  { name: 'num', label: i18nT('cotizacion.table.number'), align: 'left', field: 'num' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), align: 'center', field: 'codigo' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), align: 'left', field: 'descripcion' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'center', field: (row) => decimas(row.cantidad) },
   {
     name: 'precio',
-    label: 'Precio unitario',
+    label: i18nT('ui.precio-unitario-d3780c'),
     align: 'center',
     field: (row) => decimas(row.precio),
   },
   {
     name: 'total',
-    label: 'Total',
+    label: i18nT('ventas.total'),
     align: 'center',
     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
   },
-  { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
+  { name: 'options', label: i18nT('configGeneral.divisas.table.options'), align: 'center', field: 'options' },
 ]
 </script>

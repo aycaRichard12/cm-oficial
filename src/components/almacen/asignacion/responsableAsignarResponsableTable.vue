@@ -1,7 +1,7 @@
 <template>
   <q-card flat class="my-card">
     <q-table
-      title="Almacenes Asignados"
+      :title="$t('ui.almacenes-asignados-a4a0b9')"
       :rows="rows"
       :columns="columns"
       row-key="id"
@@ -16,7 +16,7 @@
             icon="delete"
             color="negative"
             @click="eliminar(props.row.id)"
-            title="Eliminar"
+            :title="$t('common.delete')"
             flat
             id="eliminarAlmacen"
           />
@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   rows: {
     type: Array,
@@ -37,9 +38,9 @@ defineProps({
 const emit = defineEmits(['eliminar'])
 
 const columns = [
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 function eliminar(id) {

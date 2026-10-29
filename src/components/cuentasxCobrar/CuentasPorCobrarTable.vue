@@ -6,7 +6,7 @@
           filled
           v-model="filtroAlmacen"
           :options="almacenes"
-          label="Almacén"
+          :label="$t('inventario.warehouse')"
           emit-value
           map-options
           class="q-ml-md"
@@ -18,7 +18,7 @@
           filled
           v-model="filtroEstado"
           :options="estados"
-          label="Estado"
+          :label="$t('cotizacion.table.status')"
           emit-value
           map-options
           class="q-ml-md"
@@ -31,18 +31,18 @@
       <div class="col-auto row items-center">
         <q-btn
           color="info"
-          label="Imprimir"
+          :label="$t('ui.imprimir-6d7683')"
           icon="print"
           @click="printFilteredTable"
           id="generarReporteMOV"
           class="q-mr-lg"
-          title="Imprimir tabla del almacén seleccionado"
+          :title="$t('ui.imprimir-tabla-del-almacen-seleccionado-3cc1b1')"
         />
         <q-select
           filled
           v-model="filtroColumna"
           :options="columnas"
-          label="Filtrar por"
+          :label="$t('ui.filtrar-por-5bd52e')"
           emit-value
           map-options
           style="min-width: 200px"
@@ -53,7 +53,7 @@
         <q-input
           filled
           v-model="busqueda"
-          placeholder="Buscar"
+          :placeholder="$t('ui.buscar-a62405')"
           debounce="300"
           style="min-width: 250px"
         >
@@ -71,7 +71,7 @@
       flat
       bordered
       :loading="loading"
-      no-data-label="No hay datos disponibles"
+      :no-data-label="$t('ui.no-hay-datos-disponibles-baee26')"
       loading-label="Cargando datos..."
     >
       <template #body-cell-opciones="props">
@@ -80,7 +80,7 @@
             color="info"
             size="sm"
             icon="bookmark_add"
-            title="VER LISTADO DE COBROS"
+            :title="$t('ui.ver-listado-de-cobros-40d623')"
             @click="verPagos(props.row)"
           />
           <q-btn
@@ -88,7 +88,7 @@
             color="primary"
             size="sm"
             icon="add_circle"
-            title="REGISTRAR COBRO DE CREDITO"
+            :title="$t('ui.registrar-cobro-de-credito-aead84')"
             class="q-ml-sm"
             @click="registrarCobro(props.row)"
           />
@@ -99,6 +99,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
@@ -116,89 +117,89 @@ const loading = ref(false) // Loading state for the table
 
 // Options for filters (already defined in your original code)
 const almacenes = [
-  { label: 'Todos los almacenes', value: 0 },
-  { label: 'Almacén Fábrica', value: 18 },
+  { label: i18nT('ui.todos-los-almacenes-949f2c'), value: 0 },
+  { label: i18nT('ui.almacen-fabrica-da8fb8'), value: 18 },
   { label: 'ALMACEN_1', value: 103 },
-  { label: 'Real', value: 97 },
+  { label: i18nT('ui.real-8e16e5'), value: 97 },
   { label: 'prueba_para_eliminar', value: 93 },
 ]
 
 const estados = [
-  { label: 'Todos', value: 0 },
-  { label: 'Activos', value: 1 },
-  { label: 'Finalizados', value: 2 },
-  { label: 'Atrasados', value: 3 },
-  { label: 'Anulados', value: 4 },
+  { label: i18nT('ui.todos-a4114a'), value: 0 },
+  { label: i18nT('ui.activos-520347'), value: 1 },
+  { label: i18nT('ui.finalizados-7399a3'), value: 2 },
+  { label: i18nT('ui.atrasados-8abf48'), value: 3 },
+  { label: i18nT('ui.anulados-d164f9'), value: 4 },
 ]
 
 const columnas = [
-  { label: 'Todo', value: 0 },
-  { label: 'Cliente', value: 1 },
-  { label: 'N° factura', value: 2 },
-  { label: 'Fecha crédito', value: 3 },
-  { label: 'Vencimiento', value: 4 },
-  { label: 'N° cuotas', value: 5 },
-  { label: 'N° cuotas Procesadas', value: 6 },
-  { label: 'Total venta', value: 7 },
-  { label: 'Total cobrado', value: 8 },
-  { label: 'Saldo', value: 9 },
-  { label: 'Estado', value: 10 },
+  { label: i18nT('ui.todo-fdebf6'), value: 0 },
+  { label: i18nT('ventas.client'), value: 1 },
+  { label: i18nT('ui.n-factura-0a285a'), value: 2 },
+  { label: i18nT('ui.fecha-credito-8d54df'), value: 3 },
+  { label: i18nT('ui.vencimiento-43d44c'), value: 4 },
+  { label: i18nT('ui.n-cuotas-230bba'), value: 5 },
+  { label: i18nT('ui.n-cuotas-procesadas-f66575'), value: 6 },
+  { label: i18nT('ui.total-venta-3aa5b3'), value: 7 },
+  { label: i18nT('ui.total-cobrado-27f64e'), value: 8 },
+  { label: i18nT('ui.saldo-8b0fcd'), value: 9 },
+  { label: i18nT('cotizacion.table.status'), value: 10 },
 ]
 
 // Column definitions for q-table (already defined in your original code)
 const columnasTabla = [
-  { name: 'index', label: 'N°', align: 'center', field: (row, index) => index + 1 },
-  { name: 'cliente', label: 'Cliente', align: 'left', field: 'cliente' },
-  { name: 'factura', label: 'N° factura', align: 'right', field: 'nfactura' }, // Changed to nfactura as per API response
+  { name: 'index', label: i18nT('cotizacion.table.number'), align: 'center', field: (row, index) => index + 1 },
+  { name: 'cliente', label: i18nT('ventas.client'), align: 'left', field: 'cliente' },
+  { name: 'factura', label: i18nT('ui.n-factura-0a285a'), align: 'right', field: 'nfactura' }, // Changed to nfactura as per API response
   {
     name: 'fechaCredito',
-    label: 'Fecha crédito',
+    label: i18nT('ui.fecha-credito-8d54df'),
     align: 'right',
     field: (row) => cambiarFormatoFecha(row.fechaventa),
   }, // Mapped with formatting function
   {
     name: 'vencimiento',
-    label: 'Vencimiento',
+    label: i18nT('ui.vencimiento-43d44c'),
     align: 'right',
     field: (row) => cambiarFormatoFecha(row.fechalimite),
   }, // Mapped with formatting function
-  { name: 'cuotas', label: 'N° cuotas', align: 'right', field: 'ncuotas' },
+  { name: 'cuotas', label: i18nT('ui.n-cuotas-230bba'), align: 'right', field: 'ncuotas' },
   {
     name: 'cuotasProcesadas',
-    label: 'N° cuotas procesadas',
+    label: i18nT('ui.n-cuotas-procesadas-b0c35d'),
     align: 'right',
     field: (row) => (row.cuotaspagas == null ? 0 : row.cuotaspagas), // Handle null
   },
   {
     name: 'totalVenta',
-    label: 'Total venta',
+    label: i18nT('ui.total-venta-3aa5b3'),
     align: 'right',
     field: (row) => decimas(redondear(parseFloat(row.ventatotal))),
   },
   {
     name: 'totalCobrado',
-    label: 'Total cobrado',
+    label: i18nT('ui.total-cobrado-27f64e'),
     align: 'right',
     field: (row) =>
       row.totalcobrado == null ? '0.00' : decimas(redondear(parseFloat(row.totalcobrado))),
   },
   {
     name: 'saldo',
-    label: 'Saldo',
+    label: i18nT('ui.saldo-8b0fcd'),
     align: 'right',
     field: (row) => decimas(redondear(parseFloat(row.saldo))),
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     align: 'center',
     field: 'estado',
     format: (val) => {
       const estadosMap = { 1: 'Activo', 2: 'Finalizado', 3: 'Atrasado', 4: 'Anulado' }
-      return estadosMap[val] || 'Desconocido'
+      return estadosMap[val] || i18nT('ui.desconocido-452c8a')
     },
   },
-  { name: 'opciones', label: 'Opciones', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), align: 'center' },
 ]
 
 // Function to fetch and process data
@@ -265,7 +266,7 @@ const printFilteredTable = () => {
   console.log('Imprimir tabla filtrada:', filteredAndSearchedRows.value)
   $q.notify({
     type: 'info',
-    message: 'Funcionalidad de impresión no implementada en este ejemplo.',
+    message: i18nT('ui.funcionalidad-de-impresion-no-implementada-en-este-e-0975e8'),
   })
 }
 

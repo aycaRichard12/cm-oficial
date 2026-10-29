@@ -4,7 +4,7 @@
       <div style="display: flex; justify-content: space-between">
         <div class="col-12 col-sm-4">
           <q-btn
-            label="Volver"
+            :label="$t('ui.volver-84a715')"
             icon="arrow_back"
             color="primary"
             size="sm"
@@ -16,7 +16,7 @@
         <div class="col-12 col-sm-8 text-center">
           <h4 class="q-ma-none" style="font-size: 20px">
             <q-icon name="receipt" color="primary" class="q-mr-sm" />
-            FACTURA ENTIDADES-FINANCIERAS
+            {{ $t('ui.factura-entidades-financieras-0e751b') }}
           </h4>
         </div>
         <div></div>
@@ -27,11 +27,11 @@
           <q-card-section>
             <h5 class="q-my-sm text-primary" style="font-size: 15px">
               <q-icon name="person" color="primary" class="q-mr-sm" />
-              Datos del Cliente y Fecha
+              {{ $t('ui.datos-del-cliente-y-fecha-4d7fa0') }}
             </h5>
             <div class="row q-col-gutter-md">
               <div class="col-12 col-md-4">
-                <label for="cliente">Cliente*</label>
+                <label for="cliente">{{ $t('ui.cliente-39ec2b') }}</label>
                 <q-select
                   v-model="formData.cliente"
                   id="cliente"
@@ -45,7 +45,7 @@
                   outlined
                   @filter="filterClientes"
                   @update:model-value="actualizarSucursales"
-                  :rules="[(val) => !!val || 'Seleccione un cliente']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-cliente-f08b74')]"
                   clearable
                 >
                   <template v-slot:prepend>
@@ -53,7 +53,7 @@
                   </template>
                   <template v-slot:no-option>
                     <q-item>
-                      <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                      <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                     </q-item>
                   </template>
                   <template v-slot:append>
@@ -65,14 +65,14 @@
                       color="primary"
                       @click.stop="listaCLientes"
                     >
-                      <q-tooltip>Recargar datos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                     </q-btn>
                   </template>
                 </q-select>
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="sucursal">Sucursal*</label>
+                <label for="sucursal">{{ $t('ui.sucursal-80e67a') }}</label>
                 <q-select
                   v-model="formData.sucursal"
                   id="sucursal"
@@ -91,7 +91,7 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="puntoventa">Punto de venta*</label>
+                <label for="puntoventa">{{ $t('ui.punto-de-venta-6d9630') }}</label>
                 <q-select
                   v-model="formData.puntoventa"
                   id="puntoventa"
@@ -100,7 +100,7 @@
                   :options="puntosVenta"
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un canal']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="store" color="blue" />
@@ -114,13 +114,13 @@
                       color="primary"
                       @click.stop="cargarPuntoVentas"
                     >
-                      <q-tooltip>Recargar datos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                     </q-btn>
                   </template>
                 </q-select>
               </div>
               <div class="col-12 col-md-4">
-                <label for="canalVenta">Canal de venta*</label>
+                <label for="canalVenta">{{ $t('ui.canal-de-venta-05df83') }}</label>
                 <q-select
                   v-model="formData.canal"
                   id="canalVenta"
@@ -130,7 +130,7 @@
                   option-label="label"
                   option-value="value"
                   required
-                  :rules="[(val) => !!val || 'Seleccione un canal']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="point_of_sale" color="blue" />
@@ -144,7 +144,7 @@
                       color="primary"
                       @click.stop="cargarCanales"
                     >
-                      <q-tooltip>Recargar datos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                     </q-btn>
                   </template>
                 </q-select>
@@ -159,25 +159,25 @@
             <div class="q-mt-md q-pa-md cm-surface-2 rounded-borders border-blue-grey-2 shadow-1">
               <div class="text-subtitle2 text-primary q-mb-sm flex items-center">
                 <q-icon name="auto_fix_high" class="q-mr-sm" />
-                Información de Facturación (Automática)
+                {{ $t('ui.informacion-de-facturacion-automatica-382768') }}
               </div>
               <div class="row q-col-gutter-md">
                 <div class="col-12 col-md-4">
-                  <div class="text-caption cm-text">Tipo de documento tributario*</div>
+                  <div class="text-caption cm-text">{{ $t('ui.tipo-de-documento-tributario-85552e') }}</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center font-size-10">
                     <q-icon name="description" color="blue" class="q-mr-sm" size="20px" />
                     {{ formData.tipodoc?.label || '---' }}
                   </div>
                 </div>
                 <div class="col-12 col-md-4">
-                  <div class="text-caption cm-text">Nro. documento tributario*</div>
+                  <div class="text-caption cm-text">{{ $t('ui.nro-documento-tributario-7bddd5') }}</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="numbers" color="blue" class="q-mr-sm" size="20px" />
                     {{ formData.nroDoc || '---' }}
                   </div>
                 </div>
                 <div class="col-12 col-md-4">
-                  <div class="text-caption cm-text">Fecha*</div>
+                  <div class="text-caption cm-text">{{ $t('ui.fecha-659648') }}</div>
                   <div class="text-subtitle2 text-weight-bold flex items-center">
                     <q-icon name="event" color="blue" class="q-mr-sm" size="20px" />
                     {{ cambiarFormatoFecha(formData.fecha) || '---' }}
@@ -192,14 +192,14 @@
           <q-card-section>
             <h5 class="q-my-sm text-primary" style="font-size: 15px">
               <q-icon name="credit_card" color="primary" class="q-mr-sm" />
-              Método de Pago
+              {{ $t('ui.metodo-de-pago-112f5f') }}
             </h5>
             <div class="q-gutter-sm q-mb-md">
               <q-radio
                 v-model="formData.variablePago"
                 val="directo"
                 color="green"
-                label="Pago Único"
+                :label="$t('ui.pago-unico-fc784b')"
               >
                 <template v-slot:prepend>
                   <q-icon name="attach_money" color="green" />
@@ -208,7 +208,7 @@
               <q-radio
                 v-model="formData.variablePago"
                 val="dividido"
-                label="Método de Pago Dividido"
+                :label="$t('ui.metodo-de-pago-dividido-71be36')"
               >
                 <template v-slot:prepend>
                   <q-icon name="money_off" color="orange" />
@@ -220,7 +220,7 @@
 
             <div v-if="formData.variablePago === 'directo'" class="row q-col-gutter-md q-pt-md">
               <div class="col-12 col-md-4">
-                <label for="metodopago">Método de pago*</label>
+                <label for="metodopago">{{ $t('ui.metodo-de-pago-5872f4') }}</label>
                 <q-select
                   v-model="formData.metodoPago"
                   id="metodopago"
@@ -229,7 +229,7 @@
                   :options="metodoPago"
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un canal']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="payments" color="green" />
@@ -243,7 +243,7 @@
                       color="primary"
                       @click.stop="cargarMetodoPagoFactura"
                     >
-                      <q-tooltip>Recargar datos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
                     </q-btn>
                   </template>
                 </q-select>
@@ -257,7 +257,7 @@
                 class="row q-col-gutter-md q-mb-sm items-center"
               >
                 <div class="col-12 col-md-4">
-                  <label for="metodopago">Método de pago*</label>
+                  <label for="metodopago">{{ $t('ui.metodo-de-pago-5872f4') }}</label>
                   <q-select
                     v-model="payment.metodoPago"
                     id="metodopago"
@@ -266,7 +266,7 @@
                     :options="metodoPago"
                     option-label="label"
                     option-value="value"
-                    :rules="[(val) => !!val || 'Seleccione un metodoPago']"
+                    :rules="[(val) => !!val || $t('ui.seleccione-un-metodopago-30fc18')]"
                   >
                     <template v-slot:prepend>
                       <q-icon name="payments" color="green" />
@@ -274,7 +274,7 @@
                   </q-select>
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="monto">{{ 'Monto' + ' (' + divisaActiva.simbolo + ')' }}</label>
+                  <label for="monto">{{ $t('ui.monto-835dcd') + ' (' + divisaActiva.simbolo + ')' }}</label>
                   <q-input
                     v-model="payment.monto"
                     id="monto"
@@ -285,7 +285,7 @@
                     dense
                     outlined
                     @update:model-value="calculateRemainingAmount(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
+                    :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
                   >
                     <template v-slot:prepend>
                       <q-icon name="monetization_on" color="green" />
@@ -293,7 +293,7 @@
                   </q-input>
                 </div>
                 <div class="col-12 col-md-3">
-                  <label for="porcentaje">Porcentaje (%)</label>
+                  <label for="porcentaje">{{ $t('ui.porcentaje-452cef') }}</label>
                   <q-input
                     v-model="payment.porcentaje"
                     id="porcentaje"
@@ -304,7 +304,7 @@
                     dense
                     outlined
                     @update:model-value="calculateAmountFromPercentage(index)"
-                    :rules="[(val) => !!val || 'Campo Obligatorio']"
+                    :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
                   >
                     <template v-slot:prepend>
                       <q-icon name="percent" color="green" />
@@ -323,7 +323,7 @@
                 </div>
               </div>
               <q-btn
-                label="Agregar Método de Pago"
+                :label="$t('ui.agregar-metodo-de-pago-ed8874')"
                 icon="add"
                 color="green"
                 @click="addPaymentMethod"
@@ -332,12 +332,12 @@
               <div class="q-mt-lg">
                 <p class="text-subtitle1">
                   <q-icon name="calculate" color="primary" class="q-mr-sm" />
-                  <strong>Total Pagado:</strong> {{ totalPaidAmount.toFixed(2) }}
+                  <strong>{{ $t('ui.total-pagado-77d3ef') }}</strong> {{ totalPaidAmount.toFixed(2) }}
                   {{ divisaActiva.simbolo }}
                 </p>
                 <p class="text-subtitle1">
                   <q-icon name="pending_actions" color="orange" class="q-mr-sm" />
-                  <strong>Restante por Pagar:</strong> {{ remainingAmount.toFixed(2) }}
+                  <strong>{{ $t('ui.restante-por-pagar-a4c5d1') }}</strong> {{ remainingAmount.toFixed(2) }}
                   {{ divisaActiva.simbolo }}
                 </p>
                 <q-banner
@@ -349,7 +349,7 @@
                   <template v-slot:avatar>
                     <q-icon name="warning" color="white" />
                   </template>
-                  El monto total pagado no coincide con la venta total.
+                  {{ $t('ui.el-monto-total-pagado-no-coincide-con-la-venta-total-e6063a') }}
                 </q-banner>
               </div>
             </div>
@@ -361,11 +361,11 @@
           <q-card-section>
             <h5 class="q-my-sm text-primary" style="font-size: 15px">
               <q-icon name="account_balance" color="positive" class="q-mr-sm" />
-              Caja / Banco
+              {{ $t('ui.caja-banco-20adca') }}
             </h5>
             <div class="row q-col-gutter-md q-pt-sm">
               <div class="col-12 col-md-6">
-                <label for="cajabanco">Caja / Banco de cobro*</label>
+                <label for="cajabanco">{{ $t('ui.caja-banco-de-cobro-abc4cf') }}</label>
                 <q-select
                   v-model="formData.cajabanco"
                   id="cajabanco"
@@ -376,7 +376,7 @@
                   map-options
                   dense
                   outlined
-                  :rules="[(val) => !!val || 'Seleccione una caja o banco (venta al contado)']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-una-caja-o-banco-venta-al-contado-7cd593')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="account_balance" color="positive" />
@@ -406,7 +406,7 @@
                       color="primary"
                       @click.stop.prevent="cargarCajaBancos"
                     >
-                      <q-tooltip>Recargar caja/bancos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-caja-bancos-0e0534') }}</q-tooltip>
                     </q-btn>
                   </template>
                 </q-select>
@@ -416,7 +416,7 @@
                   rounded
                   class="bg-warning text-white q-mt-sm"
                 >
-                  No hay cajas/bancos disponibles. Registre una o pulse recargar.
+                  {{ $t('ui.no-hay-cajas-bancos-disponibles-registre-una-o-pulse-ae7f5b') }}
                 </q-banner>
               </div>
             </div>
@@ -427,12 +427,12 @@
           <q-card-section>
             <h5 class="q-my-sm text-primary" style="font-size: 15px">
               <q-icon name="schedule" color="purple" class="q-mr-sm" />
-              Condiciones de Crédito
+              {{ $t('ui.condiciones-de-credito-a7732e') }}
             </h5>
             <div class="col-12 q-mb-md">
               <q-toggle
                 v-model="formData.credito"
-                label="¿A crédito?"
+                :label="$t('ui.a-credito-8f24aa')"
                 left-label
                 @update:model-value="toggleCredit"
               >
@@ -444,7 +444,7 @@
 
             <div v-if="formData.credito" class="row q-col-gutter-md q-pt-md">
               <div class="col-12 col-md-4">
-                <label for="cantidadpagos">Cantidad de pagos*</label>
+                <label for="cantidadpagos">{{ $t('ui.cantidad-de-pagos-818e5b') }}</label>
                 <q-input
                   v-model="formData.cantidadPagos"
                   id="cantidadpagos"
@@ -454,7 +454,7 @@
                   dense
                   outlined
                   @update:model-value="calculatePayments"
-                  :rules="[(val) => !!val || 'Campo Obligatorio']"
+                  :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="format_list_numbered" color="purple" />
@@ -463,7 +463,7 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="montopago">Monto de pagos*</label>
+                <label for="montopago">{{ $t('ui.monto-de-pagos-ecccae') }}</label>
                 <q-input
                   v-model="formData.montoPagos"
                   id="montopago"
@@ -481,7 +481,7 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <label for="periodo">Período establecido*</label>
+                <label for="periodo">{{ $t('ui.periodo-establecido-9ac193') }}</label>
                 <q-select
                   v-model="formData.periodo"
                   id="periodo"
@@ -502,7 +502,7 @@
               </div>
 
               <div v-if="formData.periodo === 0" class="col-12 col-md-4">
-                <label for="plazopersonalizada">Plazo total (días)*</label>
+                <label for="plazopersonalizada">{{ $t('ui.plazo-total-dias-e2bd00') }}</label>
                 <q-input
                   v-model="formData.plazoPersonalizado"
                   id="plazopersonalizada"
@@ -512,7 +512,7 @@
                   outlined
                   required
                   @update:model-value="calculateDueDate"
-                  :rules="[(val) => !!val || 'Campo Obligatorio']"
+                  :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
                 >
                   <template v-slot:prepend>
                     <q-icon name="edit_calendar" color="purple" />
@@ -521,7 +521,7 @@
               </div>
 
               <div class="col-12 col-md-4">
-                <div class="text-caption cm-text">Fecha límite*</div>
+                <div class="text-caption cm-text">{{ $t('ui.fecha-limite-b12a3b') }}</div>
                 <div class="text-subtitle2 text-weight-bold flex items-center">
                   <q-icon name="event_available" color="purple" class="q-mr-sm" size="20px" />
                   {{ formData.fechaLimite ? cambiarFormatoFecha(formData.fechaLimite) : '---' }}
@@ -533,7 +533,7 @@
 
         <div class="row q-col-gutter-md">
           <div class="col-12 text-right">
-            <q-btn label="Registrar" type="submit" color="primary" icon="save" />
+            <q-btn :label="$t('ui.registrar-caacc6')" type="submit" color="primary" icon="save" />
           </div>
         </div>
       </q-form>
@@ -544,6 +544,7 @@
   </q-dialog>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'boot/axios'
@@ -678,11 +679,11 @@ const metodoPago = ref([])
 const puntosVenta = ref([])
 const typeDoc = ref([])
 const periodOptions = [
-  { label: 'Personalizado', value: 0 },
-  { label: '15 días', value: 15 },
-  { label: '30 días', value: 30 },
-  { label: '60 días', value: 60 },
-  { label: '90 días', value: 90 },
+  { label: i18nT('ui.personalizado-738665'), value: 0 },
+  { label: i18nT('ui.15-dias-977c82'), value: 15 },
+  { label: i18nT('ui.30-dias-7f2d58'), value: 30 },
+  { label: i18nT('ui.60-dias-376f5a'), value: 60 },
+  { label: i18nT('ui.90-dias-a64b09'), value: 90 },
 ]
 const filteredClients = ref([]) // This will hold the clients currently displayed in the q-select (this is the one that gets updated by filterClientes)
 
@@ -801,7 +802,7 @@ const listaCLientes = async () => {
       console.log(data)
     }
   } catch (error) {
-    showError('Error al cargar clientes', error)
+    showError(i18nT('ui.error-al-cargar-clientes-3c0d3b'), error)
   }
 }
 const cargarPuntoVentas = async () => {
@@ -829,7 +830,7 @@ const cargarPuntoVentas = async () => {
       }
     }
   } catch (error) {
-    showError('Error al cargar clientes', error)
+    showError(i18nT('ui.error-al-cargar-clientes-3c0d3b'), error)
   }
 }
 const actualizarSucursales = async (clientId) => {
@@ -855,7 +856,7 @@ const actualizarSucursales = async (clientId) => {
 
     formData.value.sucursal = branches.value[0] || null
   } catch (error) {
-    showError('Error al cargar sucursales', error)
+    showError(i18nT('ui.error-al-cargar-sucursales-a6a650'), error)
   }
 }
 const cargarDatosCliente = (client) => {
@@ -871,7 +872,7 @@ const cargarDatosCliente = (client) => {
   typeDoc.value = [
     {
       value: client.originalData.tipodocumento,
-      label: docunmentTypesMap[client.originalData.tipodocumento] || 'Desconocido',
+      label: docunmentTypesMap[client.originalData.tipodocumento] || i18nT('ui.desconocido-452c8a'),
     },
   ]
   formData.value.tipodoc = typeDoc.value[0] || null
@@ -901,7 +902,7 @@ const cargarCajaBancos = async () => {
     }
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja/bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-70bba1') })
   }
 }
 
@@ -1035,15 +1036,15 @@ const onSubmit = async () => {
       cajabanco,
     } = formData.value
 
-    if (!cliente) throw { message: 'Debe seleccionar un cliente' }
-    if (!sucursal || !sucursal.value) throw { message: 'Debe seleccionar una sucursal válida' }
-    if (!fecha) throw { message: 'Debe seleccionar una fecha válida' }
+    if (!cliente) throw { message: i18nT('ui.debe-seleccionar-un-cliente-03eec0') }
+    if (!sucursal || !sucursal.value) throw { message: i18nT('ui.debe-seleccionar-una-sucursal-valida-1c7250') }
+    if (!fecha) throw { message: i18nT('ui.debe-seleccionar-una-fecha-valida-bc2da8') }
     if (!credito && listaCajaBancos.value.length > 0 && !cajabanco)
-      throw { message: 'Debe seleccionar una caja o banco para ventas al contado' }
+      throw { message: i18nT('ui.debe-seleccionar-una-caja-o-banco-para-ventas-al-con-a15c2c') }
     if ((!metodoPago || !metodoPago.value) && pagosDivididos.length === 0)
-      throw { message: 'Debe seleccionar un metodoPago de venta válido' }
+      throw { message: i18nT('ui.debe-seleccionar-un-metodopago-de-venta-valido-fb1465') }
     if (!cartData.listaProductos || !cartData.listaProductos.length) {
-      throw { message: 'El carrito está vacío' }
+      throw { message: i18nT('ventas.emptyCart') }
     }
 
     const suma_pagos_divididos = decimas(
@@ -1056,9 +1057,9 @@ const onSubmit = async () => {
       decimas(suma_pagos_divididos) !== decimas(cartData.ventatotal) &&
       variablePago !== 'directo'
     ) {
-      throw { message: 'Los pagos no coinciden con el monto total' }
+      throw { message: i18nT('ui.los-pagos-no-coinciden-con-el-monto-total-43e183') }
     }
-    $q.loading.show({ message: 'Procesando venta...', timeout: 30000 })
+    $q.loading.show({ message: i18nT('ui.procesando-venta-98a5be'), timeout: 30000 })
     loadingShown = true
     console.log(puntoventa)
     //Preparar formulario para envío
@@ -1151,7 +1152,7 @@ const onSubmit = async () => {
 
     console.log('Respuesta de la API:', response)
     if (!response.data || response.data.estado !== 'exito') {
-      throw { message: response.data?.mensaje || 'Error al procesar la venta', response }
+      throw { message: response.data?.mensaje || i18nT('ui.error-al-procesar-la-venta-2b7f0a'), response }
     }
 
     //  Éxito
@@ -1163,8 +1164,8 @@ const onSubmit = async () => {
     ) {
       // Si la URL existe, procede con el diálogo
       $q.dialog({
-        title: 'Venta Exitosa',
-        message: 'Su Factura está listo. ¿Desea verlo?',
+        title: i18nT('ui.venta-exitosa-19220d'),
+        message: i18nT('ui.su-factura-esta-listo-desea-verlo-d47149'),
         cancel: true,
         persistent: true,
       }).onOk(() => {
@@ -1173,8 +1174,8 @@ const onSubmit = async () => {
       })
     } else {
       $q.dialog({
-        title: 'Venta Exitosa',
-        message: 'La factura se generó correctamente.',
+        title: i18nT('ui.venta-exitosa-19220d'),
+        message: i18nT('ui.la-factura-se-genero-correctamente-2448dd'),
       })
     }
     emit('venta-registrada')
@@ -1195,7 +1196,7 @@ const onSubmit = async () => {
       timeout: 10000,
       actions: [
         {
-          label: 'Detalles',
+          label: i18nT('ui.detalles-b1bb8e'),
           handler: () => showDetailedErrorDialog(loggedError),
         },
       ],
@@ -1212,7 +1213,7 @@ const onSubmit = async () => {
 const getEnhancedErrorMessage = (error) => {
   return error.details
     ? `${error.message}: ${JSON.stringify(error.details)}`
-    : error.message || 'Ocurrió un error al procesar la venta'
+    : error.message || i18nT('ui.ocurrio-un-error-al-procesar-la-venta-9c48e1')
 }
 
 const showDetailedErrorDialog = (error) => {
@@ -1224,7 +1225,7 @@ const showDetailedErrorDialog = (error) => {
   console.log(resetForm())
 
   $q.dialog({
-    title: 'Detalles del error',
+    title: i18nT('ui.detalles-del-error-be59f6'),
     message: `
       <div>
         <p><strong>Tipo:</strong> ${error.type}</p>
@@ -1242,7 +1243,7 @@ const showError = (message, error) => {
   console.error(message, error)
   $q.notify({
     type: 'negative',
-    message: `${message}: ${error.message || 'Error desconocido'}`,
+    message: `${message}: ${error.message || i18nT('ui.error-desconocido-9c256e')}`,
   })
 }
 
@@ -1250,7 +1251,7 @@ const logError = (type, error, context = {}) => {
   const errorEntry = {
     timestamp: new Date().toISOString(),
     type,
-    message: error.message || 'Error desconocido',
+    message: error.message || i18nT('ui.error-desconocido-9c256e'),
     stack: error.stack,
     context,
     code: error.code || error.response?.status,
@@ -1314,7 +1315,7 @@ const handleRecordCreated = async (newRecordData) => {
       RegistrarCliente()
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.cliente-guardado-correctamente-d0df06'),
       })
       // Optionally, refresh your data or add the new client to your list
       // For example, if you have a method to fetch clients:
@@ -1322,7 +1323,7 @@ const handleRecordCreated = async (newRecordData) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-cliente-a235d2'),
       })
     }
   } catch (error) {
@@ -1331,8 +1332,8 @@ const handleRecordCreated = async (newRecordData) => {
     $q.notify({
       color: 'negative',
       message:
-        'Error al registrar: ' +
-        (error.response?.data?.mensaje || error.message || 'Error desconocido'),
+        i18nT('ui.error-al-registrar-c13a59') +
+        (error.response?.data?.mensaje || error.message || i18nT('ui.error-desconocido-9c256e')),
       icon: 'error',
     })
   }

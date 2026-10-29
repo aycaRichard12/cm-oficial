@@ -3,14 +3,14 @@
     <div class="col-12 col-md-4">
       <div class="flex justify-between items-center q-mb-sm">
         <label class="text-weight-bold cm-text block label-cotizacion">
-          Producto o Servicio <span class="text-negative">*</span>
+          {{ $t('ui.producto-o-servicio-2b9fe2') }} <span class="text-negative">*</span>
         </label>
         <q-checkbox
           v-if="esProductoUnico"
           :model-value="registrarComoProductoUnico"
           @update:model-value="$emit('update:registrarComoProductoUnico', $event)"
           size="xs"
-          label="Producto Único"
+          :label="$t('ui.producto-unico-b16503')"
           color="secondary"
         />
       </div>
@@ -34,7 +34,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> No hay resultados </q-item-section>
+            <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -42,7 +42,7 @@
 
     <div class="col-12 col-md-2">
       <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion"
-        >Stock Actual</label
+        >{{ $t('ui.stock-actual-a1d4ec') }}</label
       >
       <q-input
         :model-value="cantidaddisponibleCO"
@@ -62,7 +62,7 @@
 
     <div class="col-12 col-md-2">
       <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-        Cantidad <span class="text-negative">*</span>
+        {{ $t('ui.cantidad-b5b6f8') }} <span class="text-negative">*</span>
       </label>
       <q-input
         :model-value="cantidadCO"
@@ -81,7 +81,7 @@
 
     <div class="col-12 col-md-3">
       <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-        Precio unitario <span class="text-negative">*</span>
+        {{ $t('ui.precio-unitario-d3780c') }} <span class="text-negative">*</span>
       </label>
       <q-input
         :model-value="precioCO"
@@ -120,7 +120,7 @@
           anchor="top middle"
           self="bottom middle"
         >
-          Añadir al carrito
+          {{ $t('ui.anadir-al-carrito-6f31c8') }}
         </q-tooltip>
       </q-btn>
     </div>

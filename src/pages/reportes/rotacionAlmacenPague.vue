@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte de Índice de Rotación por Almacén
+          {{ $t('ui.reporte-de-indice-de-rotacion-por-almacen-7452dd') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte de Índice de Rotación por Almacén
+          {{ $t('ui.administracion-de-reporte-de-indice-de-rotacion-por-f14012') }}
         </div>
       </div>
     </div>
@@ -18,23 +18,23 @@
         <div class="col-md-4">
           <q-input
             v-model="fechaInicio"
-            label="Fecha Inicial*"
+            :label="$t('ui.fecha-inicial-2b461a')"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo obligatorio']"
+            :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
           />
         </div>
         <div class="col-md-4">
           <q-input
             v-model="fechaFin"
-            label="Fecha Final*"
+            :label="$t('ui.fecha-final-33d0e8')"
             type="date"
             outlined
             dense
             :rules="[
-              (val) => !!val || 'Campo obligatorio',
-              (val) => validarFechas(val) || 'Fecha final debe ser mayor o igual a la inicial',
+              (val) => !!val || $t('configuracion.canalesDeVenta.form.required'),
+              (val) => validarFechas(val) || $t('ui.fecha-final-debe-ser-mayor-o-igual-a-la-inicial-543555'),
             ]"
           />
         </div>
@@ -42,22 +42,22 @@
           <q-select
             v-model="almacenSeleccionado"
             :options="almacenesOptions"
-            label="Almacén*"
+            :label="$t('ui.almacen-3e3724')"
             outlined
             dense
             option-value="idalmacen"
             option-label="almacen"
             emit-value
             map-options
-            :rules="[(val) => val >= 0 || 'Campo obligatorio']"
+            :rules="[(val) => val >= 0 || $t('configuracion.canalesDeVenta.form.required')]"
           />
         </div>
       </div>
 
       <div class="row justify-center q-mt-md">
-        <q-btn label="Generar Reporte" type="submit" color="primary" class="q-mr-sm" />
+        <q-btn :label="$t('reportes.generate')" type="submit" color="primary" class="q-mr-sm" />
         <q-btn
-          label="Vista Previa"
+          :label="$t('ui.vista-previa-58a2c3')"
           color="secondary"
           @click="mostrarVistaPrevia"
           :disable="!datosFiltrados || datosFiltrados.length === 0"
@@ -90,7 +90,7 @@
       <q-dialog v-model="mostrarModal" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -111,6 +111,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -140,15 +141,15 @@ const empresa = ref({})
 
 // Configuración de la tabla
 const columnas = [
-  { name: 'numero', label: 'N°', field: (row) => row.index, align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'cantidadventas', label: 'Cant. ventas', field: 'cantidadventas', align: 'right' },
-  { name: 'cantidadIE', label: 'Inv. externo', field: 'cantidadIE', align: 'right' },
-  { name: 'rotacion', label: 'Rotación', field: 'rotacion', align: 'right' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: (row) => row.index, align: 'left' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left' },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left' },
+  { name: 'cantidadventas', label: i18nT('ui.cant-ventas-651db0'), field: 'cantidadventas', align: 'right' },
+  { name: 'cantidadIE', label: i18nT('ui.inv-externo-55fb47'), field: 'cantidadIE', align: 'right' },
+  { name: 'rotacion', label: i18nT('ui.rotacion-fb6a5f'), field: 'rotacion', align: 'right' },
 ]
 
 const pagination = {
@@ -214,7 +215,7 @@ const cargarAlmacenes = async () => {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes',
+      message: i18nT('ui.error-al-cargar-los-almacenes-5919ff'),
       caption: error.message,
     })
   }
@@ -225,8 +226,8 @@ const generarReporte = async () => {
     if (!fechaInicio.value || !fechaFin.value || almacenSeleccionado.value === null) {
       $q.notify({
         type: 'warning',
-        message: 'Error',
-        caption: 'Ingrese todos los datos necesarios',
+        message: i18nT('configProducto.configuracionProductoUnico.messages.error'),
+        caption: i18nT('ui.ingrese-todos-los-datos-necesarios-0aff9f'),
       })
       return
     }
@@ -258,7 +259,7 @@ const generarReporte = async () => {
     console.error('Error al generar reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el reporte',
+      message: i18nT('ui.error-al-generar-el-reporte-01d807'),
       caption: error.message,
     })
   } finally {
@@ -270,8 +271,8 @@ const mostrarVistaPrevia = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'Error',
-      caption: 'No se generó ningún reporte',
+      message: i18nT('configProducto.configuracionProductoUnico.messages.error'),
+      caption: i18nT('ui.no-se-genero-ningun-reporte-816b8f'),
     })
     return
   }

@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <div class="col-md-4">
-        <q-btn color="primary" icon="arrow_back" label="Volver" @click="$emit('back')" />
+        <q-btn color="primary" icon="arrow_back" :label="$t('ui.volver-84a715')" @click="$emit('back')" />
       </div>
       <div class="col-md-8">
-        <h4>Detalles de los Productos</h4>
+        <h4>{{ $t('ui.detalles-de-los-productos-09bce7') }}</h4>
       </div>
     </div>
 
@@ -16,40 +16,40 @@
         <div class="col-md-4">
           <q-input
             v-model="localData.detalle"
-            label="País de origen*"
-            placeholder="Detalle origen"
+            :label="$t('ui.pais-de-origen-b469f8')"
+            :placeholder="$t('ui.detalle-origen-6aeb42')"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
 
         <div class="col-md-4">
           <q-input
             v-model="localData.stockmin"
-            label="Stock minimo*"
+            :label="$t('ui.stock-minimo-e2ac0b')"
             type="number"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
 
         <div class="col-md-4">
           <q-input
             v-model="localData.stockmax"
-            label="Stock maximo*"
+            :label="$t('ui.stock-maximo-eb00e9')"
             type="number"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
       </div>
 
       <div class="row justify-center">
         <div class="col-auto">
-          <q-btn color="primary" label="Registrar" type="submit" />
+          <q-btn color="primary" :label="$t('ui.registrar-caacc6')" type="submit" />
         </div>
       </div>
     </q-form>

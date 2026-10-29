@@ -4,7 +4,7 @@
       <!-- Selector de producto -->
       <div class="col-12 col-md-6">
         <div v-if="isEditing">
-          <label for="producto">Producto *</label>
+          <label for="producto">{{ $t('ui.producto-814df9') }}</label>
           <q-input
             v-model="localData.descripcion"
             id="producto"
@@ -15,7 +15,7 @@
           />
         </div>
         <div v-if="!isEditing">
-          <label for="producto">Producto*</label>
+          <label for="producto">{{ $t('ui.producto-a10475') }}</label>
           <div class="row items-center no-wrap">
             <q-select
               use-input
@@ -29,7 +29,7 @@
               map-options
               option-label="label"
               option-value="value"
-              :rules="[(val) => !!val || 'Requerido']"
+              :rules="[(val) => !!val || $t('common.required')]"
               dense
               clearable
               class="col"
@@ -42,31 +42,31 @@
               class="q-ml-sm"
               @click="getProductosDisponibles(props.modelValue)"
             >
-              <q-tooltip>Recargar productos</q-tooltip>
+              <q-tooltip>{{ $t('ui.recargar-productos-894528') }}</q-tooltip>
             </q-btn>
           </div>
         </div>
       </div>
 
       <div class="col-md-2 col-12">
-        <label for="stock">Stock origen*</label>
+        <label for="stock">{{ $t('ui.stock-origen-2ef57d') }}</label>
         <q-input id="stock" v-model="localData.stockOrigen" disable dense outlined />
       </div>
       <div class="col-md-2 col-12">
-        <label for="stock_destino">Stock destino*</label>
+        <label for="stock_destino">{{ $t('ui.stock-destino-085628') }}</label>
         <q-input id="stock_destino" v-model="localData.stockDestino" disable dense outlined />
       </div>
 
       <div v-if="!ConfiguracionProductoVariante" class="col-md-2 col-6">
-        <label for="cantidad">Cantidad</label>
+        <label for="cantidad">{{ $t('ui.cantidad-b5b6f8') }}</label>
         <q-input
           id="cantidad"
           v-model.number="localData.cantidad"
           type="number"
           :rules="[
-            (val) => !!val || 'Requerido', 
-            (val) => val > 0 || 'Debe ser mayor a 0',
-            (val) => val <= (localData.stockOrigen ?? 0) || 'Stock insuficiente'
+            (val) => !!val || $t('common.required'), 
+            (val) => val > 0 || $t('ui.debe-ser-mayor-a-0-48dea0'),
+            (val) => val <= (localData.stockOrigen ?? 0) || $t('ui.stock-insuficiente-84eaef')
           ]"
           :disable="(localData.stockOrigen ?? 0) <= 0"
           dense
@@ -83,7 +83,7 @@
       class="q-mt-md"
     >
       <div class="row items-center q-mb-sm">
-        <div class="text-subtitle2 text-weight-bold">Variantes del Producto</div>
+        <div class="text-subtitle2 text-weight-bold">{{ $t('ui.variantes-del-producto-2a93f9') }}</div>
         <q-btn
           v-if="!loadingVariantes"
           icon="refresh"
@@ -93,7 +93,7 @@
           class="q-ml-sm"
           @click="cargarVariantesProducto(localData.idproductoalmacen)"
         >
-          <q-tooltip>Recargar variantes</q-tooltip>
+          <q-tooltip>{{ $t('ui.recargar-variantes-08e5d3') }}</q-tooltip>
         </q-btn>
       </div>
       <BaseFilterableTable
@@ -152,12 +152,12 @@
               type="number"
               dense
               outlined
-              label="Cantidad"
+              :label="$t('ui.cantidad-b5b6f8')"
               min="0"
               :max="props.row.cantidad ?? 0"
               :disable="(props.row.cantidad ?? 0) <= 0"
               :rules="[
-                val => !val || val <= (props.row.cantidad ?? 0) || 'Stock insuficiente'
+                val => !val || val <= (props.row.cantidad ?? 0) || $t('ui.stock-insuficiente-84eaef')
               ]"
               hide-bottom-space
               style="min-width: 120px"
@@ -168,8 +168,8 @@
     </div>
 
     <div class="col-md-2 col-12 flex justify-end items-center q-gutter-sm q-mt-md">
-      <q-btn :label="isEditing ? 'Actualizar' : 'Añadir'" color="primary" type="submit" />
-      <q-btn v-if="isEditing" label="Cancelar Edición" color="grey" @click="resetForm" />
+      <q-btn :label="isEditing ? $t('configuracion.servicios.dialog.update') : $t('ui.anadir-41261d')" color="primary" type="submit" />
+      <q-btn v-if="isEditing" :label="$t('ui.cancelar-edicion-fca2ff')" color="grey" @click="resetForm" />
     </div>
   </q-form>
 
@@ -210,6 +210,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -248,19 +249,19 @@ const isEditing = computed(() => !!localData.value.id)
 
 // --- COLUMNAS ---
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
-  { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'center' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'id', align: 'center' },
 ]
 
 const columnasVariantes = [
-  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true, dataType: 'text' },
+  { name: 'serie', label: i18nT('ui.serie-986812'), field: 'serie', align: 'left', sortable: true, dataType: 'text' },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true, dataType: 'text' },
   {
     name: 'atributos',
-    label: 'Atributos',
+    label: i18nT('ui.atributos-bd9731'),
     field: 'atributos_str',
     align: 'left',
     sortable: true,
@@ -268,13 +269,13 @@ const columnasVariantes = [
   },
   {
     name: 'stock',
-    label: 'Stock disponible',
+    label: i18nT('ui.stock-disponible-4b5080'),
     field: 'cantidad',
     align: 'center',
     sortable: true,
     dataType: 'number',
   },
-  { name: 'cantidad', label: 'Cantidad a mover', field: 'cantidad', align: 'left', sortable: false },
+  { name: 'cantidad', label: i18nT('ui.cantidad-a-mover-0367fc'), field: 'cantidad', align: 'left', sortable: false },
 ]
 
 const columnasVariantesFiltrables = ['serie', 'sku', 'atributos', 'stock']
@@ -408,7 +409,7 @@ async function cargarVariantesProducto(idproductoalmacen) {
     console.error('Error al cargar variantes:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar las variantes del producto.',
+      message: i18nT('ui.no-se-pudieron-cargar-las-variantes-del-producto-7d8d61'),
       position: 'top',
     })
   } finally {
@@ -423,7 +424,7 @@ async function getDetalleMovimiento(id_movimiento) {
     detalleMovimiento.value = response.data
   } catch (error) {
     console.error('Error al cargar detalles de movimiento:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los detalles del movimiento' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-detalles-del-movimiento-dcd90c') })
   }
 }
 
@@ -443,7 +444,7 @@ async function getProductosDisponibles(movimiento) {
     productosFiltrados.value = [...productosDisponibles.value]
   } catch (error) {
     console.error('Error al cargar productos disponibles:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-productos-4c41c2') })
   }
 }
 
@@ -462,7 +463,7 @@ async function handleFormSubmit() {
     if (variantesConCantidad.length === 0) {
       $q.notify({
         type: 'warning',
-        message: 'Debe ingresar al menos una cantidad mayor a 0 para las variantes.',
+        message: i18nT('ui.debe-ingresar-al-menos-una-cantidad-mayor-a-0-para-l-7b3cd4'),
         position: 'top',
       })
       return
@@ -475,13 +476,13 @@ async function handleFormSubmit() {
     if (variantesExcedidas.length > 0) {
       $q.notify({
         type: 'negative',
-        message: 'Una o más variantes exceden el stock disponible.',
+        message: i18nT('ui.una-o-mas-variantes-exceden-el-stock-disponible-85c057'),
         position: 'top',
       })
       return
     }
 
-    $q.loading.show({ message: 'Guardando variantes...' })
+    $q.loading.show({ message: i18nT('ui.guardando-variantes-9e10d1') })
     try {
       for (const variante of variantesConCantidad) {
         const cantidad = Number(cantidadesVariantes.value[variante.id_Producto_Variante])
@@ -494,13 +495,13 @@ async function handleFormSubmit() {
 
         const response = await api.post('', formData)
         if (response.data.estado !== 'exito') {
-          throw new Error(response.data.mensaje || 'Error al registrar variante')
+          throw new Error(response.data.mensaje || i18nT('ui.error-al-registrar-variante-6841bb'))
         }
       }
 
       $q.notify({
         type: 'positive',
-        message: 'Variantes registradas con éxito',
+        message: i18nT('ui.variantes-registradas-con-exito-d9549c'),
         position: 'top',
       })
       await loadAllData(props.modelValue)
@@ -509,7 +510,7 @@ async function handleFormSubmit() {
       console.error('Error al guardar variantes:', error)
       $q.notify({
         type: 'negative',
-        message: error.message || 'Error al guardar variantes',
+        message: error.message || i18nT('ui.error-al-guardar-variantes-c32d0d'),
         position: 'top',
       })
     } finally {
@@ -603,13 +604,13 @@ async function editDetalle(row) {
     }
   } catch (error) {
     console.error('Error al verificar Detalle Movimiento:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-productos-4c41c2') })
   }
 }
 
 function deleteDetalle(row) {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Está seguro de eliminar el detalle del producto "${row.descripcion}"?`,
     cancel: true,
     persistent: true,

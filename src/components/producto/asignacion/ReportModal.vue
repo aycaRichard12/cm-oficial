@@ -1,7 +1,7 @@
 <template>
   <q-card style="width: 100%">
     <q-card-section class="row items-center q-pb-none">
-      <div class="text-h6">REPORTE</div>
+      <div class="text-h6">{{ $t('ui.reporte-2c3099') }}</div>
       <q-space />
       <q-btn icon="close" flat round dense v-close-popup />
     </q-card-section>
@@ -15,12 +15,12 @@
                 <h6 class="name">
                   <p><strong>Comercio e Inversiones YF SRL</strong></p>
                 </h6>
-                <div><strong>Av. Ayacucho N° 218 esq. Gral Achá</strong></div>
+                <div><strong>{{ $t('ui.av-ayacucho-n-218-esq-gral-acha-2436e1') }}</strong></div>
                 <div><strong>+591 12345678</strong></div>
               </div>
 
               <div class="col text-center">
-                <h6 class="text-center"><strong>PRODUCTOS EN ALMACEN</strong></h6>
+                <h6 class="text-center"><strong>{{ $t('ui.productos-en-almacen-16a42d') }}</strong></h6>
                 <h6 class="text-center">{{ reportData.warehouseName }}</h6>
               </div>
 
@@ -33,38 +33,38 @@
           <main>
             <div class="row contacts">
               <div class="col invoice-to">
-                <div class="text-grey"><strong>DATOS DEL REPORTE:</strong></div>
+                <div class="text-grey"><strong>{{ $t('ui.datos-del-reporte-c7e471') }}</strong></div>
                 <div class="to text-grey">
-                  <strong>Nombre del almacén</strong>: {{ reportData.warehouseName }}
+                  <strong>{{ $t('ui.nombre-del-almacen-68ba02') }}</strong>: {{ reportData.warehouseName }}
                 </div>
-                <div class="date"><strong>Fecha de Impresion:</strong> {{ currentDate }}</div>
+                <div class="date"><strong>{{ $t('ui.fecha-de-impresion-43dbe8') }}</strong> {{ currentDate }}</div>
               </div>
               <div class="col invoice-details">
-                <div class="text-grey"><strong>DATOS DEL ENCARGADO:</strong></div>
-                <div class="text-grey">Usuario Actual</div>
-                <div class="date">Rol del Usuario</div>
+                <div class="text-grey"><strong>{{ $t('ui.datos-del-encargado-6be170') }}</strong></div>
+                <div class="text-grey">{{ $t('ui.usuario-actual-8e1775') }}</div>
+                <div class="date">{{ $t('ui.rol-del-usuario-83da1e') }}</div>
               </div>
             </div>
 
             <q-markup-table separator="cell" class="q-mt-md">
               <thead>
                 <tr class="bg-grey-4">
-                  <th>N°</th>
-                  <th>Código</th>
-                  <th>Código barra</th>
-                  <th>Categoría</th>
-                  <th>Sub categoría</th>
-                  <th>Descripción</th>
-                  <th>País</th>
-                  <th>Unidad</th>
-                  <th>Característica</th>
-                  <th>Otras características</th>
-                  <th>Estado</th>
-                  <th>Stock</th>
-                  <th>Stock mínimo</th>
-                  <th>Stock maximo</th>
-                  <th>Fecha registro</th>
-                  <th>Estado</th>
+                  <th>{{ $t('cotizacion.table.number') }}</th>
+                  <th>{{ $t('ui.codigo-c35510') }}</th>
+                  <th>{{ $t('ui.codigo-barra-427dc4') }}</th>
+                  <th>{{ $t('configProducto.categoriaProducto.types.categoria') }}</th>
+                  <th>{{ $t('ui.sub-categoria-229e51') }}</th>
+                  <th>{{ $t('configuracion.servicios.table.descripcion') }}</th>
+                  <th>{{ $t('ui.pais-0c664f') }}</th>
+                  <th>{{ $t('configProducto.unidadProducto.table.nombre') }}</th>
+                  <th>{{ $t('configProducto.caracteristicaProducto.table.nombre') }}</th>
+                  <th>{{ $t('ui.otras-caracteristicas-c95475') }}</th>
+                  <th>{{ $t('cotizacion.table.status') }}</th>
+                  <th>{{ $t('inventario.stock') }}</th>
+                  <th>{{ $t('ui.stock-minimo-e10ddd') }}</th>
+                  <th>{{ $t('ui.stock-maximo-33c5c4') }}</th>
+                  <th>{{ $t('ui.fecha-registro-dee961') }}</th>
+                  <th>{{ $t('cotizacion.table.status') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,7 +84,7 @@
                   <td>{{ product.minStock }}</td>
                   <td>{{ product.maxStock }}</td>
                   <td>{{ product.creationDate }}</td>
-                  <td>{{ product.active ? 'Activo' : 'Inactivo' }}</td>
+                  <td>{{ product.active ? $t('common.active') : $t('common.inactive') }}</td>
                 </tr>
               </tbody>
             </q-markup-table>
@@ -94,8 +94,8 @@
     </q-card-section>
 
     <q-card-actions align="right">
-      <q-btn flat label="Cerrar" color="negative" v-close-popup />
-      <q-btn label="Descargar en PDF" color="primary" @click="$emit('download')" />
+      <q-btn flat :label="$t('ui.cerrar-4b0816')" color="negative" v-close-popup />
+      <q-btn :label="$t('ui.descargar-en-pdf-71ca4c')" color="primary" @click="$emit('download')" />
     </q-card-actions>
   </q-card>
 </template>

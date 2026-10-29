@@ -3,7 +3,7 @@
     <q-form @submit.prevent="onSubmit">
       <q-card-section class="row q-col-gutter-x-md">
         <div class="col-12 col-md-4">
-          <label for="categoria">Selecciona Categoria Precio *</label>
+          <label for="categoria">{{ $t('ui.selecciona-categoria-precio-d10706') }}</label>
           <q-select
             v-model="localData.categoriaSeleccionada"
             :options="props.categorias"
@@ -13,7 +13,7 @@
             map-options
             dense
             outlined
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             @update:model-value="updateFiltrado"
           />
         </div>
@@ -26,11 +26,11 @@
             dense
             outlined
             type="number"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
         <div class="col-12 col-md-4">
-          <label for="almacen">Almacén *</label>
+          <label for="almacen">{{ $t('ui.almacen-877395') }}</label>
           <q-select
             v-model="localData.almacen"
             :options="props.almacenes"
@@ -40,15 +40,15 @@
             map-options
             dense
             outlined
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             @update:model-value="obtenerIdAlmacen"
           />
         </div>
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
-        <q-btn label="Guardar" type="submit" color="primary" />
+        <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
+        <q-btn :label="$t('common.save')" type="submit" color="primary" />
       </q-card-actions>
     </q-form>
   </q-card>

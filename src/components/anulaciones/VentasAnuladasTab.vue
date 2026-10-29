@@ -12,11 +12,11 @@
 
     <BaseFilterableTable
       id="tablaventasanuladas"
-      title="Ventas Anuladas"
+      :title="$t('ui.ventas-anuladas-d55bb9')"
       :rows="filteredRows"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
-      no-data-label="No hay ventas anuladas"
+      :no-data-label="$t('ui.no-hay-ventas-anuladas-7ded97')"
       row-key="id"
       :search="busqueda"
       :filter-method="filtrarRows"
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
@@ -72,27 +73,27 @@ const busqueda = ref('')
 const columnaBusqueda = ref(0)
 
 const columnasBusqueda = [
-  { value: 0, label: 'Todas' },
-  { value: 1, label: 'Fecha anulación' },
-  { value: 2, label: 'Fecha' },
-  { value: 3, label: 'Cliente' },
-  { value: 4, label: 'Sucursal' },
-  { value: 5, label: 'Tipo venta' },
-  { value: 6, label: 'Motivo' },
-  { value: 7, label: 'Nro. factura' },
+  { value: 0, label: i18nT('ui.todas-8a3c34') },
+  { value: 1, label: i18nT('ui.fecha-anulacion-2715fa') },
+  { value: 2, label: i18nT('cotizacion.table.date') },
+  { value: 3, label: i18nT('ventas.client') },
+  { value: 4, label: i18nT('ui.sucursal-07d782') },
+  { value: 5, label: i18nT('ui.tipo-venta-5ea030') },
+  { value: 6, label: i18nT('ui.motivo-cbeec5') },
+  { value: 7, label: i18nT('ui.nro-factura-15a3bf') },
 ]
 
 const columnas = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => filteredRows.value.indexOf(row) + 1,
     align: 'center',
     dataType: 'number',
   },
   {
     name: 'fecharegistro',
-    label: 'Fecha anulación',
+    label: i18nT('ui.fecha-anulacion-2715fa'),
     field: 'fecharegistro',
     align: 'center',
     dataType: 'date',
@@ -100,25 +101,25 @@ const columnas = [
   },
   {
     name: 'fechaventa',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fechaventa',
     align: 'center',
     dataType: 'date',
     format: (val) => (val ? cambiarFormatoFecha(val) : ''),
   },
-  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
-  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
-  { name: 'motivo', label: 'Motivo', field: 'motivo', align: 'left', dataType: 'text' },
+  { name: 'cliente', label: i18nT('ventas.client'), field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'sucursal', label: i18nT('ui.sucursal-07d782'), field: 'sucursal', align: 'left', dataType: 'text' },
+  { name: 'tipov', label: i18nT('ui.tipo-venta-5ea030'), field: 'tipov', align: 'left', dataType: 'text' },
+  { name: 'motivo', label: i18nT('ui.motivo-cbeec5'), field: 'motivo', align: 'left', dataType: 'text' },
   {
     name: 'nfactura',
-    label: 'Nro. factura',
+    label: i18nT('ui.nro-factura-15a3bf'),
     field: 'nfactura',
     align: 'center',
     dataType: 'number',
   },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
-  { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
+  { name: 'ver', label: i18nT('ui.ver-49b372'), field: 'ver', align: 'center' },
 ]
 
 const arrayHeaders = [
@@ -133,8 +134,8 @@ const arrayHeaders = [
 ]
 
 const opcionesEstadoFactura = [
-  { label: 'Seleccione', value: '' },
-  { label: 'Ver estado', value: 3 },
+  { label: i18nT('ui.seleccione-81cab4'), value: '' },
+  { label: i18nT('ui.ver-estado-636348'), value: 3 },
 ]
 
 const filteredRows = computed(() => {

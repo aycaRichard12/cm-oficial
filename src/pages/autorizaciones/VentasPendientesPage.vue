@@ -5,17 +5,17 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
-          Ventas pendientes
+          {{ $t('ui.ventas-pendientes-3e0afc') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Ventas pendientes
+          {{ $t('ui.administracion-de-ventas-pendientes-f82be9') }}
         </div>
       </div>
     </div>
     <!-- Filtros -->
     <q-card-section class="row q-col-gutter-md">
       <div class="col-xs-12 col-sm-4" id="filtrosAlmacen">
-        <label for="almacen">Selecciona un almacén</label>
+        <label for="almacen">{{ $t('ui.selecciona-un-almacen-ba685d') }}</label>
         <q-select
           v-model="almacenSeleccionado"
           :options="almacenOptions"
@@ -30,7 +30,7 @@
       </div>
 
       <div class="col-xs-12 col-sm-4" id="filtrosProducto">
-        <label for="producto">Producto *</label>
+        <label for="producto">{{ $t('ui.producto-814df9') }}</label>
         <q-select
           v-if="!loading && !error"
           v-model="productoSeleccionado"
@@ -48,7 +48,7 @@
         />
       </div>
       <div class="col-xs-12 col-sm-4" id="filtrosEstado">
-        <label for="estado">Filtrar por Estado</label>
+        <label for="estado">{{ $t('ui.filtrar-por-estado-e18f86') }}</label>
         <q-select
           v-model="filterStatus"
           :options="statusOptions"
@@ -65,7 +65,7 @@
     <!-- Spinner de carga -->
     <q-card-section v-if="loading" class="flex flex-center">
       <q-spinner color="primary" size="3em" />
-      <div class="q-ml-md">Cargando ventas pendientes...</div>
+      <div class="q-ml-md">{{ $t('ui.cargando-ventas-pendientes-fd3043') }}</div>
     </q-card-section>
 
     <!-- Tabla de ventas -->
@@ -77,14 +77,14 @@
         row-key="id_ventas_no_despachadas"
         :no-data-label="noDataMessage"
         flat
-        title="Ventas Pendientes"
+        :title="$t('ui.ventas-pendientes-017dc2')"
       >
         <!-- Slot para la columna 'estado' -->
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-badge
               :color="props.row.estado === 2 ? 'orange' : 'green'"
-              :label="props.row.estado === 2 ? 'En proceso' : 'Finalizado'"
+              :label="props.row.estado === 2 ? $t('ui.en-proceso-850b53') : $t('ui.finalizado-8deb18')"
             />
           </q-td>
         </template>
@@ -95,7 +95,7 @@
             <q-btn
               id="procesarVenta"
               v-if="props.row.estado === 2"
-              label="Procesar"
+              :label="$t('ui.procesar-15761a')"
               color="primary"
               @click="confirmProcess(props.row)"
               size="sm"
@@ -112,12 +112,12 @@
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="warning" color="warning" text-color="white" />
-          <span class="q-ml-sm">¿Está seguro de que desea procesar esta venta?</span>
+          <span class="q-ml-sm">{{ $t('ui.esta-seguro-de-que-desea-procesar-esta-venta-9a216b') }}</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancelar" color="primary" @click="showConfirmDialog = false" />
-          <q-btn flat label="Procesar" color="primary" @click="processConfirmedSale" />
+          <q-btn flat :label="$t('common.cancel')" color="primary" @click="showConfirmDialog = false" />
+          <q-btn flat :label="$t('ui.procesar-15761a')" color="primary" @click="processConfirmedSale" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -125,6 +125,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { cambiarFormatoFecha } from 'src/composables/FuncionesG'
@@ -185,40 +186,40 @@ const saleToProcess = ref(null) // Almacena la venta seleccionada para procesar
 
 // --- Opciones para los filtros ---
 const statusOptions = [
-  { label: 'Todos', value: 'all' },
-  { label: 'En proceso', value: 2 },
-  { label: 'Finalizado', value: 1 },
+  { label: i18nT('ui.todos-a4114a'), value: 'all' },
+  { label: i18nT('ui.en-proceso-850b53'), value: 2 },
+  { label: i18nT('ui.finalizado-8deb18'), value: 1 },
 ]
 
 // --- Columnas de la q-table ---
 const columns = [
   {
     name: 'fecha_venta',
-    label: 'Fecha Venta',
+    label: i18nT('ui.fecha-venta-b43c55'),
     field: 'fecha_venta',
     align: 'left',
     sortable: true,
     cambiarFormatoFecha: (val) => (val ? cambiarFormatoFecha(val) : ''),
   },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', sortable: true },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', sortable: true },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left', sortable: true },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left', sortable: true },
   {
     name: 'cantidad_pendiente',
-    label: 'Cantidad Pendiente',
+    label: i18nT('ui.cantidad-pendiente-453b75'),
     field: 'cantidad_pendiente',
     align: 'left',
     sortable: true,
   },
   {
     name: 'precio_unitario',
-    label: 'Precio Unitario',
+    label: i18nT('ui.precio-unitario-fd8ab0'),
     field: 'precio_unitario',
     align: 'left',
     sortable: true,
   },
 
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
-  { name: 'accion', label: 'Acción', field: 'accion', align: 'center' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', sortable: true },
+  { name: 'accion', label: i18nT('ui.accion-d7927a'), field: 'accion', align: 'center' },
 ]
 
 // --- Propiedades computadas para filtros ---
@@ -284,7 +285,7 @@ const fetchSales = async () => {
       sales.value = response.data.ventas
     } else {
       errorMessage.value =
-        'Error al obtener las ventas: ' + (response.data.message || 'Respuesta inesperada.')
+        'Error al obtener las ventas: ' + (response.data.message || i18nT('ui.respuesta-inesperada-c4b450'))
       sales.value = []
     }
   } catch (error) {
@@ -312,7 +313,7 @@ const processConfirmedSale = async () => {
   const apiUrl = `procesar_ventas_pendientes/${id_ventas_no_despachadas}/${productos_almacen_id_productos_almacen}/${cantidad_pendiente}`
 
   $q.notify({
-    message: 'Procesando venta...',
+    message: i18nT('ui.procesando-venta-98a5be'),
     color: 'info',
     icon: 'hourglass_empty',
     timeout: 5000, // No se cierra automáticamente
@@ -324,7 +325,7 @@ const processConfirmedSale = async () => {
     console.log(response)
     if (response.data.estado === 'ok') {
       $q.notify({
-        message: 'Venta procesada exitosamente.',
+        message: i18nT('ui.venta-procesada-exitosamente-0974d1'),
         color: 'positive',
         icon: 'check_circle',
       })
@@ -342,17 +343,17 @@ const processConfirmedSale = async () => {
 
       $q.notify({
         message:
-          'Error al procesar la venta: ' + (response.data.mensaje || 'Respuesta inesperada.'),
+          i18nT('ui.error-al-procesar-la-venta-6ba15f') + (response.data.mensaje || i18nT('ui.respuesta-inesperada-c4b450')),
         color: 'negative',
         icon: 'error',
       })
       errorMessage.value =
-        'Error al procesar la venta: ' + (response.data.mensaje || 'Respuesta inesperada.')
+        'Error al procesar la venta: ' + (response.data.mensaje || i18nT('ui.respuesta-inesperada-c4b450'))
     }
   } catch (error) {
     console.error('Error processing sale:', error)
     $q.notify({
-      message: 'No se pudo conectar con la API para procesar la venta.',
+      message: i18nT('ui.no-se-pudo-conectar-con-la-api-para-procesar-la-vent-d102b1'),
       color: 'negative',
       icon: 'error',
     })
@@ -374,7 +375,7 @@ onMounted(() => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'ID MD5 no encontrado. Asegúrate de iniciar sesión correctamente.',
+      message: i18nT('ui.id-md5-no-encontrado-asegurate-de-iniciar-sesion-cor-e2a61f'),
       timeout: 5000,
     })
   }

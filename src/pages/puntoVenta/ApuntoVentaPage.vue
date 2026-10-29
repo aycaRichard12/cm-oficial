@@ -48,14 +48,14 @@
             <div class="col">
               <div class="text-h5 text-weight-bold text-dark">{{ selectedUser.name }}</div>
               <div class="text-subtitle2 text-grey-7">
-                {{ selectedUser.cargo || 'Responsable de Ventas' }}
+                {{ selectedUser.cargo || $t('ui.responsable-de-ventas-e57746') }}
               </div>
             </div>
             <div class="col-auto">
               <q-btn
                 color="primary"
                 icon="add_circle"
-                label="Nueva Asignación"
+                :label="$t('ui.nueva-asignacion-e3b420')"
                 unelevated
                 @click="showModal = true"
                 class="q-px-md"
@@ -70,7 +70,7 @@
         <q-card-section class="q-pa-none">
           <div class="q-pa-md text-h6 cm-text-muted row items-center">
             <q-icon name="list" color="primary" class="q-mr-sm" />
-            Puntos de Venta Asignados
+            {{ $t('ui.puntos-de-venta-asignados-9b30f5') }}
           </div>
           <AsignacionTable
             :assignments="assignments"
@@ -86,7 +86,7 @@
       <q-dialog v-model="showModal" persistent backdrop-filter="blur(4px)">
         <q-card style="width: 700px; max-width: 95vw" class="rounded-borders shadow-10">
           <q-card-section class="row items-center bg-primary text-white q-py-sm">
-            <div class="text-h6">Registrar Punto de Venta</div>
+            <div class="text-h6">{{ $t('ui.registrar-punto-de-venta-693f75') }}</div>
             <q-space />
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import UserTable from 'components/puntoVenta/asignacion/UserTable.vue'
 import AsignacionForm from 'components/puntoVenta/asignacion/AsignacionForm.vue'
@@ -153,7 +154,7 @@ async function loadUsuarios() {
       cargo: key.usuario[0].cargo,
     }))
   } catch {
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los usuarios' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-usuarios-c3c03a') })
   }
 }
 
@@ -171,7 +172,7 @@ async function getAlmacenes() {
       cargarAsignaciones(warehouses.value[0].id)
     }
   } catch {
-    $q.notify({ type: 'negative', message: 'Error cargando almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-cargando-almacenes-df3311') })
   }
 }
 
@@ -199,7 +200,7 @@ async function loadPointsOfSale(warehouseId) {
     const idsAsignados = assignments.value.map((a) => a.idpuntoventa || a.id)
     pointsOfSale.value = todosLosPuntos.filter((p) => !idsAsignados.includes(p.id))
   } catch {
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los puntos de venta' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-puntos-de-venta-fe7999') })
   }
 }
 
@@ -216,17 +217,17 @@ async function submitAssignment({ warehouse, pointOfSale }) {
   try {
     const response = await api.post(``, formData)
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: 'Asignación registrada con éxito' })
+      $q.notify({ type: 'positive', message: i18nT('ui.asignacion-registrada-con-exito-84c21e') })
 
       // Actualizar datos y cerrar
       await cargarAsignaciones(warehouse)
       showModal.value = false
       if (formRef.value) formRef.value.resetForm()
     } else {
-      $q.notify({ type: 'negative', message: response.data.mensaje || 'Fallo en el registro' })
+      $q.notify({ type: 'negative', message: response.data.mensaje || i18nT('ui.fallo-en-el-registro-61e358') })
     }
   } catch (err) {
-    $q.notify({ type: 'negative', message: 'Ocurrió un error en el servidor: ' + err })
+    $q.notify({ type: 'negative', message: i18nT('ui.ocurrio-un-error-en-el-servidor-f0a244') + err })
   } finally {
     submitting.value = false
   }
@@ -239,25 +240,25 @@ async function cargarAsignaciones(warehouseId) {
       (u) => u.idalmacen == warehouseId && u.idresponsable == idresponsable.value,
     )
   } catch {
-    $q.notify({ type: 'negative', message: 'Error cargando historial de asignaciones' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-cargando-historial-de-asignaciones-eb2106') })
   }
 }
 
 function deleteAssignment(id) {
   $q.dialog({
-    title: 'Confirmar Eliminación',
-    message: '¿Estás seguro de que deseas retirar este punto de venta?',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
+    message: i18nT('ui.estas-seguro-de-que-deseas-retirar-este-punto-de-ven-365f64'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
     try {
       const response = await api.get(`eliminarResponsablePuntoVenta/${id}`)
       if (response.data.estado === 'exito') {
-        $q.notify({ type: 'positive', message: 'Asignación eliminada correctamente' })
+        $q.notify({ type: 'positive', message: i18nT('ui.asignacion-eliminada-correctamente-f7e208') })
         cargarAsignaciones(idalmacenF.value)
       }
     } catch {
-      $q.notify({ type: 'negative', message: 'Fallo al eliminar asignación' })
+      $q.notify({ type: 'negative', message: i18nT('ui.fallo-al-eliminar-asignacion-8f3b9b') })
     }
   })
 }

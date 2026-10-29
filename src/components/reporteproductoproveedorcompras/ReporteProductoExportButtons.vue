@@ -4,7 +4,7 @@
       <div class="col-auto">
         <q-btn
           color="positive"
-          label="Exportar a Excel"
+          :label="$t('ui.exportar-a-excel-1569c7')"
           icon="file_download"
           @click="$emit('exportar-excel')"
           flat
@@ -14,7 +14,7 @@
       <div class="col-auto">
         <q-btn
           color="info"
-          label="Previsualizar PDF"
+          :label="$t('ui.previsualizar-pdf-05088d')"
           icon="picture_as_pdf"
           @click="$emit('exportar-pdf')"
           flat

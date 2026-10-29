@@ -16,9 +16,9 @@
         <div class="col">
           <div class="ipb-title">
             <q-icon name="inventory_2" size="22px" class="q-mr-sm" />
-            Actualización Masiva de Precios Base
+            {{ $t('ui.actualizacion-masiva-de-precios-base-9bcbb5') }}
           </div>
-          <div class="ipb-subtitle">Gestiona tus precios mediante plantilla Excel</div>
+          <div class="ipb-subtitle">{{ $t('ui.gestiona-tus-precios-mediante-plantilla-excel-ff1d3c') }}</div>
         </div>
         <q-btn icon="close" flat round dense color="grey-6" v-close-popup :disable="isUploading" />
       </q-card-section>
@@ -51,13 +51,13 @@
         <div class="ipb-section">
           <div class="ipb-section__label">
             <span class="ipb-badge">1</span>
-            Seleccionar almacén
+            {{ $t('ui.seleccionar-almacen-797780') }}
           </div>
 
           <q-select
             v-model="selectedAlmacen"
             :options="almacenOptions"
-            label="Almacén"
+            :label="$t('inventario.warehouse')"
             outlined
             dense
             emit-value
@@ -76,7 +76,7 @@
             <template #no-option>
               <q-item>
                 <q-item-section class="text-grey text-caption">
-                  No hay almacenes disponibles
+                  {{ $t('ui.no-hay-almacenes-disponibles-6339fe') }}
                 </q-item-section>
               </q-item>
             </template>
@@ -87,7 +87,7 @@
         <div class="ipb-section" :class="{ 'ipb-section--disabled': !selectedAlmacen }">
           <div class="ipb-section__label">
             <span class="ipb-badge" :class="{ 'ipb-badge--inactive': !selectedAlmacen }">2</span>
-            Descargar plantilla Excel
+            {{ $t('ui.descargar-plantilla-excel-f10fce') }}
           </div>
           <div class="ipb-download-area q-mt-sm">
             <div class="ipb-download-info">
@@ -95,12 +95,12 @@
               <div class="q-ml-sm">
                 <div class="text-body2 text-weight-medium">plantilla_precios_base.xlsx</div>
                 <div class="text-caption cm-text-muted">
-                  Contiene los productos del almacén seleccionado
+                  {{ $t('ui.contiene-los-productos-del-almacen-seleccionado-5ea435') }}
                 </div>
               </div>
             </div>
             <q-btn
-              label="Descargar"
+              :label="$t('ui.descargar-8b98cb')"
               icon="download"
               color="green-7"
               unelevated
@@ -120,12 +120,12 @@
         <div class="ipb-section" :class="{ 'ipb-section--disabled': !selectedAlmacen }">
           <div class="ipb-section__label">
             <span class="ipb-badge" :class="{ 'ipb-badge--inactive': !selectedAlmacen }">3</span>
-            Subir archivo editado
+            {{ $t('ui.subir-archivo-editado-bf136b') }}
           </div>
 
           <q-file
             v-model="archivoExcel"
-            label="Selecciona tu archivo Excel"
+            :label="$t('ui.selecciona-tu-archivo-excel-c8f59e')"
             outlined
             dense
             accept=".xlsx, .xls"
@@ -184,9 +184,9 @@
 
       <!-- ── FOOTER ────────────────────────────────────────────── -->
       <q-card-actions align="right" class="q-px-lg q-pb-lg q-pt-sm">
-        <q-btn flat label="Cancelar" color="grey-7" :disable="isUploading" v-close-popup />
+        <q-btn flat :label="$t('common.cancel')" color="grey-7" :disable="isUploading" v-close-popup />
         <q-btn
-          label="Importar precios"
+          :label="$t('ui.importar-precios-ea23f1')"
           icon="cloud_upload"
           color="primary"
           unelevated
@@ -197,7 +197,7 @@
         >
           <template #loading>
             <q-spinner-dots size="18px" class="q-mr-sm" />
-            Procesando...
+            {{ $t('ui.procesando-e72aae') }}
           </template>
         </q-btn>
       </q-card-actions>
@@ -211,13 +211,13 @@
     <q-card style="min-width: 320px">
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="warning" text-color="white" />
-        <span class="q-ml-sm text-body1 text-weight-medium">Sin almacenes asignados</span>
+        <span class="q-ml-sm text-body1 text-weight-medium">{{ $t('ui.sin-almacenes-asignados-8cbe21') }}</span>
       </q-card-section>
       <q-card-section class="q-pt-none text-body2 cm-text">
-        No tienes almacenes asignados a tu usuario. Contacta al administrador del sistema.
+        {{ $t('ui.no-tienes-almacenes-asignados-a-tu-usuario-contacta-397914') }}
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Entendido" color="primary" v-close-popup />
+        <q-btn flat :label="$t('configuracion.clienteAlmacen.dialog.okButtonError')" color="primary" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -227,6 +227,7 @@
 <!-- SCRIPT                                                        -->
 <!-- ============================================================ -->
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
@@ -352,7 +353,7 @@ async function cargarAlmacenes() {
     console.error('[cargarAlmacenes]', err)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes. Intenta de nuevo.',
+      message: i18nT('ui.error-al-cargar-los-almacenes-intenta-de-nuevo-698e8b'),
       icon: 'warning',
     })
   } finally {
@@ -365,7 +366,7 @@ async function descargarPlantilla() {
   if (!selectedAlmacen.value) {
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar un almacén',
+      message: i18nT('ui.debe-seleccionar-un-almacen-b3acfb'),
     })
     return
   }
@@ -410,14 +411,14 @@ async function descargarPlantilla() {
     // 🔹 4. Crear Excel
     const worksheet = XLSX.utils.json_to_sheet(formattedData)
     const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Precios')
+    XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.precios-628c06'))
 
     // 🔹 5. Descargar archivo
     XLSX.writeFile(workbook, 'plantilla_precios_base.xlsx')
 
     $q.notify({
       type: 'positive',
-      message: 'Plantilla generada correctamente',
+      message: i18nT('ui.plantilla-generada-correctamente-c19da8'),
       icon: 'download_done',
     })
   } catch (error) {
@@ -425,7 +426,7 @@ async function descargarPlantilla() {
 
     $q.notify({
       type: 'negative',
-      message: 'Error al generar la plantilla',
+      message: i18nT('ui.error-al-generar-la-plantilla-039ba5'),
     })
   } finally {
     isDownloading.value = false
@@ -449,7 +450,7 @@ function onFileSelected(file) {
     fileStatus.value = {
       type: 'error',
       icon: 'error_outline',
-      text: 'El archivo debe ser .xlsx o .xls',
+      text: i18nT('ui.el-archivo-debe-ser-xlsx-o-xls-c572e6'),
     }
     archivoExcel.value = null
     return
@@ -514,7 +515,7 @@ async function procesarYEnviar() {
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: data?.mensaje || 'Precios actualizados correctamente.',
+        message: data?.mensaje || i18nT('ui.precios-actualizados-correctamente-7b777f'),
         icon: 'check_circle',
         timeout: 3000,
         position: 'top',
@@ -523,14 +524,14 @@ async function procesarYEnviar() {
       emit('done') // notifica al padre para recargar datos
       cerrarModal()
     } else {
-      mostrarError(data.mensaje || 'Hubo un error al procesar el archivo.')
+      mostrarError(data.mensaje || i18nT('ui.hubo-un-error-al-procesar-el-archivo-9434ee'))
     }
   } catch (err) {
     console.error('[procesarYEnviar]', err)
     mostrarError(
       err?.response?.data?.mensaje ||
         err?.message ||
-        'Ocurrió un error al procesar el archivo. Intenta de nuevo.',
+        i18nT('ui.ocurrio-un-error-al-procesar-el-archivo-intenta-de-n-646551'),
     )
   } finally {
     isUploading.value = false

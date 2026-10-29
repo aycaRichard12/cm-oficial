@@ -4,7 +4,7 @@
       <q-card-section>
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-4">
-            <label for="cliente">Cliente*</label>
+            <label for="cliente">{{ $t('ui.cliente-39ec2b') }}</label>
             <q-select
               v-model="formData.cliente"
               id="cliente"
@@ -15,7 +15,7 @@
               map-options
               @filter="filterClientes"
               @update:model-value="actualizarSucursales"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               clearable
               outlined
               dense
@@ -30,7 +30,7 @@
           </div>
 
           <div class="col-12 col-md-4">
-            <label for="sucursal">Sucursal*</label>
+            <label for="sucursal">{{ $t('ui.sucursal-80e67a') }}</label>
             <q-select
               v-model="formData.sucursal"
               id="sucursal"
@@ -56,7 +56,7 @@
               color="accent-color"
               text-color="dark"
               icon="person_add"
-              label="Nuevo Cliente"
+              :label="$t('ui.nuevo-cliente-0f0b5a')"
               @click="RegistrarCliente"
               class="full-width q-py-sm"
             />
@@ -67,7 +67,7 @@
       <q-card-section>
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-4">
-            <label for="tipodoc">Tipo de documento*</label>
+            <label for="tipodoc">{{ $t('ui.tipo-de-documento-58a837') }}</label>
             <q-select
               v-model="formData.tipodoc"
               id="tipodoc"
@@ -83,12 +83,12 @@
             />
           </div>
           <div class="col-12 col-md-4">
-            <label for="numDoc">Número de documento*</label>
+            <label for="numDoc">{{ $t('ui.numero-de-documento-a35bc9') }}</label>
             <q-input
               v-model="formData.nroDoc"
               id="numDoc"
               type="number"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               :disable="!formData.cliente"
               outlined
               dense
@@ -98,7 +98,7 @@
             />
           </div>
           <div class="col-12 col-md-4">
-            <label for="fecha">Fecha*</label>
+            <label for="fecha">{{ $t('ui.fecha-659648') }}</label>
             <q-input
               v-model="formData.fecha"
               id="fecha"
@@ -116,7 +116,7 @@
       <q-card-section>
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-6">
-            <label for="puntoventa">Punto de venta*</label>
+            <label for="puntoventa">{{ $t('ui.punto-de-venta-6d9630') }}</label>
             <q-select
               v-model="formData.puntoventa"
               id="puntoventa"
@@ -131,7 +131,7 @@
             />
           </div>
           <div class="col-12 col-md-6">
-            <label for="canalventa">Canal de venta*</label>
+            <label for="canalventa">{{ $t('ui.canal-de-venta-05df83') }}</label>
             <q-select
               v-model="formData.canal"
               id="canalventa"
@@ -154,12 +154,12 @@
             v-model="formData.variablePago"
             val="directo"
             color="primary-green"
-            label="Pago Único"
+            :label="$t('ui.pago-unico-fc784b')"
           />
           <q-radio
             v-model="formData.variablePago"
             val="dividido"
-            label="Pago Dividido"
+            :label="$t('ui.pago-dividido-1f5506')"
             color="primary-green"
           />
         </div>
@@ -167,7 +167,7 @@
         <div v-if="formData.variablePago === 'directo'">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-6">
-              <label for="metodopago">Método de pago*</label>
+              <label for="metodopago">{{ $t('ui.metodo-de-pago-5872f4') }}</label>
               <q-select
                 v-model="formData.metodoPago"
                 id="metodopago"
@@ -190,7 +190,7 @@
             class="row q-col-gutter-md q-mb-sm items-center"
           >
             <div class="col-12 col-md-5">
-              <label for="metodopagouno">Método de pago*</label>
+              <label for="metodopagouno">{{ $t('ui.metodo-de-pago-5872f4') }}</label>
               <q-select
                 v-model="payment.metodoPago"
                 label="metodopagouno"
@@ -205,7 +205,7 @@
               />
             </div>
             <div class="col-12 col-md-3">
-              <label for="monto">Monto ( {{ divisaActiva.simbolo }} )</label>
+              <label for="monto">{{ $t('ui.monto-154bf6') }} {{ divisaActiva.simbolo }} )</label>
               <q-input
                 id="monto"
                 v-model="payment.monto"
@@ -221,7 +221,7 @@
               />
             </div>
             <div class="col-12 col-md-3">
-              <label for="porcentaje">Porcentaje (%)</label>
+              <label for="porcentaje">{{ $t('ui.porcentaje-452cef') }}</label>
               <q-input
                 v-model="payment.porcentaje"
                 id="porcentaje"
@@ -255,20 +255,20 @@
             color="accent-color"
             text-color="dark"
             icon="add"
-            label="Agregar Método"
+            :label="$t('ui.agregar-metodo-42b798')"
             @click="addPaymentMethod"
             class="q-mt-sm"
           />
 
           <div class="q-mt-lg bg-grey-1 q-pa-md rounded-borders border-grey">
             <div class="row items-center">
-              <div class="col-6 text-subtitle1 cm-text-muted">Total Pagado:</div>
+              <div class="col-6 text-subtitle1 cm-text-muted">{{ $t('ui.total-pagado-77d3ef') }}</div>
               <div class="col-6 text-right text-subtitle1 text-weight-medium text-primary-dark">
                 {{ totalPaidAmount.toFixed(2) }} {{ divisaActiva.simbolo }}
               </div>
             </div>
             <div class="row items-center">
-              <div class="col-6 text-subtitle1 cm-text-muted">Restante por Pagar:</div>
+              <div class="col-6 text-subtitle1 cm-text-muted">{{ $t('ui.restante-por-pagar-a4c5d1') }}</div>
               <div
                 class="col-6 text-right text-subtitle1"
                 :class="remainingAmount !== 0 ? 'text-negative' : 'text-primary-green'"
@@ -278,7 +278,7 @@
             </div>
 
             <q-banner v-if="remainingAmount !== 0" dense class="bg-warning text-white q-mt-sm">
-              El monto total pagado no coincide con la venta total.
+              {{ $t('ui.el-monto-total-pagado-no-coincide-con-la-venta-total-e6063a') }}
             </q-banner>
           </div>
         </div>
@@ -288,7 +288,7 @@
         <div class="row items-center q-mb-md">
           <q-toggle
             v-model="formData.credito"
-            label="¿A crédito?"
+            :label="$t('ui.a-credito-8f24aa')"
             color="primary-green"
             left-label
             @update:model-value="toggleCredit"
@@ -297,7 +297,7 @@
 
         <div v-if="formData.credito" class="row q-col-gutter-md">
           <div class="col-12 col-md-4">
-            <label for="cuota">Cuotas*</label>
+            <label for="cuota">{{ $t('ui.cuotas-754fec') }}</label>
             <q-input
               v-model="formData.cantidadPagos"
               id="cuota"
@@ -313,7 +313,7 @@
           </div>
 
           <div class="col-12 col-md-4">
-            <label for="montocuota">Monto por cuota*</label>
+            <label for="montocuota">{{ $t('ui.monto-por-cuota-b72e5b') }}</label>
             <q-input
               v-model="formData.montoPagos"
               id="montocuota"
@@ -333,7 +333,7 @@
           </div>
 
           <div class="col-12 col-md-4">
-            <label for="periodicidad">Periodicidad*</label>
+            <label for="periodicidad">{{ $t('ui.periodicidad-3ad643') }}</label>
             <q-select
               v-model="formData.periodo"
               id="periodicidad"
@@ -352,7 +352,7 @@
           </div>
 
           <div v-if="formData.periodo === 0" class="col-12 col-md-4">
-            <label for="plazodias">Plazo (días)*</label>
+            <label for="plazodias">{{ $t('ui.plazo-dias-8822e5') }}</label>
             <q-input
               v-model="formData.plazoPersonalizado"
               id="plazodias"
@@ -368,7 +368,7 @@
           </div>
 
           <div class="col-12 col-md-4">
-            <label for="fechalimite">Fecha Límite*</label>
+            <label for="fechalimite">{{ $t('ui.fecha-limite-786eeb') }}</label>
             <q-input
               v-model="formData.fechaLimite"
               label="fechalimite"
@@ -387,7 +387,7 @@
       <div class="row justify-end q-mt-lg q-col-gutter-md">
         <div class="col-auto">
           <q-btn
-            label="Registrar Factura"
+            :label="$t('ui.registrar-factura-d89c5c')"
             type="submit"
             class="button-primary q-px-lg"
             icon="save"
@@ -476,6 +476,7 @@
 </style>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -596,11 +597,11 @@ const metodoPago = ref([])
 const puntosVenta = ref([])
 const typeDoc = ref([])
 const periodOptions = [
-  { label: 'Personalizado', value: 0 },
-  { label: '15 días', value: 15 },
-  { label: '30 días', value: 30 },
-  { label: '60 días', value: 60 },
-  { label: '90 días', value: 90 },
+  { label: i18nT('ui.personalizado-738665'), value: 0 },
+  { label: i18nT('ui.15-dias-977c82'), value: 15 },
+  { label: i18nT('ui.30-dias-7f2d58'), value: 30 },
+  { label: i18nT('ui.60-dias-376f5a'), value: 60 },
+  { label: i18nT('ui.90-dias-a64b09'), value: 90 },
 ]
 const filteredClients = ref([])
 
@@ -683,7 +684,7 @@ async function cargarAlmacenes(cotizacion) {
     const endpoint = `/listaResponsableAlmacen/${CONSTANTES.idempresa}`
     const { data } = await api.get(endpoint)
 
-    if (data[0] === 'error') throw new Error(data.error || 'Error al cargar almacenes')
+    if (data[0] === 'error') throw new Error(data.error || i18nT('ui.error-al-cargar-almacenes-f88f6f'))
     console.log(data)
     codigosinsucursal.value = data.find(
       (item) =>
@@ -695,7 +696,7 @@ async function cargarAlmacenes(cotizacion) {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes disponibles',
+      message: i18nT('ui.error-al-cargar-los-almacenes-disponibles-cc7e3f'),
     })
   }
 }
@@ -740,7 +741,7 @@ const listaCLientes = async () => {
       }
     }
   } catch (error) {
-    showError('Error al cargar clientes', error)
+    showError(i18nT('ui.error-al-cargar-clientes-3c0d3b'), error)
   }
 }
 
@@ -768,7 +769,7 @@ const cargarPuntoVentas = async () => {
       }
     }
   } catch (error) {
-    showError('Error al cargar puntos de venta', error)
+    showError(i18nT('ui.error-al-cargar-puntos-de-venta-3efa47'), error)
   }
 }
 
@@ -792,7 +793,7 @@ const actualizarSucursales = async (cliente) => {
     }
     cargarDatosCliente(cliente)
   } catch (error) {
-    showError('Error al cargar sucursales', error)
+    showError(i18nT('ui.error-al-cargar-sucursales-a6a650'), error)
   }
 }
 
@@ -961,17 +962,17 @@ const onSubmit = async () => {
     } = formData.value
 
     //Validaciones previas
-    if (!cliente) throw { message: 'Debe seleccionar un cliente' }
-    if (!sucursal || !sucursal.value) throw { message: 'Debe seleccionar una sucursal válida' }
-    if (!fecha) throw { message: 'Debe seleccionar una fecha válida' }
+    if (!cliente) throw { message: i18nT('ui.debe-seleccionar-un-cliente-03eec0') }
+    if (!sucursal || !sucursal.value) throw { message: i18nT('ui.debe-seleccionar-una-sucursal-valida-1c7250') }
+    if (!fecha) throw { message: i18nT('ui.debe-seleccionar-una-fecha-valida-bc2da8') }
     if ((!metodoPago || !metodoPago.value) && pagosDivididos.length === 0)
-      throw { message: 'Debe seleccionar un metodo de pago válido' }
+      throw { message: i18nT('ui.debe-seleccionar-un-metodo-de-pago-valido-fb287c') }
     if (!cartData.listaProductos || !cartData.listaProductos.length) {
-      throw { message: 'El carrito está vacío' }
+      throw { message: i18nT('ventas.emptyCart') }
     }
     console.log(metodoPago)
 
-    $q.loading.show({ message: 'Procesando venta...', timeout: 30000 })
+    $q.loading.show({ message: i18nT('ui.procesando-venta-98a5be'), timeout: 30000 })
     loadingShown = true
 
     //     elseif ($ver == "registroCotizacion_enVenta") {
@@ -1034,11 +1035,11 @@ const onSubmit = async () => {
     window.open(response.data.datosFactura.urlEmizor, '_blank', 'noopener,noreferrer')
 
     if (!response.data || response.data.estado !== 'exito') {
-      throw { message: response.data?.mensaje || 'Error al procesar la venta', response }
+      throw { message: response.data?.mensaje || i18nT('ui.error-al-procesar-la-venta-2b7f0a'), response }
     }
 
     //  Éxito
-    $q.notify({ type: 'positive', message: 'Venta registrada con éxito' })
+    $q.notify({ type: 'positive', message: i18nT('ui.venta-registrada-con-exito-166450') })
     emit('venta-registrada')
     resetForm()
   } catch (error) {
@@ -1055,7 +1056,7 @@ const onSubmit = async () => {
       timeout: 10000,
       actions: [
         {
-          label: 'Detalles',
+          label: i18nT('ui.detalles-b1bb8e'),
           handler: () => showDetailedErrorDialog(loggedError),
         },
       ],
@@ -1070,7 +1071,7 @@ const onSubmit = async () => {
 const getEnhancedErrorMessage = (error) => {
   return error.details
     ? `${error.message}: ${JSON.stringify(error.details)}`
-    : error.message || 'Ocurrió un error al procesar la venta'
+    : error.message || i18nT('ui.ocurrio-un-error-al-procesar-la-venta-9c48e1')
 }
 
 const showDetailedErrorDialog = (error) => {
@@ -1080,7 +1081,7 @@ const showDetailedErrorDialog = (error) => {
   }
 
   $q.dialog({
-    title: 'Detalles del error',
+    title: i18nT('ui.detalles-del-error-be59f6'),
     message: `
       <div>
         <p><strong>Tipo:</strong> ${error.type}</p>
@@ -1098,7 +1099,7 @@ const showError = (message, error) => {
   console.error(message, error)
   $q.notify({
     type: 'negative',
-    message: `${message}: ${error.message || 'Error desconocido'}`,
+    message: `${message}: ${error.message || i18nT('ui.error-desconocido-9c256e')}`,
   })
 }
 
@@ -1106,7 +1107,7 @@ const logError = (type, error, context = {}) => {
   const errorEntry = {
     timestamp: new Date().toISOString(),
     type,
-    message: error.message || 'Error desconocido',
+    message: error.message || i18nT('ui.error-desconocido-9c256e'),
     stack: error.stack,
     context,
     code: error.code || error.response?.status,
@@ -1158,12 +1159,12 @@ const handleRecordCreated = async (newRecordData) => {
       RegistrarCliente()
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.cliente-guardado-correctamente-d0df06'),
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-cliente-a235d2'),
       })
     }
   } catch (error) {
@@ -1171,8 +1172,8 @@ const handleRecordCreated = async (newRecordData) => {
     $q.notify({
       color: 'negative',
       message:
-        'Error al registrar: ' +
-        (error.response?.data?.mensaje || error.message || 'Error desconocido'),
+        i18nT('ui.error-al-registrar-c13a59') +
+        (error.response?.data?.mensaje || error.message || i18nT('ui.error-desconocido-9c256e')),
       icon: 'error',
     })
   }
@@ -1223,7 +1224,7 @@ async function crearCarritoVenta() {
     console.error('Error al crear carritoDos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al preparar datos de venta',
+      message: i18nT('ui.error-al-preparar-datos-de-venta-36471a'),
     })
     return false
   }
@@ -1288,7 +1289,7 @@ function cargarProductos(cotizacion) {
   // Guarda los datos actualizados en el localStorage
   $q.notify({
     type: 'positive',
-    message: 'Producto agregado al carrito',
+    message: i18nT('ui.producto-agregado-al-carrito-1227a2'),
   })
 }
 function eliminarCarrito() {

@@ -4,9 +4,9 @@
       <q-card-section class="row items-center q-pb-none">
         <div class="col">
           <div class="text-h5 text-weight-bold text-primary">
-            <q-icon name="campaign" size="sm" class="q-mr-sm" />Gestión de Campañas
+            <q-icon name="campaign" size="sm" class="q-mr-sm" />{{ $t('ui.gestion-de-campanas-a5f719') }}
           </div>
-          <div class="text-caption text-grey-7">Administre campañas promocionales y descuentos</div>
+          <div class="text-caption text-grey-7">{{ $t('ui.administre-campanas-promocionales-y-descuentos-c90a87') }}</div>
         </div>
         <div class="col-auto">
           <q-btn
@@ -18,10 +18,10 @@
               }
             "
             class="btn-res"
-            title="Registrar Campaña"
+            :title="$t('ui.registrar-campana-4c4585')"
           >
             <q-icon name="add" class="icono" />
-            <span class="texto"> <q-icon name="add" /> Nuevo</span>
+            <span class="texto"> <q-icon name="add" /> {{ $t('common.new') }}</span>
           </q-btn>
         </div>
       </q-card-section>
@@ -33,7 +33,7 @@
               :options="almacenesOptions"
               option-value="idalmacen"
               option-label="almacen"
-              label="Filtrar por almacén"
+              :label="$t('ui.filtrar-por-almacen-eeba00')"
               outlined
               dense
               emit-value
@@ -43,7 +43,7 @@
             ></q-select>
           </div>
           <div class="col-12 col-md-4" id="filtroBusqueda">
-            <q-input v-model="busqueda" label="Buscar campaña..." outlined dense clearable
+            <q-input v-model="busqueda" :label="$t('ui.buscar-campana-757e85')" outlined dense clearable
               ><template v-slot:prepend><q-icon name="search" /></template
             ></q-input>
           </div></div

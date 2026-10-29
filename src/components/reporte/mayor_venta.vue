@@ -8,13 +8,13 @@
           <div class="col-12 col-md-auto">
             <div class="row items-center">
               <q-icon name="timeline" color="teal" size="1.5rem" class="q-mr-sm" />
-              <div class="text-h6 text-weight-medium">Evolución de Ventas Propias</div>
+              <div class="text-h6 text-weight-medium">{{ $t('ui.evolucion-de-ventas-propias-13c473') }}</div>
             </div>
             <div
               class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block"
             >
               <q-icon name="event" class="q-mr-xs" />
-              <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
+              <span class="text-weight-bold">{{ $t('ui.periodo-6993ec') }}</span> {{ periodoInfo }}
             </div>
           </div>
 
@@ -22,18 +22,18 @@
           <div class="col-12 col-md-auto">
             <div class="row q-col-gutter-sm items-center">
               <div class="col-6 col-sm-auto">
-                <q-input v-model="fechaInicio" type="date" dense outlined label="Inicio"> </q-input>
+                <q-input v-model="fechaInicio" type="date" dense outlined :label="$t('ui.inicio-4f70d8')"> </q-input>
               </div>
 
               <div class="col-6 col-sm-auto">
-                <q-input v-model="fechaFin" type="date" dense outlined label="Fin"> </q-input>
+                <q-input v-model="fechaFin" type="date" dense outlined :label="$t('ui.fin-425106')"> </q-input>
               </div>
 
               <div class="col-12 col-sm-auto flex items-center">
                 <q-btn
                   color="primary"
                   icon="search"
-                  label="Consultar"
+                  :label="$t('ui.consultar-2af080')"
                   unelevated
                   :loading="loading"
                   @click="consultarFechas"
@@ -62,6 +62,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
@@ -96,7 +97,7 @@ const consultarFechas = async () => {
     else rawDataAPI.value = []
   } catch (error) {
     console.error('Error al cargar reporte:', error)
-    $q.notify({ type: 'negative', message: 'Error cargando datos de indicadores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-cargando-datos-de-indicadores-187809') })
     rawDataAPI.value = []
   } finally {
     loading.value = false
@@ -147,12 +148,12 @@ const chartOptions = ref({
   },
   yaxis: [
     {
-      title: { text: 'Total Facturado', style: { color: '#00897B', fontWeight: 600 } },
+      title: { text: i18nT('ui.total-facturado-582d87'), style: { color: '#00897B', fontWeight: 600 } },
       labels: { formatter: (val) => (val ? val.toFixed(2) : '0'), style: { colors: '#00897B' } },
     },
     {
       opposite: true,
-      title: { text: 'Transacciones / Cantidad', style: { color: '#FB8C00', fontWeight: 600 } },
+      title: { text: i18nT('ui.transacciones-cantidad-62531d'), style: { color: '#FB8C00', fontWeight: 600 } },
       labels: { formatter: (val) => (val ? Math.round(val) : '0'), style: { colors: '#FB8C00' } },
     },
   ],
@@ -180,7 +181,7 @@ const chartOptions = ref({
     itemMargin: { horizontal: 10, vertical: 8 },
   },
   noData: {
-    text: 'Cargando datos...',
+    text: i18nT('ui.cargando-datos-6acb41'),
     align: 'center',
     verticalAlign: 'middle',
     style: { fontSize: '14px', color: '#888' },

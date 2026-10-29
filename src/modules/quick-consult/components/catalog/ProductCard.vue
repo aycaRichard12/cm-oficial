@@ -17,7 +17,7 @@
             <div class="image-placeholder">
               <div class="placeholder-content">
                 <q-icon name="inventory_2" size="3rem" />
-                <span class="placeholder-text">Sin imagen</span>
+                <span class="placeholder-text">{{ $t('ui.sin-imagen-aab1a8') }}</span>
               </div>
             </div>
           </template>
@@ -25,7 +25,7 @@
         <div v-else class="image-placeholder">
           <div class="placeholder-content">
             <q-icon name="inventory_2" size="3rem" />
-            <span class="placeholder-text">Sin imagen</span>
+            <span class="placeholder-text">{{ $t('ui.sin-imagen-aab1a8') }}</span>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
           unelevated
           :disable="Number(product.stock) <= 0"
           icon="shopping_cart"
-          :label="Number(product.stock) <= 0 ? 'Sin stock' : 'Agregar al carrito'"
+          :label="Number(product.stock) <= 0 ? $t('ui.sin-stock-e38ceb') : $t('ui.agregar-al-carrito-75e94d')"
           no-caps
           @click.stop="emitAdd"
         />

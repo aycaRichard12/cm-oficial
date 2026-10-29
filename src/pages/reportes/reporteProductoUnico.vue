@@ -7,10 +7,10 @@
           <div class="col-12 col-md-auto">
             <div class="text-h5 text-primary text-weight-bold flex items-center">
               <q-icon name="qr_code_2" size="md" class="q-mr-sm" />
-              Productos Únicos
+              {{ $t('ui.productos-unicos-76c10b') }}
             </div>
             <div class="text-subtitle2 cm-text-muted q-mt-xs">
-              Gestiona y rastrea el inventario único por número de serie y almacén.
+              {{ $t('ui.gestiona-y-rastrea-el-inventario-unico-por-numero-de-8f53ee') }}
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
             outlined
             dense
             options-dense
-            label="Almacén / Tienda"
+            :label="$t('ui.almacen-tienda-92da2a')"
             class="min-width-select col-12 col-sm-5 col-md-auto"
             style="min-width: 220px"
           >
@@ -42,7 +42,7 @@
             v-model="filterText"
             outlined
             dense
-            placeholder="Buscar por nombre, código, serie..."
+            :placeholder="$t('ui.buscar-por-nombre-codigo-serie-e21c26')"
             class="col-12 col-sm-6 col-md-auto"
             style="min-width: 280px"
             clearable
@@ -74,14 +74,14 @@
       <!-- Main Data Table -->
       <q-table
         v-else
-        title="Productos Únicos"
+        :title="$t('ui.productos-unicos-76c10b')"
         :rows="productosFiltrados"
         :columns="columns"
         row-key="idproducto_unico"
         :pagination="initialPagination"
         flat
         binary-state-sort
-        no-data-label="No se encontraron productos disponibles"
+        :no-data-label="$t('ui.no-se-encontraron-productos-disponibles-28b11c')"
         class="unique-products-table"
         grid-header
         :grid="$q.screen.xs"
@@ -95,7 +95,7 @@
             <q-td key="descripcion" :props="props">
               <div class="row items-center no-wrap">
                 <q-avatar rounded size="40px" class="cm-surface-2 q-mr-sm" v-if="props.row.imagen">
-                  <img :src="props.row.imagen" alt="Producto" />
+                  <img :src="props.row.imagen" :alt="$t('inventario.product')" />
                 </q-avatar>
                 <q-avatar
                   rounded
@@ -112,7 +112,7 @@
                     class="text-caption cm-text-muted text-italic ellipsis"
                     style="max-width: 250px"
                   >
-                    {{ props.row.caracteristicas || 'Sin descripción adicional' }}
+                    {{ props.row.caracteristicas || $t('ui.sin-descripcion-adicional-d9c72a') }}
                   </div>
                 </div>
               </div>
@@ -157,8 +157,8 @@
                 class="q-px-sm q-py-xs"
               >
                 {{
-                  props.row.estado === 1 || props.row.estado === 'Disponible'
-                    ? 'Disponible'
+                  props.row.estado === 1 || props.row.estado === $t('ui.disponible-264396')
+                    ? $t('ui.disponible-264396')
                     : props.row.estado
                 }}
               </q-badge>
@@ -186,8 +186,8 @@
                     "
                   >
                     {{
-                      props.row.estado === 1 || props.row.estado === 'Disponible'
-                        ? 'Disponible'
+                      props.row.estado === 1 || props.row.estado === $t('ui.disponible-264396')
+                        ? $t('ui.disponible-264396')
                         : props.row.estado
                     }}
                   </q-badge>
@@ -196,17 +196,17 @@
                 <q-separator dashed class="q-my-sm" />
 
                 <div class="row q-col-gutter-xs text-caption">
-                  <div class="col-6 cm-text-muted">S/N Serie:</div>
+                  <div class="col-6 cm-text-muted">{{ $t('ui.s-n-serie-f0a389') }}</div>
                   <div class="col-6 text-right text-weight-medium text-purple-9">
                     {{ props.row.serie }}
                   </div>
 
-                  <div class="col-6 cm-text-muted">Almacén:</div>
+                  <div class="col-6 cm-text-muted">{{ $t('ui.almacen-7049f1') }}</div>
                   <div class="col-6 text-right text-weight-medium cm-text">
                     {{ props.row.nombre_almacen }}
                   </div>
 
-                  <div class="col-6 cm-text-muted items-center align-center">Precio:</div>
+                  <div class="col-6 cm-text-muted items-center align-center">{{ $t('ui.precio-3fc035') }}</div>
                   <div class="col-6 text-right text-weight-bold text-primary text-body2">
                     {{ formatCurrency(props.row.precio) }}
                   </div>
@@ -222,10 +222,10 @@
             <q-icon size="4em" name="find_in_page" color="grey-4" />
             <div class="text-center col-12">
               <div class="text-h6 cm-text-muted text-weight-light">
-                No pudimos encontrar coincidencias
+                {{ $t('ui.no-pudimos-encontrar-coincidencias-26799f') }}
               </div>
               <div class="text-caption cm-text-muted">
-                Prueba cambiando los términos de búsqueda o seleccionando otro almacén.
+                {{ $t('ui.prueba-cambiando-los-terminos-de-busqueda-o-seleccio-603ea6') }}
               </div>
             </div>
           </div>
@@ -236,6 +236,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { api } from 'src/boot/axios'
 import { ref, onMounted, computed } from 'vue'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -259,25 +260,25 @@ const initialPagination = ref({
 
 // Columns Definitions tailored for a SaaS Look & Feel
 const columns = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left', sortable: true },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left', sortable: true },
   {
     name: 'descripcion',
-    label: 'Producto / Descripción',
+    label: i18nT('ui.producto-descripcion-69945e'),
     field: 'descripcion',
     align: 'left',
     sortable: true,
   },
-  { name: 'codigo', label: 'Código / SKU', field: 'codigo', align: 'left', sortable: true },
-  { name: 'serie', label: 'Nº Serie', field: 'serie', align: 'left', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-sku-366d93'), field: 'codigo', align: 'left', sortable: true },
+  { name: 'serie', label: i18nT('ui.n-serie-cf7ccc'), field: 'serie', align: 'left', sortable: true },
   {
     name: 'nombre_almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'nombre_almacen',
     align: 'left',
     sortable: true,
   },
-  { name: 'precio', label: 'Precio', field: 'precio', align: 'right', sortable: true },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
+  { name: 'precio', label: i18nT('ui.precio-18e070'), field: 'precio', align: 'right', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', sortable: true },
 ]
 
 // Dynamic, Reactive filtering handling both warehouse selection and real-time global text matching
@@ -330,7 +331,7 @@ const cargarAlmacenes = async () => {
     // 2. Aplicamos la lógica condicional
     if (almacenesFiltrados.length > 1) {
       // Si hay más de uno, agregamos "Todos" al inicio
-      almacenesOptions.value = [{ label: 'Todos Los Almacenes', value: 0 }, ...almacenesFiltrados]
+      almacenesOptions.value = [{ label: i18nT('ui.todos-los-almacenes-ca930b'), value: 0 }, ...almacenesFiltrados]
     } else {
       // Si hay uno o ninguno, usamos solo los filtrados
       almacenesOptions.value = almacenesFiltrados
@@ -344,7 +345,7 @@ const cargarAlmacenes = async () => {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los almacenes',
+      message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2'),
     })
   }
 }
@@ -383,7 +384,7 @@ const obtenerProductoUnicos = async () => {
     } else {
       $q.notify({
         type: 'warning',
-        message: 'No se encontraron productos únicos para el usuario y almacén seleccionados',
+        message: i18nT('ui.no-se-encontraron-productos-unicos-para-el-usuario-y-0eec0b'),
       })
       productoUnicos.value = []
     }

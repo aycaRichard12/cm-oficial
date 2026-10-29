@@ -5,24 +5,24 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assignment" size="md" class="q-mr-sm" />
-          Pedidos
+          {{ $t('ui.pedidos-6170d2') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Pedidos
+          {{ $t('ui.administracion-de-pedidos-f06c96') }}
         </div>
       </div>
       <div class="col-12 col-md-auto q-mt-sm q-mt-md-none">
         <q-btn
           color="primary"
           icon="refresh"
-          label="Recargar"
+          :label="$t('ui.recargar-9d2c9d')"
           outline
           no-caps
           id="btnRecargarPedidos"
           :loading="recargandoTodo"
           @click.stop.prevent="recargarTodo"
         >
-          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+          <q-tooltip>{{ $t('ui.recargar-pedidos-y-almacenes-6c52b7') }}</q-tooltip>
         </q-btn>
       </div>
     </div>
@@ -30,7 +30,7 @@
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Registrar Pedido</div>
+          <div>{{ $t('ui.registrar-pedido-5839d5') }}</div>
           <q-btn icon="close" @click="showForm = false" dense flat round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -61,7 +61,7 @@
     <q-dialog v-model="showDetallePedido" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Detalle Pedido</div>
+          <div>{{ $t('ui.detalle-pedido-d83446') }}</div>
           <q-btn
             icon="close"
             @click="((showDetallePedido = false), (selectedPedido.value = null))"
@@ -81,14 +81,14 @@
           <q-img :src="imagenSeleccionada" style="width: 100%; height: auto" />
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+          <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <RegistrarAlmacenDialog
       v-model="ShowWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -96,6 +96,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import FormPedidos from 'src/components/pedidos/FormPedidos.vue'
 import TablePedidos from 'src/components/pedidos/TablePedidos.vue'
@@ -135,7 +136,7 @@ async function getAlmacen() {
     }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 
@@ -150,7 +151,7 @@ async function getPedidos() {
     listaPedidos.value = response.data
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 // Modal y formulario
@@ -232,7 +233,7 @@ const handleSubmit = async (data) => {
   }
   $q.notify({
     type: 'positive',
-    message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+    message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
   })
   toggleForm() // Cerrar y limpiar
   getPedidos()
@@ -241,8 +242,8 @@ const handleSubmit = async (data) => {
 // Eliminar pedido
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Pedido?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-pedido-94c79f')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -265,7 +266,7 @@ const confirmDelete = (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -277,14 +278,14 @@ const toggleStatus = async (item) => {
     if (!responsev.data.tieneDetalle) {
       $q.notify({
         type: 'negative',
-        message: 'El pedido está vacío y no puede ser confirmado.',
+        message: i18nT('ui.el-pedido-esta-vacio-y-no-puede-ser-confirmado-90bd97'),
       })
       return
     }
 
     $q.dialog({
-      title: 'Confirmar',
-      message: '¿Deseas confirmar este pedido?',
+      title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+      message: i18nT('ui.deseas-confirmar-este-pedido-3cf2ec'),
       cancel: true,
       persistent: true,
     }).onOk(async () => {
@@ -303,7 +304,7 @@ const toggleStatus = async (item) => {
         console.error('Error al autorizar el pedido:', error)
         $q.notify({
           type: 'negative',
-          message: 'No se pudo autorizar el pedido. Intenta de nuevo.',
+          message: i18nT('ui.no-se-pudo-autorizar-el-pedido-intenta-de-nuevo-234885'),
         })
       }
     })
@@ -311,7 +312,7 @@ const toggleStatus = async (item) => {
     console.error('Error al verificar detalle del pedido:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al verificar si el pedido tiene productos.',
+      message: i18nT('ui.error-al-verificar-si-el-pedido-tiene-productos-1025d8'),
     })
   }
 }
@@ -357,7 +358,7 @@ const recargarTodo = async () => {
   recargandoTodo.value = true
   try {
     await Promise.all([getAlmacen(), getPedidos()])
-    $q.notify({ type: 'positive', message: 'Datos recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.datos-recargados-db86ec'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar:', err)
   } finally {

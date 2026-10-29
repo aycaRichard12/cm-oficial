@@ -56,9 +56,9 @@
               class="q-mb-md"
               style="opacity: 0.9"
             />
-            <div class="text-h3 text-weight-bold q-mb-md">Gestión Comercial</div>
+            <div class="text-h3 text-weight-bold q-mb-md">{{ $t('auth.title') }}</div>
             <div class="text-h6 text-grey-4" style="max-width: 500px; margin: 0 auto">
-              Administra tus ventas, compras e inventarios de manera eficiente y sencilla.
+              {{ $t('auth.subtitle') }}
             </div>
           </div>
         </div>
@@ -72,23 +72,23 @@
                 class="q-mb-md"
                 style="background-color: var(--cm-brand); border-radius: 8px"
               />
-              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">Bienvenido</div>
-              <div class="text-subtitle1 cm-text-muted">Ingresa a tu cuenta para continuar</div>
+              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">{{ $t('auth.welcome') }}</div>
+              <div class="text-subtitle1 cm-text-muted">{{ $t('auth.loginPrompt') }}</div>
             </div>
 
             <q-form @submit.prevent="login" class="q-gutter-md">
               <div>
-                <div class="text-weight-bold cm-text q-mb-xs">Usuario</div>
+                <div class="text-weight-bold cm-text q-mb-xs">{{ $t('auth.user') }}</div>
                 <q-input
                   outlined
                   v-model="username"
                   type="text"
                   lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Por favor ingresa tu usuario']"
+                  :rules="[(val) => (val && val.length > 0) || $t('auth.userRequired')]"
                   bg-color="grey-1"
                   color="primary"
                   dense
-                  placeholder="Usuario"
+                  :placeholder="$t('auth.userPlaceholder')"
                 >
                   <template v-slot:prepend>
                     <q-icon name="person" color="grey-7" />
@@ -106,18 +106,18 @@
                     >¿Olvidaste tu contraseña?</a
                   >
                 </div> -->
-                <div class="text-weight-bold cm-text q-mb-xs">Contraseña</div>
+                <div class="text-weight-bold cm-text q-mb-xs">{{ $t('auth.password') }}</div>
 
                 <q-input
                   outlined
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Por favor ingresa tu contraseña']"
+                  :rules="[(val) => (val && val.length > 0) || $t('auth.passwordRequired')]"
                   bg-color="grey-1"
                   color="primary"
                   dense
-                  placeholder="Contraseña"
+                  :placeholder="$t('auth.passwordPlaceholder')"
                 >
                   <template v-slot:prepend>
                     <q-icon name="lock" color="grey-7" />
@@ -133,7 +133,7 @@
               </div>
 
               <q-btn
-                label="Iniciar Sesión"
+                :label="$t('auth.loginBtn')"
                 type="submit"
                 color="primary"
                 text-color="white"
@@ -146,12 +146,12 @@
               <div class="relative-position q-my-lg">
                 <q-separator />
                 <div class="absolute-center cm-surface q-px-md cm-text-muted text-caption">
-                  O continúa con
+                  {{ $t('ui.o-continua-con-519ddd') }}
                 </div>
               </div>
 
               <div class="text-center q-mt-md text-body2 cm-text-muted">
-                ¿No tienes una cuenta?
+                {{ $t('ui.no-tienes-una-cuenta-0cb9ce') }}
                 <a
                   href="https://mistersofts.com/app/em/"
                   target="_blank"
@@ -159,7 +159,7 @@
                   class="text-weight-bold text-primary"
                   style="text-decoration: none"
                 >
-                  Regístrate
+                  {{ $t('ui.registrate-aab95f') }}
                 </a>
               </div>
               <div v-if="deferredPrompt" class="text-center q-mt-sm">
@@ -170,7 +170,7 @@
                   color="grey-5"
                   text-color="grey-8"
                   icon="get_app"
-                  label="Instalar aplicación"
+                  :label="$t('ui.instalar-aplicacion-4515fb')"
                   @click="installApp"
                   class="text-caption text-weight-medium q-px-sm"
                   style="border-radius: 6px"
@@ -185,6 +185,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -315,7 +316,7 @@ const login = async () => {
           color: 'warning',
           textColor: 'white', // theme-allow
           icon: 'warning',
-          message: 'No se encontraron permisos asignados para este usuario.',
+          message: i18nT('ui.no-se-encontraron-permisos-asignados-para-este-usuar-0d0de4'),
           position: 'top',
         })
         return
@@ -353,7 +354,7 @@ const login = async () => {
         color: 'positive',
         textColor: 'white', // theme-allow
         icon: 'check_circle',
-        message: 'Bienvenido al sistema',
+        message: i18nT('auth.loginSuccess'),
         position: 'top',
       })
 
@@ -364,7 +365,7 @@ const login = async () => {
         color: 'negative',
         textColor: 'white', // theme-allow
         icon: 'error',
-        message: res.data[0]?.error || 'Credenciales inválidas. Intente nuevamente.',
+        message: res.data[0]?.error || i18nT('ui.credenciales-invalidas-intente-nuevamente-055da3'),
         position: 'top',
       })
     }
@@ -374,7 +375,7 @@ const login = async () => {
       color: 'negative',
       textColor: 'white', // theme-allow
       icon: 'error',
-      message: 'Error al conectar con el servidor',
+      message: i18nT('ui.error-al-conectar-con-el-servidor-e9c460'),
       position: 'top',
     })
   } finally {

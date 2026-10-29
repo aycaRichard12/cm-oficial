@@ -2,10 +2,10 @@
   <div class="column q-gutter-y-md">
     <div class="row items-center q-mb-md">
       <div class="col">
-        <q-btn label="Volver" icon="arrow_back" color="primary" flat @click="$emit('back')" />
+        <q-btn :label="$t('ui.volver-84a715')" icon="arrow_back" color="primary" flat @click="$emit('back')" />
       </div>
       <div class="col text-center">
-        <div class="text-h6 text-weight-bold text-primary">Detalle de Cobros</div>
+        <div class="text-h6 text-weight-bold text-primary">{{ $t('ui.detalle-de-cobros-91fe6d') }}</div>
       </div>
       <div class="col"></div>
     </div>
@@ -41,11 +41,11 @@
             "
           >
             <q-tooltip
-              >Ver
+              >{{ $t('ui.ver-49b372') }}
               {{
                 esArchivoPDF(props.row.imagen || props.row.urlpdf || props.row.foto_detalle_cobro)
                   ? 'PDF'
-                  : 'Imagen'
+                  : $t('ui.imagen-100f99')
               }}</q-tooltip
             >
           </q-btn>
@@ -63,7 +63,7 @@
               icon="edit"
               @click="$emit('editar-cobro', props.row)"
             >
-              <q-tooltip>Editar cobro</q-tooltip>
+              <q-tooltip>{{ $t('ui.editar-cobro-083ffa') }}</q-tooltip>
             </q-btn>
             <q-btn
               flat
@@ -73,7 +73,7 @@
               icon="delete"
               @click="$emit('eliminar-cobro', props.row)"
             >
-              <q-tooltip>Eliminar cobro</q-tooltip>
+              <q-tooltip>{{ $t('ui.eliminar-cobro-c7d71a') }}</q-tooltip>
             </q-btn>
           </div>
         </q-td>
@@ -85,19 +85,19 @@
         <q-markup-table flat bordered class="rounded-borders">
           <tbody class="text-weight-medium">
             <tr>
-              <td class="text-grey-7">Total Venta</td>
+              <td class="text-grey-7">{{ $t('ui.total-venta-eaaafd') }}</td>
               <td class="text-right text-subtitle2">
                 {{ formatoMoneda(detalleSeleccionado.totalVenta) }} {{ divisa }}
               </td>
             </tr>
             <tr class="bg-green-1">
-              <td class="text-positive text-weight-bold">Total Cobrado</td>
+              <td class="text-positive text-weight-bold">{{ $t('ui.total-cobrado-c3a2cb') }}</td>
               <td class="text-right text-subtitle2 text-positive text-weight-bold">
                 {{ formatoMoneda(totalCobrado) }} {{ divisa }}
               </td>
             </tr>
             <tr class="bg-orange-1">
-              <td class="text-deep-orange text-weight-bold">Saldo Actual</td>
+              <td class="text-deep-orange text-weight-bold">{{ $t('ui.saldo-actual-cb16e6') }}</td>
               <td class="text-right text-subtitle2 text-deep-orange text-weight-bold">
                 {{ formatoMoneda(detalleSeleccionado.saldo) }} {{ divisa }}
               </td>
@@ -110,6 +110,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { decimas, redondear, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 
 defineProps({
@@ -128,35 +129,35 @@ const esArchivoPDF = (url) => {
 }
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
   {
     name: 'fecha',
-    label: 'Fecha de cobro',
+    label: i18nT('ui.fecha-de-cobro-557cc3'),
     field: 'fecha',
     align: 'center',
     format: (val) => (val ? cambiarFormatoFecha(String(val).split(' ')[0]) : ''),
   },
   {
     name: 'num_documento',
-    label: 'N° Doc',
+    label: i18nT('ui.n-doc-2a0176'),
     field: 'num_documento',
     align: 'left',
   },
   {
     name: 'cuotas',
-    label: 'N° cobros',
+    label: i18nT('ui.n-cobros-da8546'),
     field: 'ncuotas',
     align: 'center',
     format: (val) => decimas(val),
   },
-  { name: 'comprobante', label: 'Comprobante', field: 'imagen', align: 'center' },
+  { name: 'comprobante', label: i18nT('ui.comprobante-7f8d58'), field: 'imagen', align: 'center' },
   {
     name: 'total_cobrado',
-    label: 'Total cobro',
+    label: i18nT('ui.total-cobro-b8bff4'),
     field: (row) => row.total || row.monto,
     align: 'right',
     format: (val) => decimas(redondear(parseFloat(val || 0))),
   },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 </script>

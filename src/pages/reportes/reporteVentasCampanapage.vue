@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
-          Ventas Registradas en Campaña
+          {{ $t('ui.ventas-registradas-en-campana-9d95ba') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Ventas Registradas en Campaña
+          {{ $t('ui.administracion-de-ventas-registradas-en-campana-afe579') }}
         </div>
       </div>
     </div>
@@ -16,7 +16,7 @@
     <q-card class="q-mb-lg shadow-2 rounded-borders">
       <q-card-section class="bg-primary text-white row items-center q-pb-sm">
         <q-icon name="tune" size="sm" class="q-mr-sm" />
-        <div class="text-subtitle1 text-weight-bold">Configuración del Reporte</div>
+        <div class="text-subtitle1 text-weight-bold">{{ $t('ui.configuracion-del-reporte-f9eac1') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -27,7 +27,7 @@
               <q-select
                 v-model="campanaSeleccionada"
                 :options="opcionesCampanas"
-                label="Campaña *"
+                :label="$t('ui.campana-2e294e')"
                 emit-value
                 map-options
                 outlined
@@ -47,7 +47,7 @@
               <q-input
                 v-model="fechaInicio"
                 type="date"
-                label="Fecha Inicial *"
+                :label="$t('ui.fecha-inicial-4e1b5c')"
                 outlined
                 dense
                 color="primary"
@@ -64,7 +64,7 @@
               <q-input
                 v-model="fechaFin"
                 type="date"
-                label="Fecha Final *"
+                :label="$t('ui.fecha-final-c5ac08')"
                 outlined
                 dense
                 color="primary"
@@ -80,7 +80,7 @@
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
               id="btnGenerarDetalle"
-              label="Generar Reporte"
+              :label="$t('reportes.generate')"
               color="primary"
               unelevated
               type="submit"
@@ -88,7 +88,7 @@
             />
             <q-btn
               id="btnExportarDetalle"
-              label="Exportar PDF"
+              :label="$t('reportes.exportPdf')"
               icon="picture_as_pdf"
               color="negative"
               unelevated
@@ -104,7 +104,7 @@
       <q-card class="shadow-2 rounded-borders q-mb-lg">
         <q-card-section class="q-pb-none">
           <div class="text-h6 text-primary text-weight-bold row items-center q-mb-sm">
-            <q-icon name="list" size="sm" class="q-mr-sm" /> Detalle Completo de Ventas
+            <q-icon name="list" size="sm" class="q-mr-sm" /> {{ $t('ui.detalle-completo-de-ventas-4413ba') }}
           </div>
         </q-card-section>
         <q-card-section>
@@ -127,7 +127,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height maximized>
       <q-card class="column">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round dense icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -144,6 +144,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -176,7 +177,7 @@ const campanaSeleccionadaTexto = computed(() => {
 const columnasTabla = [
   {
     name: 'n',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'n',
     align: 'center',
     sortable: false,
@@ -185,14 +186,14 @@ const columnasTabla = [
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
   {
     name: 'nfactura',
-    label: 'N° Factura',
+    label: i18nT('ui.n-factura-5a62ff'),
     field: 'nfactura',
     align: 'center',
 
@@ -200,21 +201,21 @@ const columnasTabla = [
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacenNombre',
     align: 'left',
   },
   {
     name: 'producto',
-    label: 'Producto',
+    label: i18nT('inventario.product'),
     field: 'productoNombre',
     align: 'left',
   },
-  { name: 'codigo', label: 'Código', field: 'productoCodigo', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'productoCodigo', align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right' },
   {
     name: 'precioOriginal',
-    label: 'P. Original',
+    label: i18nT('ui.p-original-6d2015'),
     field: 'precioOriginal',
     align: 'right',
 
@@ -222,7 +223,7 @@ const columnasTabla = [
   },
   {
     name: 'precioCampana',
-    label: 'P. Campaña',
+    label: i18nT('ui.p-campana-4a2411'),
     field: 'precioCampana',
     align: 'right',
 
@@ -230,7 +231,7 @@ const columnasTabla = [
   },
   {
     name: 'subtotalOriginal',
-    label: 'Subtot. Original',
+    label: i18nT('ui.subtot-original-b610c2'),
     field: 'subtotalOriginal',
     align: 'right',
 
@@ -238,7 +239,7 @@ const columnasTabla = [
   },
   {
     name: 'subtotalCampana',
-    label: 'Subtot. Campaña',
+    label: i18nT('ui.subtot-campana-3ba74e'),
     field: 'subtotalCampana',
     align: 'right',
 
@@ -246,7 +247,7 @@ const columnasTabla = [
   },
   {
     name: 'descuento',
-    label: 'Descuento',
+    label: i18nT('ventas.discount'),
     field: 'descuento',
     align: 'right',
 
@@ -294,7 +295,7 @@ async function cargarCampanas() {
     if (!resultado || resultado[0] === 'error') {
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar la lista de campañas.',
+        message: i18nT('ui.error-al-cargar-la-lista-de-campanas-8d18fd'),
         position: 'top',
       })
       return
@@ -306,7 +307,7 @@ async function cargarCampanas() {
     }))
   } catch (error) {
     console.error('Error en cargarCampanas:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar campañas.', position: 'top' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-campanas-65aa85'), position: 'top' })
   }
 }
 
@@ -319,7 +320,7 @@ function validarFechas() {
   if (inicio > fin) {
     $q.notify({
       type: 'info',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-48706f'),
       position: 'top',
     })
   }
@@ -347,15 +348,15 @@ function deduplicarDatos(datos) {
  */
 async function generarReporte() {
   if (!campanaSeleccionada.value) {
-    $q.notify({ type: 'info', message: 'Por favor, seleccione una campaña.', position: 'top' })
+    $q.notify({ type: 'info', message: i18nT('ui.por-favor-seleccione-una-campana-f5fdff'), position: 'top' })
     return
   }
   if (!fechaInicio.value || !fechaFin.value) {
-    $q.notify({ type: 'info', message: 'Por favor, seleccione ambas fechas.', position: 'top' })
+    $q.notify({ type: 'info', message: i18nT('ui.por-favor-seleccione-ambas-fechas-f051d1'), position: 'top' })
     return
   }
 
-  $q.loading.show({ message: 'Generando reporte...' })
+  $q.loading.show({ message: i18nT('ui.generando-reporte-f36ceb') })
   cargandoData.value = true
 
   try {
@@ -375,7 +376,7 @@ async function generarReporte() {
       if (!Array.isArray(rawData) || rawData.length === 0) {
         $q.notify({
           type: 'info',
-          message: 'No se encontraron ventas para esta campaña en el período indicado.',
+          message: i18nT('ui.no-se-encontraron-ventas-para-esta-campana-en-el-per-855127'),
           position: 'top',
         })
         datosOriginales.value = []
@@ -406,13 +407,13 @@ async function generarReporte() {
         position: 'top',
       })
     } else {
-      $q.notify({ type: 'negative', message: 'Error al generar el reporte.', position: 'top' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-generar-el-reporte-dadd3e'), position: 'top' })
     }
   } catch (error) {
     console.error('Error en generarReporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al generar el reporte.',
+      message: i18nT('ui.ocurrio-un-error-al-generar-el-reporte-eddf13'),
       position: 'top',
     })
   } finally {
@@ -439,7 +440,7 @@ function handleVerReporte() {
   if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No hay datos para mostrar en el reporte.',
+      message: i18nT('ui.no-hay-datos-para-mostrar-en-el-reporte-48e256'),
       position: 'top',
     })
     return

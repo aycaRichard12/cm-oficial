@@ -5,14 +5,14 @@
       <div class="row items-center justify-between">
         <div class="col">
           <div class="text-h5 text-weight-bold text-primary text-no-wrap">
-            {{ title || 'Reporte de Rentabilidad' }}
+            {{ title || $t('ui.reporte-de-rentabilidad-df4d46') }}
           </div>
           <div class="text-caption cm-text-muted q-mt-xs">
             <q-icon name="calendar_today" size="xs" class="q-mr-xs" />
-            Período: {{ periodoLabel }}
+            {{ $t('ui.periodo-7608e0') }} {{ periodoLabel }}
             <q-separator vertical spaced="md" />
             <q-icon name="monetization_on" size="xs" class="q-mr-xs" />
-            Moneda: {{ simbolo }}
+            {{ $t('ui.moneda-1da29c') }} {{ simbolo }}
           </div>
         </div>
         <div class="col-auto">
@@ -64,7 +64,7 @@
       <div class="col-12 col-md-6 q-pr-md-none q-pr-md-md">
         <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
           <q-icon name="table_chart" size="sm" class="q-mr-sm text-primary" />
-          Desglose por Período
+          {{ $t('ui.desglose-por-periodo-fbe7be') }}
         </div>
         <div class="table-scroll-container">
           <BaseFilterableTable
@@ -93,8 +93,8 @@
         >
           <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
             <q-icon name="bar_chart" size="sm" class="q-mr-sm text-primary" />
-            Evolución Comparativa
-            <q-tooltip>Haz clic en una barra para ver el detalle en la tabla</q-tooltip>
+            {{ $t('ui.evolucion-comparativa-66217f') }}
+            <q-tooltip>{{ $t('ui.haz-clic-en-una-barra-para-ver-el-detalle-en-la-tabl-7c5194') }}</q-tooltip>
           </div>
           <div class="chart-container">
             <VueApexCharts
@@ -108,9 +108,9 @@
         </q-card-section>
         <q-card-section v-else class="chart-section q-pa-md text-center">
           <q-icon name="bar_chart" size="64px" color="grey-5" />
-          <div class="text-h6 cm-text-muted q-mt-md">Sin datos para graficar</div>
+          <div class="text-h6 cm-text-muted q-mt-md">{{ $t('ui.sin-datos-para-graficar-1d51a0') }}</div>
           <div class="text-caption cm-text-muted q-mt-sm">
-            No se encontraron registros en el período seleccionado
+            {{ $t('ui.no-se-encontraron-registros-en-el-periodo-selecciona-bed984') }}
           </div>
         </q-card-section>
       </div>
@@ -119,6 +119,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import VueApexCharts from 'vue3-apexcharts'
@@ -126,7 +127,7 @@ import { chartTheme } from 'src/composables/useChartTheme'
 import { useThemeStore } from 'src/stores/theme'
 
 const props = defineProps({
-  title: { type: String, default: 'Reporte de Rentabilidad' },
+  title: { type: String, default: i18nT('ui.reporte-de-rentabilidad-df4d46') },
   // MODIFICADO: acepta tanto Array como Object
   rows: { type: [Array, Object], required: true },
   columns: { type: Array, required: true },
@@ -197,7 +198,7 @@ const sortedRows = computed(() => {
 /* ------------------------------------------------------------------ */
 /*  Computed: símbolo de moneda
 /* ------------------------------------------------------------------ */
-const simbolo = computed(() => props.divisa?.simbolo || 'Bs')
+const simbolo = computed(() => props.divisa?.simbolo || i18nT('ui.bs-43c494'))
 
 /* ------------------------------------------------------------------ */
 /*  Computed: etiqueta del período
@@ -234,28 +235,28 @@ const kpiCards = computed(() => {
 
   return [
     {
-      label: 'Venta Bruta',
+      label: i18nT('ui.venta-bruta-6ce759'),
       value: fmt(t.ventaBruta || 0),
       icon: 'shopping_cart',
       colorClass: 'kpi-blue',
       porcentaje: null,
     },
     {
-      label: 'Venta Neta',
+      label: i18nT('ui.venta-neta-ca0aa8'),
       value: fmt(t.ventaNeta || 0),
       icon: 'receipt_long',
       colorClass: 'kpi-teal',
       porcentaje: null,
     },
     {
-      label: 'Costo de Ventas',
+      label: i18nT('ui.costo-de-ventas-d04ca4'),
       value: fmt(t.costoVentas || 0),
       icon: 'inventory_2',
       colorClass: 'kpi-red',
       porcentaje: null,
     },
     {
-      label: 'Margen Neto',
+      label: i18nT('ui.margen-neto-57edec'),
       value: `${(t.margen || 0).toFixed(2)}%`,
       icon: 'trending_up',
       colorClass: 'kpi-green',
@@ -397,7 +398,7 @@ const chartOptions = computed(() => ({
     padding: { top: 0, right: 16, bottom: 0, left: 16 },
   },
   noData: {
-    text: 'No hay datos disponibles para el gráfico',
+    text: i18nT('ui.no-hay-datos-disponibles-para-el-grafico-ff2ddd'),
     align: 'center',
     verticalAlign: 'middle',
     style: {

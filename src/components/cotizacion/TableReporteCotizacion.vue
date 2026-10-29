@@ -1,7 +1,7 @@
 <template>
   <BaseFilterableTable
     ref="refHijo"
-    title="Reporte Cotización"
+    :title="$t('ui.reporte-cotizacion-fe218d')"
     nombreColumnaTotales="estado"
     :rows="props.rows"
     :columns="columnas"
@@ -24,7 +24,7 @@
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Anulado</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.anulado-c331a7') }}</q-tooltip>
         </q-badge>
 
         <!-- Proforma (Activo, Estado 1) -->
@@ -36,7 +36,7 @@
           class="text-weight-bold shadow-1"
         >
           <q-tooltip content-class="bg-dark text-white text-caption"
-            >Proforma / Cotización</q-tooltip
+            >{{ $t('ui.proforma-cotizacion-49062b') }}</q-tooltip
           >
         </q-badge>
 
@@ -48,7 +48,7 @@
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Nota Normal</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.nota-normal-09b375') }}</q-tooltip>
         </q-badge>
 
         <!-- Facturado (Activo, Estado 2) -->
@@ -59,7 +59,7 @@
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Facturado</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.facturado-e66f6e') }}</q-tooltip>
         </q-badge>
 
         <!-- Devolución (Activo, Estado 3) -->
@@ -70,7 +70,7 @@
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Devolución</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.devolucion-ce2809') }}</q-tooltip>
         </q-badge>
       </q-td>
     </template>
@@ -87,7 +87,7 @@
           outline
           class="cursor-pointer q-px-sm shadow-1"
         >
-          <q-tooltip>Ya esta cobrado, no se puede ir a gestionar cobro</q-tooltip>
+          <q-tooltip>{{ $t('ui.ya-esta-cobrado-no-se-puede-ir-a-gestionar-cobro-70a972') }}</q-tooltip>
         </q-badge>
 
         <!-- Pendiente (1 o 3) -->
@@ -100,7 +100,7 @@
           class="cursor-pointer q-px-sm shadow-1"
           @click="irCuentasPorCobrar"
         >
-          <q-tooltip>Ir a gestionar cobro, aun no esta cobrado</q-tooltip>
+          <q-tooltip>{{ $t('ui.ir-a-gestionar-cobro-aun-no-esta-cobrado-738d65') }}</q-tooltip>
         </q-badge>
 
         <!-- Anulado (4) -->
@@ -112,7 +112,7 @@
           outline
           class="shadow-1"
         >
-          <q-tooltip>Cobro anulado</q-tooltip>
+          <q-tooltip>{{ $t('ui.cobro-anulado-ef9221') }}</q-tooltip>
         </q-badge>
       </q-td>
     </template>
@@ -130,7 +130,7 @@
             dense
             @click="$emit('generarComprobantePDF', props.row.idcotizacion)"
           >
-            <q-tooltip>Ver Comprobante</q-tooltip>
+            <q-tooltip>{{ $t('ui.ver-comprobante-7f0b83') }}</q-tooltip>
           </q-btn>
           <!-- <q-btn
             id="btneditarcotizacion"
@@ -159,7 +159,7 @@
             dense
             @click="$emit('facturarVenta', props.row.idcotizacion)"
           >
-            <q-tooltip>Facturar</q-tooltip>
+            <q-tooltip>{{ $t('ui.facturar-0c8fd3') }}</q-tooltip>
           </q-btn>
         </div>
       </q-td>
@@ -185,6 +185,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { getTipoFactura, getToken } from 'src/composables/FuncionesG'
@@ -234,10 +235,10 @@ defineEmits(['facturarVenta', 'generarComprobantePDF', 'column-filter-changed'])
 const columnas = computed(() => {
   const sim = divisa.value?.simbolo ?? '$'
   return [
-    { name: 'nro', label: 'N°', align: 'center', field: 'nro', sortable: true },
+    { name: 'nro', label: i18nT('cotizacion.table.number'), align: 'center', field: 'nro', sortable: true },
     {
       name: 'fecha',
-      label: 'Fecha',
+      label: i18nT('cotizacion.table.date'),
       align: 'left',
       field: 'fecha',
       dataType: 'date',
@@ -245,7 +246,7 @@ const columnas = computed(() => {
     },
     {
       name: 'numeroFactura',
-      label: 'N° Doc',
+      label: i18nT('ui.n-doc-2a0176'),
       align: 'left',
       field: 'numeroFactura',
       dataType: 'number',
@@ -253,7 +254,7 @@ const columnas = computed(() => {
     },
     {
       name: 'almacen',
-      label: 'Almacén',
+      label: i18nT('inventario.warehouse'),
       align: 'left',
       field: 'almacen',
       dataType: 'text',
@@ -261,7 +262,7 @@ const columnas = computed(() => {
     },
     {
       name: 'cliente',
-      label: 'Razón Social',
+      label: i18nT('ui.razon-social-adf906'),
       align: 'left',
       field: 'cliente',
       dataType: 'text',
@@ -269,7 +270,7 @@ const columnas = computed(() => {
     },
     {
       name: 'nombreComercial',
-      label: 'Nombre Comercial',
+      label: i18nT('ui.nombre-comercial-55a6ae'),
       align: 'left',
       field: 'nombreComercial',
       dataType: 'text',
@@ -277,7 +278,7 @@ const columnas = computed(() => {
     },
     {
       name: 'sucursal',
-      label: 'Sucursal',
+      label: i18nT('ui.sucursal-07d782'),
       align: 'left',
       field: 'sucursal',
       dataType: 'text',
@@ -285,7 +286,7 @@ const columnas = computed(() => {
     },
     {
       name: 'estadoCobroResumido',
-      label: 'Estado Pago',
+      label: i18nT('ui.estado-pago-a3e139'),
       align: 'center',
       field: 'estadoCobroResumido',
       dataType: 'text',
@@ -293,7 +294,7 @@ const columnas = computed(() => {
     },
     {
       name: 'estadoResumido',
-      label: 'Tipo',
+      label: i18nT('configGeneral.divisas.table.type'),
       align: 'center',
       field: 'estadoResumido',
       dataType: 'text',
@@ -323,7 +324,7 @@ const columnas = computed(() => {
       dataType: 'number',
       sortable: true,
     },
-    { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
+    { name: 'acciones', label: i18nT('common.actions'), align: 'center', field: 'acciones' },
   ]
 })
 
@@ -383,7 +384,7 @@ onMounted(async () => {
     console.error('Error al obtener divisa activa:', error)
     $q.notify({
       type: 'warning',
-      message: 'No se pudo cargar la divisa activa. Usando configuración por defecto.',
+      message: i18nT('ui.no-se-pudo-cargar-la-divisa-activa-usando-configurac-f7def1'),
     })
   }
   //cargarAlmacenes()

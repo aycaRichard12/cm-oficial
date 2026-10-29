@@ -92,6 +92,7 @@
   </div>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -108,7 +109,7 @@ const props = defineProps({
 defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 
 const columns = computed(() => [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
   { name: 'tipo', label: t('configuracion.tiposDeClientes.table.tipo'), field: 'tipo', align: 'left' },
   { name: 'descripcion', label: t('configuracion.tiposDeClientes.table.descripcion'), field: 'descripcion', align: 'left' },
   { name: 'estado', label: t('configuracion.tiposDeClientes.table.estado'), field: 'estado', align: 'center' },

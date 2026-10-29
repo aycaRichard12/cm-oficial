@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -137,7 +138,7 @@ const columns = computed(() => [
   },
   // {
   //   name: 'colorNombre',
-  //   label: 'Nombre color',
+  //   label: Nombre color,
   //   field: 'colorNombre',
   //   align: 'left',
   // },
@@ -164,7 +165,7 @@ const processedRows = computed(() => {
   return props.rows.map((row, index) => ({
     ...row,
     numero: index + 1,
-    colorNombre: nombreColores[row.color] || 'Desconocido',
+    colorNombre: nombreColores[row.color] || i18nT('ui.desconocido-452c8a'),
   }))
 })
 </script>

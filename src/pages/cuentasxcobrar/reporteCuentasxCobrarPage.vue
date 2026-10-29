@@ -3,7 +3,7 @@
     <!-- Header and Filters Card -->
     <q-card flat bordered class="q-mb-md shadow-2">
       <q-toolbar class="bg-primary text-white shadow-2">
-        <q-toolbar-title class="text-weight-bold"> Configuración de Reporte </q-toolbar-title>
+        <q-toolbar-title class="text-weight-bold"> {{ $t('ui.configuracion-de-reporte-05467f') }} </q-toolbar-title>
       </q-toolbar>
 
       <q-card-section class="q-pt-sm q-pb-md">
@@ -12,7 +12,7 @@
             <!-- Selector de Tipo -->
             <div class="col-12 col-sm-auto">
               <div class="column items-center">
-                <div class="text-caption text-grey-7 q-mb-xs">Tipo de Reporte</div>
+                <div class="text-caption text-grey-7 q-mb-xs">{{ $t('ui.tipo-de-reporte-f3eca9') }}</div>
                 <q-toggle
                   v-model="tipoReporte"
                   color="primary"
@@ -21,7 +21,7 @@
                   @update:model-value="cambiarTipoReporteLabel"
                 />
                 <div class="text-weight-bold text-primary">
-                  {{ tipoReporte ? 'Al Corte' : 'Por Periodo' }}
+                  {{ tipoReporte ? $t('ui.al-corte-27d09e') : $t('ui.por-periodo-4d6ad9') }}
                 </div>
               </div>
             </div>
@@ -31,12 +31,12 @@
               <div v-if="!tipoReporte" class="col-12 col-sm-5 max-width-200">
                 <q-input
                   v-model="startDate"
-                  label="Fecha Inicio"
+                  :label="$t('ui.fecha-inicio-cecd90')"
                   type="date"
                   dense
                   outlined
                   stack-label
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   hide-bottom-space
                   id="fechaini"
                 >
@@ -49,12 +49,12 @@
               <div class="col-12 col-sm-5 max-width-200">
                 <q-input
                   v-model="endDate"
-                  label="Fecha Fin"
+                  :label="$t('ui.fecha-fin-97f1d8')"
                   type="date"
                   dense
                   outlined
                   stack-label
-                  :rules="!tipoReporte ? [validateEndDate] : [(val) => !!val || 'Requerido']"
+                  :rules="!tipoReporte ? [validateEndDate] : [(val) => !!val || $t('common.required')]"
                   hide-bottom-space
                   id="fechafin"
                 >
@@ -69,7 +69,7 @@
             <div class="col-12 col-sm-auto text-center">
               <q-btn
                 id="btngenerarreportecredito"
-                label="Generar Reporte"
+                :label="$t('reportes.generate')"
                 color="primary"
                 icon="analytics"
                 unelevated
@@ -90,7 +90,7 @@
           <template v-slot:avatar>
             <q-icon name="warning" color="orange" />
           </template>
-          No se encontró sesión de usuario válida.
+          {{ $t('ui.no-se-encontro-sesion-de-usuario-valida-eca682') }}
         </q-banner>
 
         <q-banner v-if="reportError" dense rounded class="bg-negative text-white">
@@ -112,7 +112,7 @@
               {{
                 processedReportData.length > 0
                   ? `Total: ${processedReportData.length} registros`
-                  : 'Resultados'
+                  : $t('ui.resultados-b164a1')
               }}
             </div>
           </div>
@@ -121,7 +121,7 @@
             <q-btn
               id="btnexportarexcelreportecredito"
               icon="file_download"
-              label="Excel"
+              :label="$t('ui.excel-a08e11')"
               color="positive"
               unelevated
               dense
@@ -129,7 +129,7 @@
               @click="exportToXLSX"
               :disable="processedReportData.length === 0 || loading"
             >
-              <q-tooltip>Exportar a Excel</q-tooltip>
+              <q-tooltip>{{ $t('ui.exportar-a-excel-1569c7') }}</q-tooltip>
             </q-btn>
             <q-btn
               id="btnpdfreportecredito"
@@ -142,7 +142,7 @@
               @click="printFilteredTable"
               :disable="processedReportData.length === 0 || loading"
             >
-              <q-tooltip>Exportar a PDF</q-tooltip>
+              <q-tooltip>{{ $t('ui.exportar-a-pdf-f6b614') }}</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -171,7 +171,7 @@
     >
       <q-card class="column no-wrap" style="background: rgba(0, 0, 0, 0.8)">
         <q-toolbar class="bg-primary text-white">
-          <q-toolbar-title>Vista Previa del Reporte</q-toolbar-title>
+          <q-toolbar-title>{{ $t('ui.vista-previa-del-reporte-1bfbe4') }}</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
 
@@ -188,6 +188,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed, nextTick, watch, onBeforeUnmount } from 'vue'
 import { date, useQuasar } from 'quasar'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -257,14 +258,14 @@ const cambiarTipoReporteLabel = () => {
 }
 const printFilteredTable = () => {
   $q.dialog({
-    title: 'Orientación del PDF',
-    message: 'Seleccione la orientación del reporte:',
+    title: i18nT('ui.orientacion-del-pdf-649111'),
+    message: i18nT('ui.seleccione-la-orientacion-del-reporte-0e6ae3'),
     options: {
       type: 'radio',
       model: 'landscape',
       items: [
-        { label: 'Horizontal', value: 'landscape', color: 'primary' },
-        { label: 'Vertical', value: 'portrait', color: 'primary' },
+        { label: i18nT('ui.horizontal-4f57a1'), value: 'landscape', color: 'primary' },
+        { label: i18nT('ui.vertical-4b937c'), value: 'portrait', color: 'primary' },
       ],
     },
     cancel: true,
@@ -360,11 +361,11 @@ const mapRows = (data) => {
 
 const generateReport = async () => {
   if (!idmd5.value) {
-    $q.notify({ type: 'negative', message: 'No hay ID MD5 disponible.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-hay-id-md5-disponible-a9dce9') })
     return
   }
   if (!startDate.value || !endDate.value) {
-    $q.notify({ type: 'negative', message: 'Seleccione fechas.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.seleccione-fechas-558e6a') })
     return
   }
 
@@ -385,7 +386,7 @@ const generateReport = async () => {
       pagination.value.rowsNumber = reportData.value.length
 
       if (reportData.value.length === 0) {
-        $q.notify({ type: 'info', message: 'Sin registros.', timeout: 2000 })
+        $q.notify({ type: 'info', message: i18nT('ui.sin-registros-200bae'), timeout: 2000 })
       } else {
         $q.notify({
           type: 'positive',
@@ -395,7 +396,7 @@ const generateReport = async () => {
       }
       scrollToCreditos()
     } else {
-      reportError.value = response.data.mensaje || 'Error API.'
+      reportError.value = response.data.mensaje || i18nT('ui.error-api-df86e0')
     }
   } catch (error) {
     console.error(error)
@@ -410,7 +411,7 @@ const exportToXLSX = () => {
   const visibleColumns = tablaCreditosRef.value?.obtenerColumnasVisibles() || []
   if (data.length === 0) return
 
-  $q.notify({ message: 'Preparando Excel...', color: 'green', icon: 'file_download' })
+  $q.notify({ message: i18nT('ui.preparando-excel-8a189e'), color: 'green', icon: 'file_download' })
   exportToXLSX_Reporte_Creditos(data, startDate.value, endDate.value, null, null, visibleColumns)
 }
 

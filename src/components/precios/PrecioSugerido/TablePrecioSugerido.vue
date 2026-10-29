@@ -5,7 +5,7 @@
       <q-card-section>
         <div class="row q-col-gutter-md items-center">
           <div class="col-12 col-md-4">
-            <span class="text-subtitle2 cm-text q-mb-xs db">Almacén</span>
+            <span class="text-subtitle2 cm-text q-mb-xs db">{{ $t('inventario.warehouse') }}</span>
             <q-select
               v-model="filtroAlmacen"
               :options="almacenes"
@@ -22,7 +22,7 @@
             </q-select>
           </div>
           <div class="col-12 col-md-4">
-            <span class="text-subtitle2 cm-text q-mb-xs db">Categoría</span>
+            <span class="text-subtitle2 cm-text q-mb-xs db">{{ $t('configProducto.categoriaProducto.types.categoria') }}</span>
             <q-select
               id="filtroCategoria"
               v-model="filtroscategoria"
@@ -41,7 +41,7 @@
             <q-btn
               color="primary"
               icon="picture_as_pdf"
-              label="Vista Previa PDF"
+              :label="$t('ui.vista-previa-pdf-9db3ed')"
               @click="onPrintReport"
               class="q-mt-md full-width-lt-md"
               id="btnPDFps"
@@ -60,7 +60,7 @@
           dense
           outlined
           debounce="300"
-          placeholder="Buscar producto, código..."
+          :placeholder="$t('ui.buscar-producto-codigo-fcc7a7')"
           bg-color="white"
           class="shadow-1 rounded-borders"
         >
@@ -95,7 +95,7 @@
             @click="editarProducto(props.row)"
             id="btnEditarPS"
           >
-            <q-tooltip content-class="bg-primary">Editar producto</q-tooltip>
+            <q-tooltip content-class="bg-primary">{{ $t('ui.editar-producto-c45766') }}</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -112,7 +112,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="column full-height">
         <q-card-section class="row items-center bg-primary text-white q-py-sm">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup />
         </q-card-section>
@@ -132,6 +132,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'src/boot/axios'
@@ -171,18 +172,18 @@ const categorias = ref([])
 // ])
 
 const columnas = [
-  { name: 'numero', label: 'N°', field: (row) => row.numero, align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'unidad', label: 'Medida', field: 'unidad', align: 'left' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: (row) => row.numero, align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'center' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'unidad', label: i18nT('ui.medida-dea00a'), field: 'unidad', align: 'left' },
   {
     name: 'precio',
-    label: 'Precio' + ' (' + currencyStore.simbolo + ')',
+    label: i18nT('ui.precio-18e070') + ' (' + currencyStore.simbolo + ')',
     field: 'precio',
     align: 'right',
     format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
-  { name: 'opciones', label: 'Opciones', field: 'id', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'id', align: 'center' },
 ]
 
 const filtrados = computed(() => {
@@ -248,7 +249,7 @@ const cargarCategoriaPrecio = async (dataOrEvent) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }

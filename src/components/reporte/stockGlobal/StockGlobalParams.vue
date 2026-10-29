@@ -3,7 +3,7 @@
     <q-card-section>
       <div class="row justify-center q-col-gutter-md">
         <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input
             :model-value="modelValueFecha"
             @update:model-value="$emit('update:modelValueFecha', $event)"
@@ -15,7 +15,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <label for="almacen">Almacén*</label>
+          <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
           <q-select
             :model-value="modelValueAlmacen"
             :options="opcionesAlmacenes"
@@ -40,7 +40,7 @@
 
       <div class="row justify-center q-mt-md">
         <!-- <q-btn color="primary" label="Generar Reporte" class="q-mr-sm" @click="$emit('generar')" /> -->
-        <q-btn color="primary" label="Vista previa del Reporte" @click="$emit('vistaPrevia')" />
+        <q-btn color="primary" :label="$t('ui.vista-previa-del-reporte-60d956')" @click="$emit('vistaPrevia')" />
       </div>
     </q-card-section>
   </div>

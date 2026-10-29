@@ -6,10 +6,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assignment" size="md" class="q-mr-sm" />
-          Autorizando Pedidos
+          {{ $t('ui.autorizando-pedidos-ebaa8c') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Autorizando Pedidos
+          {{ $t('ui.administracion-de-autorizando-pedidos-a2521c') }}
         </div>
       </div>
     </div>
@@ -17,25 +17,25 @@
       <q-form @submit.prevent="onSubmit">
         <div class="row justify-center q-col-gutter-x-md" id='filtrosFechas'>
           <div class="col-12 col-md-4">
-            <label for="fechaini">Fecha Inicial*</label>
+            <label for="fechaini">{{ $t('ui.fecha-inicial-2b461a') }}</label>
             <q-input type="date" v-model="fechai" id="fechaini" dense outlined />
           </div>
           <div class="col-12 col-md-4">
-            <label for="fechafin">Fecha Final*</label>
+            <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
             <q-input type="date" v-model="fechaf" id="fechafin" dense outlined />
           </div>
         </div>
 
         <div class="row justify-center q-mt-md">
           <div class="col-auto">
-            <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" id="datosPedido" />
-            <q-btn label="Vista previa del Reporte" color="primary" outline @click="vistaPrevia" id="pdfPedido"/>
+            <q-btn :label="$t('ui.generar-reporte-eeafce')" color="primary" type="submit" class="q-mr-sm" id="datosPedido" />
+            <q-btn :label="$t('ui.vista-previa-del-reporte-60d956')" color="primary" outline @click="vistaPrevia" id="pdfPedido"/>
           </div>
         </div>
       </q-form>
       <div class="row q-col-gutter-x-md flex justify-start" id="filtrosAlmacen">
         <div class="col-12 col-md-3">
-          <label for="almacen">Filtrar por Almacén</label>
+          <label for="almacen">{{ $t('ui.filtrar-por-almacen-f5828a') }}</label>
           <q-select id="almacen" v-model="almacen" :options="almacenes" clearable dense outlined>
             <template v-slot:append>
               <q-btn
@@ -48,7 +48,7 @@
                 :loading="recargandoAlmacenes"
                 @click.stop.prevent="recargarAlmacenes"
               >
-                <q-tooltip>Recargar almacenes</q-tooltip>
+                <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
               </q-btn>
             </template>
           </q-select>
@@ -58,19 +58,19 @@
         <q-btn
           color="primary"
           icon="refresh"
-          label="Recargar Tabla"
+          :label="$t('ui.recargar-tabla-4f363d')"
           outline
           no-caps
           id="btnRecargarTablaGestion"
           :loading="recargandoTabla"
           @click.stop.prevent="recargarTabla"
         >
-          <q-tooltip>Volver a cargar los pedidos</q-tooltip>
+          <q-tooltip>{{ $t('ui.volver-a-cargar-los-pedidos-efcd77') }}</q-tooltip>
         </q-btn>
       </div>
       <q-table
       id="tablaPedidos"
-        title="Pedidos"
+        :title="$t('ui.pedidos-6170d2')"
         :rows="filterPedido"
         :columns="columnas"
         row-key="id"
@@ -93,10 +93,10 @@
             <q-badge
               color="green"
               v-if="Number(props.row.autorizacion) === 1"
-              label="Autorizado"
+              :label="$t('ui.autorizado-b4fb49')"
               outline
             />
-            <q-badge color="red" v-else label="No Autorizado" outline />
+            <q-badge color="red" v-else :label="$t('ui.no-autorizado-988c4e')" outline />
           </q-td>
         </template>
         <template #body-cell-acciones="props">
@@ -107,17 +107,17 @@
 
             <template v-if="Number(props.row.autorizacion) === 2">
               <q-btn id="verDetalle" size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
-                ><q-tooltip>Ver Pedido</q-tooltip>
+                ><q-tooltip>{{ $t('ui.ver-pedido-87d476') }}</q-tooltip>
               </q-btn>
               <q-btn id="eliminarPedido" icon="delete" color="negative" dense flat @click="confirmDelete(props.row)" />
 
               <q-btn id="autorizarPedido" icon="toggle_off" dense flat color="grey" @click="toggleStatus(props.row)">
-                <q-tooltip>Autorizar Pedido</q-tooltip>
+                <q-tooltip>{{ $t('ui.autorizar-pedido-56cac3') }}</q-tooltip>
               </q-btn>
             </template>
             <template v-else>
               <q-btn id="verDetallePedido"  size="sm" icon="visibility" flat @click="verDetalle(props.row)" dense
-                ><q-tooltip>Ver Pedido</q-tooltip>
+                ><q-tooltip>{{ $t('ui.ver-pedido-87d476') }}</q-tooltip>
               </q-btn>
               <q-btn
                 id="enviarPedido"
@@ -128,7 +128,7 @@
                 @click="enviarPDFPorWhatsApp(props.row)"
                 dense
               >
-                <q-tooltip>Enviar PDF por WhatsApp</q-tooltip>
+                <q-tooltip>{{ $t('ui.enviar-pdf-por-whatsapp-6edec0') }}</q-tooltip>
               </q-btn>
             </template>
           </q-td>
@@ -139,7 +139,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -158,8 +158,8 @@
 
     <RegistrarAlmacenDialog
       v-model="ShowWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -167,6 +167,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed, watch } from 'vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -225,7 +226,7 @@ async function cargarAlmacenes() {
     filtrados.length > 0 ? (almacen.value = almacenes.value[0]) : (ShowWarningDialog.value = true)
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 
@@ -235,17 +236,17 @@ const redirectToAssignment = () => {
 
 // Datos de la tabla
 const columnas = [
-  { name: 'nro', label: 'N°', field: 'nro', align: 'center' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
+  { name: 'nro', label: i18nT('cotizacion.table.number'), field: 'nro', align: 'center' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'center' },
   { name: 'nropedido', label: 'Nro.Pedido', field: 'nropedido', align: 'center' },
-  { name: 'tipopedido', label: 'Tipo', field: 'tipopedido', align: 'center' },
-  { name: 'almacenorigen', label: 'Almacén Origen', field: 'almacenorigen', align: 'center' },
-  { name: 'almacen', label: 'Almacén Destino', field: 'almacen', align: 'center' },
-  { name: 'observacion', label: 'Observación', field: 'observacion', align: 'center' },
-  { name: 'autorizacion', label: 'Autorización', field: 'autorizacion', align: 'center' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'tipopedido', label: i18nT('configGeneral.divisas.table.type'), field: 'tipopedido', align: 'center' },
+  { name: 'almacenorigen', label: i18nT('ui.almacen-origen-d3b270'), field: 'almacenorigen', align: 'center' },
+  { name: 'almacen', label: i18nT('ui.almacen-destino-ae5ede'), field: 'almacen', align: 'center' },
+  { name: 'observacion', label: i18nT('ui.observacion-1d0d99'), field: 'observacion', align: 'center' },
+  { name: 'autorizacion', label: i18nT('ui.autorizacion-077400'), field: 'autorizacion', align: 'center' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 const rows = ref([])
@@ -259,7 +260,7 @@ const verDetalle = async (row) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedido  sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
   }
 }
@@ -278,7 +279,7 @@ const onSubmit = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -318,7 +319,7 @@ const getDatallePedido = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -340,7 +341,7 @@ function imprimirReporte() {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedido  sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
   }
 }
@@ -352,7 +353,7 @@ const vistaPrevia = () => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Pedidos  sin items',
+      message: i18nT('ui.pedidos-sin-items-1d275b'),
     })
   }
 }
@@ -363,14 +364,14 @@ const toggleStatus = async (item) => {
     if (!responsev.data.tieneDetalle) {
       $q.notify({
         type: 'negative',
-        message: 'El pedido está vacío y no puede ser confirmado.',
+        message: i18nT('ui.el-pedido-esta-vacio-y-no-puede-ser-confirmado-90bd97'),
       })
       return
     }
 
     $q.dialog({
-      title: 'Confirmar',
-      message: '¿Deseas confirmar este pedido?',
+      title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+      message: i18nT('ui.deseas-confirmar-este-pedido-3cf2ec'),
       cancel: true,
       persistent: true,
     }).onOk(async () => {
@@ -408,7 +409,7 @@ const toggleStatus = async (item) => {
         console.error('Error al autorizar el pedido:', error)
         $q.notify({
           type: 'negative',
-          message: 'No se pudo autorizar el pedido. Intenta de nuevo.',
+          message: i18nT('ui.no-se-pudo-autorizar-el-pedido-intenta-de-nuevo-234885'),
         })
       }
     })
@@ -416,14 +417,14 @@ const toggleStatus = async (item) => {
     console.error('Error al verificar detalle del pedido:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al verificar si el pedido tiene productos.',
+      message: i18nT('ui.error-al-verificar-si-el-pedido-tiene-productos-1025d8'),
     })
   }
 }
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Pedido?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-pedido-94c79f')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -464,7 +465,7 @@ const confirmDelete = (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -476,7 +477,7 @@ const enviarPDFPorWhatsApp = async (row) => {
   if (!detallePedido.value) {
     $q.notify({
       type: 'negative',
-      message: 'Pedido sin items',
+      message: i18nT('ui.pedido-sin-items-16845d'),
     })
     return
   }
@@ -499,8 +500,8 @@ const enviarPDFPorWhatsApp = async (row) => {
 
   const columns = [
     { header: 'N°', dataKey: 'indice' },
-    { header: 'Descripción', dataKey: 'descripcion' },
-    { header: 'Cantidad', dataKey: 'cantidad' },
+    { header: i18nT('configuracion.servicios.table.descripcion'), dataKey: 'descripcion' },
+    { header: i18nT('ui.cantidad-b5b6f8'), dataKey: 'cantidad' },
   ]
 
   autoTable(doc, {
@@ -533,7 +534,7 @@ const enviarPDFPorWhatsApp = async (row) => {
         doc.text(`${detallePlano[0].almacen}`, 5, 38)
         doc.text(detallePlano[0].empresa.direccion, 5, 41)
         doc.text(detallePlano[0].empresa.email, 5, 44)
-        doc.text('Fecha de Orden: ' + cambiarFormatoFecha(detallePlano[0].fecha), 5, 47)
+        doc.text(i18nT('ui.fecha-de-orden-57b4f3') + cambiarFormatoFecha(detallePlano[0].fecha), 5, 47)
 
         doc
           .setFontSize(7)
@@ -542,7 +543,7 @@ const enviarPDFPorWhatsApp = async (row) => {
         doc.setFontSize(6).setFont(undefined, 'normal')
         doc.text(detallePlano[0].usuarios[0].usuario, 200, 38, { align: 'right' })
         doc.text(detallePlano[0].usuarios[0].cargo, 200, 41, { align: 'right' })
-        doc.text('Tipo ' + tipo[detallePlano[0].tipopedido], 200, 44, { align: 'right' })
+        doc.text(i18nT('configGeneral.divisas.table.type') + tipo[detallePlano[0].tipopedido], 200, 44, { align: 'right' })
       }
     },
   })
@@ -579,7 +580,7 @@ const enviarPDFPorWhatsApp = async (row) => {
     throw new Error(result)
   }
   if (!response.ok) {
-    throw new Error(result || 'Error al subir el PDF')
+    throw new Error(result || i18nT('ui.error-al-subir-el-pdf-5a202e'))
   }
 
   // WhatsApp después de la subida exitosa
@@ -594,7 +595,7 @@ const recargarAlmacenes = async () => {
   recargandoAlmacenes.value = true
   try {
     await cargarAlmacenes()
-    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.almacenes-recargados-5f8af7'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar almacenes:', err)
   } finally {
@@ -607,7 +608,7 @@ const recargarTabla = async () => {
   recargandoTabla.value = true
   try {
     await onSubmit()
-    $q.notify({ type: 'positive', message: 'Tabla recargada', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.tabla-recargada-a604bf'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar tabla:', err)
   } finally {

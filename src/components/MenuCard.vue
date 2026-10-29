@@ -15,7 +15,7 @@
       <q-item>
         <q-item-section></q-item-section>
         <q-item-section>
-          <q-btn flat :style="{ color }" label="ok" :to="to" v-if="to" />
+          <q-btn flat :style="{ color }" :label="$t('ui.ok-7a85f4')" :to="to" v-if="to" />
         </q-item-section>
       </q-item>
     </q-card>

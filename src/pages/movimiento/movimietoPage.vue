@@ -34,7 +34,7 @@
     <q-dialog v-model="showDetalleMovimiento" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Detalle Movimiento</div>
+          <div>{{ $t('ui.detalle-movimiento-228fe6') }}</div>
           <q-btn icon="close" @click="cancelarDetalle" flat dense round />
         </q-card-section>
         <q-card-section>
@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue' // Import computed for formDialogTitle viewProductDetails
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -103,16 +104,16 @@ async function fetchMovimientos() {
       // or ensure type consistency. '===' is generally safer.
       almacenOrigenName:
         movementStore.originStores.find((s) => s.value == mov.idalmacenorigen)?.label ||
-        'Desconocido',
+        i18nT('ui.desconocido-452c8a'),
       almacenDestinoName:
         movementStore.destinationStores.find((s) => s.value == mov.idalmacendestino)?.label ||
-        'Desconocido',
+        i18nT('ui.desconocido-452c8a'),
       autorizacionStatus: mov.autorizacion == 1 ? 'Autorizado' : 'Pendiente', // Assuming 1 means authorized
     }))
     console.log('Mapped movimientosData for table:', movimientosData.value)
   } catch (error) {
     console.error('Error al cargar los movimientos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los movimientos.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-movimientos-fec9c2') })
   } finally {
     isLoadingMovimientos.value = false
   }
@@ -137,7 +138,7 @@ const handleAddRecord = () => {
 
 const handleGenerateReport = () => {
   $q.notify({
-    message: 'Generando Reporte General de Movimientos...',
+    message: i18nT('ui.generando-reporte-general-de-movimientos-922769'),
     color: 'green-7',
     icon: 'picture_as_pdf',
   })
@@ -199,7 +200,7 @@ const handleEditRecord = (row) => {
 
 const handleDeleteRecord = async (row) => {
   $q.dialog({
-    title: 'Confirmar Eliminación',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
     message: `¿Está seguro de que desea eliminar el movimiento con N°: ${row.id}?`,
     cancel: true,
     persistent: true,
@@ -210,7 +211,7 @@ const handleDeleteRecord = async (row) => {
       await fetchMovimientos() // Refresh the table data
     } catch (error) {
       console.error('Error al eliminar movimiento:', error)
-      $q.notify({ type: 'negative', message: 'Error al eliminar el movimiento.' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-eliminar-el-movimiento-ae0ae5') })
     }
   })
 }
@@ -219,8 +220,8 @@ const handleToggleStatus = async (row) => {
   console.log(row)
 
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Deseas Confirmar Este Movimiento?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.deseas-confirmar-este-movimiento-306c68'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -289,7 +290,7 @@ const handleToggleStatus = async (row) => {
       }
     } catch (error) {
       console.error('Error al ejecutar accion:', error)
-      $q.notify({ type: 'negative', message: 'No se pudieron autorizar el pedido' })
+      $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-autorizar-el-pedido-02d91c') })
     } finally {
       isLoadingMovimientos.value = false
     }
@@ -309,17 +310,17 @@ const handleFormSubmit = async (formDataFromChild) => {
     if (formDataFromChild.isEditing) {
       // It's an edit operation
       await api.post(``, formData) // Replace with your actual API endpoint
-      $q.notify({ type: 'positive', message: 'Movimiento actualizado correctamente.' })
+      $q.notify({ type: 'positive', message: i18nT('ui.movimiento-actualizado-correctamente-b89cb6') })
     } else {
       // It's an add operation
       await api.post('', formData) // Replace with your actual API endpoint
-      $q.notify({ type: 'positive', message: 'Movimiento registrado correctamente.' })
+      $q.notify({ type: 'positive', message: i18nT('ui.movimiento-registrado-correctamente-63c703') })
     }
     showMovimientoFormDialog.value = false // Close the dialog
     await fetchMovimientos() // Refresh the table data
   } catch (error) {
     console.error('Error al guardar el movimiento:', error)
-    $q.notify({ type: 'negative', message: 'Error al guardar el movimiento.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-guardar-el-movimiento-056b56') })
   }
 }
 
@@ -370,7 +371,7 @@ onMounted(async () => {
     console.error('Error durante la carga inicial de almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar las opciones de almacenes.',
+      message: i18nT('ui.no-se-pudieron-cargar-las-opciones-de-almacenes-5ab8a6'),
     })
   }
 

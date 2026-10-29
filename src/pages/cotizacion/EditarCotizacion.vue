@@ -11,8 +11,8 @@
                 <q-icon name="request_quote" size="28px" />
               </div>
               <div>
-                <h1 class="page-title text-grey-10">Editar Cotización</h1>
-                <div class="page-subtitle text-grey-6">Gestión y actualización de cotizaciones</div>
+                <h1 class="page-title text-grey-10">{{ $t('ui.editar-cotizacion-24dc81') }}</h1>
+                <div class="page-subtitle text-grey-6">{{ $t('ui.gestion-y-actualizacion-de-cotizaciones-021f27') }}</div>
               </div>
             </div>
           </div>
@@ -24,7 +24,7 @@
         <q-card-section class="card-header">
           <div class="flex items-center gap-2">
             <q-icon name="manage_accounts" size="20px" class="text-white" data-theme-allow />
-            <span class="card-header-title">Datos del Cliente y Configuración</span>
+            <span class="card-header-title">{{ $t('ui.datos-del-cliente-y-configuracion-525339') }}</span>
           </div>
         </q-card-section>
 
@@ -34,14 +34,14 @@
             <div class="row q-col-gutter-xl q-mb-xl">
               <div class="col-12 col-md-3" id="tipoOperacionCotizacion">
                 <div class="field-label">
-                  Tipo de Operación <span class="required-star">*</span>
+                  {{ $t('ui.tipo-de-operacion-db446a') }} <span class="required-star">*</span>
                 </div>
                 <q-select
                   v-model="tipoOperacion"
                   :options="optionOperacion"
                   id="tipooperacion"
                   map-options
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   @update:model-value="handleTipoOperacionChange"
                   outlined
                   dense
@@ -53,12 +53,12 @@
               </div>
 
               <div class="col-12 col-md-3" id="fechaCotizacion">
-                <div class="field-label">Fecha <span class="required-star">*</span></div>
+                <div class="field-label">{{ $t('cotizacion.table.date') }} <span class="required-star">*</span></div>
                 <q-input
                   v-model="fecha"
                   id="fecha"
                   type="date"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   @update:model-value="cambioFecha"
                   outlined
                   dense
@@ -69,7 +69,7 @@
               </div>
 
               <div class="col-12 col-md-6" id="clienteCotizacion">
-                <div class="field-label">Cliente <span class="required-star">*</span></div>
+                <div class="field-label">{{ $t('ventas.client') }} <span class="required-star">*</span></div>
                 <div class="row no-wrap items-start gap-2">
                   <q-select
                     class="col saas-input"
@@ -85,7 +85,7 @@
                     @update:model-value="elegirUnCliente"
                     option-value="id"
                     option-label="display"
-                    :rules="[(val) => !!val || 'Campo requerido']"
+                    :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                     outlined
                     dense
                     bg-color="white"
@@ -93,7 +93,7 @@
                   >
                     <template v-slot:no-option>
                       <q-item>
-                        <q-item-section class="text-grey">No hay resultados</q-item-section>
+                        <q-item-section class="text-grey">{{ $t('ui.no-hay-resultados-c83a44') }}</q-item-section>
                       </q-item>
                     </template>
                   </q-select>
@@ -106,7 +106,7 @@
                       icon="person_add"
                       @click="RegistrarCliente"
                     >
-                      <q-tooltip class="tooltip-custom"> Registrar Nuevo Cliente </q-tooltip>
+                      <q-tooltip class="tooltip-custom"> {{ $t('ui.registrar-nuevo-cliente-e19240') }} </q-tooltip>
                     </q-btn>
                   </div>
                 </div>
@@ -116,7 +116,7 @@
 
             <div class="row q-col-gutter-xl">
               <div class="col-12 col-md-6" id="sucursalCotizacion">
-                <div class="field-label">Sucursal <span class="required-star">*</span></div>
+                <div class="field-label">{{ $t('ui.sucursal-07d782') }} <span class="required-star">*</span></div>
                 <q-select
                   v-model="selectedSucursal"
                   use-input
@@ -130,7 +130,7 @@
                   @update:model-value="elegirUnaSucursal"
                   option-value="id"
                   option-label="nombre"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   outlined
                   dense
                   bg-color="white"
@@ -139,7 +139,7 @@
                 >
                   <template v-slot:no-option>
                     <q-item>
-                      <q-item-section class="text-grey">No hay resultados</q-item-section>
+                      <q-item-section class="text-grey">{{ $t('ui.no-hay-resultados-c83a44') }}</q-item-section>
                     </q-item>
                   </template>
                 </q-select>
@@ -162,7 +162,7 @@
           <q-form ref="cotizacionFormRef">
             <div class="row q-col-gutter-xl">
               <div class="col-12 col-md-4" id="almacenCotizacion">
-                <div class="field-label">Almacén origen <span class="required-star">*</span></div>
+                <div class="field-label">{{ $t('ui.almacen-origen-3ef997') }} <span class="required-star">*</span></div>
                 <q-select
                   v-model="filtroAlmacenCO"
                   :options="almacenesOptions"
@@ -171,7 +171,7 @@
                   map-options
                   option-value="idalmacen"
                   option-label="almacen"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   @update:model-value="listaCategoria"
                   outlined
                   dense
@@ -183,7 +183,7 @@
 
               <div class="col-12 col-md-4" id="categoriaCotizacion">
                 <div class="field-label">
-                  Categoría de precio <span class="required-star">*</span>
+                  {{ $t('ui.categoria-de-precio-f572ba') }} <span class="required-star">*</span>
                 </div>
                 <q-select
                   v-model="filtroCategoriaCO"
@@ -193,7 +193,7 @@
                   map-options
                   option-value="id"
                   option-label="nombre"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   outlined
                   dense
                   bg-color="white"
@@ -203,7 +203,7 @@
               </div>
 
               <div class="col-12 col-md-4" id="puntoVentaCotizacion">
-                <div class="field-label">Punto Venta <span class="required-star">*</span></div>
+                <div class="field-label">{{ $t('ui.punto-venta-612259') }} <span class="required-star">*</span></div>
                 <q-select
                   v-model="puntoVenta"
                   :options="puntosVenta"
@@ -212,7 +212,7 @@
                   map-options
                   option-value="value"
                   option-label="label"
-                  :rules="[(val) => !!val || 'Campo requerido']"
+                  :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                   outlined
                   dense
                   bg-color="white"
@@ -232,7 +232,7 @@
       <q-card-section class="card-header">
         <div class="flex items-center gap-2">
           <q-icon name="shopping_cart_checkout" size="20px" class="text-white" data-theme-allow />
-          <span class="card-header-title">Añadir Productos</span>
+          <span class="card-header-title">{{ $t('ui.anadir-productos-fc64fa') }}</span>
         </div>
       </q-card-section>
 
@@ -242,13 +242,13 @@
           <div class="col-12 col-md-4" id="productoCotizacion">
             <div class="flex justify-between items-center q-mb-xs">
               <div class="field-label">
-                Producto o Servicio <span class="required-star">*</span>
+                {{ $t('ui.producto-o-servicio-2b9fe2') }} <span class="required-star">*</span>
               </div>
               <q-checkbox
                 v-if="esProductoUnico"
                 v-model="registrarComoProductoUnico"
                 size="xs"
-                label="Producto Único"
+                :label="$t('ui.producto-unico-b16503')"
                 color="secondary"
                 class="unique-checkbox"
               />
@@ -273,14 +273,14 @@
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey-6">No hay resultados</q-item-section>
+                  <q-item-section class="text-grey-6">{{ $t('ui.no-hay-resultados-c83a44') }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
           </div>
 
           <div class="col-12 col-md-2" id="stockCotizacion">
-            <div class="field-label">Stock Actual</div>
+            <div class="field-label">{{ $t('ui.stock-actual-a1d4ec') }}</div>
             <q-input
               id="stock"
               v-model="cantidaddisponibleCO"
@@ -299,12 +299,12 @@
           </div>
 
           <div class="col-12 col-md-2" id="cantidadCotizacion">
-            <div class="field-label">Cantidad <span class="required-star">*</span></div>
+            <div class="field-label">{{ $t('ui.cantidad-b5b6f8') }} <span class="required-star">*</span></div>
             <q-input
               id="cantidad"
               v-model.number="cantidadCO"
               type="number"
-              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              :rules="[(val) => val > 0 || $t('ui.debe-ser-mayor-a-0-48dea0')]"
               :readonly="esProductoUnico && registrarComoProductoUnico"
               required
               outlined
@@ -316,12 +316,12 @@
           </div>
 
           <div class="col-12 col-md-3" id="precioCotizacion">
-            <div class="field-label">Precio unitario <span class="required-star">*</span></div>
+            <div class="field-label">{{ $t('ui.precio-unitario-d3780c') }} <span class="required-star">*</span></div>
             <q-input
               id="precio"
               v-model.number="precioCO"
               type="number"
-              :rules="[(val) => val > 0 || 'Debe ser mayor a 0']"
+              :rules="[(val) => val > 0 || $t('ui.debe-ser-mayor-a-0-48dea0')]"
               required
               outlined
               :readonly="!permisosStore.tienePermiso('editarprecioventa')"
@@ -347,7 +347,7 @@
               :disable="!canAddProduct"
               @click="anadirProductoACarrito"
             >
-              <q-tooltip class="tooltip-secondary"> Añadir al carrito </q-tooltip>
+              <q-tooltip class="tooltip-secondary"> {{ $t('ui.anadir-al-carrito-6f31c8') }} </q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -365,7 +365,7 @@
       <q-card-section class="summary-header">
         <div class="flex items-center gap-2">
           <q-icon name="receipt_long" size="18px" class="text-primary" />
-          <span class="summary-title">Resumen de Cotización</span>
+          <span class="summary-title">{{ $t('ui.resumen-de-cotizacion-eb51dd') }}</span>
         </div>
       </q-card-section>
 
@@ -411,7 +411,7 @@
               </div>
               <div class="additional-note" v-ripple @click="openNoteEditor(props.row)">
                 <q-icon name="edit_note" size="14px" />
-                <span>{{ props.row.descripcionAdicional || 'Añadir nota adicional...' }}</span>
+                <span>{{ props.row.descripcionAdicional || $t('ui.anadir-nota-adicional-eda646') }}</span>
               </div>
               <q-popup-edit
                 v-model="props.row.descripcionAdicional"
@@ -457,7 +457,7 @@
                 @click="eliminarProductoCarrito(props.row.idproductoalmacen)"
                 class="delete-btn"
               >
-                <q-tooltip class="tooltip-negative">Quitar producto</q-tooltip>
+                <q-tooltip class="tooltip-negative">{{ $t('ui.quitar-producto-328479') }}</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -483,7 +483,7 @@
 
         <template v-slot:bottom-row>
           <q-tr class="summary-row subtotal">
-            <q-td colspan="6" class="text-right summary-label">SUBTOTAL:</q-td>
+            <q-td colspan="6" class="text-right summary-label">{{ $t('ui.subtotal-b1b3d2') }}</q-td>
             <q-td class="text-right summary-value">
               {{ decimas(carritoECO.subtotal) }}
               <span class="currency-symbol">{{ divisaActiva.tipo }}</span>
@@ -492,7 +492,7 @@
           </q-tr>
 
           <q-tr class="summary-row discount" id="descuentoCotizacion">
-            <q-td colspan="6" class="text-right summary-label">DESCUENTO:</q-td>
+            <q-td colspan="6" class="text-right summary-label">{{ $t('ui.descuento-c7f95d') }}</q-td>
             <q-td class="text-right">
               <q-input
                 v-model.number="carritoECO.descuento"
@@ -517,7 +517,7 @@
           </q-tr>
 
           <q-tr class="summary-row total">
-            <q-td colspan="6" class="text-right total-label">TOTAL GENERAL:</q-td>
+            <q-td colspan="6" class="text-right total-label">{{ $t('ui.total-general-f6e204') }}</q-td>
             <q-td class="text-right total-amount">
               {{ decimas(carritoECO.ventatotal) }}
               <span class="total-currency">{{ divisaActiva.tipo }}</span>
@@ -530,17 +530,17 @@
       <!-- Action Buttons -->
       <q-card-section class="action-section">
         <div class="row justify-end items-center q-gutter-md">
-          <q-btn label="Cancelar" color="red" outline @click="$emit('cancelarEdicion')" />
+          <q-btn :label="$t('common.cancel')" color="red" outline @click="$emit('cancelarEdicion')" />
           <q-btn
             outline
             color="primary"
             icon="draw"
             @click="RegistrarFirma"
-            label="Firma del Cliente"
+            :label="$t('ui.firma-del-cliente-581c1d')"
             class="action-btn-outline"
           />
           <q-btn
-            label="Guardar Cotización"
+            :label="$t('ui.guardar-cotizacion-8234d5')"
             color="primary"
             icon="task_alt"
             size="lg"
@@ -573,7 +573,7 @@
               <q-icon name="payments" class="text-primary" size="24px" />
             </div>
             <span class="text-h6 text-weight-bold" style="font-family: 'Inter', sans-serif">
-              Método de Pago
+              {{ $t('ui.metodo-de-pago-112f5f') }}
             </span>
           </div>
           <q-btn
@@ -601,8 +601,8 @@
               style="border: 1px solid var(--cm-border); font-family: 'Inter', sans-serif"
               @update:model-value="handleTipoPagoGeneralChange"
               :options="[
-                { label: 'Pago Efectivo', value: false, icon: 'payments' },
-                { label: 'Pago a Crédito', value: true, icon: 'credit_score' },
+                { label: $t('ui.pago-efectivo-a4d460'), value: false, icon: 'payments' },
+                { label: $t('ui.pago-a-credito-95f7d7'), value: true, icon: 'credit_score' },
               ]"
             />
           </div>
@@ -612,7 +612,7 @@
               class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
               style="width: fit-content; border-left: 4px solid #1976d2"
             >
-              MODALIDAD: EFECTIVO
+              {{ $t('ui.modalidad-efectivo-045d82') }}
             </div>
 
             <div class="q-gutter-x-xl q-mb-xl row justify-center">
@@ -620,14 +620,14 @@
                 v-model="variablePago"
                 val="directo"
                 color="positive"
-                label="Pago Único"
+                :label="$t('ui.pago-unico-fc784b')"
                 class="text-weight-bolder text-subtitle2"
               />
               <q-radio
                 v-model="variablePago"
                 val="dividido"
                 color="orange-8"
-                label="Pago Dividido"
+                :label="$t('ui.pago-dividido-1f5506')"
                 class="text-weight-bolder text-subtitle2"
               />
             </div>
@@ -638,7 +638,7 @@
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
                 >
-                  Método de pago <span class="text-negative">*</span>
+                  {{ $t('ui.metodo-de-pago-21ff24') }} <span class="text-negative">*</span>
                 </label>
                 <q-select
                   v-model="metodoPago"
@@ -648,7 +648,7 @@
                   :options="metodosPagos"
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Seleccione un método de pago']"
+                  :rules="[(val) => !!val || $t('ui.seleccione-un-metodo-de-pago-77a850')]"
                   class="premium-input"
                 >
                   <template v-slot:prepend>
@@ -667,7 +667,7 @@
               >
                 <div class="col-12 col-md-5">
                   <label class="text-weight-bold cm-text q-mb-xs block text-caption"
-                    >Método *</label
+                    >{{ $t('ui.metodo-9d5bbb') }}</label
                   >
                   <q-select
                     v-model="payment.metodoPago"
@@ -677,13 +677,13 @@
                     :options="metodosPagos"
                     option-label="label"
                     option-value="value"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                   />
                 </div>
                 <div class="col-12 col-md-3">
                   <label class="text-weight-bold cm-text q-mb-xs block text-caption"
-                    >Monto ({{ divisaActiva.tipo }})</label
+                    >{{ $t('ui.monto-154bf6') }}{{ divisaActiva.tipo }})</label
                   >
                   <q-input
                     v-model="payment.monto"
@@ -692,13 +692,13 @@
                     outlined
                     bg-color="grey-1"
                     @update:model-value="calculateRemainingAmount(index)"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                   />
                 </div>
                 <div class="col-12 col-md-3">
                   <label class="text-weight-bold cm-text q-mb-xs block text-caption"
-                    >Porcentaje (%)</label
+                    >{{ $t('ui.porcentaje-452cef') }}</label
                   >
                   <q-input
                     v-model="payment.porcentaje"
@@ -707,7 +707,7 @@
                     outlined
                     bg-color="grey-1"
                     @update:model-value="calculateAmountFromPercentage(index)"
-                    :rules="[(val) => !!val || 'Requerido']"
+                    :rules="[(val) => !!val || $t('common.required')]"
                     hide-bottom-space
                   />
                 </div>
@@ -727,7 +727,7 @@
 
               <div class="flex justify-end q-mt-md">
                 <q-btn
-                  label="Agregar Otro Pago"
+                  :label="$t('ui.agregar-otro-pago-cd8acf')"
                   icon="add"
                   color="positive"
                   outline
@@ -750,11 +750,11 @@
                 </template>
                 <div class="row q-col-gutter-x-xl text-subtitle2">
                   <div>
-                    <span class="cm-text-muted text-caption uppercase block">Total Pagado:</span>
+                    <span class="cm-text-muted text-caption uppercase block">{{ $t('ui.total-pagado-77d3ef') }}</span>
                     <span class="text-h6">{{ totalPaidAmount.toFixed(2) }}</span>
                   </div>
                   <div>
-                    <span class="cm-text-muted text-caption uppercase block">Monto Restante:</span>
+                    <span class="cm-text-muted text-caption uppercase block">{{ $t('ui.monto-restante-4cba22') }}</span>
                     <span class="text-h6" :class="remainingAmount < 0 ? 'text-negative' : ''">
                       {{ remainingAmount.toFixed(2) }}
                     </span>
@@ -771,7 +771,7 @@
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                 style="font-size: 13px"
               >
-                Seleccione Caja o Banco <span class="text-negative">*</span>
+                {{ $t('ui.seleccione-caja-o-banco-b3521c') }} <span class="text-negative">*</span>
               </label>
 
               <q-select
@@ -783,7 +783,7 @@
                 emit-value
                 map-options
                 class="premium-input"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="positive" />
@@ -817,14 +817,14 @@
               class="text-subtitle1 text-weight-bold q-mb-lg text-primary flex items-center q-px-md bg-blue-50 q-py-sm rounded-borders shadow-1"
               style="width: fit-content; border-left: 4px solid #1976d2"
             >
-              MODALIDAD: CRÉDITO
+              {{ $t('ui.modalidad-credito-456d32') }}
             </div>
             <div class="row q-col-gutter-lg">
               <div class="col-12 col-md-6">
                 <label
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
-                  >Cantidad de pagos *</label
+                  >{{ $t('ui.cantidad-de-pagos-722c7f') }}</label
                 >
                 <q-input
                   v-model="carritoECO.cantidadPagos"
@@ -833,7 +833,7 @@
                   dense
                   outlined
                   @update:model-value="(calculatePayments(), calculateDueDate())"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                 >
                   <template v-slot:prepend
                     ><q-icon name="format_list_numbered" color="primary"
@@ -845,7 +845,7 @@
                 <label
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
-                  >Monto por pago *</label
+                  >{{ $t('ui.monto-por-pago-8425d6') }}</label
                 >
                 <q-input
                   v-model="carritoECO.montoPagos"
@@ -866,7 +866,7 @@
                 <label
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
-                  >Frecuencia *</label
+                  >{{ $t('ui.frecuencia-679fe3') }}</label
                 >
                 <q-select
                   v-model="carritoECO.periodo"
@@ -888,7 +888,7 @@
                 <label
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
-                  >Plazo total (días) *</label
+                  >{{ $t('ui.plazo-total-dias-39b2f5') }}</label
                 >
                 <q-input
                   v-model="carritoECO.plazoPersonalizado"
@@ -896,7 +896,7 @@
                   dense
                   outlined
                   @update:model-value="calculateDueDate"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                 >
                   <template v-slot:prepend
                     ><q-icon name="edit_calendar" color="primary"
@@ -908,7 +908,7 @@
                 <label
                   class="text-weight-bold cm-text q-mb-sm block text-uppercase"
                   style="font-size: 13px"
-                  >Fecha límite *</label
+                  >{{ $t('ui.fecha-limite-031465') }}</label
                 >
                 <q-input
                   v-model="carritoECO.fechaLimite"
@@ -932,14 +932,14 @@
         <q-card-actions align="right" class="q-pa-lg cm-surface shrink-0 shadow-up-1">
           <q-btn
             flat
-            label="Cancelar"
+            :label="$t('common.cancel')"
             color="grey-8"
             v-close-popup
             class="q-px-md text-weight-bold"
           />
           <q-btn
             unelevated
-            label="Confirmar Cotización"
+            :label="$t('ui.confirmar-cotizacion-b27d2d')"
             color="primary"
             icon="task_alt"
             class="q-px-xl text-weight-bolder shadow-3"
@@ -965,8 +965,7 @@
       <q-card class="q-pa-none shadow-10" style="height: 100%; max-width: 100%; border-radius: 0">
         <q-card-section class="row items-center q-pb-none bg-dark text-white q-py-sm">
           <div class="text-h6 flex items-center q-px-sm">
-            <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> Vista previa de
-            PDF
+            <q-icon name="picture_as_pdf" class="q-mr-sm text-red-4" size="md" /> {{ $t('ui.vista-previa-de-pdf-978f4e') }}
           </div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup class="bg-grey-8" size="sm" />
@@ -1004,16 +1003,16 @@
             <q-icon name="check" size="40px" color="positive" />
           </div>
           <div class="text-h6 text-weight-bolder" style="letter-spacing: 0.5px">
-            ¡Cotización Exitosa!
+            {{ $t('ui.cotizacion-exitosa-10d1c0') }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-pa-xl text-center cm-surface">
           <div class="text-body1 cm-text q-mb-md text-weight-medium" style="font-size: 16px">
-            El comprobante ha sido generado y guardado correctamente en el sistema.
+            {{ $t('ui.el-comprobante-ha-sido-generado-y-guardado-correctam-50d0b1') }}
           </div>
           <div class="text-subtitle2 text-grey-7" style="line-height: 1.5">
-            ¿Desea enviar una copia en formato PDF al correo electrónico del cliente asociado?
+            {{ $t('ui.desea-enviar-una-copia-en-formato-pdf-al-correo-elec-00d095') }}
           </div>
         </q-card-section>
 
@@ -1022,7 +1021,7 @@
         <q-card-actions align="center" class="q-pa-md bg-grey-1" style="border-top: 1px solid #eee">
           <q-btn
             flat
-            label="No, gracias"
+            :label="$t('ui.no-gracias-ec7892')"
             color="grey-7"
             @click="cancelar()"
             class="q-px-md text-weight-bold"
@@ -1030,7 +1029,7 @@
           />
           <q-btn
             unelevated
-            label="Enviar PDF por Correo"
+            :label="$t('ui.enviar-pdf-por-correo-1a3769')"
             color="positive"
             icon="send"
             class="q-px-md text-weight-bold shadow-3 q-ml-sm"
@@ -1047,6 +1046,7 @@
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api, apiCt } from 'src/boot/axios'
@@ -1120,18 +1120,18 @@ const leyendaFacturaActiva = reactive({ id: 0, codigosin: 0 }) // Aunque no se u
 const leyendasCotizacion = ref([]) // Para el aviso en el comprobante
 
 // Tipo de operación: cotizacion o venta
-const tipoOperacion = ref({ value: 2, label: 'Cotización Normal' })
+const tipoOperacion = ref({ value: 2, label: i18nT('ui.cotizacion-normal-a2a950') })
 const optionOperacion = ref([
-  { value: 0, label: 'Cotización Normal' },
-  { value: 1, label: 'Cotización Preferencial' },
+  { value: 0, label: i18nT('ui.cotizacion-normal-a2a950') },
+  { value: 1, label: i18nT('ui.cotizacion-preferencial-cc346c') },
 ])
 
 const periodOptions = [
-  { label: 'Personalizado', value: 0 },
-  { label: '15 días', value: 15 },
-  { label: '30 días', value: 30 },
-  { label: '60 días', value: 60 },
-  { label: '90 días', value: 90 },
+  { label: i18nT('ui.personalizado-738665'), value: 0 },
+  { label: i18nT('ui.15-dias-977c82'), value: 15 },
+  { label: i18nT('ui.30-dias-7f2d58'), value: 30 },
+  { label: i18nT('ui.60-dias-376f5a'), value: 60 },
+  { label: i18nT('ui.90-dias-a64b09'), value: 90 },
 ]
 
 // Datos del formulario
@@ -1202,7 +1202,7 @@ const RegistrarFirma = () => {
   } else {
     $q.notify({
       type: 'warning',
-      message: 'Por favor, selecciona un cliente antes de continuar.',
+      message: i18nT('ui.por-favor-selecciona-un-cliente-antes-de-continuar-5422d3'),
       position: 'top',
     })
   }
@@ -1219,7 +1219,7 @@ const alTerminarFirma = (respuesta) => {
   // 3. Notificación de Quasar (Feedback visual)
   $q.notify({
     type: 'positive',
-    message: 'Documento firmado correctamente',
+    message: i18nT('ui.documento-firmado-correctamente-04a2cf'),
     caption: `ID de Firma: ${respuesta.id_firma || 'N/A'}`,
     position: 'top-right',
   })
@@ -1275,28 +1275,28 @@ const calculateDueDate = () => {
 const carritoColumns = [
   { name: 'exp', label: '', align: 'left' },
 
-  { name: 'num', label: 'N°', align: 'left', field: 'num' },
-  { name: 'codigo', label: 'Código', align: 'center', field: 'codigo' },
-  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
+  { name: 'num', label: i18nT('cotizacion.table.number'), align: 'left', field: 'num' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), align: 'center', field: 'codigo' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), align: 'left', field: 'descripcion' },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     align: 'center',
     field: (row) => decimas(row.cantidad),
   },
   {
     name: 'precio',
-    label: 'Precio unitario',
+    label: i18nT('ui.precio-unitario-d3780c'),
     align: 'center',
     field: (row) => decimas(row.precio),
   },
   {
     name: 'total',
-    label: 'Total',
+    label: i18nT('ventas.total'),
     align: 'center',
     field: (row) => decimas(redondear(parseFloat(row.cantidad) * parseFloat(row.precio))),
   },
-  { name: 'options', label: 'Opciones', align: 'center', field: 'options' },
+  { name: 'options', label: i18nT('configGeneral.divisas.table.options'), align: 'center', field: 'options' },
 ]
 
 // Columnas para la tabla del comprobante
@@ -1597,7 +1597,7 @@ async function listaProductosDisponibles() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   if (!idempresa) {
-    $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-no-se-pudo-obtener-la-empresa-bc48c7') })
     return
   }
   if (!idporcentajeventa.value) {
@@ -1642,7 +1642,7 @@ async function listaCLientes() {
   const contenidousuario = await getUserData()
   const idempresa = contenidousuario?.empresa?.idempresa
   if (!idempresa) {
-    $q.notify({ type: 'negative', message: 'Error: No se pudo obtener la empresa.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-no-se-pudo-obtener-la-empresa-bc48c7') })
     return
   }
   const endpoint = `listaCliente/${idempresa}`
@@ -1676,7 +1676,7 @@ async function selectSucursal(clientId) {
     if (data.length === 0) {
       $q.notify({
         type: 'info',
-        message: 'No existen sucursales registradas del cliente seleccionado.',
+        message: i18nT('ui.no-existen-sucursales-registradas-del-cliente-selecc-a35ef7'),
       })
       sucursalesOptions.value = []
       selectedSucursal.value = null
@@ -1834,7 +1834,7 @@ async function anadirProductoACarrito() {
   if (!selectedProduct.value || cantidadCO.value <= 0 || precioCO.value <= 0) {
     $q.notify({
       type: 'info',
-      message: 'Llene todos los campos para poder cargar productos a la lista.',
+      message: i18nT('ui.llene-todos-los-campos-para-poder-cargar-productos-a-8e56f9'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -1844,7 +1844,7 @@ async function anadirProductoACarrito() {
     if (cantidadCO.value > cantidaddisponibleCO.value && !permitirStock.value) {
       $q.notify({
         type: 'warning',
-        message: 'La cantidad solicitada excede el stock disponible.',
+        message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
         actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
       return
@@ -1852,7 +1852,7 @@ async function anadirProductoACarrito() {
       if (cantidadCO.value > cantidaddisponibleCO.value && permitirStock.value) {
         $q.notify({
           type: 'warning',
-          message: 'La cantidad solicitada excede el stock disponible.',
+          message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
           actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
         })
       }
@@ -1861,7 +1861,7 @@ async function anadirProductoACarrito() {
     if (Number(tipoOperacion.value?.value) === 2 && cantidadCO.value > cantidaddisponibleCO.value) {
       $q.notify({
         type: 'warning',
-        message: 'La cantidad solicitada excede el stock disponible.',
+        message: i18nT('ui.la-cantidad-solicitada-excede-el-stock-disponible-0f2bcd'),
         actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
       })
     }
@@ -1945,7 +1945,7 @@ function aplicarDescuento() {
   if (carritoECO.descuento > carritoECO.subtotal) {
     $q.notify({
       type: 'warning',
-      message: 'El descuento sobrepasa el subtotal.',
+      message: i18nT('ui.el-descuento-sobrepasa-el-subtotal-2f51ae'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     carritoECO.descuento = carritoECO.subtotal // Ajustar descuento al subtotal máximo divisa Proforma
@@ -2072,7 +2072,7 @@ async function enviarDatos() {
   if (!isValid) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, complete todos los campos requeridos.',
+      message: i18nT('ui.por-favor-complete-todos-los-campos-requeridos-5232b8'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2082,7 +2082,7 @@ async function enviarDatos() {
   if (!isValidCliente) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, complete todos los campos requeridos.',
+      message: i18nT('ui.por-favor-complete-todos-los-campos-requeridos-5232b8'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2091,7 +2091,7 @@ async function enviarDatos() {
   if (carritoECO.listaProductos.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'Debe añadir al menos un producto a la cotización.',
+      message: i18nT('ui.debe-anadir-al-menos-un-producto-a-la-cotizacion-91dcd1'),
       actions: [{ icon: 'close', color: 'white', round: true }], // theme-allow
     })
     return
@@ -2115,7 +2115,7 @@ async function enviarDatos() {
   console.log('Payload estructurado para el backend:', payload)
 
   $q.loading.show({
-    message: 'Actualizando cotización...',
+    message: i18nT('ui.actualizando-cotizacion-e317af'),
   })
 
   try {
@@ -2128,21 +2128,21 @@ async function enviarDatos() {
     if (data.estado === 'ok') {
       $q.notify({
         type: 'positive',
-        message: 'Cotización actualizada exitosamente.',
+        message: i18nT('ui.cotizacion-actualizada-exitosamente-0d535e'),
       })
       emit('saved')
       // resetFormulario() // Opcional dependiendo de si quieres cerrar o mantener la vista
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error al actualizar la cotización.',
+        message: data.mensaje || i18nT('ui.error-al-actualizar-la-cotizacion-48fe84'),
       })
     }
   } catch (error) {
     console.error('Error al realizar la solicitud:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error de conexión o en el servidor.',
+      message: i18nT('ui.hubo-un-error-de-conexion-o-en-el-servidor-6dd6fd'),
     })
   } finally {
     $q.loading.hide()
@@ -2198,13 +2198,13 @@ function resetFormulario() {
 //   if (!idempresa) {
 //     $q.notify({
 //       type: 'negative',
-//       message: 'Error: No se pudo obtener la empresa para el comprobante.',
+//       message: Error: No se pudo obtener la empresa para el comprobante.,
 //     })
 //     return
 //   }
 
 //   $q.loading.show({
-//     message: 'Generando comprobante...',
+//     message: Generando comprobante...,
 //   })
 
 //   try {
@@ -2214,7 +2214,7 @@ function resetFormulario() {
 
 //     if (data[0] === 'error') {
 //       console.error(data.error)
-//       $q.notify({ type: 'negative', message: 'Error al cargar los detalles del comprobante.' })
+//       $q.notify({ type: 'negative', message: Error al cargar los detalles del comprobante. })
 //     } else {
 //       // Cargar leyendas si no están cargadas
 //       if (leyendasCotizacion.value.length === 0) {
@@ -2228,7 +2228,7 @@ function resetFormulario() {
 //     }
 //   } catch (error) {
 //     console.error('Error al generar comprobante:', error)
-//     $q.notify({ type: 'negative', message: 'Hubo un error al generar el comprobante.' })
+//     $q.notify({ type: 'negative', message: Hubo un error al generar el comprobante. })
 //   } finally {
 //     $q.loading.hide()
 //   }
@@ -2273,7 +2273,7 @@ const handleRecordCreated = async (newRecordData) => {
       RegistrarCliente()
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Cliente guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.cliente-guardado-correctamente-d0df06'),
       })
       // Optionally, refresh your data or add the new client to your list
       // For example, if you have a method to fetch clients:
@@ -2281,7 +2281,7 @@ const handleRecordCreated = async (newRecordData) => {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el cliente',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-cliente-a235d2'),
       })
     }
   } catch (error) {
@@ -2290,8 +2290,8 @@ const handleRecordCreated = async (newRecordData) => {
     $q.notify({
       color: 'negative',
       message:
-        'Error al registrar: ' +
-        (error.response?.data?.mensaje || error.message || 'Error desconocido'),
+        i18nT('ui.error-al-registrar-c13a59') +
+        (error.response?.data?.mensaje || error.message || i18nT('ui.error-desconocido-9c256e')),
       icon: 'error',
     })
   }
@@ -2335,7 +2335,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   }
 }
 
@@ -2343,7 +2343,7 @@ const loadData = async () => {
   if (!props.idCotizacion) return
 
   $q.loading.show({
-    message: 'Cargando datos de la cotización...',
+    message: i18nT('ui.cargando-datos-de-la-cotizacion-dacee4'),
     spinnerColor: 'primary',
   })
 
@@ -2431,7 +2431,7 @@ const loadData = async () => {
             idstock: item.idstock,
             idporcentaje: item.categoria,
             candiponible: disponible,
-            descripcion: item.producto || 'Sin descripción',
+            descripcion: item.producto || i18nT('ui.sin-descripcion-3f8d62'),
             descripcionAdicional: item.descripcionAdicional || '',
             codigo: item.codigoProducto || '',
             despachado: disponible === 0 || disponible < cantidad ? 2 : 1,
@@ -2465,7 +2465,7 @@ const loadData = async () => {
     console.error('Error al cargar la cotización:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un error al recuperar los datos de la cotización.',
+      message: i18nT('ui.hubo-un-error-al-recuperar-los-datos-de-la-cotizacio-573f83'),
     })
   } finally {
     $q.loading.hide()

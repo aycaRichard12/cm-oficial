@@ -6,7 +6,7 @@
     <div class="row justify-end q-mb-sm">
       <q-btn
         id="btnexportarexcel"
-        label="Exportar a Excel"
+        :label="$t('ui.exportar-a-excel-1569c7')"
         icon="mdi-file-excel"
         color="green"
         @click="$emit('exportarexcel')"
@@ -26,15 +26,15 @@
         color="white"
         text-color="primary"
         :options="[
-          { label: 'Lista Compacta', value: 'compacta' },
-          { label: 'Lista Extensa', value: 'extensa' },
+          { label: $t('ui.lista-compacta-9bfa8c'), value: 'compacta' },
+          { label: $t('ui.lista-extensa-47883c'), value: 'extensa' },
         ]"
       />
     </div>
 
     <BaseFilterableTable
       ref="refHijo"
-      title="Reporte Productos Vendidos"
+      :title="$t('ui.reporte-productos-vendidos-ec4622')"
       nombreColumnaTotales="estado"
       :rows="props.rows"
       :columns="columnasMostrar"
@@ -48,7 +48,7 @@
       <!-- Columna: Tipo (Estado) -->
       <template v-slot:body-cell-tipoDocumento="props">
         <q-td :props="props" class="text-center">
-          {{ props.row.tipoDocumento || 'Desconocido' }}
+          {{ props.row.tipoDocumento || $t('ui.desconocido-452c8a') }}
         </q-td>
       </template>
 
@@ -74,6 +74,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
@@ -94,10 +95,10 @@ const tipoVista = ref('extensa') // por defecto Lista Extensa
 // ================== Definición de columnas ==================
 // Columnas para vista extensa (todas las originales)
 const columnasExtensas = [
-  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
+  { name: 'nro', label: i18nT('cotizacion.table.number'), align: 'right', field: 'nro' },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     align: 'right',
     field: 'fecha',
     dataType: 'date',
@@ -105,7 +106,7 @@ const columnasExtensas = [
   },
   {
     name: 'nrofactura',
-    label: 'N° Doc.',
+    label: i18nT('ui.n-doc-c73aae'),
     align: 'right',
     field: 'nrofactura',
     dataType: 'number',
@@ -113,7 +114,7 @@ const columnasExtensas = [
   },
   {
     name: 'tipoventa',
-    label: 'Tipo de Venta',
+    label: i18nT('ui.tipo-de-venta-28cac9'),
     align: 'left',
     field: 'tipoventa',
     dataType: 'text',
@@ -121,7 +122,7 @@ const columnasExtensas = [
   },
   {
     name: 'codigo',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     align: 'left',
     field: 'codigo',
     dataType: 'text',
@@ -129,7 +130,7 @@ const columnasExtensas = [
   },
   /**{
     name: 'codigobarra',
-    label: 'Código Barras',
+    label: i18nT('ui.codigo-barras-5b224c'),
     align: 'right',
     field: 'codigobarra',
     dataType: 'text',
@@ -137,7 +138,7 @@ const columnasExtensas = [
   },*/
   {
     name: 'descripcion',
-    label: 'Descripción de Producto',
+    label: i18nT('ui.descripcion-de-producto-a09968'),
     align: 'left',
     field: 'descripcion',
     dataType: 'text',
@@ -145,7 +146,7 @@ const columnasExtensas = [
   },
   {
     name: 'preciounitario',
-    label: 'Precio Unitario',
+    label: i18nT('ui.precio-unitario-fd8ab0'),
     align: 'right',
     field: 'preciounitario',
     dataType: 'number',
@@ -153,7 +154,7 @@ const columnasExtensas = [
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     align: 'right',
     field: 'cantidad',
     dataType: 'number',
@@ -161,7 +162,7 @@ const columnasExtensas = [
   },
   {
     name: 'importe',
-    label: 'Importe',
+    label: i18nT('ui.importe-4476a5'),
     align: 'right',
     field: 'importe',
     dataType: 'number',
@@ -169,7 +170,7 @@ const columnasExtensas = [
   },
   {
     name: 'descuento',
-    label: 'Dscto.',
+    label: i18nT('ui.dscto-dfa854'),
     align: 'right',
     field: 'descuento',
     dataType: 'number',
@@ -177,7 +178,7 @@ const columnasExtensas = [
   },
   {
     name: 'totalventa',
-    label: 'Venta Total',
+    label: i18nT('ui.venta-total-7d061a'),
     align: 'right',
     field: 'totalventa',
     dataType: 'number',
@@ -185,7 +186,7 @@ const columnasExtensas = [
   },
   {
     name: 'tipopago',
-    label: 'Tipo Pago',
+    label: i18nT('ui.tipo-pago-37dfbb'),
     align: 'left',
     field: 'tipopago',
     dataType: 'text',
@@ -193,7 +194,7 @@ const columnasExtensas = [
   },
   {
     name: 'vendedor',
-    label: 'Nombre de Usuario',
+    label: i18nT('ui.nombre-de-usuario-cca84a'),
     align: 'left',
     field: 'vendedor',
     dataType: 'text',
@@ -201,7 +202,7 @@ const columnasExtensas = [
   },
   {
     name: 'sucursalc',
-    label: 'Sucursal del Cliente',
+    label: i18nT('ui.sucursal-del-cliente-079701'),
     align: 'left',
     field: 'sucursalc',
     dataType: 'text',
@@ -209,7 +210,7 @@ const columnasExtensas = [
   },
   {
     name: 'almacen',
-    label: 'Almacén Empresa',
+    label: i18nT('ui.almacen-empresa-d94ea9'),
     align: 'left',
     field: 'almacen',
     dataType: 'text',
@@ -217,7 +218,7 @@ const columnasExtensas = [
   },
   {
     name: 'cliente',
-    label: 'Razón Social Empresa',
+    label: i18nT('ui.razon-social-empresa-b2928e'),
     align: 'left',
     field: 'cliente',
     dataType: 'text',
@@ -225,7 +226,7 @@ const columnasExtensas = [
   },
   {
     name: 'nombrecomercial',
-    label: 'Nombre Comercial',
+    label: i18nT('ui.nombre-comercial-55a6ae'),
     align: 'left',
     field: 'nombrecomercial',
     dataType: 'text',
@@ -233,7 +234,7 @@ const columnasExtensas = [
   },
   {
     name: 'tipodocumento',
-    label: 'Tipo Documento',
+    label: i18nT('ui.tipo-documento-0431b6'),
     align: 'left',
     field: 'tipodocumento',
     dataType: 'text',
@@ -241,7 +242,7 @@ const columnasExtensas = [
   },
   {
     name: 'nrodoc',
-    label: 'Nro. Doc. Tributario',
+    label: i18nT('ui.nro-doc-tributario-120235'),
     align: 'right',
     field: 'nrodoc',
     dataType: 'text',
@@ -250,7 +251,7 @@ const columnasExtensas = [
 
   {
     name: 'unidad',
-    label: 'Unidad',
+    label: i18nT('configProducto.unidadProducto.table.nombre'),
     align: 'left',
     field: 'unidad',
     dataType: 'text',
@@ -258,7 +259,7 @@ const columnasExtensas = [
   },
   {
     name: 'categoria',
-    label: 'Categoría',
+    label: i18nT('configProducto.categoriaProducto.types.categoria'),
     align: 'left',
     field: 'categoria',
     dataType: 'text',
@@ -266,7 +267,7 @@ const columnasExtensas = [
   },
   {
     name: 'subcategoria',
-    label: 'Sub Categoría',
+    label: i18nT('configProducto.categoriaProducto.types.subcategoria'),
     align: 'left',
     field: 'subcategoria',
     dataType: 'text',
@@ -274,7 +275,7 @@ const columnasExtensas = [
   },
   {
     name: 'canal',
-    label: 'Canal',
+    label: i18nT('configuracion.canalesDeVenta.table.canal'),
     align: 'left',
     field: 'canal',
     dataType: 'text',
@@ -282,7 +283,7 @@ const columnasExtensas = [
   },
   {
     name: 'tipoprecio',
-    label: 'Tipo de Precio',
+    label: i18nT('ui.tipo-de-precio-75fa00'),
     align: 'left',
     field: 'tipoprecio',
     dataType: 'text',
@@ -292,10 +293,10 @@ const columnasExtensas = [
 
 // Columnas para vista compacta (sólo las 10 especificadas)
 const columnasCompactas = [
-  { name: 'nro', label: 'N°', align: 'right', field: 'nro' },
+  { name: 'nro', label: i18nT('cotizacion.table.number'), align: 'right', field: 'nro' },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     align: 'right',
     field: 'fecha',
     dataType: 'date',
@@ -303,7 +304,7 @@ const columnasCompactas = [
   },
   {
     name: 'nrofactura',
-    label: 'N° Doc.',
+    label: i18nT('ui.n-doc-c73aae'),
     align: 'right',
     field: 'nrofactura',
     dataType: 'number',
@@ -311,7 +312,7 @@ const columnasCompactas = [
   },
   {
     name: 'cliente',
-    label: 'Razón Social Empresa',
+    label: i18nT('ui.razon-social-empresa-b2928e'),
     align: 'left',
     field: 'cliente',
     dataType: 'text',
@@ -319,7 +320,7 @@ const columnasCompactas = [
   },
   {
     name: 'codigo',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     align: 'left',
     field: 'codigo',
     dataType: 'text',
@@ -327,7 +328,7 @@ const columnasCompactas = [
   },
   {
     name: 'descripcion',
-    label: 'Descripción de Producto',
+    label: i18nT('ui.descripcion-de-producto-a09968'),
     align: 'left',
     field: 'descripcion',
     dataType: 'text',
@@ -335,7 +336,7 @@ const columnasCompactas = [
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     align: 'right',
     field: 'cantidad',
     dataType: 'number',
@@ -343,7 +344,7 @@ const columnasCompactas = [
   },
   {
     name: 'preciounitario',
-    label: 'Precio Unitario',
+    label: i18nT('ui.precio-unitario-fd8ab0'),
     align: 'right',
     field: 'preciounitario',
     dataType: 'number',
@@ -351,7 +352,7 @@ const columnasCompactas = [
   },
   {
     name: 'descuento',
-    label: 'Dscto.',
+    label: i18nT('ui.dscto-dfa854'),
     align: 'right',
     field: 'descuento',
     dataType: 'number',
@@ -359,7 +360,7 @@ const columnasCompactas = [
   },
   {
     name: 'totalventa',
-    label: 'Venta Total',
+    label: i18nT('ui.venta-total-7d061a'),
     align: 'right',
     field: 'totalventa',
     dataType: 'number',

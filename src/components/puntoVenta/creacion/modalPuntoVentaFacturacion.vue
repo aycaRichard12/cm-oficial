@@ -1,17 +1,17 @@
 <template>
   <q-dialog v-model="show">
     <q-card class="q-pa-md" style="min-width: 400px; max-width: 500px">
-      <q-card-section class="text-h6 text-primary"> Crear Punto de Venta </q-card-section>
+      <q-card-section class="text-h6 text-primary"> {{ $t('ui.crear-punto-de-venta-d4c938') }} </q-card-section>
 
       <q-card-section>
         <div class="text-body2 q-mb-md">
-          Esto creará un registro en el <strong>SIAT</strong> para el punto de venta seleccionado.
+          {{ $t('ui.esto-creara-un-registro-en-el-736277') }} <strong>SIAT</strong> {{ $t('ui.para-el-punto-de-venta-seleccionado-cbb0a8') }}
         </div>
 
         <q-select
           v-model="tipoSeleccionado"
           :options="tiposPuntoVenta"
-          label="Selecciona un tipo de punto de venta"
+          :label="$t('ui.selecciona-un-tipo-de-punto-de-venta-aeb9ab')"
           emit-value
           map-options
           outlined
@@ -20,14 +20,15 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cancelar" color="negative" v-close-popup />
-        <q-btn label="Aceptar" color="primary" :loading="loading" @click="crearPuntoVenta" />
+        <q-btn flat :label="$t('common.cancel')" color="negative" v-close-popup />
+        <q-btn :label="$t('ui.aceptar-8f9f73')" color="primary" :loading="loading" @click="crearPuntoVenta" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { getToken } from 'src/composables/FuncionesG'
@@ -61,12 +62,12 @@ watch(show, (val) => emit('update:showModal', val))
 
 // Opciones del tipo de punto de venta
 const tiposPuntoVenta = [
-  { label: 'PUNTO VENTA COMISIONISTA', value: 1 },
-  { label: 'PUNTO VENTA VENTANILLA DE COBRANZA', value: 2 },
-  { label: 'PUNTO DE VENTA MÓVILES', value: 3 },
-  { label: 'PUNTO DE VENTA YPFB', value: 4 },
-  { label: 'PUNTO DE VENTA CAJEROS', value: 5 },
-  { label: 'PUNTO DE VENTA CONJUNTA', value: 6 },
+  { label: i18nT('ui.punto-venta-comisionista-cdb829'), value: 1 },
+  { label: i18nT('ui.punto-venta-ventanilla-de-cobranza-354f7d'), value: 2 },
+  { label: i18nT('ui.punto-de-venta-moviles-cab428'), value: 3 },
+  { label: i18nT('ui.punto-de-venta-ypfb-ea8757'), value: 4 },
+  { label: i18nT('ui.punto-de-venta-cajeros-39c96a'), value: 5 },
+  { label: i18nT('ui.punto-de-venta-conjunta-1f92ee'), value: 6 },
 ]
 
 // Función para validar usuario (puedes reemplazar por tu propia lógica)
@@ -74,7 +75,7 @@ const tiposPuntoVenta = [
 // Crear punto de venta
 async function crearPuntoVenta() {
   if (!tipoSeleccionado.value) {
-    $q.notify({ type: 'warning', message: 'Selecciona un tipo de punto de venta' })
+    $q.notify({ type: 'warning', message: i18nT('ui.selecciona-un-tipo-de-punto-de-venta-aeb9ab') })
     return
   }
 
@@ -102,11 +103,11 @@ async function crearPuntoVenta() {
 
     const data = response
     if (data.estado === 'error') {
-      $q.notify({ type: 'negative', message: data.mensaje || 'Error en el servidor' })
+      $q.notify({ type: 'negative', message: data.mensaje || i18nT('ui.error-en-el-servidor-ebb125') })
     } else {
       $q.notify({
         type: 'positive',
-        message: data.mensaje || 'Punto de venta creado correctamente',
+        message: data.mensaje || i18nT('ui.punto-de-venta-creado-correctamente-8b2d65'),
       })
       emit('onSuccess') // notificar al padre para refrescar lista
       show.value = false

@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
-          Autorizando Compras
+          {{ $t('ui.autorizando-compras-2eb011') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Autorizando Compras
+          {{ $t('ui.administracion-de-autorizando-compras-a3d085') }}
         </div>
       </div>
     </div>
@@ -28,7 +28,7 @@
     <q-dialog v-model="mostrarDetalleCompra" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Detalle Compra</div>
+          <div>{{ $t('ui.detalle-compra-a909b1') }}</div>
           <q-btn icon="close" @click="mostrarDetalleCompra = false" flat dense round />
         </q-card-section>
         <q-card-section>
@@ -55,6 +55,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5, idusuario_md5, objectToFormData } from 'src/composables/FuncionesGenerales'
@@ -107,8 +108,8 @@ async function editarCompra(compra) {
 async function eliminarCompra(compra) {
   console.log(compra)
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Compra?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-compra-6e72d2')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -149,7 +150,7 @@ async function eliminarCompra(compra) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -172,7 +173,7 @@ async function enviarFormData(endpoint, data, mensajeExito, mensajeError) {
     }
   } catch (error) {
     console.error('Error en API:', error)
-    $q.notify({ type: 'negative', message: 'Error en la solicitud al servidor' + error })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-en-la-solicitud-al-servidor-9eb809') + error })
   }
 }
 
@@ -181,8 +182,8 @@ async function guardarRegistro(data) {
   const response = await enviarFormData(
     endpoint,
     data,
-    'Compra registrada correctamente',
-    'Hubo un problema al registrar la compra',
+    i18nT('ui.compra-registrada-correctamente-15a8d7'),
+    i18nT('ui.hubo-un-problema-al-registrar-la-compra-485eb4'),
   )
   if (response?.data?.estado === 'exito') {
     loadRows()
@@ -219,7 +220,7 @@ async function cargarProveedores() {
     }))
   } catch (error) {
     console.error('Error al cargar proveedores:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 
@@ -233,7 +234,7 @@ async function cargarAlmacenes() {
     }))
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   }
 }
 
@@ -244,7 +245,7 @@ async function loadRows() {
     console.log('id de compra', compras.value)
   } catch (error) {
     console.error('Error al cargar compras:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar las compras' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-las-compras-127fb1') })
   }
 }
 
@@ -270,7 +271,7 @@ async function verDetalle(compra) {
     }
     console.log(formularioDetalleCompra.value)
   } catch (error) {
-    $q.notify({ type: 'negative', message: 'No se pudo mostrar el detalle de la compra' + error })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-mostrar-el-detalle-de-la-compra-7cbeeb') + error })
   }
 }
 
@@ -289,7 +290,7 @@ async function listaProductosDisponibles(compra) {
     }))
   } catch (error) {
     console.error('Error al cargar productos disponibles:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-productos-4c41c2') })
   }
 }
 //Hubo un problema al guardar el detalle
@@ -300,7 +301,7 @@ async function getDetalleCompra(compra) {
     detalleCompra.value = response.data
   } catch (error) {
     console.error('Error al cargar detalles de compra:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los detalles de la compra' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-detalles-de-la-compra-5a4066') })
   }
 }
 
@@ -313,8 +314,8 @@ async function autorizarCompra(compra) {
   console.log('detalle compra', compra.idusuario_md5)
 
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Confirmar Compra?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.confirmar-compra-207d87')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -349,11 +350,11 @@ async function autorizarCompra(compra) {
           }
         }
       } else {
-        $q.notify({ type: 'negative', message: 'No se ingreso ningun producto' })
+        $q.notify({ type: 'negative', message: i18nT('ui.no-se-ingreso-ningun-producto-6ba004') })
       }
     } catch (error) {
       console.error('Error al autorizar compra:', error)
-      $q.notify({ type: 'negative', message: 'No se pudo autorizar la compra' })
+      $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-autorizar-la-compra-e25532') })
     }
   })
 }

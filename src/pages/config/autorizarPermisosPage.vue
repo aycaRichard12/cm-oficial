@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -46,7 +47,7 @@ const fetchOperaciones = async () => {
       }
     })
   } catch (error) {
-    $q.notify({ color: 'negative', message: 'Error al cargar operaciones: ' + error })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-al-cargar-operaciones-711902') + error })
   } finally {
     loading.value = false
   }
@@ -70,11 +71,11 @@ const handleSave = async (payload) => {
     console.log(response.data)
     $q.notify({
       color: 'positive',
-      message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
+      message: `Operación ${isUpdate ? i18nT('ui.actualizada-0989d0') : 'creada'} con éxito`,
     })
     fetchOperaciones() // Refrescar tabla
   } catch (error) {
-    $q.notify({ color: 'negative', message: 'Error en la solicitud: ' + error })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-en-la-solicitud-51865c') + error })
   } finally {
     loading.value = false
   }
@@ -83,8 +84,8 @@ const handleSave = async (payload) => {
 // Eliminar
 const handleDelete = async (id) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Deseas eliminar esta operación?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.deseas-eliminar-esta-operacion-483955'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -93,10 +94,10 @@ const handleDelete = async (id) => {
       const data = await api.get(`eliminarOperacion/${id}`)
       const response = data.data
       console.log(response, id)
-      $q.notify({ color: 'positive', message: 'Operación eliminada' })
+      $q.notify({ color: 'positive', message: i18nT('ui.operacion-eliminada-b3583b') })
       fetchOperaciones()
     } catch (error) {
-      $q.notify({ color: 'negative', message: 'Error al eliminar: ' + error })
+      $q.notify({ color: 'negative', message: i18nT('ui.error-al-eliminar-e736aa') + error })
     } finally {
       loading.value = false
     }
@@ -117,7 +118,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }

@@ -6,7 +6,7 @@
         <q-icon name="filter_alt" size="md" class="q-mr-md" />
         <div>
           <div class="text-subtitle2" style="opacity: 0.7">
-            Seleccione los parámetros para generar el reporte.
+            {{ $t('ui.seleccione-los-parametros-para-generar-el-reporte-05a8e6') }}
           </div>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <!-- Sección: Fechas -->
         <div class="row q-col-gutter-md">
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="">Fecha inicio</label>
+            <label for="">{{ $t('ui.fecha-inicio-09c9bb') }}</label>
             <q-input
               :model-value="form.fecha_inicio"
               @update:model-value="(val) => updateField('fecha_inicio', val)"
@@ -28,7 +28,7 @@
               outlined
               dense
               clearable
-              :rules="[(val) => !!val || 'Requerido']"
+              :rules="[(val) => !!val || $t('common.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="event" />
@@ -37,7 +37,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="">Fecha fin</label>
+            <label for="">{{ $t('ui.fecha-fin-340809') }}</label>
             <q-input
               :model-value="form.fecha_fin"
               @update:model-value="(val) => updateField('fecha_fin', val)"
@@ -45,7 +45,7 @@
               outlined
               dense
               clearable
-              :rules="[(val) => !!val || 'Requerido']"
+              :rules="[(val) => !!val || $t('common.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="event_available" />
@@ -59,7 +59,7 @@
         <!-- Sección: Filtros -->
         <div class="row q-col-gutter-md">
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="almacen">Almacén</label>
+            <label for="almacen">{{ $t('inventario.warehouse') }}</label>
             <q-select
               :model-value="form.almacen_id"
               @update:model-value="(val) => updateField('almacen_id', val)"
@@ -82,7 +82,7 @@
 
           <!-- Select de categoría padre (sin emit-value para obtener el objeto completo) -->
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="catP">Categoría de producto</label>
+            <label for="catP">{{ $t('ui.categoria-de-producto-fc3d7a') }}</label>
 
             <q-select
               v-model="categoriaPadre"
@@ -105,7 +105,7 @@
             class="col-12 col-sm-6 col-md-4"
             v-if="categoriaPadre && categoriaPadre.children && categoriaPadre.children.length > 0"
           >
-            <label for="catsP">Subcategoría</label>
+            <label for="catsP">{{ $t('ui.subcategoria-78a946') }}</label>
 
             <q-select
               :model-value="form.categoriaProd"
@@ -119,7 +119,7 @@
               clearable
               outlined
               dense
-              :rules="[(val) => !!val || 'Requerido']"
+              :rules="[(val) => !!val || $t('common.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="category" />
@@ -128,7 +128,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="cliente">Cliente</label>
+            <label for="cliente">{{ $t('ventas.client') }}</label>
 
             <q-select
               :model-value="form.cliente_id"
@@ -151,7 +151,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md-4">
-            <label for="campana">Campaña</label>
+            <label for="campana">{{ $t('ui.campana-236ee5') }}</label>
             <q-select
               :model-value="form.campana_id"
               @update:model-value="(val) => updateField('campana_id', val)"
@@ -181,7 +181,7 @@
         <div class="row items-center justify-end q-col-gutter-md">
           <div class="col-12 col-sm-auto">
             <q-btn
-              label="Limpiar filtros"
+              :label="$t('ui.limpiar-filtros-d3126b')"
               icon="restart_alt"
               color="grey-7"
               flat
@@ -195,7 +195,7 @@
               type="submit"
               color="primary"
               icon="analytics"
-              label="Generar reporte"
+              :label="$t('ui.generar-reporte-eeafce')"
               size="md"
               :loading="loadingReporte"
               class="full-width rounded-btn"

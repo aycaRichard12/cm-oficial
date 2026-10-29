@@ -3,7 +3,7 @@
   <q-dialog v-model="modelValue">
     <q-card class="responsive-dialog">
       <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-        <div>Detalle de Inventario Externo</div>
+        <div>{{ $t('ui.detalle-de-inventario-externo-d51296') }}</div>
         <q-btn icon="close" @click="$emit('close')" flat round dense />
       </q-card-section>
       <q-card-section>
@@ -43,7 +43,7 @@
 
             <!-- Fields -->
             <div class="col-12 col-md-6">
-              <label for="producto">Producto*</label>
+              <label for="producto">{{ $t('ui.producto-a10475') }}</label>
               <q-select
                 v-model="localDetalleFormData.productos"
                 id="producto"
@@ -59,14 +59,14 @@
                 :loading="loadingProductos"
                 debounce="300"
                 clearable
-                hint="Escriba para buscar productos"
+                :hint="$t('ui.escriba-para-buscar-productos-00b495')"
                 :error="!localDetalleFormData.productos && loadingProductos === false && !!localDetalleFormData.id"
                 prepend-inner-icon="shopping_cart"
               >
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
-                      No hay resultados para su búsqueda
+                      {{ $t('ui.no-hay-resultados-para-su-busqueda-43b64b') }}
                     </q-item-section>
                   </q-item>
                 </template>
@@ -74,7 +74,7 @@
             </div>
 
             <div class="col-12 col-md-3">
-              <label for="cantidad">Cantidad</label>
+              <label for="cantidad">{{ $t('ui.cantidad-b5b6f8') }}</label>
               <q-input
                 type="number"
                 id="cantidad"
@@ -87,7 +87,7 @@
             </div>
 
             <div class="col-12 col-md-3">
-              <label for="fecha">Fecha</label>
+              <label for="fecha">{{ $t('cotizacion.table.date') }}</label>
               <q-input
                 dense
                 outlined
@@ -102,12 +102,12 @@
           </div>
           <div class="row justify-end">
             <q-btn
-              label="Cancelar"
+              :label="$t('common.cancel')"
               type="reset"
               color="negative"
               @click="$emit('reset')"
             />
-            <q-btn label="Añadir" type="submit" color="primary" />
+            <q-btn :label="$t('ui.anadir-41261d')" type="submit" color="primary" />
           </div>
         </q-form>
 

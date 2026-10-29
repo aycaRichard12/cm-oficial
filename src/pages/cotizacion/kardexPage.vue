@@ -5,10 +5,10 @@
         <div class="col-12 col-md-auto">
           <div class="text-h5 text-primary text-weight-bold flex items-center">
             <q-icon name="inventory" size="md" class="q-mr-sm" />
-            Kardex de Productos
+            {{ $t('ui.kardex-de-productos-66f4a5') }}
           </div>
           <div class="text-subtitle2 text-grey-7 q-mt-xs">
-            Administración de Kardex de Productos
+            {{ $t('ui.administracion-de-kardex-de-productos-509fa2') }}
           </div>
 
         </div>
@@ -17,31 +17,31 @@
         <q-form @submit="generarReporte">
           <div class="row q-col-gutter-x-lg flex justify-center">
             <div class="col-md-4 col-12" id="fechainikardex">
-              <label for="fechaINi">Fecha Inicial *</label>
+              <label for="fechaINi">{{ $t('ui.fecha-inicial-4e1b5c') }}</label>
               <q-input
                 v-model="fechaiR"
                 type="date"
                 id="fechaINi"
                 dense
                 outlined
-                hint="Fecha de inicio para el reporte"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :hint="$t('ui.fecha-de-inicio-para-el-reporte-4b092a')"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               />
             </div>
             <div class="col-md-4 col-12" id="fechafinkardex">
-              <label for="fechafin">Fecha Final *</label>
+              <label for="fechafin">{{ $t('ui.fecha-final-c5ac08') }}</label>
               <q-input
                 dense
                 outlined
                 v-model="fechafR"
                 type="date"
                 id="fechafin"
-                hint="Fecha de fin para el reporte"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :hint="$t('ui.fecha-de-fin-para-el-reporte-c83e34')"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               />
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12" id="almacenkardex">
-              <label for="almacen">Almacén *</label>
+              <label for="almacen">{{ $t('ui.almacen-877395') }}</label>
               <q-select
                 dense
                 outlined
@@ -52,7 +52,7 @@
                 option-value="idalmacen"
                 emit-value
                 map-options
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 @update:model-value="listaProductosDisponibles"
               />
             </div>
@@ -60,7 +60,7 @@
 
           <div class="row q-col-gutter-x-md flex justify-start">
             <div class="col-md-4 col-sm-6 col-xs-12" id="productokardex">
-              <label for="producto">Producto *</label>
+              <label for="producto">{{ $t('ui.producto-814df9') }}</label>
               <q-select
                 dense
                 outlined
@@ -75,11 +75,11 @@
                 map-options
                 clearable
                 @filter="filterProductos"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               >
                 <template v-slot:no-option>
                   <q-item>
-                    <q-item-section class="text-grey"> Sin resultados </q-item-section>
+                    <q-item-section class="text-grey"> {{ $t('ui.sin-resultados-926bea') }} </q-item-section>
                   </q-item>
                 </template>
               </q-select>
@@ -90,14 +90,14 @@
             <q-btn
               id="btngenerarreportekardex"
               type="submit"
-              label="Generar reporte"
+              :label="$t('ui.generar-reporte-eeafce')"
               color="primary"
               class="q-mr-sm"
             />
             <q-btn
               id="btnvistapreviakardex"
               v-if="datosFiltrados.length > 0"
-              label="Vista previa del Reporte"
+              :label="$t('ui.vista-previa-del-reporte-60d956')"
               color="secondary"
               @click="cargarPDF"
             />
@@ -119,7 +119,7 @@
         row-key="c"
         flat
         bordered
-        no-data-label="Aún no se ha generado ningún Reporte"
+        :no-data-label="$t('ui.aun-no-se-ha-generado-ningun-reporte-df72d3')"
       >
         <template v-slot:top-row>
           <q-tr style="height: 5px">
@@ -129,7 +129,7 @@
                 dense
                 style="height: 4px"
                 color="primary"
-                label="Mostrar / Ocultar Saldos Iniciales"
+                :label="$t('ui.mostrar-ocultar-saldos-iniciales-3b5e41')"
                 @click="mostrarSaldos = !mostrarSaldos"
               />
             </q-td>
@@ -165,7 +165,7 @@
       <q-dialog v-model="mostrarPDF" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarPDF = false" />
           </q-card-section>
@@ -198,6 +198,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -240,14 +241,14 @@ const saldosIniciales = ref([])
 
 // Columnas de la tabla
 const columns = [
-  { name: 'Fecha', label: 'Fecha', field: 'Fecha', align: 'left', sortable: true },
-  { name: 'Concepto', label: 'Concepto', field: 'Concepto', align: 'left', sortable: true },
-  { name: 'Entrada', label: 'Entrada', field: 'Entrada', align: 'right', sortable: true },
-  { name: 'Salida', label: 'Salida', field: 'Salida', align: 'right', sortable: true },
-  { name: 'Existencia', label: 'Existencia', field: 'Existencia', align: 'right', sortable: true },
+  { name: 'Fecha', label: i18nT('cotizacion.table.date'), field: 'Fecha', align: 'left', sortable: true },
+  { name: 'Concepto', label: i18nT('ui.concepto-fc5069'), field: 'Concepto', align: 'left', sortable: true },
+  { name: 'Entrada', label: i18nT('ui.entrada-73f831'), field: 'Entrada', align: 'right', sortable: true },
+  { name: 'Salida', label: i18nT('ui.salida-13058e'), field: 'Salida', align: 'right', sortable: true },
+  { name: 'Existencia', label: i18nT('ui.existencia-8b7404'), field: 'Existencia', align: 'right', sortable: true },
   {
     name: 'CUnit',
-    label: 'Costo Unitario',
+    label: i18nT('ui.costo-unitario-4ec928'),
     field: 'C.Unit',
     align: 'right',
     format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
@@ -255,7 +256,7 @@ const columns = [
   },
   {
     name: 'Debe',
-    label: 'Debe',
+    label: i18nT('ui.debe-422ad3'),
     field: 'Debe',
     align: 'right',
     format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
@@ -263,7 +264,7 @@ const columns = [
   },
   {
     name: 'Haber',
-    label: 'Haber',
+    label: i18nT('ui.haber-ce7d43'),
     field: 'Haber',
     align: 'right',
     format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
@@ -271,7 +272,7 @@ const columns = [
   },
   {
     name: 'Saldo',
-    label: 'Saldo',
+    label: i18nT('ui.saldo-8b0fcd'),
     field: 'Saldo',
     align: 'right',
     format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
@@ -319,7 +320,7 @@ const validarFechas = () => {
   if (fechaInicio > fechaFin) {
     $q.notify({
       type: 'warning',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-32b79c'),
       position: 'top',
     })
     return false
@@ -337,11 +338,11 @@ async function listaAlmacenes() {
     if (data && data.length > 0) {
       almacenes.value = data.filter((u) => u.idusuario === usuario.idusuario)
     } else {
-      $q.notify({ type: 'negative', message: 'No se encontraron almacenes.' })
+      $q.notify({ type: 'negative', message: i18nT('ui.no-se-encontraron-almacenes-5ef22d') })
     }
   } catch (error) {
     console.error(error)
-    $q.notify({ type: 'negative', message: 'Error al cargar almacenes.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-almacenes-420531') })
   }
 }
 
@@ -366,7 +367,7 @@ async function listaProductosDisponibles() {
     }
   } catch (error) {
     console.error(error)
-    $q.notify({ type: 'negative', message: 'Error al cargar productos.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-productos-095e2f') })
   }
 }
 
@@ -374,7 +375,7 @@ async function generarReporte() {
   if (!fechaiR.value || !fechafR.value || !almacenR.value || !idproductoR.value) {
     $q.notify({
       type: 'warning',
-      message: 'Por favor, ingrese todos los datos necesarios.',
+      message: i18nT('ui.por-favor-ingrese-todos-los-datos-necesarios-324da9'),
       position: 'top',
     })
     return
@@ -400,7 +401,7 @@ async function generarReporte() {
     reporteGenerado.value = true
   } catch (error) {
     console.error(error)
-    $q.notify({ type: 'negative', message: 'Error al generar el reporte.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-generar-el-reporte-dadd3e') })
   }
 }
 
@@ -577,7 +578,7 @@ function cargarPDF() {
   if (datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'warning',
-      message: 'No se ha generado ningún reporte para previsualizar.',
+      message: i18nT('ui.no-se-ha-generado-ningun-reporte-para-previsualizar-94e65c'),
       position: 'top',
     })
     return

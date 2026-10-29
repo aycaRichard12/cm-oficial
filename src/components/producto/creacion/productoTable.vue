@@ -6,9 +6,9 @@
         <div class="col-12 col-md-4">
           <div class="text-h6 text-primary text-weight-bold">
             <q-icon name="inventory_2" size="sm" class="q-mr-sm" />
-            Catálogo de Productos
+            {{ $t('ui.catalogo-de-productos-490ce0') }}
           </div>
-          <div class="text-caption text-grey-7">Administre sus productos y servicios</div>
+          <div class="text-caption text-grey-7">{{ $t('ui.administre-sus-productos-y-servicios-13ce98') }}</div>
         </div>
         <div class="col-12 col-md-8">
           <div class="row q-gutter-sm items-center justify-end q-mt-sm q-md-mt-none">
@@ -18,7 +18,7 @@
               color="blue"
               @click="$emit('irconjunto')"
               icon="mdi-set-all"
-              label="Conjunto"
+              :label="$t('ui.conjunto-286eb2')"
             />
             <q-btn
               unelevated
@@ -26,7 +26,7 @@
               color="indigo"
               @click="exportarDatos"
               icon="mdi-file-excel"
-              label="Descargar Excel"
+              :label="$t('ui.descargar-excel-af6e96')"
             />
             <q-btn
               unelevated
@@ -34,7 +34,7 @@
               color="positive"
               @click="exportarFormato"
               icon="mdi-file-download-outline"
-              label="Descargar Formato"
+              :label="$t('ui.descargar-formato-8c0088')"
             />
             <q-btn
               unelevated
@@ -42,13 +42,13 @@
               color="secondary"
               @click="$refs.fileInput.click()"
               icon="mdi-file-upload-outline"
-              label="Cargar Excel"
+              :label="$t('ui.cargar-excel-84791b')"
               :loading="importing"
               :disable="importing"
             />
-            <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Producto">
+            <q-btn color="primary" @click="$emit('add')" class="btn-res" :title="$t('ui.registrar-producto-4df83c')">
               <q-icon name="add" class="icono" />
-              <span class="texto"> <q-icon name="add" /> Nuevo </span>
+              <span class="texto"> <q-icon name="add" /> {{ $t('common.new') }} </span>
             </q-btn>
             <input
               type="file"
@@ -62,13 +62,13 @@
               unelevated
               color="negative"
               icon="delete_sweep"
-              label="Eliminar seleccionados"
+              :label="$t('ui.eliminar-seleccionados-f4a28a')"
               @click="eliminarSeleccionados"
             />
             <!-- Dentro de <q-card-section class="row items-center justify-between q-pb-none"> -->
             <q-checkbox
               v-model="selectAll"
-              label="Seleccionar todo"
+              :label="$t('ui.seleccionar-todo-4c6fdc')"
               :indeterminate="selectedIds.size > 0 && selectedIds.length < filteredRows.length"
             />
           </div>
@@ -138,7 +138,7 @@
                 class="q-mr-sm"
                 @click="$emit('gestionar-variantes', props.row)"
                 flat
-                title="Gestionar variantes"
+                :title="$t('ui.gestionar-variantes-a83405')"
                 id="variantesproducto"
               />
               <q-btn
@@ -167,7 +167,7 @@
     <q-dialog v-model="mostrarImagen">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Vista Previa de Imagen</div>
+          <div>{{ $t('ui.vista-previa-de-imagen-89419f') }}</div>
           <q-btn icon="close" flat dense round @click="mostrarImagen = false" />
         </q-card-section>
         <q-card-section>
@@ -183,6 +183,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import { imagen } from 'src/boot/url'
 import { getTipoFactura } from 'src/composables/FuncionesG'
@@ -225,28 +226,28 @@ const props = defineProps({
 let columns = []
 if (tipoFactura) {
   columns = [
-    { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+    { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'right', dataType: 'number' },
     {
       name: 'fecha',
-      label: 'Fecha',
+      label: i18nT('cotizacion.table.date'),
       field: 'fecha',
       align: 'left',
       format: (val) => cambiarFormatoFecha(val),
       dataType: 'date',
     },
-    { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
-    { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+    { name: 'codigo', label: i18nT('ui.cod-fc240c'), field: 'codigo', align: 'left', dataType: 'text' },
+    { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left', dataType: 'text' },
     {
       name: 'descripcion',
-      label: 'Descripción',
+      label: i18nT('configuracion.servicios.table.descripcion'),
       field: 'descripcion',
       align: 'left',
       dataType: 'text',
     },
-    { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+    { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left', dataType: 'text' },
     {
       name: 'subcategoria',
-      label: 'Sub Categorías',
+      label: i18nT('configProducto.categoriaProducto.table.subcategoria'),
       field: 'subcategoria',
       align: 'left',
       dataType: 'text',
@@ -260,35 +261,35 @@ if (tipoFactura) {
     },
     {
       name: 'medida',
-      label: 'Medida',
+      label: i18nT('ui.medida-dea00a'),
       field: 'medida',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'estadoproducto',
-      label: 'Estado',
+      label: i18nT('cotizacion.table.status'),
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'unidad',
-      label: 'Unidad',
+      label: i18nT('configProducto.unidadProducto.table.nombre'),
       field: 'unidad',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'caracteristica',
-      label: 'Otras caract.',
+      label: i18nT('ui.otras-caract-e96743'),
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'productosin',
-      label: 'Producto SIN',
+      label: i18nT('ui.producto-sin-2f0a27'),
       field: 'productosin',
       align: 'left',
       dataType: 'text',
@@ -296,15 +297,15 @@ if (tipoFactura) {
     },
     {
       name: 'codigonandina',
-      label: 'CodigoNandina',
+      label: i18nT('ui.codigonandina-9cf2cb'),
       field: 'codigonandina',
       align: 'left',
       dataType: 'text',
       defaultVisible: false,
     },
 
-    { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
-    { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    { name: 'imagen', label: i18nT('ui.imagen-100f99'), field: 'imagen', align: 'center' },
+    { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', sortable: false },
     {
       name: 'seleccionar',
       label: '',
@@ -316,28 +317,28 @@ if (tipoFactura) {
   ]
 } else {
   columns = [
-    { name: 'numero', label: 'N°', field: 'numero', align: 'right', dataType: 'number' },
+    { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'right', dataType: 'number' },
     {
       name: 'fecha',
-      label: 'Fecha',
+      label: i18nT('cotizacion.table.date'),
       field: 'fecha',
       align: 'left',
       format: (val) => cambiarFormatoFecha(val),
       dataType: 'date',
     },
-    { name: 'codigo', label: 'Cod.', field: 'codigo', align: 'left', dataType: 'text' },
-    { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left', dataType: 'text' },
+    { name: 'codigo', label: i18nT('ui.cod-fc240c'), field: 'codigo', align: 'left', dataType: 'text' },
+    { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left', dataType: 'text' },
     {
       name: 'descripcion',
-      label: 'Descripción',
+      label: i18nT('configuracion.servicios.table.descripcion'),
       field: 'descripcion',
       align: 'left',
       dataType: 'text',
     },
-    { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+    { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left', dataType: 'text' },
     {
       name: 'subcategoria',
-      label: 'Sub Categorías',
+      label: i18nT('configProducto.categoriaProducto.table.subcategoria'),
       field: 'subcategoria',
       align: 'left',
       dataType: 'text',
@@ -351,35 +352,35 @@ if (tipoFactura) {
     },
     {
       name: 'medida',
-      label: 'Medida',
+      label: i18nT('ui.medida-dea00a'),
       field: 'medida',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'estadoproducto',
-      label: 'Estado',
+      label: i18nT('cotizacion.table.status'),
       field: 'estadoproducto',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'unidad',
-      label: 'Unidad',
+      label: i18nT('configProducto.unidadProducto.table.nombre'),
       field: 'unidad',
       align: 'left',
       dataType: 'text',
     },
     {
       name: 'caracteristica',
-      label: 'Otras caract.',
+      label: i18nT('ui.otras-caract-e96743'),
       field: 'caracteristica',
       align: 'left',
       dataType: 'text',
     },
 
-    { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
-    { name: 'opciones', label: 'Opciones', field: 'opciones', sortable: false },
+    { name: 'imagen', label: i18nT('ui.imagen-100f99'), field: 'imagen', align: 'center' },
+    { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', sortable: false },
     {
       name: 'seleccionar',
       label: '',
@@ -426,7 +427,7 @@ const exportarFormato = () => {
 const exportarDatos = () => {
   const rowsToExport = filteredRows.value
   if (!rowsToExport || rowsToExport.length === 0) {
-    $q.notify({ type: 'warning', message: 'No hay datos para exportar' })
+    $q.notify({ type: 'warning', message: i18nT('ui.no-hay-datos-para-exportar-e911a2') })
     return
   }
 
@@ -437,7 +438,7 @@ const exportarDatos = () => {
   // Caso límite: el usuario desmarcó TODAS las columnas.
   // Distinguimos "no se consultó" (null) de "se consultó y quedó vacío" ([]).
   if (Array.isArray(visibleColumns) && visibleColumns.length === 0) {
-    $q.notify({ type: 'warning', message: 'No hay columnas visibles para exportar' })
+    $q.notify({ type: 'warning', message: i18nT('ui.no-hay-columnas-visibles-para-exportar-c746cc') })
     return
   }
 
@@ -498,7 +499,7 @@ const onFileSelected = async (event) => {
   if (!file) return
 
   try {
-    $q.loading.show({ message: 'Leyendo archivo Excel...' })
+    $q.loading.show({ message: i18nT('ui.leyendo-archivo-excel-1d8d76') })
     const data = await importarProductosDesdeExcel(file)
     event.target.value = ''
 
@@ -513,12 +514,12 @@ const onFileSelected = async (event) => {
     } else {
       // Si no hay datos, ocultar loading y notificar
       $q.loading.hide()
-      $q.notify({ type: 'warning', message: 'El archivo no contiene productos válidos' })
+      $q.notify({ type: 'warning', message: i18nT('ui.el-archivo-no-contiene-productos-validos-5e97db') })
     }
   } catch (error) {
     console.error('Error al importar:', error)
     $q.loading.hide()
-    $q.notify({ type: 'negative', message: 'Error al procesar el archivo Excel' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-procesar-el-archivo-excel-435a1a') })
   }
 }
 watch(

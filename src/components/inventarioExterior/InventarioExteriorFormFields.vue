@@ -10,17 +10,17 @@
     </div>
 
     <div class="col-12 col-md-4">
-      <label for="almacen">Almacén*</label>
+      <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
       <q-select
         v-model="localFormData.almacen"
         :options="almacenOptions"
         id="almacen"
-        label="Almacén"
+        :label="$t('inventario.warehouse')"
         dense
         outlined
         emit-value
         map-options
-        :rules="[(val) => !!val || 'Debe seleccionar un almacen']"
+        :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-almacen-ab2da4')]"
       >
         <template v-slot:prepend>
           <q-icon name="store" />
@@ -42,7 +42,7 @@
         name="fecha"
         id="fechaINV"
         v-model="localFormData.fecha"
-        label="Fecha*"
+        :label="$t('ui.fecha-659648')"
         required
         stack-label
       >
@@ -58,7 +58,7 @@
         name="observacion"
         id="observacionINV"
         v-model="localFormData.observacion"
-        label="Observación"
+        :label="$t('ui.observacion-1d0d99')"
         dense
         required
         outlined
@@ -73,7 +73,7 @@
         name="ubicacion"
         id="ubicacion"
         v-model="localFormData.latitud"
-        label="Latitud"
+        :label="$t('ui.latitud-04f172')"
         dense
         outlined
         readonly
@@ -88,7 +88,7 @@
         name="ubicacion2"
         id="ubicacion2"
         v-model="localFormData.longitud"
-        label="Longitud"
+        :label="$t('ui.longitud-9b1023')"
         dense
         outlined
         readonly
@@ -100,7 +100,7 @@
     </div>
 
     <div class="col-12" v-if="!isEditing">
-      <label>Ubicación en Mapa</label>
+      <label>{{ $t('ui.ubicacion-en-mapa-7669f5') }}</label>
       <InventarioExteriorMapa
         v-model:latitud="localFormData.latitud"
         v-model:longitud="localFormData.longitud"
@@ -110,7 +110,7 @@
 
     <div class="col-md-12 flex justify-end q-mt-md">
       <q-btn 
-        :label="isEditing ? 'Guardar Cambios' : 'Registrar'" 
+        :label="isEditing ? $t('ui.guardar-cambios-7d2fd7') : $t('ui.registrar-caacc6')" 
         :icon="isEditing ? 'save' : 'add_circle'"
         type="submit" 
         color="primary" 

@@ -4,9 +4,9 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="price_change" size="md" class="q-mr-sm" />
-          Categorías de Precio
+          {{ $t('ui.categorias-de-precio-e65163') }}
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Administración de Categorías de Precio</div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">{{ $t('ui.administracion-de-categorias-de-precio-7146fe') }}</div>
       </div>
     </div>
     <div class="q-pa-md">
@@ -16,11 +16,11 @@
             color="primary"
             @click="openFormDialog('crear')"
             class="btn-res"
-            title="Registrar Categoria Precio"
+            :title="$t('ui.registrar-categoria-precio-db702a')"
             :loading="loading"
           >
             <q-icon name="add" class="icono" />
-            <span class="texto"> <q-icon name="add" /> Nuevo </span>
+            <span class="texto"> <q-icon name="add" /> {{ $t('common.new') }} </span>
           </q-btn>
         </div>
 
@@ -38,7 +38,7 @@
       <q-card style="width: 700px; max-width: 80vw">
         <q-toolbar>
           <q-toolbar-title>
-            {{ formMode === 'crear' ? 'Crear' : 'Editar' }} Categoría
+            {{ formMode === $t('ui.crear-b8bf7a') ? $t('ui.crear-48a068') : $t('common.edit') }} {{ $t('configProducto.categoriaProducto.types.categoria') }}
           </q-toolbar-title>
           <q-btn flat round icon="close" v-close-popup />
         </q-toolbar>
@@ -59,6 +59,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import CategoriasPrecioTable from 'src/components/precios/CategoriaPrecioNuevo/CategoriasPrecioTable.vue'
@@ -99,7 +100,7 @@ const fetchCategories = async () => {
     console.error('Error al cargar categorías:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las categorías. Intente de nuevo.',
+      message: i18nT('ui.error-al-cargar-las-categorias-intente-de-nuevo-834282'),
     })
   } finally {
     loading.value = false
@@ -153,7 +154,7 @@ const handleSubmitForm = async (formData) => {
     console.error('Error al guardar categoría:', error)
     $q.notify({
       type: 'negative',
-      message: `Error al guardar: ${error.message || 'Error de conexión.'}`,
+      message: `Error al guardar: ${error.message || i18nT('ui.error-de-conexion-41aa7a')}`,
     })
   } finally {
     isSubmitting.value = false
@@ -166,7 +167,7 @@ const handleSubmitForm = async (formData) => {
  */
 const handleDelete = (categoria) => {
   $q.dialog({
-    title: 'Confirmar Eliminación',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
     message: `¿Está seguro de eliminar la categoría "${categoria.nombre_categoria}"?`,
     cancel: true,
     persistent: true,
@@ -181,7 +182,7 @@ const handleDelete = (categoria) => {
       console.log('Respuesta al eliminar categoría:', response.data)
       // Asumiendo que la API devuelve algún indicador de éxito
       if (response.data) {
-        $q.notify({ type: 'positive', message: 'Categoría eliminada.' })
+        $q.notify({ type: 'positive', message: i18nT('ui.categoria-eliminada-dd908a') })
         await fetchCategories()
       } else {
         throw new Error('No se pudo eliminar la categoría.')
@@ -190,7 +191,7 @@ const handleDelete = (categoria) => {
       console.error('Error al eliminar:', error)
       $q.notify({
         type: 'negative',
-        message: 'Error al intentar eliminar la categoría.',
+        message: i18nT('ui.error-al-intentar-eliminar-la-categoria-573a67'),
       })
     } finally {
       loading.value = false
@@ -214,7 +215,7 @@ const handleChangeStatus = async (categoria) => {
     if (response.data) {
       $q.notify({
         type: 'positive',
-        message: `Estado cambiado a ${nuevoEstado === 1 ? 'Activo' : 'Inactivo'}.`,
+        message: `Estado cambiado a ${nuevoEstado === 1 ? i18nT('common.active') : i18nT('common.inactive')}.`,
       })
       // Actualizar localmente o recargar
       await fetchCategories()
@@ -225,7 +226,7 @@ const handleChangeStatus = async (categoria) => {
     console.error('Error al cambiar estado:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cambiar el estado.',
+      message: i18nT('ui.error-al-cambiar-el-estado-757488'),
     })
   } finally {
     loading.value = false

@@ -4,7 +4,7 @@
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-4">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Almacén origen <span class="text-negative">*</span>
+            {{ $t('ui.almacen-origen-3ef997') }} <span class="text-negative">*</span>
           </label>
           <q-select
             :model-value="filtroAlmacenCO"
@@ -25,7 +25,7 @@
 
         <div class="col-12 col-md-4">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Categoría de precio <span class="text-negative">*</span>
+            {{ $t('ui.categoria-de-precio-f572ba') }} <span class="text-negative">*</span>
           </label>
           <q-select
             :model-value="filtroCategoriaCO"
@@ -46,7 +46,7 @@
 
         <div class="col-12 col-md-4">
           <label class="text-weight-bold cm-text q-mb-sm block label-cotizacion">
-            Punto Venta <span class="text-negative">*</span>
+            {{ $t('ui.punto-venta-612259') }} <span class="text-negative">*</span>
           </label>
           <q-select
             :model-value="puntoVenta"

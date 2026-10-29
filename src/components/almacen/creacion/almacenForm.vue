@@ -3,42 +3,42 @@
     <q-form @submit.prevent="handleSubmit">
       <!-- Header con título visual -->
       <q-card-section class="q-pb-none">
-        <div class="text-h6 text-weight-medium cm-text">Información del Almacén</div>
-        <div class="text-caption text-grey-6 q-mt-xs">Complete los datos del almacén</div>
+        <div class="text-h6 text-weight-medium cm-text">{{ $t('ui.informacion-del-almacen-132293') }}</div>
+        <div class="text-caption text-grey-6 q-mt-xs">{{ $t('ui.complete-los-datos-del-almacen-27a3dc') }}</div>
         <q-separator class="q-mt-md" />
       </q-card-section>
 
       <q-card-section class="row q-col-gutter-md q-mt-sm">
         <div class="col-12 col-md-6">
-          <div class="field-label">Nombre del Almacén</div>
+          <div class="field-label">{{ $t('ui.nombre-del-almacen-1b1116') }}</div>
           <q-input
             v-model="localData.nombre"
             id="nombre"
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Ingrese un nombre']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-nombre-48fbae')]"
             class="modern-input"
-            placeholder="Ej: Almacén Central"
+            :placeholder="$t('ui.ej-almacen-central-329bf9')"
           />
         </div>
 
         <div class="col-12 col-md-6">
-          <div class="field-label">Dirección</div>
+          <div class="field-label">{{ $t('ui.direccion-04f478') }}</div>
           <q-input
             v-model="localData.direccion"
             id="direccion"
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Ingrese una direccion']"
+            :rules="[(val) => !!val || $t('ui.ingrese-una-direccion-dec2ac')]"
             class="modern-input"
-            placeholder="Calle, número, colonia"
+            :placeholder="$t('ui.calle-numero-colonia-3b1cb4')"
           />
         </div>
 
         <div class="col-12 col-md-4">
-          <div class="field-label">Teléfono / WhatsApp</div>
+          <div class="field-label">{{ $t('ui.telefono-whatsapp-a4781b') }}</div>
           <q-input
             v-model="localData.telefono"
             name="telefono"
@@ -46,14 +46,14 @@
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Ingrese un telefono o numero de WhatsApp']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-telefono-o-numero-de-whatsapp-df05fe')]"
             class="modern-input"
             placeholder="+52 55 1234 5678"
           />
         </div>
 
         <div class="col-12 col-md-4">
-          <div class="field-label">Correo Electrónico</div>
+          <div class="field-label">{{ $t('ui.correo-electronico-a4a821') }}</div>
           <q-input
             v-model="localData.email"
             name="email"
@@ -62,14 +62,14 @@
             outlined
             dense
             autocomplete="off"
-            :rules="[(val) => !!val || 'Ingrese un email']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-email-dfca91')]"
             class="modern-input"
-            placeholder="almacen@empresa.com"
+            :placeholder="$t('ui.almacen-empresa-com-5e13fa')"
           />
         </div>
 
         <div class="col-12 col-md-4">
-          <div class="field-label">Tipo de Almacén</div>
+          <div class="field-label">{{ $t('configGeneral.tabs.tipodealmacen') }}</div>
           <q-select
             v-model="localData.tipoalmacen"
             :options="tiposAlmacen"
@@ -78,14 +78,14 @@
             map-options
             outlined
             dense
-            :rules="[(val) => !!val || 'Seleccione un tipo']"
+            :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
             class="modern-select"
-            placeholder="Seleccionar tipo"
+            :placeholder="$t('ui.seleccionar-tipo-e748e5')"
           />
         </div>
 
         <div class="col-12 col-md-3">
-          <div class="field-label">Sucursal</div>
+          <div class="field-label">{{ $t('ui.sucursal-07d782') }}</div>
           <q-select
             v-model="localData.sucursal"
             :options="sucursales"
@@ -94,14 +94,14 @@
             map-options
             outlined
             dense
-            :rules="[(val) => !!val || 'Seleccione una sucursal']"
+            :rules="[(val) => !!val || $t('ui.seleccione-una-sucursal-dc9130')]"
             class="modern-select"
-            placeholder="Seleccionar sucursal"
+            :placeholder="$t('ui.seleccionar-sucursal-bfd3d4')"
           />
         </div>
 
         <div class="col-12 col-md-3">
-          <div class="field-label">Código Web</div>
+          <div class="field-label">{{ $t('ui.codigo-web-49f17b') }}</div>
           <q-input
             v-model="localData.codigo"
             id="sucursal"
@@ -109,14 +109,14 @@
             type="text"
             outlined
             dense
-            :rules="[(val) => !!val || 'Ingrese un codigo para la web']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-codigo-para-la-web-bcf6a2')]"
             class="modern-input"
-            placeholder="Código único"
+            :placeholder="$t('ui.codigo-unico-05a986')"
           />
         </div>
 
         <div class="col-12 col-md-3">
-          <div class="field-label">Stock Mínimo</div>
+          <div class="field-label">{{ $t('ui.stock-minimo-87d961') }}</div>
           <q-input
             v-model="localData.stockmin"
             id="stockmin"
@@ -124,14 +124,14 @@
             type="number"
             outlined
             dense
-            :rules="[(val) => !!val || 'Ingrese un valor']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-valor-357819')]"
             class="modern-input"
             placeholder="0"
           />
         </div>
 
         <div class="col-12 col-md-3">
-          <div class="field-label">Stock Máximo</div>
+          <div class="field-label">{{ $t('ui.stock-maximo-ec2519') }}</div>
           <q-input
             v-model="localData.stockmax"
             name="stockmax"
@@ -139,7 +139,7 @@
             type="number"
             outlined
             dense
-            :rules="[(val) => !!val || 'Ingrese un valor']"
+            :rules="[(val) => !!val || $t('ui.ingrese-un-valor-357819')]"
             class="modern-input"
             placeholder="0"
           />
@@ -150,14 +150,14 @@
 
       <q-card-actions class="flex justify-end q-gutter-sm q-pa-md">
         <q-btn
-          label="Cancelar"
+          :label="$t('common.cancel')"
           flat
           color="grey-7"
           class="modern-btn-cancel"
           @click="$emit('cancel')"
         />
         <q-btn
-          label="Guardar Almacén"
+          :label="$t('ui.guardar-almacen-22589e')"
           type="submit"
           color="primary"
           class="modern-btn-save q-px-md"
