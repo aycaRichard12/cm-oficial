@@ -56,9 +56,9 @@
               class="q-mb-md"
               style="opacity: 0.9"
             />
-            <div class="text-h3 text-weight-bold q-mb-md">Gestión Comercial</div>
+            <div class="text-h3 text-weight-bold q-mb-md">{{ $t('auth.title') }}</div>
             <div class="text-h6 text-grey-4" style="max-width: 500px; margin: 0 auto">
-              Administra tus ventas, compras e inventarios de manera eficiente y sencilla.
+              {{ $t('auth.subtitle') }}
             </div>
           </div>
         </div>
@@ -72,23 +72,23 @@
                 class="q-mb-md"
                 style="background-color: var(--cm-brand); border-radius: 8px"
               />
-              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">Bienvenido</div>
-              <div class="text-subtitle1 cm-text-muted">Ingresa a tu cuenta para continuar</div>
+              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">{{ $t('auth.welcome') }}</div>
+              <div class="text-subtitle1 cm-text-muted">{{ $t('auth.loginPrompt') }}</div>
             </div>
 
             <q-form @submit.prevent="login" class="q-gutter-md">
               <div>
-                <div class="text-weight-bold cm-text q-mb-xs">Usuario</div>
+                <div class="text-weight-bold cm-text q-mb-xs">{{ $t('auth.user') }}</div>
                 <q-input
                   outlined
                   v-model="username"
                   type="text"
                   lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Por favor ingresa tu usuario']"
+                  :rules="[(val) => (val && val.length > 0) || $t('auth.userRequired')]"
                   bg-color="grey-1"
                   color="primary"
                   dense
-                  placeholder="Usuario"
+                  :placeholder="$t('auth.userPlaceholder')"
                 >
                   <template v-slot:prepend>
                     <q-icon name="person" color="grey-7" />
@@ -106,18 +106,18 @@
                     >¿Olvidaste tu contraseña?</a
                   >
                 </div> -->
-                <div class="text-weight-bold cm-text q-mb-xs">Contraseña</div>
+                <div class="text-weight-bold cm-text q-mb-xs">{{ $t('auth.password') }}</div>
 
                 <q-input
                   outlined
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Por favor ingresa tu contraseña']"
+                  :rules="[(val) => (val && val.length > 0) || $t('auth.passwordRequired')]"
                   bg-color="grey-1"
                   color="primary"
                   dense
-                  placeholder="Contraseña"
+                  :placeholder="$t('auth.passwordPlaceholder')"
                 >
                   <template v-slot:prepend>
                     <q-icon name="lock" color="grey-7" />
@@ -133,7 +133,7 @@
               </div>
 
               <q-btn
-                label="Iniciar Sesión"
+                :label="$t('auth.loginBtn')"
                 type="submit"
                 color="primary"
                 text-color="white"
