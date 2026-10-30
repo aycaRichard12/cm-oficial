@@ -153,7 +153,7 @@
               <div class="text-center q-mt-md text-body2 cm-text-muted">
                 {{ $t('ui.no-tienes-una-cuenta-0cb9ce') }}
                 <a
-                  href="https://mistersofts.com/app/em/"
+                  href="https://mistersofts.com/app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-weight-bold text-primary"

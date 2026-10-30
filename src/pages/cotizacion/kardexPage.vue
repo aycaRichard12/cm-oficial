@@ -574,7 +574,7 @@ function calcularPromedio(movimientos) {
   return salida.movimientosDespues || salida || []
 }
 
-function cargarPDF() {
+async function cargarPDF() {
   if (datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'warning',
@@ -584,16 +584,48 @@ function cargarPDF() {
     return
   }
 
-  const doc = PDFKardex(
-    datosFiltrados.value,
-    almacenLabel.value,
-    productoLabel.value,
-    fechaiR.value,
-    fechafR.value,
-    metodoValoracion.value,
+  const productoSeleccionado = productosDisponibles.value.find(
+    (p) => Number(p.id) === Number(idproductoR.value),
   )
-  pdfData.value = doc.output('dataurlstring')
-  mostrarPDF.value = true
+
+  try {
+    const doc = await PDFKardex(
+      datosFiltrados.value,
+      almacenLabel.value,
+      productoLabel.value,
+      fechaiR.value,
+      fechafR.value,
+      metodoValoracion.value,
+      {
+        saldosIniciales: saldosIniciales.value,
+        unidadMedida:
+          productoSeleccionado?.unidadmedida ||
+          productoSeleccionado?.unidad ||
+          productoSeleccionado?.unidad_medida ||
+          '',
+        stockMax:
+          productoSeleccionado?.stockmax ||
+          productoSeleccionado?.stock_maximo ||
+          productoSeleccionado?.stock_max ||
+          '',
+        stockMin:
+          productoSeleccionado?.stockmin ||
+          productoSeleccionado?.stock_minimo ||
+          productoSeleccionado?.stock_min ||
+          '',
+        divisa: divisaActiva,
+      },
+    )
+    pdfData.value = doc.output('dataurlstring')
+    mostrarPDF.value = true
+  } catch (error) {
+    console.error('Error al generar el PDF del Kardex:', error)
+    $q.notify({
+      type: 'negative',
+      message: i18nT('ui.hubo-un-error-al-procesar-los-datos-para-continuar-e65596'),
+      position: 'top',
+    })
+  }
 }
 
 onMounted(async () => {
