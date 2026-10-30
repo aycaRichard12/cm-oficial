@@ -49,6 +49,7 @@ function resolveRawMessage(i18n, key) {
       if (first) return first
     }
   } catch (error) {
+    console.log(error)
     // tm() puede no estar disponible en builds runtime-only; se ignora.
   }
   return null

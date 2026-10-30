@@ -142,7 +142,7 @@
             v-show="mostrarSaldos"
             class="bg-amber-1"
           >
-            <q-td>{{ item.Fecha }}</q-td>
+            <q-td>{{ item.Fecha ? cambiarFormatoFecha(item.Fecha) : '' }}</q-td>
             <q-td style="align-items: center">{{ item.Concepto }}</q-td>
             <q-td class="text-right">{{ item.Entrada }}</q-td>
             <q-td class="text-right">{{ item.Salida }}</q-td>
@@ -203,8 +203,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesG'
-import { PDFKardex } from 'src/utils/pdfReportGenerator'
-import { obtenerFechaActualDato, obtenerFechaPrimerDiaMesActual } from 'src/composables/FuncionesG'
+import { PDFKardex } from 'src/utils/pdfs/Kardex/reporte.js'
+import { obtenerFechaActualDato, obtenerFechaPrimerDiaMesActual, cambiarFormatoFecha } from 'src/composables/FuncionesG'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import kardexSaldoFinal from './kardexSaldoFinal.vue'
 import saldosPage from './saldosPage.vue'
@@ -241,7 +241,7 @@ const saldosIniciales = ref([])
 
 // Columnas de la tabla
 const columns = [
-  { name: 'Fecha', label: i18nT('cotizacion.table.date'), field: 'Fecha', align: 'left', sortable: true },
+  { name: 'Fecha', label: i18nT('cotizacion.table.date'), field: 'Fecha', align: 'left', sortable: true, format: (val) => (val ? cambiarFormatoFecha(val) : '') },
   { name: 'Concepto', label: i18nT('ui.concepto-fc5069'), field: 'Concepto', align: 'left', sortable: true },
   { name: 'Entrada', label: i18nT('ui.entrada-73f831'), field: 'Entrada', align: 'right', sortable: true },
   { name: 'Salida', label: i18nT('ui.salida-13058e'), field: 'Salida', align: 'right', sortable: true },
