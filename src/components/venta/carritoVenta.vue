@@ -278,7 +278,7 @@
           </div>
 
           <SelectorVariantesProducto
-            v-if="ConfiguracionProductoVariante && productoSeleccionado?.originalData?.id"
+            v-if="mostrarTablaVariantes"
             :idProducto="productoSeleccionado.originalData.id"
             @confirmar="recibirSeleccion"
             ref="selectorRef"
@@ -809,6 +809,15 @@ const validarDescripcion = async (scope, row) => {
 const productoTieneVariantes = computed(() => {
   if (!productoSeleccionado.value || !selectorRef.value) return false
   return selectorRef.value.tieneVariantes === true
+})
+
+// La tabla de variantes (SelectorVariantesProducto) SOLO se renderiza cuando la
+// configuracion esta habilitada (=== true) y existe un producto seleccionado.
+const mostrarTablaVariantes = computed(() => {
+  return (
+    ConfiguracionProductoVariante.value === true &&
+    Boolean(productoSeleccionado.value?.originalData?.id)
+  )
 })
 
 const puedeAgregarProducto = computed(() => {
@@ -1673,14 +1682,56 @@ async function consumirPermisoVentaSinStock(idalmacen) {
   return response
 }
 
+// Normaliza cualquier valor devuelto por la API a un booleano estricto.
+// Evita que strings como '0'/''/objetos/arreglos se consideren truthy.
+const normalizarBooleanoConfig = (valor) => {
+  if (valor === true || valor === 1) return true
+  if (valor === false || valor === 0 || valor === null || valor === undefined) return false
+  if (typeof valor === 'string') {
+    const v = valor.trim().toLowerCase()
+    if (['1', 'true', 'si', 'sí', 'yes', 'activo', 'habilitado'].includes(v)) return true
+    if (['0', 'false', 'no', 'inactivo', 'deshabilitado', ''].includes(v)) return false
+    return false
+  }
+  if (Array.isArray(valor)) return valor.length > 0
+  if (typeof valor === 'object') {
+    const nested =
+      valor.ProductoVariante ??
+      valor.productoVariante ??
+      valor.variante ??
+      valor.habilitado ??
+      valor.valor ??
+      valor.estado ??
+      null
+    if (nested !== null && nested !== undefined) return normalizarBooleanoConfig(nested)
+    return false
+  }
+  return Boolean(valor)
+}
+
 const fetchEstadoActualProductoVariante = async () => {
   try {
     const { data } = await api.get(`configuracionProductoVarianteEstadoActual/${idempresa}`)
-    console.log(data)
-    // Ajusta el parseo según la estructura real de la respuesta (ej. data.estado, data.valor, etc.)
-    ConfiguracionProductoVariante.value = data.ProductoVariante ?? data ?? false
+    console.log('Configuración variantes (raw):', data)
+
+    // Se prioriza la propiedad explícita y se descarta el fallback ambiguo `?? data`
+    // que convertía cualquier respuesta con forma de objeto en `truthy`.
+    const raw =
+      (data && typeof data === 'object' && !Array.isArray(data)
+        ? data.ProductoVariante ??
+          data.productoVariante ??
+          data.variante ??
+          data.habilitado ??
+          data.valor ??
+          data.estado ??
+          data
+        : data) ?? false
+
+    ConfiguracionProductoVariante.value = normalizarBooleanoConfig(raw)
   } catch (error) {
-    console.log(error)
+    console.error('Error al obtener configuración de variantes:', error)
+    // Ante un error, se asume DESHABILITADO para no mostrar la tabla de variantes.
+    ConfiguracionProductoVariante.value = false
   }
 }
 
