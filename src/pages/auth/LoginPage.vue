@@ -48,7 +48,10 @@
             ></div>
           </div>
 
-          <div class="text-center relative-position q-pa-xl" style="z-index: 10; color: var(--cm-on-primary)">
+          <div
+            class="text-center relative-position q-pa-xl"
+            style="z-index: 10; color: var(--cm-on-primary)"
+          >
             <q-icon
               name="business"
               size="100px"
@@ -72,7 +75,9 @@
                 class="q-mb-md"
                 style="background-color: var(--cm-brand); border-radius: 8px"
               />
-              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">{{ $t('auth.welcome') }}</div>
+              <div class="text-h4 text-weight-bolder text-primary q-mb-sm">
+                {{ $t('auth.welcome') }}
+              </div>
               <div class="text-subtitle1 cm-text-muted">{{ $t('auth.loginPrompt') }}</div>
             </div>
 
@@ -151,7 +156,6 @@
               </div>
 
               <div class="text-center q-mt-md text-body2 cm-text-muted">
-                {{ $t('ui.no-tienes-una-cuenta-0cb9ce') }}
                 <a
                   href="https://mistersofts.com/app/"
                   target="_blank"
@@ -159,6 +163,7 @@
                   class="text-weight-bold text-primary"
                   style="text-decoration: none"
                 >
+                  <q-icon name="home" />
                   {{ $t('ui.registrate-aab95f') }}
                 </a>
               </div>
@@ -261,11 +266,7 @@ const cargarConfiguracionContable = async (idempresa) => {
   }
   try {
     const { data } = await apiCt.get(`listar_confi_conta_integracion/${idempresa}`)
-    const lista = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.data)
-        ? data.data
-        : []
+    const lista = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []
     localStorage.setItem(CACHE_KEY_CONFI_CONTA, JSON.stringify(lista))
     console.log('[confi-conta] Configuracion guardada:', lista)
   } catch (error) {
