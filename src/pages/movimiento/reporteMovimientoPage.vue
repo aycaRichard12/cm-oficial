@@ -9,7 +9,7 @@
           id="costounitario"
           to="/movimientos"
           icon="arrow_back"
-          label="Volver"
+          :label="$t('ui.volver-84a715')"
           no-caps
         />
 
@@ -18,10 +18,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte Movimientos
+          {{ $t('ui.reporte-movimientos-9a6b08') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Reporte Movimientos
+          {{ $t('ui.administracion-de-reporte-movimientos-9692fe') }}
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
     <q-form @submit.prevent="handleGenerarReporte">
       <div class="row justify-center q-col-gutter-x-md">
         <div class="col-12 col-md-4">
-          <label for="fechaIni">Fecha Inicial*</label>
+          <label for="fechaIni">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input
             v-model="fechaInicio"
             id="fechaIni"
@@ -42,7 +42,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input
             v-model="fechaFin"
             id="fechafin"
@@ -55,13 +55,13 @@
       </div>
       <div class="row justify-center q-pt-md">
         <q-btn
-          label="Generar reporte"
+          :label="$t('ui.generar-reporte-eeafce')"
           color="primary"
           @click="handleGenerarReporte"
           class="q-mx-sm"
         />
         <q-btn
-          label="Vista previa del Reporte"
+          :label="$t('ui.vista-previa-del-reporte-60d956')"
           color="primary"
           @click="handleVerReporte"
           class="q-mx-sm"
@@ -73,7 +73,7 @@
       <q-form>
         <div class="row justify-center q-col-gutter-x-md">
           <div class="col-12 col-md-4">
-            <label for="almacen">Almacén*</label>
+            <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
             <q-select
               v-model="almacenSeleccionado"
               :options="opcionesAlmacenes"
@@ -99,7 +99,7 @@
       >
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
-            <span> No hay datos para mostrar. Genere un reporte primero. </span>
+            <span> {{ $t('ui.no-hay-datos-para-mostrar-genere-un-reporte-primero-358c32') }} </span>
           </div>
         </template>
       </q-table>
@@ -108,7 +108,7 @@
       <q-dialog v-model="mostrarModal" persistent full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -129,6 +129,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -155,24 +156,24 @@ const reporteGenerado = ref(false)
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
   const selected = opcionesAlmacenes.value.find((op) => op.value === almacenSeleccionado.value)
-  return selected ? selected.label : 'Todos los almacenes'
+  return selected ? selected.label : i18nT('ui.todos-los-almacenes-949f2c')
 })
 
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'center' },
+  { name: 'n', label: i18nT('cotizacion.table.number'), field: 'n', align: 'center' },
 
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
-  { name: 'almacenorigen', label: 'Almacén Origen', field: 'almacenorigen', align: 'left' },
-  { name: 'almacendestino', label: 'Almacén Destino', field: 'almacendestino', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+  { name: 'almacenorigen', label: i18nT('ui.almacen-origen-d3b270'), field: 'almacenorigen', align: 'left' },
+  { name: 'almacendestino', label: i18nT('ui.almacen-destino-ae5ede'), field: 'almacendestino', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
 
-  { name: 'aut', label: 'Autorizacion', field: 'aut', align: 'left' },
+  { name: 'aut', label: i18nT('ui.autorizacion-f525a8'), field: 'aut', align: 'left' },
 ]
 
 // --- Watchers ---
@@ -200,12 +201,12 @@ async function cargarListaAlmacenes() {
       console.error('Error al cargar almacenes:', resultado.error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar almacenes.',
+        message: i18nT('ui.error-al-cargar-almacenes-420531'),
         position: 'top',
       })
     } else {
       opcionesAlmacenes.value = []
-      opcionesAlmacenes.value.push({ label: 'Todos los almacenes', value: '0' })
+      opcionesAlmacenes.value.push({ label: i18nT('ui.todos-los-almacenes-949f2c'), value: '0' })
       const use = resultado.filter((u) => u.idusuario == idusuario)
       use.forEach((key) => {
         opcionesAlmacenes.value.push({
@@ -219,7 +220,7 @@ async function cargarListaAlmacenes() {
     console.error('Error en cargarListaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al cargar los almacenes.',
+      message: i18nT('ui.ocurrio-un-error-al-cargar-los-almacenes-06e9b8'),
       position: 'top',
     })
   }
@@ -235,7 +236,7 @@ function validarFechas() {
   if (inicio.getTime() > fin.getTime()) {
     $q.notify({
       type: 'info',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-48706f'),
       position: 'top',
     })
     // Se podría resetear la fecha o ajustar para corregir el error
@@ -250,14 +251,14 @@ async function generarReporte() {
   if (!fechaInicio.value || !fechaFin.value) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, seleccione ambas fechas para generar el reporte.',
+      message: i18nT('ui.por-favor-seleccione-ambas-fechas-para-generar-el-re-04ec5a'),
       position: 'top',
     })
     return
   }
 
   $q.loading.show({
-    message: 'Generando reporte...',
+    message: i18nT('ui.generando-reporte-f36ceb'),
   })
 
   try {
@@ -278,13 +279,13 @@ async function generarReporte() {
       almacenSeleccionado.value = '0' // Reinicia el filtro de almacén
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar el reporte: ' + (data.error || 'Mensaje desconocido'),
+        message: i18nT('ui.error-al-generar-el-reporte-596b95') + (data.error || i18nT('ui.mensaje-desconocido-c37e4e')),
         position: 'top',
       })
     }
@@ -292,7 +293,7 @@ async function generarReporte() {
     console.error('Error en generarReporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al generar el reporte.',
+      message: i18nT('ui.ocurrio-un-error-al-generar-el-reporte-eddf13'),
       position: 'top',
     })
   } finally {
@@ -329,7 +330,7 @@ function handleVerReporte() {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No se ha generado ningún reporte o el reporte está vacío.',
+      message: i18nT('ui.no-se-ha-generado-ningun-reporte-o-el-reporte-esta-v-d8e84e'),
       position: 'top',
     })
   } else {

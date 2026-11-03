@@ -17,11 +17,12 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
-  titulo: { type: String, default: 'Emisión de Cotización' },
+  titulo: { type: String, default: i18nT('ui.emision-de-cotizacion-d2592e') },
   subtitulo: {
     type: String,
-    default: 'Registre los detalles de la nueva cotización y añada productos',
+    default: i18nT('ui.registre-los-detalles-de-la-nueva-cotizacion-y-anada-4058b8'),
   },
 })
 </script>

@@ -8,9 +8,9 @@
             <div class="row items-center">
               <q-icon name="shortcut" color="primary" size="2.5rem" class="q-mr-md" />
               <div>
-                <div class="text-h5 text-weight-bold text-primary">Atajos Rápidos</div>
+                <div class="text-h5 text-weight-bold text-primary">{{ $t('ui.atajos-rapidos-e63995') }}</div>
                 <div class="text-subtitle2 text-grey-7">
-                  Personaliza tus accesos directos en el inicio (Máximo 5)
+                  {{ $t('ui.personaliza-tus-accesos-directos-en-el-inicio-maximo-eeefc9') }}
                 </div>
               </div>
             </div>
@@ -24,13 +24,13 @@
       <div class="col-12">
         <q-card flat class="shadow-1 rounded-borders">
           <q-card-section class="q-pa-md">
-            <div class="text-subtitle1 q-mb-md text-weight-medium">Selecciona tus atajos</div>
+            <div class="text-subtitle1 q-mb-md text-weight-medium">{{ $t('ui.selecciona-tus-atajos-c4d4ad') }}</div>
             <div class="row q-col-gutter-md">
               <div class="col-12 col-md-8">
                 <q-select
                   v-model="selectedShortcuts"
                   :options="availableOptions"
-                  label="Módulos disponibles"
+                  :label="$t('ui.modulos-disponibles-e83906')"
                   option-label="title"
                   option-value="codigo"
                   multiple
@@ -40,7 +40,7 @@
                   map-options
                   :disable="loading"
                   :max-values="5"
-                  hint="Máximo 5 atajos"
+                  :hint="$t('ui.maximo-5-atajos-e86307')"
                   @update:model-value="validateLimit"
                   @remove="onRemoveShortcut"
                 >
@@ -58,7 +58,7 @@
               </div>
               <div class="col-12 col-md-4">
                 <q-btn
-                  label="Guardar Atajos"
+                  :label="$t('ui.guardar-atajos-1f5c31')"
                   color="primary"
                   :loading="loading"
                   :disable="selectedShortcuts.length === 0"
@@ -69,9 +69,7 @@
               </div>
             </div>
             <div class="text-caption text-grey-6 q-mt-sm">
-              <q-icon name="info" size="xs" /> Los atajos se mostrarán según las reglas: si no hay
-              atajos → 4 accesos por defecto; 1 atajo → se añade a los 4 por defecto; 2 o más atajos
-              → solo se muestran los atajos seleccionados.
+              <q-icon name="info" size="xs" /> {{ $t('ui.los-atajos-se-mostraran-segun-las-reglas-si-no-hay-a-ea079d') }}
             </div>
           </q-card-section>
         </q-card>
@@ -88,7 +86,7 @@
               :rows="currentShortcuts"
               :columns="tableColumns"
               row-key="id_operacion"
-              no-data-label="No tienes atajos personalizados configurados"
+              :no-data-label="$t('ui.no-tienes-atajos-personalizados-configurados-52b966')"
             >
               <template v-slot:body-cell-num="props">
                 <q-td :props="props">
@@ -106,7 +104,7 @@
                     @click="deleteShortcut(props.row.id_operacion)"
                     size="sm"
                   >
-                    <q-tooltip>Eliminar atajo</q-tooltip>
+                    <q-tooltip>{{ $t('ui.eliminar-atajo-ba8a83') }}</q-tooltip>
                   </q-btn>
                 </q-td>
               </template>
@@ -119,6 +117,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -142,10 +141,10 @@ const availableOptions = computed(() => {
 })
 
 const tableColumns = [
-  { name: 'num', label: 'N°', field: 'num', align: 'left' },
-  { name: 'titulo', label: 'Módulo', field: 'operacion', align: 'left', sortable: true },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
+  { name: 'num', label: i18nT('cotizacion.table.number'), field: 'num', align: 'left' },
+  { name: 'titulo', label: i18nT('ui.modulo-49dbba'), field: 'operacion', align: 'left', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'center', field: 'acciones' },
 ]
 
 // Cargar atajos existentes del usuario
@@ -171,7 +170,7 @@ const fetchUserShortcuts = async () => {
     // Precargar selección actual en el multiselect
     selectedShortcuts.value = currentShortcuts.value.map((s) => s.codigo)
   } catch (error) {
-    $q.notify({ color: 'negative', message: 'Error al cargar atajos: ' + error })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-al-cargar-atajos-6937ef') + error })
   } finally {
     loading.value = false
   }
@@ -190,7 +189,7 @@ const getCurrentUserId = () => {
 // Validar límite de selección
 const validateLimit = () => {
   if (selectedShortcuts.value.length > 5) {
-    $q.notify({ color: 'warning', message: 'Máximo 5 atajos permitidos' })
+    $q.notify({ color: 'warning', message: i18nT('ui.maximo-5-atajos-permitidos-362275') })
     selectedShortcuts.value = selectedShortcuts.value.slice(0, 5)
   }
 }
@@ -198,7 +197,7 @@ const validateLimit = () => {
 // Guardar atajos: eliminar todos los existentes y crear los nuevos seleccionados
 const saveShortcuts = async () => {
   if (selectedShortcuts.value.length > 5) {
-    $q.notify({ color: 'negative', message: 'No puedes guardar más de 5 atajos' })
+    $q.notify({ color: 'negative', message: i18nT('ui.no-puedes-guardar-mas-de-5-atajos-42b646') })
     return
   }
 
@@ -207,7 +206,7 @@ const saveShortcuts = async () => {
   console.log('Guardando atajos para usuario ID:', userId)
   console.log('Atajos seleccionados:', IDMD5)
   if (!userId) {
-    $q.notify({ color: 'negative', message: 'No se pudo identificar al usuario' })
+    $q.notify({ color: 'negative', message: i18nT('ui.no-se-pudo-identificar-al-usuario-8a5f39') })
     loading.value = false
     return
   }
@@ -237,11 +236,11 @@ const saveShortcuts = async () => {
       }
     }
 
-    $q.notify({ color: 'positive', message: 'Atajos guardados correctamente' })
+    $q.notify({ color: 'positive', message: i18nT('ui.atajos-guardados-correctamente-4c927a') })
     await fetchUserShortcuts()
   } catch (error) {
     console.error(error)
-    $q.notify({ color: 'negative', message: 'Error al guardar atajos' })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-al-guardar-atajos-8caa18') })
   } finally {
     loading.value = false
   }
@@ -250,19 +249,19 @@ const saveShortcuts = async () => {
 // Eliminar un atajo individual
 const deleteShortcut = async (idOperacion) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Deseas eliminar este atajo?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.deseas-eliminar-este-atajo-cbafeb'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
     loading.value = true
     try {
       await api.get(`eliminarOperacion/${idOperacion}`)
-      $q.notify({ color: 'positive', message: 'Atajo eliminado' })
+      $q.notify({ color: 'positive', message: i18nT('ui.atajo-eliminado-68b479') })
       await fetchUserShortcuts()
     } catch (error) {
       console.error(error)
-      $q.notify({ color: 'negative', message: 'Error al eliminar' })
+      $q.notify({ color: 'negative', message: i18nT('ui.error-al-eliminar-7e52c8') })
     } finally {
       loading.value = false
     }
@@ -281,7 +280,7 @@ const onRemoveShortcut = async (codigo) => {
 
   // Mostrar diálogo de confirmación
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar el atajo "${existing.operacion}"?`,
     cancel: true,
     persistent: true,
@@ -290,7 +289,7 @@ const onRemoveShortcut = async (codigo) => {
       loading.value = true
       try {
         await api.get(`eliminarOperacion/${existing.id_operacion}`)
-        $q.notify({ color: 'positive', message: 'Atajo eliminado correctamente' })
+        $q.notify({ color: 'positive', message: i18nT('ui.atajo-eliminado-correctamente-7131a6') })
 
         // Remover de la tabla local
         const idx = currentShortcuts.value.findIndex(
@@ -304,7 +303,7 @@ const onRemoveShortcut = async (codigo) => {
         if (selIdx > -1) selectedShortcuts.value.splice(selIdx, 1)
       } catch (error) {
         console.error(error)
-        $q.notify({ color: 'negative', message: 'Error al eliminar atajo' })
+        $q.notify({ color: 'negative', message: i18nT('ui.error-al-eliminar-atajo-e3a14c') })
         // Revertir eliminación del chip en caso de error
         selectedShortcuts.value.push(codigo)
       } finally {

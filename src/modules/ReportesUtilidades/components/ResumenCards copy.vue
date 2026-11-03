@@ -7,7 +7,7 @@
           <q-icon name="analytics" size="md" class="q-mr-md" />
           <div>
             <div class="text-caption" style="opacity: 0.8">
-              Indicadores del período seleccionado
+              {{ $t('ui.indicadores-del-periodo-seleccionado-cec308') }}
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@
           <q-item>
             <q-item-section>
               <q-item-label class="text-subtitle1 text-weight-bold cm-text">
-                Venta neta
+                {{ $t('ui.venta-neta-157fa4') }}
               </q-item-label>
             </q-item-section>
             <q-item-section side class="text-right">
@@ -43,7 +43,7 @@
           <div class="sub-items-container q-pl-md q-pr-sm q-pb-sm">
             <q-item dense>
               <q-item-section>
-                <q-item-label class="text-body2 cm-text-muted">Precio venta</q-item-label>
+                <q-item-label class="text-body2 cm-text-muted">{{ $t('ui.precio-venta-1d5cc1') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-body1 cm-text">
@@ -54,7 +54,7 @@
 
             <q-item dense>
               <q-item-section>
-                <q-item-label class="text-body2 cm-text-muted">Descuento</q-item-label>
+                <q-item-label class="text-body2 cm-text-muted">{{ $t('ventas.discount') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-body1 text-negative">
@@ -69,7 +69,7 @@
           <!-- Bloque 2: Costo de Ventas -->
           <q-item>
             <q-item-section>
-              <q-item-label class="text-subtitle1 cm-text"> Costo de ventas </q-item-label>
+              <q-item-label class="text-subtitle1 cm-text"> {{ $t('ui.costo-de-ventas-065727') }} </q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-item-label class="text-h6 cm-text">
@@ -85,7 +85,7 @@
           <q-item class="q-mt-sm q-mb-xs">
             <q-item-section>
               <q-item-label class="text-h6 text-weight-bold cm-text">
-                Utilidad o Pérdida
+                {{ $t('ui.utilidad-o-perdida-73f447') }}
               </q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -104,13 +104,14 @@
         <q-icon name="info" color="grey-6" size="sm" />
       </template>
       <span class="text-caption">
-        Los indicadores corresponden al rango de fechas y filtros seleccionados.
+        {{ $t('ui.los-indicadores-corresponden-al-rango-de-fechas-y-fi-6af045') }}
       </span>
     </q-banner>
   </div>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   data: { type: Object, default: () => ({}) },
   divisa: { type: Object, default: () => ({}) },
@@ -119,9 +120,9 @@ defineProps({
 
 // Orden específico: Venta, Cotización, Total
 const orderedCategories = [
-  { key: 'venta', label: 'Venta' },
-  { key: 'cotizacion', label: 'Cotización' },
-  { key: 'total', label: 'Total' },
+  { key: 'venta', label: i18nT('ui.venta-3b19a7') },
+  { key: 'cotizacion', label: i18nT('ui.cotizacion-58685c') },
+  { key: 'total', label: i18nT('ventas.total') },
 ]
 
 // Función para formatear números (2 decimales fijos y separador de miles si es necesario)

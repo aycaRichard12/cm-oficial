@@ -9,10 +9,10 @@
         icon="my_location"
         @click="usarMiUbicacion"
         :loading="cargando"
-        tooltip="Usar mi ubicación"
+        :tooltip="$t('ui.usar-mi-ubicacion-9fb840')"
       />
       <div v-if="cargando" class="text-white bg-dark q-pa-xs rounded-borders text-caption">
-        Obteniendo GPS...
+        {{ $t('ui.obteniendo-gps-5fcf4f') }}
       </div>
     </div>
   </div>

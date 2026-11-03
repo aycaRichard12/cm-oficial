@@ -4,7 +4,7 @@
       color="primary"
       @click="$emit('add')"
       class="btn-res q-mt-lg"
-      title="Registrar Característica"
+      :title="$t('configProducto.caracteristicaProducto.table.addTitle')"
       id="add"
     >
       <q-icon name="add" class="icono" />

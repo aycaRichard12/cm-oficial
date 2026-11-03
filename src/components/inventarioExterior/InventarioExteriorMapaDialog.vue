@@ -4,7 +4,7 @@
       <q-card-section class="row items-center q-pb-none bg-primary text-white">
         <div class="text-h6">
           <q-icon name="place" class="q-mr-sm" />
-          Ubicación Registrada
+          {{ $t('ui.ubicacion-registrada-1da335') }}
         </div>
         <q-space />
         <q-btn
@@ -32,12 +32,12 @@
         <q-btn 
           flat 
           icon="map" 
-          label="Abrir en Google Maps" 
+          :label="$t('ui.abrir-en-google-maps-7be061')" 
           color="primary" 
           :href="googleMapsUrl" 
           target="_blank" 
         />
-        <q-btn flat label="Cerrar" color="grey" v-close-popup />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" color="grey" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>

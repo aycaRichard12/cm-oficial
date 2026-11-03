@@ -1,7 +1,7 @@
 <template>
   <div class="row q-col-gutter-x-md q-mb-md">
     <div class="col-12 col-md-2" id="filtroalmacenanulaciones">
-      <label for="almacen">Almacén</label>
+      <label for="almacen">{{ $t('inventario.warehouse') }}</label>
       <q-select
         :model-value="almacen"
         @update:model-value="$emit('update:almacen', $event)"
@@ -16,7 +16,7 @@
       />
     </div>
     <div class="col-12 col-md-2" id="filtrotipoventaanulaciones">
-      <label for="tipoventa">Tipo de venta</label>
+      <label for="tipoventa">{{ $t('ui.tipo-de-venta-99dfd0') }}</label>
       <q-select
         :model-value="tipo"
         @update:model-value="$emit('update:tipo', $event)"

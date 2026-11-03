@@ -2,7 +2,7 @@
   <q-page padding>
     <q-card class="q-pa-md">
       <q-card-section>
-        <div class="text-h5 text-center text-weight-bold q-mb-md">Reporte de Kardex</div>
+        <div class="text-h5 text-center text-weight-bold q-mb-md">{{ $t('ui.reporte-de-kardex-323317') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -12,9 +12,9 @@
               <q-input
                 filled
                 v-model="startDate"
-                label="Fecha Inicial"
+                :label="$t('ui.fecha-inicial-e467b4')"
                 mask="####-##-##"
-                :rules="[(val) => !!val || 'La fecha inicial es requerida']"
+                :rules="[(val) => !!val || $t('ui.la-fecha-inicial-es-requerida-0f18c8')]"
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
@@ -29,13 +29,13 @@
               <q-input
                 filled
                 v-model="endDate"
-                label="Fecha Final"
+                :label="$t('ui.fecha-final-fcea71')"
                 mask="####-##-##"
                 :rules="[
-                  (val) => !!val || 'La fecha final es requerida',
+                  (val) => !!val || $t('ui.la-fecha-final-es-requerida-da9d7e'),
                   (val) =>
                     validateDates() ||
-                    'La fecha final debe ser igual o posterior a la fecha inicial',
+                    $t('ui.la-fecha-final-debe-ser-igual-o-posterior-a-la-fecha-3effb6'),
                 ]"
               >
                 <template v-slot:append>
@@ -49,7 +49,7 @@
             </div>
           </div>
           <div class="row justify-center q-mt-md">
-            <q-btn label="Buscar" type="submit" color="primary" icon="search" :loading="loading">
+            <q-btn :label="$t('ui.buscar-a62405')" type="submit" color="primary" icon="search" :loading="loading">
               <template v-slot:loading>
                 <q-spinner-tail color="white" />
               </template>
@@ -70,7 +70,7 @@
           separator="cell"
           hide-pagination
           :rows-per-page-options="[0]"
-          no-data-label="No hay movimientos en el rango de fechas seleccionado"
+          :no-data-label="$t('ui.no-hay-movimientos-en-el-rango-de-fechas-seleccionad-9a11bc')"
         >
           <template v-slot:body-cell-entrada="props">
             <q-td :props="props">
@@ -117,27 +117,27 @@
         </q-table>
 
         <q-card-section class="q-mt-md">
-          <div class="text-h6 text-right">Resumen:</div>
+          <div class="text-h6 text-right">{{ $t('ui.resumen-8caa89') }}</div>
           <div class="text-body1 text-right q-mt-sm">
-            Saldo Total de Unidades:
+            {{ $t('ui.saldo-total-de-unidades-12320a') }}
             <span class="text-weight-bold text-blue-8">{{ totalUnitsSaldo }}</span>
           </div>
           <div class="text-body1 text-right">
-            Valor Total en Saldo:
+            {{ $t('ui.valor-total-en-saldo-000ae7') }}
             <span class="text-weight-bold text-blue-8">{{ formatCurrency(totalValueSaldo) }}</span>
           </div>
         </q-card-section>
 
         <q-card-actions align="right" class="q-mt-md">
           <q-btn
-            label="Exportar PDF"
+            :label="$t('reportes.exportPdf')"
             color="red"
             icon="picture_as_pdf"
             @click="exportToPdf"
             :disable="kardexEntries.length === 0"
           />
           <q-btn
-            label="Exportar Excel"
+            :label="$t('reportes.exportExcel')"
             color="green"
             icon="cloud_download"
             @click="exportToExcel"
@@ -148,13 +148,14 @@
 
       <q-card-section v-else-if="!loading && searchAttempted" class="text-center text-grey-7">
         <q-icon name="info" size="xl" />
-        <div class="q-mt-sm">No hay resultados para el rango de fechas seleccionado.</div>
+        <div class="q-mt-sm">{{ $t('ui.no-hay-resultados-para-el-rango-de-fechas-selecciona-8b2321') }}</div>
       </q-card-section>
     </q-card>
   </q-page>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import api from 'src/api/api' // Ajusta la ruta a tu archivo api.js
@@ -180,24 +181,24 @@ const columns = [
     format: (val) => `${val}`,
     sortable: true,
   },
-  { name: 'fecha', align: 'left', label: 'Fecha', field: 'fecha', sortable: true },
-  { name: 'detalle', align: 'left', label: 'Detalle', field: 'detalle', sortable: true },
+  { name: 'fecha', align: 'left', label: i18nT('cotizacion.table.date'), field: 'fecha', sortable: true },
+  { name: 'detalle', align: 'left', label: i18nT('ui.detalle-be605b'), field: 'detalle', sortable: true },
   {
     name: 'precio_unitario',
     align: 'right',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     field: 'precio_unitario',
     format: (val) => formatCurrency(val),
     sortable: true,
   },
-  { name: 'cantidad', align: 'right', label: 'Cantidad', field: 'cantidad', sortable: true },
-  { name: 'entrada', align: 'right', label: 'Entrada', field: 'entrada', sortable: true },
-  { name: 'salida', align: 'right', label: 'Salida', field: 'salida', sortable: true },
-  { name: 'saldo', align: 'right', label: 'Saldo (U)', field: 'saldo', sortable: true },
+  { name: 'cantidad', align: 'right', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', sortable: true },
+  { name: 'entrada', align: 'right', label: i18nT('ui.entrada-73f831'), field: 'entrada', sortable: true },
+  { name: 'salida', align: 'right', label: i18nT('ui.salida-13058e'), field: 'salida', sortable: true },
+  { name: 'saldo', align: 'right', label: i18nT('ui.saldo-u-892580'), field: 'saldo', sortable: true },
   {
     name: 'valor_entrada',
     align: 'right',
-    label: 'V. Entrada',
+    label: i18nT('ui.v-entrada-8e686a'),
     field: 'valor_entrada',
     format: (val) => formatCurrency(val),
     sortable: true,
@@ -205,7 +206,7 @@ const columns = [
   {
     name: 'valor_salida',
     align: 'right',
-    label: 'V. Salida',
+    label: i18nT('ui.v-salida-fb4e64'),
     field: 'valor_salida',
     format: (val) => formatCurrency(val),
     sortable: true,
@@ -213,7 +214,7 @@ const columns = [
   {
     name: 'valor_saldo',
     align: 'right',
-    label: 'V. Saldo',
+    label: i18nT('ui.v-saldo-349793'),
     field: 'valor_saldo',
     format: (val) => formatCurrency(val),
     sortable: true,
@@ -254,7 +255,7 @@ const searchKardex = async () => {
   if (!startDate.value || !endDate.value || !validateDates()) {
     $q.notify({
       type: 'negative',
-      message: 'Por favor, complete las fechas correctamente.',
+      message: i18nT('ui.por-favor-complete-las-fechas-correctamente-0a53d7'),
       position: 'top',
     })
     return
@@ -273,7 +274,7 @@ const searchKardex = async () => {
     if (kardexEntries.value.length === 0) {
       $q.notify({
         type: 'info',
-        message: 'No se encontraron movimientos para el rango de fechas seleccionado.',
+        message: i18nT('ui.no-se-encontraron-movimientos-para-el-rango-de-fecha-44fd5e'),
         position: 'top',
       })
     }
@@ -281,7 +282,7 @@ const searchKardex = async () => {
     console.error('Error al obtener datos del Kardex:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los datos del Kardex. Intente nuevamente.',
+      message: i18nT('ui.error-al-cargar-los-datos-del-kardex-intente-nuevame-bf83e6'),
       position: 'top',
     })
   } finally {
@@ -292,7 +293,7 @@ const searchKardex = async () => {
 // Exportar a PDF
 const exportToPdf = () => {
   const doc = new jsPDF('landscape')
-  doc.text('Reporte de Kardex', 14, 16)
+  doc.text(i18nT('ui.reporte-de-kardex-323317'), 14, 16)
   doc.text(`Desde: ${startDate.value} Hasta: ${endDate.value}`, 14, 22)
 
   const tableColumn = columns.map((col) => col.label)
@@ -389,7 +390,7 @@ const exportToExcel = () => {
 
   const ws = XLSX.utils.json_to_sheet(dataToExport)
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Kardex')
+  XLSX.utils.book_append_sheet(wb, ws, i18nT('ui.kardex-ea9e29'))
   XLSX.writeFile(wb, `Kardex_${startDate.value}_${endDate.value}.xlsx`)
 }
 </script>

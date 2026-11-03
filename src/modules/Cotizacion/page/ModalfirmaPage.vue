@@ -2,14 +2,14 @@
   <q-dialog v-model="show" persistent maximized full-width full-height>
     <q-card>
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Registrar Firma</div>
+        <div class="text-h6">{{ $t('ui.registrar-firma-5468c9') }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
       <q-card-section>
         <div class="q-mb-sm text-caption cm-text-muted">
-          Firma para: {{ idEntidad?.nombre }} {{ idEntidad?.nombrecomercial }}
+          {{ $t('ui.firma-para-680d6f') }} {{ idEntidad?.nombre }} {{ idEntidad?.nombrecomercial }}
         </div>
         <canvas
           ref="canvasRef"
@@ -24,11 +24,11 @@
       </q-card-section>
 
       <q-card-actions align="between" class="q-pa-md">
-        <q-btn flat label="Limpiar" color="negative" icon="delete" @click="limpiar" />
+        <q-btn flat :label="$t('ui.limpiar-f3b225')" color="negative" icon="delete" @click="limpiar" />
         <div>
-          <q-btn flat label="Cancelar" v-close-popup class="q-mr-sm" />
+          <q-btn flat :label="$t('common.cancel')" v-close-popup class="q-mr-sm" />
           <q-btn
-            label="Guardar Firma"
+            :label="$t('ui.guardar-firma-d88565')"
             color="primary"
             icon="draw"
             :loading="cargando"
@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, nextTick } from 'vue'
 import SignaturePad from 'signature_pad'
 import { useQuasar } from 'quasar'
@@ -117,7 +118,7 @@ function reducirImagen(base64) {
 }
 const guardarFirma = async () => {
   if (signaturePad.isEmpty()) {
-    $q.notify({ color: 'warning', message: 'Debe firmar antes de guardar' })
+    $q.notify({ color: 'warning', message: i18nT('ui.debe-firmar-antes-de-guardar-1d558a') })
     return
   }
 
@@ -135,7 +136,7 @@ const guardarFirma = async () => {
       : props.idEntidad
 
   if (!idCliente) {
-    $q.notify({ color: 'negative', message: 'Cliente no valido para registrar firma.' })
+    $q.notify({ color: 'negative', message: i18nT('ui.cliente-no-valido-para-registrar-firma-bd17c2') })
     cargando.value = false
     return
   }
@@ -149,11 +150,11 @@ const guardarFirma = async () => {
     console.log(response.data)
     // Devolvemos la respuesta al padre
     emit('onSuccess', response.data)
-    $q.notify({ color: 'positive', message: 'Firma registrada con éxito' })
+    $q.notify({ color: 'positive', message: i18nT('ui.firma-registrada-con-exito-6ff93f') })
     show.value = false
   } catch (error) {
     emit('onError', error)
-    $q.notify({ color: 'negative', message: 'Error al registrar firma' })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-al-registrar-firma-86a676') })
   } finally {
     cargando.value = false
   }

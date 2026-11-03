@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte de Pagos
+          {{ $t('ui.reporte-de-pagos-1cec1c') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte de Pagos
+          {{ $t('ui.administracion-de-reporte-de-pagos-e15e3c') }}
         </div>
       </div>
     </div>
@@ -33,7 +33,7 @@
           dense
           class="text-weight-bold"
         >
-          {{ props.row.estado_pago === 1 ? 'Concluido' : 'En Proceso' }}
+          {{ props.row.estado_pago === 1 ? $t('ui.concluido-123dfa') : $t('ui.en-proceso-875ad4') }}
         </q-chip>
       </q-td>
     </template>
@@ -43,7 +43,7 @@
           <q-btn
             color="primary"
             icon="picture_as_pdf"
-            label="Ver PDF"
+            :label="$t('ui.ver-pdf-57c851')"
             @click="abrirEnNuevaPestana(props.row.comprobante_path)"
           />
         </template>
@@ -64,7 +64,7 @@
     </template>
     <template v-slot:no-data>
       <div class="full-width row flex-center text-primary q-gutter-sm text-body1">
-        <span> No se encontraron resultados para los filtros seleccionados. </span>
+        <span> {{ $t('ui.no-se-encontraron-resultados-para-los-filtros-selecc-512c0a') }} </span>
       </div>
     </template>
   </q-table>
@@ -74,13 +74,14 @@
         <q-img :src="imagenSeleccionada" style="width: 100%; height: auto" />
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -98,27 +99,27 @@ const loading = ref(false)
 const allRows = ref([]) // Almacena todos los datos originales de la API
 
 const columns = [
-  { name: 'fecha_pago', label: 'Fecha Pago', align: 'left', field: 'fecha_pago', sortable: true },
+  { name: 'fecha_pago', label: i18nT('ui.fecha-pago-716ad0'), align: 'left', field: 'fecha_pago', sortable: true },
   {
     name: 'monto',
-    label: 'Monto',
+    label: i18nT('ui.monto-835dcd'),
     align: 'left',
     field: 'monto',
     sortable: true,
     format: (val) => `${parseFloat(val).toFixed(2)}`,
   },
-  { name: 'referencia', label: 'Referencia', align: 'left', field: 'referencia', sortable: true },
+  { name: 'referencia', label: i18nT('ui.referencia-123407'), align: 'left', field: 'referencia', sortable: true },
   {
     name: 'observaciones',
-    label: 'Observaciones',
+    label: i18nT('ui.observaciones-39b9a5'),
     align: 'center',
     field: 'observaciones',
     sortable: true,
   },
-  { name: 'estado', label: 'Estado', align: 'left', field: 'estado', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), align: 'left', field: 'estado', sortable: true },
   {
     name: 'comprobante_path',
-    label: 'Vaucher',
+    label: i18nT('ui.vaucher-7cd4c4'),
     align: 'center',
     field: 'comprobante_path',
     sortable: true,
@@ -145,7 +146,7 @@ async function fetchData() {
     $q.notify({
       color: 'negative',
       position: 'top',
-      message: 'No se pudieron cargar los datos. Por favor, intente más tarde.',
+      message: i18nT('ui.no-se-pudieron-cargar-los-datos-por-favor-intente-ma-e60bf9'),
       icon: 'report_problem',
     })
   } finally {

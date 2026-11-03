@@ -5,7 +5,7 @@
         <!-- Título e Icono -->
         <div class="col-12 col-md-auto row items-center">
           <q-icon name="table_chart" color="primary" size="28px" class="q-mr-sm" />
-          <div class="text-h6 text-weight-bold text-primary">Listado de Inventario</div>
+          <div class="text-h6 text-weight-bold text-primary">{{ $t('ui.listado-de-inventario-1e4e32') }}</div>
         </div>
 
         <q-space class="gt-sm" />
@@ -16,7 +16,7 @@
             dense
             outlined
             v-model="busqueda"
-            placeholder="Buscar por producto o código..."
+            :placeholder="$t('ui.buscar-por-producto-o-codigo-1787e0')"
             class="cm-surface"
           >
             <template v-slot:prepend>
@@ -33,7 +33,7 @@
             clearable
             v-model="categoriaFiltro"
             :options="categoriasUnicas"
-            label="Filtrar por Categoría"
+            :label="$t('ui.filtrar-por-categoria-03b32f')"
             class="cm-surface"
           >
             <template v-slot:prepend>
@@ -53,10 +53,10 @@
               flat
               size="md"
             >
-              <q-tooltip>Exportar a Excel</q-tooltip>
+              <q-tooltip>{{ $t('ui.exportar-a-excel-1569c7') }}</q-tooltip>
             </q-btn>
             <q-btn round icon="picture_as_pdf" @click="exportarPDF" color="negative" flat size="md">
-              <q-tooltip>Exportar a PDF</q-tooltip>
+              <q-tooltip>{{ $t('ui.exportar-a-pdf-f6b614') }}</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -93,6 +93,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useStockStore } from '../store/stockStore'
 //import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -123,23 +124,23 @@ const datosFiltrados = computed(() => {
 })
 
 const columnas = [
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
   {
     name: 'descripcion',
-    label: 'Descripción Producto',
+    label: i18nT('ui.descripcion-producto-f0f040'),
     field: 'descripcion',
     align: 'left',
     sortable: true,
   },
 
-  { name: 'stock', label: 'Stock actual', field: 'stock', align: 'right', sortable: true },
-  { name: 'stockminimo', label: 'Stock mínimo', field: 'stockminimo', align: 'right' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'precioSugerido', label: 'Precio Sugerido', field: 'precioSugerido', align: 'right' },
-  { name: 'valorInventario', label: 'Valor inventario', field: 'valorInventario', align: 'right' },
+  { name: 'stock', label: i18nT('ui.stock-actual-93d773'), field: 'stock', align: 'right', sortable: true },
+  { name: 'stockminimo', label: i18nT('ui.stock-minimo-e10ddd'), field: 'stockminimo', align: 'right' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'precioSugerido', label: i18nT('ui.precio-sugerido-dbaa32'), field: 'precioSugerido', align: 'right' },
+  { name: 'valorInventario', label: i18nT('ui.valor-inventario-5bcd56'), field: 'valorInventario', align: 'right' },
   {
     name: 'ultimaActualizacion',
-    label: 'Última actualización',
+    label: i18nT('ui.ultima-actualizacion-26e09a'),
     field: 'ultimaActualizacion',
     align: 'center',
   },

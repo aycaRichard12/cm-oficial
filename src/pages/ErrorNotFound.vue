@@ -10,14 +10,14 @@
       <transition appear enter-active-class="animated fadeInUp">
         <img
           src="../assets/yfcontruccion.jpg"
-          alt="Página en construcción"
+          :alt="$t('ui.pagina-en-construccion-419f78')"
           class="construction-image"
         />
       </transition>
 
       <!-- Texto principal -->
       <transition appear enter-active-class="animated fadeInUp delay-1">
-        <div class="text-h2 text-weight-bolder main-title">Página en construcción</div>
+        <div class="text-h2 text-weight-bolder main-title">{{ $t('ui.pagina-en-construccion-419f78') }}</div>
       </transition>
 
       <!-- Barra de progreso animada -->
@@ -26,14 +26,14 @@
           <div class="progress-bar">
             <div class="progress-fill" :style="{ width: progress + '%' }"></div>
           </div>
-          <span class="progress-text text-caption q-mt-xs">{{ progress }}% completado</span>
+          <span class="progress-text text-caption q-mt-xs">{{ progress }}{{ $t('ui.completado-75af0a') }}</span>
         </div>
       </transition>
 
       <!-- Subtítulo -->
       <transition appear enter-active-class="animated fadeInUp delay-3">
         <div class="text-subtitle1 q-mt-md subtitle">
-          Estamos trabajando para brindarte la mejor experiencia
+          {{ $t('ui.estamos-trabajando-para-brindarte-la-mejor-experienc-e88a68') }}
         </div>
       </transition>
 
@@ -45,7 +45,7 @@
           text-color="amber-8"
           unelevated
           to="/"
-          label="Volver al inicio"
+          :label="$t('ui.volver-al-inicio-1afb11')"
           no-caps
           size="lg"
           rounded

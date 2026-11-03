@@ -8,7 +8,7 @@
           style="letter-spacing: 0.5px"
         >
           <q-icon name="settings" size="20px" class="q-mr-sm" />
-          Definir parámetros iniciales
+          {{ $t('ui.definir-parametros-iniciales-277c68') }}
         </div>
 
         <div
@@ -20,11 +20,11 @@
               for="tipo"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Tipo de Registro <span class="text-negative">*</span></label
+              >{{ $t('ui.tipo-de-registro-e5ae70') }} <span class="text-negative">*</span></label
             >
             <q-toggle
               v-model="isIngresoConPedido"
-              label="Ingreso con pedido"
+              :label="$t('ui.ingreso-con-pedido-7a9262')"
               color="primary"
               dense
               id="tipo"
@@ -39,7 +39,7 @@
               for="pedido"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Pedido Asociado <span class="text-negative">*</span></label
+              >{{ $t('ui.pedido-asociado-f78b69') }} <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.pedido"
@@ -57,7 +57,7 @@
               bg-color="white"
               class="premium-input text-weight-medium"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               @update:model-value="seleccionarPedido"
             >
               <template v-slot:prepend>
@@ -73,12 +73,12 @@
                   :loading="loadingPedidos"
                   @click.stop.prevent="cargarPedidos"
                 >
-                  <q-tooltip>Recargar pedidos</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-pedidos-5d5fed') }}</q-tooltip>
                 </q-btn>
               </template>
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey text-italic"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey text-italic"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -90,7 +90,7 @@
               for="almacen"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Almacén de Destino <span class="text-negative">*</span></label
+              >{{ $t('ui.almacen-de-destino-7644c5') }} <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.almacen"
@@ -102,7 +102,7 @@
               map-options
               class="premium-input text-weight-medium"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="warehouse" color="primary" />
@@ -116,14 +116,14 @@
                   color="primary"
                   @click.stop.prevent="$emit('recargarAlmacenes')"
                 >
-                  <q-tooltip>Recargar almacenes</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
           </div>
 
           <div class="col-12 col-md-4 animate__animated animate__fadeIn">
-            <label for="fecha">Fecha*</label>
+            <label for="fecha">{{ $t('ui.fecha-659648') }}</label>
             <q-input
               v-model="localData.fecha"
               type="date"
@@ -143,7 +143,7 @@
           style="letter-spacing: 0.5px"
         >
           <q-icon name="inventory_2" size="20px" class="q-mr-sm" />
-          Detalles de la Compra
+          {{ $t('ui.detalles-de-la-compra-355cff') }}
         </div>
 
         <div class="row q-col-gutter-lg">
@@ -152,7 +152,7 @@
               for="nombre"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Nombre <span class="text-negative">*</span></label
+              >{{ $t('configGeneral.tipoAlmacen.form.name') }} <span class="text-negative">*</span></label
             >
             <q-input
               v-model="localData.nombre"
@@ -162,7 +162,7 @@
               bg-color="white"
               class="premium-input"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="edit_square" color="grey-6" />
@@ -175,7 +175,7 @@
               for="codigo"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Código <span class="text-negative">*</span></label
+              >{{ $t('ui.codigo-c35510') }} <span class="text-negative">*</span></label
             >
             <q-input
               v-model="localData.codigo"
@@ -185,7 +185,7 @@
               bg-color="white"
               class="premium-input"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="qr_code_2" color="grey-6" />
@@ -198,7 +198,7 @@
               for="provedor"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Proveedor <span class="text-negative">*</span></label
+              >{{ $t('compras.supplier') }} <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.proveedor"
@@ -216,7 +216,7 @@
               @filter="filterFn"
               class="premium-input"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="local_shipping" color="grey-6" />
@@ -230,12 +230,12 @@
                   color="primary"
                   @click.stop.prevent="$emit('recargarProveedores')"
                 >
-                  <q-tooltip>Recargar proveedores</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-proveedores-5ec929') }}</q-tooltip>
                 </q-btn>
               </template>
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey text-italic"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey text-italic"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -246,7 +246,7 @@
               for="factura"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Nro. Factura <span class="cm-text-muted">(Opcional)</span></label
+              >{{ $t('ui.nro-factura-5aff74') }} <span class="cm-text-muted">{{ $t('ui.opcional-03c06d') }}</span></label
             >
             <q-input
               v-model="localData.factura"
@@ -272,7 +272,7 @@
           style="letter-spacing: 0.5px"
         >
           <q-icon name="payments" size="20px" class="q-mr-sm" />
-          Condiciones de Pago
+          {{ $t('ui.condiciones-de-pago-1ae444') }}
         </div>
 
         <div
@@ -291,7 +291,7 @@
               for="tipocompra"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Forma de Pago <span class="text-negative">*</span></label
+              >{{ $t('ui.forma-de-pago-b1fac4') }} <span class="text-negative">*</span></label
             >
             <q-select
               v-model="localData.tipocompra"
@@ -304,7 +304,7 @@
               map-options
               class="premium-input text-weight-bold"
               hide-bottom-space
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="account_balance_wallet" color="primary" />
@@ -319,7 +319,7 @@
               for="cajaBanco"
               class="text-weight-bold cm-text q-mb-sm block"
               style="font-size: 13px"
-              >Seleccione Medio de Pago <span class="text-negative">*</span></label
+              >{{ $t('ui.seleccione-medio-de-pago-37be2a') }} <span class="text-negative">*</span></label
             >
 
             <q-select
@@ -331,7 +331,7 @@
               emit-value
               map-options
               class="premium-input"
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             >
               <template v-slot:prepend>
                 <q-icon name="account_balance" color="positive" />
@@ -353,7 +353,7 @@
                   color="primary"
                   @click.stop.prevent="$emit('recargarCajaBancos')"
                 >
-                  <q-tooltip>Recargar caja/bancos</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-caja-bancos-0e0534') }}</q-tooltip>
                 </q-btn>
               </template>
               <template v-slot:option="scope">
@@ -378,7 +378,7 @@
     <q-separator class="q-my-lg cm-surface-2" />
     <div class="row justify-end q-gutter-x-sm">
       <q-btn
-        label="Cancelar"
+        :label="$t('common.cancel')"
         icon="close"
         flat
         color="grey-8"
@@ -387,7 +387,7 @@
         style="border-radius: 8px"
       />
       <q-btn
-        label="Guardar Información"
+        :label="$t('ui.guardar-informacion-16c35a')"
         icon="save"
         type="submit"
         color="primary"
@@ -404,6 +404,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -444,8 +445,8 @@ const isIngresoConPedido = computed({
   },
 })
 const tiposCompra = [
-  { label: 'Al contado', value: 2 },
-  { label: 'Credito', value: 1 },
+  { label: i18nT('ui.al-contado-5cbe4c'), value: 2 },
+  { label: i18nT('ui.credito-7d70b9'), value: 1 },
 ]
 
 const onSubmit = () => {
@@ -540,7 +541,7 @@ const verificar = () => {
 
 //     PedidosAlmacen.value = filtrados
 //     pedidos.value = filtrados.map((item) => ({
-//       label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+//       label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || Sin observación}`,
 //       idalmacen: item.idalmacen,
 //       value: item.id,
 //     }))
@@ -549,7 +550,7 @@ const verificar = () => {
 //     console.error('Error al cargar datos:', error)
 //     $q.notify({
 //       type: 'negative',
-//       message: 'No se pudieron cargar los Pedidos',
+//       message: No se pudieron cargar los Pedidos,
 //     })
 //   }
 // }
@@ -582,7 +583,7 @@ async function cargarPedidos() {
 
     // Mapeamos los datos originales
     pedidos.value = filtrados.map((item) => ({
-      label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || 'Sin observación'}`,
+      label: `${item.almacen} - ${item.codigo} - ${cambiarFormatoFecha(item.fecha)} - ${item.observacion || i18nT('ui.sin-observacion-64c5de')}`,
       idalmacen: item.idalmacen,
       value: item.id,
     }))
@@ -593,7 +594,7 @@ async function cargarPedidos() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los Pedidos',
+      message: i18nT('ui.no-se-pudieron-cargar-los-pedidos-b5f6e2'),
     })
   } finally {
     loadingPedidos.value = false // ✅ Siempre resetea el flag

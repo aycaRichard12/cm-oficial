@@ -3,7 +3,7 @@
     <q-card style="min-width: 600px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">
-          {{ editing ? 'Editar Credenciales' : 'Registrar Credenciales' }}
+          {{ editing ? t('configuracion.credencialesServicio.dialog.editTitle') : t('configuracion.credencialesServicio.dialog.createTitle') }}
         </div>
         <q-space />
         <q-btn icon="close" flat round dense @click="closeDialog" />
@@ -21,7 +21,10 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import FormCredencialesServicio from './FormCredencialesServicio.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {

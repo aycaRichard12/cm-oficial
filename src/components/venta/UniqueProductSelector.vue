@@ -19,7 +19,7 @@
           class="q-mr-xs"
           size="20px"
         />
-        {{ selectionComplete ? 'Selección completa' : 'Seriales requeridos' }}
+        {{ selectionComplete ? $t('ui.seleccion-completa-57bc53') : $t('ui.seriales-requeridos-9ba5ec') }}
       </div>
       <q-badge
         :color="selectionComplete ? 'positive' : 'warning'"
@@ -43,7 +43,7 @@
       outlined
       dense
       bg-color="white"
-      placeholder="Buscar por número de serie..."
+      :placeholder="$t('ui.buscar-por-numero-de-serie-a6d4b4')"
       input-debounce="0"
       @filter="onFilter"
       @update:model-value="handleUpdate"
@@ -57,7 +57,7 @@
       <template v-slot:no-option>
         <q-item>
           <q-item-section class="cm-text-muted text-caption italic">
-            {{ loading ? 'Sincronizando inventario…' : 'Sin coincidencias' }}
+            {{ loading ? $t('ui.sincronizando-inventario-2063e2') : $t('ui.sin-coincidencias-ff98e5') }}
           </q-item-section>
         </q-item>
       </template>
@@ -81,7 +81,7 @@
           <q-item-section>
             <q-item-label class="text-body2">{{ scope.opt.serie }}</q-item-label>
             <q-item-label caption v-if="scope.opt.id_productos_almacen">
-              Almacén {{ scope.opt.id_productos_almacen }}
+              {{ $t('inventario.warehouse') }} {{ scope.opt.id_productos_almacen }}
             </q-item-label>
           </q-item-section>
         </q-item>

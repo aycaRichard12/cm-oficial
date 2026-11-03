@@ -8,9 +8,9 @@
             <div class="row items-center">
               <q-icon name="security" color="primary" size="2.5rem" class="q-mr-md" />
               <div>
-                <div class="text-h5 text-weight-bold text-primary">Permisos de Usuarios</div>
+                <div class="text-h5 text-weight-bold text-primary">{{ $t('ui.permisos-de-usuarios-d1e354') }}</div>
                 <div class="text-subtitle2 text-grey-7">
-                  Gestiona las operaciones y niveles de autorización
+                  {{ $t('ui.gestiona-las-operaciones-y-niveles-de-autorizacion-58d631') }}
                 </div>
               </div>
             </div>
@@ -42,13 +42,13 @@
           <q-card-section class="q-pa-sm">
             <base-filterable-table
               :title="
-                tipoFiltro === 'operacion' ? 'Operaciones Registradas' : 'Gráficos Autorizados'
+                tipoFiltro === 'operacion' ? $t('ui.operaciones-registradas-4f84ef') : $t('ui.graficos-autorizados-890229')
               "
               :rows="operacionesFiltradas"
               :columns="dynamicColumns"
               :array-headers="dynamicHeaders"
               row-key="id"
-              no-data-label="No hay permisos registrados"
+              :no-data-label="$t('ui.no-hay-permisos-registrados-fbc7db')"
             >
               <template v-slot:body-cell-num="props">
                 <q-td :props="props">
@@ -59,7 +59,7 @@
                 <q-td :props="props">
                   <q-badge
                     :color="Number(props.row.estado) === 1 ? 'positive' : 'negative'"
-                    :label="Number(props.row.estado) === 1 ? 'Autorizado' : 'No Autorizado'"
+                    :label="Number(props.row.estado) === 1 ? $t('ui.autorizado-b4fb49') : $t('ui.no-autorizado-988c4e')"
                     outline
                     class="q-px-sm q-py-xs"
                   />
@@ -79,7 +79,7 @@
                       size="sm"
                     >
                       <q-tooltip class="bg-grey-8 text-body2">
-                        {{ Number(props.row.estado) === 1 ? 'Desautorizar' : 'Autorizar' }}
+                        {{ Number(props.row.estado) === 1 ? $t('ui.desautorizar-7626e2') : $t('ui.autorizar-8a74ab') }}
                       </q-tooltip>
                     </q-btn>
                     <q-btn
@@ -91,7 +91,7 @@
                       @click="handleDelete(props.row.id_operacion)"
                       size="sm"
                     >
-                      <q-tooltip class="bg-grey-8 text-body2">Eliminar</q-tooltip>
+                      <q-tooltip class="bg-grey-8 text-body2">{{ $t('common.delete') }}</q-tooltip>
                     </q-btn>
                   </div>
                 </q-td>
@@ -105,6 +105,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -166,7 +167,7 @@ const dynamicColumns = computed(() => {
     {
       name: 'num',
       align: 'left',
-      label: 'N°',
+      label: i18nT('cotizacion.table.number'),
       field: 'num',
       sortable: true,
       dataType: 'number',
@@ -174,7 +175,7 @@ const dynamicColumns = computed(() => {
     {
       name: 'codigo',
       align: 'left',
-      label: 'Código',
+      label: i18nT('ui.codigo-c35510'),
       field: 'codigo',
       sortable: true,
       dataType: 'text',
@@ -182,7 +183,7 @@ const dynamicColumns = computed(() => {
     {
       name: 'operacion',
       align: 'left',
-      label: 'Operación/Gráfico',
+      label: i18nT('ui.operacion-grafico-40a6fd'),
       field: 'operacion',
       sortable: true,
       dataType: 'text',
@@ -190,7 +191,7 @@ const dynamicColumns = computed(() => {
     {
       name: 'estado',
       align: 'center',
-      label: 'Estado',
+      label: i18nT('cotizacion.table.status'),
       field: 'estado',
       sortable: true,
       dataType: 'text',
@@ -198,7 +199,7 @@ const dynamicColumns = computed(() => {
     {
       name: 'acciones',
       align: 'center',
-      label: 'Acciones',
+      label: i18nT('common.actions'),
       field: 'acciones',
       sortable: false,
     },
@@ -208,7 +209,7 @@ const dynamicColumns = computed(() => {
     cols.splice(1, 0, {
       name: 'usuario',
       align: 'left',
-      label: 'Usuario',
+      label: i18nT('auth.user'),
       field: 'usuario',
       sortable: true,
       dataType: 'text',
@@ -239,14 +240,14 @@ const fetchOperaciones = async () => {
         ...obj,
         // Forzamos que idusuario esté disponible en el primer nivel
         idusuario: obj.idusuario || datosUser.idusuario || datosUser.id,
-        usuario: datosUser.usuario || 'Sin Usuario',
+        usuario: datosUser.usuario || i18nT('ui.sin-usuario-69e79a'),
         nombreCompleto: datosUser.nombre
           ? `${datosUser.nombre} ${datosUser.apellido || ''}`
           : 'N/A',
       }
     })
   } catch (error) {
-    $q.notify({ color: 'negative', message: 'Error al cargar operaciones: ' + error })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-al-cargar-operaciones-711902') + error })
   } finally {
     loading.value = false
   }
@@ -269,7 +270,7 @@ const handleSave = async (payload) => {
       }
       $q.notify({
         color: 'positive',
-        message: 'Permisos asignados con éxito',
+        message: i18nT('ui.permisos-asignados-con-exito-99c3ab'),
       })
     }
     // Es una petición singular (Operaciones menú principal)
@@ -285,12 +286,12 @@ const handleSave = async (payload) => {
       await api[method](url, body)
       $q.notify({
         color: 'positive',
-        message: `Operación ${isUpdate ? 'actualizada' : 'creada'} con éxito`,
+        message: `Operación ${isUpdate ? i18nT('ui.actualizada-0989d0') : 'creada'} con éxito`,
       })
     }
     fetchOperaciones() // Refrescar tabla en ambas circunstancias
   } catch (error) {
-    $q.notify({ color: 'negative', message: 'Error en la solicitud: ' + error })
+    $q.notify({ color: 'negative', message: i18nT('ui.error-en-la-solicitud-51865c') + error })
   } finally {
     loading.value = false
   }
@@ -299,8 +300,8 @@ const handleSave = async (payload) => {
 // Eliminar
 const handleDelete = async (id) => {
   $q.dialog({
-    title: 'Confirmar',
-    message: '¿Deseas eliminar esta operación?',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: i18nT('ui.deseas-eliminar-esta-operacion-483955'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -309,10 +310,10 @@ const handleDelete = async (id) => {
       const data = await api.get(`eliminarOperacion/${id}`)
       const response = data.data
       console.log(response, id)
-      $q.notify({ color: 'positive', message: 'Operación eliminada' })
+      $q.notify({ color: 'positive', message: i18nT('ui.operacion-eliminada-b3583b') })
       fetchOperaciones()
     } catch (error) {
-      $q.notify({ color: 'negative', message: 'Error al eliminar: ' + error })
+      $q.notify({ color: 'negative', message: i18nT('ui.error-al-eliminar-e736aa') + error })
     } finally {
       loading.value = false
     }
@@ -333,7 +334,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }

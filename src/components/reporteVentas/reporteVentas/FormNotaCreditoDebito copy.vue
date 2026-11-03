@@ -1,32 +1,32 @@
 <template>
   <q-card class="document-preview q-pa-md">
     <q-card-section class="text-center">
-      <div class="text-h4 text-weight-bold">Nota de Crédito/Débito</div>
-      <div class="text-subtitle1 cm-text">Razón Social: {{ nota.nombreRazonSocial }}</div>
+      <div class="text-h4 text-weight-bold">{{ $t('ui.nota-de-credito-debito-5d732c') }}</div>
+      <div class="text-subtitle1 cm-text">{{ $t('ui.razon-social-6c6fb2') }} {{ nota.nombreRazonSocial }}</div>
       <div>NIT: {{ nota.numeroDocumento }}</div>
     </q-card-section>
 
     <q-separator inset />
 
     <q-card-section>
-      <div class="text-h6 section-title">Datos de la Nota</div>
+      <div class="text-h6 section-title">{{ $t('ui.datos-de-la-nota-bf0ec8') }}</div>
       <div class="row q-col-gutter-md q-mt-sm">
         <div class="col-12 col-md-6">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Nro. Nota:</q-item-label>
+              <q-item-label caption>{{ $t('ui.nro-nota-1b695e') }}</q-item-label>
               <q-item-label class="text-weight-medium">{{ nota.numeroNota }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Código Cliente:</q-item-label>
+              <q-item-label caption>{{ $t('ui.codigo-cliente-fd5d95') }}</q-item-label>
               <q-item-label>{{ nota.codigoCliente }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Usuario:</q-item-label>
+              <q-item-label caption>{{ $t('ui.usuario-5a75b0') }}</q-item-label>
               <q-item-label>{{ nota.usuario }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -34,13 +34,13 @@
         <div class="col-12 col-md-6">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Punto de Venta:</q-item-label>
+              <q-item-label caption>{{ $t('ui.punto-de-venta-0effa9') }}</q-item-label>
               <q-item-label>{{ nota.codigoPuntoVenta }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Documento de Identidad:</q-item-label>
+              <q-item-label caption>{{ $t('ui.documento-de-identidad-6a60fb') }}</q-item-label>
               <q-item-label>
                 {{ getTipoDocumento(nota.codigoTipoDocumentoIdentidad) }} -
                 {{ nota.numeroDocumento }}
@@ -49,7 +49,7 @@
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Leyenda:</q-item-label>
+              <q-item-label caption>{{ $t('ui.leyenda-540211') }}</q-item-label>
               <q-item-label>{{ getLeyenda(nota.codigoLeyenda) }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -60,12 +60,12 @@
     <q-separator />
 
     <q-card-section>
-      <div class="text-h6 section-title">Datos de la Factura Original</div>
+      <div class="text-h6 section-title">{{ $t('ui.datos-de-la-factura-original-6c2229') }}</div>
       <div class="row q-col-gutter-md q-mt-sm">
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Nro. Factura:</q-item-label>
+              <q-item-label caption>{{ $t('ui.nro-factura-2169b6') }}</q-item-label>
               <q-item-label class="text-weight-medium">{{
                 nota.facturaExterna.numeroFactura
               }}</q-item-label>
@@ -75,7 +75,7 @@
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Fecha Factura:</q-item-label>
+              <q-item-label caption>{{ $t('ui.fecha-factura-004d53') }}</q-item-label>
               <q-item-label>{{
                 new Date(nota.facturaExterna.fechaFacturaOriginal).toLocaleDateString('es-BO')
               }}</q-item-label>
@@ -85,7 +85,7 @@
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Monto Total Original:</q-item-label>
+              <q-item-label caption>{{ $t('ui.monto-total-original-e1662f') }}</q-item-label>
               <q-item-label class="text-weight-medium"
                 >Bs. {{ nota.facturaExterna.montoTotalFacturaOriginal.toFixed(2) }}</q-item-label
               >
@@ -95,7 +95,7 @@
         <div class="col-12">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>CUF Original:</q-item-label>
+              <q-item-label caption>{{ $t('ui.cuf-original-0d7e37') }}</q-item-label>
               <q-item-label class="cuf-text">{{
                 nota.facturaExterna.numeroAutorizacionCuf
               }}</q-item-label>
@@ -108,7 +108,7 @@
     <q-separator />
 
     <q-card-section>
-      <div class="text-h6 section-title">Detalle de la Devolución / Ajuste</div>
+      <div class="text-h6 section-title">{{ $t('ui.detalle-de-la-devolucion-ajuste-a62e69') }}</div>
       <q-table
         flat
         bordered
@@ -126,7 +126,7 @@
           <q-list bordered separator>
             <q-item>
               <q-item-section>
-                <q-item-label caption>Descuento Adicional</q-item-label>
+                <q-item-label caption>{{ $t('ui.descuento-adicional-c87c9a') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-weight-medium"
@@ -136,7 +136,7 @@
             </q-item>
             <q-item class="cm-surface-2">
               <q-item-section>
-                <q-item-label class="text-weight-bold">MONTO TOTAL DEVUELTO</q-item-label>
+                <q-item-label class="text-weight-bold">{{ $t('ui.monto-total-devuelto-be61ba') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-h6 text-weight-bold"
@@ -146,7 +146,7 @@
             </q-item>
             <q-item>
               <q-item-section>
-                <q-item-label caption>Monto efectivo Crédito/Débito</q-item-label>
+                <q-item-label caption>{{ $t('ui.monto-efectivo-credito-debito-6afeaf') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-weight-medium"
@@ -162,10 +162,10 @@
     <q-separator class="q-mt-md" />
 
     <q-card-actions align="right" class="q-pa-md">
-      <q-btn flat label="Cancelar" color="grey-8" icon="cancel" @click="$emit('cancelar')" />
+      <q-btn flat :label="$t('common.cancel')" color="grey-8" icon="cancel" @click="$emit('cancelar')" />
       <q-btn
         unelevated
-        label="Confirmar Registro"
+        :label="$t('ui.confirmar-registro-f23a8b')"
         color="primary"
         icon="check_circle"
         @click="$emit('confirmar')"
@@ -175,6 +175,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { defineProps, defineEmits } from 'vue'
 
 // =============================================
@@ -220,43 +221,43 @@ defineEmits(['cancelar'])
 const columnsDetalle = [
   {
     name: 'codigoProducto',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     align: 'left',
     field: 'codigoProducto',
     sortable: true,
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     align: 'left',
     field: 'descripcion',
     style: 'white-space: normal;',
   },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'center', field: 'cantidad' },
   {
     name: 'unidadMedida',
-    label: 'Unidad',
+    label: i18nT('configProducto.unidadProducto.table.nombre'),
     align: 'left',
     field: 'unidadMedida',
     format: (val) => getUnidadMedida(val),
   },
   {
     name: 'precioUnitario',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     align: 'right',
     field: 'precioUnitario',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'montoDescuento',
-    label: 'Descuento',
+    label: i18nT('ventas.discount'),
     align: 'right',
     field: 'montoDescuento',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'subTotal',
-    label: 'Subtotal',
+    label: i18nT('ventas.subtotal'),
     align: 'right',
     field: 'subTotal',
     format: (val) => `Bs. ${val.toFixed(2)}`,
@@ -270,7 +271,7 @@ const columnsDetalle = [
 // En una aplicación real, estos datos vendrían de un store, un API o un archivo de configuración.
 const getTipoDocumento = (codigo) => {
   const tipos = { 1: 'CI', 2: 'CEX', 3: 'PAS', 4: 'OD', 5: 'NIT' }
-  return tipos[codigo] || 'Otro'
+  return tipos[codigo] || i18nT('ui.otro-ada1c1')
 }
 
 const getLeyenda = (codigo) => {
@@ -279,7 +280,7 @@ const getLeyenda = (codigo) => {
     1: 'Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilizas.',
     2: 'Ley N° 453: El proveedor deberá entregar el producto en las modalidades y términos ofertados o convenidos.',
   }
-  return leyendas[codigo] || 'Leyenda no encontrada.'
+  return leyendas[codigo] || i18nT('ui.leyenda-no-encontrada-0fe89c')
 }
 
 const getUnidadMedida = (codigo) => {

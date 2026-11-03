@@ -22,7 +22,7 @@
           <template v-slot:body-cell-acciones="props">
             <q-td :props="props">
               <q-btn
-                label="Consumir"
+                :label="$t('ui.consumir-486628')"
                 color="primary"
                 size="sm"
                 @click="procesarConsumo(props.row)"
@@ -33,7 +33,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="cm-surface text-teal">
-        <q-btn flat label="Cerrar" v-close-popup />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" v-close-popup />
       </q-card-actions>
 
       <q-inner-loading :showing="loading">
@@ -44,13 +44,14 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed } from 'vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { idusuario_md5 } from 'src/composables/FuncionesGenerales'
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
-  title: { type: String, default: 'Permisos asignados al usuario' },
+  title: { type: String, default: i18nT('ui.permisos-asignados-al-usuario-55c3fc') },
 })
 
 const emit = defineEmits(['update:modelValue', 'permiso-consumido'])
@@ -68,17 +69,17 @@ const isOpen = computed({
 })
 // Columnas
 const colsPermisos = [
-  { name: 'index', label: 'N°', field: 'idpermiso', align: 'left' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'idpermiso', align: 'left' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
   {
     name: 'usuario',
-    label: 'Solicitante',
+    label: i18nT('ui.solicitante-0cd165'),
     field: (row) => row.usuario?.usuario || 'N/A',
     align: 'left',
   },
-  { name: 'fecha_inicio', label: 'Inicio', field: 'fecha_inicio', align: 'left' },
-  { name: 'fecha_fin', label: 'Fin', field: 'fecha_fin', align: 'left' },
-  { name: 'acciones', label: 'Acciones', align: 'right' },
+  { name: 'fecha_inicio', label: i18nT('ui.inicio-4f70d8'), field: 'fecha_inicio', align: 'left' },
+  { name: 'fecha_fin', label: i18nT('ui.fin-425106'), field: 'fecha_fin', align: 'left' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'right' },
 ]
 
 // Cargar datos cuando el diálogo se abra

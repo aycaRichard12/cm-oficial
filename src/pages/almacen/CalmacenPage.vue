@@ -5,15 +5,15 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para añadir un almacén -->
           <q-icon name="add_business" size="md" class="q-mr-sm" />
-          Registrar Almacén
+          {{ $t('ui.registrar-almacen-12ab43') }}
         </div>
-        <div class="text-subtitle2 text-grey-7 q-mt-xs">Alta de nuevos almacenes en el sistema</div>
+        <div class="text-subtitle2 text-grey-7 q-mt-xs">{{ $t('ui.alta-de-nuevos-almacenes-en-el-sistema-42ff89') }}</div>
       </div>
     </div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Almacén</div>
+          <div>{{ $t('ui.registrar-almacen-12ab43') }}</div>
           <q-btn icon="close" @click="showForm = false" flat round dense />
         </q-card-section>
 
@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import FormularioAlmacen from 'components/almacen/creacion/almacenForm.vue'
 import TablaAlmacen from 'components/almacen/creacion/almacenTable.vue'
@@ -75,7 +76,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -92,7 +93,7 @@ async function loadTiposAlmacenes() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -109,7 +110,7 @@ async function loadSucursales() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -166,7 +167,7 @@ const confirmDelete = async (item) => {
   const result = await showDialog(
     $q,
     'Q',
-    '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+    i18nT('ui.estas-seguro-de-que-deseas-eliminar-este-registro-es-a35dda'),
   )
   console.log('Question dialog result:', result)
   if (result) {
@@ -186,11 +187,11 @@ const confirmDelete = async (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   } else {
-    $q.notify({ message: 'Acción cancelada', color: 'info' })
+    $q.notify({ message: i18nT('ui.accion-cancelada-4177e8'), color: 'info' })
   }
 }
 
@@ -204,7 +205,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -226,14 +227,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: i18nT('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()

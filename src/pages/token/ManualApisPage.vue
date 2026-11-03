@@ -3,14 +3,14 @@
     <q-btn
       color="primary"
       text-color="white"
-      label="Generar Token"
+      :label="$t('configuracion.tokensApis.btn')"
       icon="token"
       @click="modalGenerartoken = true"
     />
     <q-dialog v-model="modalGenerartoken">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Generador de Token de Acceso</div>
+          <div>{{ $t('configuracion.tokensApis.title') }}</div>
           <q-btn color="primary" icon="close" @click="modalGenerartoken = false" />
         </q-card-section>
         <q-card-section>

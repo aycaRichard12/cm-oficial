@@ -5,16 +5,16 @@
       <q-card-section class="q-pa-md">
         <div class="row q-col-gutter-sm items-center justify-between q-mb-sm">
           <div class="col-12 col-md-auto row q-gutter-sm">
-            <q-btn color="primary" @click="$emit('add')" class="btn-res" title="Registrar Cliente">
+            <q-btn color="primary" @click="$emit('add')" class="btn-res" :title="$t('ui.registrar-cliente-ab9ded')">
               <q-icon name="add" class="icono" />
-              <span class="texto"> <q-icon name="add" /> Nuevo </span>
+              <span class="texto"> <q-icon name="add" /> {{ $t('common.new') }} </span>
             </q-btn>
             <q-btn
               outline
               color="green"
               @click="$emit('importFromExcel')"
               icon="upload"
-              label="Importar Excel"
+              :label="$t('ui.importar-excel-c115aa')"
               id="importarExcel"
             />
             <q-btn
@@ -22,7 +22,7 @@
               color="info"
               @click="exportarClientesFiltrados"
               icon="file_download"
-              label="Exportar Excel"
+              :label="$t('reportes.exportExcel')"
               id="exportarExcel"
             />
             <q-btn
@@ -30,7 +30,7 @@
               color="red"
               @click="exportarClientesPDF"
               icon="picture_as_pdf"
-              label="Reporte PDF"
+              :label="$t('ui.reporte-pdf-7a7b28')"
               id="exportarPdf"
             />
           </div>
@@ -43,7 +43,7 @@
               debounce="300"
               v-model="search"
               id="buscar"
-              placeholder="Buscar rápido..."
+              :placeholder="$t('ui.buscar-rapido-534a2b')"
               style="min-width: 250px"
             >
               <template v-slot:prepend><q-icon name="search" /></template>
@@ -58,14 +58,14 @@
               dense
               v-model="filtroAlmacen"
               :options="almacenOptions"
-              label="Filtrar por Almacén"
+              :label="$t('ui.filtrar-por-almacen-f5828a')"
               id="canalventa"
               option-label="label"
               option-value="value"
               emit-value
               map-options
               prepend-icon="warehouse"
-              placeholder="Almacén asignado"
+              :placeholder="$t('ui.almacen-asignado-999b11')"
               ><template v-slot:prepend><q-icon name="storefront" /></template>
               <template v-slot:append>
                 <q-btn
@@ -78,7 +78,7 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'almacen')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template></q-select>
           </div>
@@ -87,7 +87,7 @@
               v-model="filtroTipoCliente"
               :options="tipoClienteFilterOptions"
               id="tipocliente"
-              label="Filtrar por Tipo Cliente"
+              :label="$t('ui.filtrar-por-tipo-cliente-be0fc7')"
               dense
               outlined
               clearable
@@ -104,7 +104,7 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'tipocliente')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -114,7 +114,7 @@
               v-model="filtroCanalVenta"
               :options="canalVentaFilterOptions"
               id="canalventa"
-              label="Filtrar por Canal Venta"
+              :label="$t('ui.filtrar-por-canal-venta-efd98b')"
               dense
               outlined
               clearable
@@ -131,7 +131,7 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'canalventa')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -141,7 +141,7 @@
               v-model="filtroTipoDocumento"
               :options="tipoDocumentoFilterOptions"
               id="tipodoc"
-              label="Filtrar por Tipo Doc."
+              :label="$t('ui.filtrar-por-tipo-doc-e8abf9')"
               dense
               outlined
               clearable
@@ -158,7 +158,7 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'tipodocumento')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -174,9 +174,9 @@
     </q-banner>
     <!-- Después del q-banner y antes del q-table -->
     <div class="row q-gutter-xs q-mb-sm">
-      <q-chip text-color="red" icon="code" dense> Sin almacén </q-chip>
-      <q-chip text-color="green" icon="code" dense> 1 almacén </q-chip>
-      <q-chip text-color="blue" icon="code" dense> Múltiples almacenes </q-chip>
+      <q-chip text-color="red" icon="code" dense> {{ $t('ui.sin-almacen-d9a4f5') }} </q-chip>
+      <q-chip text-color="green" icon="code" dense> {{ $t('ui.1-almacen-44521b') }} </q-chip>
+      <q-chip text-color="blue" icon="code" dense> {{ $t('ui.multiples-almacenes-107293') }} </q-chip>
     </div>
     <!-- Tabla de clientes -->
     <q-table
@@ -200,12 +200,12 @@
             {{ props.value }}
             <q-tooltip>
               <span v-if="!props.row.almacenes || props.row.almacenes.length === 0">
-                Sin almacén
+                {{ $t('ui.sin-almacen-d9a4f5') }}
               </span>
               <span v-else-if="props.row.almacenes.length === 1">
-                Almacén: {{ props.row.almacenes[0].almacen }}
+                {{ $t('ui.almacen-7049f1') }} {{ props.row.almacenes[0].almacen }}
               </span>
-              <span v-else> Múltiples almacenes ({{ props.row.almacenes.length }}) </span>
+              <span v-else> {{ $t('ui.multiples-almacenes-864921') }}{{ props.row.almacenes.length }}) </span>
             </q-tooltip>
           </q-chip>
         </q-td>
@@ -254,23 +254,23 @@
     <q-dialog v-model="confirmDeleteDialog">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Confirmar eliminación</div>
+          <div class="text-h6">{{ $t('configuracion.credencialesServicio.messages.deleteTitle') }}</div>
         </q-card-section>
 
         <q-card-section>
-          ¿Está seguro que desea eliminar al cliente {{ clientToDelete.nombre }}?
+          {{ $t('ui.esta-seguro-que-desea-eliminar-al-cliente-6dbcb4') }} {{ clientToDelete.nombre }}?
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancelar" color="primary" v-close-popup />
-          <q-btn flat label="Eliminar" color="negative" @click="deleteClient" />
+          <q-btn flat :label="$t('common.cancel')" color="primary" v-close-popup />
+          <q-btn flat :label="$t('common.delete')" color="negative" @click="deleteClient" />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -287,6 +287,7 @@
   </div>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import * as XLSX from 'xlsx-js-style'
 import { useClienteAlmacenConfig } from 'src/modules/config/composables/useClienteAlmacenConfig'
@@ -348,25 +349,25 @@ const alertClass = ref('bg-green text-white') // theme-allow: white text on sema
 const search = ref('')
 
 const columns = [
-  { name: 'id', label: 'N°', field: (row) => row.numero, align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'nombre', label: 'Razón Social', field: 'nombre', align: 'left' },
+  { name: 'id', label: i18nT('cotizacion.table.number'), field: (row) => row.numero, align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'nombre', label: i18nT('ui.razon-social-adf906'), field: 'nombre', align: 'left' },
   {
     name: 'nombrecomercial',
-    label: 'Nombre Comercial',
+    label: i18nT('ui.nombre-comercial-55a6ae'),
     field: 'nombrecomercial',
     align: 'left',
   },
   {
     name: 'tipo',
-    label: 'Tipo',
+    label: i18nT('configGeneral.divisas.table.type'),
     field: 'tipo',
 
     align: 'left',
   },
   {
     name: 'canal',
-    label: 'Canal Venta',
+    label: i18nT('configuracion.canalesDeVenta.table.title'),
     field: 'canal',
     align: 'left',
   },
@@ -377,17 +378,17 @@ const columns = [
     align: 'center',
   },
   { name: 'nit', label: 'Nro.Doc', field: 'nit', align: 'right' },
-  { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'left' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left' },
-  { name: 'email', label: 'Email', field: 'email', align: 'left' },
-  { name: 'telefono', label: 'Telefono', field: 'telefono', align: 'center' },
-  { name: 'movil', label: 'Movil', field: 'movil', align: 'left' },
-  { name: 'ciudad', label: 'Ciudad', field: 'ciudad', align: 'left' },
-  { name: 'zona', label: 'Zona', field: 'zona', align: 'left' },
-  { name: 'pais', label: 'Pais', field: 'pais', align: 'left' },
-  { name: 'web', label: 'Web', field: 'web', align: 'left' },
-  { name: 'contacto', label: 'Contacto', field: 'contacto', align: 'left' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'detalle', label: i18nT('ui.detalle-be605b'), field: 'detalle', align: 'left' },
+  { name: 'direccion', label: i18nT('ui.direccion-04f478'), field: 'direccion', align: 'left' },
+  { name: 'email', label: i18nT('configuracion.servicios.table.email'), field: 'email', align: 'left' },
+  { name: 'telefono', label: i18nT('ui.telefono-398dc6'), field: 'telefono', align: 'center' },
+  { name: 'movil', label: i18nT('ui.movil-c46a8d'), field: 'movil', align: 'left' },
+  { name: 'ciudad', label: i18nT('ui.ciudad-c6fbe2'), field: 'ciudad', align: 'left' },
+  { name: 'zona', label: i18nT('ui.zona-27288b'), field: 'zona', align: 'left' },
+  { name: 'pais', label: i18nT('ui.pais-9895c6'), field: 'pais', align: 'left' },
+  { name: 'web', label: i18nT('ui.web-a8323a'), field: 'web', align: 'left' },
+  { name: 'contacto', label: i18nT('ui.contacto-d8a53e'), field: 'contacto', align: 'left' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 const processedRows = computed(() => {
   return props.rows.map((row, index) => ({
@@ -525,7 +526,7 @@ function exportarClientesFiltrados() {
   }
 
   const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes')
+  XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.clientes-e84b64'))
   XLSX.writeFile(workbook, 'clientes.xlsx')
 }
 

@@ -5,9 +5,9 @@
     <div class="row items-center q-mb-lg">
       <q-icon name="store" size="2.5rem" color="primary" class="q-mr-md" />
       <div>
-        <h1 class="text-h4 text-primary q-my-none">Configuración de Sucursales</h1>
+        <h1 class="text-h4 text-primary q-my-none">{{ $t('ui.configuracion-de-sucursales-8b515e') }}</h1>
         <p class="text-subtitle2 cm-text-muted q-mt-xs q-mb-none">
-          Asigne sucursales Sin a una sucursal Empresa para centralizar operaciones.
+          {{ $t('ui.asigne-sucursales-sin-a-una-sucursal-empresa-para-ce-539c87') }}
         </p>
       </div>
     </div>
@@ -50,6 +50,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import StatsCards from '../components/StatsCards.vue'
 import FiltrosSucursal from '../components/FiltrosSucursal.vue'
@@ -112,7 +113,7 @@ const onAsignado = () => {
 const confirmarQuitar = async (sucursal) => {
   // Opcional: diálogo de confirmación con $q.dialog
   $q.dialog({
-    title: 'Quitar asignación',
+    title: i18nT('ui.quitar-asignacion-9c7938'),
     message: `¿Seguro que deseas quitar el código de sucursal grande de ${sucursal.nombre}?`,
     cancel: true,
     persistent: true,
@@ -120,7 +121,7 @@ const confirmarQuitar = async (sucursal) => {
     try {
       await quitarCodigo(sucursal.idsucursalcontable)
       refetch()
-      $q.notify({ type: 'positive', message: 'Código eliminado' })
+      $q.notify({ type: 'positive', message: i18nT('ui.codigo-eliminado-62acdf') })
     } catch (err) {
       $q.notify({ type: 'negative', message: err.message })
     }

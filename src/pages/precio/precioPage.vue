@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para costos y precios -->
           <q-icon name="price_change" size="md" class="q-mr-sm" />
-          Costo Unitario
+          {{ $t('ui.costo-unitario-4ec928') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Gestión y actualización de costos por unidad de producto
+          {{ $t('ui.gestion-y-actualizacion-de-costos-por-unidad-de-prod-495645') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Costo Unitario</div>
+          <div>{{ $t('ui.registrar-costo-unitario-1af416') }}</div>
           <q-btn icon="close" dense flat round @click="showForm = false" />
         </q-card-section>
         <q-card-section>
@@ -41,14 +41,15 @@
 
     <RegistrarAlmacenDialog
       v-model="showWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import FormCostoUnitario from 'src/components/precios/costoUnitario/FormCostoUnitario.vue'
 import TableCostoUnitario from 'src/components/precios/costoUnitario/TableCostoUnitario.vue'
@@ -93,7 +94,7 @@ const cargarListaAlmacenes = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -120,19 +121,19 @@ const guardarPrecioBase = async (data) => {
 
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Guardado correctamente',
+        message: response.data.mensaje || i18nT('ui.guardado-correctamente-ab0571'),
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-f513bf'),
       })
     }
   } catch (error) {
     console.error('Error al guardar: ', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar',
+      message: i18nT('ui.no-se-pudo-guardar-01dee4'),
     })
   }
   toggleForm()
@@ -159,7 +160,7 @@ const abrirFormularioEditar = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -177,7 +178,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   } finally {
     cargando.value = false

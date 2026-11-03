@@ -4,15 +4,15 @@
       <q-card-section>
         <div class="row items-start justify-between q-mb-md">
           <div>
-            <div class="text-h5 text-weight-bold">Reporte de Inventario Físico - Valorado</div>
-            <div class="text-caption text-grey-7">Kardex físico-valorado por producto</div>
+            <div class="text-h5 text-weight-bold">{{ $t('ui.reporte-de-inventario-fisico-valorado-edd7ba') }}</div>
+            <div class="text-caption text-grey-7">{{ $t('ui.kardex-fisico-valorado-por-producto-150d85') }}</div>
           </div>
           <div class="row q-gutter-sm no-print">
             <q-btn
               outline
               color="green-7"
               icon="grid_on"
-              label="Excel"
+              :label="$t('ui.excel-a08e11')"
               :disable="!filasKardex.length"
               @click="exportarExcel"
             />
@@ -28,7 +28,7 @@
               outline
               color="primary"
               icon="print"
-              label="Imprimir"
+              :label="$t('ui.imprimir-6d7683')"
               :disable="!filasKardex.length"
               @click="imprimir"
             />
@@ -42,7 +42,7 @@
               :options="opcionesAlmacenes"
               emit-value
               map-options
-              label="Almacén"
+              :label="$t('inventario.warehouse')"
               dense
               outlined
               :loading="loadingAlmacenes"
@@ -54,7 +54,7 @@
               <template v-slot:no-option>
                 <q-item
                   ><q-item-section class="text-grey"
-                    >Sin almacenes disponibles</q-item-section
+                    >{{ $t('ui.sin-almacenes-disponibles-cdf2fb') }}</q-item-section
                   ></q-item
                 >
               </template>
@@ -73,13 +73,13 @@
             <q-btn
               color="primary"
               icon="assessment"
-              label="Generar"
+              :label="$t('ui.generar-1f31a1')"
               class="full-width"
               :loading="loading"
               :disable="!puedeGenerar"
               @click="generarInforme"
             >
-              <q-tooltip v-if="!puedeGenerar">Seleccione almacén y un rango válido</q-tooltip>
+              <q-tooltip v-if="!puedeGenerar">{{ $t('ui.seleccione-almacen-y-un-rango-valido-7d0024') }}</q-tooltip>
             </q-btn>
           </div>
 
@@ -89,7 +89,7 @@
               dense
               color="primary"
               icon="refresh"
-              label="Recargar"
+              :label="$t('ui.recargar-9d2c9d')"
               class="full-width"
               :loading="loadingAlmacenes"
               @click="cargarAlmacenes"
@@ -99,7 +99,7 @@
 
         <div v-if="filasKardex.length" class="row q-gutter-sm q-mt-md">
           <q-chip icon="event" color="primary" text-color="white" dense>
-            Del {{ fmtFechaDDMMYYYY(fechaInicio) }} al {{ fmtFechaDDMMYYYY(fechaFin) }}
+            {{ $t('ui.del-717e1e') }} {{ fmtFechaDDMMYYYY(fechaInicio) }} {{ $t('ui.al-2f9ee2') }} {{ fmtFechaDDMMYYYY(fechaFin) }}
           </q-chip>
           <q-chip icon="store" color="primary" text-color="white" dense>
             {{ almacenNombre }}
@@ -108,7 +108,7 @@
             {{ divisaActiva.codigosin || divisaActiva.nombre }}
           </q-chip>
           <q-chip icon="inventory_2" color="blue-grey-7" text-color="white" dense>
-            {{ filasKardex.length }} productos
+            {{ filasKardex.length }} {{ $t('ui.productos-2d7e7d') }}
           </q-chip>
         </div>
       </q-card-section>
@@ -131,7 +131,7 @@
     <q-card flat bordered class="kardex-print-area">
       <div class="row items-center q-pa-sm bg-grey-2 no-print">
         <div class="text-subtitle1 text-weight-bold">
-          <q-icon name="table_chart" /> Detalle por producto
+          <q-icon name="table_chart" /> {{ $t('ui.detalle-por-producto-d22628') }}
           <q-badge v-if="filasKardex.length" color="primary" class="q-ml-sm">
             {{ filasKardexFiltradas.length }}
           </q-badge>
@@ -141,14 +141,14 @@
           v-model="filtroTexto"
           dense
           outlined
-          placeholder="Buscar producto/código..."
+          :placeholder="$t('ui.buscar-producto-codigo-c0d55d')"
           style="min-width: 220px"
           class="q-mr-sm"
           clearable
         >
           <template v-slot:prepend><q-icon name="search" /></template>
         </q-input>
-        <q-toggle v-model="soloInconsistentes" label="Solo inconsistentes" dense color="negative" />
+        <q-toggle v-model="soloInconsistentes" :label="$t('ui.solo-inconsistentes-268b93')" dense color="negative" />
       </div>
 
       <div class="kardex-scroll">
@@ -165,33 +165,33 @@
           class="kardex-table"
           :no-data-label="
             !filasKardex.length
-              ? 'Seleccione almacén y rango de fechas, luego presione Generar'
-              : 'Sin productos para los filtros aplicados'
+              ? $t('ui.seleccione-almacen-y-rango-de-fechas-luego-presione-9dc711')
+              : $t('ui.sin-productos-para-los-filtros-aplicados-122458')
           "
         >
           <template v-slot:header>
             <q-tr key="hdr-main">
-              <q-th rowspan="2" class="kdx-th kdx-th-item">N°</q-th>
-              <q-th rowspan="2" class="kdx-th kdx-th-desc">Descripción</q-th>
-              <q-th colspan="3" class="kdx-th kdx-head-saldo-inicial">Saldo Inicial</q-th>
-              <q-th colspan="3" class="kdx-th kdx-head-entradas">Entradas</q-th>
-              <q-th colspan="3" class="kdx-th kdx-head-salidas">Salidas</q-th>
-              <q-th colspan="3" class="kdx-th kdx-head-saldo-final">Saldo Final</q-th>
-              <q-th rowspan="2" class="kdx-th kdx-th-acciones no-print">Acciones</q-th>
+              <q-th rowspan="2" class="kdx-th kdx-th-item">{{ $t('cotizacion.table.number') }}</q-th>
+              <q-th rowspan="2" class="kdx-th kdx-th-desc">{{ $t('configuracion.servicios.table.descripcion') }}</q-th>
+              <q-th colspan="3" class="kdx-th kdx-head-saldo-inicial">{{ $t('ui.saldo-inicial-f00275') }}</q-th>
+              <q-th colspan="3" class="kdx-th kdx-head-entradas">{{ $t('ui.entradas-d1358d') }}</q-th>
+              <q-th colspan="3" class="kdx-th kdx-head-salidas">{{ $t('ui.salidas-2779e6') }}</q-th>
+              <q-th colspan="3" class="kdx-th kdx-head-saldo-final">{{ $t('ui.saldo-final-2cf0d6') }}</q-th>
+              <q-th rowspan="2" class="kdx-th kdx-th-acciones no-print">{{ $t('common.actions') }}</q-th>
             </q-tr>
             <q-tr key="hdr-sub">
-              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">Cantidad</q-th>
-              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Unit.</q-th>
-              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">P. Total</q-th>
-              <q-th class="kdx-th kdx-head-entradas kdx-num">Cantidad</q-th>
-              <q-th class="kdx-th kdx-head-entradas kdx-num">P. Unit.</q-th>
-              <q-th class="kdx-th kdx-head-entradas kdx-num">P. Total</q-th>
-              <q-th class="kdx-th kdx-head-salidas kdx-num">Cantidad</q-th>
-              <q-th class="kdx-th kdx-head-salidas kdx-num">P. Unit.</q-th>
-              <q-th class="kdx-th kdx-head-salidas kdx-num">P. Total</q-th>
-              <q-th class="kdx-th kdx-head-saldo-final kdx-num">Cantidad</q-th>
-              <q-th class="kdx-th kdx-head-saldo-final kdx-num">P. Unit.</q-th>
-              <q-th class="kdx-th kdx-head-saldo-final kdx-num">P. Total</q-th>
+              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">{{ $t('ui.cantidad-b5b6f8') }}</q-th>
+              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">{{ $t('ui.p-unit-b616d4') }}</q-th>
+              <q-th class="kdx-th kdx-head-saldo-inicial kdx-num">{{ $t('ui.p-total-390805') }}</q-th>
+              <q-th class="kdx-th kdx-head-entradas kdx-num">{{ $t('ui.cantidad-b5b6f8') }}</q-th>
+              <q-th class="kdx-th kdx-head-entradas kdx-num">{{ $t('ui.p-unit-b616d4') }}</q-th>
+              <q-th class="kdx-th kdx-head-entradas kdx-num">{{ $t('ui.p-total-390805') }}</q-th>
+              <q-th class="kdx-th kdx-head-salidas kdx-num">{{ $t('ui.cantidad-b5b6f8') }}</q-th>
+              <q-th class="kdx-th kdx-head-salidas kdx-num">{{ $t('ui.p-unit-b616d4') }}</q-th>
+              <q-th class="kdx-th kdx-head-salidas kdx-num">{{ $t('ui.p-total-390805') }}</q-th>
+              <q-th class="kdx-th kdx-head-saldo-final kdx-num">{{ $t('ui.cantidad-b5b6f8') }}</q-th>
+              <q-th class="kdx-th kdx-head-saldo-final kdx-num">{{ $t('ui.p-unit-b616d4') }}</q-th>
+              <q-th class="kdx-th kdx-head-saldo-final kdx-num">{{ $t('ui.p-total-390805') }}</q-th>
             </q-tr>
           </template>
 
@@ -262,7 +262,7 @@
                     @click="abrirDetalle(props.row)"
                     size="sm"
                   >
-                    <q-tooltip>Ver compras / salidas del periodo</q-tooltip>
+                    <q-tooltip>{{ $t('ui.ver-compras-salidas-del-periodo-2953b1') }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     v-if="props.row.advertencias && props.row.advertencias.length"
@@ -276,7 +276,7 @@
                     @click="abrirAdvertencias(props.row)"
                   >
                     <q-badge color="orange" floating>{{ props.row.advertencias.length }}</q-badge>
-                    <q-tooltip>Ver advertencias ({{ props.row.advertencias.length }})</q-tooltip>
+                    <q-tooltip>{{ $t('ui.ver-advertencias-a82f94') }}{{ props.row.advertencias.length }})</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -322,14 +322,14 @@
           <q-space />
           <div class="text-caption text-white q-mr-md"><!-- theme-allow -->
             <q-icon name="event" />
-            Del {{ fmtFechaDDMMYYYY(fechaInicio) }} al {{ fmtFechaDDMMYYYY(fechaFin) }}
+            {{ $t('ui.del-717e1e') }} {{ fmtFechaDDMMYYYY(fechaInicio) }} {{ $t('ui.al-2f9ee2') }} {{ fmtFechaDDMMYYYY(fechaFin) }}
           </div>
           <q-btn flat round icon="close" color="white" v-close-popup />
         </q-card-section>
         <q-separator />
 
         <q-card-section>
-          <div class="text-subtitle2 q-mb-sm">Compras del periodo</div>
+          <div class="text-subtitle2 q-mb-sm">{{ $t('ui.compras-del-periodo-0ba63d') }}</div>
           <BaseFilterableTable
             :rows="detalleActual?.detalle?.compras || []"
             :columns="columnasMovimientoEntrada"
@@ -353,10 +353,10 @@
             v-if="!detalleActual?.detalle?.compras?.length"
             class="text-caption text-grey q-mb-md"
           >
-            Sin compras en el periodo.
+            {{ $t('ui.sin-compras-en-el-periodo-b3f9d0') }}
           </div>
 
-          <div class="text-subtitle2 q-mt-md q-mb-sm">Salidas del periodo</div>
+          <div class="text-subtitle2 q-mt-md q-mb-sm">{{ $t('ui.salidas-del-periodo-8417d9') }}</div>
           <BaseFilterableTable
             :rows="detalleActual?.detalle?.salidas || []"
             :columns="columnasMovimientoSalida"
@@ -377,7 +377,7 @@
             </template>
           </BaseFilterableTable>
           <div v-if="!detalleActual?.detalle?.salidas?.length" class="text-caption text-grey">
-            Sin salidas en el periodo.
+            {{ $t('ui.sin-salidas-en-el-periodo-67e0f0') }}
           </div>
         </q-card-section>
       </q-card>
@@ -387,7 +387,7 @@
       <q-card style="min-width: 520px; max-width: 90vw">
         <q-card-section class="row items-center bg-orange-9 text-white"><!-- theme-allow -->
           <q-icon name="warning" size="md" class="q-mr-sm" />
-          <div class="text-h6 text-white"><!-- theme-allow -->Advertencias del producto</div>
+          <div class="text-h6 text-white"><!-- theme-allow -->{{ $t('ui.advertencias-del-producto-0860dc') }}</div>
           <q-space />
           <q-btn flat round icon="close" color="white" v-close-popup />
         </q-card-section>
@@ -412,11 +412,11 @@
             </q-item>
           </q-list>
           <div v-else class="text-caption text-grey q-pa-sm">
-            Sin advertencias para este producto.
+            {{ $t('ui.sin-advertencias-para-este-producto-a8a082') }}
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+          <q-btn flat :label="$t('ui.cerrar-4b0816')" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -424,6 +424,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -468,27 +469,27 @@ const advertenciasActuales = ref({ producto: '', codigo: '', lista: [] })
 const paginacion = ref({ page: 1, rowsPerPage: 0 })
 
 const columnasPlaceholder = [
-  { name: 'item', label: 'Ítem', align: 'center', field: '__index' },
-  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
-  { name: 'siCantidad', label: 'SI Cant.', align: 'right', field: 'siCantidad' },
-  { name: 'siPUnit', label: 'SI P.U.', align: 'right', field: 'siPUnit' },
-  { name: 'siPTotal', label: 'SI P.T.', align: 'right', field: 'siPTotal' },
-  { name: 'entCantidad', label: 'Ent. Cant.', align: 'right', field: 'entCantidad' },
-  { name: 'entPUnit', label: 'Ent. P.U.', align: 'right', field: 'entPUnit' },
-  { name: 'entPTotal', label: 'Ent. P.T.', align: 'right', field: 'entPTotal' },
-  { name: 'salCantidad', label: 'Sal. Cant.', align: 'right', field: 'salCantidad' },
-  { name: 'salPUnit', label: 'Sal. P.U.', align: 'right', field: 'salPUnit' },
-  { name: 'salPTotal', label: 'Sal. P.T.', align: 'right', field: 'salPTotal' },
-  { name: 'sfCantidad', label: 'SF Cant.', align: 'right', field: 'sfCantidad' },
-  { name: 'sfPUnit', label: 'SF P.U.', align: 'right', field: 'sfPUnit' },
-  { name: 'sfPTotal', label: 'SF P.T.', align: 'right', field: 'sfPTotal' },
-  { name: 'acciones', label: 'Acciones', align: 'center' },
+  { name: 'item', label: i18nT('ui.item-b49aca'), align: 'center', field: '__index' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), align: 'left', field: 'descripcion' },
+  { name: 'siCantidad', label: i18nT('ui.si-cant-91048c'), align: 'right', field: 'siCantidad' },
+  { name: 'siPUnit', label: i18nT('ui.si-p-u-5e87ac'), align: 'right', field: 'siPUnit' },
+  { name: 'siPTotal', label: i18nT('ui.si-p-t-cb3130'), align: 'right', field: 'siPTotal' },
+  { name: 'entCantidad', label: i18nT('ui.ent-cant-bd2a5a'), align: 'right', field: 'entCantidad' },
+  { name: 'entPUnit', label: i18nT('ui.ent-p-u-9d28f6'), align: 'right', field: 'entPUnit' },
+  { name: 'entPTotal', label: i18nT('ui.ent-p-t-7c923f'), align: 'right', field: 'entPTotal' },
+  { name: 'salCantidad', label: i18nT('ui.sal-cant-600b0b'), align: 'right', field: 'salCantidad' },
+  { name: 'salPUnit', label: i18nT('ui.sal-p-u-959a32'), align: 'right', field: 'salPUnit' },
+  { name: 'salPTotal', label: i18nT('ui.sal-p-t-4a4199'), align: 'right', field: 'salPTotal' },
+  { name: 'sfCantidad', label: i18nT('ui.sf-cant-73abf8'), align: 'right', field: 'sfCantidad' },
+  { name: 'sfPUnit', label: i18nT('ui.sf-p-u-d57e81'), align: 'right', field: 'sfPUnit' },
+  { name: 'sfPTotal', label: i18nT('ui.sf-p-t-f9210f'), align: 'right', field: 'sfPTotal' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'center' },
 ]
 
 const columnasMovimientoEntrada = [
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     sortable: true,
@@ -496,7 +497,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'documento',
-    label: 'Documento',
+    label: i18nT('ui.documento-8ae11c'),
     field: 'documento',
     align: 'left',
     sortable: true,
@@ -504,7 +505,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'nfactura',
-    label: 'N° Factura',
+    label: i18nT('ui.n-factura-5a62ff'),
     field: 'nfactura',
     align: 'left',
     sortable: true,
@@ -512,7 +513,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
     sortable: true,
@@ -520,7 +521,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     field: 'cantidad',
     align: 'right',
     sortable: true,
@@ -528,7 +529,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'precioUnitario',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     field: 'precioUnitario',
     align: 'right',
     sortable: true,
@@ -536,7 +537,7 @@ const columnasMovimientoEntrada = [
   },
   {
     name: 'valor',
-    label: 'Valor',
+    label: i18nT('configProducto.parametroObsolescencia.form.valor'),
     field: 'valor',
     align: 'right',
     sortable: true,
@@ -547,7 +548,7 @@ const columnasMovimientoEntrada = [
 const columnasMovimientoSalida = [
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     sortable: true,
@@ -555,7 +556,7 @@ const columnasMovimientoSalida = [
   },
   {
     name: 'documento',
-    label: 'Documento',
+    label: i18nT('ui.documento-8ae11c'),
     field: 'documento',
     align: 'left',
     sortable: true,
@@ -563,7 +564,7 @@ const columnasMovimientoSalida = [
   },
   {
     name: 'nfactura',
-    label: 'N° Factura',
+    label: i18nT('ui.n-factura-5a62ff'),
     field: 'nfactura',
     align: 'left',
     sortable: true,
@@ -571,7 +572,7 @@ const columnasMovimientoSalida = [
   },
   {
     name: 'cantidad',
-    label: 'Cantidad',
+    label: i18nT('ui.cantidad-b5b6f8'),
     field: 'cantidad',
     align: 'right',
     sortable: true,
@@ -579,7 +580,7 @@ const columnasMovimientoSalida = [
   },
   {
     name: 'precioUnitario',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     field: 'precioUnitario',
     align: 'right',
     sortable: true,
@@ -587,7 +588,7 @@ const columnasMovimientoSalida = [
   },
   {
     name: 'valor',
-    label: 'Valor',
+    label: i18nT('configProducto.parametroObsolescencia.form.valor'),
     field: 'valor',
     align: 'right',
     sortable: true,
@@ -689,7 +690,7 @@ watch([filtroTexto, soloInconsistentes], () => {
 
 const almacenNombre = computed(() => {
   const opt = opcionesAlmacenes.value.find((o) => o.value === almacenSeleccionado.value)
-  return opt?.label || 'Sin almacén'
+  return opt?.label || i18nT('ui.sin-almacen-d9a4f5')
 })
 
 const puedeGenerar = computed(
@@ -776,7 +777,7 @@ async function cargarAlmacenes() {
     if (Array.isArray(response.data)) {
       const filtrados = response.data.filter((obj) => obj.idusuario == idusuario)
       opcionesAlmacenes.value = [
-        { label: 'Todos los almacenes', value: 0 },
+        { label: i18nT('ui.todos-los-almacenes-949f2c'), value: 0 },
         ...filtrados.map((item) => ({
           label: item.almacen,
           value: item.idalmacen,
@@ -790,7 +791,7 @@ async function cargarAlmacenes() {
     }
   } catch (error) {
     console.error('[informeInventario] cargarAlmacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudo cargar la lista de almacenes.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-cargar-la-lista-de-almacenes-bcb90d') })
   } finally {
     loadingAlmacenes.value = false
   }
@@ -819,14 +820,14 @@ async function generarInforme() {
       filas.value = []
       $q.notify({
         type: 'warning',
-        message: body?.mensaje || 'La respuesta del servidor no contiene datos válidos.',
+        message: body?.mensaje || i18nT('ui.la-respuesta-del-servidor-no-contiene-datos-validos-192fad'),
       })
     }
   } catch (error) {
     console.error('[informeInventario] generarInforme:', error)
     const msg =
       error?.response?.data?.mensaje ||
-      'No se pudo generar el informe de inventario. Intente de nuevo.'
+      i18nT('ui.no-se-pudo-generar-el-informe-de-inventario-intente-8650b7')
     $q.notify({ type: 'negative', message: msg })
   } finally {
     loading.value = false
@@ -883,7 +884,7 @@ function exportarExcel() {
     const svc = new KardexExcelService()
     const blob = svc.generate({
       filas: filasKardexFiltradas.value,
-      titulo: 'Reporte de Inventario Físico - Valorado',
+      titulo: i18nT('ui.reporte-de-inventario-fisico-valorado-edd7ba'),
       almacenNombre: almacenNombre.value,
       fechaInicio: aFechaISO(fechaInicio.value),
       fechaFin: aFechaISO(fechaFin.value),
@@ -897,16 +898,16 @@ function exportarExcel() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    $q.notify({ type: 'positive', message: 'Excel generado correctamente.' })
+    $q.notify({ type: 'positive', message: i18nT('ui.excel-generado-correctamente-793c9e') })
   } catch (e) {
     console.error('[informeInventario] exportarExcel:', e)
-    $q.notify({ type: 'negative', message: 'No se pudo generar el Excel.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-generar-el-excel-fa81fb') })
   }
 }
 
 async function exportarPdf() {
   if (!filasKardexFiltradas.value.length) {
-    $q.notify({ type: 'warning', message: 'No hay datos para exportar.' })
+    $q.notify({ type: 'warning', message: i18nT('ui.no-hay-datos-para-exportar-0864ac') })
     return
   }
   loading.value = true
@@ -914,7 +915,7 @@ async function exportarPdf() {
     const svc = new KardexPdfService()
     const doc = await svc.generate({
       filas: filasKardexFiltradas.value,
-      titulo: 'Reporte de Inventario Físico - Valorado',
+      titulo: i18nT('ui.reporte-de-inventario-fisico-valorado-edd7ba'),
       almacenNombre: almacenNombre.value,
       fechaInicio: aFechaISO(fechaInicio.value),
       fechaFin: aFechaISO(fechaFin.value),
@@ -923,10 +924,10 @@ async function exportarPdf() {
       format: 'a4',
     })
     doc.save(`Kardex_${aFechaISO(fechaInicio.value)}_${aFechaISO(fechaFin.value)}.pdf`)
-    $q.notify({ type: 'positive', message: 'PDF generado correctamente.' })
+    $q.notify({ type: 'positive', message: i18nT('ui.pdf-generado-correctamente-c748eb') })
   } catch (e) {
     console.error('[informeInventario] exportarPdf:', e)
-    $q.notify({ type: 'negative', message: 'No se pudo generar el PDF.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-generar-el-pdf-dba951') })
   } finally {
     loading.value = false
   }

@@ -18,10 +18,10 @@
         <!-- Información del resumen -->
         <div class="col column justify-center">
           <div class="text-white text-weight-bold text-subtitle1"><!-- theme-allow -->
-            {{ itemList.length }} productos | {{ totalItems }} unidades
+            {{ itemList.length }} {{ $t('ui.productos-ce8b0f') }} {{ totalItems }} {{ $t('ui.unidades-86edeb') }}
           </div>
           <div class="text-white text-caption opacity-80"><!-- theme-allow -->
-            Total a pagar: <span class="text-weight-bolder text-white">{{ formattedTotal }}</span><!-- theme-allow -->
+            {{ $t('ui.total-a-pagar-9ae5b3') }} <span class="text-weight-bolder text-white">{{ formattedTotal }}</span><!-- theme-allow -->
           </div>
         </div>
 

@@ -40,6 +40,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CaracteristicaProductoForm from 'components/productoConf/caracteristicas/caracteristicaForm.vue'
@@ -115,7 +116,7 @@ const confirmDelete = async (item) => {
     const res = response.data
 
     const esExito = res.estado === 'exito' || (Array.isArray(res) && res[0] === 'exito')
-    const mensaje = res.mensaje || (Array.isArray(res) ? res[1] : null) || 'Procesado'
+    const mensaje = res.mensaje || (Array.isArray(res) ? res[1] : null) || i18nT('ui.procesado-6c27bb')
 
     if (esExito) {
       // 2. Notificación de éxito profesional
@@ -127,7 +128,7 @@ const confirmDelete = async (item) => {
       $q.notify({
         type: 'warning',
         message: mensaje,
-        caption: 'La característica podría estar en uso por algún producto.',
+        caption: i18nT('ui.la-caracteristica-podria-estar-en-uso-por-algun-prod-5ef2c7'),
         icon: 'warning',
         timeout: 5000,
       })
@@ -139,7 +140,7 @@ const confirmDelete = async (item) => {
 
     $q.notify({
       type: 'negative',
-      message: 'No se pudo eliminar el registro',
+      message: i18nT('ui.no-se-pudo-eliminar-el-registro-8371ff'),
     })
   }
 }

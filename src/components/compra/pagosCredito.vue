@@ -10,14 +10,14 @@
             dense
             filled
             bg-color="grey-2"
-            label="Monto Total del Crédito *"
+            :label="$t('ui.monto-total-del-credito-8bf9ca')"
             stack-label
             disable
             input-class="text-weight-bold cm-text"
             lazy-rules
             :rules="[
-              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-              (val) => val > 0 || 'El monto debe ser mayor a 0',
+              (val) => (val !== null && val !== '') || $t('ui.este-campo-es-obligatorio-927642'),
+              (val) => val > 0 || $t('ui.el-monto-debe-ser-mayor-a-0-644bee'),
             ]"
           >
             <template v-slot:prepend>
@@ -40,12 +40,12 @@
             dense
             filled
             bg-color="grey-2"
-            label="Número de Cuotas *"
+            :label="$t('ui.numero-de-cuotas-a1fc8b')"
             stack-label
             lazy-rules
             :rules="[
-              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-              (val) => val > 0 || 'Debe haber al menos 1 cuota',
+              (val) => (val !== null && val !== '') || $t('ui.este-campo-es-obligatorio-927642'),
+              (val) => val > 0 || $t('ui.debe-haber-al-menos-1-cuota-0fcbf7'),
             ]"
           >
             <template v-slot:prepend>
@@ -63,19 +63,19 @@
             dense
             filled
             bg-color="grey-2"
-            label="Frecuencia de Pago (en días) *"
+            :label="$t('ui.frecuencia-de-pago-en-dias-9e0068')"
             stack-label
             lazy-rules
             :rules="[
-              (val) => (val !== null && val !== '') || 'Este campo es obligatorio',
-              (val) => val > 0 || 'La frecuencia debe ser de al menos 1 día',
+              (val) => (val !== null && val !== '') || $t('ui.este-campo-es-obligatorio-927642'),
+              (val) => val > 0 || $t('ui.la-frecuencia-debe-ser-de-al-menos-1-dia-be16a9'),
             ]"
           >
             <template v-slot:prepend>
               <q-icon name="event_repeat" size="xs" color="grey-7" />
             </template>
             <template v-slot:hint>
-              <span class="cm-text-muted">Ej: 30 (mensual), 7 (semanal)</span>
+              <span class="cm-text-muted">{{ $t('ui.ej-30-mensual-7-semanal-9dc1fe') }}</span>
             </template>
           </q-input>
         </div>
@@ -87,11 +87,11 @@
             dense
             filled
             bg-color="grey-2"
-            label="Fecha de Inicio del Primer Pago *"
+            :label="$t('ui.fecha-de-inicio-del-primer-pago-20e8b1')"
             stack-label
             v-model="formData.fecha_inicio"
             id="fecha"
-            :rules="[(val) => !!val || 'Debe seleccionar una fecha']"
+            :rules="[(val) => !!val || $t('ui.debe-seleccionar-una-fecha-8c5b57')]"
           >
             <template v-slot:prepend>
               <q-icon name="calendar_month" size="xs" color="grey-7" />
@@ -107,7 +107,7 @@
           <q-item class="bg-primary-1 full-width rounded-borders text-right">
             <q-item-section>
               <q-item-label class="text-caption cm-text-muted text-weight-medium text-right"
-                >Monto Estimado por Cuota</q-item-label
+                >{{ $t('ui.monto-estimado-por-cuota-d7caaa') }}</q-item-label
               >
               <q-item-label
                 class="text-h6 text-primary text-weight-bold row items-center justify-end"
@@ -125,7 +125,7 @@
 
     <q-card-actions align="right" class="q-pa-md bg-transparent">
       <q-btn
-        label="Generar Plan"
+        :label="$t('ui.generar-plan-644a8d')"
         type="submit"
         color="primary"
         icon="playlist_add_check"
@@ -137,7 +137,7 @@
       >
         <template v-slot:loading>
           <q-spinner-hourglass class="on-left" />
-          Procesando...
+          {{ $t('ui.procesando-e72aae') }}
         </template>
       </q-btn>
     </q-card-actions>
@@ -145,6 +145,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue' // Se importa 'computed'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -213,7 +214,7 @@ const crearPago = async () => {
       const result = await showDialog(
         $q,
         'S',
-        '¡Todo salió perfectamente! Los datos se han guardado correctamente y el proceso se completó sin errores.',
+        i18nT('ui.todo-salio-perfectamente-los-datos-se-han-guardado-c-082fec'),
       )
       console.log('Success dialog result:', result)
 
@@ -225,7 +226,7 @@ const crearPago = async () => {
     const result = await showDialog(
       $q,
       'E',
-      error.response?.data?.message || 'Ocurrió un error al procesar la solicitud',
+      error.response?.data?.message || i18nT('configuracion.servicios.messages.saveError'),
     )
     console.log('Success dialog result:', result)
   } finally {

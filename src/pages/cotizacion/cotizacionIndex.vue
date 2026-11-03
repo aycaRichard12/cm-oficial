@@ -5,7 +5,7 @@
         flat
         color="primary"
         icon="arrow_back"
-        label="Volver a la lista"
+        :label="$t('ui.volver-a-la-lista-2a41f5')"
         @click="paginaRegistrarCotizacion = false"
         class="btn-res"
       />

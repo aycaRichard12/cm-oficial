@@ -3,7 +3,7 @@
     v-model="isOpen"
     :title="title"
     :loading="loading"
-    confirm-label="Solicitar Permiso venta sin stock"
+    :confirm-label="$t('ui.solicitar-permiso-venta-sin-stock-4d8e21')"
     confirm-color="primary"
     card-style="min-width: 500px; max-width: 700px;"
     @confirm="handleEnviar"
@@ -13,7 +13,7 @@
       <div class="q-mb-md">
         <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
-          Almacen
+          {{ $t('ui.almacen-673013') }}
         </div>
         <q-select
           v-model="formData.almacenSeleccionado"
@@ -24,8 +24,8 @@
           map-options
           outlined
           dense
-          label="Seleccionar almacen *"
-          :rules="[(val) => !!val || 'Debe seleccionar un almacen']"
+          :label="$t('ui.seleccionar-almacen-fe625b')"
+          :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-almacen-ab2da4')]"
           :loading="loadingUsuarios"
         >
           <template v-slot:prepend>
@@ -33,7 +33,7 @@
           </template>
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay almacenes disponibles </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-almacenes-disponibles-6339fe') }} </q-item-section>
             </q-item>
           </template>
           <template v-slot:append>
@@ -46,7 +46,7 @@
               @click.stop="loadAAlmacenes"
               :disable="loadingUsuarios"
             >
-              <q-tooltip>Recargar datos</q-tooltip>
+              <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
             </q-btn>
           </template>
         </q-select>
@@ -56,7 +56,7 @@
       <div class="q-mb-md">
         <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
-          Destinatario
+          {{ $t('ui.destinatario-74f553') }}
         </div>
         <q-select
           v-model="formData.usuarioSeleccionado"
@@ -67,8 +67,8 @@
           map-options
           outlined
           dense
-          label="Seleccionar usuario *"
-          :rules="[(val) => !!val || 'Debe seleccionar un usuario']"
+          :label="$t('ui.seleccionar-usuario-dd5afd')"
+          :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-usuario-5015d6')]"
           :loading="loadingUsuarios"
         >
           <template v-slot:prepend>
@@ -76,7 +76,7 @@
           </template>
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay usuarios disponibles </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-usuarios-disponibles-2bf41f') }} </q-item-section>
             </q-item>
           </template>
           <template v-slot:append>
@@ -89,7 +89,7 @@
               @click.stop="loadUsuarios"
               :disable="loadingUsuarios"
             >
-              <q-tooltip>Recargar datos</q-tooltip>
+              <q-tooltip>{{ $t('ui.recargar-datos-3840f2') }}</q-tooltip>
             </q-btn>
           </template>
         </q-select>
@@ -101,16 +101,16 @@
       <div class="q-mb-md">
         <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="mail" class="q-mr-xs" />
-          Motivo de la solicitud
+          {{ $t('ui.motivo-de-la-solicitud-5f7b85') }}
         </div>
 
         <q-input
           v-model="formData.asunto"
           outlined
           dense
-          label="Asunto *"
-          placeholder="Ej: Permiso para venta sin stock, Solicitud de aprobación, etc."
-          :rules="[(val) => !!val || 'El asunto es obligatorio']"
+          :label="$t('ui.asunto-82fa9b')"
+          :placeholder="$t('ui.ej-permiso-para-venta-sin-stock-solicitud-de-aprobac-205469')"
+          :rules="[(val) => !!val || $t('ui.el-asunto-es-obligatorio-6588e3')]"
           class="q-mb-md"
         >
           <template v-slot:prepend>
@@ -123,9 +123,9 @@
           outlined
           type="textarea"
           rows="5"
-          label="Mensaje *"
-          placeholder="Escriba el contenido de la solicitud..."
-          :rules="[(val) => !!val || 'El mensaje es obligatorio']"
+          :label="$t('ui.mensaje-870575')"
+          :placeholder="$t('ui.escriba-el-contenido-de-la-solicitud-c6dba7')"
+          :rules="[(val) => !!val || $t('ui.el-mensaje-es-obligatorio-1fd439')]"
         >
           <template v-slot:prepend>
             <q-icon name="message" />
@@ -136,10 +136,10 @@
       <!-- Vista previa del formato -->
       <q-card flat bordered class="cm-surface-2 q-mt-md">
         <q-card-section>
-          <div class="text-caption cm-text-muted q-mb-sm">Vista Previa del Formato</div>
+          <div class="text-caption cm-text-muted q-mb-sm">{{ $t('ui.vista-previa-del-formato-822873') }}</div>
           <div class="text-body2">
-            <div><strong>Asunto:</strong> {{ formData.asunto || '(sin asunto)' }}</div>
-            <div><strong>Mensaje:</strong> {{ formData.mensaje || '(sin mensaje)' }}</div>
+            <div><strong>{{ $t('ui.asunto-a92531') }}</strong> {{ formData.asunto || $t('ui.sin-asunto-52427d') }}</div>
+            <div><strong>{{ $t('ui.mensaje-813d0e') }}</strong> {{ formData.mensaje || $t('ui.sin-mensaje-ead80a') }}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -148,6 +148,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import BaseDialog from '../general/BaseDialog.vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
@@ -163,7 +164,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Enviar Notificación',
+    default: i18nT('ui.enviar-notificacion-a4632e'),
   },
 })
 

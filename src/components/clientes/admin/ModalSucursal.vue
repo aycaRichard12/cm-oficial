@@ -3,12 +3,12 @@
     <q-card-section class="row items-center q-pb-none">
       <div class="text-h6 text-primary">
         <q-icon name="store" class="q-mr-sm" />
-        Sucursales
+        {{ $t('ui.sucursales-0770c1') }}
       </div>
       <q-space />
       <q-btn
         v-if="modelValue.id"
-        label="Nueva Sucursal"
+        :label="$t('ui.nueva-sucursal-d78130')"
         icon="add"
         flat
         color="primary"
@@ -24,17 +24,17 @@
           <q-input
             :model-value="modelValue.nombre"
             @update:model-value="(val) => updateModelValue('nombre', val)"
-            label="Nombre *"
+            :label="$t('configuracion.servicios.dialog.nombre')"
             outlined
             dense
             class="col-12 col-md-4"
-            :rules="[(val) => (val && val.length > 0) || 'El nombre es requerido']"
+            :rules="[(val) => (val && val.length > 0) || $t('ui.el-nombre-es-requerido-f0a0af')]"
             lazy-rules
           />
           <q-input
             :model-value="modelValue.telefono"
             @update:model-value="(val) => updateModelValue('telefono', val)"
-            label="Teléfono"
+            :label="$t('ui.telefono-99af37')"
             outlined
             dense
             class="col-12 col-md-3"
@@ -42,7 +42,7 @@
           <q-input
             :model-value="modelValue.direccion"
             @update:model-value="(val) => updateModelValue('direccion', val)"
-            label="Dirección"
+            :label="$t('ui.direccion-04f478')"
             outlined
             dense
             class="col-12 col-md-5"
@@ -51,7 +51,7 @@
 
         <div class="row justify-end q-mt-sm">
           <q-btn
-            :label="modelValue.id ? 'Actualizar Sucursal' : 'Guardar Sucursal'"
+            :label="modelValue.id ? $t('ui.actualizar-sucursal-fcb0cd') : $t('ui.guardar-sucursal-fff117')"
             type="submit"
             color="primary"
             :loading="loading"
@@ -73,7 +73,7 @@
         dense
         wrap-cells
         :loading="loading"
-        no-data-label="No hay sucursales registradas"
+        :no-data-label="$t('ui.no-hay-sucursales-registradas-991453')"
       >
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props" class="text-nowrap">
@@ -86,7 +86,7 @@
               round
               @click="editarSucursal(props.row)"
             >
-              <q-tooltip>Editar sucursal</q-tooltip>
+              <q-tooltip>{{ $t('ui.editar-sucursal-73165a') }}</q-tooltip>
             </q-btn>
             <q-btn
               icon="delete"
@@ -97,7 +97,7 @@
               round
               @click="eliminarSucursal(props.row)"
             >
-              <q-tooltip>Eliminar sucursal</q-tooltip>
+              <q-tooltip>{{ $t('ui.eliminar-sucursal-96fc10') }}</q-tooltip>
             </q-btn>
           </q-td>
         </template>
@@ -107,6 +107,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -148,11 +149,11 @@ const onSubmit = () => {
 }
 
 const columns = [
-  { name: 'id', label: 'N°', field: (row) => row.numero, align: 'center' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left' },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'center' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'id', label: i18nT('cotizacion.table.number'), field: (row) => row.numero, align: 'center' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left' },
+  { name: 'telefono', label: i18nT('ui.telefono-99af37'), field: 'telefono', align: 'center' },
+  { name: 'direccion', label: i18nT('ui.direccion-04f478'), field: 'direccion', align: 'left' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 const processedRows = computed(() => {

@@ -7,10 +7,10 @@
           <div class="row items-center q-col-gutter-lg">
             <div class="col">
               <div class="text-h6 text-weight-medium cm-text q-mb-xs">
-                Filtro de Asignaciones
+                {{ $t('ui.filtro-de-asignaciones-b9c5b8') }}
               </div>
               <div class="text-subtitle2 text-grey-6">
-                Seleccione un almacén para visualizar sus asignaciones
+                {{ $t('ui.seleccione-un-almacen-para-visualizar-sus-asignacion-ffd10d') }}
               </div>
             </div>
           </div>
@@ -33,7 +33,7 @@
                   option-label="name"
                   @update:model-value="$emit('loadAssignments', filterWarehouse)"
                   class="animated-filter-select"
-                  placeholder="Seleccione un almacén..."
+                  :placeholder="$t('ui.seleccione-un-almacen-b25a45')"
                   behavior="menu"
                   dropdown-icon="expand_more"
                   clearable
@@ -59,10 +59,10 @@
                     <q-icon name="info" size="sm" color="info" class="q-mr-sm" />
                     <div class="text-caption">
                       <span v-if="filterWarehouse" class="text-weight-medium">
-                        Mostrando asignaciones del almacén seleccionado
+                        {{ $t('ui.mostrando-asignaciones-del-almacen-seleccionado-be9975') }}
                       </span>
                       <span v-else class="text-grey-6">
-                        Seleccione un almacén para ver las asignaciones
+                        {{ $t('ui.seleccione-un-almacen-para-ver-las-asignaciones-7c71d2') }}
                       </span>
                     </div>
                   </div>
@@ -82,9 +82,9 @@
         <q-card-section class="bg-grey-1">
           <div class="row items-center justify-between">
             <div class="col">
-              <div class="text-h6 text-weight-medium cm-text">Asignaciones Registradas</div>
+              <div class="text-h6 text-weight-medium cm-text">{{ $t('ui.asignaciones-registradas-4d0895') }}</div>
               <div class="text-caption text-grey-6">
-                {{ processedRows.length }} registros encontrados
+                {{ processedRows.length }} {{ $t('ui.registros-encontrados-936dd1') }}
               </div>
             </div>
 
@@ -93,7 +93,7 @@
                 dense
                 debounce="300"
                 v-model="filter"
-                placeholder="Buscar en asignaciones..."
+                :placeholder="$t('ui.buscar-en-asignaciones-dbbe48')"
                 outlined
                 class="search-input"
                 style="min-width: 300px"
@@ -122,7 +122,7 @@
           bordered
           :loading="!processedRows.length"
           loading-label="Cargando asignaciones..."
-          no-data-label="No se encontraron asignaciones"
+          :no-data-label="$t('ui.no-se-encontraron-asignaciones-51f0f6')"
         >
           <!-- Header personalizado -->
           <template v-slot:header="props">
@@ -154,7 +154,7 @@
                 size="sm"
               >
                 <q-tooltip anchor="top middle" self="bottom middle">
-                  Eliminar asignación
+                  {{ $t('ui.eliminar-asignacion-f6ee1a') }}
                 </q-tooltip>
               </q-btn>
             </q-td>
@@ -169,7 +169,7 @@
             <div class="row items-center justify-center">
               <q-icon name="info" size="xs" color="info" class="q-mr-sm" />
               <div class="text-caption text-grey-7">
-                Las asignaciones eliminadas no se pueden recuperar. Verifique antes de proceder.
+                {{ $t('ui.las-asignaciones-eliminadas-no-se-pueden-recuperar-v-bb3d04') }}
               </div>
             </div>
           </q-card-section>
@@ -405,6 +405,7 @@
 }
 </style>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 const props = defineProps({
   assignments: {
@@ -423,27 +424,27 @@ const filterWarehouse = ref(null)
 const columns = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => row.numero,
     align: 'center',
   },
   {
     name: 'nombre',
-    label: 'Nombre',
+    label: i18nT('configGeneral.tipoAlmacen.form.name'),
     align: 'center',
     field: 'nombre',
     sortable: true,
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     align: 'center',
     field: 'descripcion',
     sortable: true,
   },
   {
     name: 'opciones',
-    label: 'Opciones',
+    label: i18nT('configGeneral.divisas.table.options'),
     align: 'center',
     field: 'opciones',
     sortable: false,

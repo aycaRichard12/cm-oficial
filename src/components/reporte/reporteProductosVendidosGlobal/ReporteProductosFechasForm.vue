@@ -2,7 +2,7 @@
   <q-form @submit.prevent="$emit('generar')">
     <div class="row flex justify-center q-col-gutter-x-md">
       <div class="col-12 col-md-4" id="fechaini">
-        <label for="fechaini">Fecha InicialA*</label>
+        <label for="fechaini">{{ $t('ui.fecha-iniciala-300da7') }}</label>
         <q-input
           outlined
           dense
@@ -11,7 +11,7 @@
           id="fechaini"
           mask="##/##/####"
           fill-mask
-          :rules="[(val) => !!val || 'Campo obligatorio']"
+          :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -28,7 +28,7 @@
       </div>
 
       <div class="col-12 col-md-4" id="fechafin">
-        <label for="fechafin">Fecha Final*</label>
+        <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
         <q-input
           outlined
           dense
@@ -38,8 +38,8 @@
           mask="##/##/####"
           fill-mask
           :rules="[
-            (val) => !!val || 'Campo obligatorio',
-            (val) => validarFechas(val) || 'Fecha final debe ser mayor o igual a la inicial',
+            (val) => !!val || $t('configuracion.canalesDeVenta.form.required'),
+            (val) => validarFechas(val) || $t('ui.fecha-final-debe-ser-mayor-o-igual-a-la-inicial-543555'),
           ]"
         >
           <template v-slot:append>
@@ -58,9 +58,9 @@
     </div>
 
     <div class="row justify-center q-mt-md">
-      <q-btn label="Generar reporte" type="submit" color="primary" class="q-mr-sm" id="generar" />
+      <q-btn :label="$t('ui.generar-reporte-eeafce')" type="submit" color="primary" class="q-mr-sm" id="generar" />
       <q-btn
-        label="Exportar a Excel"
+        :label="$t('ui.exportar-a-excel-1569c7')"
         color="primary"
         @click="$emit('exportar')"
         :disable="disableExport"

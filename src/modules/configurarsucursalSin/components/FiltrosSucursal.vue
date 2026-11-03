@@ -5,7 +5,7 @@
         v-model="searchModel"
         dense
         outlined
-        label="Buscar sucursal"
+        :label="$t('ui.buscar-sucursal-ed898b')"
         clearable
         debounce="300"
       >
@@ -15,7 +15,7 @@
       </q-input>
     </div>
     <div class="col-6 col-sm-3 col-md-2">
-      <q-select v-model="paisModel" :options="paises" outlined dense label="País" clearable />
+      <q-select v-model="paisModel" :options="paises" outlined dense :label="$t('ui.pais-0c664f')" clearable />
     </div>
     <div class="col-6 col-sm-3 col-md-2">
       <q-select
@@ -23,7 +23,7 @@
         :options="municipios"
         outlined
         dense
-        label="Municipio"
+        :label="$t('ui.municipio-9e8609')"
         clearable
       />
     </div>
@@ -33,7 +33,7 @@
         :options="statusOptions"
         outlined
         dense
-        label="Estado"
+        :label="$t('cotizacion.table.status')"
         emit-value
         map-options
       />
@@ -42,6 +42,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -73,8 +74,8 @@ const statusModel = computed({
 })
 
 const statusOptions = [
-  { label: 'Todas', value: 'all' },
-  { label: 'Asignadas', value: 'assigned' },
-  { label: 'No asignadas', value: 'unassigned' },
+  { label: i18nT('ui.todas-8a3c34'), value: 'all' },
+  { label: i18nT('ui.asignadas-c5e188'), value: 'assigned' },
+  { label: i18nT('ui.no-asignadas-93e23c'), value: 'unassigned' },
 ]
 </script>

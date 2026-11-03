@@ -8,17 +8,17 @@
           @click="$emit('add')"
           class="btn-res"
           id="btnAgregar"
-          title="Registrar Pedido"
+          :title="$t('ui.registrar-pedido-5839d5')"
         >
           <q-icon name="add" class="icono" />
-          <span class="texto"> <q-icon name="add" />Nuevo</span>
+          <span class="texto"> <q-icon name="add" />{{ $t('common.new') }}</span>
         </q-btn>
       </div>
       <div class="col-6 flex justify-end">
         <q-btn
           color="primary"
           icon="refresh"
-          label="Recargar"
+          :label="$t('ui.recargar-9d2c9d')"
           outline
           no-caps
           class="btn-res q-mr-sm"
@@ -26,17 +26,17 @@
           :loading="recargando"
           @click.stop.prevent="recargar"
         >
-          <q-tooltip>Recargar pedidos y almacenes</q-tooltip>
+          <q-tooltip>{{ $t('ui.recargar-pedidos-y-almacenes-6c52b7') }}</q-tooltip>
         </q-btn>
         <q-btn color="info" @click="imprimir" outline class="btn-res" id="btnImprimir">
           <q-icon name="picture_as_pdf" class="icono" />
-          <span class="texto">Vista Previa PDF</span>
+          <span class="texto">{{ $t('ui.vista-previa-pdf-9db3ed') }}</span>
         </q-btn>
       </div>
     </div>
     <div class="row q-col-gutter-x-md">
       <div class="col-12 col-md-3" id="almacenPedidos">
-        <label for="almacen">Almacén</label>
+        <label for="almacen">{{ $t('inventario.warehouse') }}</label>
         <q-select
           v-model="filtroAlmacen"
           :options="almacenes"
@@ -49,7 +49,7 @@
       </div>
 
       <div class="col-12 col-md-3" id="tipoPedidos">
-        <label for="tipo">Tipo</label>
+        <label for="tipo">{{ $t('configGeneral.divisas.table.type') }}</label>
         <q-select
           v-model="filtroTipo"
           :options="tiposPedido"
@@ -66,7 +66,7 @@
           outline
           color="green"
           icon="upload"
-          label="Importar Excel"
+          :label="$t('ui.importar-excel-c115aa')"
           no-caps
           @click="mostrarImportarExcel = true"
           id="importarExcel"
@@ -74,7 +74,7 @@
       </div>
       <div class="col-12 col-md-12 flex justify-end" id="buscarPedidos">
         <div>
-          <label for="buscar">Buscar...</label>
+          <label for="buscar">{{ $t('common.search') }}</label>
           <q-input dense debounce="300" v-model="search" id="buscar" outlined>
             <template v-slot:append>
               <q-icon name="search" />
@@ -87,7 +87,7 @@
     <!-- Tabla -->
     <q-table
       id="tablePedidos"
-      title="Pedidos"
+      :title="$t('ui.pedidos-6170d2')"
       :rows="ordenados"
       :columns="columnas"
       :loading="loading"
@@ -103,19 +103,19 @@
           <q-badge
             color="green"
             v-if="Number(props.row.autorizacion) === 1"
-            label="Autorizado"
+            :label="$t('ui.autorizado-b4fb49')"
             outline
           />
-          <q-badge color="red" v-else label="No Autorizado" outline />
+          <q-badge color="red" v-else :label="$t('ui.no-autorizado-988c4e')" outline />
         </q-td>
       </template>
       <template v-slot:body-cell-tipopedido="props">
         <q-td :props="props">
           <div v-if="Number(props.row.tipopedido) === 1">
-            {{ 'Compra' }}
+            {{ $t('ui.compra-e1fa56') }}
           </div>
           <div v-else>
-            {{ 'Movimiento' }}
+            {{ $t('ui.movimiento-e09ae5') }}
           </div>
         </q-td>
       </template>
@@ -126,7 +126,7 @@
               id="btnVerPDF"
               color="primary"
               icon="picture_as_pdf"
-              label="Ver PDF"
+              :label="$t('ui.ver-pdf-57c851')"
               @click="abrirEnNuevaPestana(props.row.ruta)"
             />
           </template>
@@ -189,7 +189,7 @@
               color="grey"
               @click="$emit('toggle-status', props.row)"
             >
-              <q-tooltip>Autorizar Pedido</q-tooltip>
+              <q-tooltip>{{ $t('ui.autorizar-pedido-56cac3') }}</q-tooltip>
             </q-btn>
             <q-btn
               id="notificaciones"
@@ -199,7 +199,7 @@
               flat
               @click="abrirDialogNotificacion(props.row)"
             >
-              <q-tooltip>Enviar Notificación</q-tooltip>
+              <q-tooltip>{{ $t('ui.enviar-notificacion-a4632e') }}</q-tooltip>
             </q-btn>
             <template v-if="Number(props.row.tipopedido) === 2">
               <q-btn
@@ -228,14 +228,14 @@
       </template>
 
       <template v-slot:no-data>
-        <div class="text-center q-pa-md">No hay datos para mostrar.</div>
+        <div class="text-center q-pa-md">{{ $t('ui.no-hay-datos-para-mostrar-abdd8b') }}</div>
       </template>
     </q-table>
   </div>
   <q-dialog v-model="mostrarModal" full-width full-height>
     <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
+        <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
         <q-space />
         <q-btn flat round icon="close" @click="mostrarModal = false" />
       </q-card-section>
@@ -263,6 +263,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { PDFpedidos } from 'src/utils/pdfReportGenerator'
@@ -278,9 +279,15 @@ const $q = useQuasar()
 const dialogNotificacionOpen = ref(false)
 const pedidoSeleccionado = ref(null)
 const tituloNotificacion = computed(() => {
-  if (!pedidoSeleccionado.value) return 'Enviar Notificación'
-  const tipo = Number(pedidoSeleccionado.value.tipopedido) === 1 ? 'Compra' : 'Movimiento'
-  return `Notificación - Pedido de ${tipo} #${pedidoSeleccionado.value.codigo}`
+  if (!pedidoSeleccionado.value) return i18nT('ui.enviar-notificacion-a4632e')
+  const tipo =
+    Number(pedidoSeleccionado.value.tipopedido) === 1
+      ? i18nT('ui.compra-e1fa56')
+      : i18nT('ui.movimiento-e09ae5')
+  return i18nT('ui.notificacion-pedido-de-tipo-n-b2d5e8', {
+    tipo,
+    codigo: pedidoSeleccionado.value.codigo,
+  })
 })
 const mostrarImportarExcel = ref(false)
 const recargando = ref(false)
@@ -309,7 +316,7 @@ const recargar = async () => {
   recargando.value = true
   try {
     emit('reload')
-    $q.notify({ type: 'positive', message: 'Solicitando recarga...', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.solicitando-recarga-44a131'), position: 'top', timeout: 1200 })
   } finally {
     recargando.value = false
   }
@@ -322,9 +329,9 @@ const search = ref('')
 const mostrarModal = ref(false)
 const pedidoId = ref('')
 const tiposPedido = [
-  { label: 'Pedidos de Compras', value: 1 },
-  { label: 'Pedidos de Movimientos', value: 2 },
-  { label: 'Pedidos de Producción', value: 3 },
+  { label: i18nT('ui.pedidos-de-compras-41dc5a'), value: 1 },
+  { label: i18nT('ui.pedidos-de-movimientos-9e7b28'), value: 2 },
+  { label: i18nT('ui.pedidos-de-produccion-b22175'), value: 3 },
 ]
 
 const filtroTipo = ref(null) // Siempre comienza en 1
@@ -333,27 +340,27 @@ console.log(filtroTipo.value)
 
 function actualizarColumnas() {
   columnas.value = [
-    { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-    { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
+    { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+    { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha', align: 'center' },
     ...(filtroTipo.value === 2
       ? [
           {
             name: 'almacenorigen',
-            label: 'Almacén origen',
+            label: i18nT('ui.almacen-origen-3ef997'),
             field: 'almacenorigen',
             align: 'center',
           },
         ]
       : []),
-    { name: 'almacen', label: 'Almacén destino', field: 'almacen', align: 'center' },
-    { name: 'codigo', label: 'Código', field: 'codigo', align: 'center' },
-    { name: 'tipopedido', label: 'Tipo', field: 'tipopedido', align: 'align' },
-    { name: 'observacion', label: 'Observación', field: 'observacion', align: 'align' },
-    { name: 'autorizacion', label: 'Autorización', field: 'autorizacion', align: 'center' },
-    { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-    { name: 'ruta', label: 'Vaucher', field: 'ruta', align: 'center' },
-    { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'center' },
-    { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+    { name: 'almacen', label: i18nT('ui.almacen-destino-80fb1d'), field: 'almacen', align: 'center' },
+    { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'center' },
+    { name: 'tipopedido', label: i18nT('configGeneral.divisas.table.type'), field: 'tipopedido', align: 'align' },
+    { name: 'observacion', label: i18nT('ui.observacion-1d0d99'), field: 'observacion', align: 'align' },
+    { name: 'autorizacion', label: i18nT('ui.autorizacion-077400'), field: 'autorizacion', align: 'center' },
+    { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+    { name: 'ruta', label: i18nT('ui.vaucher-7cd4c4'), field: 'ruta', align: 'center' },
+    { name: 'detalle', label: i18nT('ui.detalle-be605b'), field: 'detalle', align: 'center' },
+    { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
   ]
 }
 

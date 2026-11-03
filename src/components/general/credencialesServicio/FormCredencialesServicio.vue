@@ -4,7 +4,7 @@
       <div class="row q-col-gutter-md">
         <!-- Service Selection (shown in both create and edit modes) -->
         <div class="col-12">
-          <label for="id_soft_externo">Servicio *</label>
+          <label for="id_soft_externo">{{ t('configuracion.credencialesServicio.dialog.servicio') }}</label>
           <q-select
             v-model="localFormData.id_soft_externo"
             :options="filteredServices"
@@ -20,7 +20,7 @@
             option-value="value"
             emit-value
             map-options
-            hint="Seleccione el servicio para configurar credenciales"
+            :hint="t('configuracion.credencialesServicio.dialog.servicioHint')"
           >
             <template v-slot:prepend>
               <q-icon name="design_services" color="primary" />
@@ -28,7 +28,7 @@
             <template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey">
-                  No se encontraron servicios
+                  {{ t('configuracion.servicios.messages.loadError') }}
                 </q-item-section>
               </q-item>
             </template>
@@ -50,33 +50,33 @@
 
         <!-- App ID -->
         <div class="col-12 col-md-6">
-          <label for="app_id">App ID *</label>
+          <label for="app_id">{{ t('configuracion.credencialesServicio.dialog.appId') }}</label>
           <q-input
             v-model="localFormData.credenciales.app_id"
             outlined
             dense
             id="app_id"
             :rules="validationRules.app_id"
-            placeholder="Ej: 2092889"
+            :placeholder="$t('ui.ej-2092889-50d73a')"
           />
         </div>
 
         <!-- Key -->
         <div class="col-12 col-md-6">
-          <label for="key">Key *</label>
+          <label for="key">{{ t('configuracion.credencialesServicio.dialog.key') }}</label>
           <q-input
             v-model="localFormData.credenciales.key"
             outlined
             dense
             id="key"
             :rules="validationRules.key"
-            placeholder="Ej: 0bc643ef8d66124dac64"
+            :placeholder="$t('ui.ej-0bc643ef8d66124dac64-fdc449')"
           />
         </div>
 
         <!-- Secret -->
         <div class="col-12 col-md-6">
-          <label for="secret">Secret *</label>
+          <label for="secret">{{ t('configuracion.credencialesServicio.dialog.secret') }}</label>
           <q-input
             v-model="localFormData.credenciales.secret"
             outlined
@@ -84,7 +84,7 @@
             id="secret"
             :type="showSecret ? 'text' : 'password'"
             :rules="validationRules.secret"
-            placeholder="Ej: 97c2543c35b16e66b006"
+            :placeholder="$t('ui.ej-97c2543c35b16e66b006-6caba8')"
           >
             <template v-slot:append>
               <q-icon
@@ -98,28 +98,28 @@
 
         <!-- Cluster -->
         <div class="col-12 col-md-6">
-          <label for="cluster">Cluster *</label>
+          <label for="cluster">{{ t('configuracion.credencialesServicio.dialog.cluster') }}</label>
           <q-input
             v-model="localFormData.credenciales.cluster"
             outlined
             dense
             id="cluster"
             :rules="validationRules.cluster"
-            placeholder="Ej: sa1"
+            :placeholder="$t('ui.ej-sa1-daf135')"
           />
         </div>
       </div>
 
       <q-card-actions class="flex justify-end q-mt-md">
         <q-btn 
-          label="Cancelar" 
+          :label="t('configuracion.credencialesServicio.dialog.cancel')" 
           flat 
           color="negative" 
           @click="$emit('cancel')" 
           :disable="loading"
         />
         <q-btn 
-          :label="isEditMode ? 'Actualizar' : 'Guardar'" 
+          :label="isEditMode ? t('configuracion.credencialesServicio.dialog.update') : t('configuracion.credencialesServicio.dialog.save')" 
           type="submit" 
           color="primary"
           :loading="loading"
@@ -131,7 +131,10 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useCredencialesServicioForm } from 'src/composables/useCredencialesServicioForm'
+
+const { t } = useI18n()
 
 const props = defineProps({
   editing: {

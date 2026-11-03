@@ -26,7 +26,7 @@
     />
 
     <div class="q-my-md">
-      <q-btn color="primary" label="Ver Detalle" @click="obtenerReporte" />
+      <q-btn color="primary" :label="$t('ui.ver-detalle-4c9cbe')" @click="obtenerReporte" />
     </div>
     <div class="q-my-md">
       <q-tabs
@@ -37,18 +37,18 @@
         indicator-color="primary"
         align="justify"
       >
-        <q-tab name="detalle" label="Detalle" />
-        <q-tab name="grafico" label="Gráfico" />
+        <q-tab name="detalle" :label="$t('ui.detalle-be605b')" />
+        <q-tab name="grafico" :label="$t('ui.grafico-b420dc')" />
       </q-tabs>
     </div>
 
     <div class="q-mt-md" v-if="tipoReporte === 'grafico' && graficoData">
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-3">
-          <div class="text-subtitle1 text-weight-medium q-mb-sm">Configuración de Gráfico</div>
+          <div class="text-subtitle1 text-weight-medium q-mb-sm">{{ $t('ui.configuracion-de-grafico-78e4a9') }}</div>
           <q-select
             v-model="form.granularidad"
-            label="Agrupar por"
+            :label="$t('ui.agrupar-por-30a165')"
             :options="['dia', 'semana', 'mes', 'anual']"
             emit-value
             map-options
@@ -65,7 +65,7 @@
       <TablaReporte
         ref="refHijo"
         v-if="tipoReporte === 'detalle' && detalleData.length"
-        title="Productos vendidos"
+        :title="$t('ui.productos-vendidos-fb7909')"
         :rows="detalleData"
         :columns="detalleColumns"
         row-key="codigo_producto"
@@ -76,7 +76,7 @@
       />
       <tablaGrafico
         v-if="tipoReporte === 'grafico' && graficoData"
-        title="Ventas por periodo"
+        :title="$t('ui.ventas-por-periodo-fc1a57')"
         :rows="graficoData"
         :columns="graficoColumns"
         :divisa="divisa"

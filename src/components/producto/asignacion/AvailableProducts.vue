@@ -6,24 +6,24 @@
     <div class="row flex justify-between">
       <q-btn color="primary" @click="$emit('atras')" class="btn-res" dense id="btnAtras">
         <q-icon name="arrow_back" class="icono" style="" />
-        <span class="texto"> Volver</span>
+        <span class="texto"> {{ $t('ui.volver-84a715') }}</span>
       </q-btn>
 
       <div class="title-p1">
-        <div class="title">Productos Disponibles:</div>
+        <div class="title">{{ $t('ui.productos-disponibles-2611d4') }}</div>
         <div></div>
       </div>
 
       <q-btn color="primary" @click="$emit('continuar')" class="btn-res" dense id="btnContinuar">
         <q-icon name="arrow_forward" class="icono" />
-        <span class="texto">Continuar</span>
+        <span class="texto">{{ $t('configuracion.clienteAlmacen.dialog.okButtonSuccess') }}</span>
       </q-btn>
     </div>
 
     <!-- Filtros -->
     <div class="row q-col-gutter-x-md flex justify-between" id="filtroProductos">
       <div class="col-12 col-md-4">
-        <label for="almacen">Almacén</label>
+        <label for="almacen">{{ $t('inventario.warehouse') }}</label>
         <q-select
           v-model="filtro"
           :options="opciones"
@@ -36,14 +36,14 @@
         />
       </div>
       <div class="col-12 col-md-2">
-        <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ $t('common.search') }}</label>
         <q-input dense debounce="300" v-model="filter" id="buscar" outlined />
       </div>
     </div>
 
     <!-- Tabla de productos -->
     <q-table
-      title="productos"
+      :title="$t('ui.productos-2d7e7d')"
       v-if="filtro"
       :rows="rows"
       :columns="columns"
@@ -93,7 +93,7 @@
     <q-dialog v-model="mostrarImagen">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Vista Previa de Imagen</div>
+          <div>{{ $t('ui.vista-previa-de-imagen-89419f') }}</div>
           <q-btn icon="close" flat dense round @click="mostrarImagen = false" />
         </q-card-section>
         <q-card-section>
@@ -109,6 +109,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed } from 'vue'
 import { imagen } from 'src/boot/url'
 // Props
@@ -157,20 +158,20 @@ const onToggleAll = (val) => {
 // Paginación
 
 const columns = [
-  { name: 'index', label: 'N°', field: 'index', align: 'right' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'subcategoria', label: 'Sub categoría', field: 'subcategoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'codigo_barra', label: 'Código barra', field: 'codigo_barra', align: 'left' },
-  { name: 'caracteristicas', label: 'Características', field: 'caracteristicas', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'otras', label: 'Otras características', field: 'otras', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'left' },
-  { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
-  { name: 'seleccion', label: 'Opciones', field: 'id' },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'right' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left' },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left' },
+  { name: 'subcategoria', label: i18nT('ui.sub-categoria-229e51'), field: 'subcategoria', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'codigo_barra', label: i18nT('ui.codigo-barra-427dc4'), field: 'codigo_barra', align: 'left' },
+  { name: 'caracteristicas', label: i18nT('ui.caracteristicas-2d11e4'), field: 'caracteristicas', align: 'left' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'left' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left' },
+  { name: 'otras', label: i18nT('ui.otras-caracteristicas-c95475'), field: 'otras', align: 'left' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha', align: 'left' },
+  { name: 'imagen', label: i18nT('ui.imagen-100f99'), field: 'imagen', align: 'center' },
+  { name: 'seleccion', label: i18nT('configGeneral.divisas.table.options'), field: 'id' },
 ]
 
 // Emitir selección de almacén

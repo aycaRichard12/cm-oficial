@@ -8,10 +8,10 @@
           <div class="text-h5 text-weight-bold text-primary">{{ seccion.label }}</div>
           <div class="text-caption cm-text-muted q-mt-xs">
             <q-icon name="calendar_today" size="xs" class="q-mr-xs" />
-            Período: {{ seccion.periodoLabel }}
+            {{ $t('ui.periodo-7608e0') }} {{ seccion.periodoLabel }}
             <q-separator vertical spaced="md" />
             <q-icon name="monetization_on" size="xs" class="q-mr-xs" />
-            Moneda: {{ simbolo }}
+            {{ $t('ui.moneda-1da29c') }} {{ simbolo }}
           </div>
         </q-card-section>
 
@@ -54,7 +54,7 @@
           <div class="col-12 q-pr-md-none q-pr-md-md">
             <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
               <q-icon name="table_chart" size="sm" class="q-mr-sm text-primary" />
-              Desglose por Período
+              {{ $t('ui.desglose-por-periodo-fbe7be') }}
             </div>
             <div class="table-scroll-container">
               <BaseFilterableTable
@@ -82,7 +82,7 @@
             >
               <div class="text-subtitle1 text-weight-medium cm-text q-mb-md">
                 <q-icon name="bar_chart" size="sm" class="q-mr-sm text-primary" />
-                Evolución Comparativa
+                {{ $t('ui.evolucion-comparativa-66217f') }}
               </div>
               <div class="chart-container">
                 <VueApexCharts
@@ -95,7 +95,7 @@
             </q-card-section>
             <q-card-section v-else class="chart-section q-pa-md text-center">
               <q-icon name="bar_chart" size="64px" color="grey-5" />
-              <div class="text-h6 cm-text-muted q-mt-md">Sin datos para graficar</div>
+              <div class="text-h6 cm-text-muted q-mt-md">{{ $t('ui.sin-datos-para-graficar-1d51a0') }}</div>
             </q-card-section>
           </div>
         </div>
@@ -105,15 +105,16 @@
     <!-- Estado vacío general -->
     <div v-if="!secciones.length" class="text-center q-pa-xl">
       <q-icon name="inbox" size="64px" color="grey-5" />
-      <div class="text-h6 cm-text-muted q-mt-md">Sin datos disponibles</div>
+      <div class="text-h6 cm-text-muted q-mt-md">{{ $t('ui.sin-datos-disponibles-b2f1c2') }}</div>
       <div class="text-caption cm-text-muted q-mt-sm">
-        No se encontraron registros en el período seleccionado
+        {{ $t('ui.no-se-encontraron-registros-en-el-periodo-selecciona-bed984') }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import VueApexCharts from 'vue3-apexcharts'
@@ -121,7 +122,7 @@ import { chartTheme } from 'src/composables/useChartTheme'
 import { useThemeStore } from 'src/stores/theme'
 
 const props = defineProps({
-  title: { type: String, default: 'Reporte de Rentabilidad' },
+  title: { type: String, default: i18nT('ui.reporte-de-rentabilidad-df4d46') },
   rows: { type: [Array, Object], required: true },
   columns: { type: Array, required: true },
   rowKey: { type: String, default: 'periodo' },
@@ -155,7 +156,7 @@ const ArrayHeaders = [
 ]
 const summationHeaders = ['venta_bruta', 'venta_neta', 'costo_ventas', 'utilidad']
 
-const simbolo = computed(() => props.divisa?.simbolo || 'Bs')
+const simbolo = computed(() => props.divisa?.simbolo || i18nT('ui.bs-43c494'))
 
 const formatPeriodo = (granularidad, periodo) => {
   if (!periodo) return periodo
@@ -227,28 +228,28 @@ function buildSectionData(label, rows) {
 
   const kpiCards = [
     {
-      label: 'Venta Bruta',
+      label: i18nT('ui.venta-bruta-6ce759'),
       value: fmt(ventaBruta || 0),
       icon: 'shopping_cart',
       colorClass: 'kpi-blue',
       porcentaje: null,
     },
     {
-      label: 'Venta Neta',
+      label: i18nT('ui.venta-neta-ca0aa8'),
       value: fmt(ventaNeta || 0),
       icon: 'receipt_long',
       colorClass: 'kpi-teal',
       porcentaje: null,
     },
     {
-      label: 'Costo de Ventas',
+      label: i18nT('ui.costo-de-ventas-d04ca4'),
       value: fmt(costoVentas || 0),
       icon: 'inventory_2',
       colorClass: 'kpi-red',
       porcentaje: null,
     },
     {
-      label: 'Margen Neto',
+      label: i18nT('ui.margen-neto-57edec'),
       value: `${margen.toFixed(2)}%`,
       icon: 'trending_up',
       colorClass: 'kpi-green',
@@ -385,7 +386,7 @@ function buildSectionData(label, rows) {
       padding: { top: 0, right: 16, bottom: 0, left: 16 },
     },
     noData: {
-      text: 'No hay datos disponibles',
+      text: i18nT('ui.no-hay-datos-disponibles-baee26'),
       align: 'center',
       verticalAlign: 'middle',
       style: {

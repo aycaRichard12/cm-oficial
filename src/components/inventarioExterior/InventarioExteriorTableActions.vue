@@ -10,7 +10,7 @@
       @click="$emit('viewMap', row)"
       id="btnUbicacion"
     >
-      <q-tooltip>Ver Ubicación</q-tooltip>
+      <q-tooltip>{{ $t('ui.ver-ubicacion-0c5f15') }}</q-tooltip>
     </q-btn>
 
     <!-- Botón Editar -->
@@ -24,7 +24,7 @@
       v-if="canEdit"
       id="btnEditar"
     >
-      <q-tooltip>Editar</q-tooltip>
+      <q-tooltip>{{ $t('common.edit') }}</q-tooltip>
     </q-btn>
 
     <!-- Botón Eliminar -->
@@ -38,7 +38,7 @@
       v-if="canDelete"
       id="btnEliminar"
     >
-      <q-tooltip>Eliminar</q-tooltip>
+      <q-tooltip>{{ $t('common.delete') }}</q-tooltip>
     </q-btn>
   </div>
 </template>

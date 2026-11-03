@@ -4,7 +4,7 @@
       <div>{{ title }}</div>
       <q-space />
       <q-btn flat round dense icon="content_copy" @click="copyCode">
-        <q-tooltip>Copiar código</q-tooltip>
+        <q-tooltip>{{ $t('ui.copiar-codigo-3b9435') }}</q-tooltip>
       </q-btn>
     </q-bar>
     <q-card-section class="q-pa-none">
@@ -16,6 +16,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { useQuasar, copyToClipboard } from 'quasar'
 
 const $q = useQuasar()
@@ -29,7 +30,7 @@ const copyCode = () => {
   copyToClipboard(props.code)
     .then(() => {
       $q.notify({
-        message: 'Copiado al portapapeles',
+        message: i18nT('configuracion.credencialesServicio.dialog.copied'),
         color: 'positive',
         icon: 'check',
         position: 'top-right',
@@ -38,7 +39,7 @@ const copyCode = () => {
     })
     .catch(() => {
       $q.notify({
-        message: 'Error al copiar',
+        message: i18nT('configuracion.credencialesServicio.dialog.errorCopy'),
         color: 'negative',
         icon: 'error',
         position: 'top-right',

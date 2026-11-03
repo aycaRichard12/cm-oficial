@@ -3,7 +3,7 @@
     <q-dialog v-model="showForm" persistent>
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Categoria Precio</div>
+          <div>{{ $t('ui.categoria-precio-62ba28') }}</div>
           <q-btn color="" icon="close" @click="showForm = false" flat dense round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -20,8 +20,8 @@
     </q-dialog>
     <RegistrarAlmacenDialog
       v-model="showWarningDialog"
-      title="¡Advertencia!"
-      message="No tienes un almacén asignado. Debes asignarte uno o asignar un almacén a otros usuarios para desbloquear las funcionalidades del sistema."
+      :title="$t('ui.advertencia-0ef76a')"
+      :message="$t('ui.no-tienes-un-almacen-asignado-debes-asignarte-uno-o-2b40f1')"
       @accepted="redirectToAssignment"
       @closed="redirectToAssignment"
     />
@@ -37,6 +37,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import FormCategoriaPrecio from '../../components/precios/categoriaPrecio/FormCategoriaPrecio.vue'
 import TableCategoriaPrecio from '../../components/precios/categoriaPrecio/TableCategoriaPrecio.vue'
@@ -79,7 +80,7 @@ async function getAlmacenes() {
     }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   }
 }
 
@@ -96,7 +97,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -129,7 +130,7 @@ const fetchCategories = async () => {
     console.error('Error al cargar categorías:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las categorías. Intente de nuevo.',
+      message: i18nT('ui.error-al-cargar-las-categorias-intente-de-nuevo-834282'),
     })
   }
 }
@@ -159,7 +160,7 @@ const editUnit = (item) => {
 
 const confirmDelete = (item) => {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar "${item.nombre}"?`,
     cancel: true,
     persistent: true,
@@ -178,7 +179,7 @@ const confirmDelete = (item) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -194,7 +195,7 @@ const toggleStatus = async (item) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -215,14 +216,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: i18nT('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()

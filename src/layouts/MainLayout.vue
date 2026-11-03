@@ -80,7 +80,7 @@
     </q-drawer>
 
     <q-page-container style="height: calc(100vh - 50px)">
-      <router-view :style="pageBackgroundStyle" />
+      <router-view ref="routerViewRef" :key="$i18n.locale" :style="pageBackgroundStyle" />
     </q-page-container>
 
     <!-- Dialog de Notificación Recibida -->
@@ -89,8 +89,9 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import emitter from 'src/event-bus'
-import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
+import { ref, onMounted, onUnmounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { PAGINAS, PAGINAS_ICONS, PAGINAS_SELECT, GRUPO_PAGINAS_DETALLE } from 'src/stores/paginas'
 import { useMenuStore } from 'src/stores/permitidos'
@@ -100,10 +101,11 @@ import { permisoNotificaciones } from 'src/composables/FuncionesG'
 import { guiarInicio } from 'src/utils/guiasDriver'
 import { idempresa_md5, idusuario_md5, getUsuario } from 'src/composables/FuncionesGenerales'
 import { usePusherStore } from 'src/stores/pusher-store'
-import { useQuasar } from 'quasar'
+//import { useQuasar } from 'quasar'
 import { useOperacionesPermitidas } from 'src/composables/useAutorizarOperaciones'
-const $q = useQuasar()
-
+import { usePageBackground } from 'src/composables/usePageBackground'
+const router = useRouter()
+const route = useRoute()
 const pusherStore = usePusherStore()
 //import { LocalStorage } from 'quasar'
 const idempresa = idempresa_md5()
@@ -113,16 +115,9 @@ const usuario = getUsuario()
 console.log('Usuario en MainLayout.vue:', usuario)
 
 // Fondo del area de contenido (logo mistersofts sin fondo)
-const publicBase = import.meta.env.BASE_URL
-const pageBackgroundStyle = computed(() => ({
-  backgroundColor: 'var(--cm-bg)',
-  backgroundImage: `url('${publicBase}${$q.dark.isActive ? 'fondoDarck.png' : 'fondo.jpeg'}')`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'center center',
-  backgroundSize: 'min(60%, 900px)',
-  overflowY: 'auto',
-  height: '100%',
-}))
+// La logica de mostrar/ocultar el fondo segun contenido vive en usePageBackground
+const routerViewRef = ref(null)
+const { pageBackgroundStyle } = usePageBackground(routerViewRef)
 
 // Referencia al dialog de notificaciones
 const notificacionDialogRef = ref(null)
@@ -138,8 +133,7 @@ const irdashboard = () => {
   sessionStorage.setItem('logoutIntencional', 'true')
   window.location.replace('login')
 }
-const router = useRouter()
-const route = useRoute()
+
 const menuStore = useMenuStore()
 
 const leftDrawerOpen = ref(false)
@@ -246,6 +240,8 @@ const iconos = ref({
   configuracionIntegracionExterna: 'settings',
   reporteProductoUnico: 'fact_check',
   utilidades: 'analytics',
+  informeinventario: 'inventory',
+  sincronizaralmacenes: 'sync_alt',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {
@@ -356,8 +352,8 @@ onMounted(async () => {
 
   const userData = loadData('mistersofts-cm')
   if (userData[0]) {
-    nombreUsuario.value = userData[0].nombre || 'Usuario'
-    cargo.value = userData[0].cargo || 'Sin cargo'
+    nombreUsuario.value = userData[0].nombre || i18nT('auth.user')
+    cargo.value = userData[0].cargo || i18nT('ui.sin-cargo-646167')
   }
   const menuPrincipal = menuStore.obtenerMenuPrincipal
   items.value = menuPrincipal

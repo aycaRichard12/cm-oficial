@@ -3,7 +3,7 @@
     <div class="row justify-end q-mb-md">
       <q-btn
         color="primary"
-        label="Volver a Productos"
+        :label="$t('ui.volver-a-productos-3e2c8d')"
         icon="arrow_back"
         @click="mostrarmoduloConjunto = false"
         outline
@@ -15,7 +15,7 @@
     <q-dialog v-model="showForm">
       <q-card class="responsive-dialog">
         <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-          <div>Registrar Producto o Servicio</div>
+          <div>{{ $t('ui.registrar-producto-o-servicio-197aae') }}</div>
           <q-btn icon="close" @click="toggleForm" dense flat round />
         </q-card-section>
         <q-card-section class="q-pa-none">
@@ -61,6 +61,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { idempresa_md5, validarUsuario } from 'src/composables/FuncionesGenerales'
@@ -120,7 +121,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos del catálogo',
+      message: i18nT('ui.no-se-pudieron-cargar-los-datos-del-catalogo-350636'),
     })
   } finally {
     cargando.value = false
@@ -141,7 +142,7 @@ async function loadcategorias() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -159,7 +160,7 @@ async function loadestados() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los Estados de Producto',
+      message: i18nT('ui.no-se-pudieron-cargar-los-estados-de-producto-c091b1'),
     })
   }
 }
@@ -183,7 +184,7 @@ async function loadsubcategorias(idcategoria) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -201,7 +202,7 @@ async function loadunidades() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -228,7 +229,7 @@ async function ListaProductoSin() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -255,7 +256,7 @@ async function ListaUnidadSin() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -274,7 +275,7 @@ async function loadmedidas() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -297,14 +298,14 @@ const handleSubmit = async (data) => {
     }
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
     })
     loadRows()
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: i18nT('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()
@@ -379,7 +380,7 @@ const confirmDelete = (row) => {
   console.log(row)
 
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar Producto "${row.nombre}"?`,
     cancel: true,
     persistent: true,
@@ -403,7 +404,7 @@ const confirmDelete = (row) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -412,8 +413,8 @@ const eliminarProductosSeleccionados = (ids) => {
   console.log(ids)
 
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Productos seleccionados?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-productos-seleccionados-a0b9b6')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -440,7 +441,7 @@ const eliminarProductosSeleccionados = (ids) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -452,7 +453,7 @@ const handleImport = async (data) => {
   importing.value = true
 
   $q.loading.show({
-    message: 'Importando productos...',
+    message: i18nT('ui.importando-productos-2eb0aa'),
   })
 
   for (const item of data) {

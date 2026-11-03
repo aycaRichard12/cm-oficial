@@ -8,10 +8,10 @@
         @click="$emit('add')"
         no-caps
         id="btnNuevaCompra"
-        title="Registrar Compra"
+        :title="$t('ui.registrar-compra-8c3ac1')"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto"> <q-icon name="add" />Nuevo</span>
+        <span class="texto"> <q-icon name="add" />{{ $t('common.new') }}</span>
       </q-btn>
     </div>
 
@@ -25,7 +25,7 @@
         id="btnRecargar"
       >
         <q-icon name="refresh" class="icono" />
-        <span class="texto">Recargar</span>
+        <span class="texto">{{ $t('ui.recargar-9d2c9d') }}</span>
       </q-btn>
       <q-btn
         color="info"
@@ -35,7 +35,7 @@
         id="btnImprimir"
       >
         <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista Previa PDF</span>
+        <span class="texto">{{ $t('ui.vista-previa-pdf-9db3ed') }}</span>
       </q-btn>
     </div>
   </div>

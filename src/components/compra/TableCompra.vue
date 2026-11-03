@@ -19,7 +19,7 @@
       <BaseFilterableTable
         id="tabla"
         ref="tableRef"
-        title="Compras"
+        :title="$t('ui.compras-43a802')"
         :rows="processedRows"
         :columns="columnas"
         :arrayHeaders="arrayHeaders"
@@ -36,21 +36,21 @@
             <q-badge
               v-if="Number(props.row.autorizacion) === 1"
               color="positive"
-              label="Autorizado"
+              :label="$t('ui.autorizado-b4fb49')"
               outline
             />
             <q-badge
               v-else-if="Number(props.row.autorizacion) === 0"
               color="grey"
-              label="Anulada"
+              :label="$t('ui.anulada-886f1d')"
               outline
             />
-            <q-badge v-else color="negative" label="No Autorizado" outline />
+            <q-badge v-else color="negative" :label="$t('ui.no-autorizado-988c4e')" outline />
           </q-td>
         </template>
         <template v-slot:body-cell-tipocompra="props">
           <q-td :props="props">
-            {{ Number(props.row.tipocompra) === 2 ? 'Contado' : 'A crédito' }}
+            {{ Number(props.row.tipocompra) === 2 ? $t('ui.contado-447b89') : $t('ui.a-credito-d25cc3') }}
           </q-td>
         </template>
 
@@ -58,7 +58,7 @@
           <q-td :props="props">
             <q-btn
               id="detalleCompra"
-              title="Añadir Carrito "
+              :title="$t('ui.anadir-carrito-881812')"
               icon="shopping_cart"
               color="primary"
               dense
@@ -68,19 +68,19 @@
             <q-btn
               v-if="Number(props.row.autorizacion) !== 1"
               id="importarDetalleCompra"
-              title="Importar Detalle Excel"
+              :title="$t('ui.importar-detalle-excel-72ae22')"
               icon="upload_file"
               color="green-8"
               dense
               flat
               @click="abrirImportarDetalle(props.row)"
             >
-              <q-tooltip>Importar detalle desde Excel</q-tooltip>
+              <q-tooltip>{{ $t('ui.importar-detalle-desde-excel-4af6fb') }}</q-tooltip>
             </q-btn>
             <q-btn
               id="planPago"
               v-if="Number(props.row.tipocompra) === 1 && Number(props.row.estado) === 1"
-              title="Generar Plan de Pagos"
+              :title="$t('ui.generar-plan-de-pagos-ab21fb')"
               icon="payment"
               color="blue"
               flat=""
@@ -126,7 +126,7 @@
                 flat
                 @click="abrirDialogNotificacion(props.row)"
               >
-                <q-tooltip>Enviar Notificación</q-tooltip>
+                <q-tooltip>{{ $t('ui.enviar-notificacion-a4632e') }}</q-tooltip>
               </q-btn>
             </div>
             <!-- Botón Solicitar Anulación: solo para compras ya autorizadas -->
@@ -142,7 +142,7 @@
                   flat
                   @click="$emit('solicitar-anulacion', props.row)"
                 >
-                  <q-tooltip>Solicitar Anulación</q-tooltip>
+                  <q-tooltip>{{ $t('ui.solicitar-anulacion-d309de') }}</q-tooltip>
                 </q-btn>
                 <!-- Anulación directa (sin pasar por aprobación) -->
                 <q-btn
@@ -154,7 +154,7 @@
                   v-if="permisosStore.tienePermiso('anularcompradirecta')"
                   @click="confirmarAnulacionDirecta(props.row)"
                 >
-                  <q-tooltip>Anular Directamente</q-tooltip>
+                  <q-tooltip>{{ $t('ui.anular-directamente-f851b8') }}</q-tooltip>
                 </q-btn>
               </template>
               <!-- Solicitud ya activa: mostrar su estado -->
@@ -196,6 +196,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 
 import { decimas, redondear } from 'src/composables/FuncionesG'
@@ -266,14 +267,14 @@ function abrirImportarDetalle(row) {
 const columnas = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     align: 'right',
     field: 'numero',
     dataType: 'number',
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     align: 'right', // Align right for dates usually looks better or same as numbers
     field: 'fecha',
     format: (val) => {
@@ -288,41 +289,41 @@ const columnas = [
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'lote',
-    label: 'Nombre lote',
+    label: i18nT('ui.nombre-lote-c7e013'),
     field: 'lote',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'codigo',
-    label: 'Código',
+    label: i18nT('ui.codigo-c35510'),
     field: 'codigo',
     dataType: 'text',
   },
   {
     name: 'nfactura',
-    label: 'N°Factura',
+    label: i18nT('ui.n-factura-e9f28b'),
     align: 'right',
     field: 'nfactura',
     dataType: 'number',
   },
   {
     name: 'tipocompra',
-    label: 'Tipo compra',
+    label: i18nT('ui.tipo-compra-7e2b47'),
     field: 'tipocompra_label', // Use label for friendly filtering
     align: 'center',
     dataType: 'text',
   },
   {
     name: 'total',
-    label: 'Total compra' + ` \n(${divisaActiva.simbolo})`,
+    label: i18nT('ui.total-compra-51fdc9') + ` \n(${divisaActiva.simbolo})`,
     align: 'right',
     field: 'total', // Use raw number for filtering
     format: (val) => {
@@ -334,13 +335,13 @@ const columnas = [
   },
   {
     name: 'autorizacion',
-    label: 'Autorización',
+    label: i18nT('ui.autorizacion-077400'),
     field: 'autorizacion_label', // Use label for friendly filtering
     align: 'center',
     dataType: 'text',
   },
-  { name: 'detalle', label: 'Detalle', field: 'detalle', align: 'right' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'detalle', label: i18nT('ui.detalle-be605b'), field: 'detalle', align: 'right' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 const arrayHeaders = [
@@ -413,8 +414,11 @@ const processedRows = computed(() => {
 })
 
 const tituloNotificacion = computed(() => {
-  if (!compraSeleccionada.value) return 'Enviar Notificación'
-  return `Notificación - Compra ${compraSeleccionada.value.codigo} (${compraSeleccionada.value.proveedor})`
+  if (!compraSeleccionada.value) return i18nT('ui.enviar-notificacion-a4632e')
+  return i18nT('ui.notificacion-compra-a1c4f7', {
+    codigo: compraSeleccionada.value.codigo,
+    proveedor: compraSeleccionada.value.proveedor,
+  })
 })
 
 watch(
@@ -437,7 +441,7 @@ async function FormularioCredito(c) {
     const result = await showDialog(
       $q,
       'W',
-      'El registro de compra esta en espera de autorización o confirmación, para continuar con plan de pagos.',
+      i18nT('ui.el-registro-de-compra-esta-en-espera-de-autorizacion-7f713a'),
     )
     console.log('Warning dialog result:', result)
   }
@@ -448,7 +452,7 @@ function closeModalCredito() {
 }
 async function imprimirReporte() {
   if (!filtroAlmacen.value) {
-    await showDialog($q, 'W', 'Debe seleccionar un almacén para ver el reporte.')
+    await showDialog($q, 'W', i18nT('ui.debe-seleccionar-un-almacen-para-ver-el-reporte-019106'))
     return
   }
 
@@ -475,16 +479,16 @@ const abrirDialogNotificacion = (compra) => {
 
 async function confirmarAnulacionDirecta(row) {
   $q.dialog({
-    title: 'Anular compra directamente',
+    title: i18nT('ui.anular-compra-directamente-16b323'),
     message: `¿Anular la compra Factura N° ${row.nfactura} — ${row.proveedor}? Esta acción no requiere aprobación.`,
     prompt: {
       model: '',
-      label: 'Motivo (opcional)',
+      label: i18nT('ui.motivo-opcional-6f8d31'),
       type: 'text',
     },
     cancel: true,
     persistent: true,
-    ok: { label: 'Anular', color: 'negative' },
+    ok: { label: i18nT('ui.anular-5b4de7'), color: 'negative' },
   }).onOk(async (motivo) => {
     const ok = await anularCompraDirecta({ id: row.id, motivo })
     if (ok) emit('actualizarTablaPrincipal')

@@ -5,16 +5,16 @@
         color="primary"
         @click="$emit('toggleForm')"
         class="btn-res q-mt-lg"
-        title="Registrar Inventario Exterior"
+        :title="$t('ui.registrar-inventario-exterior-2469f0')"
         id="add"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">{{ formCollapse ? 'Cancelar Registro' : 'Nuevo' }}</span>
+        <span class="texto">{{ formCollapse ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}</span>
       </q-btn>
     </div>
 
     <div class="col-12 col-md-4" id="selectAlmacenExterno">
-      <label for="almacen">Seleccione un Almacén</label>
+      <label for="almacen">{{ $t('ui.seleccione-un-almacen-fc2f9e') }}</label>
       <q-select
         v-model="filtroAlmacen"
         :options="almacenOptions"
@@ -28,8 +28,8 @@
       />
     </div>
     <div class="col-12 col-md-3" id="inputBuscar">
-      <label for="buscar">Buscar...</label>
-      <q-input dense debounce="300" v-model="searchQuery" placeholder="Buscar..."></q-input>
+      <label for="buscar">{{ $t('common.search') }}</label>
+      <q-input dense debounce="300" v-model="searchQuery" :placeholder="$t('common.search')"></q-input>
     </div>
   </div>
 </template>

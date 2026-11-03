@@ -7,38 +7,38 @@
       <q-card-section class="q-pt-lg">
         <div class="section-title">
           <q-icon name="description" size="sm" class="q-mr-xs" />
-          Información General
+          {{ $t('ui.informacion-general-438a25') }}
         </div>
         <div class="row q-col-gutter-md">
           <!-- Razón Social -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Razón Social <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.razon-social-adf906') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.nombre"
               id="nombre"
-              :rules="[(val) => !!val || 'Campo Obligatorio']"
+              :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
               prepend-icon="business"
-              placeholder="Ingrese razón social"
+              :placeholder="$t('ui.ingrese-razon-social-a15c04')"
             />
           </div>
           <!-- Nombre Comercial -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Nombre Comercial <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.nombre-comercial-55a6ae') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.nombrecomercial"
               id="nomcomercial"
-              :rules="[(val) => !!val || 'Campo Obligatorio']"
+              :rules="[(val) => !!val || $t('ui.campo-obligatorio-f2e737')]"
               prepend-icon="store"
-              placeholder="Nombre con el que opera"
+              :placeholder="$t('ui.nombre-con-el-que-opera-45e395')"
             />
           </div>
           <!-- Tipo de Cliente -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Tipo de Cliente <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.tipo-de-cliente-0b35df') }} <span class="text-red">*</span></div>
             <q-select
               outlined
               dense
@@ -49,9 +49,9 @@
               option-label="label"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un tipo']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
               prepend-icon="people"
-              placeholder="Seleccione tipo"
+              :placeholder="$t('ui.seleccione-tipo-6f2c4b')"
             >
               <template v-slot:append>
                 <q-btn
@@ -64,14 +64,14 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'tipocliente')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
           </div>
           <!-- Canal de venta -->
           <div class="col-12 col-md-3">
-            <div class="field-label">Canal de venta <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.canal-de-venta-5eeada') }} <span class="text-red">*</span></div>
             <q-select
               outlined
               dense
@@ -82,9 +82,9 @@
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un canal']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-canal-ce32e2')]"
               prepend-icon="tune"
-              placeholder="Canal de venta"
+              :placeholder="$t('ui.canal-de-venta-5eeada')"
             >
               <template v-slot:append>
                 <q-btn
@@ -97,14 +97,14 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'canalventa')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
           </div>
           <!-- Tipo de Documento -->
           <div class="col-12 col-md-2">
-            <div class="field-label">Tipo de Doc <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.tipo-de-doc-178a9f') }} <span class="text-red">*</span></div>
             <q-select
               outlined
               dense
@@ -115,9 +115,9 @@
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un tipo']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-tipo-776f45')]"
               prepend-icon="badge"
-              placeholder="Doc. identidad"
+              :placeholder="$t('ui.doc-identidad-698fb9')"
             >
               <template v-slot:append>
                 <q-btn
@@ -130,27 +130,27 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'tipodocumento')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
           </div>
           <!-- Nro De Documento -->
           <div class="col-12 col-md-3">
-            <div class="field-label">Nro De Documento <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.nro-de-documento-4023c6') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.nrodocumento"
               id="nrodoc"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               prepend-icon="pin"
-              placeholder="Número de documento"
+              :placeholder="$t('ui.numero-de-documento-90fd82')"
             />
           </div>
           <!-- Almacén -->
           <div class="col-12 col-md-3" v-if="soloAlmacen">
-            <div class="field-label">Almacén <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('inventario.warehouse') }} <span class="text-red">*</span></div>
             <q-select
               outlined
               dense
@@ -161,9 +161,9 @@
               option-value="value"
               emit-value
               map-options
-              :rules="[(val) => !!val || 'Seleccione un Almacen']"
+              :rules="[(val) => !!val || $t('ui.seleccione-un-almacen-d73231')]"
               prepend-icon="warehouse"
-              placeholder="Almacén asignado"
+              :placeholder="$t('ui.almacen-asignado-999b11')"
             >
               <template v-slot:append>
                 <q-btn
@@ -176,7 +176,7 @@
                   color="primary"
                   @click.stop="emit('reload-options', 'almacen')"
                 >
-                  <q-tooltip>Recargar opciones</q-tooltip>
+                  <q-tooltip>{{ $t('ui.recargar-opciones-bc5810') }}</q-tooltip>
                 </q-btn>
               </template>
             </q-select>
@@ -190,107 +190,107 @@
       <q-card-section class="bg-grey-1">
         <div class="section-title">
           <q-icon name="location_on" size="sm" class="q-mr-xs" />
-          Contacto y Ubicación
+          {{ $t('ui.contacto-y-ubicacion-8e405f') }}
         </div>
         <div class="row q-col-gutter-md">
           <!-- Email -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Email</div>
+            <div class="field-label">{{ $t('configuracion.servicios.table.email') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.email"
               id="email"
               prepend-icon="email"
-              placeholder="correo@ejemplo.com"
-              hint="ejemplo@correo.com"
+              :placeholder="$t('ui.correo-ejemplo-com-054a79')"
+              :hint="$t('ui.ejemplo-correo-com-9c0833')"
             />
           </div>
           <!-- Dirección -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Dirección</div>
+            <div class="field-label">{{ $t('ui.direccion-04f478') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.direccion"
               id="direccion"
               prepend-icon="home"
-              placeholder="Calle, número, piso"
+              :placeholder="$t('ui.calle-numero-piso-6da356')"
             />
           </div>
           <!-- Teléfono -->
           <div class="col-12 col-md-2">
-            <div class="field-label">Teléfono</div>
+            <div class="field-label">{{ $t('ui.telefono-99af37') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.telefono"
               id="telefono"
               prepend-icon="phone"
-              placeholder="Fijo"
+              :placeholder="$t('ui.fijo-1f5c32')"
             />
           </div>
           <!-- Móvil -->
           <div class="col-12 col-md-3">
-            <div class="field-label">Móvil <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.movil-ce84c3') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.movil"
               id="movil"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               prepend-icon="smartphone"
-              placeholder="Celular"
+              :placeholder="$t('ui.celular-3cf916')"
             />
           </div>
           <!-- País -->
           <div class="col-12 col-md-3">
-            <div class="field-label">País <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.pais-0c664f') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.pais"
               id="pais"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               prepend-icon="public"
-              placeholder="País"
+              :placeholder="$t('ui.pais-0c664f')"
             />
           </div>
           <!-- Ciudad -->
           <div class="col-12 col-md-4">
-            <div class="field-label">Ciudad <span class="text-red">*</span></div>
+            <div class="field-label">{{ $t('ui.ciudad-c6fbe2') }} <span class="text-red">*</span></div>
             <q-input
               outlined
               dense
               v-model="localData.ciudad"
               id="ciudad"
-              :rules="[(val) => !!val || 'Campo obligatorio']"
+              :rules="[(val) => !!val || $t('configuracion.canalesDeVenta.form.required')]"
               prepend-icon="location_city"
-              placeholder="Ciudad"
+              :placeholder="$t('ui.ciudad-c6fbe2')"
             />
           </div>
           <!-- Zona -->
           <div class="col-12 col-md-3">
-            <div class="field-label">Zona</div>
+            <div class="field-label">{{ $t('ui.zona-27288b') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.zona"
               id="zona"
               prepend-icon="map"
-              placeholder="Zona o barrio"
+              :placeholder="$t('ui.zona-o-barrio-76c411')"
             />
           </div>
           <!-- Página Web -->
           <div class="col-12 col-md-5">
-            <div class="field-label">Página Web</div>
+            <div class="field-label">{{ $t('ui.pagina-web-804748') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.web"
               prepend-icon="language"
               placeholder="https://..."
-              hint="Sitio web de la empresa"
+              :hint="$t('ui.sitio-web-de-la-empresa-53416c')"
             />
           </div>
         </div>
@@ -302,31 +302,31 @@
       <q-card-section>
         <div class="section-title">
           <q-icon name="more_horiz" size="sm" class="q-mr-xs" />
-          Datos Adicionales
+          {{ $t('ui.datos-adicionales-9e63c4') }}
         </div>
         <div class="row q-col-gutter-md">
           <!-- Contacto -->
           <div class="col-12 col-md-6">
-            <div class="field-label">Contacto</div>
+            <div class="field-label">{{ $t('ui.contacto-d8a53e') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.contacto"
               id="contacto"
               prepend-icon="perm_contact_calendar"
-              placeholder="Nombre de la persona de contacto"
+              :placeholder="$t('ui.nombre-de-la-persona-de-contacto-e82bde')"
             />
           </div>
           <!-- Detalle -->
           <div class="col-12 col-md-6">
-            <div class="field-label">Detalle</div>
+            <div class="field-label">{{ $t('ui.detalle-be605b') }}</div>
             <q-input
               outlined
               dense
               v-model="localData.detalle"
               id="detalle"
               prepend-icon="notes"
-              placeholder="Observaciones adicionales"
+              :placeholder="$t('ui.observaciones-adicionales-5b4a14')"
             />
           </div>
         </div>
@@ -335,7 +335,7 @@
       <!-- Acciones del formulario -->
       <q-card-actions align="right" class="q-pa-md q-gutter-sm bg-grey-2">
         <q-btn
-          label="Cancelar"
+          :label="$t('common.cancel')"
           flat
           color="negative"
           icon="close"
@@ -343,7 +343,7 @@
           class="modern-btn"
         />
         <q-btn
-          label="Guardar"
+          :label="$t('common.save')"
           type="submit"
           color="primary"
           icon="save"

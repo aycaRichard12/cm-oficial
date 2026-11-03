@@ -17,6 +17,7 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       'tests/example.spec.js',
+      'tests/e2e/**',
       '**/*.e2e.spec.js',
     ],
     environment: 'node',

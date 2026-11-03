@@ -3,21 +3,21 @@
     <q-dialog v-model="VisibleModalJustificacion" persistent>
       <q-card style="min-width: 400px">
         <q-card-section class="bg-primary text-white text-h6">
-          Motivo de la Devolución
+          {{ $t('ui.motivo-de-la-devolucion-544ee4') }}
         </q-card-section>
 
         <q-card-section>
-          <label for="motivo">Escriba el motivo...</label>
+          <label for="motivo">{{ $t('ui.escriba-el-motivo-819618') }}</label>
           <q-input v-model="motivo" type="textarea" outlined dense autogrow id="motivo" />
         </q-card-section>
 
         <q-separator />
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancelar" color="negative" @click="cancelarJustificacion" />
+          <q-btn flat :label="$t('common.cancel')" color="negative" @click="cancelarJustificacion" />
           <q-btn
             flat
-            label="Continuar"
+            :label="$t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
             color="primary"
             :disable="!motivo"
             @click="confirmarJustificacion"
@@ -30,7 +30,7 @@
     <q-dialog v-model="VisibleModalNotaCredito" full-width full-height>
       <q-card>
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Nota Credito Debito</div>
+          <div>{{ $t('ui.registrar-nota-credito-debito-510823') }}</div>
           <q-btn icon="close" flat dense round @click="toggleModal" />
         </q-card-section>
         <q-card-section style="max-height: 83vh; overflow-y: auto">
@@ -41,6 +41,7 @@
   </div>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
@@ -105,7 +106,7 @@ const ir_a_NotaCreditoDebito = async (factura) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
   console.log(jsonEmizor)

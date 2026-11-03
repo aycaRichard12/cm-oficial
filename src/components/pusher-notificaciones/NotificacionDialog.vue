@@ -3,7 +3,7 @@
     v-model="isOpen"
     :title="title"
     :loading="loading"
-    confirm-label="Enviar Notificación"
+    :confirm-label="$t('ui.enviar-notificacion-a4632e')"
     confirm-color="primary"
     card-style="min-width: 500px; max-width: 700px;"
     @confirm="handleEnviar"
@@ -14,7 +14,7 @@
       <div class="q-mb-md">
         <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="person" class="q-mr-xs" />
-          Destinatario
+          {{ $t('ui.destinatario-74f553') }}
         </div>
         <q-select
           v-model="formData.usuarioSeleccionado"
@@ -25,8 +25,8 @@
           map-options
           outlined
           dense
-          label="Seleccionar usuario *"
-          :rules="[(val) => !!val || 'Debe seleccionar un usuario']"
+          :label="$t('ui.seleccionar-usuario-dd5afd')"
+          :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-usuario-5015d6')]"
           :loading="loadingUsuarios"
         >
           <template v-slot:prepend>
@@ -34,7 +34,7 @@
           </template>
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No hay usuarios disponibles </q-item-section>
+              <q-item-section class="text-grey"> {{ $t('ui.no-hay-usuarios-disponibles-2bf41f') }} </q-item-section>
             </q-item>
           </template>
         </q-select>
@@ -46,16 +46,16 @@
       <div class="q-mb-md">
         <div class="text-subtitle2 cm-text q-mb-sm">
           <q-icon name="mail" class="q-mr-xs" />
-          Detalles de la Notificación
+          {{ $t('ui.detalles-de-la-notificacion-0bbb17') }}
         </div>
 
         <q-input
           v-model="formData.asunto"
           outlined
           dense
-          label="Asunto *"
-          placeholder="Ej: Venta, Pedido, Alerta"
-          :rules="[(val) => !!val || 'El asunto es obligatorio']"
+          :label="$t('ui.asunto-82fa9b')"
+          :placeholder="$t('ui.ej-venta-pedido-alerta-760a59')"
+          :rules="[(val) => !!val || $t('ui.el-asunto-es-obligatorio-6588e3')]"
           class="q-mb-md"
         >
           <template v-slot:prepend>
@@ -68,9 +68,9 @@
           outlined
           type="textarea"
           rows="5"
-          label="Mensaje *"
-          placeholder="Escriba el contenido de la notificación..."
-          :rules="[(val) => !!val || 'El mensaje es obligatorio']"
+          :label="$t('ui.mensaje-870575')"
+          :placeholder="$t('ui.escriba-el-contenido-de-la-notificacion-2450e1')"
+          :rules="[(val) => !!val || $t('ui.el-mensaje-es-obligatorio-1fd439')]"
         >
           <template v-slot:prepend>
             <q-icon name="message" />
@@ -81,10 +81,10 @@
       <!-- Vista previa del formato -->
       <q-card flat bordered class="bg-grey-1 q-mt-md">
         <q-card-section>
-          <div class="text-caption text-grey-7 q-mb-sm">Vista Previa del Formato</div>
+          <div class="text-caption text-grey-7 q-mb-sm">{{ $t('ui.vista-previa-del-formato-822873') }}</div>
           <div class="text-body2">
-            <div><strong>Asunto:</strong> {{ formData.asunto || '(sin asunto)' }}</div>
-            <div><strong>Mensaje:</strong> {{ formData.mensaje || '(sin mensaje)' }}</div>
+            <div><strong>{{ $t('ui.asunto-a92531') }}</strong> {{ formData.asunto || $t('ui.sin-asunto-52427d') }}</div>
+            <div><strong>{{ $t('ui.mensaje-813d0e') }}</strong> {{ formData.mensaje || $t('ui.sin-mensaje-ead80a') }}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -93,6 +93,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import BaseDialog from '../general/BaseDialog.vue'
 import { useNotificaciones } from 'src/composables/pusher-notificaciones/useNotificaciones'
@@ -106,7 +107,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Enviar Notificación',
+    default: i18nT('ui.enviar-notificacion-a4632e'),
   },
 })
 

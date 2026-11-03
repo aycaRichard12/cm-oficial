@@ -28,7 +28,7 @@
       <q-card-actions align="center" class="q-pa-md q-pt-lg">
         <q-btn
           outline
-          label="Cancelar"
+          :label="$t('common.cancel')"
           color="grey-8"
           v-close-popup
           @click="closeDialog"
@@ -38,7 +38,7 @@
         />
         <q-btn
           unelevated
-          label="Aceptar"
+          :label="$t('ui.aceptar-8f9f73')"
           color="warning"
           text-color="dark"
           @click="onAccept"
@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 
 // Props y emits
@@ -62,7 +63,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Advertencia',
+    default: i18nT('ui.advertencia-c29238'),
   },
   message: {
     type: String,

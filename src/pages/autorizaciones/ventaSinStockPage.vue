@@ -2,7 +2,7 @@
   <q-page padding>
     <q-card flat bordered class="q-pa-md">
       <q-toolbar class="bg-primary text-white shadow-2 rounded-borders">
-        <q-toolbar-title>Gestión de Permisos de Stock</q-toolbar-title>
+        <q-toolbar-title>{{ $t('ui.gestion-de-permisos-de-stock-85e760') }}</q-toolbar-title>
         <!-- <q-btn
           icon="add"
           label="Nueva Solicitud"
@@ -21,9 +21,9 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab name="solicitudes" icon="assignment" label="Solicitudes" id="solicitudes" />
-        <q-tab name="activos" icon="check_circle" label="P. Activos" id="activos" />
-        <q-tab name="historial" icon="history" label="Historial" id="historial" />
+        <q-tab name="solicitudes" icon="assignment" :label="$t('ui.solicitudes-853f77')" id="solicitudes" />
+        <q-tab name="activos" icon="check_circle" :label="$t('ui.p-activos-36a533')" id="activos" />
+        <q-tab name="historial" icon="history" :label="$t('ui.historial-302027')" id="historial" />
       </q-tabs>
 
       <q-separator />
@@ -32,7 +32,7 @@
         <q-tab-panel name="solicitudes">
           <q-table
             id="solicitudes"
-            title="Solicitudes de Permiso"
+            :title="$t('ui.solicitudes-de-permiso-9f297b')"
             :rows="listaSolicitudesData"
             :columns="colsSolicitudes"
             row-key="id"
@@ -57,7 +57,7 @@
                   @click="gestionarSolicitud(props.row)"
                   id="gestionar"
                 >
-                  <q-tooltip>Aprobar o Rechazar</q-tooltip>
+                  <q-tooltip>{{ $t('ui.aprobar-o-rechazar-08a601') }}</q-tooltip>
                 </q-btn>
               </q-td>
             </template>
@@ -66,7 +66,7 @@
 
         <q-tab-panel name="activos" id="tablaActivos">
           <q-table
-            title="Permisos Disponibles"
+            :title="$t('ui.permisos-disponibles-11df9d')"
             :rows="listaActivosData"
             :columns="colsPermisos"
             :loading="loading"
@@ -79,7 +79,7 @@
             <div class="col-12 col-md-6">
               <q-table
                 id="historial"
-                title="Usados"
+                :title="$t('ui.usados-06cf39')"
                 :rows="listaUsadosData"
                 :columns="colsPermisos"
                 :loading="loading"
@@ -90,7 +90,7 @@
             <div class="col-12 col-md-6">
               <q-table
                 id="vencidos"
-                title="Vencidos"
+                :title="$t('ui.vencidos-49690e')"
                 :rows="listaVencidosData"
                 :columns="colsPermisos"
                 :loading="loading"
@@ -106,7 +106,7 @@
     <q-dialog v-model="dialogoSolicitud" persistent>
       <q-card style="min-width: 400px">
         <q-card-section class="row items-center">
-          <div class="text-h6">Nueva Solicitud de Permiso</div>
+          <div class="text-h6">{{ $t('ui.nueva-solicitud-de-permiso-0ade0d') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -116,7 +116,7 @@
             <q-select
               v-model="formSolicitud.idalmacen"
               :options="almacenesResponsable"
-              label="Almacen"
+              :label="$t('ui.almacen-673013')"
               map-options
               emit-value
               outlined
@@ -125,7 +125,7 @@
             <q-select
               v-model="formSolicitud.idusuario_asignado"
               :options="responsables"
-              label="Responsable"
+              :label="$t('ui.responsable-44b588')"
               map-options
               emit-value
               outlined
@@ -133,7 +133,7 @@
             />
             <q-input
               v-model="formSolicitud.motivo"
-              label="Motivo / Justificación"
+              :label="$t('ui.motivo-justificacion-b817c2')"
               type="textarea"
               outlined
               required
@@ -141,8 +141,8 @@
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn label="Cancelar" flat v-close-popup />
-            <q-btn label="Enviar Solicitud" color="primary" type="submit" :loading="loading" />
+            <q-btn :label="$t('common.cancel')" flat v-close-popup />
+            <q-btn :label="$t('ui.enviar-solicitud-7c09ba')" color="primary" type="submit" :loading="loading" />
           </q-card-actions>
         </q-form>
       </q-card>
@@ -151,13 +151,13 @@
     <q-dialog v-model="dialogoGestion" persistent>
       <q-card style="min-width: 400px">
         <q-card-section class="bg-secondary text-white">
-          <div class="text-h6">Gestionar Solicitud #{{ selectedItem?.id }}</div>
+          <div class="text-h6">{{ $t('ui.gestionar-solicitud-5cfefd') }}{{ selectedItem?.id }}</div>
         </q-card-section>
 
         <q-card-section class="q-gutter-sm q-pt-md">
-          <p class="text-subtitle2">Defina la vigencia del permiso:</p>
+          <p class="text-subtitle2">{{ $t('ui.defina-la-vigencia-del-permiso-539605') }}</p>
           <div>
-            <label for="fI">Fecha y Hora de Inicio</label>
+            <label for="fI">{{ $t('ui.fecha-y-hora-de-inicio-d64f2e') }}</label>
             <q-input v-model="fechaInicio" id="fI" outlined dense readonly>
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
@@ -170,7 +170,7 @@
                       mask="YYYY-MM-DD HH:mm:ss"
                     >
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -181,7 +181,7 @@
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-time v-model="fechaInicio" mask="YYYY-MM-DD HH:mm:ss" format24h>
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-time>
                   </q-popup-proxy>
@@ -190,14 +190,14 @@
             </q-input>
           </div>
           <div>
-            <label for="fF" class="q-mt-md">Fecha y Hora de Fin</label>
+            <label for="fF" class="q-mt-md">{{ $t('ui.fecha-y-hora-de-fin-542a27') }}</label>
             <q-input v-model="fechaFin" id="fF" outlined dense readonly>
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-date v-model="fechaFin" mask="YYYY-MM-DD HH:mm:ss">
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -208,7 +208,7 @@
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-time v-model="fechaFin" mask="YYYY-MM-DD HH:mm:ss" format24h>
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                        <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                       </div>
                     </q-time>
                   </q-popup-proxy>
@@ -219,7 +219,7 @@
 
           <q-input
             v-model="observacionGestion"
-            label="Observaciones del Administrador"
+            :label="$t('ui.observaciones-del-administrador-96249c')"
             outlined
             type="textarea"
             rows="2"
@@ -228,15 +228,15 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pb-md q-pr-md">
-          <q-btn label="Cancelar" flat v-close-popup />
+          <q-btn :label="$t('common.cancel')" flat v-close-popup />
           <q-btn
-            label="Rechazar"
+            :label="$t('ui.rechazar-2b004c')"
             color="negative"
             @click="handleGestion('rechazar')"
             :loading="loading"
           />
           <q-btn
-            label="Aprobar"
+            :label="$t('ui.aprobar-c2505a')"
             color="positive"
             @click="handleGestion('aprobar')"
             :loading="loading"
@@ -248,6 +248,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, reactive } from 'vue'
 import { useSolicitudes } from 'src/composables/ventasSinStock/useSolicitudes'
 import { date } from 'quasar' // Helper de Quasar para formatear fechas
@@ -293,54 +294,54 @@ const formSolicitud = reactive({
 
 // Columnas Tablas
 const colsSolicitudes = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left' },
-  { name: 'fecha', label: 'Fecha', field: 'fecha_solicitud', align: 'left' },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left' },
+  { name: 'fecha', label: i18nT('cotizacion.table.date'), field: 'fecha_solicitud', align: 'left' },
   {
     name: 'usuario',
-    label: 'Solicitante',
+    label: i18nT('ui.solicitante-0cd165'),
     field: (row) => row.usuario?.usuario || 'N/A',
     align: 'left',
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     align: 'left',
   },
   {
     name: 'motivo',
-    label: 'Motivo',
+    label: i18nT('ui.motivo-cbeec5'),
     field: 'motivo',
     align: 'left',
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'acciones', label: 'Acciones', align: 'right' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'right' },
 ]
 
 const colsPermisos = [
-  { name: 'index', label: 'N°', field: 'index', align: 'left' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
   {
     name: 'usuario',
-    label: 'Solicitante',
+    label: i18nT('ui.solicitante-0cd165'),
     field: (row) => row.usuario?.usuario || 'N/A',
     align: 'left',
   },
   {
     name: 'fecha_inicio',
-    label: 'Inicio',
+    label: i18nT('ui.inicio-4f70d8'),
     field: 'fecha_inicio',
     align: 'left',
   },
   {
     name: 'fecha_fin',
-    label: 'Fin',
+    label: i18nT('ui.fin-425106'),
     field: 'fecha_fin',
     align: 'left',
   },
   {
     name: 'motivo',
-    label: 'Motivo',
+    label: i18nT('ui.motivo-cbeec5'),
     field: 'motivo',
     align: 'left',
   },

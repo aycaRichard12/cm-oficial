@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="row items-center q-mb-md">
       <q-avatar color="primary" text-color="white" icon="admin_panel_settings" />
-      <div class="text-h6 text-weight-bold cm-text-muted q-ml-sm">Gestionar Permiso</div>
+      <div class="text-h6 text-weight-bold cm-text-muted q-ml-sm">{{ $t('ui.gestionar-permiso-f93489') }}</div>
     </div>
 
     <!-- Tabs -->
@@ -16,8 +16,8 @@
       indicator-color="primary"
       align="left"
     >
-      <q-tab name="operacion" label="Operaciones" icon="settings" />
-      <q-tab name="graficos" label="Gráficos" icon="insert_chart" />
+      <q-tab name="operacion" :label="$t('ui.operaciones-5d75e5')" icon="settings" />
+      <q-tab name="graficos" :label="$t('ui.graficos-9522a3')" icon="insert_chart" />
     </q-tabs>
 
     <q-separator class="q-my-md" />
@@ -40,8 +40,8 @@
             input-debounce="0"
             clearable
             @filter="filterUsuarios"
-            :rules="[(val) => !!val || 'Seleccione un usuario']"
-            label="Usuario para asignar permisos"
+            :rules="[(val) => !!val || $t('ui.seleccione-un-usuario-6d0bc4')]"
+            :label="$t('ui.usuario-para-asignar-permisos-65a78d')"
             @update:model-value="alCambiarUsuario"
             class="bg-grey-1"
           >
@@ -55,7 +55,7 @@
       <!-- Operaciones -->
       <div v-show="tipoPermiso === 'operacion'" class="q-mt-md">
         <div class="row items-center q-mb-sm">
-          <div class="text-subtitle2 text-weight-bold text-primary">Operaciones de Sistema</div>
+          <div class="text-subtitle2 text-weight-bold text-primary">{{ $t('ui.operaciones-de-sistema-271ee3') }}</div>
           <q-spinner-dots
             v-if="cargandoPermisosActuales"
             color="primary"
@@ -65,11 +65,11 @@
           <q-badge
             v-else-if="form.usuarioSeleccionado"
             color="primary"
-            label="Autorizado"
+            :label="$t('ui.autorizado-b4fb49')"
             outline
             class="q-ml-sm"
           >
-            {{ cantidadOperacionesAsignadas }} activos
+            {{ cantidadOperacionesAsignadas }} {{ $t('ui.activos-6986b7') }}
           </q-badge>
         </div>
 
@@ -93,7 +93,7 @@
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-weight-medium cm-text">{{ opt.label }}</q-item-label>
-              <q-item-label caption>Permiso para acceder a esta funcionalidad</q-item-label>
+              <q-item-label caption>{{ $t('ui.permiso-para-acceder-a-esta-funcionalidad-878a60') }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -106,7 +106,7 @@
           "
           class="text-negative text-caption q-mt-sm"
         >
-          Falta seleccionar al menos una operación.
+          {{ $t('ui.falta-seleccionar-al-menos-una-operacion-72a854') }}
         </div>
       </div>
 
@@ -114,7 +114,7 @@
       <div v-show="tipoPermiso === 'graficos'" class="q-mt-md">
         <div class="row items-center q-mb-sm">
           <div class="text-subtitle2 text-weight-bold text-primary">
-            Visualizaciones del Dashboard
+            {{ $t('ui.visualizaciones-del-dashboard-60ded3') }}
           </div>
           <q-spinner-dots
             v-if="cargandoPermisosActuales"
@@ -125,11 +125,11 @@
           <q-badge
             v-else-if="form.usuarioSeleccionado"
             color="primary"
-            label="Autorizado"
+            :label="$t('ui.autorizado-b4fb49')"
             outline
             class="q-ml-sm"
           >
-            {{ cantidadGraficosAsignados }} activos
+            {{ cantidadGraficosAsignados }} {{ $t('ui.activos-6986b7') }}
           </q-badge>
         </div>
 
@@ -149,7 +149,7 @@
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-weight-medium cm-text">{{ opt.label }}</q-item-label>
-              <q-item-label caption>Mostrar este gráfico en el panel principal</q-item-label>
+              <q-item-label caption>{{ $t('ui.mostrar-este-grafico-en-el-panel-principal-533bc6') }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -162,7 +162,7 @@
           "
           class="text-negative text-caption q-mt-sm"
         >
-          Falta seleccionar al menos un gráfico.
+          {{ $t('ui.falta-seleccionar-al-menos-un-grafico-bb2b56') }}
         </div>
       </div>
 
@@ -172,13 +172,13 @@
         <q-btn
           flat
           icon="refresh"
-          label="Limpiar Selección"
+          :label="$t('ui.limpiar-seleccion-21713c')"
           color="grey-7"
           @click="resetForm"
           class="rounded-borders"
         />
         <q-btn
-          label="Guardar Permisos"
+          :label="$t('ui.guardar-permisos-e1d1b3')"
           type="submit"
           color="primary"
           :loading="loading || cargandoPermisosActuales"

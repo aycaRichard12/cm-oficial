@@ -2,7 +2,7 @@
   <div class="pdf-container">
     <div v-if="loading" class="status-message">
       <q-spinner color="primary" size="3em" />
-      <p class="text-subtitle1 q-mt-md">Generando comprobante...</p>
+      <p class="text-subtitle1 q-mt-md">{{ $t('ui.generando-comprobante-76e34b') }}</p>
     </div>
 
     <div v-else-if="error" class="status-message text-negative">
@@ -12,29 +12,29 @@
 
     <template v-else-if="!isMobile && pdfUrl">
       <div class="toolbar">
-        <span class="text-h6 text-weight-bold">Comprobante PDF</span>
+        <span class="text-h6 text-weight-bold">{{ $t('ui.comprobante-pdf-65b81d') }}</span>
         <q-btn
           color="primary"
           icon="download"
-          label="Descargar"
+          :label="$t('ui.descargar-8b98cb')"
           outline
           :href="pdfUrl"
           download="comprobante.pdf"
         />
       </div>
-      <iframe :src="pdfUrl" class="pdf-viewer" frameborder="0" title="Comprobante PDF" />
+      <iframe :src="pdfUrl" class="pdf-viewer" frameborder="0" :title="$t('ui.comprobante-pdf-65b81d')" />
     </template>
 
     <div v-else-if="isMobile && mobileFallbackUrl" class="status-message mobile-success">
       <q-icon name="check_circle" color="positive" size="4em" />
-      <h5 class="text-weight-bold q-mb-sm">Comprobante listo</h5>
+      <h5 class="text-weight-bold q-mb-sm">{{ $t('ui.comprobante-listo-77c82b') }}</h5>
       <p class="text-body1">
-        Si la descarga no inició automáticamente, usá el botón de abajo para obtener tu archivo.
+        {{ $t('ui.si-la-descarga-no-inicio-automaticamente-usa-el-boto-092c2d') }}
       </p>
       <q-btn
         color="primary"
         icon="download"
-        label="Descargar comprobante"
+        :label="$t('ui.descargar-comprobante-388c59')"
         type="a"
         :href="mobileFallbackUrl"
         download="comprobante.pdf"

@@ -7,9 +7,9 @@
           <div class="col-12 col-md-4">
             <div class="text-h6 text-primary text-weight-bold flex items-center">
               <q-icon name="payments" size="sm" class="q-mr-sm" />
-              Reporte de Cobros
+              {{ $t('ui.reporte-de-cobros-fe6272') }}
             </div>
-            <div class="text-caption text-grey-7">Historial de cobros por periodo y almacén</div>
+            <div class="text-caption text-grey-7">{{ $t('ui.historial-de-cobros-por-periodo-y-almacen-a662b1') }}</div>
           </div>
 
           <!-- Filtros de Fecha -->
@@ -18,7 +18,7 @@
               <div class="col-6 col-sm-3">
                 <q-input
                   v-model="startDate"
-                  label="Desde"
+                  :label="$t('ui.desde-966c7c')"
                   type="date"
                   dense
                   outlined
@@ -30,7 +30,7 @@
               <div class="col-6 col-sm-3">
                 <q-input
                   v-model="endDate"
-                  label="Hasta"
+                  :label="$t('ui.hasta-ccdaad')"
                   type="date"
                   dense
                   outlined
@@ -41,7 +41,7 @@
               </div>
               <div class="col-12 col-sm-6 text-right q-gutter-xs">
                 <q-btn
-                  label="Generar"
+                  :label="$t('ui.generar-1f31a1')"
                   color="primary"
                   icon="refresh"
                   @click="fetchReport"
@@ -57,7 +57,7 @@
                   unelevated
                   outline
                 >
-                  <q-tooltip>Imprimir PDF</q-tooltip>
+                  <q-tooltip>{{ $t('ui.imprimir-pdf-60263c') }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   v-if="reportData.length > 0"
@@ -67,7 +67,7 @@
                   unelevated
                   outline
                 >
-                  <q-tooltip>Exportar Excel</q-tooltip>
+                  <q-tooltip>{{ $t('reportes.exportExcel') }}</q-tooltip>
                 </q-btn>
               </div>
             </div>
@@ -84,7 +84,7 @@
             <q-select
               v-model="selectedAlmacen"
               :options="almacenOptions"
-              label="Almacén"
+              :label="$t('inventario.warehouse')"
               emit-value
               map-options
               dense
@@ -101,7 +101,7 @@
               input-debounce="300"
               :options="clientesFiltrados"
               @filter="filterClientes"
-              label="Buscar Cliente..."
+              :label="$t('ui.buscar-cliente-2679bb')"
               option-label="displayName"
               :loading="loadingClientes"
               clearable
@@ -117,7 +117,7 @@
               flat
               color="negative"
               icon="backspace"
-              label="Limpiar"
+              :label="$t('ui.limpiar-f3b225')"
               @click="resetAllFilters"
               size="sm"
             />
@@ -177,9 +177,9 @@
               @click="verImagen(props.row.foto_detalle_cobro || props.row.urlpdf)"
             >
               <q-tooltip
-                >Ver
+                >{{ $t('ui.ver-49b372') }}
                 {{
-                  esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'PDF' : 'Imagen'
+                  esArchivoPDF(props.row.foto_detalle_cobro || props.row.urlpdf) ? 'PDF' : $t('ui.imagen-100f99')
                 }}</q-tooltip
               >
             </q-btn>
@@ -191,15 +191,15 @@
     <q-card flat bordered v-else-if="!loading && reportFetched">
       <q-card-section class="text-center text-grey-7 q-pa-xl">
         <q-icon name="search_off" size="56px" class="q-mb-md" />
-        <div class="text-h6">No se encontraron resultados</div>
-        <div>Pruebe ajustando las fechas o los filtros para su búsqueda.</div>
+        <div class="text-h6">{{ $t('ui.no-se-encontraron-resultados-379d80') }}</div>
+        <div>{{ $t('ui.pruebe-ajustando-las-fechas-o-los-filtros-para-su-bu-3a3285') }}</div>
       </q-card-section>
     </q-card>
 
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="column no-wrap" style="height: 100%">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Vista previa de Reporte</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-reporte-069956') }}</div>
           <q-space />
           <q-btn flat round icon="close" v-close-popup />
         </q-card-section>
@@ -224,6 +224,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { api } from 'src/boot/axios'
 import { date, useQuasar } from 'quasar'
@@ -275,7 +276,7 @@ const columns = [
   {
     name: 'fecha_actual',
     align: 'left',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha_actual',
     sortable: true,
     dataType: 'date',
@@ -284,7 +285,7 @@ const columns = [
   {
     name: 'num_documento',
     align: 'left',
-    label: 'N° Doc',
+    label: i18nT('ui.n-doc-2a0176'),
     field: 'num_documento',
     sortable: true,
     dataType: 'text',
@@ -292,7 +293,7 @@ const columns = [
   {
     name: 'nombre_cliente',
     align: 'left',
-    label: 'Razón Social',
+    label: i18nT('ui.razon-social-adf906'),
     field: 'nombre_cliente',
     sortable: true,
     dataType: 'text',
@@ -300,7 +301,7 @@ const columns = [
   {
     name: 'nombre_comercial',
     align: 'left',
-    label: 'Nombre Comercial',
+    label: i18nT('ui.nombre-comercial-55a6ae'),
     field: 'nombre_comercial',
     sortable: true,
     dataType: 'text',
@@ -308,7 +309,7 @@ const columns = [
   {
     name: 'Venta',
     align: 'left',
-    label: 'Documento Cobrado',
+    label: i18nT('ui.documento-cobrado-a1e470'),
     field: 'Venta',
     sortable: true,
     dataType: 'text',
@@ -316,7 +317,7 @@ const columns = [
   {
     name: 'monto_total_venta',
     align: 'right',
-    label: 'Monto Venta',
+    label: i18nT('ui.monto-venta-f44814'),
     field: 'monto_total_venta',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
     dataType: 'number',
@@ -324,7 +325,7 @@ const columns = [
   {
     name: 'saldo_estado_cobro',
     align: 'right',
-    label: 'Saldo Cobro',
+    label: i18nT('ui.saldo-cobro-2020f5'),
     field: 'saldo_estado_cobro',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
     dataType: 'number',
@@ -332,7 +333,7 @@ const columns = [
   {
     name: 'monto_detalle_cobro',
     align: 'right',
-    label: 'Monto Cobrado',
+    label: i18nT('ui.monto-cobrado-752b90'),
     field: 'monto_detalle_cobro',
     format: (val) => `${val ? val.toFixed(2) : '0.00'}`,
     dataType: 'number',
@@ -340,7 +341,7 @@ const columns = [
   {
     name: 'tipo_cobro',
     align: 'center',
-    label: 'Tipo Cobro',
+    label: i18nT('ui.tipo-cobro-e46562'),
     field: 'tipo_cobro',
     sortable: true,
     dataType: 'text',
@@ -348,7 +349,7 @@ const columns = [
   {
     name: 'foto_detalle_cobro',
     align: 'center',
-    label: 'Comprobante',
+    label: i18nT('ui.comprobante-7f8d58'),
     field: 'foto_detalle_cobro',
   },
 ]
@@ -368,7 +369,7 @@ const fetchReport = async () => {
   if (!idusuario) {
     $q.notify({
       type: 'negative',
-      message: 'Error: ID de empresa no encontrado en el almacenamiento local. Inicie sesión.',
+      message: i18nT('ui.error-id-de-empresa-no-encontrado-en-el-almacenamien-782ab8'),
       position: 'top',
     })
     loading.value = false
@@ -377,7 +378,7 @@ const fetchReport = async () => {
   if (!startDate.value || !endDate.value) {
     $q.notify({
       type: 'warning',
-      message: 'Por favor, seleccione ambas fechas para generar el reporte.',
+      message: i18nT('ui.por-favor-seleccione-ambas-fechas-para-generar-el-re-04ec5a'),
       position: 'top',
     })
     loading.value = false
@@ -397,13 +398,13 @@ const fetchReport = async () => {
       if (response.data.length === 0) {
         $q.notify({
           type: 'info',
-          message: 'No se encontraron datos para el rango de fechas especificado.',
+          message: i18nT('ui.no-se-encontraron-datos-para-el-rango-de-fechas-espe-199bf2'),
           position: 'top',
         })
       } else {
         $q.notify({
           type: 'positive',
-          message: 'Reporte generado con éxito.',
+          message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
           position: 'top',
         })
       }
@@ -411,7 +412,7 @@ const fetchReport = async () => {
       // Handle cases where API returns non-array or non-200 status for success
       $q.notify({
         type: 'negative',
-        message: response.data.error || 'Respuesta inesperada del servidor.',
+        message: response.data.error || i18nT('ui.respuesta-inesperada-del-servidor-2903c8'),
         position: 'top',
       })
       console.error('API Response Error:', response.data)
@@ -475,14 +476,14 @@ const exportToXLSX = () => {
   if (data.length === 0) {
     $q.notify({
       type: 'warning',
-      message: 'No hay datos en la tabla para exportar. Genere un reporte primero.',
+      message: i18nT('ui.no-hay-datos-en-la-tabla-para-exportar-genere-un-rep-6c497e'),
       position: 'top',
     })
     return
   }
 
   $q.notify({
-    message: 'Exportando a Excel con estilos...',
+    message: i18nT('ui.exportando-a-excel-con-estilos-683c44'),
     color: 'green',
     icon: 'file_download',
   })
@@ -493,7 +494,7 @@ const exportToXLSX = () => {
 
   $q.notify({
     type: 'positive',
-    message: 'Reporte Excel generado con éxito.',
+    message: i18nT('ui.reporte-excel-generado-con-exito-2ac7b0'),
     position: 'top',
   })
 }
@@ -515,7 +516,7 @@ const activeFilters = ref({
   estado: false,
 })
 const almacenOptions = computed(() => {
-  const options = [{ label: 'Todos los almacenes', value: 0 }]
+  const options = [{ label: i18nT('ui.todos-los-almacenes-949f2c'), value: 0 }]
   almacenes.almacenes.forEach((almacen) => {
     options.push({ label: almacen.almacen, value: Number(almacen.idalmacen) })
   })
@@ -610,7 +611,7 @@ onMounted(async () => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'ID MD5 no encontrado. Asegúrate de iniciar sesión correctamente.',
+      message: i18nT('ui.id-md5-no-encontrado-asegurate-de-iniciar-sesion-cor-e2a61f'),
       timeout: 5000,
     })
   }
@@ -622,7 +623,7 @@ onMounted(async () => {
     } catch (error) {
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar clientes',
+        message: i18nT('ui.error-al-cargar-clientes-3c0d3b'),
         caption: error.message,
       })
     } finally {

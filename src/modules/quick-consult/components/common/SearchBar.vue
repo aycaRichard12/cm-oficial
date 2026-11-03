@@ -11,7 +11,7 @@
             borderless
             dense
             rounded
-            placeholder="Buscar por nombre, código o código de barras..."
+            :placeholder="$t('ui.buscar-por-nombre-codigo-o-codigo-de-barras-1ed988')"
             class="search-input"
             @update:model-value="onSearchInput"
           >
@@ -29,7 +29,7 @@
                 @click="clearSearch"
               >
                 <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]">
-                  Limpiar búsqueda
+                  {{ $t('ui.limpiar-busqueda-493ecd') }}
                 </q-tooltip>
               </q-btn>
               <q-btn
@@ -50,7 +50,7 @@
                   transparent
                 />
                 <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 8]">
-                  {{ hasActiveFilters ? 'Filtros activos' : 'Abrir filtros' }}
+                  {{ hasActiveFilters ? $t('ui.filtros-activos-d0bea9') : $t('ui.abrir-filtros-3705a7') }}
                 </q-tooltip>
               </q-btn>
             </template>
@@ -62,7 +62,7 @@
           <div class="results-count">
             <q-icon name="sell" size="16px" class="q-mr-xs" color="secondary" />
             <span class="text-weight-medium">
-              {{ resultsCount }} producto{{ resultsCount !== 1 ? 's' : '' }}
+              {{ resultsCount }} {{ $t('ui.producto-66fcf4') }}{{ resultsCount !== 1 ? 's' : '' }}
             </span>
           </div>
         </div>

@@ -5,7 +5,7 @@
       <q-card-section class="bg-deep-orange flex justify-between items-center text-white q-py-sm"> <!-- theme-allow -->
         <div class="text-h6 flex items-center gap-2">
           <q-icon name="block" class="q-mr-sm" />
-          Solicitar Anulación de Compra
+          {{ $t('ui.solicitar-anulacion-de-compra-e615f2') }}
         </div>
         <div class="row q-gutter-x-xs">
           <q-btn
@@ -16,7 +16,7 @@
             :loading="loadingUsuarios"
             @click="recargarUsuarios"
           >
-            <q-tooltip>Recargar usuarios</q-tooltip>
+            <q-tooltip>{{ $t('ui.recargar-usuarios-88a623') }}</q-tooltip>
           </q-btn>
           <q-btn icon="close" flat round dense @click="handleCancel" />
         </div>
@@ -29,7 +29,7 @@
             <template v-slot:avatar>
               <q-icon name="info" />
             </template>
-            Compra: <strong>{{ compra?.nfactura }}</strong> — Proveedor:
+            {{ $t('ui.compra-a4dbc1') }} <strong>{{ compra?.nfactura }}</strong> {{ $t('ui.proveedor-938914') }}
             <strong>{{ compra?.proveedor }}</strong>
           </q-banner>
 
@@ -37,7 +37,7 @@
           <div>
             <div class="text-subtitle2 cm-text q-mb-sm">
               <q-icon name="edit_note" class="q-mr-xs" />
-              Motivo de Anulación
+              {{ $t('ui.motivo-de-anulacion-171518') }}
             </div>
             <q-input
               v-model="formData.motivo"
@@ -45,9 +45,9 @@
               dense
               type="textarea"
               rows="3"
-              label="Motivo *"
-              placeholder="Describe el motivo de la anulación..."
-              :rules="[(val) => !!val?.trim() || 'El motivo es obligatorio']"
+              :label="$t('ui.motivo-49005a')"
+              :placeholder="$t('ui.describe-el-motivo-de-la-anulacion-3457d1')"
+              :rules="[(val) => !!val?.trim() || $t('ui.el-motivo-es-obligatorio-9e2508')]"
             >
               <template v-slot:prepend>
                 <q-icon name="description" />
@@ -61,7 +61,7 @@
           <div>
             <div class="text-subtitle2 cm-text q-mb-sm">
               <q-icon name="notifications" class="q-mr-xs" />
-              Notificar a Responsable
+              {{ $t('ui.notificar-a-responsable-66d9ca') }}
             </div>
 
             <q-select
@@ -73,9 +73,9 @@
               map-options
               outlined
               dense
-              label="Seleccionar destinatario *"
+              :label="$t('ui.seleccionar-destinatario-a5dcd3')"
               :loading="loadingUsuarios"
-              :rules="[(val) => !!val || 'Debe seleccionar un destinatario']"
+              :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-destinatario-048911')]"
               class="q-mb-md"
             >
               <template v-slot:prepend>
@@ -83,7 +83,7 @@
               </template>
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey">No hay usuarios disponibles</q-item-section>
+                  <q-item-section class="text-grey">{{ $t('ui.no-hay-usuarios-disponibles-2bf41f') }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -92,8 +92,8 @@
               v-model="formData.asunto"
               outlined
               dense
-              label="Asunto *"
-              :rules="[(val) => !!val?.trim() || 'El asunto es obligatorio']"
+              :label="$t('ui.asunto-82fa9b')"
+              :rules="[(val) => !!val?.trim() || $t('ui.el-asunto-es-obligatorio-6588e3')]"
               class="q-mb-md"
             >
               <template v-slot:prepend>
@@ -107,8 +107,8 @@
               dense
               type="textarea"
               rows="3"
-              label="Mensaje de notificación *"
-              :rules="[(val) => !!val?.trim() || 'El mensaje es obligatorio']"
+              :label="$t('ui.mensaje-de-notificacion-a05f32')"
+              :rules="[(val) => !!val?.trim() || $t('ui.el-mensaje-es-obligatorio-1fd439')]"
             >
               <template v-slot:prepend>
                 <q-icon name="message" />
@@ -119,10 +119,10 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="Cancelar" color="grey" @click="handleCancel" :disable="loading" />
+        <q-btn flat :label="$t('common.cancel')" color="grey" @click="handleCancel" :disable="loading" />
         <q-btn
           unelevated
-          label="Enviar Solicitud"
+          :label="$t('ui.enviar-solicitud-7c09ba')"
           color="deep-orange"
           icon="send"
           :loading="loading"

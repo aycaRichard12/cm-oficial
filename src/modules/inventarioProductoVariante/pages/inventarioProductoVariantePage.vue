@@ -1,18 +1,18 @@
 <template>
   <q-page padding>
     <q-card-section class="row items-center justify-between q-pb-none">
-      <div class="text-h6">Inventario de Productos Variantes</div>
+      <div class="text-h6">{{ $t('ui.inventario-de-productos-variantes-ba3984') }}</div>
       <q-btn
         color="primary"
         icon="refresh"
-        label="Recargar Todo"
+        :label="$t('ui.recargar-todo-02f3b5')"
         outline
         dense
         class="q-px-sm"
         :loading="loading || loadingAlmacenes"
         @click="recargarTodo"
       >
-        <q-tooltip>Recargar almacenes e inventario</q-tooltip>
+        <q-tooltip>{{ $t('ui.recargar-almacenes-e-inventario-da4e4d') }}</q-tooltip>
       </q-btn>
     </q-card-section>
 
@@ -25,7 +25,7 @@
             :options="opcionesAlmacenes"
             emit-value
             map-options
-            label="Almacén"
+            :label="$t('inventario.warehouse')"
             dense
             outlined
             :loading="loadingAlmacenes"
@@ -45,12 +45,12 @@
                 :loading="loadingAlmacenes"
                 @click.stop="cargarAlmacenes"
               >
-                <q-tooltip>Recargar almacenes</q-tooltip>
+                <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
               </q-btn>
             </template>
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey">Sin almacenes disponibles</q-item-section>
+                <q-item-section class="text-grey">{{ $t('ui.sin-almacenes-disponibles-cdf2fb') }}</q-item-section>
               </q-item>
             </template>
           </q-select>
@@ -66,7 +66,7 @@
         row-key="id_variante"
         :loading="loading"
         :no-data-label="
-          almacenSeleccionado ? 'Sin variantes para este almacén' : 'Seleccione un almacén'
+          almacenSeleccionado ? $t('ui.sin-variantes-para-este-almacen-109529') : $t('ui.seleccione-un-almacen-27ab34')
         "
       >
         <!-- Botón recargar dentro de la tabla -->
@@ -82,7 +82,7 @@
             :disable="!almacenSeleccionado"
             class="q-mr-xs"
           >
-            <q-tooltip>Recargar inventario</q-tooltip>
+            <q-tooltip>{{ $t('ui.recargar-inventario-c1e252') }}</q-tooltip>
           </q-btn>
         </template>
         <!-- Celda: Imagen -->
@@ -146,6 +146,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
@@ -171,10 +172,10 @@ const almacenSeleccionado = ref(null)
 const opcionesAlmacenes = ref([])
 
 const columnas = [
-  { name: 'imagen', label: 'Imagen', field: 'imagen', align: 'center' },
+  { name: 'imagen', label: i18nT('ui.imagen-100f99'), field: 'imagen', align: 'center' },
   {
     name: 'codigo',
-    label: 'Código',
+    label: i18nT('ui.codigo-c35510'),
     field: 'codigo',
     align: 'left',
     sortable: true,
@@ -182,17 +183,17 @@ const columnas = [
   },
   {
     name: 'nombre',
-    label: 'Producto',
+    label: i18nT('inventario.product'),
     field: 'nombre',
     align: 'left',
     sortable: true,
     dataType: 'text',
   },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true, dataType: 'text' },
-  { name: 'atributos', label: 'Atributos', align: 'left' },
+  { name: 'atributos', label: i18nT('ui.atributos-bd9731'), align: 'left' },
   {
     name: 'stock',
-    label: 'Stock',
+    label: i18nT('inventario.stock'),
     field: 'cantidad',
     align: 'center',
     sortable: true,
@@ -200,7 +201,7 @@ const columnas = [
   },
   {
     name: 'precio_base',
-    label: 'Precio Base',
+    label: i18nT('ui.precio-base-427900'),
     field: 'precio_base',
     align: 'right',
     sortable: true,
@@ -235,7 +236,7 @@ async function cargarAlmacenes() {
     }
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudo cargar la lista de almacenes.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-cargar-la-lista-de-almacenes-bcb90d') })
   } finally {
     loadingAlmacenes.value = false
   }
@@ -280,7 +281,7 @@ async function cargarInventario() {
     }
   } catch (error) {
     console.error('Error al cargar inventario de variantes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudo cargar el inventario de variantes.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-cargar-el-inventario-de-variantes-49ee1a') })
   } finally {
     loading.value = false
   }

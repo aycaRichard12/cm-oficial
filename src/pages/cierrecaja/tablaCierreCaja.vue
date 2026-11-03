@@ -1,7 +1,7 @@
 <template>
   <BaseFilterableTable
     ref="refHijo"
-    title="Reporte ventas"
+    :title="$t('ui.reporte-ventas-b501c0')"
     nombreColumnaTotales="canal"
     :rows="props.rows"
     :columns="columnas"
@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 const refHijo = ref(null)
@@ -75,31 +76,31 @@ defineEmits(['viewPdf', 'autorizarCierreCaja'])
 // Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
 
 const columnas = [
-  { name: 'nro', label: 'N°', field: 'nro', align: 'left' },
+  { name: 'nro', label: i18nT('cotizacion.table.number'), field: 'nro', align: 'left' },
   {
     name: 'fecha_inicio',
-    label: 'Fecha Inicio',
+    label: i18nT('ui.fecha-inicio-cecd90'),
     align: 'left',
     field: 'fecha_inicio',
     dataType: 'date',
   },
   {
     name: 'fecha_fin',
-    label: 'Fecha Fin',
+    label: i18nT('ui.fecha-fin-97f1d8'),
     align: 'left',
     field: 'fecha_fin',
     dateType: 'date',
   },
   {
     name: 'observacion',
-    label: 'Observación',
+    label: i18nT('ui.observacion-1d0d99'),
     align: 'left',
     field: 'observacion',
     dateType: 'text',
   },
   {
     name: 'punto_venta',
-    label: 'Punto de Venta',
+    label: i18nT('ui.punto-de-venta-ee4115'),
     align: 'left',
     field: 'punto_venta',
     dateType: 'text',
@@ -107,14 +108,14 @@ const columnas = [
 
   {
     name: 'creado_en',
-    label: 'Fecha de Creación',
+    label: i18nT('ui.fecha-de-creacion-3a561f'),
     align: 'left',
     field: 'creado_en',
     dateType: 'date',
   },
 
-  { name: 'autorizado', label: 'Autorizado', align: 'left', field: 'autorizado', dateType: 'text' },
-  { name: 'actions', label: 'Acciones', align: 'center' },
+  { name: 'autorizado', label: i18nT('ui.autorizado-b4fb49'), align: 'left', field: 'autorizado', dateType: 'text' },
+  { name: 'actions', label: i18nT('common.actions'), align: 'center' },
 ]
 const getAuthorizationColor = (status) => {
   switch (status) {
