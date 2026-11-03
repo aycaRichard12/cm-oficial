@@ -23,6 +23,7 @@
           dense
           class="col-md-4"
           @change="validarFechas"
+          @keyup.enter="ejecutarReporte"
         />
       </div>
       <div class="col-12 col-md-3" id="fechafindetalleproductos">
@@ -35,6 +36,7 @@
           dense
           class="col-md-4"
           @change="validarFechas"
+          @keyup.enter="ejecutarReporte"
         />
       </div>
     </div>
@@ -268,37 +270,35 @@ watch(sucursalSearchTerm, (newVal) => {
     filtrarYOrdenarDatos()
   }
 })
-watch([fechai, fechaf], ([nuevaInicio, nuevaFin]) => {
-  // Solo procede si ambas fechas están definidas
-  if (!nuevaInicio || !nuevaFin) return
-
-  const inicio = new Date(nuevaInicio)
-  const fin = new Date(nuevaFin)
-
-  // Verifica que la fecha de inicio no sea mayor que la de fin
-  if (inicio.getTime() > fin.getTime()) {
-    // La validación visual ya se encarga de mostrar la notificación gracias al @change
-    return
-  }
-
-  // Evita múltiples generaciones simultáneas
-  if (!loading.value) {
-    generarReporte()
-  }
-})
 // Methods
 const validarFechas = () => {
+  if (!fechai.value || !fechaf.value) {
+    $q.notify({
+      type: 'warning',
+      message: i18nT('ui.por-favor-seleccione-las-fechas-de-inicio-y-fin-a11e23'),
+      position: 'top',
+    })
+    return false
+  }
+
   const fechaInicio = new Date(fechai.value)
   const fechaFin = new Date(fechaf.value)
 
-  if (fechaInicio.getTime() > fechaFin.getTime()) {
+  if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime()) || fechaInicio.getTime() > fechaFin.getTime()) {
     $q.notify({
-      type: 'info',
+      type: 'negative',
       message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-32b79c'),
       position: 'top',
     })
-    // Opcional: ajustar la fecha de fin o inicio si hay error
-    // fechaf.value = fechai.value;
+    return false
+  }
+  return true
+}
+
+const ejecutarReporte = () => {
+  if (!validarFechas()) return
+  if (!loading.value) {
+    generarReporte()
   }
 }
 
@@ -306,7 +306,7 @@ const generarReporte = async () => {
   loading.value = true
   if (!fechai.value || !fechaf.value) {
     $q.notify({
-      type: 'negative',
+      type: 'warning',
       message: i18nT('ui.por-favor-seleccione-las-fechas-de-inicio-y-fin-a11e23'),
       position: 'top',
     })
