@@ -122,6 +122,34 @@
         bordered
         :no-data-label="$t('ui.aun-no-se-ha-generado-ningun-reporte-df72d3')"
       >
+        <!-- [kdx-pdf-format-header] Encabezado agrupado que replica el PDF del Kardex -->
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
+              Fecha
+            </q-th>
+            <q-th rowspan="2" class="text-left text-weight-bold" style="vertical-align: middle">
+              Descripción
+            </q-th>
+            <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
+              Nº Dcto.
+            </q-th>
+            <q-th colspan="3" class="text-center text-weight-bold">Control físico</q-th>
+            <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
+              Costo Unitario
+            </q-th>
+            <q-th colspan="3" class="text-center text-weight-bold">Control Valorado</q-th>
+          </q-tr>
+          <q-tr :props="props">
+            <q-th class="text-right text-weight-bold bg-primary">Entrada</q-th>
+            <q-th class="text-right text-weight-bold bg-primary">Salida</q-th>
+            <q-th class="text-right text-weight-bold bg-primary">Saldo</q-th>
+            <q-th class="text-right text-weight-bold bg-primary">Ingreso</q-th>
+            <q-th class="text-right text-weight-bold bg-primary">Egreso</q-th>
+            <q-th class="text-right text-weight-bold bg-primary">Saldo</q-th>
+          </q-tr>
+        </template>
+
         <template v-slot:top-row>
           <q-tr style="height: 5px">
             <q-td colspan="10" class="text-center">
@@ -145,6 +173,9 @@
           >
             <q-td>{{ item.Fecha ? cambiarFormatoFecha(item.Fecha) : '' }}</q-td>
             <q-td style="align-items: center">{{ item.Concepto }}</q-td>
+            <q-td class="text-center">{{
+              item.Documento ?? item['Nº Dcto.'] ?? item.idstock ?? ''
+            }}</q-td>
             <q-td class="text-right">{{ item.Entrada }}</q-td>
             <q-td class="text-right">{{ item.Salida }}</q-td>
             <q-td class="text-right">{{ item.Existencia }}</q-td>
@@ -249,74 +280,90 @@ const saldosIniciales = ref([])
 // Función para alternar expandido
 
 // Columnas de la tabla
+// [kdx-pdf-format-columns] Columnas alineadas al formato del PDF del Kardex
 const columns = [
   {
     name: 'Fecha',
-    label: i18nT('cotizacion.table.date'),
+    label: 'Fecha',
     field: 'Fecha',
-    align: 'left',
+    align: 'center',
     sortable: true,
     format: (val) => (val ? cambiarFormatoFecha(val) : ''),
   },
   {
     name: 'Concepto',
-    label: i18nT('ui.concepto-fc5069'),
-    field: 'Concepto',
+    label: 'Descripción',
+    field: (row) => row.Concepto || row.Detalle || '',
     align: 'left',
     sortable: true,
   },
   {
+    name: 'Documento',
+    label: 'Nº Dcto.',
+    field: (row) =>
+      row.Documento ??
+      row['Nº Dcto.'] ??
+      row.nroDcto ??
+      row.numerodocumento ??
+      row.nrodocumento ??
+      row.documento ??
+      row.idstock ??
+      '',
+    align: 'center',
+    sortable: true,
+  },
+  {
     name: 'Entrada',
-    label: i18nT('ui.entrada-73f831'),
+    label: 'Entrada',
     field: 'Entrada',
     align: 'right',
     sortable: true,
   },
   {
     name: 'Salida',
-    label: i18nT('ui.salida-13058e'),
+    label: 'Salida',
     field: 'Salida',
     align: 'right',
     sortable: true,
   },
   {
     name: 'Existencia',
-    label: i18nT('ui.existencia-8b7404'),
+    label: 'Saldo',
     field: 'Existencia',
     align: 'right',
     sortable: true,
   },
   {
     name: 'CUnit',
-    label: i18nT('ui.costo-unitario-4ec928'),
+    label: 'Costo Unitario',
     field: 'C.Unit',
     align: 'right',
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Debe',
-    label: i18nT('ui.debe-422ad3'),
+    label: 'Ingreso',
     field: 'Debe',
     align: 'right',
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Haber',
-    label: i18nT('ui.haber-ce7d43'),
+    label: 'Egreso',
     field: 'Haber',
     align: 'right',
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Saldo',
-    label: i18nT('ui.saldo-8b0fcd'),
+    label: 'Saldo',
     field: 'Saldo',
     align: 'right',
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
   },
 ]
 
