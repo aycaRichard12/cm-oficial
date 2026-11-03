@@ -10,7 +10,6 @@
           <div class="text-subtitle2 text-grey-7 q-mt-xs">
             {{ $t('ui.administracion-de-kardex-de-productos-509fa2') }}
           </div>
-
         </div>
       </div>
       <q-card-section>
@@ -79,7 +78,9 @@
               >
                 <template v-slot:no-option>
                   <q-item>
-                    <q-item-section class="text-grey"> {{ $t('ui.sin-resultados-926bea') }} </q-item-section>
+                    <q-item-section class="text-grey">
+                      {{ $t('ui.sin-resultados-926bea') }}
+                    </q-item-section>
                   </q-item>
                 </template>
               </q-select>
@@ -204,7 +205,11 @@ import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesG'
 import { PDFKardex } from 'src/utils/pdfs/Kardex/reporte.js'
-import { obtenerFechaActualDato, obtenerFechaPrimerDiaMesActual, cambiarFormatoFecha } from 'src/composables/FuncionesG'
+import {
+  obtenerFechaActualDato,
+  obtenerFechaPrimerDiaMesActual,
+  cambiarFormatoFecha,
+} from 'src/composables/FuncionesG'
 import { useCurrencyStore } from 'src/stores/currencyStore'
 import kardexSaldoFinal from './kardexSaldoFinal.vue'
 import saldosPage from './saldosPage.vue'
@@ -245,11 +250,42 @@ const saldosIniciales = ref([])
 
 // Columnas de la tabla
 const columns = [
-  { name: 'Fecha', label: i18nT('cotizacion.table.date'), field: 'Fecha', align: 'left', sortable: true, format: (val) => (val ? cambiarFormatoFecha(val) : '') },
-  { name: 'Concepto', label: i18nT('ui.concepto-fc5069'), field: 'Concepto', align: 'left', sortable: true },
-  { name: 'Entrada', label: i18nT('ui.entrada-73f831'), field: 'Entrada', align: 'right', sortable: true },
-  { name: 'Salida', label: i18nT('ui.salida-13058e'), field: 'Salida', align: 'right', sortable: true },
-  { name: 'Existencia', label: i18nT('ui.existencia-8b7404'), field: 'Existencia', align: 'right', sortable: true },
+  {
+    name: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
+    field: 'Fecha',
+    align: 'left',
+    sortable: true,
+    format: (val) => (val ? cambiarFormatoFecha(val) : ''),
+  },
+  {
+    name: 'Concepto',
+    label: i18nT('ui.concepto-fc5069'),
+    field: 'Concepto',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'Entrada',
+    label: i18nT('ui.entrada-73f831'),
+    field: 'Entrada',
+    align: 'right',
+    sortable: true,
+  },
+  {
+    name: 'Salida',
+    label: i18nT('ui.salida-13058e'),
+    field: 'Salida',
+    align: 'right',
+    sortable: true,
+  },
+  {
+    name: 'Existencia',
+    label: i18nT('ui.existencia-8b7404'),
+    field: 'Existencia',
+    align: 'right',
+    sortable: true,
+  },
   {
     name: 'CUnit',
     label: i18nT('ui.costo-unitario-4ec928'),
@@ -591,7 +627,27 @@ async function cargarPDF() {
   const productoSeleccionado = productosDisponibles.value.find(
     (p) => Number(p.id) === Number(idproductoR.value),
   )
+  console.log('producto seleccionado', productoSeleccionado)
+  console.log('datos filtrados', datosFiltrados.value)
+  console.log('datos originales ', datosOriginales.value)
 
+  if (!movimientosOriginales.value || movimientosOriginales.value.length === 0) return
+  const datos = datosOriginales.value
+  let informacionProducto = []
+  switch (metodoValoracion.value) {
+    case 'PEPS':
+      informacionProducto = datos.PEPS.info_producto
+      break
+    case 'UEPS':
+      informacionProducto = datos.UEPS.info_producto
+      break
+    case 'PROMEDIO':
+      informacionProducto = datos.PROMEDIO.info_producto
+      break
+    default:
+      informacionProducto = datos.PEPS.info_producto
+  }
+  console.log('informacionProducto', informacionProducto)
   try {
     const doc = await PDFKardex(
       datosFiltrados.value,
@@ -602,21 +658,7 @@ async function cargarPDF() {
       metodoValoracion.value,
       {
         saldosIniciales: saldosIniciales.value,
-        unidadMedida:
-          productoSeleccionado?.unidadmedida ||
-          productoSeleccionado?.unidad ||
-          productoSeleccionado?.unidad_medida ||
-          '',
-        stockMax:
-          productoSeleccionado?.stockmax ||
-          productoSeleccionado?.stock_maximo ||
-          productoSeleccionado?.stock_max ||
-          '',
-        stockMin:
-          productoSeleccionado?.stockmin ||
-          productoSeleccionado?.stock_minimo ||
-          productoSeleccionado?.stock_min ||
-          '',
+        informacionProducto: informacionProducto,
         divisa: divisaActiva.value,
       },
     )

@@ -240,6 +240,8 @@ const iconos = ref({
   configuracionIntegracionExterna: 'settings',
   reporteProductoUnico: 'fact_check',
   utilidades: 'analytics',
+  informeinventario: 'inventory',
+  sincronizaralmacenes: 'sync_alt',
 })
 
 const loadTabsForSubmenu = (submenuCodigo) => {

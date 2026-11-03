@@ -27,10 +27,13 @@ export async function PDFKardex(
   const {
     saldosIniciales = [],
     divisa = '',
+    informacionProducto = {},
     //unidadMedida = '',
     //stockMax = '',
     //stockMin = '',
   } = extra || {}
+
+  const { nombre_unidad = '', stock_maximo = '', stock_minimo = '' } = informacionProducto || {}
 
   // Normaliza la divisa: acepta string, ref de Vue, objeto {simbolo|nombre|codigosin} o null.
   const divisaTexto = (() => {
@@ -73,22 +76,37 @@ export async function PDFKardex(
     titulo: 'DATOS DEL KARDEX',
     campos: [
       { label: 'Producto', valor: productoLabel || '-' },
+      { label: 'Unidad Medida', valor: nombre_unidad || '-' },
+
       { label: 'Almacén', valor: almacenLabel || '-' },
-      //{ label: 'Periodo', valor: `Del ${fmtFecha(fechaiR)} al ${fmtFecha(fechafR)}` },
-     // ...(divisaTexto ? [{ label: '', valor: `Expresado en ${divisaTexto}` }] : []),
+    ],
+  }
+
+  const datosDerecha = {
+    titulo: '',
+    campos: [
+      { label: 'Stock Min', valor: stock_minimo || '-' },
+      { label: 'Stock Max', valor: stock_maximo || '-' },
       { label: 'Método', valor: metodoValoracion || '-' },
     ],
   }
-  const fecha={
-    inicio : fechaiR,
-    final: fechafR
+  const fecha = {
+    inicio: fechaiR,
+    final: fechafR,
   }
-  const extras  = {
+  const extras = {
     expresadoDivisa: divisaTexto,
   }
   const drawHeader = () => {
     docBuilder.addEncabezado()
-    docBuilder.addEncabezadoInfo('KARDEX FÍSICO VALORADO', fecha, datosIzquierda, null, false, extras)
+    docBuilder.addEncabezadoInfo(
+      'KARDEX FÍSICO VALORADO',
+      fecha,
+      datosIzquierda,
+      datosDerecha,
+      false,
+      extras,
+    )
   }
 
   drawHeader()
@@ -96,7 +114,7 @@ export async function PDFKardex(
   const filas = [...safeSaldos, ...safeKardex]
 
   const obtenerNumeroDocumento = (mov) =>
-    mov?.NroDcto ??
+    mov?.Documento ??
     mov?.['Nº Dcto.'] ??
     mov?.nroDcto ??
     mov?.numerodocumento ??
