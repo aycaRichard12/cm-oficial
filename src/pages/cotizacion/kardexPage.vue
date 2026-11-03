@@ -167,16 +167,22 @@
         </template>
 
         <template v-slot:top-row>
-          <q-tr style="height: 5px">
-            <q-td colspan="10" class="text-center">
+          <q-tr>
+            <q-td colspan="10" class="text-center q-py-xs">
               <q-btn
                 flat
                 dense
-                style="height: 4px"
                 color="primary"
                 :label="$t('ui.mostrar-ocultar-saldos-iniciales-3b5e41')"
                 @click="mostrarSaldos = !mostrarSaldos"
               />
+            </q-td>
+          </q-tr>
+
+          <!-- [kdx-saldos-fix] Feedback cuando se activa el toggle pero no hay datos -->
+          <q-tr v-if="mostrarSaldos && saldosIniciales.length === 0" class="bg-grey-2">
+            <q-td colspan="10" class="text-center text-grey-7">
+              {{ $t('ui.no-se-encontraron-saldos-iniciales-141eb6') }}
             </q-td>
           </q-tr>
 
@@ -625,7 +631,36 @@ function filtrarLotesPendientes(movimientos, fechaInicial) {
     return { compras, movimientosDespues: despues }
   }
 
-  if (!ultimo || !Array.isArray(ultimo.Lotes_Pendientes) || ultimo.Lotes_Pendientes.length === 0) {
+  if (!ultimo) {
+    return { compras: [], movimientosDespues: despues }
+  }
+
+  if (!Array.isArray(ultimo.Lotes_Pendientes) || ultimo.Lotes_Pendientes.length === 0) {
+    // [kdx-saldos-fix] Fallback: si el ultimo movimiento previo trae existencia
+    // positiva pero sin lotes detallados, sintetizamos un saldo inicial para que
+    // el toggle "Mostrar / Ocultar Saldos Iniciales" tenga algo visible.
+    const existencia = Number(ultimo.Existencia) || 0
+    if (existencia > 0) {
+      const precio = Number(ultimo['C.Unit']) || 0
+      return {
+        compras: [
+          {
+            idstock: ultimo.idstock,
+            Fecha: ultimo.Fecha,
+            Concepto: 'SALDO INICIAL',
+            Entrada: 0,
+            Salida: 0,
+            Existencia: existencia,
+            'C.Unit': precio,
+            Debe: existencia * precio,
+            Haber: 0,
+            Saldo: existencia * precio,
+            ini: true,
+          },
+        ],
+        movimientosDespues: despues,
+      }
+    }
     return { compras: [], movimientosDespues: despues }
   }
 
