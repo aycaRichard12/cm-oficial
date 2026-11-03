@@ -1,18 +1,18 @@
 <template>
   <q-card class="document-preview q-pa-md">
     <q-card-section class="text-center">
-      <div class="text-h4 text-weight-bold">Nota de Crédito/Débito</div>
-      <div class="text-subtitle1 cm-text">Razón Social: {{ nota.nombreRazonSocial }}</div>
+      <div class="text-h4 text-weight-bold">{{ $t('ui.nota-de-credito-debito-5d732c') }}</div>
+      <div class="text-subtitle1 cm-text">{{ $t('ui.razon-social-6c6fb2') }} {{ nota.nombreRazonSocial }}</div>
       <div>NIT: {{ nota.numeroDocumento }}</div>
     </q-card-section>
     <q-separator inset />
     <q-card-section>
-      <div class="text-h6 section-title">Datos de la Factura Original</div>
+      <div class="text-h6 section-title">{{ $t('ui.datos-de-la-factura-original-6c2229') }}</div>
       <div class="row q-col-gutter-md q-mt-sm">
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Nro. Factura:</q-item-label>
+              <q-item-label caption>{{ $t('ui.nro-factura-2169b6') }}</q-item-label>
               <q-item-label class="text-weight-medium">{{
                 nota.facturaExterna.numeroFactura
               }}</q-item-label>
@@ -22,7 +22,7 @@
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Fecha Factura:</q-item-label>
+              <q-item-label caption>{{ $t('ui.fecha-factura-004d53') }}</q-item-label>
               <q-item-label>{{
                 new Date(nota.facturaExterna.fechaFacturaOriginal).toLocaleDateString('es-BO')
               }}</q-item-label>
@@ -32,7 +32,7 @@
         <div class="col-12 col-md-4">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Monto Total Original:</q-item-label>
+              <q-item-label caption>{{ $t('ui.monto-total-original-e1662f') }}</q-item-label>
               <q-item-label class="text-weight-medium"
                 >Bs. {{ nota.facturaExterna.montoTotalFacturaOriginal.toFixed(2) }}</q-item-label
               >
@@ -42,7 +42,7 @@
         <div class="col-12">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>CUF Original:</q-item-label>
+              <q-item-label caption>{{ $t('ui.cuf-original-0d7e37') }}</q-item-label>
               <q-item-label class="cuf-text">{{
                 nota.facturaExterna.numeroAutorizacionCuf
               }}</q-item-label>
@@ -52,7 +52,7 @@
       </div>
     </q-card-section>
     <q-card-section>
-      <div class="text-h6 section-title">Detalle Factura</div>
+      <div class="text-h6 section-title">{{ $t('ui.detalle-factura-4da33c') }}</div>
       <q-table
         flat
         bordered
@@ -67,18 +67,18 @@
     <q-separator />
 
     <q-card-section>
-      <div class="text-h6 section-title">Datos de la Nota</div>
+      <div class="text-h6 section-title">{{ $t('ui.datos-de-la-nota-bf0ec8') }}</div>
       <div class="row q-col-gutter-md q-mt-sm">
         <div class="col-12 col-md-6">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Código Cliente:</q-item-label>
+              <q-item-label caption>{{ $t('ui.codigo-cliente-fd5d95') }}</q-item-label>
               <q-item-label>{{ nota.codigoCliente }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Usuario:</q-item-label>
+              <q-item-label caption>{{ $t('ui.usuario-5a75b0') }}</q-item-label>
               <q-item-label>{{ nota.usuario }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -86,13 +86,13 @@
         <div class="col-12 col-md-6">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Punto de Venta:</q-item-label>
+              <q-item-label caption>{{ $t('ui.punto-de-venta-0effa9') }}</q-item-label>
               <q-item-label>{{ getPuntoVenta(nota.codigoPuntoVenta) }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Documento de Identidad:</q-item-label>
+              <q-item-label caption>{{ $t('ui.documento-de-identidad-6a60fb') }}</q-item-label>
               <q-item-label>
                 {{ getTipoDocumento(nota.codigoTipoDocumentoIdentidad) }} -
                 {{ nota.numeroDocumento }}
@@ -103,7 +103,7 @@
         <div class="col-12">
           <q-item dense>
             <q-item-section>
-              <q-item-label caption>Leyenda:</q-item-label>
+              <q-item-label caption>{{ $t('ui.leyenda-540211') }}</q-item-label>
               <q-item-label>{{ getLeyenda(nota.codigoLeyenda) }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -114,7 +114,7 @@
     <q-separator />
 
     <q-card-section>
-      <div class="text-h6 section-title">Detalle de la Devolución / Ajuste</div>
+      <div class="text-h6 section-title">{{ $t('ui.detalle-de-la-devolucion-ajuste-a62e69') }}</div>
       <q-table
         flat
         bordered
@@ -133,7 +133,7 @@
               v-model.number="props.row.cantidad"
               v-slot="scope"
             >
-              <label for="cantidad">Cantidad</label>
+              <label for="cantidad">{{ $t('ui.cantidad-b5b6f8') }}</label>
               <q-input
                 v-model.number="scope.value"
                 outlined
@@ -163,7 +163,7 @@
         <template v-slot:body-cell-cantidadPerdida="props">
           <q-td :props="props" style="background-color: #f9f9f9">
             <q-popup-edit v-model.number="props.row.cantidadPerdida" v-slot="scope">
-              <label for="cantidadPerdida">Cantidad Pérdida</label>
+              <label for="cantidadPerdida">{{ $t('ui.cantidad-perdida-b1d003') }}</label>
               <q-input
                 v-model.number="scope.value"
                 outlined
@@ -173,8 +173,8 @@
                 type="number"
                 :max="props.row.cantidad"
                 :rules="[
-                  (val) => val >= 0 || 'Debe ser mayor o igual a 0',
-                  (val) => val <= props.row.cantidad || 'No puede superar la cantidad devuelta',
+                  (val) => val >= 0 || $t('ui.debe-ser-mayor-o-igual-a-0-003cf7'),
+                  (val) => val <= props.row.cantidad || $t('ui.no-puede-superar-la-cantidad-devuelta-6cf480'),
                 ]"
                 id="cantidadPerdida"
                 @keyup.enter="scope.set"
@@ -247,7 +247,7 @@
               flat
               round
               @click="eliminarDetalleNota(props.pageIndex)"
-              title="Eliminar este ítem"
+              :title="$t('ui.eliminar-este-item-1ec76e')"
             />
           </q-td>
         </template>
@@ -262,7 +262,7 @@
           <q-list bordered separator>
             <q-item>
               <q-item-section>
-                <q-item-label caption>Descuento Adicional</q-item-label>
+                <q-item-label caption>{{ $t('ui.descuento-adicional-c87c9a') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-weight-medium">
@@ -287,7 +287,7 @@
 
             <q-item class="cm-surface-2">
               <q-item-section>
-                <q-item-label class="text-weight-bold">MONTO TOTAL DEVUELTO</q-item-label>
+                <q-item-label class="text-weight-bold">{{ $t('ui.monto-total-devuelto-be61ba') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-h6 text-weight-bold">
@@ -298,7 +298,7 @@
 
             <q-item>
               <q-item-section>
-                <q-item-label caption>Monto efectivo Crédito/Débito</q-item-label>
+                <q-item-label caption>{{ $t('ui.monto-efectivo-credito-debito-6afeaf') }}</q-item-label>
               </q-item-section>
               <q-item-section side class="text-right">
                 <q-item-label class="text-weight-medium">
@@ -314,10 +314,10 @@
     <q-separator class="q-mt-md" />
 
     <q-card-actions align="right" class="q-pa-md">
-      <q-btn flat label="Cancelar" color="grey-8" icon="cancel" @click="$emit('cancelar')" />
+      <q-btn flat :label="$t('common.cancel')" color="grey-8" icon="cancel" @click="$emit('cancelar')" />
       <q-btn
         unelevated
-        label="Confirmar Registro"
+        :label="$t('ui.confirmar-registro-f23a8b')"
         color="primary"
         icon="check_circle"
         @click="confirmarNota()"
@@ -327,6 +327,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { defineProps, ref, onMounted, computed } from 'vue'
 import { getfechaCodigo, validarUsuario } from 'src/composables/FuncionesG'
 import { peticionGET } from 'src/composables/peticionesFetch'
@@ -382,45 +383,45 @@ const emit = defineEmits(['cancelar'])
 const ColumnsDetalleAjuste = [
   {
     name: 'codigoProducto',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     align: 'left',
     field: 'codigoProducto',
     sortable: true,
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     align: 'left',
     field: 'descripcion',
     style: 'white-space: normal;',
   },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad' },
-  { name: 'esPerdida', label: '¿Es Pérdida?', field: 'esPerdida', align: 'center' }, // nuevo
-  { name: 'cantidadPerdida', label: 'Cantidad Pérdida', field: 'cantidadPerdida', align: 'center' }, // nuevo
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'center', field: 'cantidad' },
+  { name: 'esPerdida', label: i18nT('ui.es-perdida-3d6e9e'), field: 'esPerdida', align: 'center' }, // nuevo
+  { name: 'cantidadPerdida', label: i18nT('ui.cantidad-perdida-b1d003'), field: 'cantidadPerdida', align: 'center' }, // nuevo
   {
     name: 'unidadMedida',
-    label: 'Unidad',
+    label: i18nT('configProducto.unidadProducto.table.nombre'),
     align: 'left',
     field: 'unidadMedida',
     format: (val) => getUnidadMedida(val),
   },
   {
     name: 'precioUnitario',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     align: 'right',
     field: 'precioUnitario',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'montoDescuento',
-    label: 'Descuento',
+    label: i18nT('ventas.discount'),
     align: 'right',
     field: 'montoDescuento',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'subTotal',
-    label: 'subTotal',
+    label: i18nT('ui.subtotal-757ed2'),
     align: 'right',
     field: 'subTotal',
     format: (val) => `Bs. ${val.toFixed(2)}`,
@@ -428,7 +429,7 @@ const ColumnsDetalleAjuste = [
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     align: 'center',
     field: 'acciones',
     style: 'font-weight: 500',
@@ -437,43 +438,43 @@ const ColumnsDetalleAjuste = [
 const columnsDetalle = [
   {
     name: 'codigoProducto',
-    label: 'Código Producto',
+    label: i18nT('ui.codigo-producto-24251e'),
     align: 'left',
     field: 'codigoProducto',
     sortable: true,
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     align: 'left',
     field: 'descripcion',
     style: 'white-space: normal;',
   },
-  { name: 'cantidad', label: 'Cantidad', align: 'center', field: 'cantidad' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'center', field: 'cantidad' },
   {
     name: 'unidadMedida',
-    label: 'Unidad',
+    label: i18nT('configProducto.unidadProducto.table.nombre'),
     align: 'left',
     field: 'unidadMedida',
     format: (val) => getUnidadMedida(val),
   },
   {
     name: 'precioUnitario',
-    label: 'P. Unitario',
+    label: i18nT('ui.p-unitario-a58e75'),
     align: 'right',
     field: 'precioUnitario',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'montoDescuento',
-    label: 'Descuento',
+    label: i18nT('ventas.discount'),
     align: 'right',
     field: 'montoDescuento',
     format: (val) => `Bs. ${val.toFixed(2)}`,
   },
   {
     name: 'subTotal',
-    label: 'Subtotal',
+    label: i18nT('ventas.subtotal'),
     align: 'right',
     field: 'subTotal',
     format: (val) => `Bs. ${val.toFixed(2)}`,
@@ -487,12 +488,12 @@ const columnsDetalle = [
 // En una aplicación real, estos datos vendrían de un store, un API o un archivo de configuración.
 const getTipoDocumento = (codigo) => {
   const tipos = { 1: 'CI', 2: 'CEX', 3: 'PAS', 4: 'OD', 5: 'NIT' }
-  return tipos[codigo] || 'Otro'
+  return tipos[codigo] || i18nT('ui.otro-ada1c1')
 }
 const getPuntoVenta = (codigo) => {
   console.log('Puntos de Venta disponibles:', puntosVenta.value)
   return (
-    puntosVenta.value.find((pv) => pv.value === codigo)?.label || 'Punto de Venta no encontrado'
+    puntosVenta.value.find((pv) => pv.value === codigo)?.label || i18nT('ui.punto-de-venta-no-encontrado-1e2494')
   )
 }
 // const calcular_montoEfectivoCreditoDebito = () => {
@@ -514,7 +515,7 @@ const getLeyenda = (codigo) => {
   const res = leyendasSINOptions.value.find((obj) => Number(obj.value) == Number(codigo))
   console.log('Leyenda encontrada:', res)
 
-  return res ? res.label : 'Leyenda no encontrada.'
+  return res ? res.label : i18nT('ui.leyenda-no-encontrada-0fe89c')
 }
 
 const cargarPuntoVentas = async () => {
@@ -543,14 +544,14 @@ const cargarPuntoVentas = async () => {
       }
     }
   } catch (error) {
-    showError('Error al cargar Punto Venta Sin', error)
+    showError(i18nT('ui.error-al-cargar-punto-venta-sin-5a943b'), error)
   }
 }
 const showError = (message, error) => {
   console.error(message, error)
   $q.notify({
     type: 'negative',
-    message: `${message}: ${error.message || 'Error desconocido'}`,
+    message: `${message}: ${error.message || i18nT('ui.error-desconocido-9c256e')}`,
   })
 }
 
@@ -564,7 +565,7 @@ const cargarLeyendaSIN = async () => {
     if (resultado[0] === 'error') {
       $q.notify({
         type: 'negative',
-        message: resultado.error || 'Error al cargar leyendas SIN',
+        message: resultado.error || i18nT('ui.error-al-cargar-leyendas-sin-889429'),
       })
     } else {
       leyendasSINOptions.value = resultado.data.map((item) => ({
@@ -578,7 +579,7 @@ const cargarLeyendaSIN = async () => {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Error de red al cargar leyendas SIN',
+      message: i18nT('ui.error-de-red-al-cargar-leyendas-sin-dfa2c2'),
     })
   }
 }
@@ -587,16 +588,16 @@ const eliminarDetalleNota = async (index) => {
   const result = await showDialog(
     $q,
     'Q',
-    '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+    i18nT('ui.estas-seguro-de-que-deseas-eliminar-este-registro-es-a35dda'),
   )
   console.log('Question dialog result:', result)
   if (result) {
     if (index > -1) {
       nota.value.detalles.splice(index, 1)
     }
-    await showDialog($q, 'I', 'La operación se completó exitosamente.')
+    await showDialog($q, 'I', i18nT('ui.la-operacion-se-completo-exitosamente-4fb636'))
   } else {
-    $q.notify({ message: 'Acción cancelada', color: 'info' })
+    $q.notify({ message: i18nT('ui.accion-cancelada-4177e8'), color: 'info' })
   }
 }
 const confirmarNota = async () => {
@@ -639,13 +640,13 @@ const confirmarNota = async () => {
     const data = response.data
     console.log('Respuesta del servidor:', data)
     if (data.estado === 'error') {
-      showDialog($q, 'E', data.mensaje || 'Error al registrar la nota de crédito/débito')
+      showDialog($q, 'E', data.mensaje || i18nT('ui.error-al-registrar-la-nota-de-credito-debito-099ad1'))
     } else {
-      showDialog($q, 'I', 'La nota de crédito/débito se registró exitosamente.')
+      showDialog($q, 'I', i18nT('ui.la-nota-de-credito-debito-se-registro-exitosamente-d22e8b'))
       emit('cancelar') // Cerrar el formulario después de confirmar
     }
   } catch (error) {
-    showDialog($q, 'E', error.message || 'Error inesperado al registrar la nota de crédito/débito')
+    showDialog($q, 'E', error.message || i18nT('ui.error-inesperado-al-registrar-la-nota-de-credito-deb-a4709a'))
   }
 }
 const montoDescuentoCreditoDebito = computed(() => {
@@ -692,7 +693,7 @@ const validarMonto = async (scope) => {
     await showDialog(
       $q,
       'E',
-      'El valor debe ser menor a ' + montoTotalDevuelto.value + ' y mayor o igual a 0',
+      i18nT('ui.el-valor-debe-ser-menor-a-dad8e6') + montoTotalDevuelto.value + i18nT('ui.y-mayor-o-igual-a-0-24cd5a'),
     )
   }
 }
@@ -719,7 +720,7 @@ const validar = async (scope, row) => {
   if (scope.value > 0) {
     scope.set()
   } else {
-    await showDialog($q, 'E', 'El valor debe ser  mayor a 0')
+    await showDialog($q, 'E', i18nT('ui.el-valor-debe-ser-mayor-a-0-857620'))
   }
 }
 onMounted(async () => {

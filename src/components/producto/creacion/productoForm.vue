@@ -2,47 +2,47 @@
   <q-form @submit.prevent="handleSubmit">
     <!-- Información Básica -->
     <q-card-section>
-      <div class="text-subtitle1 text-weight-medium q-mb-md">Información Básica</div>
+      <div class="text-subtitle1 text-weight-medium q-mb-md">{{ $t('ui.informacion-basica-1e5b10') }}</div>
       <q-separator class="q-mb-md" />
       
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-4">
           <q-input
             v-model="localData.codigo"
-            label="Código de Producto *"
+            :label="$t('ui.codigo-de-producto-875956')"
             dense
             outlined
-            hint="Código único del producto"
+            :hint="$t('ui.codigo-unico-del-producto-87dc22')"
           />
         </div>
         
         <div class="col-12 col-md-4">
           <q-input
             v-model="localData.nombre"
-            label="Nombre del Producto *"
+            :label="$t('ui.nombre-del-producto-653bf1')"
             dense
             outlined
-            hint="Nombre comercial"
+            :hint="$t('ui.nombre-comercial-d9ea86')"
           />
         </div>
         
         <div class="col-12 col-md-4">
           <q-input
             v-model="localData.descripcion"
-            label="Descripción *"
+            :label="$t('ui.descripcion-ad1450')"
             dense
             outlined
-            hint="Descripción breve"
+            :hint="$t('ui.descripcion-breve-786a04')"
           />
         </div>
         
         <div class="col-12 col-md-4">
           <q-input
             v-model="localData.codigobarras"
-            label="Código de Barras"
+            :label="$t('ui.codigo-de-barras-edc5fc')"
             dense
             outlined
-            hint="Opcional"
+            :hint="$t('ui.opcional-7a5984')"
           />
         </div>
       </div>
@@ -50,7 +50,7 @@
 
     <!-- Categorización -->
     <q-card-section>
-      <div class="text-subtitle1 text-weight-medium q-mb-md">Categorización</div>
+      <div class="text-subtitle1 text-weight-medium q-mb-md">{{ $t('ui.categorizacion-35af35') }}</div>
       <q-separator class="q-mb-md" />
       
       <div class="row q-col-gutter-md">
@@ -58,12 +58,12 @@
           <q-select
             v-model="localData.categoria"
             :options="categorias"
-            label="Categoría *"
+            :label="$t('ui.categoria-ad8cb3')"
             dense
             outlined
             emit-value
             map-options
-            hint="Seleccione la categoría principal"
+            :hint="$t('ui.seleccione-la-categoria-principal-95f14c')"
             @update:model-value="
               (val) => {
                 localData.subcategoria = null
@@ -77,12 +77,12 @@
           <q-select
             v-model="localData.subcategoria"
             :options="subcategorias"
-            label="Sub Categoría *"
+            :label="$t('ui.sub-categoria-839e58')"
             dense
             outlined
             emit-value
             map-options
-            hint="Seleccione la subcategoría"
+            :hint="$t('ui.seleccione-la-subcategoria-8b5ae7')"
           />
         </div>
         
@@ -90,12 +90,12 @@
           <q-select
             v-model="localData.estadoproductos"
             :options="estados"
-            label="Estado del Producto *"
+            :label="$t('ui.estado-del-producto-fe7a0d')"
             dense
             outlined
             emit-value
             map-options
-            hint="Estado actual"
+            :hint="$t('ui.estado-actual-273fb2')"
           />
         </div>
       </div>
@@ -103,7 +103,7 @@
 
     <!-- Características -->
     <q-card-section>
-      <div class="text-subtitle1 text-weight-medium q-mb-md">Características</div>
+      <div class="text-subtitle1 text-weight-medium q-mb-md">{{ $t('ui.caracteristicas-2d11e4') }}</div>
       <q-separator class="q-mb-md" />
       
       <div class="row q-col-gutter-md">
@@ -111,12 +111,12 @@
           <q-select
             v-model="localData.unidad"
             :options="unidades"
-            label="Unidad de Medida *"
+            :label="$t('ui.unidad-de-medida-34e881')"
             dense
             outlined
             emit-value
             map-options
-            hint="Ej: Kilo, Unidad, Litro"
+            :hint="$t('ui.ej-kilo-unidad-litro-b6ca66')"
           />
         </div>
         
@@ -124,7 +124,7 @@
           <q-select
             v-model="localData.medida"
             :options="medidas"
-            label="Característica *"
+            :label="$t('ui.caracteristica-b85000')"
             dense
             outlined
             emit-value
@@ -135,10 +135,10 @@
         <div class="col-12 col-md-4">
           <q-input
             v-model="localData.caracteristica"
-            label="Otras Características"
+            :label="$t('ui.otras-caracteristicas-832f7d')"
             dense
             outlined
-            hint="Opcional"
+            :hint="$t('ui.opcional-7a5984')"
           />
         </div>
       </div>
@@ -146,7 +146,7 @@
 
     <!-- Información SIN (Facturación) -->
     <q-card-section v-if="tipoFactura">
-      <div class="text-subtitle1 text-weight-medium q-mb-md">Información SIN (Facturación)</div>
+      <div class="text-subtitle1 text-weight-medium q-mb-md">{{ $t('ui.informacion-sin-facturacion-030229') }}</div>
       <q-separator class="q-mb-md" />
       
       <div class="row q-col-gutter-md">
@@ -154,7 +154,7 @@
           <q-select
             v-model="localData.codigosin"
             :options="FilterProductoSIN"
-            label="Producto SIN *"
+            :label="$t('ui.producto-sin-4997e5')"
             dense
             outlined
             emit-value
@@ -164,7 +164,7 @@
             hide-selected
             input-debounce="0"
             @filter="filterFn"
-            hint="Busque el código SIN del producto"
+            :hint="$t('ui.busque-el-codigo-sin-del-producto-d42e36')"
           />
         </div>
         
@@ -172,7 +172,7 @@
           <q-select
             v-model="localData.unidadsin"
             :options="FilterUnidadSIN"
-            label="Unidad SIN *"
+            :label="$t('ui.unidad-sin-7c6daf')"
             dense
             outlined
             emit-value
@@ -182,17 +182,17 @@
             hide-selected
             input-debounce="0"
             @filter="filterUnidadFn"
-            hint="Unidad según SIN"
+            :hint="$t('ui.unidad-segun-sin-ff36c3')"
           />
         </div>
         
         <div class="col-12 col-md-3">
           <q-input
             v-model="localData.codigoNandina"
-            label="Código Nandina"
+            :label="$t('ui.codigo-nandina-a255a6')"
             dense
             outlined
-            hint="Opcional"
+            :hint="$t('ui.opcional-7a5984')"
           />
         </div>
       </div>
@@ -200,18 +200,18 @@
 
     <!-- Imagen del Producto -->
     <q-card-section>
-      <div class="text-subtitle1 text-weight-medium q-mb-md">Imagen del Producto</div>
+      <div class="text-subtitle1 text-weight-medium q-mb-md">{{ $t('ui.imagen-del-producto-79f5a9') }}</div>
       <q-separator class="q-mb-md" />
       
       <div class="row q-col-gutter-md">
         <div class="col-12" :class="imagePreview ? 'col-md-8' : ''">
           <q-file
             v-model="localData.imagen"
-            label="Seleccionar imagen"
+            :label="$t('ui.seleccionar-imagen-54a686')"
             outlined
             dense
             accept="image/*"
-            hint="Formatos admitidos: JPG, PNG. La imagen se optimizará automáticamente."
+            :hint="$t('ui.formatos-admitidos-jpg-png-la-imagen-se-optimizara-a-5bf5f3')"
             counter
             @update:model-value="onImageSelected"
             :loading="isCompressing"
@@ -225,7 +225,7 @@
         
         <div class="col-12 col-md-4" v-if="imagePreview">
           <div class="text-caption text-grey-7 q-mb-xs">
-            {{ typeof localData.imagen === 'string' ? 'Imagen actual' : 'Vista previa' }}
+            {{ typeof localData.imagen === 'string' ? $t('ui.imagen-actual-2b5262') : $t('ui.vista-previa-432932') }}
           </div>
           <q-card flat bordered class="q-pa-sm">
             <q-img
@@ -238,7 +238,7 @@
                 <div class="absolute-full flex flex-center bg-grey-3 text-grey-7">
                   <div class="text-center">
                     <q-icon name="broken_image" size="md" />
-                    <div class="text-caption">Error al cargar imagen</div>
+                    <div class="text-caption">{{ $t('ui.error-al-cargar-imagen-79af4b') }}</div>
                   </div>
                 </div>
               </template>
@@ -256,14 +256,14 @@
     
     <q-card-actions align="right" class="q-pa-md">
       <q-btn
-        label="Cancelar"
+        :label="$t('common.cancel')"
         flat
         color="grey-7"
         @click="$emit('cancel')"
         class="q-mr-sm"
       />
       <q-btn
-        label="Guardar"
+        :label="$t('common.save')"
         type="submit"
         color="primary"
         unelevated
@@ -274,6 +274,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed, onUnmounted } from 'vue'
 import { TipoFactura } from 'src/composables/FuncionesGenerales'
 import imageCompression from 'browser-image-compression'
@@ -375,7 +376,7 @@ const onImageSelected = async (file) => {
     // We use a simple notification without trying to store its ID and update it later
     // because doing so causes "trying to update a grouped one which is forbidden" error in Quasar.
     $q.notify({
-      message: 'Optimizando imagen...',
+      message: i18nT('ui.optimizando-imagen-a6798c'),
       color: 'info',
       textColor: 'white', // theme-allow
       icon: 'cloud_upload',
@@ -412,7 +413,7 @@ const onImageSelected = async (file) => {
 
     // Show a success notification
     $q.notify({
-      message: 'Imagen optimizada con éxito',
+      message: i18nT('ui.imagen-optimizada-con-exito-96c4c2'),
       color: 'positive',
       icon: 'check_circle',
       timeout: 2500,
@@ -421,7 +422,7 @@ const onImageSelected = async (file) => {
   } catch (error) {
     console.error('Error compressing image:', error)
     $q.notify({
-      message: 'Hubo un error al optimizar la imagen',
+      message: i18nT('ui.hubo-un-error-al-optimizar-la-imagen-82e18e'),
       color: 'negative',
       icon: 'warning',
     })

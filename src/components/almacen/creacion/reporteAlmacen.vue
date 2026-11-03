@@ -17,7 +17,7 @@
             @click="maximizedToggle = false"
             :disable="!maximizedToggle"
           >
-            <q-tooltip v-if="maximizedToggle" class="cm-surface text-primary">Minimize</q-tooltip>
+            <q-tooltip v-if="maximizedToggle" class="cm-surface text-primary">{{ $t('ui.minimize-1c5b76') }}</q-tooltip>
           </q-btn>
           <q-btn
             dense
@@ -26,10 +26,10 @@
             @click="maximizedToggle = true"
             :disable="maximizedToggle"
           >
-            <q-tooltip v-if="!maximizedToggle" class="cm-surface text-primary">Maximize</q-tooltip>
+            <q-tooltip v-if="!maximizedToggle" class="cm-surface text-primary">{{ $t('ui.maximize-35afae') }}</q-tooltip>
           </q-btn>
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="cm-surface text-primary">Close</q-tooltip>
+            <q-tooltip class="cm-surface text-primary">{{ $t('ui.close-bbfa77') }}</q-tooltip>
           </q-btn>
         </q-bar>
         <div class="q-mb-md">
@@ -59,11 +59,11 @@
 
         <div class="row q-mt-md justify-between items-start">
           <div>
-            <div class="text-grey"><strong>DATOS DEL REPORTE:</strong></div>
-            <div id="feventa">Fecha de Impresión: {{ fecha }}</div>
+            <div class="text-grey"><strong>{{ $t('ui.datos-del-reporte-c7e471') }}</strong></div>
+            <div id="feventa">{{ $t('ui.fecha-de-impresion-709027') }} {{ fecha }}</div>
           </div>
           <div class="text-right">
-            <div class="text-grey"><strong>DATOS DEL ENCARGADO:</strong></div>
+            <div class="text-grey"><strong>{{ $t('ui.datos-del-encargado-6be170') }}</strong></div>
             <div>{{ usuario.nombre }}</div>
             <div>{{ usuario.cargo }}</div>
           </div>
@@ -72,8 +72,8 @@
         <q-table :rows="almacenes" :columns="columns" row-key="id" flat bordered class="q-mt-md" />
 
         <q-card-actions align="right">
-          <q-btn label="Cerrar" color="secondary" v-close-popup />
-          <q-btn label="Descargar en PDF" color="primary" @click="descargarPDF" />
+          <q-btn :label="$t('ui.cerrar-4b0816')" color="secondary" v-close-popup />
+          <q-btn :label="$t('ui.descargar-en-pdf-71ca4c')" color="primary" @click="descargarPDF" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 const props = defineProps({
   dialog: {
@@ -124,16 +125,16 @@ const almacenes = ref([
 ])
 
 const columns = [
-  { name: 'id', label: 'N°', field: 'id', align: 'left' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion' },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono' },
-  { name: 'email', label: 'Email', field: 'email' },
-  { name: 'tipo', label: 'Tipo almacén', field: 'tipo' },
-  { name: 'stockmin', label: 'Stock min', field: 'stockmin' },
-  { name: 'stockmax', label: 'Stock max', field: 'stockmax' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal' },
-  { name: 'estado', label: 'Estado', field: 'estado' },
+  { name: 'id', label: i18nT('cotizacion.table.number'), field: 'id', align: 'left' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre' },
+  { name: 'direccion', label: i18nT('ui.direccion-04f478'), field: 'direccion' },
+  { name: 'telefono', label: i18nT('ui.telefono-99af37'), field: 'telefono' },
+  { name: 'email', label: i18nT('configuracion.servicios.table.email'), field: 'email' },
+  { name: 'tipo', label: i18nT('ui.tipo-almacen-8f4e01'), field: 'tipo' },
+  { name: 'stockmin', label: i18nT('ui.stock-min-42e889'), field: 'stockmin' },
+  { name: 'stockmax', label: i18nT('ui.stock-max-6ac758'), field: 'stockmax' },
+  { name: 'sucursal', label: i18nT('ui.sucursal-07d782'), field: 'sucursal' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado' },
 ]
 
 const descargarPDF = () => {

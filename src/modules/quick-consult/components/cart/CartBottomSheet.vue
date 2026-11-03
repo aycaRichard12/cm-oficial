@@ -16,7 +16,7 @@
           <q-icon name="shopping_bag" size="22px" class="header-cart-icon" />
         </div>
         <q-toolbar-title class="header-title-group">
-          <span class="header-title-text">Mi Carrito</span>
+          <span class="header-title-text">{{ $t('ui.mi-carrito-b6b3a0') }}</span>
           <q-badge
             floating
             color="secondary"
@@ -95,7 +95,7 @@
                 <div class="stepper-pill">
                   <button
                     class="stepper-btn"
-                    aria-label="Reducir cantidad"
+                    :aria-label="$t('ui.reducir-cantidad-3f16b5')"
                     @click="decrement(item)"
                   >
                     <q-icon name="remove" size="16px" />
@@ -103,7 +103,7 @@
                   <span class="stepper-value">{{ item.quantity }}</span>
                   <button
                     class="stepper-btn"
-                    aria-label="Aumentar cantidad"
+                    :aria-label="$t('ui.aumentar-cantidad-a4667d')"
                     @click="increment(item)"
                   >
                     <q-icon name="add" size="16px" />
@@ -124,12 +124,12 @@
             <q-icon name="shopping_cart_checkout" size="4rem" class="empty-icon-animated" />
             <div class="empty-glow" />
           </div>
-          <h2 class="empty-heading">Tu carrito está vacío</h2>
+          <h2 class="empty-heading">{{ $t('ui.tu-carrito-esta-vacio-f9c19e') }}</h2>
           <p class="empty-description">
-            Agrega productos desde el catálogo y construye tu orden de venta.
+            {{ $t('ui.agrega-productos-desde-el-catalogo-y-construye-tu-or-13bac1') }}
           </p>
           <q-btn
-            label="Explorar catálogo"
+            :label="$t('ui.explorar-catalogo-7bcd5f')"
             color="primary"
             v-close-popup
             class="empty-cta-btn"
@@ -149,13 +149,13 @@
           <!-- Totales -->
           <div class="totals-block-premium">
             <div class="total-row subtotal-row">
-              <span class="total-label">Subtotal</span>
+              <span class="total-label">{{ $t('ventas.subtotal') }}</span>
               <span class="total-value subtotal-value">
                 {{ formatPrice(cartStore.totalAmount) }}
               </span>
             </div>
             <div class="total-row grand-total-row">
-              <span class="total-label grand-label">Total</span>
+              <span class="total-label grand-label">{{ $t('ventas.total') }}</span>
               <span class="total-value grand-value">
                 {{ formatPrice(cartStore.totalAmount) }}
               </span>
@@ -167,7 +167,7 @@
             <q-btn
               flat
               color="negative"
-              label="Vaciar"
+              :label="$t('ui.vaciar-40a9e5')"
               icon="delete_sweep"
               class="clear-btn-premium"
               @click="confirmClearCart"
@@ -176,7 +176,7 @@
             />
             <q-btn-dropdown
               color="primary-action"
-              label="Procesar venta"
+              :label="$t('ui.procesar-venta-ee1032')"
               class="process-btn-premium"
               size="md"
               rounded
@@ -192,8 +192,8 @@
                     <q-icon name="point_of_sale" color="primary" size="sm" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label class="dropdown-label">Enviar a Venta</q-item-label>
-                    <q-item-label caption>Pago inmediato</q-item-label>
+                    <q-item-label class="dropdown-label">{{ $t('ui.enviar-a-venta-f997a9') }}</q-item-label>
+                    <q-item-label caption>{{ $t('ui.pago-inmediato-1d25e1') }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-icon name="chevron_right" color="grey-5" size="xs" />
@@ -210,8 +210,8 @@
                     <q-icon name="request_quote" color="secondary" size="sm" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label class="dropdown-label">Enviar a Cotización</q-item-label>
-                    <q-item-label caption>Guardar para aprobar</q-item-label>
+                    <q-item-label class="dropdown-label">{{ $t('ui.enviar-a-cotizacion-680dfb') }}</q-item-label>
+                    <q-item-label caption>{{ $t('ui.guardar-para-aprobar-58068e') }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-icon name="chevron_right" color="grey-5" size="xs" />
@@ -229,6 +229,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 // ============================================================
 // LÓGICA DEL COMPONENTE - NO MODIFICADA EN ABSOLUTO
 // ============================================================
@@ -282,13 +283,13 @@ const decrement = (item) => {
 
 const confirmRemove = (item) => {
   $q.dialog({
-    title: 'Eliminar producto',
+    title: i18nT('ui.eliminar-producto-27d76f'),
     message: `¿Deseas quitar "${item.product.descripcion}" del carrito?`,
     cancel: true,
     persistent: true,
     ok: {
       color: 'negative',
-      label: 'Eliminar',
+      label: i18nT('common.delete'),
       flat: true,
     },
   }).onOk(() => {
@@ -298,13 +299,13 @@ const confirmRemove = (item) => {
 
 const confirmClearCart = () => {
   $q.dialog({
-    title: 'Vaciar carrito',
-    message: '¿Estás seguro de que deseas eliminar todos los productos del carrito?',
+    title: i18nT('ui.vaciar-carrito-4718b2'),
+    message: i18nT('ui.estas-seguro-de-que-deseas-eliminar-todos-los-produc-d25882'),
     cancel: true,
     persistent: true,
     ok: {
       color: 'negative',
-      label: 'Sí, vaciar todo',
+      label: i18nT('ui.si-vaciar-todo-44f17c'),
       flat: true,
     },
   }).onOk(() => {
@@ -319,7 +320,7 @@ const proceedTo = async (destination) => {
     const items = cartStore.getItemsForSale()
     console.log(`Items para ${destination}:`, items)
     if (items.length === 0) {
-      $q.notify({ type: 'warning', message: 'No hay productos en el carrito' })
+      $q.notify({ type: 'warning', message: i18nT('ui.no-hay-productos-en-el-carrito-0f51e6') })
       return
     }
 
@@ -368,11 +369,11 @@ const proceedTo = async (destination) => {
 
     $q.notify({
       type: 'positive',
-      message: `Carrito transferido a ${destination === 'sale' ? 'venta' : 'cotización'}`,
+      message: `Carrito transferido a ${destination === 'sale' ? i18nT('ui.venta-1fb17d') : i18nT('ui.cotizacion-5e3cf0')}`,
     })
   } catch (error) {
     console.error(`Error al transferir carrito a ${destination}:`, error)
-    $q.notify({ type: 'negative', message: 'Error al procesar la transferencia' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-procesar-la-transferencia-25c1d5') })
   }
 }
 </script>

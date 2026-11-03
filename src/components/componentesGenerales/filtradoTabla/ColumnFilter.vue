@@ -7,7 +7,7 @@
     round
     dense
     class="q-ml-xs"
-    aria-label="Filtro y orden de columna"
+    :aria-label="$t('ui.filtro-y-orden-de-columna-a693ab')"
   >
     <q-badge v-if="filterCount > 0" color="red" floating>{{ filterCount }}</q-badge>
     <q-icon
@@ -32,19 +32,19 @@
             <q-item-section avatar style="min-width: 36px">
               <q-icon name="arrow_upward" />
             </q-item-section>
-            <q-item-section>Ordenar de menor a mayor</q-item-section>
+            <q-item-section>{{ $t('ui.ordenar-de-menor-a-mayor-f1e1c0') }}</q-item-section>
           </q-item>
           <q-item clickable v-close-popup @click="applySort('desc')">
             <q-item-section avatar style="min-width: 36px">
               <q-icon name="arrow_downward" />
             </q-item-section>
-            <q-item-section>Ordenar de mayor a menor</q-item-section>
+            <q-item-section>{{ $t('ui.ordenar-de-mayor-a-menor-bd8c1a') }}</q-item-section>
           </q-item>
           <q-item v-if="sortDirection" clickable v-close-popup @click="clearSort">
             <q-item-section avatar style="min-width: 36px">
               <q-icon name="sort" />
             </q-item-section>
-            <q-item-section>Quitar orden</q-item-section>
+            <q-item-section>{{ $t('ui.quitar-orden-4340cb') }}</q-item-section>
           </q-item>
         </q-list>
 
@@ -58,19 +58,19 @@
           indicator-color="primary"
           align="justify"
         >
-          <q-tab name="values" label="Valores" />
-          <q-tab name="condition" label="Condiciones" />
+          <q-tab name="values" :label="$t('ui.valores-53d17c')" />
+          <q-tab name="condition" :label="$t('ui.condiciones-9a5b79')" />
         </q-tabs>
 
         <q-separator />
 
         <q-tab-panels v-model="tab" animated style="max-height: 400px; overflow-y: auto">
           <q-tab-panel name="values" class="q-pa-sm">
-            <q-input v-model="quickSearch" dense debounce="300" placeholder="Buscar valor...">
+            <q-input v-model="quickSearch" dense debounce="300" :placeholder="$t('ui.buscar-valor-2bad30')">
               <template v-slot:append><q-icon name="search" /></template>
             </q-input>
 
-            <q-checkbox v-model="selectAll" label="Seleccionar todo" dense class="q-mt-sm" />
+            <q-checkbox v-model="selectAll" :label="$t('ui.seleccionar-todo-4c6fdc')" dense class="q-mt-sm" />
 
             <q-list style="max-height: 200px; overflow-y: auto" separator>
               <q-item v-for="val in filteredUniqueValues" :key="val" dense tag="label">
@@ -80,7 +80,7 @@
                 <q-item-section>{{ val }} ({{ valueCounts[val] || 0 }})</q-item-section>
               </q-item>
               <q-item v-if="!filteredUniqueValues.length" dense>
-                <q-item-section class="text-caption text-grey">No hay resultados.</q-item-section>
+                <q-item-section class="text-caption text-grey">{{ $t('ui.no-hay-resultados-29d26c') }}</q-item-section>
               </q-item>
             </q-list>
           </q-tab-panel>
@@ -89,7 +89,7 @@
             <q-select
               v-model="localCondition.operator"
               :options="getConditionOptions(dataType)"
-              label="Operador"
+              :label="$t('ui.operador-7a16ea')"
               dense
               class="q-mb-md"
             />
@@ -104,7 +104,7 @@
             <div v-else>
               <q-input
                 v-model="localCondition.value1"
-                label="Valor Inicial"
+                :label="$t('ui.valor-inicial-bd296a')"
                 dense
                 debounce="300"
                 class="q-mb-sm"
@@ -112,7 +112,7 @@
               />
               <q-input
                 v-model="localCondition.value2"
-                label="Valor Final"
+                :label="$t('ui.valor-final-d0ad23')"
                 dense
                 debounce="300"
                 :type="dataType === 'number' ? 'number' : dataType === 'date' ? 'date' : 'text'"
@@ -120,7 +120,7 @@
             </div>
             <q-checkbox
               v-model="localCondition.active"
-              label="Activar Condición"
+              :label="$t('ui.activar-condicion-de89d6')"
               dense
               class="q-mt-sm"
             />
@@ -130,9 +130,9 @@
         <q-separator />
 
         <div class="q-pa-sm flex justify-end q-gutter-sm">
-          <q-btn label="Limpiar" color="negative" flat @click="clearFilter" />
-          <q-btn label="Cancelar" color="grey" flat v-close-popup />
-          <q-btn label="Aplicar" color="primary" @click="applyFilter" v-close-popup />
+          <q-btn :label="$t('ui.limpiar-f3b225')" color="negative" flat @click="clearFilter" />
+          <q-btn :label="$t('common.cancel')" color="grey" flat v-close-popup />
+          <q-btn :label="$t('ui.aplicar-4ac3b3')" color="primary" @click="applyFilter" v-close-popup />
         </div>
       </q-card>
     </q-menu>

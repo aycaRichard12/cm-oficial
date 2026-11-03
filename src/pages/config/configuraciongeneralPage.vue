@@ -15,7 +15,7 @@
             <q-btn
               flat
               style="color: #f2c037"
-              label="Ir"
+              :label="$t('ui.ir-96e58e')"
               @click="cambiarComponente(VentaComponent)"
             />
           </q-item-section>
@@ -38,7 +38,7 @@
             <q-btn
               flat
               style="color: white; /* theme-allow */"
-              label="Ir"
+              :label="$t('ui.ir-96e58e')"
               @click="cambiarComponente(PedidoComponent)"
             />
           </q-item-section>
@@ -61,7 +61,7 @@
             <q-btn
               flat
               style="color: white; /* theme-allow */"
-              label="Ir"
+              :label="$t('ui.ir-96e58e')"
               @click="cambiarComponente(CrearProductos)"
             />
           </q-item-section>
@@ -101,6 +101,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, shallowRef, markRaw, defineAsyncComponent } from 'vue'
 import { useQuasar } from 'quasar'
 import { driver } from 'driver.js'
@@ -156,7 +157,7 @@ onMounted(() => {
   if (contenidoUsuario && contenidoMenus) {
     try {
       const parsedData = JSON.parse(contenidoUsuario)
-      nombreUsuario.value = parsedData[0]?.nombre || 'Usuario desconocido'
+      nombreUsuario.value = parsedData[0]?.nombre || i18nT('ui.usuario-desconocido-b61c02')
 
       venta.value = verificar_permiso_venta()
       compra.value = verificar_permiso_compra()
@@ -221,9 +222,9 @@ const iniciarGuia = () => {
     {
       element: '#venta-card',
       popover: {
-        title: 'Módulo de Ventas',
+        title: i18nT('ui.modulo-de-ventas-ac8720'),
         description:
-          'Aquí puedes gestionar tus ventas y realizar nuevas transacciones. Haz clic para acceder.',
+          i18nT('ui.aqui-puedes-gestionar-tus-ventas-y-realizar-nuevas-t-065f84'),
         side: 'left',
         align: 'start',
       },
@@ -231,9 +232,9 @@ const iniciarGuia = () => {
     {
       element: '#compra-card',
       popover: {
-        title: 'Módulo de Compras',
+        title: i18nT('ui.modulo-de-compras-2264ac'),
         description:
-          'Consulta y administra todas tus compras de manera sencilla. Presiona el botón para ingresar.',
+          i18nT('ui.consulta-y-administra-todas-tus-compras-de-manera-se-a273aa'),
         side: 'bottom',
         align: 'start',
       },
@@ -241,8 +242,8 @@ const iniciarGuia = () => {
     {
       element: '#reportes-card',
       popover: {
-        title: 'Reportes y Estadísticas',
-        description: 'Accede a análisis detallados y estadísticas de rendimiento en tu negocio.',
+        title: i18nT('ui.reportes-y-estadisticas-6de16a'),
+        description: i18nT('ui.accede-a-analisis-detallados-y-estadisticas-de-rendi-9c9dbb'),
         side: 'bottom',
         align: 'start',
       },
@@ -250,8 +251,8 @@ const iniciarGuia = () => {
     {
       element: '#producto-card',
       popover: {
-        title: 'Gestión de Productos',
-        description: 'Agrega, edita y organiza tus productos. ¡Optimiza tu catálogo aquí!',
+        title: i18nT('ui.gestion-de-productos-2815c2'),
+        description: i18nT('ui.agrega-edita-y-organiza-tus-productos-optimiza-tu-ca-0ce6c2'),
         side: 'bottom',
         align: 'start',
       },
@@ -260,8 +261,8 @@ const iniciarGuia = () => {
     {
       element: '#venta',
       popover: {
-        title: 'Carrito de Ventas',
-        description: 'Realiza la venta de tus productos fácilmente desde esta sección.',
+        title: i18nT('ui.carrito-de-ventas-062c7a'),
+        description: i18nT('ui.realiza-la-venta-de-tus-productos-facilmente-desde-e-eaadd3'),
         side: 'bottom',
         align: 'start',
       },
@@ -269,9 +270,9 @@ const iniciarGuia = () => {
     {
       element: '#reportes-hoy',
       popover: {
-        title: 'Resumen de Reportes',
+        title: i18nT('ui.resumen-de-reportes-6616bb'),
         description:
-          'Visualiza rápidamente los reportes y métricas del día para mantener el control de tu negocio.',
+          i18nT('ui.visualiza-rapidamente-los-reportes-y-metricas-del-di-92e745'),
         side: 'bottom',
         align: 'start',
       },

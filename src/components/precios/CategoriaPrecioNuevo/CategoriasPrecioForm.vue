@@ -1,7 +1,7 @@
 <template>
   <q-form @submit="onSubmit" class="q-gutter-md">
     <div class="">
-      <label for="nombrecategoria">Nombre de la Categoría *</label>
+      <label for="nombrecategoria">{{ $t('ui.nombre-de-la-categoria-9ccaf8') }}</label>
       <q-input
         v-model="formData.nombre_categoria"
         id="nombrecategoria"
@@ -9,13 +9,13 @@
         dense
         lazy-rules
         :rules="[
-          (val) => (val && val.length > 0) || 'El nombre es obligatorio',
-          (val) => (val && val.length <= 100) || 'Máximo 100 caracteres',
+          (val) => (val && val.length > 0) || $t('ui.el-nombre-es-obligatorio-6043d7'),
+          (val) => (val && val.length <= 100) || $t('ui.maximo-100-caracteres-47a2f1'),
         ]"
       />
     </div>
     <div>
-      <label for="porcentaje">Porcentaje de Aplicación (%) *</label>
+      <label for="porcentaje">{{ $t('ui.porcentaje-de-aplicacion-20891e') }}</label>
       <q-input
         v-model.number="formData.porcentaje"
         id="porcentaje"
@@ -26,15 +26,15 @@
         outlined
         dense
         :rules="[
-          (val) => val != null || 'El porcentaje es obligatorio',
-          (val) => (val >= 0 && val <= 100) || 'Debe ser un valor entre 0 y 100',
+          (val) => val != null || $t('ui.el-porcentaje-es-obligatorio-527464'),
+          (val) => (val >= 0 && val <= 100) || $t('ui.debe-ser-un-valor-entre-0-y-100-a2b56f'),
         ]"
       />
     </div>
 
     <div class="row justify-end q-gutter-sm">
       <q-btn
-        label="Cancelar"
+        :label="$t('common.cancel')"
         type="button"
         color="negative"
         flat
@@ -42,7 +42,7 @@
         :disable="isSubmitting"
       />
       <q-btn
-        :label="mode === 'crear' ? 'Crear Categoría' : 'Guardar Cambios'"
+        :label="mode === $t('ui.crear-b8bf7a') ? $t('ui.crear-categoria-04a59e') : $t('ui.guardar-cambios-7d2fd7')"
         type="submit"
         color="primary"
         :loading="isSubmitting"

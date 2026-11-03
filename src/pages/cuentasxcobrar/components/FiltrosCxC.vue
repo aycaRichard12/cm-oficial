@@ -5,7 +5,7 @@
       class="col-12 col-md-3"
       id="filtroalmacencuentasporcobrar"
     >
-      <label class="text-caption text-weight-medium">Almacén</label>
+      <label class="text-caption text-weight-medium">{{ $t('inventario.warehouse') }}</label>
       <q-select
         :model-value="filtroAlmacen"
         @update:model-value="(val) => $emit('update:filtroAlmacen', val)"
@@ -20,12 +20,12 @@
     </div>
 
     <div v-else-if="opcionesAlmacenes.length === 1" class="col-12 col-md-3">
-      <label class="text-caption text-weight-medium">Almacén</label>
+      <label class="text-caption text-weight-medium">{{ $t('inventario.warehouse') }}</label>
       <q-input :model-value="opcionesAlmacenes[0].label" dense outlined readonly class="q-mr-sm" />
     </div>
 
     <div class="col-12 col-md-3" id="filtroestadocuentasporcobrar">
-      <label class="text-caption text-weight-medium">Tipo</label>
+      <label class="text-caption text-weight-medium">{{ $t('configGeneral.divisas.table.type') }}</label>
       <q-select
         :model-value="filtroEstado"
         @update:model-value="(val) => $emit('update:filtroEstado', val)"

@@ -11,10 +11,10 @@
         <div>
           <div class="text-h6">
             <q-icon name="tune" class="q-mr-sm" />
-            Variantes del Producto
+            {{ $t('ui.variantes-del-producto-2a93f9') }}
           </div>
           <div class="text-caption text-grey-3">
-            {{ producto?.nombre }} — Cód: {{ producto?.codigo }}
+            {{ producto?.nombre }} {{ $t('ui.cod-b4b39a') }} {{ producto?.codigo }}
           </div>
         </div>
         <q-btn icon="close" flat round dense @click="cerrar" />
@@ -28,9 +28,9 @@
         narrow-indicator
         active-color="primary"
       >
-        <q-tab name="atributos" icon="list_alt" label="Atributos y Valores" />
-        <q-tab name="asignados" icon="check_circle" label="Atributos del Producto" />
-        <q-tab name="variantes" icon="inventory_2" label="Variantes" />
+        <q-tab name="atributos" icon="list_alt" :label="$t('ui.atributos-y-valores-8f504e')" />
+        <q-tab name="asignados" icon="check_circle" :label="$t('ui.atributos-del-producto-a303e4')" />
+        <q-tab name="variantes" icon="inventory_2" :label="$t('ui.variantes-69a7f0')" />
       </q-tabs>
       <q-separator />
 
@@ -41,21 +41,21 @@
             <div class="col-12 col-md-5">
               <q-card flat bordered>
                 <q-card-section class="text-subtitle1">
-                  <q-icon name="add_circle" class="q-mr-xs" /> Nuevo Atributo
+                  <q-icon name="add_circle" class="q-mr-xs" /> {{ $t('ui.nuevo-atributo-40a1bc') }}
                 </q-card-section>
                 <q-separator />
                 <q-card-section>
                   <q-input
                     v-model="nuevoAtributo.nombre"
-                    label="Nombre *"
+                    :label="$t('configuracion.servicios.dialog.nombre')"
                     dense
                     outlined
-                    placeholder="Ej: Color, Talla"
+                    :placeholder="$t('ui.ej-color-talla-cde80d')"
                   />
                   <q-select
                     v-model="nuevoAtributo.tipo_dato"
                     :options="tiposDato"
-                    label="Tipo de Dato *"
+                    :label="$t('ui.tipo-de-dato-c8df78')"
                     dense
                     outlined
                     emit-value
@@ -67,7 +67,7 @@
                     color="primary"
                     unelevated
                     icon="add"
-                    label="Registrar Atributo"
+                    :label="$t('ui.registrar-atributo-8efd9c')"
                     :loading="guardandoAtributo"
                     @click="registrarAtributo"
                   />
@@ -78,7 +78,7 @@
             <div class="col-12 col-md-7">
               <q-card flat bordered>
                 <q-card-section class="row items-center justify-between">
-                  <div class="text-subtitle1">Atributos Existentes</div>
+                  <div class="text-subtitle1">{{ $t('ui.atributos-existentes-127fa8') }}</div>
                   <q-btn icon="refresh" flat dense round @click="cargarAtributos" />
                 </q-card-section>
                 <q-separator />
@@ -90,7 +90,7 @@
                     v-for="attr in atributos"
                     :key="attr.id_Atributo_producto"
                     :label="attr.nombre"
-                    :caption="'Tipo: ' + attr.tipo_dato"
+                    :caption="$t('ui.tipo-99c7d2') + attr.tipo_dato"
                     icon="label"
                     group="atributos"
                   >
@@ -99,7 +99,7 @@
                         <div class="row items-center q-gutter-sm q-mb-sm">
                           <q-input
                             v-model="nuevoValor[attr.id_Atributo_producto]"
-                            label="Nuevo valor"
+                            :label="$t('ui.nuevo-valor-25feb4')"
                             dense
                             outlined
                             class="col"
@@ -133,7 +133,7 @@
                             {{ val.valor }}
                           </q-chip>
                           <div v-if="!attr.valores?.length" class="text-caption text-grey">
-                            Sin valores asignados
+                            {{ $t('ui.sin-valores-asignados-ad421b') }}
                           </div>
                         </div>
                       </q-card-section>
@@ -141,7 +141,7 @@
                   </q-expansion-item>
                 </q-list>
                 <q-card-section v-else class="text-center text-grey-6 q-pa-lg">
-                  No hay atributos. Cree uno para empezar.
+                  {{ $t('ui.no-hay-atributos-cree-uno-para-empezar-cc89e5') }}
                 </q-card-section>
               </q-card>
             </div>
@@ -154,7 +154,7 @@
             <div class="col-12 col-md-5">
               <q-card flat bordered>
                 <q-card-section class="text-subtitle1">
-                  <q-icon name="link" class="q-mr-xs" /> Asignar Atributo al Producto
+                  <q-icon name="link" class="q-mr-xs" /> {{ $t('ui.asignar-atributo-al-producto-7e749f') }}
                 </q-card-section>
                 <q-separator />
                 <q-card-section>
@@ -165,7 +165,7 @@
                     option-value="id_Atributo_producto"
                     emit-value
                     map-options
-                    label="Atributo *"
+                    :label="$t('ui.atributo-f30e62')"
                     dense
                     outlined
                   />
@@ -174,7 +174,7 @@
                     color="primary"
                     unelevated
                     icon="link"
-                    label="Asignar"
+                    :label="$t('ui.asignar-8e935b')"
                     :disable="!atributoSeleccionado"
                     :loading="asignandoAtributo"
                     @click="asignarAtributo"
@@ -185,7 +185,7 @@
             <div class="col-12 col-md-7">
               <q-card flat bordered>
                 <q-card-section class="text-subtitle1">
-                  Atributos asignados a este producto
+                  {{ $t('ui.atributos-asignados-a-este-producto-faa496') }}
                 </q-card-section>
                 <q-separator />
                 <q-list v-if="atributosProducto.length" separator>
@@ -195,7 +195,7 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>{{ ap.nombre }}</q-item-label>
-                      <q-item-label caption>Tipo: {{ ap.tipo_dato }}</q-item-label>
+                      <q-item-label caption>{{ $t('ui.tipo-99c7d2') }} {{ ap.tipo_dato }}</q-item-label>
                     </q-item-section>
                     <q-item-section side>
                       <q-btn
@@ -209,7 +209,7 @@
                   </q-item>
                 </q-list>
                 <q-card-section v-else class="text-center text-grey-6 q-pa-lg">
-                  No hay atributos asignados a este producto
+                  {{ $t('ui.no-hay-atributos-asignados-a-este-producto-3da8bf') }}
                 </q-card-section>
               </q-card>
             </div>
@@ -222,48 +222,48 @@
             <div class="col-12 col-md-4">
               <q-card flat bordered>
                 <q-card-section class="text-subtitle1">
-                  {{ editandoVariante ? 'Editar Variante' : 'Nueva Variante' }}
+                  {{ editandoVariante ? $t('ui.editar-variante-e74cb7') : $t('ui.nueva-variante-11e755') }}
                 </q-card-section>
                 <q-separator />
                 <q-card-section>
                   <q-input
                     v-model="formVariante.sku"
-                    label="SKU *"
+                    :label="$t('ui.sku-aef8aa')"
                     dense
                     outlined
-                    hint="Código único de la variante"
+                    :hint="$t('ui.codigo-unico-de-la-variante-72dff7')"
                   />
                   <q-input
                     v-model.number="formVariante.precio_base"
                     type="number"
-                    label="Precio Base"
+                    :label="$t('ui.precio-base-427900')"
                     dense
                     outlined
                     class="q-mt-sm"
                   />
                   <q-input
                     v-model="formVariante.codigo_barras"
-                    label="Código de Barras"
+                    :label="$t('ui.codigo-de-barras-edc5fc')"
                     dense
                     outlined
                     class="q-mt-sm"
                   />
                   <q-toggle
                     v-model="formVariante.activo"
-                    label="Activo"
+                    :label="$t('common.active')"
                     color="positive"
                     class="q-mt-sm"
                     :true-value="1"
                     :false-value="0"
                   />
 
-                  <div class="q-mt-md text-subtitle2 text-primary">Valores de Atributos</div>
+                  <div class="q-mt-md text-subtitle2 text-primary">{{ $t('ui.valores-de-atributos-c119f8') }}</div>
                   <q-banner
                     v-if="!atributosProducto.length"
                     dense
                     class="bg-warning text-white q-mt-sm"
                   >
-                    Debe asignar al menos un atributo al producto.
+                    {{ $t('ui.debe-asignar-al-menos-un-atributo-al-producto-4e4067') }}
                   </q-banner>
                   <div
                     v-for="ap in atributosProducto"
@@ -280,7 +280,7 @@
                       map-options
                       dense
                       outlined
-                      placeholder="Seleccione valor"
+                      :placeholder="$t('ui.seleccione-valor-cb417f')"
                     />
                   </div>
 
@@ -289,7 +289,7 @@
                       color="primary"
                       unelevated
                       icon="save"
-                      :label="editandoVariante ? 'Actualizar' : 'Registrar'"
+                      :label="editandoVariante ? $t('configuracion.servicios.dialog.update') : $t('ui.registrar-caacc6')"
                       :loading="guardandoVariante"
                       :disable="!puedeGuardarVariante"
                       @click="guardarVariante"
@@ -300,7 +300,7 @@
                       color="grey"
                       flat
                       icon="cancel"
-                      label="Cancelar"
+                      :label="$t('common.cancel')"
                       @click="resetFormVariante"
                       class="col"
                     />
@@ -312,7 +312,7 @@
             <div class="col-12 col-md-8">
               <q-card flat bordered>
                 <q-card-section class="row items-center justify-between">
-                  <div class="text-subtitle1">Variantes registradas</div>
+                  <div class="text-subtitle1">{{ $t('ui.variantes-registradas-8d21bf') }}</div>
                   <q-btn icon="refresh" flat dense round @click="cargarVariantes" />
                 </q-card-section>
                 <q-separator />
@@ -337,14 +337,14 @@
                         class="q-ma-xs"
                       />
                       <span v-if="!props.row.valores?.length" class="text-grey-6">
-                        Sin atributos
+                        {{ $t('ui.sin-atributos-9c3300') }}
                       </span>
                     </q-td>
                   </template>
                   <template v-slot:body-cell-activo="props">
                     <q-td :props="props" class="text-center">
                       <q-badge :color="props.row.activo == 1 ? 'positive' : 'grey'">
-                        {{ props.row.activo == 1 ? 'Activo' : 'Inactivo' }}
+                        {{ props.row.activo == 1 ? $t('common.active') : $t('common.inactive') }}
                       </q-badge>
                     </q-td>
                   </template>
@@ -377,6 +377,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed } from 'vue'
 import { apiP } from 'boot/axios'
 import { useQuasar } from 'quasar'
@@ -395,10 +396,10 @@ const visible = ref(props.modelValue)
 const tab = ref('atributos')
 
 const tiposDato = [
-  { label: 'Texto', value: 'texto' },
-  { label: 'Número', value: 'numero' },
-  { label: 'Decimal', value: 'decimal' },
-  { label: 'Booleano', value: 'booleano' },
+  { label: i18nT('ui.texto-6eeba6'), value: 'texto' },
+  { label: i18nT('ui.numero-1d91f4'), value: 'numero' },
+  { label: i18nT('ui.decimal-e4c3a2'), value: 'decimal' },
+  { label: i18nT('ui.booleano-f0f79a'), value: 'booleano' },
 ]
 
 // Atributos globales
@@ -422,16 +423,16 @@ const formVariante = ref(formVarianteInicial())
 
 const columnasVariantes = [
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
-  { name: 'precio_base', label: 'Precio', field: 'precio_base', align: 'right' },
+  { name: 'precio_base', label: i18nT('ui.precio-18e070'), field: 'precio_base', align: 'right' },
   {
     name: 'codigo_barras',
-    label: 'Cód. Barras',
+    label: i18nT('ui.cod-barras-a99c05'),
     field: 'codigo_barras',
     align: 'left',
   },
-  { name: 'valores', label: 'Atributos', field: 'valores', align: 'left' },
-  { name: 'activo', label: 'Estado', field: 'activo', align: 'center' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'valores', label: i18nT('ui.atributos-bd9731'), field: 'valores', align: 'left' },
+  { name: 'activo', label: i18nT('cotizacion.table.status'), field: 'activo', align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 /* ============================== COMPUTED ================================== */
@@ -507,7 +508,7 @@ async function cargarAtributos() {
     console.log(data)
   } catch (error) {
     console.error('Error cargando atributos:', error)
-    notificar('negative', 'No se pudieron cargar los atributos')
+    notificar('negative', i18nT('ui.no-se-pudieron-cargar-los-atributos-ab0011'))
   } finally {
     cargandoAtributos.value = false
   }
@@ -515,7 +516,7 @@ async function cargarAtributos() {
 
 async function registrarAtributo() {
   if (!nuevoAtributo.value.nombre?.trim()) {
-    notificar('warning', 'Ingrese el nombre del atributo')
+    notificar('warning', i18nT('ui.ingrese-el-nombre-del-atributo-70c465'))
     return
   }
   guardandoAtributo.value = true
@@ -533,15 +534,15 @@ async function registrarAtributo() {
     payload.append('empresa', props.empresa)
     const { data } = await apiP.post('', payload)
     if (Array.isArray(data) && data[0] === 'success') {
-      notificar('positive', data[1] || 'Atributo registrado')
+      notificar('positive', data[1] || i18nT('ui.atributo-registrado-38792e'))
       nuevoAtributo.value = { nombre: '', tipo_dato: 'texto' }
       await cargarAtributos()
     } else {
-      notificar('negative', data?.[1] || 'Error al registrar atributo')
+      notificar('negative', data?.[1] || i18nT('ui.error-al-registrar-atributo-485839'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al registrar atributo')
+    notificar('negative', i18nT('ui.error-al-registrar-atributo-485839'))
   } finally {
     guardandoAtributo.value = false
   }
@@ -549,7 +550,7 @@ async function registrarAtributo() {
 
 async function confirmarEliminarAtributo(attr) {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar el atributo "${attr.nombre}" y todos sus valores?`,
     cancel: true,
     persistent: true,
@@ -557,15 +558,15 @@ async function confirmarEliminarAtributo(attr) {
     try {
       const { data } = await apiP.get(`eliminar_atributo/${attr.id_Atributo_producto}`)
       if (Array.isArray(data) && data[0] === 'success') {
-        notificar('positive', data[1] || 'Atributo eliminado')
+        notificar('positive', data[1] || i18nT('ui.atributo-eliminado-3282a6'))
         await cargarAtributos()
         await cargarAtributosProducto()
       } else {
-        notificar('negative', data?.[1] || 'No se pudo eliminar')
+        notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-eliminar-ffa177'))
       }
     } catch (error) {
       console.error(error)
-      notificar('negative', 'Error al eliminar atributo')
+      notificar('negative', i18nT('ui.error-al-eliminar-atributo-4cdb5b'))
     }
   })
 }
@@ -589,14 +590,14 @@ async function registrarValor(idAtributo) {
     const { data } = await apiP.post('', formData)
     if (Array.isArray(data) && data[0] === 'success') {
       nuevoValor.value[idAtributo] = ''
-      notificar('positive', 'Valor registrado')
+      notificar('positive', i18nT('ui.valor-registrado-04e3a0'))
       await cargarAtributos()
     } else {
-      notificar('negative', data?.[1] || 'No se pudo registrar el valor')
+      notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-registrar-el-valor-9034eb'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al registrar valor')
+    notificar('negative', i18nT('ui.error-al-registrar-valor-ea4c5e'))
   }
 }
 
@@ -604,14 +605,14 @@ async function confirmarEliminarValor(val) {
   try {
     const { data } = await apiP.get(`eliminar_valor/${val.id_Valor_Atributo}`)
     if (Array.isArray(data) && data[0] === 'success') {
-      notificar('positive', 'Valor eliminado')
+      notificar('positive', i18nT('ui.valor-eliminado-836bfb'))
       await cargarAtributos()
     } else {
-      notificar('negative', data?.[1] || 'No se pudo eliminar el valor')
+      notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-eliminar-el-valor-83c2a5'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al eliminar valor')
+    notificar('negative', i18nT('ui.error-al-eliminar-valor-8e5319'))
   }
 }
 
@@ -642,15 +643,15 @@ async function asignarAtributo() {
     formData.append('id_Atributo_producto', atributoSeleccionado.value)
     const { data } = await apiP.post('', formData)
     if (Array.isArray(data) && data[0] === 'success') {
-      notificar('positive', 'Atributo asignado al producto')
+      notificar('positive', i18nT('ui.atributo-asignado-al-producto-61bad4'))
       atributoSeleccionado.value = null
       await cargarAtributosProducto()
     } else {
-      notificar('negative', data?.[1] || 'No se pudo asignar')
+      notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-asignar-e2d0e1'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al asignar atributo')
+    notificar('negative', i18nT('ui.error-al-asignar-atributo-b26002'))
   } finally {
     asignandoAtributo.value = false
   }
@@ -660,14 +661,14 @@ async function eliminarAsignacion(idProductoAtributo) {
   try {
     const { data } = await apiP.get(`eliminar_asignacion_producto/${idProductoAtributo}`)
     if (Array.isArray(data) && data[0] === 'success') {
-      notificar('positive', 'Asignación eliminada')
+      notificar('positive', i18nT('ui.asignacion-eliminada-3ddcb4'))
       await cargarAtributosProducto()
     } else {
-      notificar('negative', data?.[1] || 'No se pudo eliminar')
+      notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-eliminar-ffa177'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al eliminar asignación')
+    notificar('negative', i18nT('ui.error-al-eliminar-asignacion-c09a1a'))
   }
 }
 
@@ -680,7 +681,7 @@ async function cargarVariantes() {
     variantes.value = Array.isArray(data) ? data : []
   } catch (error) {
     console.error('Error cargando variantes:', error)
-    notificar('negative', 'No se pudieron cargar las variantes')
+    notificar('negative', i18nT('ui.no-se-pudieron-cargar-las-variantes-0bc3d7'))
   } finally {
     cargandoVariantes.value = false
   }
@@ -707,7 +708,7 @@ function editarVariante(row) {
 
 async function guardarVariante() {
   if (!puedeGuardarVariante.value) {
-    notificar('warning', 'Complete los datos requeridos')
+    notificar('warning', i18nT('ui.complete-los-datos-requeridos-62fbc1'))
     return
   }
   guardandoVariante.value = true
@@ -750,15 +751,15 @@ async function guardarVariante() {
 
     const { data } = await apiP.post('', payload)
     if (Array.isArray(data) && data[0] === 'success') {
-      notificar('positive', data[1] || 'Variante guardada')
+      notificar('positive', data[1] || i18nT('ui.variante-guardada-7bac07'))
       resetFormVariante()
       await cargarVariantes()
     } else {
-      notificar('negative', data?.[1] || 'Error al guardar variante')
+      notificar('negative', data?.[1] || i18nT('ui.error-al-guardar-variante-198c55'))
     }
   } catch (error) {
     console.error(error)
-    notificar('negative', 'Error al guardar variante')
+    notificar('negative', i18nT('ui.error-al-guardar-variante-198c55'))
   } finally {
     guardandoVariante.value = false
   }
@@ -766,7 +767,7 @@ async function guardarVariante() {
 
 function confirmarEliminarVariante(row) {
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar la variante "${row.sku}"?`,
     cancel: true,
     persistent: true,
@@ -774,14 +775,14 @@ function confirmarEliminarVariante(row) {
     try {
       const { data } = await apiP.get(`eliminar_variante/${row.id_Producto_Variante}`)
       if (Array.isArray(data) && data[0] === 'success') {
-        notificar('positive', 'Variante eliminada')
+        notificar('positive', i18nT('ui.variante-eliminada-169023'))
         await cargarVariantes()
       } else {
-        notificar('negative', data?.[1] || 'No se pudo eliminar')
+        notificar('negative', data?.[1] || i18nT('ui.no-se-pudo-eliminar-ffa177'))
       }
     } catch (error) {
       console.error(error)
-      notificar('negative', 'Error al eliminar variante')
+      notificar('negative', i18nT('ui.error-al-eliminar-variante-cb194c'))
     }
   })
 }

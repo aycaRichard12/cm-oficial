@@ -3,41 +3,41 @@
     <q-form @submit="cargarDatosIniciales" @reset="onReset">
       <div class="row q-col-gutter-x-md">
         <div class="col-12 col-md-3">
-          <label for="fechaini">Fecha Inicial</label>
+          <label for="fechaini">{{ $t('ui.fecha-inicial-e467b4') }}</label>
           <q-input
             v-model="fechaini"
             id="fechaini"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
 
         <div class="col-12 col-md-3">
-          <label for="fechafin">Fecha Final</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-fcea71') }}</label>
           <q-input
             v-model="fechafin"
             id="fechafin"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
         <div class="col-12 col-md-3">
-          <label for="puntoventa">Punto de venta</label>
+          <label for="puntoventa">{{ $t('ui.punto-de-venta-f50489') }}</label>
           <q-select
             v-model="model_puntoVenta"
             :options="puntosVenta"
             id="puntoventa"
             dense
             outlined
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
         <div class="col-12 col-md-3 flex justify-center q-mt-lg">
-          <q-btn color="primary" text-color="white" label="Generar" type="submit" />
+          <q-btn color="primary" text-color="white" :label="$t('ui.generar-1f31a1')" type="submit" />
         </div>
       </div>
     </q-form>
@@ -80,15 +80,15 @@
       </q-markup-table>
 
       <q-card-section>
-        <div class="text-subtitle1 q-mb-md">Cierre por Concepto Ventas</div>
+        <div class="text-subtitle1 q-mb-md">{{ $t('ui.cierre-por-concepto-ventas-b09743') }}</div>
 
         <q-markup-table flat bordered dense class="q-mb-md">
           <thead>
             <tr>
-              <th class="text-left">Método de Pago</th>
-              <th class="text-right">Según Sistema</th>
-              <th class="text-right">Según Arqueo</th>
-              <th class="text-right">Diferencia</th>
+              <th class="text-left">{{ $t('ui.metodo-de-pago-112f5f') }}</th>
+              <th class="text-right">{{ $t('ui.segun-sistema-6bc043') }}</th>
+              <th class="text-right">{{ $t('ui.segun-arqueo-d4bc85') }}</th>
+              <th class="text-right">{{ $t('ui.diferencia-4fcda6') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -118,15 +118,15 @@
             </tr>
           </tbody>
         </q-markup-table>
-        <div class="text-subtitle1 q-mb-md">Cierre por Concepto Cotización</div>
+        <div class="text-subtitle1 q-mb-md">{{ $t('ui.cierre-por-concepto-cotizacion-16f9d3') }}</div>
 
         <q-markup-table flat bordered dense class="q-mb-md" title="">
           <thead>
             <tr>
-              <th class="text-left">Método de Pago</th>
-              <th class="text-right">Según Sistema</th>
-              <th class="text-right">Según Arqueo</th>
-              <th class="text-right">Diferencia</th>
+              <th class="text-left">{{ $t('ui.metodo-de-pago-112f5f') }}</th>
+              <th class="text-right">{{ $t('ui.segun-sistema-6bc043') }}</th>
+              <th class="text-right">{{ $t('ui.segun-arqueo-d4bc85') }}</th>
+              <th class="text-right">{{ $t('ui.diferencia-4fcda6') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -159,14 +159,14 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="text-subtitle1 q-mb-md">Arqueo de Caja Efectivo</div>
+        <div class="text-subtitle1 q-mb-md">{{ $t('ui.arqueo-de-caja-efectivo-30cac9') }}</div>
 
         <q-markup-table flat bordered dense class="q-mb-md">
           <thead>
             <tr>
-              <th class="text-left">Denominación</th>
-              <th class="text-left">Cantidad</th>
-              <th class="text-left">Subtotal</th>
+              <th class="text-left">{{ $t('ui.denominacion-081d65') }}</th>
+              <th class="text-left">{{ $t('ui.cantidad-b5b6f8') }}</th>
+              <th class="text-left">{{ $t('ventas.subtotal') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -194,7 +194,7 @@
         <div class="q-gutter-sm q-mt-md">
           <q-item>
             <q-item-section>
-              <q-item-label class="text-weight-bold">Total Contado:</q-item-label>
+              <q-item-label class="text-weight-bold">{{ $t('ui.total-contado-5f41e1') }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-item-label class="text-h6 text-green-8">{{
@@ -208,17 +208,17 @@
         <q-input
           v-if="diferenciaArqueo !== 0"
           v-model="observacion"
-          label="Observaciones (obligatorio)"
+          :label="$t('ui.observaciones-obligatorio-70aec4')"
           type="textarea"
           outlined
-          :rules="[(val) => !!val || 'Este campo es obligatorio si hay diferencia']"
+          :rules="[(val) => !!val || $t('ui.este-campo-es-obligatorio-si-hay-diferencia-8f3a9f')]"
         />
       </div>
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn label="Cancelar" color="negative" flat @click="resetForm" />
+        <q-btn :label="$t('common.cancel')" color="negative" flat @click="resetForm" />
 
         <q-btn
-          :label="'Cerrar Caja'"
+          :label="$t('ui.cerrar-caja-eeb268')"
           color="primary"
           icon="save"
           type="submit"
@@ -231,6 +231,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, onMounted, toRaw } from 'vue'
 import { useQuasar } from 'quasar'
 //import { useCajaStore } from 'stores/caja' // Asegúrate de que este store exista
@@ -265,17 +266,17 @@ function calcularDiferenciaConceptoI(row) {
 }
 
 const denominaciones = reactive([
-  { valor: 200, cantidad: 0, label: 'Billetes de 200' },
-  { valor: 100, cantidad: 0, label: 'Billetes de 100' },
-  { valor: 50, cantidad: 0, label: 'Billetes de 50' },
-  { valor: 20, cantidad: 0, label: 'Billetes de 20' },
-  { valor: 10, cantidad: 0, label: 'Billetes de 10' },
-  { valor: 5, cantidad: 0, label: 'Monedas de 5' },
-  { valor: 2, cantidad: 0, label: 'Monedas de 2' },
-  { valor: 1, cantidad: 0, label: 'Monedas de 1' },
-  { valor: 0.5, cantidad: 0, label: 'Monedas de 0.5' },
-  { valor: 0.2, cantidad: 0, label: 'Monedas de 0.2' },
-  { valor: 0.1, cantidad: 0, label: 'Monedas de 0.1' },
+  { valor: 200, cantidad: 0, label: i18nT('ui.billetes-de-200-9b4b9d') },
+  { valor: 100, cantidad: 0, label: i18nT('ui.billetes-de-100-bff23c') },
+  { valor: 50, cantidad: 0, label: i18nT('ui.billetes-de-50-aa2024') },
+  { valor: 20, cantidad: 0, label: i18nT('ui.billetes-de-20-49cb46') },
+  { valor: 10, cantidad: 0, label: i18nT('ui.billetes-de-10-d49800') },
+  { valor: 5, cantidad: 0, label: i18nT('ui.monedas-de-5-91bd5c') },
+  { valor: 2, cantidad: 0, label: i18nT('ui.monedas-de-2-34679b') },
+  { valor: 1, cantidad: 0, label: i18nT('ui.monedas-de-1-cc98b5') },
+  { valor: 0.5, cantidad: 0, label: i18nT('ui.monedas-de-0-5-538fb9') },
+  { valor: 0.2, cantidad: 0, label: i18nT('ui.monedas-de-0-2-61b4d7') },
+  { valor: 0.1, cantidad: 0, label: i18nT('ui.monedas-de-0-1-d9764e') },
 ])
 const totalSistemaArqueo = ref(0)
 const totalContado = ref(0)
@@ -369,14 +370,14 @@ const cargarPuntosDeVenta = async () => {
     }
   } catch (error) {
     console.error('Error al cargar puntos de venta:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar los puntos de venta.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-los-puntos-de-venta-5af7df') })
   }
 }
 
 const cargarDatosIniciales = async () => {
   const puntoventa = model_puntoVenta.value
   if (!puntoventa) {
-    $q.notify({ type: 'negative', message: 'Debe seleccionar un punto de venta.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.debe-seleccionar-un-punto-de-venta-2ccb87') })
     return
   }
 
@@ -444,7 +445,7 @@ const cargarDatosIniciales = async () => {
     calcularTotalesArqueo()
   } catch (error) {
     console.error('Error al cargar datos iniciales:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar los datos del arqueo.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-los-datos-del-arqueo-4a5e43') })
   } finally {
     isLoading.value = false
   }
@@ -453,14 +454,14 @@ const cargarDatosIniciales = async () => {
 const validarYEnviar = async () => {
   const puntoventa = model_puntoVenta.value
   if (!puntoventa) {
-    $q.notify({ type: 'negative', message: 'Debe seleccionar un punto de venta.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.debe-seleccionar-un-punto-de-venta-2ccb87') })
     return
   }
 
   if (diferenciaArqueo.value !== 0 && !observacion.value) {
     $q.notify({
       type: 'negative',
-      message: 'Debe ingresar una observación si hay diferencia en el arqueo.',
+      message: i18nT('ui.debe-ingresar-una-observacion-si-hay-diferencia-en-e-9c5218'),
     })
     return
   }
@@ -486,24 +487,24 @@ const validarYEnviar = async () => {
     console.log('Response from cierreCaja:', response.data)
 
     if (response.data.estado === 'exito') {
-      $q.notify({ type: 'positive', message: 'Cierre de caja registrado exitosamente.' })
+      $q.notify({ type: 'positive', message: i18nT('ui.cierre-de-caja-registrado-exitosamente-6dfc59') })
       emit('success')
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Error al registrar el cierre de caja.',
+        message: response.data.mensaje || i18nT('ui.error-al-registrar-el-cierre-de-caja-0f964c'),
       })
     }
   } catch (error) {
     console.error('Error al registrar cierre:', error)
-    $q.notify({ type: 'negative', message: 'Error de conexión al registrar el cierre.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-de-conexion-al-registrar-el-cierre-a94b25') })
   } finally {
     isLoading.value = false
   }
 }
 
 // const imprimirReporte = () => {
-//   $q.notify({ type: 'info', message: 'Generando reporte de cierre simulado...' })
+//   $q.notify({ type: 'info', message: Generando reporte de cierre simulado... })
 // }
 
 const resetForm = () => {

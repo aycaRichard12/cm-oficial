@@ -5,6 +5,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { useMeta } from 'quasar'
 // import { useIdle } from '@vueuse/core'
 // import { LocalStorage, Notify } from 'quasar'
@@ -16,14 +17,14 @@ import { useMeta } from 'quasar'
 // const { idle } = useIdle(900 * 1000)
 
 const metaData = {
-  title: 'Comercial', //getNombreEmpresa(),
+  title: i18nT('ui.comercial-e063f0'), //getNombreEmpresa(),
   titleTemplate: (title) => `${title} - Mistersofts`,
 }
 // watch(idle, (newIdle) => {
 //   if (newIdle && router.currentRoute.value.path !== '/login') {
 //     // 1. Mostrar un aviso al usuario
 //     Notify.create({
-//       message: 'Tu sesión ha expirado por inactividad',
+//       message: Tu sesión ha expirado por inactividad,
 //       color: 'warning',
 //       icon: 'warning',
 //     })

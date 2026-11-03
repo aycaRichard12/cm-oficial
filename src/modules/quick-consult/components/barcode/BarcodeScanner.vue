@@ -15,8 +15,8 @@
         <div class="row items-center">
           <q-icon name="qr_code_scanner" size="md" color="primary" class="q-mr-sm" />
           <div>
-            <div class="text-subtitle1 text-weight-bold">Escáner de Barras</div>
-            <div class="text-caption opacity-70">Apunta al código del producto</div>
+            <div class="text-subtitle1 text-weight-bold">{{ $t('ui.escaner-de-barras-6bf19c') }}</div>
+            <div class="text-caption opacity-70">{{ $t('ui.apunta-al-codigo-del-producto-e9fe8e') }}</div>
           </div>
         </div>
         <q-btn flat round icon="close" color="white" v-close-popup />
@@ -46,7 +46,7 @@
         <div v-if="isLoading" class="absolute-full flex flex-center bg-black z-top">
           <div class="text-center">
             <q-spinner-dots color="primary" size="3rem" />
-            <div class="q-mt-md">Iniciando cámara...</div>
+            <div class="q-mt-md">{{ $t('ui.iniciando-camara-821a7f') }}</div>
           </div>
         </div>
 
@@ -54,11 +54,11 @@
         <div v-if="error" class="absolute-full flex flex-center bg-black q-pa-xl z-top">
           <div class="text-center">
             <q-icon name="error_outline" color="negative" size="4rem" />
-            <div class="text-h6 q-mt-md">Error de cámara</div>
+            <div class="text-h6 q-mt-md">{{ $t('ui.error-de-camara-dff921') }}</div>
             <div class="text-body2 q-mt-sm text-grey-5">{{ error }}</div>
             <q-btn
               color="primary"
-              label="Reintentar"
+              :label="$t('ui.reintentar-adec7b')"
               class="q-mt-lg"
               rounded
               @click="startScanner"
@@ -66,7 +66,7 @@
             <q-btn
               flat
               color="white"
-              label="Ingresar manualmente"
+              :label="$t('ui.ingresar-manualmente-495510')"
               class="q-mt-sm full-width"
               @click="showManualInput = true"
             />
@@ -82,7 +82,7 @@
               outline
               color="white"
               icon="flashlight_on"
-              :label="isFlashOn ? 'Apagar luz' : 'Encender luz'"
+              :label="isFlashOn ? $t('ui.apagar-luz-b88c12') : $t('ui.encender-luz-989580')"
               class="full-width rounded-btn"
               @click="toggleFlash"
               :disable="!hasFlash"
@@ -93,7 +93,7 @@
               outline
               color="white"
               icon="flip_camera_ios"
-              label="Girar"
+              :label="$t('ui.girar-6308d9')"
               class="full-width rounded-btn"
               @click="toggleCamera"
             />
@@ -104,7 +104,7 @@
           flat
           color="primary"
           icon="edit"
-          label="Ingresar código manualmente"
+          :label="$t('ui.ingresar-codigo-manualmente-809f6a')"
           class="full-width q-mt-md"
           @click="showManualInput = true"
           no-caps
@@ -115,7 +115,7 @@
       <q-dialog v-model="showManualInput" position="bottom">
         <q-card style="width: 100%; border-radius: 20px 20px 0 0">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Código manual</div>
+            <div class="text-h6">{{ $t('ui.codigo-manual-10ab0f') }}</div>
             <q-space />
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
@@ -123,7 +123,7 @@
           <q-card-section class="q-pt-sm">
             <q-input
               v-model="manualCode"
-              label="Ingresa el código de barras"
+              :label="$t('ui.ingresa-el-codigo-de-barras-555939')"
               outlined
               autofocus
               @keyup.enter="handleManualSubmit"
@@ -140,6 +140,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onBeforeUnmount } from 'vue'
 //import { useQuasar } from 'quasar'
 import { Html5Qrcode } from 'html5-qrcode'
@@ -224,7 +225,7 @@ const startScanner = async () => {
     }
   } catch (err) {
     console.error('Error starting scanner:', err)
-    error.value = err.message || 'Error desconocido al iniciar la cámara'
+    error.value = err.message || i18nT('ui.error-desconocido-al-iniciar-la-camara-503375')
     isLoading.value = false
   }
 }

@@ -50,6 +50,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -59,7 +60,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Diálogo'
+    default: i18nT('ui.dialogo-bd379d')
   },
   persistent: {
     type: Boolean,
@@ -91,7 +92,7 @@ const props = defineProps({
   },
   cancelLabel: {
     type: String,
-    default: 'Cancelar'
+    default: i18nT('common.cancel')
   },
   confirmLabel: {
     type: String,

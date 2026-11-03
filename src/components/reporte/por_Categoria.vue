@@ -8,11 +8,11 @@
           <div class="col-12 col-md-auto">
             <div class="row items-center">
               <q-icon name="bar_chart" color="primary" size="1.5rem" class="q-mr-sm" />
-              <div class="text-h6 text-weight-medium">Ventas por Categoría</div>
+              <div class="text-h6 text-weight-medium">{{ $t('ui.ventas-por-categoria-b6b252') }}</div>
             </div>
             <div class="text-caption text-grey-7 bg-grey-2 q-px-sm q-py-xs rounded-borders q-mt-xs inline-block">
               <q-icon name="event" class="q-mr-xs" />
-              <span class="text-weight-bold">Periodo:</span> {{ periodoInfo }}
+              <span class="text-weight-bold">{{ $t('ui.periodo-6993ec') }}</span> {{ periodoInfo }}
             </div>
           </div>
           
@@ -20,13 +20,13 @@
           <div class="col-12 col-md-auto">
             <div class="row q-col-gutter-sm items-center">
               <div class="col-6 col-sm-auto">
-                <q-input v-model="fechaInicio" dense outlined label="Inicio" mask="##/##/####">
+                <q-input v-model="fechaInicio" dense outlined :label="$t('ui.inicio-4f70d8')" mask="##/##/####">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                         <q-date v-model="fechaInicio" mask="DD/MM/YYYY">
                           <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                            <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -36,13 +36,13 @@
               </div>
 
               <div class="col-6 col-sm-auto">
-                <q-input v-model="fechaFin" dense outlined label="Fin" mask="##/##/####">
+                <q-input v-model="fechaFin" dense outlined :label="$t('ui.fin-425106')" mask="##/##/####">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                         <q-date v-model="fechaFin" mask="DD/MM/YYYY">
                           <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                            <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -55,7 +55,7 @@
                 <q-btn 
                   color="primary" 
                   icon="search" 
-                  label="Consultar" 
+                  :label="$t('ui.consultar-2af080')" 
                   unelevated 
                   :loading="loading"
                   @click="consultarFechas"
@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import VueApexCharts from 'vue3-apexcharts'
@@ -133,7 +134,7 @@ const consultarFechas = async () => {
     }
   } catch (error) {
     console.error('Error al cargar reporte de categorías:', error)
-    $q.notify({ type: 'negative', message: 'Error cargando datos de categoría' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-cargando-datos-de-categoria-d5d114') })
     rawDataAPI.value = []
   } finally {
     loading.value = false
@@ -146,7 +147,7 @@ const chartData = computed(() => {
   
   const agrupado = {}
   rawData.forEach((item) => {
-    const categoria = item.categoria?.trim() || 'Sin categoría'
+    const categoria = item.categoria?.trim() || i18nT('ui.sin-categoria-0849d0')
     const subcategoria = item.subcategoria?.trim() || null
     const label = subcategoria || categoria
     const ventas = Number(item.total_ventas) || 0
@@ -223,7 +224,7 @@ const chartOptions = ref({
   xaxis: {
     categories: [],
     title: {
-      text: 'Categorías',
+      text: i18nT('configProducto.categoriaProducto.table.title'),
       style: {
         fontSize: '12px',
         fontWeight: 600,
@@ -248,7 +249,7 @@ const chartOptions = ref({
   },
   yaxis: {
     title: { 
-      text: 'Número de Ventas',
+      text: i18nT('ui.numero-de-ventas-9b5051'),
       style: {
         fontSize: '12px',
         fontWeight: 600,
@@ -336,7 +337,7 @@ const chartOptions = ref({
     },
   ],
   noData: {
-    text: 'Cargando datos...',
+    text: i18nT('ui.cargando-datos-6acb41'),
     align: 'center',
     verticalAlign: 'middle',
     style: {
@@ -371,7 +372,7 @@ watch(
 
     newData.forEach((item) => {
       // Usamos solo el nombre de la subcategoría para etiquetas más limpias
-      const label = item.subcategoria || item.categoria || 'Sin categoría'
+      const label = item.subcategoria || item.categoria || i18nT('ui.sin-categoria-0849d0')
       categories.push(label)
       seriesData.push(item.total_ventas)
     })

@@ -4,10 +4,9 @@
       <q-card-section>
         <div class="row items-center justify-between q-col-gutter-md">
           <div class="col-12 col-md">
-            <div class="text-h5 text-weight-bold">Sincronización de Kardex por Almacén</div>
+            <div class="text-h5 text-weight-bold">{{ $t('ui.sincronizacion-de-kardex-por-almacen-2f1ae6') }}</div>
             <div class="text-caption text-grey-7">
-              Seleccione un almacén y presione <b>Sincronizar</b>. El reporte PDF se descargará
-              automáticamente.
+              {{ $t('ui.seleccione-un-almacen-y-presione-bfeef9') }} <b>{{ $t('ui.sincronizar-e32f49') }}</b>{{ $t('ui.el-reporte-pdf-se-descargara-automaticamente-f4a086') }}
             </div>
           </div>
           <div class="col-12 col-md-auto row q-gutter-sm items-center">
@@ -16,7 +15,7 @@
               dense
               outlined
               clearable
-              placeholder="Buscar almacén, código o empresa..."
+              :placeholder="$t('ui.buscar-almacen-codigo-o-empresa-6e186e')"
               style="min-width: 280px"
             >
               <template v-slot:prepend><q-icon name="search" /></template>
@@ -25,7 +24,7 @@
               outline
               color="primary"
               icon="refresh"
-              label="Recargar"
+              :label="$t('ui.recargar-9d2c9d')"
               :loading="loadingAlmacenes"
               @click="cargarAlmacenes"
             />
@@ -39,10 +38,10 @@
             text-color="white"
             dense
           >
-            Estado: {{ ultimoResultado.estado }}
+            {{ $t('ui.estado-d25c1e') }} {{ ultimoResultado.estado }}
           </q-chip>
           <q-chip icon="inventory_2" color="blue-grey-7" text-color="white" dense>
-            {{ ultimoResultado.sincronizados }} / {{ ultimoResultado.total_productos }} productos
+            {{ ultimoResultado.sincronizados }} / {{ ultimoResultado.total_productos }} {{ $t('ui.productos-2d7e7d') }}
           </q-chip>
           <q-chip icon="swap_vert" color="blue-grey-7" text-color="white" dense>
             {{ ultimoResultado.total_movimientos }} movimientos
@@ -68,7 +67,7 @@
         <template v-slot:body-cell-estado="props">
           <q-td :props="props" class="text-center">
             <q-badge :color="Number(props.row.estado) === 1 ? 'positive' : 'grey-6'">
-              {{ Number(props.row.estado) === 1 ? 'Activo' : 'Inactivo' }}
+              {{ Number(props.row.estado) === 1 ? $t('common.active') : $t('common.inactive') }}
             </q-badge>
           </q-td>
         </template>
@@ -78,7 +77,7 @@
             <q-btn
               color="primary"
               icon="sync"
-              label="Sincronizar"
+              :label="$t('ui.sincronizar-e32f49')"
               size="sm"
               no-caps
               unelevated
@@ -87,7 +86,7 @@
               @click="sincronizar(props.row)"
             >
               <q-tooltip v-if="Number(props.row.estado) !== 1">
-                Almacén inactivo
+                {{ $t('ui.almacen-inactivo-f47c19') }}
               </q-tooltip>
             </q-btn>
           </q-td>
@@ -95,7 +94,7 @@
 
         <template v-slot:no-data>
           <div class="text-caption text-grey q-pa-md full-width text-center">
-            {{ loadingAlmacenes ? 'Cargando almacenes...' : 'No hay almacenes disponibles.' }}
+            {{ loadingAlmacenes ? $t('ui.cargando-almacenes-f7a01e') : $t('ui.no-hay-almacenes-disponibles-5d547d') }}
           </div>
         </template>
       </q-table>
@@ -104,6 +103,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { SincronizacionAlmacenService } from '../services/SincronizacionAlmacenService'
@@ -121,11 +121,11 @@ const ultimoResultado = ref(null)
 
 const columnas = [
   { name: 'idalmacen', label: 'ID', field: 'idalmacen', align: 'center', sortable: true, style: 'width: 70px' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', sortable: true },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
-  { name: 'empresa', label: 'Empresa', field: 'empresa', align: 'left', sortable: true },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
-  { name: 'acciones', label: 'Acciones', align: 'center', style: 'width: 140px' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
+  { name: 'empresa', label: i18nT('ui.empresa-6eb94b'), field: 'empresa', align: 'left', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', sortable: true },
+  { name: 'acciones', label: i18nT('common.actions'), align: 'center', style: 'width: 140px' },
 ]
 
 const almacenesFiltrados = computed(() => {
@@ -142,12 +142,12 @@ async function cargarAlmacenes() {
   try {
     almacenes.value = await service.listarAlmacenes()
     if (!almacenes.value.length) {
-      $q.notify({ type: 'warning', message: 'No hay almacenes disponibles para este usuario.' })
+      $q.notify({ type: 'warning', message: i18nT('ui.no-hay-almacenes-disponibles-para-este-usuario-d6cad2') })
     }
   } catch (e) {
     console.error('[sincronizarAlmacenes] cargarAlmacenes:', e)
     const msg =
-      e?.response?.data?.mensaje || e?.message || 'No se pudo cargar el listado de almacenes.'
+      e?.response?.data?.mensaje || e?.message || i18nT('ui.no-se-pudo-cargar-el-listado-de-almacenes-94f8ab')
     $q.notify({ type: 'negative', message: msg })
   } finally {
     loadingAlmacenes.value = false
@@ -166,7 +166,7 @@ async function sincronizar(row) {
     if (resultado?.estado !== 'exito') {
       $q.notify({
         type: 'negative',
-        message: resultado?.mensaje || 'La sincronización finalizó con errores.',
+        message: resultado?.mensaje || i18nT('ui.la-sincronizacion-finalizo-con-errores-d139f6'),
         timeout: 6000,
       })
     } else {
@@ -180,7 +180,7 @@ async function sincronizar(row) {
       })
     }
 
-    $q.loading.show({ message: 'Generando reporte PDF...' })
+    $q.loading.show({ message: i18nT('ui.generando-reporte-pdf-13a1f4') })
     const doc = await pdfService.generate({
       resultado,
       almacenNombre: row.almacen,
@@ -190,14 +190,14 @@ async function sincronizar(row) {
 
     const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
     doc.save(`Sincronizacion_${row.idalmacen}_${stamp}.pdf`)
-    $q.notify({ type: 'positive', message: 'Reporte PDF generado y descargado.' })
+    $q.notify({ type: 'positive', message: i18nT('ui.reporte-pdf-generado-y-descargado-568778') })
   } catch (e) {
     console.error('[sincronizarAlmacenes] sincronizar:', e)
     const msg =
       e?.response?.data?.mensaje ||
       e?.response?.data?.error ||
       e?.message ||
-      'Error al sincronizar el almacén.'
+      i18nT('ui.error-al-sincronizar-el-almacen-68b641')
     $q.notify({ type: 'negative', message: msg, timeout: 6000 })
   } finally {
     $q.loading.hide()

@@ -5,17 +5,17 @@
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
-        title="Registrar Almacen"
+        :title="$t('ui.registrar-almacen-e70151')"
       >
         <q-icon name="add" class="icono" />
-        <span class="texto">Agregar</span>
+        <span class="texto">{{ $t('ui.agregar-87ebee') }}</span>
       </q-btn>
       <q-btn color="info" outline @click="mostrarReporte" class="btn-res q-mt-lg">
         <q-icon name="picture_as_pdf" class="icono" />
-        <span class="texto">Vista previa PDF</span>
+        <span class="texto">{{ $t('ui.vista-previa-pdf-46ad39') }}</span>
       </q-btn>
       <div>
-        <label for="buscar">Buscar...</label>
+        <label for="buscar">{{ $t('common.search') }}</label>
         <q-input
           v-model="search"
           id="buscar"
@@ -33,7 +33,7 @@
     </div>
 
     <q-table
-      title="Almacenes"
+      :title="$t('ui.almacenes-10df99')"
       :rows="filteredData"
       :columns="columnas"
       row-key="id"
@@ -80,8 +80,8 @@
 
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="$t('common.active')" outline />
+          <q-badge color="red" v-else :label="$t('common.inactive')" outline />
         </q-td>
       </template>
       <template v-slot:body-cell-opciones="props">
@@ -92,7 +92,7 @@
             dense
             class="q-mr-sm"
             @click="$emit('edit-item', props.row)"
-            title="Editar"
+            :title="$t('common.edit')"
             flat
           />
           <q-btn
@@ -100,7 +100,7 @@
             color="negative"
             dense
             @click="$emit('delete-item', props.row)"
-            title="Eliminar"
+            :title="$t('common.delete')"
             flat
           />
           <q-btn
@@ -109,7 +109,7 @@
             flat
             :color="Number(props.row.estado) === 1 ? 'green' : 'grey'"
             @click="$emit('toggle-status', props.row)"
-            title="Cambiar de Estadato"
+            :title="$t('ui.cambiar-de-estadato-3682cb')"
           />
         </q-td>
       </template>
@@ -118,7 +118,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -138,6 +138,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import ColumnFilter from './ColumnFilter.vue'
 import { PDFalmacenes } from 'src/utils/pdfReportGenerator'
@@ -173,17 +174,17 @@ const ArrayHeaders = [
   'estado',
 ]
 const columnas = [
-  { name: 'codigo', label: 'Codigo', field: 'codigo', align: 'left' },
-  { name: 'nombre', label: 'Nombre', field: 'nombre', align: 'left' },
-  { name: 'direccion', label: 'Dirección', field: 'direccion', align: 'left' },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'left' },
-  { name: 'email', label: 'Email', field: 'email', align: 'left' },
-  { name: 'tipoalmacen', label: 'Tipo almacén', field: 'tipoalmacen', align: 'left' },
-  { name: 'stockmin', label: 'Stock min', field: 'stockmin' },
-  { name: 'stockmax', label: 'Stock max', field: 'stockmax' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-b77b7c'), field: 'codigo', align: 'left' },
+  { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), field: 'nombre', align: 'left' },
+  { name: 'direccion', label: i18nT('ui.direccion-04f478'), field: 'direccion', align: 'left' },
+  { name: 'telefono', label: i18nT('ui.telefono-99af37'), field: 'telefono', align: 'left' },
+  { name: 'email', label: i18nT('configuracion.servicios.table.email'), field: 'email', align: 'left' },
+  { name: 'tipoalmacen', label: i18nT('ui.tipo-almacen-8f4e01'), field: 'tipoalmacen', align: 'left' },
+  { name: 'stockmin', label: i18nT('ui.stock-min-42e889'), field: 'stockmin' },
+  { name: 'stockmax', label: i18nT('ui.stock-max-6ac758'), field: 'stockmax' },
+  { name: 'sucursal', label: i18nT('ui.sucursal-07d782'), field: 'sucursal', align: 'left' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 /**

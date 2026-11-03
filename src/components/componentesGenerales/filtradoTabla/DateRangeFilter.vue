@@ -3,7 +3,7 @@
     <div class="col-12 col-sm-6">
       <q-input
         v-model="modelInicial"
-        label="Fecha Inicial"
+        :label="$t('ui.fecha-inicial-e467b4')"
         outlined
         dense
         mask="##/##/####"
@@ -16,7 +16,7 @@
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date v-model="modelInicial" mask="DD/MM/YYYY" minimal>
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Aceptar" color="primary" flat />
+                  <q-btn v-close-popup :label="$t('ui.aceptar-8f9f73')" color="primary" flat />
                 </div>
               </q-date>
             </q-popup-proxy>
@@ -28,7 +28,7 @@
     <div class="col-12 col-sm-6">
       <q-input
         v-model="modelFinal"
-        label="Fecha Final"
+        :label="$t('ui.fecha-final-fcea71')"
         outlined
         dense
         mask="##/##/####"
@@ -41,7 +41,7 @@
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date v-model="modelFinal" mask="DD/MM/YYYY" minimal>
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Aceptar" color="primary" flat />
+                  <q-btn v-close-popup :label="$t('ui.aceptar-8f9f73')" color="primary" flat />
                 </div>
               </q-date>
             </q-popup-proxy>

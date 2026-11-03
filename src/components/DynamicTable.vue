@@ -10,7 +10,7 @@
     <template v-slot:top>
       <div class="text-h6">{{ title }}</div>
       <q-space />
-      <q-btn color="primary" label="Refresh" @click="$emit('refresh')" :loading="loading" />
+      <q-btn color="primary" :label="$t('ui.refresh-56e3ba')" @click="$emit('refresh')" :loading="loading" />
     </template>
 
     <template v-slot:body-cell-actions="props">
@@ -30,6 +30,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -58,7 +59,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Tabla de Datos',
+    default: i18nT('ui.tabla-de-datos-65447d'),
   },
 })
 

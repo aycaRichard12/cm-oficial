@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-center q-col-gutter-x-md q-mt-md">
     <div class="col-12 col-md-3" id="almacenVendidos">
-      <label for="almacen">Filtrar por almacén</label>
+      <label for="almacen">{{ $t('ui.filtrar-por-almacen-eeba00') }}</label>
       <q-select
         id="almacen"
         v-model="localAlmacen"
@@ -13,7 +13,7 @@
       />
     </div>
     <div class="col-12 col-md-3" id="clienteVendidos">
-      <label for="cliente">Filtrar por razón social</label>
+      <label for="cliente">{{ $t('ui.filtrar-por-razon-social-06617e') }}</label>
       <q-select
         id="cliente"
         v-model="localCliente"
@@ -30,13 +30,13 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> Sin resultados </q-item-section>
+            <q-item-section class="text-grey"> {{ $t('ui.sin-resultados-926bea') }} </q-item-section>
           </q-item>
         </template>
       </q-select>
     </div>
     <div class="col-12 col-md-3" id="sucursalVendidos">
-      <label for="sucursal">Filtrar por sucursal</label>
+      <label for="sucursal">{{ $t('ui.filtrar-por-sucursal-961f92') }}</label>
       <q-select
         id="sucursal"
         v-model="localSucursal"
@@ -54,7 +54,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> Sin resultados </q-item-section>
+            <q-item-section class="text-grey"> {{ $t('ui.sin-resultados-926bea') }} </q-item-section>
           </q-item>
         </template>
       </q-select>

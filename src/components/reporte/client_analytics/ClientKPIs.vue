@@ -6,12 +6,12 @@
         <q-card-section>
           <div class="text-h6">
             <q-icon name="check_circle" size="sm" class="q-mr-xs" />
-            Clientes Activos
+            {{ $t('ui.clientes-activos-a818a9') }}
           </div>
           <div class="text-h3 text-weight-bold q-mt-sm">
             {{ kpis.clientesActivos }}
           </div>
-          <div class="text-caption opacity-80">Compraron en últimos 30 días</div>
+          <div class="text-caption opacity-80">{{ $t('ui.compraron-en-ultimos-30-dias-a6b447') }}</div>
         </q-card-section>
       </q-card>
     </div>
@@ -21,12 +21,12 @@
         <q-card-section>
           <div class="text-h6">
             <q-icon name="warning" size="sm" class="q-mr-xs" />
-            En Riesgo
+            {{ $t('ui.en-riesgo-6c41bf') }}
           </div>
           <div class="text-h3 text-weight-bold q-mt-sm">
             {{ kpis.clientesEnRiesgo }}
           </div>
-          <div class="text-caption opacity-80">Sin compra 30-90 días</div>
+          <div class="text-caption opacity-80">{{ $t('ui.sin-compra-30-90-dias-0fff6c') }}</div>
         </q-card-section>
       </q-card>
     </div>
@@ -36,12 +36,12 @@
         <q-card-section>
           <div class="text-h6">
             <q-icon name="cancel" size="sm" class="q-mr-xs" />
-            Inactivos
+            {{ $t('ui.inactivos-0d99e0') }}
           </div>
           <div class="text-h3 text-weight-bold q-mt-sm">
             {{ kpis.clientesInactivos }}
           </div>
-          <div class="text-caption opacity-80">Más de 90 días sin compra</div>
+          <div class="text-caption opacity-80">{{ $t('ui.mas-de-90-dias-sin-compra-77f909') }}</div>
         </q-card-section>
       </q-card>
     </div>
@@ -51,12 +51,12 @@
         <q-card-section>
           <div class="text-h6">
             <q-icon name="shopping_cart" size="sm" class="q-mr-xs" />
-            Ventas {{ new Date().getFullYear() }}
+            {{ $t('ui.ventas-9aac1a') }} {{ new Date().getFullYear() }}
           </div>
           <div class="text-h3 text-weight-bold q-mt-sm">
             {{ kpis.totalVentasAño }}
           </div>
-          <div class="text-caption opacity-80">Total del año actual</div>
+          <div class="text-caption opacity-80">{{ $t('ui.total-del-ano-actual-2666e6') }}</div>
         </q-card-section>
       </q-card>
     </div>

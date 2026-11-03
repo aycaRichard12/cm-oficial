@@ -26,13 +26,13 @@
               class="text-h6 text-weight-bolder"
               style="font-family: 'Inter', sans-serif; line-height: 1.2"
             >
-              Método de Pago
+              {{ $t('ui.metodo-de-pago-112f5f') }}
             </div>
             <div
               class="text-caption text-weight-medium gt-xs"
               style="color: rgba(255, 255, 255, 0.8)"
             >
-              Configure la modalidad y detalles del pago
+              {{ $t('ui.configure-la-modalidad-y-detalles-del-pago-43371f') }}
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
                 style="padding: 4px 12px"
               >
                 <q-icon name="payments" size="18px" />
-                <span>Efectivo</span>
+                <span>{{ $t('ui.efectivo-4a9fab') }}</span>
               </div>
             </template>
 
@@ -82,7 +82,7 @@
                 style="padding: 4px 12px"
               >
                 <q-icon name="credit_score" size="18px" />
-                <span>Crédito</span>
+                <span>{{ $t('ui.credito-f05ef4') }}</span>
               </div>
             </template>
           </q-btn-toggle>
@@ -95,11 +95,11 @@
               style="border-left: 4px solid #1976d2"
             >
               <q-icon name="payments" class="q-mr-sm" />
-              MODALIDAD: EFECTIVO
+              {{ $t('ui.modalidad-efectivo-045d82') }}
             </div>
 
             <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-              Total: {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
+              {{ $t('ui.total-d8e717') }} {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
             </div>
           </div>
 
@@ -108,14 +108,14 @@
               v-model="carritoLocal.variablePago"
               val="directo"
               color="positive"
-              label="Pago Único"
+              :label="$t('ui.pago-unico-fc784b')"
               class="text-weight-bolder text-subtitle2"
             />
             <q-radio
               v-model="carritoLocal.variablePago"
               val="dividido"
               color="orange-8"
-              label="Pago Dividido"
+              :label="$t('ui.pago-dividido-1f5506')"
               class="text-weight-bolder text-subtitle2"
             />
           </div>
@@ -129,7 +129,7 @@
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 12px"
               >
-                Método de pago principal <span class="text-negative">*</span>
+                {{ $t('ui.metodo-de-pago-principal-d3756d') }} <span class="text-negative">*</span>
               </label>
               <q-select
                 v-model="carritoLocal.metodoPago"
@@ -141,7 +141,7 @@
                 map-options
                 option-label="label"
                 option-value="value"
-                :rules="[(val) => !!val || 'Seleccione un método de pago']"
+                :rules="[(val) => !!val || $t('ui.seleccione-un-metodo-de-pago-77a850')]"
                 class="premium-input"
                 style="border-radius: 8px"
               >
@@ -155,7 +155,7 @@
           <div v-else-if="carritoLocal.variablePago === 'dividido'" class="q-pt-sm">
             <div class="text-caption cm-text-muted q-mb-md flex items-center">
               <q-icon name="info" size="xs" class="q-mr-xs" />
-              Distribuya el monto total entre diferentes métodos de pago.
+              {{ $t('ui.distribuya-el-monto-total-entre-diferentes-metodos-d-e790b4') }}
             </div>
 
             <div
@@ -166,7 +166,7 @@
               <div class="col-12 col-md-5">
                 <label
                   class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
-                  >Método de Pago *</label
+                  >{{ $t('ui.metodo-de-pago-6f04c3') }}</label
                 >
                 <q-select
                   v-model="payment.metodoPago"
@@ -178,7 +178,7 @@
                   map-options
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   hide-bottom-space
                   class="rounded-borders"
                 />
@@ -186,7 +186,7 @@
               <div class="col-12 col-md-3">
                 <label
                   class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
-                  >Monto ({{ divisaActiva.tipo }})</label
+                  >{{ $t('ui.monto-154bf6') }}{{ divisaActiva.tipo }})</label
                 >
                 <q-input
                   v-model="payment.monto"
@@ -195,7 +195,7 @@
                   outlined
                   bg-color="grey-1"
                   @update:model-value="calculateRemainingAmount(index)"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   hide-bottom-space
                   class="rounded-borders"
                 />
@@ -203,7 +203,7 @@
               <div class="col-12 col-md-3">
                 <label
                   class="text-weight-bold cm-text q-mb-xs block text-caption text-uppercase ls-1"
-                  >Porcentaje (%)</label
+                  >{{ $t('ui.porcentaje-452cef') }}</label
                 >
                 <q-input
                   v-model="payment.porcentaje"
@@ -212,7 +212,7 @@
                   outlined
                   bg-color="grey-1"
                   @update:model-value="calculateAmountFromPercentage(index)"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   hide-bottom-space
                   class="rounded-borders"
                 />
@@ -233,7 +233,7 @@
 
             <div class="flex justify-end q-mt-md">
               <q-btn
-                label="Añadir Método"
+                :label="$t('ui.anadir-metodo-b6d8a2')"
                 icon="add"
                 color="primary"
                 outline
@@ -255,7 +255,7 @@
                 <div class="row q-gutter-x-xl">
                   <div class="column">
                     <span class="text-caption cm-text-muted text-uppercase ls-1 font-bold"
-                      >Total Pagado</span
+                      >{{ $t('ui.total-pagado-38b2c1') }}</span
                     >
                     <span
                       class="text-h6 text-weight-bolder"
@@ -266,7 +266,7 @@
                   </div>
                   <div class="column">
                     <span class="text-caption cm-text-muted text-uppercase ls-1 font-bold"
-                      >Monto Pendiente</span
+                      >{{ $t('ui.monto-pendiente-5e9bde') }}</span
                     >
                     <span
                       class="text-h6 text-weight-bolder"
@@ -295,7 +295,7 @@
               class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
               style="font-size: 12px"
             >
-              Asignar a Caja o Banco <span class="text-negative">*</span>
+              {{ $t('ui.asignar-a-caja-o-banco-7feda9') }} <span class="text-negative">*</span>
             </label>
 
             <q-select
@@ -306,7 +306,7 @@
               emit-value
               map-options
               class="premium-input cm-surface"
-              :rules="[(val) => !!val || 'Campo requerido']"
+              :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               style="border-radius: 8px"
             >
               <template v-slot:prepend>
@@ -346,11 +346,11 @@
               style="border-left: 4px solid #1976d2"
             >
               <q-icon name="credit_score" class="q-mr-sm" />
-              MODALIDAD: CRÉDITO
+              {{ $t('ui.modalidad-credito-456d32') }}
             </div>
 
             <div class="bg-primary/10 text-primary q-px-md q-py-xs rounded-pill text-weight-bold">
-              Monto Total: {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
+              {{ $t('ui.monto-total-d3e85d') }} {{ decimas(carritoLocal.ventatotal) }} {{ divisaActiva.tipo }}
             </div>
           </div>
 
@@ -359,7 +359,7 @@
               <label
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
-                >Número de Cuotas *</label
+                >{{ $t('ui.numero-de-cuotas-a1fc8b') }}</label
               >
               <q-input
                 v-model="carritoLocal.cantidadPagos"
@@ -369,7 +369,7 @@
                 outlined
                 bg-color="white"
                 @update:model-value="(calculatePayments(), calculateDueDate())"
-                :rules="[(val) => (!!val && val > 0) || 'Requerido']"
+                :rules="[(val) => (!!val && val > 0) || $t('common.required')]"
                 class="rounded-borders"
               >
                 <template v-slot:prepend
@@ -382,7 +382,7 @@
               <label
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
-                >Monto por Cuota</label
+                >{{ $t('ui.monto-por-cuota-6be916') }}</label
               >
               <q-input
                 v-model="carritoLocal.montoPagos"
@@ -403,7 +403,7 @@
               <label
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
-                >Frecuencia de Pago *</label
+                >{{ $t('ui.frecuencia-de-pago-c5e539') }}</label
               >
               <q-select
                 v-model="carritoLocal.periodo"
@@ -427,7 +427,7 @@
               <label
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
-                >Plazo Total (Días) *</label
+                >{{ $t('ui.plazo-total-dias-7f3667') }}</label
               >
               <q-input
                 v-model="carritoLocal.plazoPersonalizado"
@@ -436,7 +436,7 @@
                 outlined
                 bg-color="white"
                 @update:model-value="calculateDueDate"
-                :rules="[(val) => !!val || 'Requerido']"
+                :rules="[(val) => !!val || $t('common.required')]"
                 class="rounded-borders"
               >
                 <template v-slot:prepend><q-icon name="edit_calendar" color="primary" /></template>
@@ -447,7 +447,7 @@
               <label
                 class="text-weight-bold cm-text q-mb-sm block text-uppercase ls-1"
                 style="font-size: 11px"
-                >Fecha de Vencimiento Estimada</label
+                >{{ $t('ui.fecha-de-vencimiento-estimada-4aa486') }}</label
               >
               <q-input
                 v-model="carritoLocal.fechaLimite"
@@ -465,8 +465,7 @@
           <div class="q-mt-xl q-pa-md bg-blue-50 rounded-borders border-blue flex items-center">
             <q-icon name="info" color="primary" size="sm" class="q-mr-md" />
             <div class="text-caption text-blue-9 text-weight-medium">
-              La fecha de vencimiento se calcula automáticamente según la frecuencia y el número de
-              cuotas desde la fecha de emisión.
+              {{ $t('ui.la-fecha-de-vencimiento-se-calcula-automaticamente-s-9d5056') }}
             </div>
           </div>
         </div>
@@ -477,14 +476,14 @@
       <q-card-actions align="right" class="q-pa-md q-pa-sm-sm cm-surface shrink-0 shadow-up-1">
         <q-btn
           flat
-          label="Regresar"
+          :label="$t('ui.regresar-9e5b8e')"
           color="grey-8"
           v-close-popup
           class="q-px-md text-weight-bold rounded-pill"
         />
         <q-btn
           unelevated
-          label="Confirmar Cotización"
+          :label="$t('ui.confirmar-cotizacion-b27d2d')"
           color="primary"
           icon="task_alt"
           class="q-px-lg text-weight-bolder shadow-3 transition-all transform hover:scale-105 full-width-xs"

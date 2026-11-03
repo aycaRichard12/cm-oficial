@@ -3,7 +3,7 @@
     id="acciontablaanulacion"
     v-model="accionSeleccionada"
     :options="opciones"
-    label="Acción"
+    :label="$t('ui.accion-d7927a')"
     dense
     emit-value
     map-options

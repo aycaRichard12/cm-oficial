@@ -6,11 +6,11 @@
       <!-- Descripción del producto (solo lectura) -->
       <div class="row q-col-gutter-x-md">
         <div class="col-12 col-md-4">
-          <label for="descripcion">Descripción del producto*</label>
+          <label for="descripcion">{{ $t('ui.descripcion-del-producto-2d2cdb') }}</label>
           <q-input v-model="localData.descripcion" disable required dense outlined />
         </div>
         <div class="col-12 col-md-4">
-          <label for="precioactual">Costo unitario actual del producto*</label>
+          <label for="precioactual">{{ $t('ui.costo-unitario-actual-del-producto-257471') }}</label>
           <q-input v-model="localData.precioactual" disable required dense outlined>
             <template #append>
               <q-icon name="attach_money" />
@@ -18,13 +18,13 @@
           </q-input>
         </div>
         <div class="col-12 col-md-4">
-          <label for="precio">Nuevo costo unitario del producto*</label>
+          <label for="precio">{{ $t('ui.nuevo-costo-unitario-del-producto-29c7ba') }}</label>
           <q-input
             v-model="localData.precio"
             dense
             outlined
             type="number"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           >
             <template #append>
               <q-icon name="attach_money" />
@@ -34,14 +34,15 @@
       </div>
 
       <q-card-actions class="row flex justify-start">
-        <q-btn label="Guardar" type="button" color="primary" @click="onSubmit" />
-        <q-btn label="Cancelar" flat color="negative" @click="$emit('cancel')" />
+        <q-btn :label="$t('common.save')" type="button" color="primary" @click="onSubmit" />
+        <q-btn :label="$t('common.cancel')" flat color="negative" @click="$emit('cancel')" />
       </q-card-actions>
     </q-form>
   </div>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, defineProps, defineEmits } from 'vue'
 import { useQuasar } from 'quasar'
 const emit = defineEmits(['submit', 'cancel'])
@@ -68,16 +69,16 @@ watch(
 
 const onSubmit = async () => {
   $q.dialog({
-    title: 'Advertencia',
+    title: i18nT('ui.advertencia-c29238'),
     message:
-      'Los precios de venta según Categorías de Precios existentes serán actualizados automáticamente.',
+      i18nT('ui.los-precios-de-venta-segun-categorias-de-precios-exi-a6fded'),
     persistent: true,
     ok: {
-      label: 'Aceptar',
+      label: i18nT('ui.aceptar-8f9f73'),
       color: 'primary',
     },
     cancel: true,
-    cancelLabel: 'Cancelar',
+    cancelLabel: i18nT('common.cancel'),
     cancelColor: 'negative',
   }).onOk(async () => {
     const isValid = await form.value.validate()

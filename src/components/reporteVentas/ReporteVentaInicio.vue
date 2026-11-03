@@ -2,12 +2,12 @@
   <q-table
     flat
     bordered
-    title="Ventas de Hoy "
+    :title="$t('ui.ventas-de-hoy-8a09d1')"
     :rows="rows"
     :columns="columns"
     row-key="id"
     :pagination="pagination"
-    no-data-label="No hay ninguna venta"
+    :no-data-label="$t('ui.no-hay-ninguna-venta-f935cd')"
   >
     <template v-slot:body-cell-tipoventa="props">
       <q-td :props="props">
@@ -22,7 +22,7 @@
           size="sm"
           dense
           @click="verComprobante(props.row)"
-          title="VER COMPROBANTE"
+          :title="$t('ui.ver-comprobante-6a074f')"
         />
         <q-btn
           v-if="props.row.tipoventa == 1"
@@ -41,7 +41,7 @@
     </template>
     <template v-slot:bottom-row>
       <q-tr>
-        <q-td colspan="3" class="text-right text-bold">Total:</q-td>
+        <q-td colspan="3" class="text-right text-bold">{{ $t('ui.total-d8e717') }}</q-td>
         <q-td class="text-right text-bold"
           >{{ decimas(cantidadTotal) }} {{ divisaActiva.simbolo }}</q-td
         >
@@ -51,7 +51,7 @@
   <q-dialog v-model="mostrarModal" full-width full-height>
     <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
+        <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
         <q-space />
         <q-btn flat round icon="close" @click="mostrarModal = false" />
       </q-card-section>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
@@ -95,17 +96,17 @@ const tipo = {
   24: 'Nota de Crédito-Débido',
 }
 const columns = [
-  { name: 'nfactura', label: 'N° Fact', field: 'nfactura', align: 'center' },
+  { name: 'nfactura', label: i18nT('ui.n-fact-ecc729'), field: 'nfactura', align: 'center' },
   {
     name: 'cliente',
-    label: 'Razon social',
+    label: i18nT('ui.razon-social-3c914d'),
     align: 'left',
     field: (row) => row.cliente.split('-')[0],
   },
-  { name: 'tipoventa', label: 'Tipo-Venta', field: 'tipoventa' },
+  { name: 'tipoventa', label: i18nT('ui.tipo-venta-96e441'), field: 'tipoventa' },
   {
     name: 'ventatotal',
-    label: 'Monto',
+    label: i18nT('ui.monto-835dcd'),
     field: (row) => decimas(row.ventatotal) + ' ' + divisaActiva.simbolo,
     align: 'right',
   },
@@ -131,7 +132,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -156,7 +157,7 @@ const getDetalleVenta = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -167,7 +168,7 @@ const verComprobante = async (id) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Venta sin items',
+      message: i18nT('ui.venta-sin-items-9c9323'),
     })
   }
 }

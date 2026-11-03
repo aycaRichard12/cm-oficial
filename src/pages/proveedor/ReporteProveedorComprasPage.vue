@@ -5,7 +5,7 @@
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>
           <q-icon name="shopping_cart" size="sm" class="q-mr-sm" />
-          Reportes de Compras según Proveedor
+          {{ $t('ui.reportes-de-compras-segun-proveedor-2c613e') }}
         </q-toolbar-title>
       </q-toolbar>
 
@@ -17,7 +17,7 @@
             <q-select
               v-model="selectedProveedor"
               :options="proveedoresOptions"
-              label="Proveedor"
+              :label="$t('compras.supplier')"
               dense
               outlined
               use-input
@@ -31,7 +31,7 @@
               </template>
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                  <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -44,8 +44,8 @@
               type="date"
               dense
               outlined
-              label="Fecha Inicial *"
-              :rules="[(val) => !!val || 'Fecha inicial requerida']"
+              :label="$t('ui.fecha-inicial-4e1b5c')"
+              :rules="[(val) => !!val || $t('ui.fecha-inicial-requerida-8ce168')]"
               class="full-width"
             >
               <template v-slot:prepend>
@@ -61,8 +61,8 @@
               type="date"
               dense
               outlined
-              label="Fecha Final *"
-              :rules="[(val) => !!val || 'Fecha final requerida']"
+              :label="$t('ui.fecha-final-c5ac08')"
+              :rules="[(val) => !!val || $t('ui.fecha-final-requerida-0fd8d4')]"
               class="full-width"
             >
               <template v-slot:prepend>
@@ -75,7 +75,7 @@
           <div class="col-12 col-md-2 flex items-end" id="generarReporte">
             <q-btn
               color="primary"
-              label="Generar"
+              :label="$t('ui.generar-1f31a1')"
               icon="search"
               :loading="loading"
               :disable="!fechaInicio || !fechaFin || !selectedProveedor"
@@ -93,7 +93,7 @@
           <div class="col-auto">
             <q-btn
               color="positive"
-              label="Exportar a Excel"
+              :label="$t('ui.exportar-a-excel-1569c7')"
               icon="file_download"
               @click="generarExcel"
               flat
@@ -103,7 +103,7 @@
           <div class="col-auto">
             <q-btn
               color="info"
-              label="Previsualizar PDF"
+              :label="$t('ui.previsualizar-pdf-05088d')"
               icon="picture_as_pdf"
               @click="generarPDF"
               flat
@@ -118,7 +118,7 @@
         <BaseFilterableTable
           id="reporteCompras"
           ref="miTabla"
-          title="Listado de Compras"
+          :title="$t('ui.listado-de-compras-bd877e')"
           :rows="filteredCompras"
           :columns="columnas"
           :array-headers="arrayHeaders"
@@ -162,7 +162,7 @@
                 @click="verDetallePDF(props.row.idIngreso)"
                 :loading="loadingDetalle && selectedIdIngreso === props.row.idIngreso"
               >
-                <q-tooltip>Ver Detalle en PDF</q-tooltip>
+                <q-tooltip>{{ $t('ui.ver-detalle-en-pdf-99192a') }}</q-tooltip>
               </q-btn>
             </q-td>
           </template>
@@ -176,7 +176,7 @@
         <q-toolbar class="bg-primary text-white">
           <q-toolbar-title>
             <q-icon name="picture_as_pdf" size="sm" class="q-mr-sm" />
-            Detalle de Compra - PDF
+            {{ $t('ui.detalle-de-compra-pdf-a9e657') }}
           </q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
@@ -186,7 +186,7 @@
             v-if="pdfUrl"
             :src="pdfUrl"
             style="width: 100%; height: 100%; border: none"
-            title="Detalle de Compra PDF"
+            :title="$t('ui.detalle-de-compra-pdf-02d641')"
           />
         </q-card-section>
       </q-card>
@@ -195,6 +195,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 
 import { useReporteProveedorCompras } from 'src/composables/useReporteProveedorCompras'
@@ -243,44 +244,44 @@ const sumColumns = ['totalIngreso']
 const columnas = [
   {
     name: 'num',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'num',
     align: 'center',
   },
   {
     name: 'codigoProveedor',
-    label: 'Código Proveedor',
+    label: i18nT('ui.codigo-proveedor-7b6f12'),
     field: 'codigoProveedor',
     align: 'left',
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
   },
   {
     name: 'fechaIngreso',
-    label: 'Fecha Ingreso',
+    label: i18nT('ui.fecha-ingreso-83de8b'),
     field: 'fechaIngreso',
     align: 'center',
     format: (val) => cambiarFormatoFecha(val),
   },
   {
     name: 'nombreIngreso',
-    label: 'Nombre Ingreso',
+    label: i18nT('ui.nombre-ingreso-71bfbd'),
     field: 'nombreIngreso',
     align: 'left',
   },
   {
     name: 'nFactura',
-    label: 'N° Factura',
+    label: i18nT('ui.n-factura-5a62ff'),
     field: 'nFactura',
     align: 'center',
   },
   {
     name: 'nombreAlmacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'nombreAlmacen',
     align: 'left',
   },
@@ -294,7 +295,7 @@ const columnas = [
   },
   {
     name: 'autorizacion',
-    label: 'Autorización',
+    label: i18nT('ui.autorizacion-077400'),
     field: 'autorizacion',
     align: 'center',
     dataType: 'text',
@@ -304,14 +305,14 @@ const columnas = [
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     align: 'center',
     dataType: 'text',
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'center',
   },
@@ -388,7 +389,7 @@ const generarReporte = async () => {
   } else {
     $q.notify({
       type: 'warning',
-      message: 'No se encontraron compras para el proveedor en este rango de fechas',
+      message: i18nT('ui.no-se-encontraron-compras-para-el-proveedor-en-este-8d9161'),
       position: 'top-right',
       timeout: 2000,
     })
@@ -398,7 +399,7 @@ const generarReporte = async () => {
 const generarPDF = () => {
   if (filteredCompras.value.length === 0) {
     $q.notify({
-      message: 'No hay datos para generar el reporte',
+      message: i18nT('ui.no-hay-datos-para-generar-el-reporte-5a1bf6'),
       color: 'warning',
       icon: 'warning',
     })
@@ -433,7 +434,7 @@ const generarPDF = () => {
 const generarExcel = () => {
   if (filteredCompras.value.length === 0) {
     $q.notify({
-      message: 'No hay datos para exportar',
+      message: i18nT('ui.no-hay-datos-para-exportar-e911a2'),
       color: 'warning',
       icon: 'warning',
     })
@@ -455,7 +456,7 @@ const generarExcel = () => {
 
   const ws = XLSX.utils.json_to_sheet(dataToExport)
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Compras')
+  XLSX.utils.book_append_sheet(wb, ws, i18nT('ui.compras-43a802'))
 
   XLSX.writeFile(wb, `Reporte_Compras_${fechaInicio.value}_${fechaFin.value}.xlsx`)
 }
@@ -518,7 +519,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos de proveedores',
+      message: i18nT('ui.no-se-pudieron-cargar-los-datos-de-proveedores-cdc702'),
     })
   }
 }

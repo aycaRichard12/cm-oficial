@@ -4,7 +4,7 @@
       <q-toolbar class="bg-primary text-white">
         <q-toolbar-title>
           <q-icon name="picture_as_pdf" size="sm" class="q-mr-sm" />
-          Previsualización PDF
+          {{ $t('ui.previsualizacion-pdf-ac4869') }}
         </q-toolbar-title>
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
@@ -15,7 +15,7 @@
           :src="pdfUrl"
           class="full-width full-height"
           style="border: none; min-height: calc(100vh - 50px)"
-          title="Previsualización PDF"
+          :title="$t('ui.previsualizacion-pdf-ac4869')"
         />
       </q-card-section>
     </q-card>

@@ -4,10 +4,10 @@
       <div class="col-12">
         <q-input
           v-model="localForm.serie"
-          label="Nombre de la Serie *"
+          :label="$t('ui.nombre-de-la-serie-f74d89')"
           outlined
           dense
-          :rules="[(val) => !!val || 'El nombre es obligatorio']"
+          :rules="[(val) => !!val || $t('ui.el-nombre-es-obligatorio-6043d7')]"
         />
       </div>
 
@@ -15,7 +15,7 @@
         <q-select
           v-model="localForm.producto_idproducto"
           :options="productosOptions"
-          label="Producto"
+          :label="$t('inventario.product')"
           outlined
           dense
           emit-value
@@ -29,7 +29,7 @@
 
       <div class="col-12" v-if="localForm.producto_idproducto">
         <BaseFilterableTable
-          title="Seleccione las variantes"
+          :title="$t('ui.seleccione-las-variantes-c5d1f3')"
           v-model:selected="selectedRows"
           :rows="filteredVariantesOptions"
           :columns="variantColumns"
@@ -43,7 +43,7 @@
           filterMode="client"
         >
           <template v-slot:top>
-            <div class="text-subtitle2">Seleccione las variantes</div>
+            <div class="text-subtitle2">{{ $t('ui.seleccione-las-variantes-c5d1f3') }}</div>
             <q-space />
             <q-chip
               v-if="quickSearchAttr"
@@ -91,19 +91,20 @@
           v-model="localForm.estado"
           :true-value="1"
           :false-value="0"
-          label="Estado Activo"
+          :label="$t('ui.estado-activo-3dc4c0')"
         />
       </div>
     </div>
 
     <div class="row justify-end q-mt-md q-gutter-sm">
-      <q-btn label="Cancelar" color="negative" flat @click="$emit('cancel')" />
-      <q-btn label="Guardar" type="submit" color="primary" />
+      <q-btn :label="$t('common.cancel')" color="negative" flat @click="$emit('cancel')" />
+      <q-btn :label="$t('common.save')" type="submit" color="primary" />
     </div>
   </q-form>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed } from 'vue'
 import { apiP } from 'boot/axios'
 import { useQuasar } from 'quasar'
@@ -169,15 +170,15 @@ const filteredVariantesOptions = computed(() => {
 })
 
 const variantColumns = [
-  { name: 'label', label: 'Variante', field: 'label', align: 'left', sortable: true },
+  { name: 'label', label: i18nT('ui.variante-f51a07'), field: 'label', align: 'left', sortable: true },
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
   {
     name: 'atributos',
-    label: 'Atributos',
+    label: i18nT('ui.atributos-bd9731'),
     field: (row) => row.valores.map((v) => `${v.atributo}: ${v.valor}`).join(', '),
     align: 'left',
   },
-  { name: 'precio', label: 'Precio', field: 'precio', align: 'left', sortable: true },
+  { name: 'precio', label: i18nT('ui.precio-18e070'), field: 'precio', align: 'left', sortable: true },
 ]
 
 const cargarVariantes = async (idproducto) => {
@@ -203,7 +204,7 @@ const cargarVariantes = async (idproducto) => {
     selectedRows.value = variantesOptions.value.filter((v) => idsSeleccionados.includes(v.value))
   } catch (error) {
     console.error('Error al cargar variantes', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar variantes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-variantes-034de5') })
   } finally {
     cargandoVariantes.value = false
   }

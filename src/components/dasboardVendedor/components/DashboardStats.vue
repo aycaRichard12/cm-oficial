@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 import { useStockStore } from '../store/stockStore'
 //import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -23,46 +24,46 @@ const store = useStockStore()
 
 const kpis = computed(() => [
   {
-    title: 'Total Productos',
+    title: i18nT('ui.total-productos-2b18bc'),
     icon: 'inventory',
     color: 'blue',
     value: store.totalProductos,
-    subtitle: 'Activos en almacén',
+    subtitle: i18nT('ui.activos-en-almacen-eaec44'),
   },
   {
-    title: 'Disponibles',
+    title: i18nT('ui.disponibles-61af94'),
     icon: 'check_circle',
     color: 'green',
     value: store.productosDisponibles,
-    subtitle: 'Stock > 15',
+    subtitle: i18nT('ui.stock-15-92110a'),
   },
   {
-    title: 'Stock Bajo',
+    title: i18nT('ui.stock-bajo-2c94db'),
     icon: 'warning',
     color: 'yellow',
     value: store.productosStockBajo,
-    subtitle: '5 a 15 unidades',
+    subtitle: i18nT('ui.5-a-15-unidades-210bc2'),
   },
   {
-    title: 'Stock Crítico',
+    title: i18nT('ui.stock-critico-679f22'),
     icon: 'error',
     color: 'orange',
     value: store.productosStockCritico,
-    subtitle: '< 5 unidades',
+    subtitle: i18nT('ui.5-unidades-0ade8c'),
   },
   {
-    title: 'Agotados',
+    title: i18nT('ui.agotados-ec43f2'),
     icon: 'highlight_off',
     color: 'red',
     value: store.productosAgotados,
-    subtitle: 'Stock = 0',
+    subtitle: i18nT('ui.stock-0-97283b'),
   },
   {
-    title: 'Valor Inventario',
+    title: i18nT('ui.valor-inventario-a8fb07'),
     icon: 'attach_money',
     color: 'teal',
     value: store.valorTotalInventario,
-    subtitle: 'Precio venta',
+    subtitle: i18nT('ui.precio-venta-1d5cc1'),
   },
 ])
 </script>

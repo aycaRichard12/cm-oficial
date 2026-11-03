@@ -12,7 +12,7 @@
       @touchend.prevent="stopDrawing"
     ></canvas>
     <div class="row justify-between q-mt-sm">
-      <q-btn flat color="negative" label="Limpiar" @click="clearCanvas" />
+      <q-btn flat color="negative" :label="$t('ui.limpiar-f3b225')" @click="clearCanvas" />
       <!-- El botón de guardar se manejará desde el padre accediendo al método save -->
     </div>
   </div>

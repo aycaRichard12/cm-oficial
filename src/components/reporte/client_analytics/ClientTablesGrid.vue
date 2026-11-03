@@ -6,10 +6,10 @@
         <q-card-section>
           <div class="text-h6">
             <q-icon name="check_circle" class="q-mr-sm" color="positive" />
-            Clientes Activos - Predicción de Próxima Compra
+            {{ $t('ui.clientes-activos-prediccion-de-proxima-compra-68b1c6') }}
           </div>
           <div class="text-caption text-grey-6">
-            Clientes que compraron en los últimos 30 días
+            {{ $t('ui.clientes-que-compraron-en-los-ultimos-30-dias-59c21f') }}
           </div>
         </q-card-section>
         <q-card-section>
@@ -32,13 +32,13 @@
                 <q-badge
                   v-if="props.row.proxima_compra_prediccion"
                   color="positive"
-                  :label="`${props.row.proxima_compra_prediccion} (en ${props.row.dias_hasta_proxima_compra} días)`"
+                  :label="`${props.row.proxima_compra_prediccion} ${$t('ui.en-n-dias-6f0a2b', { n: props.row.dias_hasta_proxima_compra })}`"
                 >
-                  <q-tooltip> Basado en promedio de intervalos entre compras </q-tooltip>
+                  <q-tooltip> {{ $t('ui.basado-en-promedio-de-intervalos-entre-compras-6193e7') }} </q-tooltip>
                 </q-badge>
-                <q-badge v-else color="grey-5" label="Requiere 2+ compras">
+                <q-badge v-else color="grey-5" :label="$t('ui.requiere-2-compras-a3933a')">
                   <q-tooltip>
-                    Se necesitan al menos 2 compras para calcular predicción
+                    {{ $t('ui.se-necesitan-al-menos-2-compras-para-calcular-predic-aa4d6e') }}
                   </q-tooltip>
                 </q-badge>
               </q-td>
@@ -61,10 +61,10 @@
             <div class="col">
               <div class="text-h6">
                 <q-icon name="person_off" class="q-mr-sm" color="negative" />
-                Clientes Inactivos
+                {{ $t('ui.clientes-inactivos-1c238a') }}
               </div>
               <div class="text-caption text-grey-6">
-                Clientes sin compra en {{ diasInactivosTabla }} días o más
+                {{ $t('ui.clientes-sin-compra-en-716b2a') }} {{ diasInactivosTabla }} {{ $t('ui.dias-o-mas-b54a7d') }}
               </div>
             </div>
             <div class="col-auto">
@@ -72,7 +72,7 @@
                 :model-value="diasInactivosTabla"
                 @update:model-value="$emit('update:diasInactivosTabla', $event)"
                 :options="[30, 60, 90, 120, 180]"
-                label="Días sin compra"
+                :label="$t('ui.dias-sin-compra-ed0f5d')"
                 dense
                 outlined
                 style="min-width: 150px"
@@ -113,6 +113,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   tablaClientesActivos: Array,
   tablaClientesInactivos: Array,
@@ -122,33 +123,33 @@ defineProps({
 defineEmits(['update:diasInactivosTabla'])
 
 const columnasInactivos = [
-  { name: 'nombre', label: 'Cliente', field: 'nombre', align: 'left', sortable: true },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'left', sortable: true },
+  { name: 'nombre', label: i18nT('ventas.client'), field: 'nombre', align: 'left', sortable: true },
+  { name: 'telefono', label: i18nT('ui.telefono-99af37'), field: 'telefono', align: 'left', sortable: true },
   {
     name: 'ultima_compra_formatted',
-    label: 'Última Compra',
+    label: i18nT('ui.ultima-compra-bceff9'),
     field: 'ultima_compra_formatted',
     align: 'center',
     sortable: true,
   },
   {
     name: 'dias_sin_compra',
-    label: 'Días sin Compra',
+    label: i18nT('ui.dias-sin-compra-2e95ee'),
     field: 'dias_sin_compra',
     align: 'center',
     sortable: true,
   },
   {
     name: 'total_compras',
-    label: 'Total Compras',
+    label: i18nT('ui.total-compras-fb8375'),
     field: 'total_compras',
     align: 'center',
     sortable: true,
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', sortable: true },
   {
     name: 'prediccion',
-    label: 'Próxima Compra',
+    label: i18nT('ui.proxima-compra-538044'),
     field: 'proxima_compra_prediccion',
     align: 'center',
     sortable: false,
@@ -156,33 +157,33 @@ const columnasInactivos = [
 ]
 
 const columnasActivos = [
-  { name: 'nombre', label: 'Cliente', field: 'nombre', align: 'left', sortable: true },
-  { name: 'telefono', label: 'Teléfono', field: 'telefono', align: 'left', sortable: true },
+  { name: 'nombre', label: i18nT('ventas.client'), field: 'nombre', align: 'left', sortable: true },
+  { name: 'telefono', label: i18nT('ui.telefono-99af37'), field: 'telefono', align: 'left', sortable: true },
   {
     name: 'ultima_compra_formatted',
-    label: 'Última Compra',
+    label: i18nT('ui.ultima-compra-bceff9'),
     field: 'ultima_compra_formatted',
     align: 'center',
     sortable: true,
   },
   {
     name: 'total_compras',
-    label: 'Total Compras',
+    label: i18nT('ui.total-compras-fb8375'),
     field: 'total_compras',
     align: 'center',
     sortable: true,
   },
   {
     name: 'frecuencia_compra',
-    label: 'Frecuencia',
+    label: i18nT('ui.frecuencia-57f1dd'),
     field: 'frecuencia_compra',
     align: 'center',
     sortable: true,
   },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center', sortable: true },
   {
     name: 'prediccion',
-    label: 'Próxima Compra Estimada',
+    label: i18nT('ui.proxima-compra-estimada-03e8a2'),
     field: 'proxima_compra_prediccion',
     align: 'center',
     sortable: true,

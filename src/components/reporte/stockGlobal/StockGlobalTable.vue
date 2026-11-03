@@ -2,7 +2,7 @@
   <q-card v-if="rows.length" class="q-mt-md">
     <BaseFilterableTable
       ref="baseTableRef"
-      title="Stock De Productos"
+      :title="$t('ui.stock-de-productos-c299f8')"
       :rows="rows"
       :columns="visibleColumns"
       :arrayHeaders="visibleHeaders"

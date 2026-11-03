@@ -30,6 +30,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 defineProps({
   videoUrl: {
     type: String,
@@ -37,7 +38,7 @@ defineProps({
   },
   title: {
     type: String,
-    default: 'Video de Novedades'
+    default: i18nT('ui.video-de-novedades-4661a1')
   },
   badge: {
     type: String,

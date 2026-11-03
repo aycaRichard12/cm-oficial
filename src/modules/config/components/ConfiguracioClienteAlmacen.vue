@@ -124,7 +124,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="dialogType === 'error' ? t('configuracion.clienteAlmacen.dialog.okButtonError') : t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
+          :label="dialogType === $t('ui.error-11f957') ? t('configuracion.clienteAlmacen.dialog.okButtonError') : t('configuracion.clienteAlmacen.dialog.okButtonSuccess')"
           :color="dialogType === 'error' ? 'negative' : 'positive'"
           v-close-popup
           class="q-px-md"

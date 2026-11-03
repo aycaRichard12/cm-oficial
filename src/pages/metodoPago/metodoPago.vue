@@ -5,17 +5,17 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para métodos de pago y transacciones -->
           <q-icon name="payments" size="md" class="q-mr-sm" />
-          Métodos de Pago
+          {{ $t('ui.metodos-de-pago-25ac5f') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de formas de pago para facturación
+          {{ $t('ui.administracion-de-formas-de-pago-para-facturacion-8a71a2') }}
         </div>
       </div>
     </div>
     <q-dialog v-model="showForm" persistent class="responsive-dialog">
       <q-card class="responsive-dialog">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Metodo Pago</div>
+          <div class="text-h6">{{ $t('ui.metodo-pago-122001') }}</div>
           <q-space />
           <q-btn icon="close" flat round v-close-popup @click="toggleForm" />
         </q-card-section>
@@ -27,18 +27,18 @@
             class="row q-col-gutter-x-md"
           >
             <div class="col-12 col-md-6">
-              <label for="nombre">Nombre del Método de Pago</label>
+              <label for="nombre">{{ $t('ui.nombre-del-metodo-de-pago-d6f490') }}</label>
               <q-input
                 v-model="form.nombre"
                 id="nombre"
                 outlined
                 dense
                 color="warning"
-                :rules="[(val) => !!val || 'El nombre es requerido']"
+                :rules="[(val) => !!val || $t('ui.el-nombre-es-requerido-f0a0af')]"
               />
             </div>
             <div class="col-12 col-md-6" v-if="tipoFactura">
-              <label for="descripcion">Descripción SIN</label>
+              <label for="descripcion">{{ $t('ui.descripcion-sin-f34e43') }}</label>
               <q-select
                 v-model="form.descripcionSIN"
                 :options="filteredMetodosPagoSin"
@@ -53,11 +53,11 @@
                 option-label="descripcion"
                 input-debounce="0"
                 @filter="filterFn"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
               >
                 <template v-slot:no-option>
                   <q-item>
-                    <q-item-section class="text-grey">No hay opciones</q-item-section>
+                    <q-item-section class="text-grey">{{ $t('ui.no-hay-opciones-42f5ac') }}</q-item-section>
                   </q-item>
                 </template>
               </q-select>
@@ -66,7 +66,7 @@
             <q-input
               v-if="false"
               v-model="form.codigoSIN"
-              label="Código SIN (auto-relleno)"
+              :label="$t('ui.codigo-sin-auto-relleno-68486b')"
               outlined
               dense
               disable
@@ -77,12 +77,12 @@
               <q-btn
                 v-if="showForm"
                 type="submit"
-                label="Guardar"
+                :label="$t('common.save')"
                 color="positive"
                 class="q-mt-md q-ml-sm"
               />
               <q-btn
-                label="Cancelar"
+                :label="$t('common.cancel')"
                 flat
                 round
                 v-close-popup
@@ -101,18 +101,18 @@
         @click="toggleForm"
         class="btn-res q-ma-lg"
         id="agregarCanalDeVenta"
-        title="Registrar Leyenda"
+        :title="$t('configGeneral.leyenda.table.addTitle')"
       >
         <q-icon name="add" class="icono" />
         <span class="texto">
-          <q-icon name="add" /> {{ mostrarFormulario ? 'Cancelar Registro' : 'Nuevo' }}
+          <q-icon name="add" /> {{ mostrarFormulario ? $t('ui.cancelar-registro-2dee20') : $t('common.new') }}
         </span>
       </q-btn>
     </div>
 
     <q-table
       class=""
-      title="Metodos de Pagos"
+      :title="$t('ui.metodos-de-pagos-fbb9d4')"
       :rows="filteredMetodosPago"
       :columns="columns"
       row-key="id"
@@ -124,7 +124,7 @@
       <template v-slot:top-right>
         <q-input
           v-model="searchTerm"
-          placeholder="Buscar..."
+          :placeholder="$t('common.search')"
           dense
           outlined
           debounce="300"
@@ -149,8 +149,8 @@
           </template> -->
       <template v-slot:body-cell-estado="props">
         <q-td align="center">
-          <q-badge color="green" v-if="Number(props.row.estado) === 1" label="Activo" outline />
-          <q-badge color="red" v-else label="Inactivo" outline />
+          <q-badge color="green" v-if="Number(props.row.estado) === 1" :label="$t('common.active')" outline />
+          <q-badge color="red" v-else :label="$t('common.inactive')" outline />
         </q-td>
       </template>
       <template v-slot:body-cell-actions="props">
@@ -186,6 +186,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { peticionGET } from 'src/composables/peticionesFetch.js'
@@ -252,32 +253,32 @@ if (tipoFactura) {
   columns = [
     {
       name: 'index',
-      label: 'N°',
+      label: i18nT('cotizacion.table.number'),
       align: 'right',
       field: (row) => metodosPago.value.indexOf(row) + 1,
     },
-    { name: 'nombre', label: 'Nombre', align: 'left', field: 'nombre' },
+    { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), align: 'left', field: 'nombre' },
     {
       name: 'descripcionSIN',
-      label: 'Descripción SIN',
+      label: i18nT('ui.descripcion-sin-f34e43'),
       align: 'left',
       field: (row) => row.metodopagosin.descripcion,
     },
-    { name: 'estado', label: 'Estado', align: 'center', field: 'estado' },
-    { name: 'actions', label: 'Acciones', align: 'center', field: 'actions' },
+    { name: 'estado', label: i18nT('cotizacion.table.status'), align: 'center', field: 'estado' },
+    { name: 'actions', label: i18nT('common.actions'), align: 'center', field: 'actions' },
   ]
 } else {
   columns = [
     {
       name: 'index',
-      label: 'N°',
+      label: i18nT('cotizacion.table.number'),
       align: 'right',
       field: (row) => metodosPago.value.indexOf(row) + 1,
     },
-    { name: 'nombre', label: 'Nombre', align: 'left', field: 'nombre' },
+    { name: 'nombre', label: i18nT('configGeneral.tipoAlmacen.form.name'), align: 'left', field: 'nombre' },
 
-    { name: 'estado', label: 'Estado', align: 'center', field: 'estado' },
-    { name: 'actions', label: 'Acciones', align: 'center', field: 'actions' },
+    { name: 'estado', label: i18nT('cotizacion.table.status'), align: 'center', field: 'estado' },
+    { name: 'actions', label: i18nT('common.actions'), align: 'center', field: 'actions' },
   ]
 }
 
@@ -328,7 +329,7 @@ const getLeyendaSINOptions = async () => {
         console.error(resultado.error)
         $q.notify({
           type: 'negative',
-          message: 'Error al cargar opciones SIN.',
+          message: i18nT('ui.error-al-cargar-opciones-sin-cef09c'),
         })
       } else {
         leyendaSINOptions.value = resultado.data
@@ -340,7 +341,7 @@ const getLeyendaSINOptions = async () => {
     console.error('Error fetching SIN options:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al cargar opciones SIN.',
+      message: i18nT('ui.error-de-conexion-al-cargar-opciones-sin-5e6376'),
     })
   }
 }
@@ -360,7 +361,7 @@ const fetchMetodosPago = async () => {
       console.error(resultado.error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar métodos de pago.',
+        message: i18nT('ui.error-al-cargar-metodos-de-pago-b08957'),
       })
     } else {
       metodosPago.value = resultado
@@ -369,7 +370,7 @@ const fetchMetodosPago = async () => {
     console.error('Error fetching metodos de pago:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al cargar métodos de pago.',
+      message: i18nT('ui.error-de-conexion-al-cargar-metodos-de-pago-a76ef5'),
     })
   }
 }
@@ -400,7 +401,7 @@ const handleSubmit = async () => {
     if (data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: data.mensaje || 'Operación exitosa.',
+        message: data.mensaje || i18nT('ui.operacion-exitosa-319748'),
       })
       fetchMetodosPago()
       resetForm()
@@ -408,14 +409,14 @@ const handleSubmit = async () => {
     } else {
       $q.notify({
         type: 'negative',
-        message: data.mensaje || 'Error en la operación.',
+        message: data.mensaje || i18nT('ui.error-en-la-operacion-02096f'),
       })
     }
   } catch (error) {
     console.error('Error submitting form:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al guardar.',
+      message: i18nT('ui.error-de-conexion-al-guardar-c75295'),
     })
   }
 }
@@ -447,7 +448,7 @@ const editMetodoPago = async (metodo) => {
       } else {
         $q.notify({
           type: 'negative',
-          message: resultado.mensaje || 'No se pudo cargar el registro para editar.',
+          message: resultado.mensaje || i18nT('ui.no-se-pudo-cargar-el-registro-para-editar-812308'),
         })
       }
     } else {
@@ -464,15 +465,15 @@ const editMetodoPago = async (metodo) => {
     console.error('Error editing metodo pago:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al cargar datos para edición.',
+      message: i18nT('ui.error-de-conexion-al-cargar-datos-para-edicion-6bc3e2'),
     })
   }
 }
 
 const confirmDelete = (id) => {
   $q.dialog({
-    title: 'Confirmar Eliminación',
-    message: '¿Está seguro de que desea eliminar este registro? No podrá recuperarlo.',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
+    message: i18nT('ui.esta-seguro-de-que-desea-eliminar-este-registro-no-p-9dbfc6'),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -487,20 +488,20 @@ const deleteMetodoPago = async (id) => {
     if (resultado.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: resultado.mensaje || 'Registro eliminado exitosamente.',
+        message: resultado.mensaje || i18nT('ui.registro-eliminado-exitosamente-5e3672'),
       })
       fetchMetodosPago()
     } else {
       $q.notify({
         type: 'negative',
-        message: resultado.mensaje || 'Error al eliminar el registro.',
+        message: resultado.mensaje || i18nT('ui.error-al-eliminar-el-registro-e650cc'),
       })
     }
   } catch (error) {
     console.error('Error deleting metodo pago:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al eliminar.',
+      message: i18nT('ui.error-de-conexion-al-eliminar-921f9d'),
     })
   }
 }
@@ -512,20 +513,20 @@ const changeStatus = async (id, newStatus) => {
     if (resultado.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: resultado.mensaje || 'Estado actualizado exitosamente.',
+        message: resultado.mensaje || i18nT('ui.estado-actualizado-exitosamente-5c6c96'),
       })
       fetchMetodosPago()
     } else {
       $q.notify({
         type: 'negative',
-        message: resultado.mensaje || 'Error al actualizar el estado.',
+        message: resultado.mensaje || i18nT('ui.error-al-actualizar-el-estado-1f08eb'),
       })
     }
   } catch (error) {
     console.error('Error changing status:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al cambiar el estado.',
+      message: i18nT('ui.error-de-conexion-al-cambiar-el-estado-a4f30c'),
     })
   }
 }

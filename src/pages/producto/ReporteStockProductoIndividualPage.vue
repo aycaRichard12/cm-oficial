@@ -5,10 +5,10 @@
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <!-- Icono representativo para reportes de inventario detallado -->
           <q-icon name="analytics" size="md" class="q-mr-sm" />
-          Reporte de Stock Individual
+          {{ $t('ui.reporte-de-stock-individual-09d7e0') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Consulta detallada de existencias y movimientos por producto
+          {{ $t('ui.consulta-detallada-de-existencias-y-movimientos-por-367bef') }}
         </div>
       </div>
     </div>

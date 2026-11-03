@@ -276,6 +276,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { api } from 'src/boot/axios'
@@ -360,7 +361,7 @@ const fetchServices = async () => {
     console.error('Error al cargar servicios:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo cargar la lista de servicios',
+      message: i18nT('configuracion.servicios.messages.loadError'),
       icon: 'report_problem',
     })
   } finally {
@@ -414,14 +415,14 @@ const toggleStatus = async (row) => {
 
     $q.notify({
       type: 'positive',
-      message: `Estado actualizado a ${nuevoEstado == 1 ? 'Activo' : 'Inactivo'}`,
+      message: `Estado actualizado a ${nuevoEstado == 1 ? i18nT('common.active') : i18nT('common.inactive')}`,
       icon: 'check_circle',
     })
   } catch (error) {
     console.error('Error al cambiar estado:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo actualizar el estado',
+      message: i18nT('configuracion.servicios.messages.statusUpdateError'),
       icon: 'error',
     })
     // Revertir cambio en caso de error
@@ -457,8 +458,8 @@ const submitForm = async () => {
     $q.notify({
       type: 'positive',
       message: isEditing.value
-        ? 'Servicio actualizado correctamente'
-        : 'Servicio creado correctamente',
+        ? i18nT('configuracion.servicios.messages.updated')
+        : i18nT('configuracion.servicios.messages.saved'),
       icon: 'check_circle',
     })
 
@@ -468,7 +469,7 @@ const submitForm = async () => {
     console.error('Error al guardar servicio:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al procesar la solicitud',
+      message: i18nT('configuracion.servicios.messages.saveError'),
       icon: 'error',
     })
   } finally {
@@ -479,22 +480,22 @@ const submitForm = async () => {
 // Eliminar
 const handleDelete = (row) => {
   $q.dialog({
-    title: 'Eliminar Servicio',
+    title: i18nT('configuracion.servicios.messages.deleteTitle'),
     message: `¿Realmente deseas eliminar "${row.nombre}"? Esta acción no se puede deshacer.`,
-    ok: { label: 'Eliminar', color: 'negative', flat: true },
-    cancel: { label: 'Cancelar', color: 'grey-8', flat: true },
+    ok: { label: i18nT('common.delete'), color: 'negative', flat: true },
+    cancel: { label: i18nT('common.cancel'), color: 'grey-8', flat: true },
     persistent: true,
   }).onOk(async () => {
     loading.value = true
     try {
       await api.get(`services/eliminarServicio/${row.id}`)
-      $q.notify({ type: 'positive', message: 'Servicio eliminado correctamente', icon: 'delete' })
+      $q.notify({ type: 'positive', message: i18nT('configuracion.servicios.messages.deleteSuccess'), icon: 'delete' })
       fetchServices()
     } catch (error) {
       console.error('Error al eliminar servicio:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudo eliminar el servicio',
+        message: i18nT('configuracion.servicios.messages.deleteError'),
         icon: 'error',
       })
     } finally {

@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="local_shipping" size="md" class="q-mr-sm" />
-          Gestión de Proveedores
+          {{ $t('ui.gestion-de-proveedores-5acea9') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Directorio y administración de proveedores de la empresa
+          {{ $t('ui.directorio-y-administracion-de-proveedores-de-la-emp-ef9033') }}
         </div>
       </div>
     </div>
@@ -19,7 +19,7 @@
         <q-card-section class="bg-primary text-h6 text-white row items-center justify-between">
           <div>
             <q-icon name="local_shipping" class="q-mr-sm" />
-            {{ isEditing ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+            {{ isEditing ? $t('ui.editar-proveedor-bdc67d') : $t('ui.nuevo-proveedor-398c8a') }}
           </div>
           <q-btn icon="close" @click="toggleForm" flat dense round />
         </q-card-section>
@@ -37,17 +37,17 @@
     <q-dialog v-model="showImport" persistent>
       <q-card style="min-width: 350px">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Importar Proveedores</div>
+          <div class="text-h6">{{ $t('ui.importar-proveedores-813e63') }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup @click="resetForm" />
         </q-card-section>
 
         <q-card-section class="q-pt-md">
-          <p>Seleccione el archivo .xlsx o .csv con el formato requerido.</p>
+          <p>{{ $t('ui.seleccione-el-archivo-xlsx-o-csv-con-el-formato-requ-0ae9d9') }}</p>
 
           <q-file
             v-model="excelFile"
-            label="Elegir archivo Excel"
+            :label="$t('ui.elegir-archivo-excel-917dd0')"
             outlined
             accept=".xlsx, .xls, .csv"
             :loading="isUploading"
@@ -63,10 +63,10 @@
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancelar" v-close-popup @click="resetForm" />
+          <q-btn flat :label="$t('common.cancel')" v-close-popup @click="resetForm" />
           <q-btn
             color="primary"
-            label="Procesar Importación"
+            :label="$t('ui.procesar-importacion-0c6085')"
             :loading="isUploading"
             @click="procesarExcel"
           />
@@ -85,6 +85,7 @@
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import TableProveedor from 'src/components/proveedor/TableProveedor.vue'
 import FormProveedor from 'src/components/proveedor/FormProveedor.vue'
@@ -125,19 +126,19 @@ const guardarProveedor = async (data) => {
 
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Proveedor guardado correctamente',
+        message: response.data.mensaje || i18nT('configGeneral.divisas.messages.saved'),
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Hubo un problema al guardar el proveedor',
+        message: response.data.mensaje || i18nT('ui.hubo-un-problema-al-guardar-el-proveedor-b11718'),
       })
     }
   } catch (error) {
     console.error('Error al guardar Proveedor: ', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo guardar el Proveedor',
+      message: i18nT('ui.no-se-pudo-guardar-el-proveedor-8fa2e4'),
     })
   }
   toggleForm()
@@ -152,7 +153,7 @@ async function loadRows() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -198,7 +199,7 @@ const resetForm = () => {
 const confirmDelete = (provedor) => {
   console.log(provedor)
   $q.dialog({
-    title: 'Confirmar',
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
     message: `¿Eliminar Proveedor "${provedor.nombre}"?`,
     cancel: true,
     persistent: true,
@@ -222,7 +223,7 @@ const confirmDelete = (provedor) => {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })

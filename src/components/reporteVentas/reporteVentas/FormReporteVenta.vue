@@ -4,19 +4,19 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte de Ventas
+          {{ $t('ui.reporte-de-ventas-b4aec2') }}
         </div>
-        <div class="text-subtitle2 cm-text-muted q-mt-xs">Administración de Reporte de Ventas</div>
+        <div class="text-subtitle2 cm-text-muted q-mt-xs">{{ $t('ui.administracion-de-reporte-de-ventas-1317c0') }}</div>
       </div>
     </div>
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
         <div class="col-12 col-md-3" id="fechaini">
-          <label for="fechaini">Fecha Inicial*</label>
+          <label for="fechaini">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input type="date" v-model="fechai" id="fechaini" dense outlined />
         </div>
         <div class="col-12 col-md-3" id="fechafin">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input type="date" v-model="fechaf" id="fechafin" dense outlined />
         </div>
       </div>
@@ -25,7 +25,7 @@
         <div class="">
           <q-btn
             id="btngenerarreporte"
-            label="Generar reporte"
+            :label="$t('ui.generar-reporte-eeafce')"
             color="primary"
             type="submit"
             class="q-mr-sm"
@@ -37,7 +37,7 @@
       <q-btn
         id="btnvistaprevia"
         icon="picture_as_pdf"
-        label="Vista previa"
+        :label="$t('ui.vista-previa-432932')"
         color="red"
         outline
         @click="vistaPrevia"
@@ -45,7 +45,7 @@
       <q-btn
         id="btnexportarexcel"
         icon="mdi-microsoft-excel"
-        label="Exportar Excel"
+        :label="$t('reportes.exportExcel')"
         color="green"
         outline
         @click="exportXLSX"
@@ -66,7 +66,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -101,6 +101,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -190,7 +191,7 @@ const verDetalle = async (row) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Venta sin items',
+      message: i18nT('ui.venta-sin-items-9c9323'),
     })
   }
 }
@@ -210,11 +211,11 @@ const crearMensaje = async (row) => {
     console.log('Correo del cliente:', emailCliente.value)
 
     // 4. Configurar opciones
-    opcionesEnvio.value = [{ label: 'Comprobante', value: 'comprobante' }]
+    opcionesEnvio.value = [{ label: i18nT('ui.comprobante-7f8d58'), value: 'comprobante' }]
     const tipoFactura = getTipoFactura(true) // Esta línea no afecta la funcionalidad de envío
     console.log('Tipo de factura:', tipoFactura)
     if (Number(row.tipoventa) !== 0) {
-      opcionesEnvio.value.push({ label: 'Factura', value: 'factura' })
+      opcionesEnvio.value.push({ label: i18nT('ui.factura-2e3485'), value: 'factura' })
     }
     console.log('Opciones de envío:', opcionesEnvio.value)
 
@@ -223,7 +224,7 @@ const crearMensaje = async (row) => {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: 'No se pudo obtener los datos del cliente.' + error,
+      message: i18nT('ui.no-se-pudo-obtener-los-datos-del-cliente-042891') + error,
     })
   }
 }
@@ -235,7 +236,7 @@ const procesarEnvioCorreo = async ({ correo, opcion }) => {
   if (!detalleVenta.value) {
     return $q.notify({
       type: 'negative',
-      message: 'Venta sin items',
+      message: i18nT('ui.venta-sin-items-9c9323'),
     })
   }
 
@@ -268,7 +269,7 @@ const getDetalleVenta = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -351,7 +352,7 @@ const onSubmit = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -397,7 +398,7 @@ onMounted(async () => {
     console.error('Error al obtener divisa activa:', error)
     $q.notify({
       type: 'warning',
-      message: 'No se pudo cargar la divisa activa. Usando configuración por defecto.',
+      message: i18nT('ui.no-se-pudo-cargar-la-divisa-activa-usando-configurac-f7def1'),
     })
   }
   //cargarAlmacenes()

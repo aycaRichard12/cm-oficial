@@ -8,12 +8,12 @@
       id="btnNuevaAsignacion"
     >
       <q-icon name="inventory_2" class="icono" />
-      <span class="texto">Nueva Asignación</span>
+      <span class="texto">{{ $t('ui.nueva-asignacion-e3b420') }}</span>
     </q-btn>
 
     <!-- Filtro por almacén -->
     <div class="col-2" id="filtroAlmacenProductos">
-      <label for="almacen">Almacén</label>
+      <label for="almacen">{{ $t('inventario.warehouse') }}</label>
       <q-select
         v-model="filtro"
         :options="opciones"
@@ -37,13 +37,13 @@
     >
       <q-icon name="picture_as_pdf" class="icono" />
 
-      <span class="texto">Vista previa PDF</span>
+      <span class="texto">{{ $t('ui.vista-previa-pdf-46ad39') }}</span>
     </q-btn>
   </div>
   <div class="flex justify-end q-mb-md">
     <div id="buscadorProductos">
-      <label for="buscar">Buscar...</label>
-      <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar...">
+      <label for="buscar">{{ $t('common.search') }}</label>
+      <q-input outlined dense debounce="300" v-model="filter" :placeholder="$t('common.search')">
         <template v-slot:append>
           <q-icon name="search" />
         </template>
@@ -53,7 +53,7 @@
 
   <q-table
     id="tableProductos"
-    title="Productos Asignados"
+    :title="$t('ui.productos-asignados-238368')"
     :rows="rows"
     :columns="columns"
     :pagination="pagination"
@@ -75,7 +75,7 @@
           :disable="props.row.estado === undefined"
         >
           <q-tooltip>
-            {{ Number(props.row.estado) === 1 ? 'Desactivar producto' : 'Activar producto' }}
+            {{ Number(props.row.estado) === 1 ? $t('ui.desactivar-producto-e694c2') : $t('ui.activar-producto-32afa2') }}
           </q-tooltip>
         </q-btn>
       </q-td>
@@ -105,7 +105,7 @@
   <q-dialog v-model="mostrarModal" full-width full-height>
     <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Vista previa de PDF</div>
+        <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
         <q-space />
         <q-btn flat round icon="close" @click="mostrarModal = false" />
       </q-card-section>
@@ -124,6 +124,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed } from 'vue'
 import { DPF_REPORTE_PRODUCTO_ASIGNADOS } from 'src/utils/pdfReportGenerator'
 // Props
@@ -180,66 +181,66 @@ watch(
 )
 // Columnas de la tabla
 const columns = [
-  { name: 'index', label: 'N°', field: 'index', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
   {
     name: 'codigobarra',
-    label: 'Código barra',
+    label: i18nT('ui.codigo-barra-427dc4'),
     field: 'codigobarra',
     align: 'left',
     sortable: true,
   },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', sortable: true },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left', sortable: true },
   {
     name: 'subcategoria',
-    label: 'Sub categoría',
+    label: i18nT('ui.sub-categoria-229e51'),
     field: 'subcategoria',
     align: 'left',
     sortable: true,
   },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     align: 'left',
     sortable: true,
   },
-  { name: 'detalle', label: 'País', field: 'detalle', align: 'left', sortable: true },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'rigth', sortable: true },
-  { name: 'medida', label: 'Característica', field: 'medida', align: 'left', sortable: true },
+  { name: 'detalle', label: i18nT('ui.pais-0c664f'), field: 'detalle', align: 'left', sortable: true },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'rigth', sortable: true },
+  { name: 'medida', label: i18nT('configProducto.caracteristicaProducto.table.nombre'), field: 'medida', align: 'left', sortable: true },
   {
     name: 'caracteristica',
-    label: 'Otras características',
+    label: i18nT('ui.otras-caracteristicas-c95475'),
     field: 'caracteristica',
     align: 'left',
     sortable: true,
   },
   {
     name: 'estadoproducto',
-    label: 'Estado Fisico',
+    label: i18nT('ui.estado-fisico-4251d3'),
     field: 'estadoproducto',
     align: 'left',
     sortable: true,
   },
-  { name: 'stock', label: 'Stock', field: 'stock', align: 'right', sortable: true },
+  { name: 'stock', label: i18nT('inventario.stock'), field: 'stock', align: 'right', sortable: true },
   {
     name: 'stockminimo',
-    label: 'Stock mínimo',
+    label: i18nT('ui.stock-minimo-e10ddd'),
     field: 'stockminimo',
     align: 'right',
     sortable: true,
   },
   {
     name: 'stockmaximo',
-    label: 'Stock máximo',
+    label: i18nT('ui.stock-maximo-8a95f2'),
     field: 'stockmaximo',
     align: 'right',
     sortable: true,
   },
-  { name: 'fecha', label: 'Fecha creación', field: 'fecha', align: 'center', sortable: true },
-  { name: 'fecha', label: 'Fecha creación', field: 'fecha', align: 'center', sortable: true },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'center' },
-  { name: 'opciones', label: 'Acciones', field: 'actions', align: 'center' },
+  { name: 'fecha', label: i18nT('ui.fecha-creacion-c51fd0'), field: 'fecha', align: 'center', sortable: true },
+  { name: 'fecha', label: i18nT('ui.fecha-creacion-c51fd0'), field: 'fecha', align: 'center', sortable: true },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'center' },
+  { name: 'opciones', label: i18nT('common.actions'), field: 'actions', align: 'center' },
 ]
 
 async function onPrintReport() {

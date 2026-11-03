@@ -12,13 +12,13 @@
 
     <BaseFilterableTable
       id="tablaventasvalidas"
-      title="Ventas Validas"
+      :title="$t('ui.ventas-validas-3e630c')"
       :rows="filteredRows"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
       :sumColumns="summationHeaders"
       nombre-columna-totales="nfactura"
-      no-data-label="No hay ventas validas"
+      :no-data-label="$t('ui.no-hay-ventas-validas-779f93')"
       row-key="id"
       :filter="busqueda"
       :filter-method="filtrarRows"
@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import VentasFiltroBar from './VentasFiltroBar.vue'
 import VentasTableActions from './VentasTableActions.vue'
@@ -74,34 +75,34 @@ const busqueda = ref('')
 const columnaBusqueda = ref(0)
 
 const columnasBusqueda = [
-  { value: 0, label: 'Todas' },
-  { value: 1, label: 'Almacén' },
-  { value: 2, label: 'Fecha' },
-  { value: 3, label: 'Cliente' },
-  { value: 4, label: 'Sucursal' },
-  { value: 5, label: 'Tipo venta' },
-  { value: 6, label: 'Tipo pago' },
-  { value: 7, label: 'Canal' },
-  { value: 8, label: 'Nro. factura' },
-  { value: 9, label: 'Total' },
-  { value: 10, label: 'Dscto' },
-  { value: 11, label: 'Monto' },
-  { value: 12, label: 'Estado' },
-  { value: 12, label: 'Tipo' },
+  { value: 0, label: i18nT('ui.todas-8a3c34') },
+  { value: 1, label: i18nT('inventario.warehouse') },
+  { value: 2, label: i18nT('cotizacion.table.date') },
+  { value: 3, label: i18nT('ventas.client') },
+  { value: 4, label: i18nT('ui.sucursal-07d782') },
+  { value: 5, label: i18nT('ui.tipo-venta-5ea030') },
+  { value: 6, label: i18nT('ui.tipo-pago-db71ca') },
+  { value: 7, label: i18nT('configuracion.canalesDeVenta.table.canal') },
+  { value: 8, label: i18nT('ui.nro-factura-15a3bf') },
+  { value: 9, label: i18nT('ventas.total') },
+  { value: 10, label: i18nT('ui.dscto-9c1760') },
+  { value: 11, label: i18nT('ui.monto-835dcd') },
+  { value: 12, label: i18nT('cotizacion.table.status') },
+  { value: 12, label: i18nT('configGeneral.divisas.table.type') },
 ]
 
 const columnas = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => filteredRows.value.indexOf(row) + 1,
     align: 'center',
     dataType: 'number',
   },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left', dataType: 'text' },
   {
     name: 'fechaventa',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fechaventa',
     align: 'center',
     dataType: 'date',
@@ -118,25 +119,25 @@ const columnas = [
       return String(val)
     },
   },
-  { name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left', dataType: 'text' },
-  { name: 'sucursal', label: 'Sucursal', field: 'sucursal', align: 'left', dataType: 'text' },
-  { name: 'tipov', label: 'Tipo venta', field: 'tipov', align: 'left', dataType: 'text' },
-  { name: 'tipopago', label: 'Tipo pago', field: 'tipopago', align: 'left', dataType: 'text' },
-  { name: 'canal', label: 'Canal', field: 'canal', align: 'left', dataType: 'text' },
+  { name: 'cliente', label: i18nT('ventas.client'), field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'sucursal', label: i18nT('ui.sucursal-07d782'), field: 'sucursal', align: 'left', dataType: 'text' },
+  { name: 'tipov', label: i18nT('ui.tipo-venta-5ea030'), field: 'tipov', align: 'left', dataType: 'text' },
+  { name: 'tipopago', label: i18nT('ui.tipo-pago-db71ca'), field: 'tipopago', align: 'left', dataType: 'text' },
+  { name: 'canal', label: i18nT('configuracion.canalesDeVenta.table.canal'), field: 'canal', align: 'left', dataType: 'text' },
   {
     name: 'nfactura',
-    label: 'Nro. factura',
+    label: i18nT('ui.nro-factura-15a3bf'),
     field: 'nfactura',
     align: 'center',
     dataType: 'number',
   },
-  { name: 'total', label: 'Total', field: 'total', align: 'right', dataType: 'number' },
-  { name: 'descuento', label: 'Dscto', field: 'descuento', align: 'right', dataType: 'number' },
-  { name: 'montototal', label: 'Monto', field: 'montototal', align: 'right', dataType: 'number' },
-  { name: 'estado', label: 'Estado', field: 'estado', align: 'left', dataType: 'text' },
-  { name: 'tipo', label: 'Tipo', field: 'tipo', align: 'left', dataType: 'text' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
-  { name: 'ver', label: 'Ver', field: 'ver', align: 'center' },
+  { name: 'total', label: i18nT('ventas.total'), field: 'total', align: 'right', dataType: 'number' },
+  { name: 'descuento', label: i18nT('ui.dscto-9c1760'), field: 'descuento', align: 'right', dataType: 'number' },
+  { name: 'montototal', label: i18nT('ui.monto-835dcd'), field: 'montototal', align: 'right', dataType: 'number' },
+  { name: 'estado', label: i18nT('cotizacion.table.status'), field: 'estado', align: 'left', dataType: 'text' },
+  { name: 'tipo', label: i18nT('configGeneral.divisas.table.type'), field: 'tipo', align: 'left', dataType: 'text' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
+  { name: 'ver', label: i18nT('ui.ver-49b372'), field: 'ver', align: 'center' },
 ]
 
 const arrayHeaders = [
@@ -159,22 +160,22 @@ const arrayHeaders = [
 const summationHeaders = ['total', 'descuento', 'montototal']
 
 const opcionesAccionSimple = [
-  { label: 'Seleccione', value: '' },
-  { label: 'Anulación', value: 1 },
-  { label: 'Devolución', value: 2 },
+  { label: i18nT('ui.seleccione-81cab4'), value: '' },
+  { label: i18nT('ui.anulacion-1ede2d'), value: 1 },
+  { label: i18nT('ui.devolucion-ce2809'), value: 2 },
 ]
 
 const opcionesAccionCotizacionNormal = [
-  { label: 'Seleccione', value: '' },
-  { label: 'Anulación', value: 1 },
-  { label: 'Ver estado', value: 3 },
+  { label: i18nT('ui.seleccione-81cab4'), value: '' },
+  { label: i18nT('ui.anulacion-1ede2d'), value: 1 },
+  { label: i18nT('ui.ver-estado-636348'), value: 3 },
 ]
 
 const opcionesAccionCompleta = [
-  { label: 'Seleccione', value: '' },
-  { label: 'Anulación', value: 1 },
-  { label: 'Devolución', value: 2 },
-  { label: 'Ver estado', value: 3 },
+  { label: i18nT('ui.seleccione-81cab4'), value: '' },
+  { label: i18nT('ui.anulacion-1ede2d'), value: 1 },
+  { label: i18nT('ui.devolucion-ce2809'), value: 2 },
+  { label: i18nT('ui.ver-estado-636348'), value: 3 },
 ]
 
 // Logic

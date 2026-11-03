@@ -4,7 +4,7 @@
     <div class="row items-center justify-between q-mb-md">
       <div class="text-subtitle1 text-weight-bold text-primary flex items-center">
         <q-icon name="add_shopping_cart" size="sm" class="q-mr-sm" />
-        {{ esModoEdicion ? 'Editar Producto' : 'Añadir Producto' }}
+        {{ esModoEdicion ? $t('ui.editar-producto-307347') : $t('ui.anadir-producto-b77e91') }}
       </div>
       <div class="row items-center q-gutter-x-sm">
         <q-chip
@@ -34,7 +34,7 @@
                     <div class="section-indicator bg-primary"></div>
                     <q-icon name="shopping_bag" size="sm" color="primary" class="q-mr-sm" />
                     <h3 class="section-title text-h6 cm-text q-ma-none text-weight-medium">
-                      {{ esModoEdicion ? 'Editar Producto' : 'Seleccionar Producto' }}
+                      {{ esModoEdicion ? $t('ui.editar-producto-307347') : $t('ui.seleccionar-producto-995f1f') }}
                     </h3>
                     <q-badge
                       v-if="esModoEdicion"
@@ -43,7 +43,7 @@
                       class="q-ml-sm q-px-md"
                       outline
                     >
-                      Modo Edición
+                      {{ $t('ui.modo-edicion-551680') }}
                     </q-badge>
                   </div>
                 </div>
@@ -52,18 +52,18 @@
                   <div v-if="productoUnico" class="unique-product-section q-mb-sm">
                     <q-checkbox
                       v-model="detalleForm.productoUnico"
-                      label="Producto Único"
+                      :label="$t('ui.producto-unico-b16503')"
                       color="primary"
                       class="custom-checkbox text-weight-medium"
                       :disable="esModoEdicion"
                     >
                       <template v-slot:label>
-                        <span class="cm-text">Producto Único</span>
+                        <span class="cm-text">{{ $t('ui.producto-unico-b16503') }}</span>
                       </template>
                     </q-checkbox>
 
                     <q-tooltip v-if="esModoEdicion" class="bg-grey-800">
-                      No se puede cambiar el tipo de producto en modo edición
+                      {{ $t('ui.no-se-puede-cambiar-el-tipo-de-producto-en-modo-edic-742530') }}
                     </q-tooltip>
                   </div>
                 </div>
@@ -77,7 +77,7 @@
                   outlined
                   readonly
                   bg-color="grey-50"
-                  label="Producto o Servicio"
+                  :label="$t('ui.producto-o-servicio-2b9fe2')"
                   class="readonly-input full-width"
                   stack-label
                 >
@@ -105,14 +105,14 @@
                   map-options
                   option-label="label"
                   option-value="value"
-                  :rules="[(val) => !!val || 'Requerido']"
+                  :rules="[(val) => !!val || $t('common.required')]"
                   dense
                   clearable
                   class="product-select full-width"
                   behavior="menu"
                   input-debounce=""
                   bg-color="white"
-                  placeholder="Escribe para buscar..."
+                  :placeholder="$t('ui.escribe-para-buscar-d85047')"
                 >
                   <template v-slot:prepend>
                     <q-icon name="search" size="xs" color="primary" />
@@ -126,14 +126,14 @@
                       color="primary"
                       @click.stop.prevent="listaProductosDisponibles"
                     >
-                      <q-tooltip>Recargar productos</q-tooltip>
+                      <q-tooltip>{{ $t('ui.recargar-productos-894528') }}</q-tooltip>
                     </q-btn>
                   </template>
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey-500 text-center q-py-md">
                         <q-icon name="inbox" size="md" class="q-mb-sm" />
-                        <div>No se encontraron productos</div>
+                        <div>{{ $t('ui.no-se-encontraron-productos-fd0da8') }}</div>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -155,7 +155,7 @@
                         <div class="stock-info text-caption text-grey-600 q-mt-xs">
                           <q-icon name="inventory_2" size="xs" />
                           <span
-                            >Stock:
+                            >{{ $t('ui.stock-de3ee6') }}
                             {{
                               productosDisponibles.find((p) => p.value === scope.opt.value)
                                 ?.stock || 0
@@ -184,7 +184,7 @@
                     <div class="flex items-center q-px-md q-py-sm bg-blue-1 rounded-borders">
                       <q-icon name="inventory_2" size="sm" color="primary" class="q-mr-sm" />
                       <div class="column">
-                        <span class="text-caption text-primary text-weight-bold">STOCK ACTUAL</span>
+                        <span class="text-caption text-primary text-weight-bold">{{ $t('ui.stock-actual-f8cfc5') }}</span>
                         <span class="text-subtitle1 text-blue-10 text-weight-bolder">{{
                           detalleForm.stockActual
                         }}</span>
@@ -196,7 +196,7 @@
                     <div class="flex items-center q-px-md q-py-sm bg-orange-1 rounded-borders">
                       <q-icon name="straighten" size="sm" color="orange-8" class="q-mr-sm" />
                       <div class="column">
-                        <span class="text-caption text-orange-9 text-weight-bold">UNIDAD</span>
+                        <span class="text-caption text-orange-9 text-weight-bold">{{ $t('ui.unidad-34e232') }}</span>
                         <span class="text-subtitle1 text-orange-10 text-weight-bolder">{{
                           detalleForm.unidad || '---'
                         }}</span>
@@ -209,9 +209,9 @@
                   v-if="ConfiguracionProductoVariante && variantesDelProducto.length > 0"
                   class="q-mt-md"
                 >
-                  <div class="text-subtitle2 text-weight-bold q-mb-sm">Variantes del Producto</div>
+                  <div class="text-subtitle2 text-weight-bold q-mb-sm">{{ $t('ui.variantes-del-producto-2a93f9') }}</div>
                   <BaseFilterableTable
-                    title="Variantes del Producto"
+                    :title="$t('ui.variantes-del-producto-2a93f9')"
                     :rows="variantesDelProducto"
                     :columns="columnasVariantes"
                     row-key="id_Producto_Variante"
@@ -226,7 +226,7 @@
                           <q-badge v-if="props.row.serie" color="teal" outline>
                             {{ props.row.serie }}
                           </q-badge>
-                          <span v-else class="text-grey text-caption">Sin serie</span>
+                          <span v-else class="text-grey text-caption">{{ $t('ui.sin-serie-c818cd') }}</span>
                         </q-td>
                         <q-td key="atributos" :props="props">
                           <div v-for="attr in props.row.atributos" :key="attr.id_Valor_Atributo">
@@ -241,7 +241,7 @@
                             type="number"
                             dense
                             outlined
-                            label="Precio"
+                            :label="$t('ui.precio-18e070')"
                             style="min-width: 120px"
                           />
                         </q-td>
@@ -251,7 +251,7 @@
                             type="number"
                             dense
                             outlined
-                            label="Cantidad"
+                            :label="$t('ui.cantidad-b5b6f8')"
                             min="0"
                             style="min-width: 120px"
                           />
@@ -274,7 +274,7 @@
                 <div class="section-indicator bg-primary"></div>
                 <q-icon name="price_change" size="sm" color="primary" class="q-mr-sm" />
                 <h3 class="section-title text-h6 cm-text q-ma-none text-weight-medium">
-                  Precio y Cantidad
+                  {{ $t('ui.precio-y-cantidad-426c30') }}
                 </h3>
               </div>
 
@@ -283,7 +283,7 @@
                   <div class="q-mb-sm">
                     <q-checkbox
                       v-model="detalleForm.sinPrecio"
-                      label="Registrar Sin Precio"
+                      :label="$t('ui.registrar-sin-precio-36eca9')"
                       color="orange-7"
                       dense
                       class="custom-checkbox"
@@ -306,12 +306,12 @@
                     type="text"
                     inputmode="decimal"
                     :rules="[
-                      (val) => (val !== null && val !== '') || 'Requerido',
-                      (val) => parseFloat(val) > 0 || 'Mayor a 0',
+                      (val) => (val !== null && val !== '') || $t('common.required'),
+                      (val) => parseFloat(val) > 0 || $t('ui.mayor-a-0-92dd1c'),
                     ]"
                     dense
                     outlined
-                    label="Precio Unitario *"
+                    :label="$t('ui.precio-unitario-dec7bd')"
                     placeholder="0.00"
                     class="price-input full-width"
                     stack-label
@@ -333,7 +333,7 @@
                     outlined
                     readonly
                     bg-color="grey-2"
-                    label="Precio Unitario"
+                    :label="$t('ui.precio-unitario-fd8ab0')"
                     placeholder="0.00"
                     class="full-width q-mb-md"
                     stack-label
@@ -349,11 +349,11 @@
                     v-model.number="detalleForm.cantidad"
                     type="text"
                     inputmode="decimal"
-                    :rules="[(val) => val > 0 || 'Mayor a 0']"
+                    :rules="[(val) => val > 0 || $t('ui.mayor-a-0-92dd1c')]"
                     dense
                     outlined
                     clearable
-                    label="Cantidad *"
+                    :label="$t('ui.cantidad-a5de18')"
                     placeholder="0"
                     class="quantity-input full-width"
                     stack-label
@@ -365,7 +365,7 @@
                     </template>
                     <template v-slot:append>
                       <q-badge outline color="primary" class="unit-badge text-body2">
-                        {{ detalleForm.unidad || 'und' }}
+                        {{ detalleForm.unidad || $t('ui.und-b03a43') }}
                       </q-badge>
                     </template>
                   </q-input>
@@ -375,7 +375,7 @@
                   <div class="action-buttons column q-gutter-y-sm q-pb-md">
                     <q-btn
                       v-if="esModoEdicion"
-                      label="Cancelar Edición"
+                      :label="$t('ui.cancelar-edicion-fca2ff')"
                       color="grey-7"
                       flat
                       rounded
@@ -388,7 +388,7 @@
                     />
 
                     <q-btn
-                      :label="esModoEdicion ? 'Actualizar Producto' : 'Agregar a la Compra'"
+                      :label="esModoEdicion ? $t('ui.actualizar-producto-9c2fdd') : $t('ui.agregar-a-la-compra-327887')"
                       :icon="esModoEdicion ? 'update' : 'add_shopping_cart'"
                       color="primary"
                       type="submit"
@@ -416,7 +416,7 @@
     <div class="row items-center justify-between q-py-sm">
       <div class="text-subtitle1 text-weight-bold cm-text flex items-center">
         <q-icon name="list_alt" size="sm" class="q-mr-sm text-primary" />
-        Detalle de Productos
+        {{ $t('ui.detalle-de-productos-1126e2') }}
       </div>
       <div class="row items-center q-gutter-x-sm">
         <q-badge
@@ -450,7 +450,7 @@
               @click="props.expand = !props.expand"
               :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
             >
-              <q-tooltip>Ver detalles de códigos</q-tooltip>
+              <q-tooltip>{{ $t('ui.ver-detalles-de-codigos-9e0689') }}</q-tooltip>
             </q-btn>
           </q-td>
 
@@ -535,7 +535,7 @@
 
       <template v-slot:bottom-row>
         <q-tr class="bg-primary text-white">
-          <q-td colspan="5" class="text-right text-weight-bold">TOTAL GENERAL:</q-td>
+          <q-td colspan="5" class="text-right text-weight-bold">{{ $t('ui.total-general-f6e204') }}</q-td>
           <q-td class="text-right text-weight-bolder text-subtitle1">
             {{ divisaActiva.simbolo }} {{ total.toFixed(2) }}
           </q-td>
@@ -550,7 +550,7 @@
   <!-- Boton Cerrar Inferior -->
   <q-card-actions align="right" class="q-py-sm q-px-md bg-transparent">
     <q-btn
-      label="Cerrar Panel"
+      :label="$t('ui.cerrar-panel-b380cb')"
       color="grey-9"
       icon="close"
       outline
@@ -562,6 +562,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -624,10 +625,10 @@ const detalleForm = ref({
 // --- COMPUTED PROPERTIES ---
 const columnas = computed(() => [
   { name: 'exp', label: '', align: 'left' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', sortable: true },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', sortable: true },
   {
     name: 'descripcion',
-    label: 'Descripción',
+    label: i18nT('configuracion.servicios.table.descripcion'),
     field: 'descripcion',
     align: 'left',
     sortable: true,
@@ -639,14 +640,14 @@ const columnas = computed(() => [
     align: 'right',
     sortable: true,
   },
-  { name: 'cantidad', label: 'Cantidad', field: 'cantidad', align: 'right', sortable: true },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), field: 'cantidad', align: 'right', sortable: true },
   {
     name: 'subtotal',
     label: `Sub Total (${divisaActiva.simbolo})`,
     align: 'right',
     sortable: true,
   },
-  { name: 'opciones', label: 'Opciones', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), align: 'center' },
 ])
 
 const total = computed(() => {
@@ -657,10 +658,10 @@ const total = computed(() => {
 })
 const columnasVariantes = computed(() => [
   { name: 'sku', label: 'SKU', field: 'sku', align: 'left', sortable: true },
-  { name: 'serie', label: 'Serie', field: 'serie', align: 'left', sortable: true },
-  { name: 'atributos', label: 'Atributos', align: 'left' },
-  { name: 'precio', label: 'Precio', align: 'left' },
-  { name: 'cantidad', label: 'Cantidad', align: 'left' },
+  { name: 'serie', label: i18nT('ui.serie-986812'), field: 'serie', align: 'left', sortable: true },
+  { name: 'atributos', label: i18nT('ui.atributos-bd9731'), align: 'left' },
+  { name: 'precio', label: i18nT('ui.precio-18e070'), align: 'left' },
+  { name: 'cantidad', label: i18nT('ui.cantidad-b5b6f8'), align: 'left' },
 ])
 
 // --- WATCHERS ---
@@ -699,14 +700,14 @@ watch(
 
 // --- MÉTODOS DE DATOS (API) ---
 async function cargarDatos() {
-  $q.loading.show({ message: 'Cargando datos...' })
+  $q.loading.show({ message: i18nT('ui.cargando-datos-6acb41') })
   try {
     await Promise.all([getDetalleCompra(), listaProductosDisponibles()])
   } catch (error) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los datos iniciales.',
+      message: i18nT('ui.error-al-cargar-los-datos-iniciales-1908ab'),
       position: 'top',
     })
   } finally {
@@ -722,7 +723,7 @@ async function recargarComponente() {
     onResetForm()
     $q.notify({
       type: 'positive',
-      message: 'Detalle recargado correctamente',
+      message: i18nT('ui.detalle-recargado-correctamente-f78d72'),
       position: 'top',
       timeout: 1500,
     })
@@ -730,7 +731,7 @@ async function recargarComponente() {
     console.error('Error al recargar componente:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo recargar el detalle',
+      message: i18nT('ui.no-se-pudo-recargar-el-detalle-dc346d'),
       position: 'top',
     })
   } finally {
@@ -748,7 +749,7 @@ async function getDetalleCompra() {
     console.error('Error al cargar detalles de compra:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los detalles de la compra',
+      message: i18nT('ui.no-se-pudieron-cargar-los-detalles-de-la-compra-5a4066'),
       position: 'top',
     })
   } finally {
@@ -772,7 +773,7 @@ async function listaProductosDisponibles() {
     console.error('Error al cargar productos disponibles:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los productos',
+      message: i18nT('ui.no-se-pudieron-cargar-los-productos-4c41c2'),
       position: 'top',
     })
   }
@@ -790,7 +791,7 @@ function filtrarProductos(val, update) {
 function confirmarCantidadEspecial() {
   return new Promise((resolve) => {
     $q.dialog({
-      title: '<span class="text-primary">Atención: Producto Único</span>',
+      title: i18nT('ui.span-class-text-primary-atencion-producto-unico-span-ddf254'),
       message: `
         <div class="text-center">
           <p>Vas a registrar una cantidad de:</p>
@@ -802,8 +803,8 @@ function confirmarCantidadEspecial() {
       `,
       html: true,
       persistent: true,
-      ok: { label: 'Sí, Correcto', color: 'primary', unelevated: true },
-      cancel: { label: 'Corregir', color: 'grey', flat: true },
+      ok: { label: i18nT('ui.si-correcto-abc7f9'), color: 'primary', unelevated: true },
+      cancel: { label: i18nT('ui.corregir-3d4794'), color: 'grey', flat: true },
     })
       .onOk(() => resolve(true))
       .onCancel(() => resolve(false))
@@ -822,13 +823,13 @@ async function onSubmit() {
     if (variantesConCantidad.length === 0) {
       $q.notify({
         type: 'warning',
-        message: 'Debe ingresar al menos una cantidad mayor a 0 para las variantes.',
+        message: i18nT('ui.debe-ingresar-al-menos-una-cantidad-mayor-a-0-para-l-7b3cd4'),
         position: 'top',
       })
       return
     }
 
-    $q.loading.show({ message: 'Guardando variantes...' })
+    $q.loading.show({ message: i18nT('ui.guardando-variantes-9e10d1') })
     try {
       for (const variante of variantesConCantidad) {
         const cantidad = Number(cantidadesVariantes.value[variante.id_Producto_Variante])
@@ -847,13 +848,13 @@ async function onSubmit() {
 
         const response = await api.post('', formData)
         if (response.data.estado !== 'exito') {
-          throw new Error(response.data.mensaje || 'Error al registrar variante')
+          throw new Error(response.data.mensaje || i18nT('ui.error-al-registrar-variante-6841bb'))
         }
       }
 
       $q.notify({
         type: 'positive',
-        message: 'Variantes registradas con éxito',
+        message: i18nT('ui.variantes-registradas-con-exito-d9549c'),
         position: 'top',
       })
       await getDetalleCompra()
@@ -864,7 +865,7 @@ async function onSubmit() {
       console.error('Error al guardar variantes:', error)
       $q.notify({
         type: 'negative',
-        message: error.message || 'Error al guardar variantes',
+        message: error.message || i18nT('ui.error-al-guardar-variantes-c32d0d'),
         position: 'top',
       })
     } finally {
@@ -893,13 +894,13 @@ async function onSubmit() {
     : formData.append('ver', 'registrarDetalleCompra')
 
   try {
-    $q.loading.show({ message: 'Guardando...' })
+    $q.loading.show({ message: i18nT('ui.guardando-c63871') })
     const response = await api.post('', formData)
     console.log('Respuesta API al guardar detalle:', response.data)
     if (response.data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Guardado con éxito',
+        message: response.data.mensaje || i18nT('ui.guardado-con-exito-98bba9'),
         position: 'top',
       })
       await getDetalleCompra()
@@ -909,7 +910,7 @@ async function onSubmit() {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Error al guardar',
+        message: response.data.mensaje || i18nT('ui.error-al-guardar-557655'),
         position: 'top',
       })
     }
@@ -917,7 +918,7 @@ async function onSubmit() {
     console.error('Error en onSubmit:', error)
     $q.notify({
       type: 'negative',
-      message: 'Hubo un problema de comunicación con el servidor.',
+      message: i18nT('ui.hubo-un-problema-de-comunicacion-con-el-servidor-239086'),
       position: 'top',
     })
   } finally {
@@ -952,7 +953,7 @@ function actualizarCantidadRow(row, nuevaCant) {
 // --- MÉTODOS DE LA TABLA ---
 async function iniciarEdicion(row) {
   try {
-    $q.loading.show({ message: 'Cargando datos...' })
+    $q.loading.show({ message: i18nT('ui.cargando-datos-6acb41') })
     const point = `verificarIDdetallecompra/${row.id}`
     const response = await api.get(point)
 
@@ -971,7 +972,7 @@ async function iniciarEdicion(row) {
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Error al Editar',
+        message: response.data.mensaje || i18nT('ui.error-al-editar-e1a6ae'),
         position: 'top',
       })
     }
@@ -979,7 +980,7 @@ async function iniciarEdicion(row) {
     console.error('Error al iniciar edición:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo cargar la información del producto.',
+      message: i18nT('ui.no-se-pudo-cargar-la-informacion-del-producto-38e3cd'),
       position: 'top',
     })
   } finally {
@@ -989,11 +990,11 @@ async function iniciarEdicion(row) {
 
 function confirmarEliminar(row) {
   $q.dialog({
-    title: 'Confirmar Eliminación',
+    title: i18nT('configGeneral.tipoAlmacen.messages.deleteTitle'),
     message: `¿Estás seguro de que quieres eliminar el producto "${row.descripcion}"?`,
     cancel: true,
     persistent: true,
-    ok: { color: 'negative', label: 'Eliminar' },
+    ok: { color: 'negative', label: i18nT('common.delete') },
   }).onOk(async () => {
     await eliminarDetalle(row)
   })
@@ -1009,7 +1010,7 @@ const fetchEstadoActual = async () => {
 
 async function eliminarDetalle(row) {
   try {
-    $q.loading.show({ message: 'Eliminando...' })
+    $q.loading.show({ message: i18nT('ui.eliminando-789534') })
     const response = await api.get(`eliminarDetalleCompra/${row.id}`)
     if (response.data.estado === 'exito') {
       $q.notify({
@@ -1030,7 +1031,7 @@ async function eliminarDetalle(row) {
     console.error('Error al eliminar detalle:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudo eliminar el producto.',
+      message: i18nT('ui.no-se-pudo-eliminar-el-producto-ccefb5'),
       position: 'top',
     })
   } finally {
@@ -1069,7 +1070,7 @@ async function cargarVariantesProducto(idproductoalmacen) {
     console.error('Error al cargar variantes:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar las variantes del producto.',
+      message: i18nT('ui.no-se-pudieron-cargar-las-variantes-del-producto-7d8d61'),
       position: 'top',
     })
   } finally {

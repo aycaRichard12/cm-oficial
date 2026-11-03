@@ -8,7 +8,7 @@
           <q-select
             v-model="filtroAlmacen"
             :options="almacenes"
-            label="Seleccionar Almacén"
+            :label="$t('ui.seleccionar-almacen-0c6226')"
             dense
             outlined
             map-options
@@ -30,7 +30,7 @@
             outline
             color="green"
             icon="upload"
-            label="Importar Excel"
+            :label="$t('ui.importar-excel-c115aa')"
             no-caps
             @click="mostrarImportarExcel = true"
             id="importarExcel"
@@ -41,7 +41,7 @@
             id="reportedepreciosbase"
             to="/reportedepreciosbase"
             icon="assessment"
-            label="Reporte de Costos"
+            :label="$t('ui.reporte-de-costos-06bc13')"
             no-caps
             unelevated
           />
@@ -49,7 +49,7 @@
           <q-btn
             color="negative"
             icon="picture_as_pdf"
-            label="Vista Previa PDF"
+            :label="$t('ui.vista-previa-pdf-9db3ed')"
             no-caps
             @click="onPrintReport"
             id="btnVistaPDF"
@@ -74,17 +74,17 @@
       id="tableCostoUnitario"
       dense
       separator="cell"
-      no-data-label="No se encontraron resultados"
-      rows-per-page-label="Filas por página"
+      :no-data-label="$t('ui.no-se-encontraron-resultados-379d80')"
+      :rows-per-page-label="$t('ui.filas-por-pagina-d8aabf')"
     >
       <template v-slot:top>
         <div class="full-width row justify-between items-center q-py-xs">
-          <div class="text-h6 cm-text q-ml-sm">Tabla con Costos Unitarios</div>
+          <div class="text-h6 cm-text q-ml-sm">{{ $t('ui.tabla-con-costos-unitarios-9ae99d') }}</div>
 
           <!-- Search Input -->
           <q-input
             v-model="filter"
-            placeholder="Buscar costo unitario..."
+            :placeholder="$t('ui.buscar-costo-unitario-144d6a')"
             dense
             outlined
             debounce="300"
@@ -110,10 +110,10 @@
             icon="edit"
             color="primary"
             @click="editarProducto(props.row)"
-            title="Editar producto"
+            :title="$t('ui.editar-producto-c45766')"
             id="btnEditarCostoUnitario"
           >
-            <q-tooltip>Editar Costo</q-tooltip>
+            <q-tooltip>{{ $t('ui.editar-costo-c79dca') }}</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -127,7 +127,7 @@
       <template v-slot:no-data>
         <div class="full-width row flex-center cm-text q-pa-md">
           <q-icon size="2em" name="sentiment_dissatisfied" />
-          <span class="q-ml-sm">No se encontraron resultados</span>
+          <span class="q-ml-sm">{{ $t('ui.no-se-encontraron-resultados-379d80') }}</span>
         </div>
       </template>
     </q-table>
@@ -143,7 +143,7 @@
     >
       <q-card class="column no-wrap">
         <q-toolbar class="bg-primary text-white">
-          <q-toolbar-title>Vista Previa de Reporte</q-toolbar-title>
+          <q-toolbar-title>{{ $t('ui.vista-previa-de-reporte-80060d') }}</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
 
@@ -159,6 +159,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch } from 'vue'
 
 import { useCurrencyStore } from 'src/stores/currencyStore'
@@ -205,21 +206,21 @@ const pagination = ref({ page: 1, rowsPerPage: 10 })
 const columnas = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => row.numero,
     align: 'center',
   },
-  { name: 'codigo', label: 'Código', align: 'left', field: 'codigo' },
-  { name: 'descripcion', label: 'Descripción', align: 'left', field: 'descripcion' },
-  { name: 'unidad', label: 'Unidad', align: 'left', field: 'unidad' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), align: 'left', field: 'codigo' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), align: 'left', field: 'descripcion' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), align: 'left', field: 'unidad' },
   {
     name: 'precio',
-    label: 'Costo' + ' (' + currencyStore.simbolo + ')',
+    label: i18nT('ui.costo-74bd5f') + ' (' + currencyStore.simbolo + ')',
     align: 'right',
     field: 'precio',
     format: (val) => (isNaN(val) ? '0.00' : Number(val).toFixed(2)),
   },
-  { name: 'opciones', label: 'Opciones', align: 'center' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), align: 'center' },
 ]
 
 // Filtro combinado por búsqueda y almacén
@@ -281,7 +282,7 @@ function onPrintReport() {
   const almacenId = filtroAlmacen.value
   // Buscar el objeto almacén completo para obtener el label
   const almacenObj = props.almacenes.find((a) => a.value === almacenId)
-  const almacenLabel = almacenObj ? almacenObj.label : 'Todos los Almacenes'
+  const almacenLabel = almacenObj ? almacenObj.label : i18nT('ui.todos-los-almacenes-1034b1')
 
   console.log('📊 Generando PDF para almacén:', almacenLabel)
 

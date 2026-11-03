@@ -11,6 +11,7 @@ const ALLOWLIST = [
   'src/css/quasar.variables.css',
   'src/composables/useChartTheme.js',
   'src/utils/pdfs/',
+  'src/i18n/',
   'src/modules/pdf/',
 ]
 const ALLOWLIST_PATTERNS = [/src\/modules\/[^/]+\/services\/[^/]*PdfService\.js$/]

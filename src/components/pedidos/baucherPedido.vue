@@ -2,12 +2,12 @@
   <q-dialog v-model="mostrar">
     <q-card class="q-pa-md" style="min-width: 300px; max-width: 400px">
       <q-card-section>
-        <div class="text-h6">Subir Voucher</div>
+        <div class="text-h6">{{ $t('ui.subir-voucher-2a82ad') }}</div>
       </q-card-section>
 
       <q-card-section class="q-gutter-md">
-        <q-btn icon="photo" label="Subir Archivo" color="primary" @click="seleccionarImagen" />
-        <q-btn icon="camera_alt" label="Usar Cámara" color="secondary" @click="usarCamara" />
+        <q-btn icon="photo" :label="$t('ui.subir-archivo-275bfe')" color="primary" @click="seleccionarImagen" />
+        <q-btn icon="camera_alt" :label="$t('ui.usar-camara-460ab5')" color="secondary" @click="usarCamara" />
         <input
           ref="inputImagen"
           type="file"
@@ -19,14 +19,14 @@
           <div v-if="isPdfSelected" class="q-mt-md flex flex-center column">
             <q-icon name="picture_as_pdf" size="6em" color="red-8" />
             <div class="q-mt-sm text-center text-weight-medium">
-              Archivo PDF Seleccionado: <br />{{ selectedFile.name }}
+              {{ $t('ui.archivo-pdf-seleccionado-d4ecaf') }} <br />{{ selectedFile.name }}
             </div>
           </div>
           <q-img v-else :src="imagenPreview" class="q-mt-md" style="max-height: 200px" />
 
           <q-btn
             class="q-mt-md full-width"
-            label="Subir Voucher"
+            :label="$t('ui.subir-voucher-2a82ad')"
             color="positive"
             @click="subirVoucher"
             :loading="subiendo"
@@ -36,16 +36,16 @@
         <q-dialog v-model="mostrarCamara" persistent>
           <q-card>
             <q-card-section>
-              <div class="text-h6">Captura con Cámara</div>
+              <div class="text-h6">{{ $t('ui.captura-con-camara-a06948') }}</div>
               <video ref="video" autoplay playsinline style="width: 100%; height: auto" />
               <div class="q-mt-md flex justify-around">
                 <q-btn
                   color="primary"
                   icon="photo_camera"
-                  label="Capturar"
+                  :label="$t('ui.capturar-5adc27')"
                   @click="capturarImagen"
                 />
-                <q-btn flat label="Cancelar" color="negative" @click="cerrarCamara" />
+                <q-btn flat :label="$t('common.cancel')" color="negative" @click="cerrarCamara" />
               </div>
             </q-card-section>
           </q-card>
@@ -53,13 +53,14 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="Cerrar" color="grey" @click="cerrar" />
+        <q-btn flat :label="$t('ui.cerrar-4b0816')" color="grey" @click="cerrar" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onBeforeUnmount, watch, nextTick, computed } from 'vue' // Import nextTick
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -108,7 +109,7 @@ const usarCamara = async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       $q.notify({
         type: 'negative',
-        message: 'Tu navegador no soporta la cámara.',
+        message: i18nT('ui.tu-navegador-no-soporta-la-camara-f97296'),
       })
       return
     }
@@ -130,7 +131,7 @@ const usarCamara = async () => {
       console.error('Video element not found after nextTick.')
       $q.notify({
         type: 'negative',
-        message: 'Error al iniciar la cámara: elemento de video no disponible.',
+        message: i18nT('ui.error-al-iniciar-la-camara-elemento-de-video-no-disp-4ea485'),
       })
       cerrarCamara() // Close camera if element not found
     }
@@ -159,7 +160,7 @@ const usarCamara = async () => {
 
 const capturarImagen = () => {
   if (!video.value || !stream) {
-    $q.notify({ type: 'warning', message: 'Cámara no lista para capturar.' })
+    $q.notify({ type: 'warning', message: i18nT('ui.camara-no-lista-para-capturar-7fee2f') })
     return
   }
   const canvas = document.createElement('canvas')
@@ -173,9 +174,9 @@ const capturarImagen = () => {
       const file = new File([blob], `voucher_camera_${Date.now()}.png`, { type: 'image/png' })
       selectedFile.value = file
       imagenPreview.value = URL.createObjectURL(file)
-      $q.notify({ type: 'info', message: 'Imagen capturada.' })
+      $q.notify({ type: 'info', message: i18nT('ui.imagen-capturada-bdea48') })
     } else {
-      $q.notify({ type: 'negative', message: 'Error al capturar la imagen.' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-capturar-la-imagen-7d194d') })
     }
   }, 'image/png')
 
@@ -196,11 +197,11 @@ const cerrarCamara = () => {
 
 const subirVoucher = async () => {
   if (!selectedFile.value) {
-    $q.notify({ type: 'warning', message: 'Primero selecciona o captura una imagen.' })
+    $q.notify({ type: 'warning', message: i18nT('ui.primero-selecciona-o-captura-una-imagen-02c730') })
     return
   }
   if (!props.idPedido) {
-    $q.notify({ type: 'negative', message: 'No se ha proporcionado el ID del pedido.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-ha-proporcionado-el-id-del-pedido-c3b083') })
     return
   }
 
@@ -216,21 +217,21 @@ const subirVoucher = async () => {
     if (response.data.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: response.data.mensaje || 'Voucher subido exitosamente.',
+        message: response.data.mensaje || i18nT('ui.voucher-subido-exitosamente-b9ce1a'),
       })
       emit('voucher-uploaded', response.data.ruta_recibo)
       cerrar()
     } else {
       $q.notify({
         type: 'negative',
-        message: response.data.mensaje || 'Error al subir el voucher.',
+        message: response.data.mensaje || i18nT('ui.error-al-subir-el-voucher-4f57d4'),
       })
     }
   } catch (error) {
     console.error('Error al subir el voucher:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error de conexión al subir el voucher.',
+      message: i18nT('ui.error-de-conexion-al-subir-el-voucher-0ef075'),
       caption: error.message,
     })
   } finally {

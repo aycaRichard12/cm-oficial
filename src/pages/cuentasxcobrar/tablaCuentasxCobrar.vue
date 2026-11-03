@@ -2,7 +2,7 @@
   <BaseFilterableTable
     id="tablalistadocuentasporcobrar"
     ref="refHijo"
-    title="Cuentas por Cobrar"
+    :title="$t('ui.cuentas-por-cobrar-2aaedc')"
     nombreColumnaTotales="cuotasProcesadas"
     :rows="props.rows"
     :columns="columnas"
@@ -24,7 +24,7 @@
               color="primary"
               :id="'btn-' + props.row.id"
               @click="$emit('cargarFormulario', props.row)"
-              title="Registrar cobro"
+              :title="$t('ui.registrar-cobro-f33742')"
             />
           </span>
           <q-btn
@@ -32,7 +32,7 @@
             icon="list_alt"
             color="info"
             @click="$emit('mostrarDetalles', props.row)"
-            title="Ver listado de cobros"
+            :title="$t('ui.ver-listado-de-cobros-e5cf8e')"
           />
         </div>
       </q-td>
@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
@@ -75,62 +76,62 @@ defineEmits(['cargarFormulario', 'mostrarDetalles', 'column-filter-changed'])
 
 // Definición de las columnas (CORREGIDA: se añade 'sortable: true' a las columnas)
 const columnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
   {
     name: 'fecha',
-    label: 'Fecha Crédito',
+    label: i18nT('ui.fecha-credito-e22d16'),
     field: 'fechaventa',
     align: 'center',
     dataType: 'date',
   },
-  { name: 'cliente', label: 'Razon Social', field: 'cliente', align: 'left', dataType: 'text' },
+  { name: 'cliente', label: i18nT('ui.razon-social-eb711d'), field: 'cliente', align: 'left', dataType: 'text' },
   {
     name: 'nombreComercial',
-    label: 'Nombre Comercial',
+    label: i18nT('ui.nombre-comercial-55a6ae'),
     field: 'nombreComercial',
     align: 'left',
     dataType: 'text',
   },
-  { name: 'factura', label: 'N° Factura', field: 'nfactura', align: 'center', dataType: 'number' },
+  { name: 'factura', label: i18nT('ui.n-factura-5a62ff'), field: 'nfactura', align: 'center', dataType: 'number' },
 
   {
     name: 'vencimiento',
-    label: 'Vencimiento',
+    label: i18nT('ui.vencimiento-43d44c'),
     field: 'fechalimite',
     align: 'center',
     dataType: 'date',
   },
-  { name: 'cuotas', label: 'N° Cuotas', field: 'ncuotas', align: 'center', dataType: 'number' },
+  { name: 'cuotas', label: i18nT('ui.n-cuotas-9e3c8f'), field: 'ncuotas', align: 'center', dataType: 'number' },
   {
     name: 'cuotasProcesadas',
-    label: 'Cuotas Procesadas',
+    label: i18nT('ui.cuotas-procesadas-a2220e'),
     field: 'cuotaspagas',
     align: 'center',
     dataType: 'number',
   },
   {
     name: 'ventatotal',
-    label: 'Total Venta',
+    label: i18nT('ui.total-venta-eaaafd'),
     field: 'ventatotal',
     align: 'right',
     dataType: 'number',
   },
   {
     name: 'totalcobrado',
-    label: 'Total Cobrado',
+    label: i18nT('ui.total-cobrado-c3a2cb'),
     field: 'totalcobrado',
     align: 'right',
     dataType: 'number',
   },
   {
     name: 'saldo',
-    label: 'Saldo',
+    label: i18nT('ui.saldo-8b0fcd'),
     field: 'saldo',
     align: 'right',
     dataType: 'number',
   },
-  { name: 'estadoLabel', label: 'Estado', field: 'estadoLabel', align: 'center', dataType: 'text' },
-  { name: 'opciones', label: 'Opciones', field: 'opciones', align: 'center' },
+  { name: 'estadoLabel', label: i18nT('cotizacion.table.status'), field: 'estadoLabel', align: 'center', dataType: 'text' },
+  { name: 'opciones', label: i18nT('configGeneral.divisas.table.options'), field: 'opciones', align: 'center' },
 ]
 
 // Headers para la tabla filtrable (copiado del archivo original)

@@ -3,19 +3,19 @@
     <div class="q-mb-md">
       <q-btn
         icon="arrow_back"
-        label="Volver"
+        :label="$t('ui.volver-84a715')"
         color="primary"
         @click="$emit('volver')"
         class="q-mb-md"
       />
 
-      <h4 class="text-h6 q-mb-md">Detalle de devolución</h4>
+      <h4 class="text-h6 q-mb-md">{{ $t('ui.detalle-de-devolucion-c630c6') }}</h4>
 
       <q-form @submit="actualizarDetalleDev">
         <div class="row q-col-gutter-md">
           <q-input
             v-model="formDetalleDev.producto"
-            label="Producto"
+            :label="$t('inventario.product')"
             outlined
             dense
             disable
@@ -24,7 +24,7 @@
 
           <q-input
             v-model="formDetalleDev.cantidadTotal"
-            label="Cant. Venta"
+            :label="$t('ui.cant-venta-c4d03b')"
             outlined
             dense
             disable
@@ -33,18 +33,18 @@
 
           <q-input
             v-model="formDetalleDev.cantidadDevuelta"
-            label="Cant. Devuelta*"
+            :label="$t('ui.cant-devuelta-db49f2')"
             outlined
             dense
             type="number"
-            :rules="[(val) => val >= 0 || 'Debe ser un número positivo']"
+            :rules="[(val) => val >= 0 || $t('ui.debe-ser-un-numero-positivo-daaec1')]"
             class="col-12 col-md-2"
           />
 
           <q-select
             v-model="formDetalleDev.perdida"
             :options="opcionesPerdida"
-            label="Pérdida*"
+            :label="$t('ui.perdida-335820')"
             outlined
             dense
             emit-value
@@ -54,27 +54,27 @@
 
           <q-input
             v-model="formDetalleDev.cantidadPerdida"
-            label="Cant. Pérdida*"
+            :label="$t('ui.cant-perdida-914125')"
             outlined
             dense
             type="number"
-            :rules="[(val) => val >= 0 || 'Debe ser un número positivo']"
+            :rules="[(val) => val >= 0 || $t('ui.debe-ser-un-numero-positivo-daaec1')]"
             :disable="formDetalleDev.perdida === 2"
             class="col-12 col-md-2"
           />
 
           <div class="col-12">
             <div class="row q-gutter-sm">
-              <q-btn label="Actualizar" type="submit" color="primary" />
+              <q-btn :label="$t('configuracion.servicios.dialog.update')" type="submit" color="primary" />
 
-              <q-btn label="Borrar" type="reset" color="primary" flat @click="resetForm" />
+              <q-btn :label="$t('ui.borrar-d7b82b')" type="reset" color="primary" flat @click="resetForm" />
 
               <q-space />
 
-              <q-btn label="Cancelar Devolución" color="negative" @click="eliminarDevolucion" />
+              <q-btn :label="$t('ui.cancelar-devolucion-41bad0')" color="negative" @click="eliminarDevolucion" />
 
               <q-btn
-                label="Confirmar Devolución"
+                :label="$t('ui.confirmar-devolucion-6be543')"
                 color="positive"
                 @click="confirmarAutorizarDevolucion"
               />
@@ -85,7 +85,7 @@
     </div>
 
     <q-table
-      title="Devoluciones"
+      :title="$t('ui.devoluciones-c4cbac')"
       :rows="detalles"
       :columns="columnas"
       row-key="id"
@@ -103,7 +103,7 @@
               @click="props.expand = !props.expand"
               :icon="props.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
             >
-              <q-tooltip>Ver detalles de códigos</q-tooltip>
+              <q-tooltip>{{ $t('ui.ver-detalles-de-codigos-9e0689') }}</q-tooltip>
             </q-btn>
           </q-td>
 
@@ -146,6 +146,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, watch } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
@@ -173,25 +174,25 @@ const formDetalleDev = ref({
 })
 
 const opcionesPerdida = ref([
-  { value: 1, label: 'Si' },
-  { value: 2, label: 'No' },
+  { value: 1, label: i18nT('ui.si-79ac29') },
+  { value: 2, label: i18nT('ui.no-816c52') },
 ])
 
 const columnas = [
   { name: 'exp', label: '', align: 'left' },
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'precio', label: 'Precio', field: 'precio', align: 'right' },
-  { name: 'cantidad', label: 'Cant. devuelta', field: 'cantidad', align: 'right' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'precio', label: i18nT('ui.precio-18e070'), field: 'precio', align: 'right' },
+  { name: 'cantidad', label: i18nT('ui.cant-devuelta-31bd1a'), field: 'cantidad', align: 'right' },
   {
     name: 'perdida',
-    label: 'Pérdida',
+    label: i18nT('ui.perdida-e59387'),
     field: (row) => (row.perdida === 1 ? 'Si' : 'No'),
     align: 'center',
   },
-  { name: 'cantidadperdida', label: 'Cant. pérdida', field: 'cantidadperdida', align: 'right' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'cantidadperdida', label: i18nT('ui.cant-perdida-5daa1f'), field: 'cantidadperdida', align: 'right' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 // Fetch data logic (Moved from Main Page to here as it is very specific)
@@ -211,7 +212,7 @@ const listarDatosDetalleDevolucion = async (id) => {
     }))
   } catch (error) {
     console.error('Error al listar detalle de devolución:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar detalle de devolución' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-detalle-de-devolucion-c37132') })
   } finally {
     loading.value = false
   }
@@ -236,13 +237,13 @@ const editarDetalle = async (row) => {
     }
   } catch (error) {
     console.error('Error al cargar detalle para edición:', error)
-    $q.notify({ type: 'negative', message: 'Error al cargar detalle para edición' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-cargar-detalle-para-edicion-fa077b') })
   }
 }
 
 const actualizarDetalleDev = async () => {
   try {
-    $q.loading.show({ message: 'Actualizando detalle...' })
+    $q.loading.show({ message: i18nT('ui.actualizando-detalle-5bff4f') })
 
     const formData = new FormData()
     formData.append('ver', 'actualizarDetalleDev')
@@ -254,15 +255,15 @@ const actualizarDetalleDev = async () => {
     const response = await api.post('', formData)
 
     if (response.data.estado === 100) {
-      $q.notify({ type: 'positive', message: 'Detalle actualizado correctamente' })
+      $q.notify({ type: 'positive', message: i18nT('ui.detalle-actualizado-correctamente-2a2001') })
       resetForm()
       await listarDatosDetalleDevolucion(props.idDevolucion)
     } else {
-      throw new Error(response.data.error || 'Error al actualizar detalle')
+      throw new Error(response.data.error || i18nT('ui.error-al-actualizar-detalle-4e729b'))
     }
   } catch (error) {
     console.error('Error al actualizar detalle:', error)
-    $q.notify({ type: 'negative', message: 'Error al actualizar detalle' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-actualizar-detalle-4e729b') })
   } finally {
     $q.loading.hide()
   }
@@ -283,24 +284,24 @@ const resetForm = () => {
 
 const eliminarDevolucion = () => {
   $q.dialog({
-    title: '¿Está seguro?',
-    message: 'No podrá recuperar este registro',
+    title: i18nT('ui.esta-seguro-6c4824'),
+    message: i18nT('ui.no-podra-recuperar-este-registro-02fdf8'),
     cancel: true,
     persistent: true,
   }).onOk(async () => {
     try {
-      $q.loading.show({ message: 'Eliminando devolución...' })
+      $q.loading.show({ message: i18nT('ui.eliminando-devolucion-21f064') })
       const response = await api.get(`eliminarDevolucion/${props.idDevolucion}`)
 
       if (response.data.estado === 100) {
-        $q.notify({ type: 'positive', message: 'Devolución eliminada con éxito' })
+        $q.notify({ type: 'positive', message: i18nT('ui.devolucion-eliminada-con-exito-f9a54f') })
         emit('finalizado')
       } else {
-        throw new Error(response.data.error || 'Error al eliminar devolución')
+        throw new Error(response.data.error || i18nT('ui.error-al-eliminar-devolucion-1e0895'))
       }
     } catch (error) {
       console.error('Error al eliminar devolución:', error)
-      $q.notify({ type: 'negative', message: 'Error al eliminar devolución' })
+      $q.notify({ type: 'negative', message: i18nT('ui.error-al-eliminar-devolucion-1e0895') })
     } finally {
       $q.loading.hide()
     }
@@ -309,8 +310,8 @@ const eliminarDevolucion = () => {
 
 const confirmarAutorizarDevolucion = () => {
   $q.dialog({
-    title: '¿Está seguro?',
-    message: 'Al aceptar el stock de productos se actualizará',
+    title: i18nT('ui.esta-seguro-6c4824'),
+    message: i18nT('ui.al-aceptar-el-stock-de-productos-se-actualizara-bd067d'),
     cancel: true,
     persistent: true,
   }).onOk(autorizarDevolucion)
@@ -322,19 +323,19 @@ const autorizarDevolucion = async () => {
     //const usuario = usuarioResponse[0]
     //const idusuario = usuario?.idusuario
 
-    $q.loading.show({ message: 'Autorizando devolución...' })
+    $q.loading.show({ message: i18nT('ui.autorizando-devolucion-6d61c6') })
 
     // const response = await api.get(`autorizarDevolucion/${props.idDevolucion}/1/${idusuario}`)
 
     // if (response.data.estado === 100) {
-    //   $q.notify({ type: 'positive', message: 'Devolución registrada con éxito' })
+    //   $q.notify({ type: 'positive', message: Devolución registrada con éxito })
     //   emit('finalizado')
     // } else {
-    //   throw new Error(response.data.error || 'Error al autorizar devolución')
+    //   throw new Error(response.data.error || Error al autorizar devolución)
     // }
   } catch (error) {
     console.error('Error al autorizar devolución:', error)
-    $q.notify({ type: 'negative', message: 'Error al autorizar devolución' })
+    $q.notify({ type: 'negative', message: i18nT('ui.error-al-autorizar-devolucion-e607e5') })
   } finally {
     $q.loading.hide()
   }

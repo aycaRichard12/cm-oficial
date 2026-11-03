@@ -12,10 +12,10 @@
         <div class="col">
           <div class="dpv-title">
             <q-icon name="download" size="22px" class="q-mr-sm" />
-            Plantilla de Productos Variantes
+            {{ $t('ui.plantilla-de-productos-variantes-fb338c') }}
           </div>
           <div class="dpv-subtitle">
-            Descarga el Excel, complétalo y súbelo para registrar variantes masivamente
+            {{ $t('ui.descarga-el-excel-completalo-y-subelo-para-registrar-f73942') }}
           </div>
         </div>
         <q-btn icon="close" flat round dense color="grey-6" v-close-popup :disable="isUploading" />
@@ -49,13 +49,13 @@
         <div class="dpv-section">
           <div class="dpv-section__label">
             <span class="dpv-badge">1</span>
-            Seleccionar almacén
+            {{ $t('ui.seleccionar-almacen-797780') }}
           </div>
 
           <q-select
             v-model="selectedAlmacen"
             :options="almacenOptions"
-            label="Almacén"
+            :label="$t('inventario.warehouse')"
             outlined
             dense
             emit-value
@@ -82,13 +82,13 @@
                 :loading="isLoadingAlmacenes"
                 @click.stop.prevent="recargarAlmacenes"
               >
-                <q-tooltip>Recargar almacenes</q-tooltip>
+                <q-tooltip>{{ $t('ui.recargar-almacenes-fa871e') }}</q-tooltip>
               </q-btn>
             </template>
             <template #no-option>
               <q-item>
                 <q-item-section class="text-grey text-caption">
-                  No hay almacenes disponibles
+                  {{ $t('ui.no-hay-almacenes-disponibles-6339fe') }}
                 </q-item-section>
               </q-item>
             </template>
@@ -99,7 +99,7 @@
         <div class="dpv-section" :class="{ 'dpv-section--disabled': !selectedAlmacen }">
           <div class="dpv-section__label">
             <span class="dpv-badge" :class="{ 'dpv-badge--inactive': !selectedAlmacen }">2</span>
-            Descargar plantilla Excel
+            {{ $t('ui.descargar-plantilla-excel-f10fce') }}
           </div>
           <div class="dpv-download-area q-mt-sm">
             <div class="dpv-download-info">
@@ -107,12 +107,12 @@
               <div class="q-ml-sm">
                 <div class="text-body2 text-weight-medium">plantilla_variantes.xlsx</div>
                 <div class="text-caption cm-text-muted">
-                  Contiene los productos del almacén seleccionado
+                  {{ $t('ui.contiene-los-productos-del-almacen-seleccionado-5ea435') }}
                 </div>
               </div>
             </div>
             <q-btn
-              label="Descargar"
+              :label="$t('ui.descargar-8b98cb')"
               icon="download"
               color="green-7"
               unelevated
@@ -132,12 +132,12 @@
         <div class="dpv-section" :class="{ 'dpv-section--disabled': !selectedAlmacen }">
           <div class="dpv-section__label">
             <span class="dpv-badge" :class="{ 'dpv-badge--inactive': !selectedAlmacen }">3</span>
-            Subir archivo editado
+            {{ $t('ui.subir-archivo-editado-bf136b') }}
           </div>
 
           <q-file
             v-model="archivoExcel"
-            label="Selecciona tu archivo Excel"
+            :label="$t('ui.selecciona-tu-archivo-excel-c8f59e')"
             outlined
             dense
             accept=".xlsx, .xls"
@@ -196,9 +196,9 @@
 
       <!-- ── FOOTER ────────────────────────────────────────────── -->
       <q-card-actions align="right" class="q-px-lg q-pb-lg q-pt-sm">
-        <q-btn flat label="Cancelar" color="grey-7" :disable="isUploading" v-close-popup />
+        <q-btn flat :label="$t('common.cancel')" color="grey-7" :disable="isUploading" v-close-popup />
         <q-btn
-          label="Importar variantes"
+          :label="$t('ui.importar-variantes-b2d77c')"
           icon="cloud_upload"
           color="primary"
           unelevated
@@ -209,7 +209,7 @@
         >
           <template #loading>
             <q-spinner-dots size="18px" class="q-mr-sm" />
-            Procesando...
+            {{ $t('ui.procesando-e72aae') }}
           </template>
         </q-btn>
       </q-card-actions>
@@ -221,19 +221,20 @@
     <q-card style="min-width: 320px">
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="warning" text-color="white" />
-        <span class="q-ml-sm text-body1 text-weight-medium">Sin almacenes asignados</span>
+        <span class="q-ml-sm text-body1 text-weight-medium">{{ $t('ui.sin-almacenes-asignados-8cbe21') }}</span>
       </q-card-section>
       <q-card-section class="q-pt-none text-body2 cm-text">
-        No tienes almacenes asignados a tu usuario. Contacta al administrador del sistema.
+        {{ $t('ui.no-tienes-almacenes-asignados-a-tu-usuario-contacta-397914') }}
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Entendido" color="primary" v-close-popup />
+        <q-btn flat :label="$t('configuracion.clienteAlmacen.dialog.okButtonError')" color="primary" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import * as XLSX from 'xlsx'
@@ -341,7 +342,7 @@ async function cargarAlmacenes() {
     console.error('[cargarAlmacenes]', err)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes',
+      message: i18nT('ui.error-al-cargar-los-almacenes-5919ff'),
       icon: 'warning',
     })
   } finally {
@@ -355,7 +356,7 @@ async function cargarAlmacenes() {
  */
 async function descargarPlantilla() {
   if (!selectedAlmacen.value) {
-    statusMessage.value = { type: 'error', text: 'Debes seleccionar un almacén.' }
+    statusMessage.value = { type: 'error', text: i18nT('ui.debes-seleccionar-un-almacen-013a79') }
     return
   }
 
@@ -395,26 +396,26 @@ async function descargarPlantilla() {
     // Crear hoja de cálculo
     const worksheet = XLSX.utils.json_to_sheet(filas)
     const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Variantes')
+    XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.variantes-69a7f0'))
 
     // Descargar archivo
     XLSX.writeFile(workbook, `plantilla_variantes_almacen_${selectedAlmacen.value}.xlsx`)
 
     statusMessage.value = {
       type: 'success',
-      text: 'Plantilla generada correctamente.',
+      text: i18nT('ui.plantilla-generada-correctamente-5c6b2c'),
     }
 
     $q.notify({
       type: 'positive',
-      message: 'Plantilla descargada',
+      message: i18nT('ui.plantilla-descargada-3c329e'),
       icon: 'download_done',
     })
   } catch (err) {
     console.error('[descargarPlantilla]', err)
     statusMessage.value = {
       type: 'error',
-      text: err?.response?.data?.mensaje || err.message || 'Error al generar la plantilla.',
+      text: err?.response?.data?.mensaje || err.message || i18nT('ui.error-al-generar-la-plantilla-ee4d2c'),
     }
   } finally {
     isDownloading.value = false
@@ -438,7 +439,7 @@ function onFileSelected(file) {
     fileStatus.value = {
       type: 'error',
       icon: 'error_outline',
-      text: 'El archivo debe ser .xlsx o .xls',
+      text: i18nT('ui.el-archivo-debe-ser-xlsx-o-xls-c572e6'),
     }
     archivoExcel.value = null
     return
@@ -458,7 +459,7 @@ async function recargarAlmacenes() {
   if (isLoadingAlmacenes.value) return
   try {
     await cargarAlmacenes()
-    $q.notify({ type: 'positive', message: 'Almacenes recargados', position: 'top', timeout: 1200 })
+    $q.notify({ type: 'positive', message: i18nT('ui.almacenes-recargados-5f8af7'), position: 'top', timeout: 1200 })
   } catch (err) {
     console.error('Error al recargar almacenes:', err)
   }
@@ -565,7 +566,7 @@ async function procesarYEnviar() {
     mostrarError(
       err?.response?.data?.mensaje ||
         err?.message ||
-        'Ocurrió un error al procesar el archivo. Intenta de nuevo.',
+        i18nT('ui.ocurrio-un-error-al-procesar-el-archivo-intenta-de-n-646551'),
     )
   } finally {
     isUploading.value = false

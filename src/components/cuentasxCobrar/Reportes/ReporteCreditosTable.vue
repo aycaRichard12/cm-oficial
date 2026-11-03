@@ -1,7 +1,7 @@
 <template>
   <BaseFilterableTable
     ref="tableRef"
-    title="Créditos"
+    :title="$t('ui.creditos-fa59a5')"
     :rows="props.rows"
     :columns="columns"
     row-key="idcredito"
@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 
@@ -74,11 +75,11 @@ const colorEstado = {
 }
 
 const columns = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'right', sortable: true },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'right', sortable: true },
   {
     name: 'tipo_cobro',
     align: 'center',
-    label: 'Tipo',
+    label: i18nT('configGeneral.divisas.table.type'),
     field: 'tipo_cobro',
 
     dataType: 'text',
@@ -86,7 +87,7 @@ const columns = [
   {
     name: 'fechaventa',
     align: 'center',
-    label: 'Fecha Crédito',
+    label: i18nT('ui.fecha-credito-e22d16'),
     field: 'fechaventa',
 
     dataType: 'date',
@@ -94,7 +95,7 @@ const columns = [
   {
     name: 'numFactura',
     align: 'center',
-    label: 'num Factura',
+    label: i18nT('ui.num-factura-a2659f'),
     field: 'numFactura',
 
     dataType: 'number',
@@ -103,19 +104,19 @@ const columns = [
   {
     name: 'razonsocial',
     align: 'left',
-    label: 'Razón Social',
+    label: i18nT('ui.razon-social-adf906'),
     field: 'razonsocial',
   },
   {
     name: 'sucursal',
     align: 'left',
-    label: 'Sucursal',
+    label: i18nT('ui.sucursal-07d782'),
     field: 'sucursal',
   },
   {
     name: 'fechalimite',
     align: 'center',
-    label: 'Fecha Límite',
+    label: i18nT('ui.fecha-limite-b037db'),
     field: 'fechalimite',
 
     dataType: 'date',
@@ -123,7 +124,7 @@ const columns = [
   {
     name: 'ncuotas',
     align: 'center',
-    label: 'Cant. Cuotas',
+    label: i18nT('ui.cant-cuotas-a40f25'),
     field: 'ncuotas',
 
     dataType: 'number',
@@ -131,19 +132,19 @@ const columns = [
   {
     name: 'cuotasprocesadas',
     align: 'center',
-    label: 'Cuotas Proc.',
+    label: i18nT('ui.cuotas-proc-654e7a'),
     field: 'cuotasprocesadas',
   },
   {
     name: 'estado',
     align: 'center',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estadoLabel',
   },
   {
     name: 'moradias',
     align: 'right',
-    label: 'Mora Días',
+    label: i18nT('ui.mora-dias-db5528'),
     field: 'moradias',
 
     dataType: 'number',
@@ -151,7 +152,7 @@ const columns = [
   {
     name: 'valorcuotas',
     align: 'right',
-    label: 'Valor Cuota',
+    label: i18nT('ui.valor-cuota-a02fdf'),
     field: 'valorcuotas',
 
     dataType: 'number',
@@ -159,7 +160,7 @@ const columns = [
   {
     name: 'totalventa',
     align: 'right',
-    label: 'Total Venta',
+    label: i18nT('ui.total-venta-eaaafd'),
     field: 'totalventa',
 
     dataType: 'number',
@@ -167,7 +168,7 @@ const columns = [
   {
     name: 'totalcobrado',
     align: 'right',
-    label: 'Total Cobrado',
+    label: i18nT('ui.total-cobrado-c3a2cb'),
     field: 'totalcobrado',
 
     dataType: 'number',
@@ -175,7 +176,7 @@ const columns = [
   {
     name: 'saldo',
     align: 'right',
-    label: 'Saldo',
+    label: i18nT('ui.saldo-8b0fcd'),
     field: 'saldo',
 
     dataType: 'number',
@@ -183,7 +184,7 @@ const columns = [
   {
     name: 'totalatrasado',
     align: 'right',
-    label: 'Total Atrasado',
+    label: i18nT('ui.total-atrasado-5f639b'),
     field: 'totalatrasado',
 
     dataType: 'number',
@@ -191,7 +192,7 @@ const columns = [
   {
     name: 'totalanulado',
     align: 'right',
-    label: 'Total Anulado',
+    label: i18nT('ui.total-anulado-2a5202'),
     field: 'totalanulado',
 
     dataType: 'number',

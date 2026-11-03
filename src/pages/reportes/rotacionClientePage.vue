@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="assessment" size="md" class="q-mr-sm" />
-          Reporte de Índice de Rotación por Cliente
+          {{ $t('ui.reporte-de-indice-de-rotacion-por-cliente-c23a09') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte de Índice de Rotación por Cliente
+          {{ $t('ui.administracion-de-reporte-de-indice-de-rotacion-por-d04dc1') }}
         </div>
       </div>
     </div>
@@ -19,11 +19,11 @@
         <div class="col-md-3 col-sm-6 col-xs-12">
           <q-input
             v-model="fechaInicio"
-            label="Fecha Inicial*"
+            :label="$t('ui.fecha-inicial-2b461a')"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
 
@@ -31,11 +31,11 @@
         <div class="col-md-3 col-sm-6 col-xs-12">
           <q-input
             v-model="fechaFin"
-            label="Fecha Final*"
+            :label="$t('ui.fecha-final-33d0e8')"
             type="date"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           />
         </div>
 
@@ -43,7 +43,7 @@
         <div class="col-md-3 col-sm-6 col-xs-12">
           <q-select
             v-model="clienteSeleccionado"
-            label="Razón Social*"
+            :label="$t('ui.razon-social-e27b7d')"
             :options="clientesOptions"
             option-label="label"
             option-value="value"
@@ -51,11 +51,11 @@
             outlined
             dense
             @filter="filtrarClientes"
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
           >
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey"> No hay resultados </q-item-section>
+                <q-item-section class="text-grey"> {{ $t('ui.no-hay-resultados-c83a44') }} </q-item-section>
               </q-item>
             </template>
           </q-select>
@@ -65,13 +65,13 @@
         <div class="col-md-3 col-sm-6 col-xs-12">
           <q-select
             v-model="sucursalSeleccionada"
-            label="Sucursal*"
+            :label="$t('ui.sucursal-80e67a')"
             :options="sucursalesOptions"
             option-label="label"
             option-value="value"
             outlined
             dense
-            :rules="[(val) => !!val || 'Campo requerido']"
+            :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
             :disable="!clienteSeleccionado"
           />
         </div>
@@ -79,10 +79,10 @@
 
       <div class="row q-mt-md justify-center">
         <div class="col-auto">
-          <q-btn type="submit" color="primary" label="Generar Reporte" class="q-mr-sm" />
+          <q-btn type="submit" color="primary" :label="$t('reportes.generate')" class="q-mr-sm" />
           <q-btn
             color="primary"
-            label="Vista Previa"
+            :label="$t('ui.vista-previa-58a2c3')"
             @click="mostrarVistaPrevia"
             :disable="!datosFiltrados || datosFiltrados.length === 0"
           />
@@ -116,7 +116,7 @@
       <q-dialog v-model="mostrarModal" full-width full-height>
         <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Vista previa de PDF</div>
+            <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
             <q-space />
             <q-btn flat round icon="close" @click="mostrarModal = false" />
           </q-card-section>
@@ -136,6 +136,7 @@
   </q-page>
 </template>
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -171,20 +172,20 @@ const sucursalesOptions = ref([])
 const columnas = [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => datosFiltrados.value.indexOf(row) + 1,
     align: 'left',
   },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left' },
-  { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left' },
-  { name: 'cantidadVentas', label: 'Cant. Ventas', field: 'cantidadventas', align: 'right' },
-  { name: 'inventarioExterno', label: 'Inv. Externo', field: 'cantidadIE', align: 'right' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left' },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left' },
+  { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left' },
+  { name: 'cantidadVentas', label: i18nT('ui.cant-ventas-beb632'), field: 'cantidadventas', align: 'right' },
+  { name: 'inventarioExterno', label: i18nT('ui.inv-externo-d898e1'), field: 'cantidadIE', align: 'right' },
   {
     name: 'rotacion',
-    label: 'Rotación',
+    label: i18nT('ui.rotacion-fb6a5f'),
     field: (row) => calcularRotacion(row),
     align: 'right',
   },
@@ -238,7 +239,7 @@ const cargarDatosIniciales = async () => {
     console.error('Error al cargar datos iniciales:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar datos iniciales',
+      message: i18nT('ui.error-al-cargar-datos-iniciales-ba835a'),
     })
   }
 }
@@ -257,7 +258,7 @@ const cargarClientes = async () => {
     console.error('Error al cargar clientes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar la lista de clientes',
+      message: i18nT('ui.error-al-cargar-la-lista-de-clientes-1daf00'),
     })
   }
 }
@@ -293,7 +294,7 @@ const cargarSucursales = async (idCliente) => {
     console.error('Error al cargar sucursales:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar las sucursales del cliente',
+      message: i18nT('ui.error-al-cargar-las-sucursales-del-cliente-967f0a'),
     })
   }
 }
@@ -319,13 +320,13 @@ const generarReporte = async () => {
 
     $q.notify({
       type: 'positive',
-      message: 'Reporte generado correctamente',
+      message: i18nT('ui.reporte-generado-correctamente-8b476f'),
     })
   } catch (error) {
     console.error('Error al generar reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el reporte',
+      message: i18nT('ui.error-al-generar-el-reporte-01d807'),
     })
   } finally {
     cargando.value = false
@@ -337,7 +338,7 @@ const validarFormulario = () => {
   if (!fechaInicio.value || !fechaFin.value) {
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar ambas fechas',
+      message: i18nT('ui.debe-seleccionar-ambas-fechas-4d5415'),
     })
     return false
   }
@@ -345,7 +346,7 @@ const validarFormulario = () => {
   if (new Date(fechaInicio.value) > new Date(fechaFin.value)) {
     $q.notify({
       type: 'warning',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-32b79c'),
     })
     return false
   }
@@ -353,7 +354,7 @@ const validarFormulario = () => {
   if (!clienteSeleccionado.value) {
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar un cliente',
+      message: i18nT('ui.debe-seleccionar-un-cliente-03eec0'),
     })
     return false
   }
@@ -361,7 +362,7 @@ const validarFormulario = () => {
   if (!sucursalSeleccionada.value) {
     $q.notify({
       type: 'warning',
-      message: 'Debe seleccionar una sucursal',
+      message: i18nT('ui.debe-seleccionar-una-sucursal-b91ff3'),
     })
     return false
   }
@@ -374,7 +375,7 @@ const mostrarVistaPrevia = () => {
   if (!datosFiltrados.value || datosFiltrados.value.length === 0) {
     $q.notify({
       type: 'warning',
-      message: 'No hay datos para mostrar en el reporte',
+      message: i18nT('ui.no-hay-datos-para-mostrar-en-el-reporte-7ba1e1'),
     })
     return
   }

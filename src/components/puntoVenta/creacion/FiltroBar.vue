@@ -1,14 +1,14 @@
 <template>
   <q-row class="q-col-gutter-md items-center">
     <q-col cols="12" md="4">
-      <q-btn label="Agregar" icon="add" color="primary" @click="$emit('add')" class="full-width" />
+      <q-btn :label="$t('ui.agregar-87ebee')" icon="add" color="primary" @click="$emit('add')" class="full-width" />
     </q-col>
 
     <q-col cols="12" md="4">
       <q-select
         v-model="filtroTipoAlmacen"
         :options="tiposAlmacen"
-        label="Tipo de almacén"
+        :label="$t('ui.tipo-de-almacen-b9c1cd')"
         emit-value
         map-options
         dense
@@ -21,7 +21,7 @@
     <q-col cols="12" md="4">
       <q-input
         v-model="search"
-        placeholder="Buscar..."
+        :placeholder="$t('common.search')"
         dense
         outlined
         debounce="300"

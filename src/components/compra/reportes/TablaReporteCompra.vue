@@ -12,7 +12,7 @@
       <BaseFilterableTable
         id="tabla"
         ref="refHijo"
-        title="Compras"
+        :title="$t('ui.compras-43a802')"
         :rows="processedRows"
         :columns="columns"
         :arrayHeaders="arrayHeaders"
@@ -38,7 +38,7 @@
               icon="picture_as_pdf"
               @click="$emit('detallePdf', props.row)"
             >
-              <q-tooltip>Ver Detalle en PDF</q-tooltip>
+              <q-tooltip>{{ $t('ui.ver-detalle-en-pdf-99192a') }}</q-tooltip>
             </q-btn>
           </q-td>
         </template>
@@ -48,6 +48,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import CompraAcciones from './CompraAcciones.vue'
 import { PDFReporteCompras } from 'src/utils/pdfs/reporteCompras/reporte.js'
@@ -115,34 +116,34 @@ const fechaf = computed(() => {
 const columns = computed(() => [
   {
     name: 'num',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'num',
     align: 'center',
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     align: 'left',
     dataType: 'date',
   },
   {
     name: 'codigo',
-    label: 'Codigo',
+    label: i18nT('ui.codigo-b77b7c'),
     field: 'codigo',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'nombrelote',
-    label: 'Nombre Lote',
+    label: i18nT('ui.nombre-lote-7dc842'),
     field: 'nombrelote',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'proveedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'proveedor',
     align: 'left',
     dataType: 'text',
@@ -156,28 +157,28 @@ const columns = computed(() => [
   },
   {
     name: 'autorizacionTexto',
-    label: 'Autorización',
+    label: i18nT('ui.autorizacion-077400'),
     field: 'autorizacionTexto',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'nfactura',
-    label: 'Factura',
+    label: i18nT('ui.factura-2e3485'),
     field: 'nfactura',
     align: 'right',
     dataType: 'number',
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'left',
   },
@@ -223,14 +224,14 @@ const exportarexcel = () => {
   // ── 3. Definir todas las columnas posibles (copiado del PDF) ──
   const allPossibleColumns = [
     { header: 'N', dataKey: 'nro', width: 10 },
-    { header: 'Fecha', dataKey: 'fecha', width: 20 },
-    { header: 'Código', dataKey: 'codigo', width: 30 },
-    { header: 'Nombre Lote', dataKey: 'nombrelote', width: 30 },
-    { header: 'Proveedor', dataKey: 'proveedor', width: 30 },
+    { header: i18nT('cotizacion.table.date'), dataKey: 'fecha', width: 20 },
+    { header: i18nT('ui.codigo-c35510'), dataKey: 'codigo', width: 30 },
+    { header: i18nT('ui.nombre-lote-7dc842'), dataKey: 'nombrelote', width: 30 },
+    { header: i18nT('compras.supplier'), dataKey: 'proveedor', width: 30 },
     { header: `Importe Compra (${nombreDivisa.value})`, dataKey: 'total', width: 15 },
-    { header: 'Autorización', dataKey: 'autorizacionTexto', width: 25 },
-    { header: 'Factura', dataKey: 'nfactura', width: 10 },
-    { header: 'Almacén', dataKey: 'almacen', width: 20 },
+    { header: i18nT('ui.autorizacion-077400'), dataKey: 'autorizacionTexto', width: 25 },
+    { header: i18nT('ui.factura-2e3485'), dataKey: 'nfactura', width: 10 },
+    { header: i18nT('inventario.warehouse'), dataKey: 'almacen', width: 20 },
   ]
 
   // ── 4. Filtrar columnas según visibilidad (igual que en PDF) ──
@@ -282,7 +283,7 @@ const exportarexcel = () => {
 
   // ── 8. Generar y descargar archivo ────────────
   const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte Compras')
+  XLSX.utils.book_append_sheet(workbook, worksheet, i18nT('ui.reporte-compras-68944e'))
   XLSX.writeFile(workbook, `Reporte_Compras_${new Date().toISOString().split('T')[0]}.xlsx`)
 }
 

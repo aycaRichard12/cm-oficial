@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="point_of_sale" size="md" class="q-mr-sm" />
-          Reporte de Ventas por Campaña
+          {{ $t('ui.reporte-de-ventas-por-campana-1dc25c') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Reporte de Ventas por Campaña
+          {{ $t('ui.administracion-de-reporte-de-ventas-por-campana-cb9ea5') }}
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
     <q-card class="q-mb-lg shadow-2 rounded-borders">
       <q-card-section class="bg-primary text-white row items-center q-pb-sm">
         <q-icon name="tune" size="sm" class="q-mr-sm" />
-        <div class="text-subtitle1 text-weight-bold">Configuración del Reporte</div>
+        <div class="text-subtitle1 text-weight-bold">{{ $t('ui.configuracion-del-reporte-f9eac1') }}</div>
       </q-card-section>
 
       <q-card-section>
@@ -29,7 +29,7 @@
                 v-model="fechaInicio"
                 id="fechaIni"
                 type="date"
-                label="Fecha Inicial *"
+                :label="$t('ui.fecha-inicial-4e1b5c')"
                 outlined
                 dense
                 color="primary"
@@ -47,7 +47,7 @@
                 v-model="fechaFin"
                 id="fechafin"
                 type="date"
-                label="Fecha Final *"
+                :label="$t('ui.fecha-final-c5ac08')"
                 outlined
                 dense
                 color="primary"
@@ -62,7 +62,7 @@
           <div class="row justify-end q-pt-md q-gutter-sm">
             <q-btn
               id="btnGenerarVentas"
-              label="Generar Reporte"
+              :label="$t('reportes.generate')"
               color="primary"
               unelevated
               @click="handleGenerarReporte"
@@ -70,7 +70,7 @@
             />
             <q-btn
               id="btnExportarVentas"
-              label="Exportar PDF"
+              :label="$t('reportes.exportPdf')"
               icon="picture_as_pdf"
               color="negative"
               unelevated
@@ -89,7 +89,7 @@
           <div
             class="col-12 col-sm-auto text-h6 text-primary text-weight-bold row items-center q-mb-sm"
           >
-            <q-icon name="list_alt" size="sm" class="q-mr-sm" /> Resultados
+            <q-icon name="list_alt" size="sm" class="q-mr-sm" /> {{ $t('ui.resultados-b164a1') }}
           </div>
           <!-- Filtros de búsqueda (Almacén y Texto) -->
           <div class="col-12 col-sm-auto row q-gutter-sm justify-end">
@@ -97,7 +97,7 @@
               <q-select
                 v-model="almacenSeleccionado"
                 :options="opcionesAlmacenes"
-                label="Filtrar por Almacén"
+                :label="$t('ui.filtrar-por-almacen-f5828a')"
                 emit-value
                 map-options
                 outlined
@@ -134,7 +134,7 @@
         <BaseFilterableTable
           id="tableReporteVentas"
           ref="tableRef"
-          title="Resumen de Ventas por Campaña"
+          :title="$t('ui.resumen-de-ventas-por-campana-97127b')"
           :rows="datosFiltrados"
           :columns="columnasTabla"
           :arrayHeaders="[
@@ -159,7 +159,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height maximized>
       <q-card class="column">
         <q-card-section class="row items-center q-pb-none bg-primary text-white">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round dense icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -176,6 +176,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -206,30 +207,30 @@ const cargandoData = ref(false)
 // --- Propiedades Calculadas ---
 const almacenSeleccionadoTexto = computed(() => {
   const selected = opcionesAlmacenes.value.find((op) => op.value === almacenSeleccionado.value)
-  return selected ? selected.label : 'Todos los almacenes'
+  return selected ? selected.label : i18nT('ui.todos-los-almacenes-949f2c')
 })
 
 const columnasTabla = [
-  { name: 'n', label: 'N°', field: 'n', align: 'left' },
-  { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left' },
-  { name: 'nombre', label: 'Campaña', field: 'nombre', align: 'left' },
-  { name: 'porcentaje', label: 'Porcentaje', field: 'porcentaje', align: 'left' },
+  { name: 'n', label: i18nT('cotizacion.table.number'), field: 'n', align: 'left' },
+  { name: 'almacen', label: i18nT('inventario.warehouse'), field: 'almacen', align: 'left' },
+  { name: 'nombre', label: i18nT('ui.campana-236ee5'), field: 'nombre', align: 'left' },
+  { name: 'porcentaje', label: i18nT('ui.porcentaje-47bcdf'), field: 'porcentaje', align: 'left' },
   {
     name: 'fechainicio',
-    label: 'Fecha Inicio',
+    label: i18nT('ui.fecha-inicio-cecd90'),
     field: 'fechainicio',
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
   {
     name: 'fechafinal',
-    label: 'Fecha Final',
+    label: i18nT('ui.fecha-final-fcea71'),
     field: 'fechafinal',
     align: 'left',
     format: (val) => cambiarFormatoFecha(val),
   },
-  { name: 'est', label: 'Estado', field: 'est', align: 'left' },
-  { name: 'nventas', label: 'Cantidad de Ventas', field: 'nventas', align: 'center' },
+  { name: 'est', label: i18nT('cotizacion.table.status'), field: 'est', align: 'left' },
+  { name: 'nventas', label: i18nT('ui.cantidad-de-ventas-1ac992'), field: 'nventas', align: 'center' },
 ]
 
 // --- Watchers ---
@@ -257,12 +258,12 @@ async function cargarListaAlmacenes() {
       console.error('Error al cargar almacenes:', resultado.error)
       $q.notify({
         type: 'negative',
-        message: 'Error al cargar almacenes.',
+        message: i18nT('ui.error-al-cargar-almacenes-420531'),
         position: 'top',
       })
     } else {
       opcionesAlmacenes.value = []
-      opcionesAlmacenes.value.push({ label: 'Todos los almacenes', value: '0' })
+      opcionesAlmacenes.value.push({ label: i18nT('ui.todos-los-almacenes-949f2c'), value: '0' })
       const use = resultado.filter((u) => u.idusuario == idusuario)
       use.forEach((key) => {
         opcionesAlmacenes.value.push({
@@ -276,7 +277,7 @@ async function cargarListaAlmacenes() {
     console.error('Error en cargarListaAlmacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al cargar los almacenes.',
+      message: i18nT('ui.ocurrio-un-error-al-cargar-los-almacenes-06e9b8'),
       position: 'top',
     })
   }
@@ -292,7 +293,7 @@ function validarFechas() {
   if (inicio.getTime() > fin.getTime()) {
     $q.notify({
       type: 'info',
-      message: 'La fecha de inicio no puede ser mayor que la fecha de fin.',
+      message: i18nT('ui.la-fecha-de-inicio-no-puede-ser-mayor-que-la-fecha-d-48706f'),
       position: 'top',
     })
     // Se podría resetear la fecha o ajustar para corregir el error
@@ -307,14 +308,14 @@ async function generarReporte() {
   if (!fechaInicio.value || !fechaFin.value) {
     $q.notify({
       type: 'info',
-      message: 'Por favor, seleccione ambas fechas para generar el reporte.',
+      message: i18nT('ui.por-favor-seleccione-ambas-fechas-para-generar-el-re-04ec5a'),
       position: 'top',
     })
     return
   }
 
   $q.loading.show({
-    message: 'Generando reporte...',
+    message: i18nT('ui.generando-reporte-f36ceb'),
   })
   cargandoData.value = true
 
@@ -366,13 +367,13 @@ async function generarReporte() {
       almacenSeleccionado.value = '0' // Reinicia el filtro de almacén
       $q.notify({
         type: 'positive',
-        message: 'Reporte generado con éxito.',
+        message: i18nT('ui.reporte-generado-con-exito-13e8ba'),
         position: 'top',
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: 'Error al generar los reportes.',
+        message: i18nT('ui.error-al-generar-los-reportes-96f64e'),
         position: 'top',
       })
     }
@@ -380,7 +381,7 @@ async function generarReporte() {
     console.error('Error en generarReporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al generar el reporte.',
+      message: i18nT('ui.ocurrio-un-error-al-generar-el-reporte-eddf13'),
       position: 'top',
     })
   } finally {
@@ -438,7 +439,7 @@ function handleVerReporte() {
   if (!datosFinales || datosFinales.length === 0) {
     $q.notify({
       type: 'info',
-      message: 'No se ha generado ningún reporte o el reporte está vacío.',
+      message: i18nT('ui.no-se-ha-generado-ningun-reporte-o-el-reporte-esta-v-d8e84e'),
       position: 'top',
     })
     return

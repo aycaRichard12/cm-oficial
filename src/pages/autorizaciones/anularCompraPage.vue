@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="shopping_cart" size="md" class="q-mr-sm" />
-          Solicitudes de Anulación de Compras
+          {{ $t('ui.solicitudes-de-anulacion-de-compras-2a222b') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Solicitudes de Anulación de Compras
+          {{ $t('ui.administracion-de-solicitudes-de-anulacion-de-compra-3a104c') }}
         </div>
       </div>
     </div>
@@ -37,13 +37,13 @@
 
       <!-- Recargar -->
       <q-btn icon="refresh" color="primary" flat round :loading="loading" @click="recargar">
-        <q-tooltip>Recargar</q-tooltip>
+        <q-tooltip>{{ $t('ui.recargar-9d2c9d') }}</q-tooltip>
       </q-btn>
     </div>
 
     <!-- Tabla con filtros avanzados -->
     <BaseFilterableTable
-      title="Solicitudes de Anulación"
+      :title="$t('ui.solicitudes-de-anulacion-d6c7b2')"
       :rows="solicitudesFiltradas"
       :columns="columnas"
       :array-headers="columnasFiltrables"
@@ -115,7 +115,7 @@
               :loading="procesando === props.row.id_solicitud + 'a'"
               @click="procesarSolicitud(props.row, 'aprobada')"
             >
-              <q-tooltip>Aprobar anulación</q-tooltip>
+              <q-tooltip>{{ $t('ui.aprobar-anulacion-84f839') }}</q-tooltip>
             </q-btn>
             <q-btn
               icon="cancel"
@@ -126,10 +126,10 @@
               :loading="procesando === props.row.id_solicitud + 'r'"
               @click="procesarSolicitud(props.row, 'rechazada')"
             >
-              <q-tooltip>Rechazar anulación</q-tooltip>
+              <q-tooltip>{{ $t('ui.rechazar-anulacion-cb6583') }}</q-tooltip>
             </q-btn>
           </template>
-          <span v-else class="text-grey-4 text-caption">Procesada</span>
+          <span v-else class="text-grey-4 text-caption">{{ $t('ui.procesada-345199') }}</span>
         </q-td>
       </template>
     </BaseFilterableTable>
@@ -137,6 +137,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
@@ -161,15 +162,15 @@ const chipTextColor = (item) => (filtroEstado.value === item.valor ? 'white' : '
 const busqueda = ref('')
 
 const estadoConfig = {
-  pendiente: { color: 'orange', icon: 'schedule', label: 'Pendiente' },
-  aprobada: { color: 'positive', icon: 'check_circle', label: 'Aprobada' },
-  rechazada: { color: 'negative', icon: 'cancel', label: 'Rechazada' },
+  pendiente: { color: 'orange', icon: 'schedule', label: i18nT('ui.pendiente-7d63af') },
+  aprobada: { color: 'positive', icon: 'check_circle', label: i18nT('ui.aprobada-eec32e') },
+  rechazada: { color: 'negative', icon: 'cancel', label: i18nT('ui.rechazada-1d237f') },
 }
 
 const columnas = computed(() => [
   {
     name: 'id_solicitud',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'id_solicitud',
     sortable: true,
     align: 'center',
@@ -177,7 +178,7 @@ const columnas = computed(() => [
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     sortable: true,
     align: 'center',
@@ -185,7 +186,7 @@ const columnas = computed(() => [
   },
   {
     name: 'nfactura',
-    label: 'Factura',
+    label: i18nT('ui.factura-2e3485'),
     field: 'nfactura',
     sortable: true,
     align: 'center',
@@ -193,7 +194,7 @@ const columnas = computed(() => [
   },
   {
     name: 'nombre_provedor',
-    label: 'Proveedor',
+    label: i18nT('compras.supplier'),
     field: 'nombre_provedor',
     sortable: true,
     align: 'center',
@@ -201,14 +202,14 @@ const columnas = computed(() => [
   },
   {
     name: 'solicitante',
-    label: 'Solicitante',
+    label: i18nT('ui.solicitante-0cd165'),
     field: 'solicitante',
     sortable: false,
     align: 'center',
   },
   {
     name: 'motivo_usuario',
-    label: 'Motivo',
+    label: i18nT('ui.motivo-cbeec5'),
     field: 'motivo_usuario',
     sortable: false,
     align: 'center',
@@ -216,7 +217,7 @@ const columnas = computed(() => [
   },
   {
     name: 'fecha_solicitud',
-    label: 'Fecha Sol.',
+    label: i18nT('ui.fecha-sol-fc610e'),
     field: 'fecha_solicitud',
     sortable: true,
     align: 'center',
@@ -225,7 +226,7 @@ const columnas = computed(() => [
   },
   {
     name: 'fecha_compra',
-    label: 'Fecha Compra',
+    label: i18nT('ui.fecha-compra-3dd6df'),
     field: 'fecha_compra',
     sortable: true,
     align: 'center',
@@ -234,7 +235,7 @@ const columnas = computed(() => [
   },
   {
     name: 'fecha_resolucion',
-    label: 'Fecha Resolución',
+    label: i18nT('ui.fecha-resolucion-149a52'),
     field: 'fecha_resolucion',
     sortable: true,
     align: 'center',
@@ -242,13 +243,13 @@ const columnas = computed(() => [
   },
   {
     name: 'total',
-    label: `Total (${simbolo || 'Bs.'})`,
+    label: `Total (${simbolo || i18nT('ui.bs-78383b')})`,
     field: 'total',
     sortable: true,
     align: 'center',
     dataType: 'number',
   },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', sortable: false, align: 'center' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', sortable: false, align: 'center' },
 ])
 
 // Columnas que tendrán filtros avanzados por cabecera
@@ -269,28 +270,28 @@ const solicitudesFiltradas = computed(() => {
 
 const resumen = computed(() => [
   {
-    label: 'Total',
+    label: i18nT('ventas.total'),
     cantidad: solicitudes.value.length,
     color: 'primary',
     icon: 'list',
     valor: 'todas',
   },
   {
-    label: 'Pendientes',
+    label: i18nT('ui.pendientes-eaf186'),
     cantidad: solicitudes.value.filter((s) => s.estado === 'pendiente').length,
     color: 'orange',
     icon: 'schedule',
     valor: 'pendiente',
   },
   {
-    label: 'Aprobadas',
+    label: i18nT('ui.aprobadas-50e27d'),
     cantidad: solicitudes.value.filter((s) => s.estado === 'aprobada').length,
     color: 'positive',
     icon: 'check_circle',
     valor: 'aprobada',
   },
   {
-    label: 'Rechazadas',
+    label: i18nT('ui.rechazadas-f09124'),
     cantidad: solicitudes.value.filter((s) => s.estado === 'rechazada').length,
     color: 'negative',
     icon: 'cancel',
@@ -323,13 +324,13 @@ const procesando = ref(null)
 async function procesarSolicitud(solicitud, estado) {
   if (estado === 'rechazada') {
     $q.dialog({
-      title: 'Motivo de rechazo',
+      title: i18nT('ui.motivo-de-rechazo-561a53'),
       message: `Ingresa el motivo para rechazar la solicitud #${solicitud.id_solicitud}:`,
       prompt: {
         model: '',
         isValid: (val) => val.trim().length > 0,
         type: 'text',
-        label: 'Motivo *',
+        label: i18nT('ui.motivo-49005a'),
       },
       cancel: true,
       persistent: true,
@@ -338,7 +339,7 @@ async function procesarSolicitud(solicitud, estado) {
     })
   } else {
     $q.dialog({
-      title: 'Confirmar aprobación',
+      title: i18nT('ui.confirmar-aprobacion-3be592'),
       message: `¿Aprobar la anulación de la compra Factura N° ${solicitud.nfactura} — ${solicitud.nombre_provedor}?`,
       cancel: true,
       persistent: true,
@@ -365,7 +366,7 @@ async function enviarDecision(solicitud, estado, motivo_rechazo) {
     const ok = response.data.estado === 'exito' || response.data.estado === 'success'
     $q.notify({
       type: ok ? 'positive' : 'negative',
-      message: response.data.mensaje || (ok ? 'Procesado correctamente' : 'Error al procesar'),
+      message: response.data.mensaje || (ok ? i18nT('ui.procesado-correctamente-61c5f8') : i18nT('ui.error-al-procesar-f36d22')),
     })
     if (ok) {
       await cargarSolicitudes()
@@ -374,7 +375,7 @@ async function enviarDecision(solicitud, estado, motivo_rechazo) {
     }
   } catch (e) {
     console.error(e)
-    $q.notify({ type: 'negative', message: 'Error de conexión' })
+    $q.notify({ type: 'negative', message: i18nT('configProducto.configuracionProductoUnico.messages.connectionError') })
   } finally {
     procesando.value = null
   }

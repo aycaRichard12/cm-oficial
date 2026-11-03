@@ -57,7 +57,7 @@
             dense
             id="app_id"
             :rules="validationRules.app_id"
-            placeholder="Ej: 2092889"
+            :placeholder="$t('ui.ej-2092889-50d73a')"
           />
         </div>
 
@@ -70,7 +70,7 @@
             dense
             id="key"
             :rules="validationRules.key"
-            placeholder="Ej: 0bc643ef8d66124dac64"
+            :placeholder="$t('ui.ej-0bc643ef8d66124dac64-fdc449')"
           />
         </div>
 
@@ -84,7 +84,7 @@
             id="secret"
             :type="showSecret ? 'text' : 'password'"
             :rules="validationRules.secret"
-            placeholder="Ej: 97c2543c35b16e66b006"
+            :placeholder="$t('ui.ej-97c2543c35b16e66b006-6caba8')"
           >
             <template v-slot:append>
               <q-icon
@@ -105,7 +105,7 @@
             dense
             id="cluster"
             :rules="validationRules.cluster"
-            placeholder="Ej: sa1"
+            :placeholder="$t('ui.ej-sa1-daf135')"
           />
         </div>
       </div>

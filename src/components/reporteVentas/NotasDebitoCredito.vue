@@ -4,10 +4,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="label" size="md" class="q-mr-sm" />
-          Notas de Credito/Debito
+          {{ $t('ui.notas-de-credito-debito-0958a2') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Notas de Credito/Debito
+          {{ $t('ui.administracion-de-notas-de-credito-debito-09fab5') }}
         </div>
       </div>
     </div>
@@ -15,25 +15,25 @@
     <q-form @submit.prevent="onSubmit">
       <div class="row justify-center q-col-gutter-x-md q-ma-sm">
         <div class="col-12 col-md-3" id="fechaini">
-          <label for="fechaini">Fecha Inicial*</label>
+          <label for="fechaini">{{ $t('ui.fecha-inicial-2b461a') }}</label>
           <q-input type="date" v-model="fechai" dense outlined />
         </div>
         <div class="col-12 col-md-3" id="fechafin">
-          <label for="fechafin">Fecha Final*</label>
+          <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input type="date" v-model="fechaf" dense outlined />
         </div>
       </div>
 
       <div class="row justify-center q-mt-md">
         <div class="" id="btnGenerarReporte">
-          <q-btn label="Generar reporte" color="primary" type="submit" class="q-mr-sm" />
+          <q-btn :label="$t('ui.generar-reporte-eeafce')" color="primary" type="submit" class="q-mr-sm" />
         </div>
       </div>
     </q-form>
     <div class="row flex justify-between q-ma-md">
       <q-btn
         icon="picture_as_pdf"
-        label="Vista previa"
+        :label="$t('ui.vista-previa-432932')"
         color="red"
         outline
         @click="vistaPrevia"
@@ -42,7 +42,7 @@
       </q-btn>
       <q-btn
         icon="mdi-microsoft-excel"
-        label="Exportar Excel"
+        :label="$t('reportes.exportExcel')"
         color="green"
         outline
         @click="exportXLSX"
@@ -51,12 +51,12 @@
     </div>
     <div class="row q-col-gutter-x-md q-ma-sm">
       <div class="col-12 col-md-2" id="almacenCredito">
-        <label for="almacen">Filtrar por Almacén</label>
+        <label for="almacen">{{ $t('ui.filtrar-por-almacen-f5828a') }}</label>
         <q-select id="almacen" dense outlined v-model="almacen" :options="almacenes" clearable />
       </div>
 
       <div class="col-12 col-md-3" id="clienteCredito">
-        <label for="cliente">Filtrar por razón social</label>
+        <label for="cliente">{{ $t('ui.filtrar-por-razon-social-06617e') }}</label>
         <q-input
           v-model="clienteBusqueda"
           id="cliente"
@@ -84,7 +84,7 @@
             <q-card-section class="row items-center" id="dialogClientes">
               <q-input
                 v-model="clienteFilter"
-                label="Filtrar clientes..."
+                :label="$t('ui.filtrar-clientes-cec6c7')"
                 dense
                 class="col-grow"
                 autofocus
@@ -114,7 +114,7 @@
       </div>
 
       <div class="col-12 col-md-2" id="dialogSucursal">
-        <label for="sucursal">Filtrar por sucursal del cliente</label>
+        <label for="sucursal">{{ $t('ui.filtrar-por-sucursal-del-cliente-801c8e') }}</label>
         <q-input
           v-model="sucursalBusqueda"
           id="sucursal"
@@ -143,7 +143,7 @@
             <q-card-section class="row items-center" id="dialogSucursal">
               <q-input
                 v-model="sucursalFilter"
-                label="Filtrar clientes..."
+                :label="$t('ui.filtrar-clientes-cec6c7')"
                 dense
                 class="col-grow"
                 autofocus
@@ -173,12 +173,12 @@
       </div>
 
       <div class="col-12 col-md-2" id="dialogCanal">
-        <label for="canal">Filtrar por canal de venta</label>
+        <label for="canal">{{ $t('ui.filtrar-por-canal-de-venta-54003e') }}</label>
         <q-select id="canal" dense outlined="" v-model="canal" :options="canales" clearable />
       </div>
 
       <div class="col-12 col-md-3" id="dialogTipoPago">
-        <label for="tipopago">Filtrar por tipo de pago</label>
+        <label for="tipopago">{{ $t('ui.filtrar-por-tipo-de-pago-d53e14') }}</label>
         <q-select
           id="tipopago"
           dense
@@ -186,8 +186,8 @@
           v-model="tipopago"
           :options="[
             { label: 'todo', value: '0' },
-            { label: 'A crédito', value: 'credito' },
-            { label: 'Al contado', value: 'contado' },
+            { label: $t('ui.a-credito-d25cc3'), value: 'credito' },
+            { label: $t('ui.al-contado-5cbe4c'), value: 'contado' },
           ]"
           clearable
         />
@@ -195,7 +195,7 @@
     </div>
     <q-table
       id="tableCredito"
-      title="Reporte de Ventas"
+      :title="$t('ui.reporte-de-ventas-b4aec2')"
       :rows="filteredCompra"
       :columns="columnas"
       row-key="id"
@@ -254,7 +254,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -274,7 +274,7 @@
     <q-dialog v-model="VisibleModalNotaCredito" full-width full-height>
       <q-card>
         <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>Registrar Nota Credito Debito</div>
+          <div>{{ $t('ui.registrar-nota-credito-debito-510823') }}</div>
           <q-btn icon="close" flat dense round @click="toggleModal" />
         </q-card-section>
         <q-card-section style="max-height: 83vh; overflow-y: auto">
@@ -286,6 +286,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, computed } from 'vue'
 import { api } from 'src/boot/axios'
 import { idempresa_md5, idusuario_md5 } from 'src/composables/FuncionesGenerales'
@@ -356,7 +357,7 @@ async function cargarAlmacenes() {
     }))
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 async function getSucursale() {
@@ -368,7 +369,7 @@ async function getSucursale() {
       label: `${cli.nombre}`,
     }))
   } catch (error) {
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-clientes-dd5442') + error })
   }
 }
 async function getClientes() {
@@ -379,7 +380,7 @@ async function getClientes() {
       label: `${cli.codigo} - ${cli.nombre} - ${cli.nombrecomercial} - ${cli.ciudad} - ${cli.nit}`,
     }))
   } catch (error) {
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-clientes-dd5442') + error })
   }
 }
 async function getCanalVenta() {
@@ -390,7 +391,7 @@ async function getCanalVenta() {
       label: `${cli.canal}`,
     }))
   } catch (error) {
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los clientes' + error })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-clientes-dd5442') + error })
   }
 }
 const clientesFiltrados = computed(() => {
@@ -432,25 +433,25 @@ const clearSucursal = () => {
 
 // Datos de la tabla
 const columnas = [
-  { name: 'nro', label: 'N°', field: 'nro', align: 'left' },
-  { name: 'numNota', label: 'N° Nota', field: 'numNota', align: 'left' },
-  { name: 'fechaEmision', label: 'Fecha Emisión', field: 'fechaEmision' },
-  { name: 'cliente', label: 'Cliente', field: 'cliente' },
-  { name: 'nfactura', label: 'Nro. Factura', field: 'nfactura' },
-  { name: 'numeroFactura', label: 'Nro. SIN', field: 'numeroFactura' },
-  { name: 'monto_total_devuelto', label: 'Total Devuelto', field: 'monto_total_devuelto' },
+  { name: 'nro', label: i18nT('cotizacion.table.number'), field: 'nro', align: 'left' },
+  { name: 'numNota', label: i18nT('ui.n-nota-9bb7dd'), field: 'numNota', align: 'left' },
+  { name: 'fechaEmision', label: i18nT('ui.fecha-emision-f60f9b'), field: 'fechaEmision' },
+  { name: 'cliente', label: i18nT('ventas.client'), field: 'cliente' },
+  { name: 'nfactura', label: i18nT('ui.nro-factura-5aff74'), field: 'nfactura' },
+  { name: 'numeroFactura', label: i18nT('ui.nro-sin-fc4c0f'), field: 'numeroFactura' },
+  { name: 'monto_total_devuelto', label: i18nT('ui.total-devuelto-9ea186'), field: 'monto_total_devuelto' },
   {
     name: 'monto_descuento_credito_debito',
-    label: 'Descuento',
+    label: i18nT('ventas.discount'),
     field: 'monto_descuento_credito_debito',
   },
   {
     name: 'monto_efectivo_credito_debito',
-    label: 'Efectivo',
+    label: i18nT('ui.efectivo-4a9fab'),
     field: 'monto_efectivo_credito_debito',
   },
-  { name: 'codigoEstado', label: 'Estado SIN', field: 'codigoEstado' },
-  { name: 'acciones', label: 'Acciones', field: 'acciones', align: 'center' },
+  { name: 'codigoEstado', label: i18nT('ui.estado-sin-a74c00'), field: 'codigoEstado' },
+  { name: 'acciones', label: i18nT('common.actions'), field: 'acciones', align: 'center' },
 ]
 
 const rows = ref([])
@@ -460,7 +461,7 @@ const detalleVenta = ref([])
 const ir_a_factura = (row) => {
   const url = row.shortLink || row.shortlink
   if (!url) {
-    $q.notify({ type: 'warning', message: 'La nota no tiene enlace de factura' })
+    $q.notify({ type: 'warning', message: i18nT('ui.la-nota-no-tiene-enlace-de-factura-18f4a7') })
     return
   }
   window.open(url, '_blank')
@@ -468,7 +469,7 @@ const ir_a_factura = (row) => {
 const ir_a_impuestos = (row) => {
   const url = row.urlSin || row.urlsin
   if (!url) {
-    $q.notify({ type: 'warning', message: 'La nota no tiene enlace del SIN' })
+    $q.notify({ type: 'warning', message: i18nT('ui.la-nota-no-tiene-enlace-del-sin-7c3cbd') })
     return
   }
   window.open(url, '_blank')
@@ -482,7 +483,7 @@ const verDetalle = async (row) => {
   } else {
     $q.notify({
       type: 'negative',
-      message: 'Venta sin items',
+      message: i18nT('ui.venta-sin-items-9c9323'),
     })
   }
 }
@@ -492,7 +493,7 @@ const crearMensaje = async (row) => {
     console.log(response.data) // res { email: 'ClienteVarios@one.com' }
     const clientEmail = response.data.email
     $q.dialog({
-      title: 'Confirmar',
+      title: i18nT('configGeneral.divisas.messages.deleteTitle'),
       message: `¿Enviar factura a correo  "${clientEmail}"?`,
       cancel: true,
       persistent: true,
@@ -505,7 +506,7 @@ const crearMensaje = async (row) => {
       } else {
         $q.notify({
           type: 'negative',
-          message: 'Venta sin items',
+          message: i18nT('ui.venta-sin-items-9c9323'),
         })
       }
     })
@@ -513,7 +514,7 @@ const crearMensaje = async (row) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -522,7 +523,7 @@ async function enviarFacturaCorreo(idcliente) {
 }
 const cargarNotas = async () => {
   if (!almacen.value || !almacen.value.value) {
-    $q.notify({ type: 'warning', message: 'Seleccione un almacén para continuar' })
+    $q.notify({ type: 'warning', message: i18nT('ui.seleccione-un-almacen-para-continuar-a81797') })
     return
   }
   const enpoint = `listarNotas/${idempresa}/${almacen.value.value}`
@@ -535,12 +536,12 @@ const cargarNotas = async () => {
     } else {
       $q.notify({
         type: 'negative',
-        message: (data && data.mensaje) || 'Error al listar notas',
+        message: (data && data.mensaje) || i18nT('ui.error-al-listar-notas-2572b5'),
       })
     }
   } catch (error) {
     console.error('Error al listar notas:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar las notas' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-las-notas-db7f13') })
   }
 }
 
@@ -553,7 +554,7 @@ const getDetalleVenta = async (id) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -644,7 +645,7 @@ const ir_a_NotaCreditoDebito = async (factura) => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
   console.log(jsonEmizor)

@@ -42,7 +42,7 @@
         <q-btn
           v-if="tipo === 'Q'"
           flat
-          :label="config.cancelLabel || 'Cancelar'"
+          :label="config.cancelLabel || $t('common.cancel')"
           color="grey-7"
           no-caps
           class="q-px-lg text-weight-bold"
@@ -63,6 +63,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 import { useDialogPluginComponent } from 'quasar'
 
@@ -78,17 +79,17 @@ defineEmits([...useDialogPluginComponent.emits, 'update:modelValue'])
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 const configMap = {
-  I: { icon: 'info', color: 'blue-7', title: 'Información', okLabel: 'Entendido' },
+  I: { icon: 'info', color: 'blue-7', title: i18nT('ui.informacion-45332d'), okLabel: i18nT('configuracion.clienteAlmacen.dialog.okButtonError') },
   Q: {
     icon: 'help',
     color: 'warning',
-    title: 'Confirmación',
-    okLabel: 'Confirmar',
-    cancelLabel: 'Tal vez luego',
+    title: i18nT('ui.confirmacion-9850af'),
+    okLabel: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    cancelLabel: i18nT('ui.tal-vez-luego-05d968'),
   },
-  E: { icon: 'error', color: 'negative', title: 'Error del Sistema', okLabel: 'Cerrar' },
-  W: { icon: 'warning', color: 'orange-8', title: 'Atención', okLabel: 'Aceptar' },
-  S: { icon: 'check_circle', color: 'positive', title: 'Operación Exitosa', okLabel: 'Genial' },
+  E: { icon: 'error', color: 'negative', title: i18nT('ui.error-del-sistema-d00c95'), okLabel: i18nT('ui.cerrar-4b0816') },
+  W: { icon: 'warning', color: 'orange-8', title: i18nT('ui.atencion-aa813c'), okLabel: i18nT('ui.aceptar-8f9f73') },
+  S: { icon: 'check_circle', color: 'positive', title: i18nT('ui.operacion-exitosa-047492'), okLabel: i18nT('ui.genial-d6aa03') },
 }
 
 const config = computed(() => configMap[props.tipo] || configMap['I'])

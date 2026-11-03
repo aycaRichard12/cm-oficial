@@ -4,7 +4,7 @@
       <div class="q-gutter-md">
         <div class="row q-col-gutter-md justify-center" id="filtroFechas">
           <div class="col-md-4">
-            <label for="fechafin">Fecha Final*</label>
+            <label for="fechafin">{{ $t('ui.fecha-final-33d0e8') }}</label>
             <q-input
               v-model="fechaFin"
               id="fechafin"
@@ -15,7 +15,7 @@
             />
           </div>
           <div class="col-12 col-md-4">
-            <label for="almacen">Almacén*</label>
+            <label for="almacen">{{ $t('ui.almacen-3e3724') }}</label>
             <q-select
               v-model="form.almacen"
               id="almacen"
@@ -36,14 +36,14 @@
       </div>
 
       <div class="row q-gutter-sm justify-center q-mt-lg">
-        <q-btn color="primary" label="Vista Previa" @click="vistaPrevia" id="vistaPrevia" />
+        <q-btn color="primary" :label="$t('ui.vista-previa-58a2c3')" @click="vistaPrevia" id="vistaPrevia" />
         <!-- <q-btn
           color="primary"
           label="Reporte con imágen"
           @click="reporteImage"
           id="reporteImage"
         /> -->
-        <q-btn color="primary" label="Catálogo" @click="vistaCatalogo" id="vistaCatalogo" />
+        <q-btn color="primary" :label="$t('ui.catalogo-d92b81')" @click="vistaCatalogo" id="vistaCatalogo" />
       </div>
     </q-form>
 
@@ -68,7 +68,7 @@
     <BaseFilterableTable
       id="tablaStock"
       ref="miTabla"
-      title="Productos"
+      :title="$t('ui.productos-14e2a6')"
       :rows="processedRows"
       :columns="columnas"
       :arrayHeaders="arrayHeaders"
@@ -82,7 +82,7 @@
       <template v-slot:top-right> </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
-          {{ Number(props.row.estado) === 1 ? 'Activo' : 'No Activo' }}
+          {{ Number(props.row.estado) === 1 ? $t('common.active') : $t('ui.no-activo-56b827') }}
         </q-td>
       </template>
     </BaseFilterableTable>
@@ -92,7 +92,7 @@
     <q-dialog v-model="mostrarModal" full-width full-height>
       <q-card class="q-pa-md" style="height: 100%; max-width: 100%">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Vista previa de PDF</div>
+          <div class="text-h6">{{ $t('ui.vista-previa-de-pdf-978f4e') }}</div>
           <q-space />
           <q-btn flat round icon="close" @click="mostrarModal = false" />
         </q-card-section>
@@ -112,6 +112,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed, onMounted } from 'vue'
 import { api } from 'src/boot/axios'
 import { validarUsuario } from 'src/composables/FuncionesGenerales'
@@ -137,31 +138,31 @@ const divisaActiva = useCurrencyStore().simbolo
 const datos = ref([])
 
 const definicionColumnas = [
-  { name: 'numero', label: 'N°', field: 'numero', align: 'center', dataType: 'number' },
-  // { name: 'fecha', label: 'Fecha registro', field: 'fecha', align: 'left', dataType: 'date' },
-  // { name: 'almacen', label: 'Almacén', field: 'almacen', align: 'left', dataType: 'text' },
-  { name: 'codigo', label: 'Código', field: 'codigo', align: 'left', dataType: 'text' },
-  { name: 'producto', label: 'Producto', field: 'producto', align: 'left', dataType: 'text' },
-  { name: 'categoria', label: 'Categoría', field: 'categoria', align: 'left', dataType: 'text' },
+  { name: 'numero', label: i18nT('cotizacion.table.number'), field: 'numero', align: 'center', dataType: 'number' },
+  // { name: 'fecha', label: Fecha registro, field: 'fecha', align: 'left', dataType: 'date' },
+  // { name: 'almacen', label: Almacén, field: 'almacen', align: 'left', dataType: 'text' },
+  { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left', dataType: 'text' },
+  { name: 'producto', label: i18nT('inventario.product'), field: 'producto', align: 'left', dataType: 'text' },
+  { name: 'categoria', label: i18nT('configProducto.categoriaProducto.types.categoria'), field: 'categoria', align: 'left', dataType: 'text' },
   {
     name: 'subcategoria',
-    label: 'Sub categoría',
+    label: i18nT('ui.sub-categoria-229e51'),
     field: 'subcategoria',
     align: 'left',
     dataType: 'text',
   },
   {
     name: 'descripcion',
-    label: 'Descripcion',
+    label: i18nT('ui.descripcion-535208'),
     field: 'descripcion',
     align: 'left',
     dataType: 'text',
   },
-  { name: 'unidad', label: 'Unidad', field: 'unidad', align: 'left', dataType: 'text' },
-  { name: 'pais', label: 'País', field: 'pais', align: 'left', dataType: 'text' },
+  { name: 'unidad', label: i18nT('configProducto.unidadProducto.table.nombre'), field: 'unidad', align: 'left', dataType: 'text' },
+  { name: 'pais', label: i18nT('ui.pais-0c664f'), field: 'pais', align: 'left', dataType: 'text' },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     align: 'left',
     datatype: 'text',
@@ -169,7 +170,7 @@ const definicionColumnas = [
   },
   {
     name: 'stock',
-    label: 'Stock',
+    label: i18nT('inventario.stock'),
     field: 'stock',
     align: 'right',
     dataType: 'number',
@@ -241,7 +242,7 @@ async function cargarAlmacenes() {
     generarReporte()
   } catch (error) {
     console.error('Error al cargar proveedores:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los proveedores' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-proveedores-3f776a') })
   }
 }
 
@@ -256,7 +257,7 @@ const generarReporte = async () => {
     datos.value = response.data
   } catch (error) {
     console.error('Error al cargar almacenes:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar los almacenes' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-los-almacenes-4154c2') })
   }
 }
 const processedRows = computed(() => {

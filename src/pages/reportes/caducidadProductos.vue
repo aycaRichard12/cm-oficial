@@ -5,19 +5,19 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="inventory" size="md" class="q-mr-sm" />
-          Caducidad Producto
+          {{ $t('ui.caducidad-producto-a7ee53') }}
         </div>
         <div class="text-subtitle2 cm-text-muted q-mt-xs">
-          Administración de Caducidad Producto
+          {{ $t('ui.administracion-de-caducidad-producto-276984') }}
         </div>
       </div>
     </div>
     <q-card-section>
       <div class="row justify-center q-mb-md">
         <div class="col-12 col-md-4" id="fechaFinalR">
-          <label for="fechafinal">Fecha Final*</label>
+          <label for="fechafinal">{{ $t('ui.fecha-final-33d0e8') }}</label>
           <q-input
-            label="Fecha Final*"
+            :label="$t('ui.fecha-final-33d0e8')"
             type="date"
             dense
             outlined=""
@@ -28,16 +28,16 @@
       </div>
 
       <div class="row justify-center q-mb-md">
-        <q-btn color="primary" label="Generar reporte" @click="generarReporte" class="q-mr-sm" id="btnGenerarReporte" />
+        <q-btn color="primary" :label="$t('ui.generar-reporte-eeafce')" @click="generarReporte" class="q-mr-sm" id="btnGenerarReporte" />
         <q-btn color="primary" @click="exportarTablaAExcel" class="btn-res" id="btnExportarExcel">
           <q-icon name="mdi-file-excel" class="icono" />
-          <span class="texto">Exportar a Excel</span>
+          <span class="texto">{{ $t('ui.exportar-a-excel-1569c7') }}</span>
         </q-btn>
       </div>
 
       <div class="row q-col-gutter-x-md">
         <div class="col-12 col-md-4" id="almacenR">
-          <label for="almacen">Almacén</label>
+          <label for="almacen">{{ $t('inventario.warehouse') }}</label>
           <q-select
             dense
             outlined
@@ -50,7 +50,7 @@
           />
         </div>
         <div class="col-12 col-md-8" id="clienteR">
-          <label for="razonSocial">Razón Social*</label>
+          <label for="razonSocial">{{ $t('ui.razon-social-e27b7d') }}</label>
           <q-select
             dense
             outlined
@@ -80,7 +80,7 @@
         <div class="col-12 col-md-8" id="tablaR">
           <div style="max-height: 60vh; overflow-y: auto">
             <q-table
-              title="Inventario Externo"
+              :title="$t('ui.inventario-externo-b41a8a')"
               dense
               :rows="datosTablaPrincipal"
               :columns="columnasTablaPrincipal"
@@ -99,7 +99,7 @@
         <div class="col-12 col-md-4" id="tablaResumenR">
           <div style="max-height: 60vh; overflow-y: auto">
             <q-table
-              title="Resumen"
+              :title="$t('ui.resumen-35414e')"
               dense
               :rows="datosTablaResumen"
               :columns="columnasTablaResumen"
@@ -132,6 +132,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'boot/axios'
@@ -198,7 +199,7 @@ const cargarAlmacenes = async () => {
     console.error('Error al cargar almacenes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los almacenes',
+      message: i18nT('ui.error-al-cargar-los-almacenes-5919ff'),
     })
   }
 }
@@ -222,7 +223,7 @@ const cargarClientes = async () => {
     console.error('Error al cargar clientes:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al cargar los clientes',
+      message: i18nT('ui.error-al-cargar-los-clientes-12e13e'),
     })
   }
 }
@@ -270,7 +271,7 @@ const generarReporte = async () => {
   if (!fechaFinal.value) {
     $q.notify({
       type: 'warning',
-      message: 'Ingrese la fecha final',
+      message: i18nT('ui.ingrese-la-fecha-final-b073bc'),
     })
     return
   }
@@ -294,7 +295,7 @@ const generarReporte = async () => {
     console.error('Error al generar reporte:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al generar el reporte',
+      message: i18nT('ui.error-al-generar-el-reporte-01d807'),
     })
   }
 }
@@ -343,17 +344,17 @@ const cargarDatos = () => {
   // Crear columnas dinámicas
   const maxColumnas = Math.max(...Object.values(filas).map((f) => f.fechavencimientos.length))
   const columnasBase = [
-    { name: 'index', label: 'N°', field: 'index', align: 'left' },
-    { name: 'codigo', label: 'Código', field: 'codigo', align: 'left' },
-    { name: 'descripcion', label: 'Descripción', field: 'descripcion', align: 'left' },
+    { name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left' },
+    { name: 'codigo', label: i18nT('ui.codigo-c35510'), field: 'codigo', align: 'left' },
+    { name: 'descripcion', label: i18nT('configuracion.servicios.table.descripcion'), field: 'descripcion', align: 'left' },
   ]
 
   for (let i = 0; i < maxColumnas; i++) {
     columnasBase.push(
-      { name: `fecha_${i}`, label: 'Fecha', field: `fecha_${i}`, align: 'left' },
+      { name: `fecha_${i}`, label: i18nT('cotizacion.table.date'), field: `fecha_${i}`, align: 'left' },
       {
         name: `cantidad_${i}`,
-        label: 'Cantidad',
+        label: i18nT('ui.cantidad-b5b6f8'),
         field: `cantidad_${i}`,
         align: 'left',
       },
@@ -392,7 +393,7 @@ const cargarDatos = () => {
         objtablamedidor.push({
           nro: index,
           cantidad: fila.cantidades[i],
-          nombre: nombrecolores[color] || 'Desconocido',
+          nombre: nombrecolores[color] || i18nT('ui.desconocido-452c8a'),
           color: color,
         })
       }
@@ -405,7 +406,7 @@ const cargarDatos = () => {
   datosTablaPrincipal.value = rowsPrincipal
 
   // Procesar datos para la tabla resumen
-  const columnasResumen = [{ name: 'index', label: 'N°', field: 'index', align: 'left' }]
+  const columnasResumen = [{ name: 'index', label: i18nT('cotizacion.table.number'), field: 'index', align: 'left' }]
   console.log(data1)
   data1.forEach((item) => {
     columnasResumen.push({
@@ -454,7 +455,7 @@ const exportarTablaAExcel = () => {
   if (!datosTablaPrincipal.value.length) {
     $q.notify({
       type: 'warning',
-      message: 'No hay datos para exportar',
+      message: i18nT('ui.no-hay-datos-para-exportar-e911a2'),
     })
     return
   }
@@ -518,7 +519,7 @@ const exportarTablaAExcel = () => {
     console.error('Error al exportar a Excel:', error)
     $q.notify({
       type: 'negative',
-      message: 'Error al exportar el reporte',
+      message: i18nT('ui.error-al-exportar-el-reporte-1eff6f'),
     })
   }
 }

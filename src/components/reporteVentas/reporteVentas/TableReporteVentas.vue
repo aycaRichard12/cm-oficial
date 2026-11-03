@@ -1,7 +1,7 @@
 <template>
   <BaseFilterableTable
     ref="refHijo"
-    title="Reporte ventas"
+    :title="$t('ui.reporte-ventas-b501c0')"
     nombreColumnaTotales="canal"
     :rows="props.rows"
     :columns="columnas"
@@ -17,34 +17,34 @@
         <q-badge
           v-if="props.row.estado === 'Valido'"
           color="green"
-          label="Activo"
+          :label="$t('common.active')"
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Activo</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('common.active') }}</q-tooltip>
         </q-badge>
 
         <q-badge
           v-else-if="props.row.estado === 'Anulado'"
           color="red"
-          label="Anulado"
+          :label="$t('ui.anulado-c331a7')"
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Anulado</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.anulado-c331a7') }}</q-tooltip>
         </q-badge>
         <q-badge
           v-else-if="props.row.estado === 'Devuelta'"
           color="orange"
-          label="Devuelto"
+          :label="$t('ui.devuelto-8334e9')"
           outline
           class="text-weight-bold shadow-1"
         >
-          <q-tooltip content-class="bg-dark text-white text-caption">Anulado</q-tooltip>
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.anulado-c331a7') }}</q-tooltip>
         </q-badge>
 
-        <q-badge v-else color="grey" label="Desconocido" outline class="text-weight-bold shadow-1">
-          <q-tooltip content-class="bg-dark text-white text-caption">Estado desconocido</q-tooltip>
+        <q-badge v-else color="grey" :label="$t('ui.desconocido-452c8a')" outline class="text-weight-bold shadow-1">
+          <q-tooltip content-class="bg-dark text-white text-caption">{{ $t('ui.estado-desconocido-c6f97c') }}</q-tooltip>
         </q-badge>
       </q-td>
     </template>
@@ -98,21 +98,21 @@
                   <q-item-section avatar>
                     <q-icon name="receipt_long" color="blue" size="xs" />
                   </q-item-section>
-                  <q-item-section>Ver Factura</q-item-section>
+                  <q-item-section>{{ $t('ui.ver-factura-3d5c6a') }}</q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup @click="$emit('irAImpuestos', props.row)">
                   <q-item-section avatar>
                     <q-icon name="policy" color="warning" size="xs" />
                   </q-item-section>
-                  <q-item-section>Ver URL SIN</q-item-section>
+                  <q-item-section>{{ $t('ui.ver-url-sin-baa553') }}</q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup @click="$emit('abrirModalNota', props.row)">
                   <q-item-section avatar>
                     <q-icon name="account_balance_wallet" color="orange" size="xs" />
                   </q-item-section>
-                  <q-item-section>Nota Crédito/Débito</q-item-section>
+                  <q-item-section>{{ $t('ui.nota-credito-debito-71c121') }}</q-item-section>
                 </q-item>
               </template>
             </q-list>
@@ -124,6 +124,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref } from 'vue'
 import BaseFilterableTable from 'src/components/componentesGenerales/filtradoTabla/BaseFilterableTable.vue'
 const refHijo = ref(null)
@@ -163,7 +164,7 @@ defineEmits([
 const columnas = [
   {
     name: 'nro',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'nro',
     align: 'left',
     style: 'width: 50px',
@@ -171,7 +172,7 @@ const columnas = [
   },
   {
     name: 'fecha',
-    label: 'Fecha',
+    label: i18nT('cotizacion.table.date'),
     field: 'fecha',
     dataType: 'date',
     align: 'left',
@@ -188,7 +189,7 @@ const columnas = [
   },
   {
     name: 'almacen',
-    label: 'Almacén',
+    label: i18nT('inventario.warehouse'),
     field: 'almacen',
     dataType: 'text',
     align: 'left',
@@ -198,7 +199,7 @@ const columnas = [
 
   {
     name: 'cliente',
-    label: 'Razón Social',
+    label: i18nT('ui.razon-social-adf906'),
     field: 'cliente',
     dataType: 'text',
     align: 'left',
@@ -207,7 +208,7 @@ const columnas = [
   },
   {
     name: 'sucursal',
-    label: 'Sucursal',
+    label: i18nT('ui.sucursal-07d782'),
     field: 'sucursal',
     dataType: 'text',
     align: 'left',
@@ -216,7 +217,7 @@ const columnas = [
   },
   {
     name: 'tipoventa',
-    label: 'Tipo-Venta',
+    label: i18nT('ui.tipo-venta-96e441'),
     field: 'tipoventa',
     dataType: 'number',
     align: 'left',
@@ -225,7 +226,7 @@ const columnas = [
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     dataType: 'text',
     align: 'left',
@@ -234,7 +235,7 @@ const columnas = [
   },
   {
     name: 'tipopago',
-    label: 'Tipo-Pago',
+    label: i18nT('ui.tipo-pago-a21cbe'),
     field: 'tipopago',
     dataType: 'text',
     align: 'left',
@@ -244,7 +245,7 @@ const columnas = [
 
   {
     name: 'canal',
-    label: 'Canal',
+    label: i18nT('configuracion.canalesDeVenta.table.canal'),
     field: 'canal',
     dataType: 'text',
     align: 'left',
@@ -253,7 +254,7 @@ const columnas = [
   },
   {
     name: 'total',
-    label: 'Total',
+    label: i18nT('ventas.total'),
     field: 'total',
     align: 'right',
     dataType: 'number',
@@ -262,7 +263,7 @@ const columnas = [
   },
   {
     name: 'descuento',
-    label: 'Dscto.',
+    label: i18nT('ui.dscto-dfa854'),
     field: 'descuento',
     align: 'right',
     dataType: 'number',
@@ -271,7 +272,7 @@ const columnas = [
   },
   {
     name: 'ventatotal',
-    label: 'Monto',
+    label: i18nT('ui.monto-835dcd'),
     field: 'ventatotal',
     align: 'right',
     dataType: 'number',
@@ -280,7 +281,7 @@ const columnas = [
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'center',
     sortable: false,

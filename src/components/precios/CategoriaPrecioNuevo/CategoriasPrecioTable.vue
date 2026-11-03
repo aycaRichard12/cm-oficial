@@ -1,12 +1,12 @@
 <template>
   <q-table
-    title="Lista de Categorías"
+    :title="$t('ui.lista-de-categorias-76d6f9')"
     :rows="categorias"
     :columns="columns"
     row-key="id"
     :loading="loading"
     :rows-per-page-options="[10, 25, 50, 100]"
-    no-data-label="No se encontraron categorías de precios."
+    :no-data-label="$t('ui.no-se-encontraron-categorias-de-precios-77018a')"
     v-model:pagination="pagination"
   >
     <template v-slot:body-cell-indice="props">
@@ -17,7 +17,7 @@
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-badge :color="props.row.estado === 1 ? 'green' : 'red'">
-          {{ props.row.estado === 1 ? 'Activo' : 'Inactivo' }}
+          {{ props.row.estado === 1 ? $t('common.active') : $t('common.inactive') }}
         </q-badge>
       </q-td>
     </template>
@@ -31,7 +31,7 @@
           dense
           color="primary"
           @click="$emit('editar', props.row)"
-          title="Editar"
+          :title="$t('common.edit')"
         />
         <q-btn
           :icon="props.row.estado === 1 ? 'toggle_off' : 'toggle_on'"
@@ -40,7 +40,7 @@
           dense
           :color="props.row.estado === 1 ? 'red' : 'green'"
           @click="$emit('cambiar-estado', props.row)"
-          :title="props.row.estado === 1 ? 'Desactivar' : 'Activar'"
+          :title="props.row.estado === 1 ? $t('configProducto.configuracionProductoUnico.tooltipDesactivar') : $t('configProducto.configuracionProductoUnico.tooltipActivar')"
         />
         <q-btn
           icon="delete"
@@ -49,7 +49,7 @@
           dense
           color="negative"
           @click="$emit('eliminar', props.row)"
-          title="Eliminar"
+          :title="$t('common.delete')"
         />
       </q-td>
     </template>
@@ -57,6 +57,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { defineProps, defineEmits } from 'vue'
 import { ref } from 'vue'
 // --- Definición de Props ---
@@ -83,35 +84,35 @@ defineEmits(['editar', 'eliminar', 'cambiar-estado'])
 const columns = [
   {
     name: 'indice',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: 'indice',
     align: 'left',
     sortable: true,
   },
   {
     name: 'nombre_categoria',
-    label: 'Nombre',
+    label: i18nT('configGeneral.tipoAlmacen.form.name'),
     field: 'nombre_categoria',
     align: 'left',
     sortable: true,
   },
   {
     name: 'porcentaje',
-    label: 'Porcentaje (%)',
+    label: i18nT('ui.porcentaje-452cef'),
     field: 'porcentaje',
     align: 'right',
     sortable: true,
   },
   {
     name: 'estado',
-    label: 'Estado',
+    label: i18nT('cotizacion.table.status'),
     field: 'estado',
     align: 'center',
     sortable: true,
   },
   {
     name: 'acciones',
-    label: 'Acciones',
+    label: i18nT('common.actions'),
     field: 'acciones',
     align: 'center',
   },

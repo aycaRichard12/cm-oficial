@@ -5,10 +5,10 @@
       <div class="col-12 col-md-auto">
         <div class="text-h5 text-primary text-weight-bold flex items-center">
           <q-icon name="label" size="md" class="q-mr-sm" />
-          Asignar Almacén
+          {{ $t('ui.asignar-almacen-5d1362') }}
         </div>
         <div class="text-subtitle2 text-grey-7 q-mt-xs">
-          Administración de Asignar Almacén
+          {{ $t('ui.administracion-de-asignar-almacen-3c1cec') }}
         </div>
       </div>
     </div>
@@ -16,7 +16,7 @@
       <q-dialog v-model="showForm" persistent>
         <q-card class="responsive-dialog">
           <q-card-section class="bg-primary text-h6 text-white flex justify-between">
-            <div>Registrar Usuario</div>
+            <div>{{ $t('ui.registrar-usuario-d24899') }}</div>
             <q-btn color="" icon="close" @click="showForm = false" flat dense round />
           </q-card-section>
           <q-card-section class="q-pa-none">
@@ -51,6 +51,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import ResponsableForm from 'src/components/almacen/asignacion/responsableForm.vue'
 import ResponsableTable from 'src/components/almacen/asignacion/responsableTable.vue'
@@ -86,7 +87,7 @@ async function loadUsuarios() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -97,8 +98,8 @@ function cargarTabla() {
 }
 function eliminarResponsable(id) {
   $q.dialog({
-    title: 'Confirmar',
-    message: `¿Eliminar Usuario ?`,
+    title: i18nT('configGeneral.divisas.messages.deleteTitle'),
+    message: `${i18nT('ui.eliminar-usuario-f91510')}`,
     cancel: true,
     persistent: true,
   }).onOk(async () => {
@@ -116,7 +117,7 @@ function eliminarResponsable(id) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
   })
@@ -139,7 +140,7 @@ const cargarAlmacen = async () => {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -158,7 +159,7 @@ async function iniciarAsignacion(responsable) {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 
@@ -176,7 +177,7 @@ async function eliminarAlmacen(id) {
   const result = await showDialog(
     $q,
     'Q',
-    '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+    i18nT('ui.estas-seguro-de-que-deseas-eliminar-este-registro-es-a35dda'),
   )
   console.log('Question dialog result:', result)
   if (result) {
@@ -195,12 +196,12 @@ async function eliminarAlmacen(id) {
       console.error('Error al cargar datos:', error)
       $q.notify({
         type: 'negative',
-        message: 'No se pudieron cargar los datos',
+        message: i18nT('configGeneral.divisas.messages.loadError'),
       })
     }
-    $q.notify({ message: 'Registro eliminado', color: 'positive' })
+    $q.notify({ message: i18nT('ui.registro-eliminado-af3547'), color: 'positive' })
   } else {
-    $q.notify({ message: 'Acción cancelada', color: 'info' })
+    $q.notify({ message: i18nT('ui.accion-cancelada-4177e8'), color: 'info' })
   }
 }
 const toggleForm = () => {
@@ -243,13 +244,13 @@ const handleSubmit = async (data) => {
     toggleForm()
     $q.notify({
       type: 'positive',
-      message: isEditing.value ? 'Editado correctamente' : 'Registrado correctamente',
+      message: isEditing.value ? i18nT('configGeneral.leyenda.messages.updated') : i18nT('configGeneral.leyenda.messages.saved'),
     })
   } catch (error) {
     console.error('Error al guardar:', error)
     $q.notify({
       type: 'negative',
-      message: 'Ocurrió un error al guardar' + error,
+      message: i18nT('configGeneral.leyenda.messages.saveError') + error,
     })
   }
   toggleForm()

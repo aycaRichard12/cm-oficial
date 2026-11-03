@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import { applyChartTheme } from 'src/composables/useChartTheme'
@@ -73,7 +74,7 @@ const chartMejoresHistoricos = computed(() =>
       toolbar: { show: true },
     },
     title: {
-      text: 'Mejores Clientes (Histórico)',
+      text: i18nT('ui.mejores-clientes-historico-a5af56'),
       align: 'center',
       style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
     },
@@ -99,7 +100,7 @@ const chartMejoresHistoricos = computed(() =>
       },
     },
     yaxis: {
-      title: { text: 'Total Compras' },
+      title: { text: i18nT('ui.total-compras-fb8375') },
     },
     tooltip: {
       custom: ({ dataPointIndex }) => {
@@ -119,7 +120,7 @@ const chartMejoresHistoricos = computed(() =>
             <div class="tooltip-divider"></div>
             <div class="tooltip-prediction">
               <strong> Próxima compra estimada:</strong><br>
-              ${cliente.proxima_compra_prediccion} (en ${cliente.dias_hasta_proxima_compra} días)
+              ${cliente.proxima_compra_prediccion} ${i18nT('ui.en-n-dias-6f0a2b', { n: cliente.dias_hasta_proxima_compra })}
             </div>
           `
         }
@@ -148,7 +149,7 @@ const chartDistribucion = computed(() =>
       height: 350,
     },
     title: {
-      text: 'Distribución por Estado',
+      text: i18nT('ui.distribucion-por-estado-e357a8'),
       align: 'center',
       style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
     },
@@ -170,9 +171,9 @@ const chartDistribucion = computed(() =>
         const dist = props.distribucionPorEstado[estadoKey]
 
         const criterios = {
-          active: 'Compró en los últimos 30 días',
-          risk: 'Sin compra entre 30-90 días',
-          discontinued: 'Más de 90 días sin compra',
+          active: i18nT('ui.compro-en-los-ultimos-30-dias-79d37f'),
+          risk: i18nT('ui.sin-compra-entre-30-90-dias-169fd1'),
+          discontinued: i18nT('ui.mas-de-90-dias-sin-compra-77f909'),
         }
 
         let html = `
@@ -184,7 +185,7 @@ const chartDistribucion = computed(() =>
 
         if (dist.clientes.length > 0) {
           html +=
-            '<div class="tooltip-divider"></div><div class="tooltip-subheader">Top Clientes:</div>'
+            i18nT('ui.div-class-tooltip-divider-div-div-class-tooltip-subh-9a89ac')
           dist.clientes.slice(0, 3).forEach((c) => {
             html += `<div class="tooltip-row-small">• ${c.nombre} (${c.total_compras} compras)</div>`
           })
@@ -214,7 +215,7 @@ const chartTimeline = computed(() =>
       toolbar: { show: true },
     },
     title: {
-      text: 'Evolución de Ventas',
+      text: i18nT('ui.evolucion-de-ventas-561ec4'),
       align: 'center',
       style: { fontSize: '16px', fontWeight: 'bold', color: '#263238' },
     },
@@ -233,7 +234,7 @@ const chartTimeline = computed(() =>
       },
     },
     yaxis: {
-      title: { text: 'Número de Ventas' },
+      title: { text: i18nT('ui.numero-de-ventas-9b5051') },
     },
     tooltip: {
       x: {

@@ -88,6 +88,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -106,7 +107,7 @@ defineEmits(['add', 'edit-item', 'delete-item', 'toggle-status'])
 const columns = computed(() => [
   {
     name: 'numero',
-    label: 'N°',
+    label: i18nT('cotizacion.table.number'),
     field: (row) => row.numero,
     align: 'center',
   },

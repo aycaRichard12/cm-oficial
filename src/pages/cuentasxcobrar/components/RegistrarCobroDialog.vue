@@ -5,7 +5,7 @@
       <q-card-section class="bg-primary text-white row items-center q-py-sm">
         <q-icon name="payments" size="sm" class="q-mr-sm" />
         <div class="text-h6 text-weight-bold">
-          {{ modoEdicion ? 'Editar Cobro' : 'Registrar Cobro' }}
+          {{ modoEdicion ? $t('ui.editar-cobro-023b77') : $t('ui.registrar-cobro-59c03b') }}
         </div>
         <q-space />
         <q-btn icon="close" flat round dense @click="cerrar" />
@@ -23,7 +23,7 @@
                 class="text-caption text-grey-7 text-uppercase text-weight-bold"
                 style="font-size: 0.65rem"
               >
-                Cliente
+                {{ $t('ventas.client') }}
               </div>
               <div class="text-subtitle2 text-weight-bolder">{{ localFormulario.cliente }}</div>
             </div>
@@ -37,7 +37,7 @@
                 class="text-caption text-grey-7 text-uppercase text-weight-bold"
                 style="font-size: 0.65rem"
               >
-                Sucursal
+                {{ $t('ui.sucursal-07d782') }}
               </div>
               <div class="text-subtitle2 text-weight-bolder">{{ localFormulario.sucursal }}</div>
             </div>
@@ -51,7 +51,7 @@
                 class="text-caption text-blue-9 text-uppercase text-weight-bold"
                 style="font-size: 0.6rem"
               >
-                Total Venta
+                {{ $t('ui.total-venta-eaaafd') }}
               </div>
               <div class="text-subtitle1 text-weight-bold text-primary">
                 {{ localFormulario.deudaTotal }} <small class="text-caption">{{ divisa }}</small>
@@ -64,7 +64,7 @@
                 class="text-caption text-orange-9 text-uppercase text-weight-bold"
                 style="font-size: 0.6rem"
               >
-                Saldo
+                {{ $t('ui.saldo-8b0fcd') }}
               </div>
               <div class="text-subtitle1 text-weight-bold text-deep-orange">
                 {{ localFormulario.saldoPendiente }}
@@ -78,7 +78,7 @@
                 class="text-caption text-red-9 text-uppercase text-weight-bold"
                 style="font-size: 0.6rem"
               >
-                Cuotas Pend.
+                {{ $t('ui.cuotas-pend-8c330d') }}
               </div>
               <div class="text-subtitle1 text-weight-bold text-negative">
                 {{ localFormulario.cuotasPendientes }}
@@ -91,7 +91,7 @@
                 class="text-caption text-green-9 text-uppercase text-weight-bold"
                 style="font-size: 0.6rem"
               >
-                V. Cuota
+                {{ $t('ui.v-cuota-2565aa') }}
               </div>
               <div class="text-subtitle1 text-weight-bold text-positive">
                 {{ localFormulario.valorCuota }} <small class="text-caption">{{ divisa }}</small>
@@ -110,11 +110,11 @@
               <q-input
                 :model-value="fechaMostrar"
                 id="fecharegistrocobro"
-                label="Fecha de cobro"
+                :label="$t('ui.fecha-de-cobro-557cc3')"
                 dense
                 outlined
                 readonly
-                :rules="[() => !!localFormulario.fecha || 'Seleccione una fecha']"
+                :rules="[() => !!localFormulario.fecha || $t('ui.seleccione-una-fecha-de486b')]"
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer text-primary">
@@ -126,7 +126,7 @@
                         @update:model-value="onFieldUpdate"
                       >
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                          <q-btn v-close-popup :label="$t('ui.cerrar-4b0816')" color="primary" flat />
                         </div>
                       </q-date>
                     </q-popup-proxy>
@@ -139,14 +139,14 @@
               <q-input
                 v-model.number="localFormulario.numeroCobros"
                 id="nrocobrosregistrocobro"
-                label="N° Cobros"
+                :label="$t('ui.n-cobros-b03fa3')"
                 type="number"
                 min="1"
                 :max="localFormulario.cuotasPendientes"
                 step="1"
                 dense
                 outlined
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 :disable="localFormulario.cuotasPendientes === 1"
                 :hint="
                   localFormulario.cuotasPendientes > 1
@@ -162,7 +162,7 @@
               <q-input
                 v-model="localFormulario.totalCobro"
                 id="totalacobrarregistrocobro"
-                label="Total a Cobrar"
+                :label="$t('ui.total-a-cobrar-3da99b')"
                 type="number"
                 min="0.01"
                 :max="localFormulario.saldoPendiente"
@@ -170,8 +170,8 @@
                 dense
                 outlined
                 :rules="[
-                  (val) => !!val || 'Campo requerido',
-                  (val) => parseFloat(val) > 0 || 'Debe ser mayor a 0',
+                  (val) => !!val || $t('configProducto.estadoProducto.form.required'),
+                  (val) => parseFloat(val) > 0 || $t('ui.debe-ser-mayor-a-0-48dea0'),
                   (val) =>
                     parseFloat(val) <= parseFloat(localFormulario.saldoPendiente) ||
                     `No puede superar el saldo`,
@@ -206,7 +206,7 @@
                   class="text-caption text-grey-7 text-uppercase text-weight-bold"
                   style="font-size: 0.6rem"
                 >
-                  Nuevo Saldo
+                  {{ $t('ui.nuevo-saldo-867c7e') }}
                 </div>
                 <div
                   class="text-h6 text-weight-bolder"
@@ -229,7 +229,7 @@
                 for="cajaBanco"
                 class="text-weight-bold cm-text q-mb-sm block"
                 style="font-size: 13px; text-transform: uppercase"
-                >Seleccione Caja o Banco <span class="text-negative">*</span></label
+                >{{ $t('ui.seleccione-caja-o-banco-b3521c') }} <span class="text-negative">*</span></label
               >
 
               <q-select
@@ -241,7 +241,7 @@
                 emit-value
                 map-options
                 class="premium-input"
-                :rules="[(val) => !!val || 'Campo requerido']"
+                :rules="[(val) => !!val || $t('configProducto.estadoProducto.form.required')]"
                 @update:model-value="onFieldUpdate"
               >
                 <template v-slot:prepend>
@@ -274,14 +274,14 @@
               <q-file
                 v-model="localFormulario.comprobante"
                 id="comprobanteregistrocobro"
-                label="Adjuntar Comprobante (JPG, PNG, PDF)"
+                :label="$t('ui.adjuntar-comprobante-jpg-png-pdf-d2cbd0')"
                 dense
                 outlined
                 accept=".jpg,.jpeg,.png,.pdf"
                 max-file-size="5242880"
                 @update:model-value="onArchivoCambiado"
                 @rejected="
-                  $q.notify({ type: 'negative', message: 'Archivo no válido o demasiado grande' })
+                  $q.notify({ type: 'negative', message: $t('ui.archivo-no-valido-o-demasiado-grande-314921') })
                 "
                 :loading="isCompressing"
                 :disable="isCompressing"
@@ -298,7 +298,7 @@
                 >
                   <q-icon name="picture_as_pdf" size="lg" />
                   <div class="q-ml-md">
-                    <div class="text-weight-bold">PDF Seleccionado</div>
+                    <div class="text-weight-bold">{{ $t('ui.pdf-seleccionado-635ca7') }}</div>
                     <div class="text-caption cm-text truncate" style="max-width: 250px">
                       {{ localFormulario.comprobante?.name }}
                     </div>
@@ -322,12 +322,12 @@
             class="bg-negative text-white q-mt-md"
             icon="warning"
           >
-            El monto ingresado excede el saldo pendiente.
+            {{ $t('ui.el-monto-ingresado-excede-el-saldo-pendiente-33dc06') }}
           </q-banner>
 
           <div class="q-mt-lg row justify-center q-gutter-sm">
             <q-btn
-              :label="modoEdicion ? 'Guardar Cambios' : 'Registrar Cobro'"
+              :label="modoEdicion ? $t('ui.guardar-cambios-7d2fd7') : $t('ui.registrar-cobro-59c03b')"
               type="submit"
               color="primary"
               icon="check_circle"
@@ -336,7 +336,7 @@
               :loading="isCompressing || enviando"
             />
             <q-btn
-              label="Cancelar"
+              :label="$t('common.cancel')"
               color="grey-7"
               flat
               icon="close"
@@ -351,6 +351,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { computed, ref, watch, reactive, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { apiCt } from 'src/boot/axios'
@@ -439,7 +440,7 @@ async function listarcajasbanco() {
     console.log(listaCajaBancos.value)
   } catch (error) {
     console.error('Error al cargar caja bancos:', error)
-    $q.notify({ type: 'negative', message: 'No se pudieron cargar caja Bancos' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudieron-cargar-caja-bancos-8c4a52') })
   }
 }
 // keep local copy in sync when parent updates the prop

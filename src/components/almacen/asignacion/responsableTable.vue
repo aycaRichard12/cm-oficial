@@ -5,18 +5,18 @@
       @click="$emit('add')"
       class="btn-res q-mt-lg"
       id="nuevaAsignacion"
-      title="Asignar Almacen"
+      :title="$t('ui.asignar-almacen-087b8e')"
     >
       <q-icon name="add" class="icono" />
-      <span class="texto"> <q-icon name="add" /> Nueva Asignación</span>
+      <span class="texto"> <q-icon name="add" /> {{ $t('ui.nueva-asignacion-e3b420') }}</span>
     </q-btn>
     <div id="buscarAsignacion">
-      <label for="buscar">Buscar...</label>
+      <label for="buscar">{{ $t('common.search') }}</label>
       <q-input dense outlined debounce="300" v-model="search" id="buscar" />
     </div>
   </div>
   <q-table
-    title="Responsables"
+    :title="$t('ui.responsables-a6d3cc')"
     :rows="rows"
     :columns="columns"
     :pagination="pagination"
@@ -34,7 +34,7 @@
             icon="delete"
             color="negative"
             @click="eliminar(props.row.id)"
-            title="Eliminar"
+            :title="$t('common.delete')"
             flat
             id="eliminarAsignacion"
           />
@@ -43,7 +43,7 @@
             icon="add_box"
             color="primary"
             @click="asignarAlmacenes(props.row)"
-            title="Asignar Almacen"
+            :title="$t('ui.asignar-almacen-087b8e')"
             flat
             id="asignarAlmacenes"
           />
@@ -54,6 +54,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 /**
  * Componente de tabla para visualizar y gestionar responsables
  * Muestra lista de responsables con opciones para eliminar o asignar almacenes
@@ -87,29 +88,29 @@ const search = ref('') // Término de búsqueda para filtrar la tabla (implement
 const columns = [
   {
     name: 'usuario',
-    label: 'Usuario',
+    label: i18nT('auth.user'),
     // Acceso anidado con operador optional chaining y fallback a string vacío
     field: (row) => row.usuario?.usuario || '',
     align: 'left',
   },
   {
     name: 'nombre',
-    label: 'Nombre',
+    label: i18nT('configGeneral.tipoAlmacen.form.name'),
     field: (row) => row.usuario?.nombre || '',
   },
   {
     name: 'apellido',
-    label: 'Apellido',
+    label: i18nT('ui.apellido-45b89a'),
     field: (row) => row.usuario?.apellido || '',
   },
   {
     name: 'cargo',
-    label: 'Cargo',
+    label: i18nT('ui.cargo-6c98e8'),
     field: (row) => row.usuario?.cargo || '',
   },
   {
     name: 'opciones',
-    label: 'Opciones',
+    label: i18nT('configGeneral.divisas.table.options'),
     field: '', // Campo vacío porque esta columna contiene botones de acción
     align: 'center',
   },

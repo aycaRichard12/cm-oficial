@@ -4,7 +4,7 @@
     <!-- Opcional: Barra de navegación (QHeader) si la necesitas -->
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-toolbar-title> Configuración Inicial </q-toolbar-title>
+        <q-toolbar-title> {{ $t('ui.configuracion-inicial-c481d2') }} </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -18,36 +18,36 @@
           style="min-width: 300px; max-width: 500px; width: 100%"
         >
           <div class="q-mb-md text-center">
-            <h3 class="q-mb-md">Configuración Inicial</h3>
+            <h3 class="q-mb-md">{{ $t('ui.configuracion-inicial-c481d2') }}</h3>
           </div>
 
           <q-select
             filled
             v-model="usuario"
             :options="usuarios"
-            label="Seleccionar Usuario"
+            :label="$t('ui.seleccionar-usuario-a7fac8')"
             option-label="label"
             option-value="value"
             emit-value
             map-options
-            :rules="[(val) => !!val || 'Debe seleccionar un usuario']"
+            :rules="[(val) => !!val || $t('ui.debe-seleccionar-un-usuario-5015d6')]"
           />
 
           <q-select
             filled
             v-model="sucursal"
             :options="sucursales"
-            label="Seleccionar Sucursal"
+            :label="$t('ui.seleccionar-sucursal-cb5005')"
             option-label="label"
             option-value="value"
             emit-value
             map-options
             class="q-mt-md"
-            :rules="[(val) => !!val || 'Debe seleccionar una sucursal']"
+            :rules="[(val) => !!val || $t('ui.debe-seleccionar-una-sucursal-b91ff3')]"
           />
 
           <div class="q-mt-lg">
-            <q-btn type="submit" label="Ingresar" color="primary" unelevated class="full-width" />
+            <q-btn type="submit" :label="$t('ui.ingresar-84b55f')" color="primary" unelevated class="full-width" />
           </div>
         </q-form>
 
@@ -55,18 +55,18 @@
         <q-dialog v-model="mostrarOpcionesConfiguracion" persistent>
           <q-card style="width: 400px; max-width: 90vw">
             <q-card-section class="bg-primary text-white">
-              <div class="text-h6">Opciones de Configuración</div>
+              <div class="text-h6">{{ $t('ui.opciones-de-configuracion-8c38b7') }}</div>
             </q-card-section>
 
             <q-card-section class="q-pt-md">
-              Por favor, seleccione cómo desea configurar el sistema para esta empresa:
+              {{ $t('ui.por-favor-seleccione-como-desea-configurar-el-sistem-7fd652') }}
             </q-card-section>
 
             <q-card-actions align="center" class="q-pb-md q-px-md column q-gutter-y-sm">
               <q-btn
                 color="secondary"
                 icon="cloud_download"
-                label="1. Configuración Básica"
+                :label="$t('ui.1-configuracion-basica-248eb6')"
                 class="full-width"
                 @click="configurarConfiguracionBasica"
               />
@@ -74,7 +74,7 @@
                 color="primary"
                 flat
                 icon="settings_applications"
-                label="2. Configuración Manual"
+                :label="$t('ui.2-configuracion-manual-8961af')"
                 class="full-width q-ml-none"
                 @click="enviarConfiguracionManual"
               />
@@ -87,6 +87,7 @@
 </template>
 
 <script setup>
+import { t as i18nT } from 'src/i18n/runtime'
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
@@ -118,7 +119,7 @@ async function getUsuarios() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -135,7 +136,7 @@ async function getSucursal() {
     console.error('Error al cargar datos:', error)
     $q.notify({
       type: 'negative',
-      message: 'No se pudieron cargar los datos',
+      message: i18nT('configGeneral.divisas.messages.loadError'),
     })
   }
 }
@@ -149,25 +150,25 @@ async function enviarConfiguracionManual() {
   const payload = {
     ver: 'registrarConfiguracionInicial',
     id_empresa_md5: idempresa,
-    descripcion: 'No se descargo configuracion',
+    descripcion: i18nT('ui.no-se-descargo-configuracion-7df055'),
   }
 
   try {
     const response = await api.post('', payload)
     const data = extraerUltimoJSON(response.data)
     if (data?.estado === 'exito') {
-      $q.notify({ type: 'positive', message: 'Configuración aplicada correctamente.' })
+      $q.notify({ type: 'positive', message: i18nT('ui.configuracion-aplicada-correctamente-8c66fd') })
       mostrarOpcionesConfiguracion.value = false
       setTimeout(() => router.push('/'), 1000)
     } else {
       $q.notify({
         type: 'negative',
-        message: data?.mensaje || 'Error al aplicar configuración',
+        message: data?.mensaje || i18nT('ui.error-al-aplicar-configuracion-81fa43'),
       })
     }
   } catch (error) {
     console.error('Error en configuración manual:', error)
-    $q.notify({ type: 'negative', message: 'Ocurrió un error en el servidor.' })
+    $q.notify({ type: 'negative', message: i18nT('ui.ocurrio-un-error-en-el-servidor-97c47b') })
   }
 }
 
@@ -207,18 +208,18 @@ async function enviarFormulario() {
     if (data?.estado === 'exito') {
       $q.notify({
         type: 'positive',
-        message: `Configuración guardada correctamente.`,
+        message: `${i18nT('ui.configuracion-guardada-correctamente-94ef53')}`,
       })
       setTimeout(() => router.push('/'), 1000)
     } else {
       $q.notify({
         type: 'negative',
-        message: data?.mensaje || 'Hubo un problema al configurar',
+        message: data?.mensaje || i18nT('ui.hubo-un-problema-al-configurar-94f34f'),
       })
     }
   } catch (error) {
     console.error('Error al configurar: ', error)
-    $q.notify({ type: 'negative', message: 'No se pudo configurar' })
+    $q.notify({ type: 'negative', message: i18nT('ui.no-se-pudo-configurar-d3804f') })
   }
 }
 onMounted(() => {
