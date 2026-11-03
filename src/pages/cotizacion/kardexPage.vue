@@ -102,6 +102,15 @@
               color="secondary"
               @click="cargarPDF"
             />
+            <q-btn
+              id="btnexcelkardex"
+              v-if="datosFiltrados.length > 0"
+              label="Descargar Excel"
+              icon="table_view"
+              color="green"
+              class="q-ml-sm"
+              @click="descargarExcel"
+            />
             <!-- <q-btn
               v-if="datosFiltrados.length > 0"
               label="Saldos Registrados"
@@ -114,39 +123,46 @@
 
       <q-table
         id="tablakardex"
-        :title="title"
+        :title="tituloConDivisa"
         :rows="datosFiltrados"
         :columns="columns"
         row-key="c"
         flat
         bordered
+        class="kardex-table-bordered"
         :no-data-label="$t('ui.aun-no-se-ha-generado-ningun-reporte-df72d3')"
       >
         <!-- [kdx-pdf-format-header] Encabezado agrupado que replica el PDF del Kardex -->
         <template v-slot:header="props">
           <q-tr :props="props">
             <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
-              Fecha
+              {{ $t('ui.kardex-fecha-4a1b2c') }}
             </q-th>
             <q-th rowspan="2" class="text-left text-weight-bold" style="vertical-align: middle">
-              Descripción
+              {{ $t('ui.kardex-descripcion-5b2c3d') }}
             </q-th>
             <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
-              Nº Dcto.
+              {{ $t('ui.kardex-nro-dcto-6c3d4e') }}
             </q-th>
-            <q-th colspan="3" class="text-center text-weight-bold">Control físico</q-th>
+            <q-th colspan="3" class="text-center text-weight-bold">
+              {{ $t('ui.kardex-control-fisico-7d4e5f') }}
+            </q-th>
             <q-th rowspan="2" class="text-center text-weight-bold" style="vertical-align: middle">
-              Costo Unitario
+              {{ $t('ui.kardex-costo-unitario-8e5f6a') }}
+              <span v-if="divisaActiva">({{ divisaActiva }})</span>
             </q-th>
-            <q-th colspan="3" class="text-center text-weight-bold">Control Valorado</q-th>
+            <q-th colspan="3" class="text-center text-weight-bold">
+              {{ $t('ui.kardex-control-valorado-9f6a7b') }}
+              <span v-if="divisaActiva">({{ divisaActiva }})</span>
+            </q-th>
           </q-tr>
           <q-tr :props="props">
-            <q-th class="text-right text-weight-bold bg-primary">Entrada</q-th>
-            <q-th class="text-right text-weight-bold bg-primary">Salida</q-th>
-            <q-th class="text-right text-weight-bold bg-primary">Saldo</q-th>
-            <q-th class="text-right text-weight-bold bg-primary">Ingreso</q-th>
-            <q-th class="text-right text-weight-bold bg-primary">Egreso</q-th>
-            <q-th class="text-right text-weight-bold bg-primary">Saldo</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-entrada-a17b8c') }}</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-salida-b28c9d') }}</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-saldo-c39dae') }}</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-ingreso-d4aebf') }}</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-egreso-e5bfc0') }}</q-th>
+            <q-th class="text-right text-weight-bold">{{ $t('ui.kardex-saldo-c39dae') }}</q-th>
           </q-tr>
         </template>
 
@@ -179,18 +195,10 @@
             <q-td class="text-right">{{ item.Entrada }}</q-td>
             <q-td class="text-right">{{ item.Salida }}</q-td>
             <q-td class="text-right">{{ item.Existencia }}</q-td>
-            <q-td class="text-right">{{
-              divisaActiva + ' ' + parseFloat(item['C.Unit']).toFixed(2)
-            }}</q-td>
-            <q-td class="text-right">{{
-              divisaActiva + ' ' + parseFloat(item.Debe).toFixed(2)
-            }}</q-td>
-            <q-td class="text-right">{{
-              divisaActiva + ' ' + parseFloat(item.Haber).toFixed(2)
-            }}</q-td>
-            <q-td class="text-right">{{
-              divisaActiva + ' ' + parseFloat(item.Saldo).toFixed(2)
-            }}</q-td>
+            <q-td class="text-right">{{ parseFloat(item['C.Unit']).toFixed(2) }}</q-td>
+            <q-td class="text-right">{{ parseFloat(item.Debe).toFixed(2) }}</q-td>
+            <q-td class="text-right">{{ parseFloat(item.Haber).toFixed(2) }}</q-td>
+            <q-td class="text-right">{{ parseFloat(item.Saldo).toFixed(2) }}</q-td>
           </q-tr>
         </template>
       </q-table>
@@ -264,6 +272,14 @@ const metodoValoracion = ref('PEPS') // Valor por defecto
 const saldoFinal = ref({})
 const mostrarSaldos = ref(false) // controla si se muestran los saldos iniciales
 const title = ref('')
+
+const tituloConDivisa = computed(() => {
+  const t = title.value
+  const d = divisaActiva.value
+  if (!t) return ''
+  return d ? `${t} (${d})` : t
+})
+
 // Opciones para el selector de métodos
 
 // Datos y estados
@@ -281,10 +297,10 @@ const saldosIniciales = ref([])
 
 // Columnas de la tabla
 // [kdx-pdf-format-columns] Columnas alineadas al formato del PDF del Kardex
-const columns = [
+const columns = computed(() => [
   {
     name: 'Fecha',
-    label: 'Fecha',
+    label: i18nT('ui.kardex-fecha-4a1b2c'),
     field: 'Fecha',
     align: 'center',
     sortable: true,
@@ -292,14 +308,14 @@ const columns = [
   },
   {
     name: 'Concepto',
-    label: 'Descripción',
+    label: i18nT('ui.kardex-descripcion-5b2c3d'),
     field: (row) => row.Concepto || row.Detalle || '',
     align: 'left',
     sortable: true,
   },
   {
     name: 'Documento',
-    label: 'Nº Dcto.',
+    label: i18nT('ui.kardex-nro-dcto-6c3d4e'),
     field: (row) =>
       row.Documento ??
       row['Nº Dcto.'] ??
@@ -314,58 +330,58 @@ const columns = [
   },
   {
     name: 'Entrada',
-    label: 'Entrada',
+    label: i18nT('ui.kardex-entrada-a17b8c'),
     field: 'Entrada',
     align: 'right',
     sortable: true,
   },
   {
     name: 'Salida',
-    label: 'Salida',
+    label: i18nT('ui.kardex-salida-b28c9d'),
     field: 'Salida',
     align: 'right',
     sortable: true,
   },
   {
     name: 'Existencia',
-    label: 'Saldo',
+    label: i18nT('ui.kardex-saldo-c39dae'),
     field: 'Existencia',
     align: 'right',
     sortable: true,
   },
   {
     name: 'CUnit',
-    label: 'Costo Unitario',
+    label: i18nT('ui.kardex-costo-unitario-8e5f6a'),
     field: 'C.Unit',
     align: 'right',
     sortable: true,
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
+    format: (val) => parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Debe',
-    label: 'Ingreso',
+    label: i18nT('ui.kardex-ingreso-d4aebf'),
     field: 'Debe',
     align: 'right',
     sortable: true,
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
+    format: (val) => parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Haber',
-    label: 'Egreso',
+    label: i18nT('ui.kardex-egreso-e5bfc0'),
     field: 'Haber',
     align: 'right',
     sortable: true,
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
+    format: (val) => parseFloat(val || 0).toFixed(2),
   },
   {
     name: 'Saldo',
-    label: 'Saldo',
+    label: i18nT('ui.kardex-saldo-c39dae'),
     field: 'Saldo',
     align: 'right',
     sortable: true,
-    format: (val) => divisaActiva.value + ' ' + parseFloat(val || 0).toFixed(2),
+    format: (val) => parseFloat(val || 0).toFixed(2),
   },
-]
+])
 
 // Computed
 const almacenesOptions = computed(() => {
@@ -721,6 +737,134 @@ async function cargarPDF() {
   }
 }
 
+function descargarExcel() {
+  if (datosFiltrados.value.length === 0) {
+    $q.notify({
+      type: 'warning',
+      message: i18nT('ui.no-se-ha-generado-ningun-reporte-para-previsualizar-94e65c'),
+      position: 'top',
+    })
+    return
+  }
+
+  const divisa = divisaActiva.value || ''
+  const metodo = metodoValoracion.value || ''
+  const fechaIni = cambiarFormatoFecha(fechaiR.value)
+  const fechaFin = cambiarFormatoFecha(fechafR.value)
+  const almacen = almacenLabel.value
+  const producto = productoLabel.value
+
+  const divisaSuffix = divisa ? ' (' + divisa + ')' : ''
+  const headers = [
+    i18nT('ui.kardex-fecha-4a1b2c'),
+    i18nT('ui.kardex-descripcion-5b2c3d'),
+    i18nT('ui.kardex-nro-dcto-6c3d4e'),
+    i18nT('ui.kardex-entrada-a17b8c'),
+    i18nT('ui.kardex-salida-b28c9d'),
+    i18nT('ui.kardex-saldo-existencia-f6d0a1') + divisaSuffix,
+    i18nT('ui.kardex-costo-unitario-8e5f6a') + divisaSuffix,
+    i18nT('ui.kardex-ingreso-d4aebf') + divisaSuffix,
+    i18nT('ui.kardex-egreso-e5bfc0') + divisaSuffix,
+    i18nT('ui.kardex-saldo-c39dae') + divisaSuffix,
+  ]
+
+  const escapeHtml = (s) =>
+    String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+
+  const fmtNum = (v) => {
+    const n = parseFloat(v ?? 0)
+    return isNaN(n) ? '0.00' : n.toFixed(2)
+  }
+
+  const docField = (row) =>
+    row.Documento ??
+    row['Nº Dcto.'] ??
+    row.nroDcto ??
+    row.numerodocumento ??
+    row.nrodocumento ??
+    row.documento ??
+    row.idstock ??
+    ''
+
+  const totalCols = headers.length
+  const headerRow = `<tr>${headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('')}</tr>`
+
+  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8" /><style>
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #000; padding: 4px 6px; font-family: Arial; font-size: 11px; }
+    th { background: #1976d2; color: #fff; font-weight: bold; text-align: center; }
+    .title { font-size: 14px; font-weight: bold; text-align: center; }
+    .meta { font-size: 11px; }
+    .num { text-align: right; }
+    .center { text-align: center; }
+    .subhead { background: #bbdefb; font-weight: bold; text-align: center; }
+  </style></head><body><table>`
+
+  html += `<tr><td colspan="${totalCols}" class="title">${escapeHtml(`Reporte Kardex ${metodo}${divisa ? ' (' + divisa + ')' : ''}`)}</td></tr>`
+  html += `<tr><td colspan="${totalCols}" class="meta">Almacén: <b>${escapeHtml(almacen)}</b> &nbsp;&nbsp; Producto: <b>${escapeHtml(producto)}</b></td></tr>`
+  html += `<tr><td colspan="${totalCols}" class="meta">Rango: <b>${escapeHtml(fechaIni)}</b> a <b>${escapeHtml(fechaFin)}</b> &nbsp;&nbsp; Método: <b>${escapeHtml(metodo)}</b></td></tr>`
+  html += `<tr><td colspan="${totalCols}"></td></tr>`
+
+  if (mostrarSaldos.value && saldosIniciales.value.length > 0) {
+    html += `<tr><td colspan="${totalCols}" class="subhead">SALDOS INICIALES</td></tr>`
+    html += headerRow
+    saldosIniciales.value.forEach((item) => {
+      html += `<tr>
+        <td class="center">${escapeHtml(item.Fecha ? cambiarFormatoFecha(item.Fecha) : '')}</td>
+        <td>${escapeHtml(item.Concepto || '')}</td>
+        <td class="center">${escapeHtml(docField(item))}</td>
+        <td class="num">${escapeHtml(item.Entrada ?? '')}</td>
+        <td class="num">${escapeHtml(item.Salida ?? '')}</td>
+        <td class="num">${escapeHtml(item.Existencia ?? '')}</td>
+        <td class="num">${fmtNum(item['C.Unit'])}</td>
+        <td class="num">${fmtNum(item.Debe)}</td>
+        <td class="num">${fmtNum(item.Haber)}</td>
+        <td class="num">${fmtNum(item.Saldo)}</td>
+      </tr>`
+    })
+    html += `<tr><td colspan="${totalCols}"></td></tr>`
+  }
+
+  html += `<tr><td colspan="${totalCols}" class="subhead">MOVIMIENTOS</td></tr>`
+  html += headerRow
+  datosFiltrados.value.forEach((row) => {
+    html += `<tr>
+      <td class="center">${escapeHtml(row.Fecha ? cambiarFormatoFecha(row.Fecha) : '')}</td>
+      <td>${escapeHtml(row.Concepto || row.Detalle || '')}</td>
+      <td class="center">${escapeHtml(docField(row))}</td>
+      <td class="num">${escapeHtml(row.Entrada ?? '')}</td>
+      <td class="num">${escapeHtml(row.Salida ?? '')}</td>
+      <td class="num">${escapeHtml(row.Existencia ?? '')}</td>
+      <td class="num">${fmtNum(row['C.Unit'])}</td>
+      <td class="num">${fmtNum(row.Debe)}</td>
+      <td class="num">${fmtNum(row.Haber)}</td>
+      <td class="num">${fmtNum(row.Saldo)}</td>
+    </tr>`
+  })
+
+  html += `</table></body></html>`
+
+  const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `Kardex_${metodo}_${fechaiR.value}_${fechafR.value}.xls`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+
+  $q.notify({
+    type: 'positive',
+    message: 'Excel descargado correctamente',
+    position: 'top',
+  })
+}
+
 onMounted(async () => {
   await listaAlmacenes()
   if (almacenes.value.length > 0) {
@@ -731,6 +875,19 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.kardex-table-bordered :deep(table) {
+  border-collapse: collapse !important;
+}
+
+.kardex-table-bordered :deep(thead th),
+.kardex-table-bordered :deep(tbody td) {
+  border: 1px solid #9e9e9e !important;
+}
+
+.kardex-table-bordered :deep(thead th) {
+  border-color: #000 !important;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease;

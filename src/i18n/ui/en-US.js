@@ -2607,5 +2607,17 @@ export default {
   "solicitar-permiso-venta-sin-stock-4d8e21": "Request permission to sell without stock",
   "notificacion-compra-a1c4f7": "Notification - Purchase {codigo} ({proveedor})",
   "notificacion-pedido-de-tipo-n-b2d5e8": "Notification - {tipo} Order #{codigo}",
-  "pedidos-sin-items-1d275b": "Orders without items"
+  "pedidos-sin-items-1d275b": "Orders without items",
+  "kardex-fecha-4a1b2c": "Date",
+  "kardex-descripcion-5b2c3d": "Description",
+  "kardex-nro-dcto-6c3d4e": "Doc. No.",
+  "kardex-control-fisico-7d4e5f": "Physical Control",
+  "kardex-costo-unitario-8e5f6a": "Unit Cost",
+  "kardex-control-valorado-9f6a7b": "Valued Control",
+  "kardex-entrada-a17b8c": "In",
+  "kardex-salida-b28c9d": "Out",
+  "kardex-saldo-c39dae": "Balance",
+  "kardex-ingreso-d4aebf": "Income",
+  "kardex-egreso-e5bfc0": "Expense",
+  "kardex-saldo-existencia-f6d0a1": "Balance (Stock)"
 }

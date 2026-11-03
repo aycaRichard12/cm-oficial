@@ -2607,5 +2607,17 @@ export default {
   "solicitar-permiso-venta-sin-stock-4d8e21": "Solicitar Permiso venta sin stock",
   "notificacion-compra-a1c4f7": "Notificación - Compra {codigo} ({proveedor})",
   "notificacion-pedido-de-tipo-n-b2d5e8": "Notificación - Pedido de {tipo} #{codigo}",
-  "pedidos-sin-items-1d275b": "Pedidos sin items"
+  "pedidos-sin-items-1d275b": "Pedidos sin items",
+  "kardex-fecha-4a1b2c": "Fecha",
+  "kardex-descripcion-5b2c3d": "Descripción",
+  "kardex-nro-dcto-6c3d4e": "Nº Dcto.",
+  "kardex-control-fisico-7d4e5f": "Control físico",
+  "kardex-costo-unitario-8e5f6a": "Costo Unitario",
+  "kardex-control-valorado-9f6a7b": "Control Valorado",
+  "kardex-entrada-a17b8c": "Entrada",
+  "kardex-salida-b28c9d": "Salida",
+  "kardex-saldo-c39dae": "Saldo",
+  "kardex-ingreso-d4aebf": "Ingreso",
+  "kardex-egreso-e5bfc0": "Egreso",
+  "kardex-saldo-existencia-f6d0a1": "Saldo (Exist.)"
 }
