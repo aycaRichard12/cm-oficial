@@ -210,7 +210,11 @@ import kardexSaldoFinal from './kardexSaldoFinal.vue'
 import saldosPage from './saldosPage.vue'
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 const idempresa = idempresa_md5()
-const divisaActiva = useCurrencyStore().simbolo
+const currencyStore = useCurrencyStore()
+const divisaActiva = computed(() => {
+  const v = currencyStore.simbolo
+  return v && typeof v === 'object' && 'value' in v ? (v.value ?? '') : (v ?? '')
+})
 console.log(divisaActiva)
 const usuario = validarUsuario()[0]
 const $q = useQuasar()
@@ -251,7 +255,7 @@ const columns = [
     label: i18nT('ui.costo-unitario-4ec928'),
     field: 'C.Unit',
     align: 'right',
-    format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
   },
   {
@@ -259,7 +263,7 @@ const columns = [
     label: i18nT('ui.debe-422ad3'),
     field: 'Debe',
     align: 'right',
-    format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
   },
   {
@@ -267,7 +271,7 @@ const columns = [
     label: i18nT('ui.haber-ce7d43'),
     field: 'Haber',
     align: 'right',
-    format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
   },
   {
@@ -275,7 +279,7 @@ const columns = [
     label: i18nT('ui.saldo-8b0fcd'),
     field: 'Saldo',
     align: 'right',
-    format: (val) => divisaActiva + ' ' + parseFloat(val).toFixed(2),
+    format: (val) => divisaActiva.value + ' ' + parseFloat(val).toFixed(2),
     sortable: true,
   },
 ]
@@ -613,7 +617,7 @@ async function cargarPDF() {
           productoSeleccionado?.stock_minimo ||
           productoSeleccionado?.stock_min ||
           '',
-        divisa: divisaActiva,
+        divisa: divisaActiva.value,
       },
     )
     pdfData.value = doc.output('dataurlstring')
