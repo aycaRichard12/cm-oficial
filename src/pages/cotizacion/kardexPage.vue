@@ -399,8 +399,19 @@ const productoLabel = computed(() => {
 })
 
 // Métodos
+// [kdx-perf-002] Cache por producto del texto normalizado (WeakMap -> GC automatico)
+const _productSearchCache = new WeakMap()
+function _getProductSearchText(p) {
+  let s = _productSearchCache.get(p)
+  if (s === undefined) {
+    s = ((p.descripcion || '') + ' ' + (p.codigo || '')).toLowerCase()
+    _productSearchCache.set(p, s)
+  }
+  return s
+}
+
 const filterProductos = (val, update) => {
-  if (val === '') {
+  if (!val) {
     update(() => {
       productosFiltrados.value = productosDisponibles.value
     })
@@ -408,10 +419,8 @@ const filterProductos = (val, update) => {
   }
   update(() => {
     const needle = val.toLowerCase()
-    productosFiltrados.value = productosDisponibles.value.filter(
-      (v) =>
-        v.descripcion.toLowerCase().indexOf(needle) > -1 ||
-        v.codigo.toLowerCase().indexOf(needle) > -1,
+    productosFiltrados.value = productosDisponibles.value.filter((v) =>
+      _getProductSearchText(v).includes(needle),
     )
   })
 }
@@ -580,83 +589,76 @@ function calcularPEPS(movimientos) {
 }
 
 function filtrarLotesPendientes(movimientos, fechaInicial) {
-  console.log(metodoValoracion.value)
-  if (metodoValoracion.value == 'PROMEDIO') {
-    const fechaFiltro = new Date(fechaInicial)
-    console.log(metodoValoracion.value)
+  // [kdx-perf-001] Comparacion lexicografica YMD (sin crear Date), particion en 1 pasada,
+  // lookup O(1) por idstock y sin mutar los movimientos originales.
+  const fechaStr = String(fechaInicial || '').slice(0, 10)
 
-    // Movimientos posteriores o iguales a la fecha inicial
-    const movDes = movimientos.filter((mov) => new Date(mov.Fecha) >= fechaFiltro)
-
-    // Movimientos anteriores a la fecha inicial
-    const movimientosAntes = movimientos.filter((mov) => new Date(mov.Fecha) < fechaFiltro)
-
-    // Último movimiento antes de la fecha inicial
-    const ultimo_movimiento =
-      movimientosAntes.length > 0 ? movimientosAntes[movimientosAntes.length - 1] : null
-    console.log(ultimo_movimiento)
-
-    // Recorremos los lotes pendientes y generamos filas iniciales
-    let compra = []
-    if (ultimo_movimiento) {
-      compra = [
-        {
-          idstock: ultimo_movimiento.idstock,
-          Fecha: ultimo_movimiento.Fecha,
-          Concepto: 'SALDO INICIAL',
-          Entrada: 0,
-          Salida: 0,
-          Existencia: ultimo_movimiento.Existencia,
-          'C.Unit': ultimo_movimiento['C.Unit'],
-          Debe: 0,
-          Haber: 0,
-          Saldo: ultimo_movimiento.Saldo,
-          Costo_Promedio_Actual: ultimo_movimiento['C.Unit'],
-        },
-      ]
-    }
-
-    console.log(compra)
-    // Añadimos las filas de compras al inicio de movimientosDespues
-    return { compras: compra || [], movimientosDespues: movDes || [] }
-  } else {
-    const fechaFiltro = new Date(fechaInicial)
-
-    // Movimientos posteriores o iguales a la fecha inicial
-    const movDes = movimientos.filter((mov) => new Date(mov.Fecha) >= fechaFiltro)
-
-    // Movimientos anteriores a la fecha inicial
-    const movimientosAntes = movimientos.filter((mov) => new Date(mov.Fecha) < fechaFiltro)
-
-    // Último movimiento antes de la fecha inicial
-    const ultimo_movimiento =
-      movimientosAntes.length > 0 ? movimientosAntes[movimientosAntes.length - 1] : null
-
-    if (!ultimo_movimiento || !ultimo_movimiento.Lotes_Pendientes) {
-      // Si no hay lotes pendientes, devolvemos solo los movimientos posteriores
-      return movDes
-    }
-
-    const com = []
-
-    // Recorremos los lotes pendientes y generamos filas iniciales
-    ultimo_movimiento.Lotes_Pendientes.forEach((p, index) => {
-      const movimiento = movimientosAntes.find((obj) => Number(obj.idstock) === Number(p.idstock))
-      if (movimiento) {
-        movimiento.Concepto = 'SALDO ' + (index + 1)
-        movimiento.Entrada = p.cantidad
-        movimiento.Existencia = p.cantidad
-        movimiento.Debe = parseFloat(p.cantidad) * parseFloat(p.precio_unitario)
-        movimiento.Saldo = ultimo_movimiento.Saldo
-        movimiento.ini = true
-        com.push({ ...movimiento })
-      }
-    })
-    console.log(com)
-    console.log(movDes)
-    // Añadimos las filas de compras al inicio de movimientosDespues
-    return { compras: com || [], movimientosDespues: movDes || [] }
+  const antes = []
+  const despues = []
+  for (let i = 0; i < movimientos.length; i++) {
+    const m = movimientos[i]
+    const f = String((m && m.Fecha) || '').slice(0, 10)
+    if (f < fechaStr) antes.push(m)
+    else despues.push(m)
   }
+
+  const ultimo = antes.length > 0 ? antes[antes.length - 1] : null
+
+  if (metodoValoracion.value === 'PROMEDIO') {
+    const compras = ultimo
+      ? [
+          {
+            idstock: ultimo.idstock,
+            Fecha: ultimo.Fecha,
+            Concepto: 'SALDO INICIAL',
+            Entrada: 0,
+            Salida: 0,
+            Existencia: ultimo.Existencia,
+            'C.Unit': ultimo['C.Unit'],
+            Debe: 0,
+            Haber: 0,
+            Saldo: ultimo.Saldo,
+            Costo_Promedio_Actual: ultimo['C.Unit'],
+          },
+        ]
+      : []
+    return { compras, movimientosDespues: despues }
+  }
+
+  if (!ultimo || !Array.isArray(ultimo.Lotes_Pendientes) || ultimo.Lotes_Pendientes.length === 0) {
+    return { compras: [], movimientosDespues: despues }
+  }
+
+  const porIdstock = new Map()
+  for (let i = 0; i < antes.length; i++) {
+    const mov = antes[i]
+    const id = Number(mov.idstock)
+    if (!porIdstock.has(id)) porIdstock.set(id, mov)
+  }
+
+  const compras = []
+  ultimo.Lotes_Pendientes.forEach((p, index) => {
+    const base = porIdstock.get(Number(p.idstock)) || ultimo
+    const cantidad = Number(p.cantidad) || 0
+    const precio = Number(p.precio_unitario) || 0
+    compras.push({
+      idstock: base.idstock,
+      Fecha: base.Fecha,
+      Concepto: 'SALDO ' + (index + 1),
+      Entrada: cantidad,
+      Salida: 0,
+      Existencia: cantidad,
+      'C.Unit': precio,
+      Debe: cantidad * precio,
+      Haber: 0,
+      Saldo: cantidad * precio,
+      ini: true,
+      Lotes_Pendientes: [{ idstock: p.idstock, cantidad, precio_unitario: precio }],
+    })
+  })
+  console.log('compras', compras)
+
+  return { compras, movimientosDespues: despues }
 }
 function calcularUEPS(movimientos) {
   console.log(movimientos)

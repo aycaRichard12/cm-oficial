@@ -105,14 +105,16 @@ export class TableBuilder {
     }
   }
 
+  // [kdx-perf-003] Single regex (apertura+cierre) + early-exit por celda
   _handleBoldTags(data) {
-    if (Array.isArray(data.cell.text)) {
-      data.cell.text.forEach((text, i) => {
-        if (typeof text === 'string' && text.includes('<b>')) {
-          data.cell.text[i] = text.replace(/<b>/g, '').replace(/<\/b>/g, '')
-          data.cell.styles.fontStyle = 'bold'
-        }
-      })
+    const texts = data.cell.text
+    if (!Array.isArray(texts)) return
+    for (let i = 0; i < texts.length; i++) {
+      const t = texts[i]
+      if (typeof t !== 'string') continue
+      if (t.indexOf('<b>') === -1 && t.indexOf('</b>') === -1) continue
+      texts[i] = t.replace(/<\/?b>/g, '')
+      data.cell.styles.fontStyle = 'bold'
     }
   }
 }
