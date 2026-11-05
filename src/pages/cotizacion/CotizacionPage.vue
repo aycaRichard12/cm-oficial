@@ -2558,8 +2558,11 @@ async function enviarDatos() {
     return
   }
 
-  // FIX BUG#2: validación explícita del método de pago en efectivo directo.
+  // Validación del método de pago SOLO para Cotización Preferencial (tipoOperacion === 1).
+  // La Cotización Normal (tipoOperacion === 0) no gestiona método de pago y no debe
+  // bloquearse por este campo.
   if (
+    Number(tipoOperacion.value?.value) === 1 &&
     carritoCO.variablePago === 'directo' &&
     !carritoCO.credito &&
     !carritoCO.metodoPago
