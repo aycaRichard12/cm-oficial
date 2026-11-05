@@ -574,7 +574,7 @@ const guardarCodigosEnVenta = (codigos) => {
 }
 const lote = ref(true)
 const listaCajaBancos = ref([])
-const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
+const [escritura, lectura, editar, eliminar] = obtenerPermisosPagina()
 const pdfData = ref(null)
 const mostrarModal = ref(false)
 const warehouses = useAlmacenStore()

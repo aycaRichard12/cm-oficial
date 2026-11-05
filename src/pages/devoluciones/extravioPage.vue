@@ -581,7 +581,7 @@ const guardarCodigosEnVenta = (codigos) => {
   formularioDetalle.value.cantidad = codigos.length
 }
 const listaCajaBancos = ref([])
-const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
+const [escritura, lectura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
 const lote = ref(false)
 const pdfData = ref(null)
