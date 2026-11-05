@@ -994,7 +994,7 @@ export const mockAuthResponse = [
                   es: 'Tipo Almacén',
                 },
                 codigo: 'tipodealmacen-eb160de1de89d9058fcb0b968dbbbd68',
-                permiso: '1111',
+                permiso: '1100',
               },
               {
                 titulo: 'Divisas',
@@ -1002,7 +1002,7 @@ export const mockAuthResponse = [
                   es: 'Divisas',
                 },
                 codigo: 'divisas-eb160de1de89d9058fcb0b968dbbbd68',
-                permiso: '1111',
+                permiso: '1100',
               },
               {
                 titulo: 'Método Inventario',

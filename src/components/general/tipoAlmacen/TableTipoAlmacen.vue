@@ -17,6 +17,7 @@
     </div> -->
     <div class="flex justify-between">
       <q-btn
+        v-if="puedeCrear"
         color="primary"
         @click="$emit('add')"
         class="btn-res q-mt-lg"
@@ -65,6 +66,7 @@
       <template v-slot:body-cell-acciones="props">
         <q-td :props="props" class="text-nowrap">
           <q-btn
+            v-if="puedeEditar"
             icon="edit"
             color="primary"
             dense
@@ -74,6 +76,7 @@
             id="edit"
           />
           <q-btn
+            v-if="puedeEliminar"
             icon="delete"
             dense
             flat
@@ -83,6 +86,7 @@
             id="delete"
           />
           <q-btn
+            v-if="puedeEditar"
             :title="t('configGeneral.tipoAlmacen.table.toggleStatus')"
             :icon="Number(props.row.estado) === 1 ? 'toggle_on' : 'toggle_off'"
             dense
@@ -103,6 +107,9 @@ import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   rows: Array,
+  puedeCrear: { type: Boolean, default: true },
+  puedeEditar: { type: Boolean, default: true },
+  puedeEliminar: { type: Boolean, default: true },
 })
 const search = ref('')
 const { t } = useI18n()

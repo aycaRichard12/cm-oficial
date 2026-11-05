@@ -11,30 +11,46 @@
         </div>
       </div>
     </div>
-    <q-dialog v-model="showForm" persistent>
-      <q-card class="responsive-dialog">
-        <q-card-section class="bg-primary text-white text-h6 flex justify-between">
-          <div>{{ t('configGeneral.tipoAlmacen.dialogTitle') }}</div>
-          <q-btn icon="close" flat dense round @click="showForm = false"></q-btn>
-        </q-card-section>
-        <q-card-section class="q-pa-none">
-          <TipoAlmacenForm
-            :model-value="formData"
-            :is-editing="isEditing"
-            @submit="handleSubmit"
-            @cancel="toggleForm"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <template v-if="lectura">
+      <q-dialog v-model="showForm" persistent>
+        <q-card class="responsive-dialog">
+          <q-card-section class="bg-primary text-white text-h6 flex justify-between">
+            <div>{{ t('configGeneral.tipoAlmacen.dialogTitle') }}</div>
+            <q-btn icon="close" flat dense round @click="showForm = false"></q-btn>
+          </q-card-section>
+          <q-card-section class="q-pa-none">
+            <TipoAlmacenForm
+              :model-value="formData"
+              :is-editing="isEditing"
+              @submit="handleSubmit"
+              @cancel="toggleForm"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
 
-    <TipoAlmacenTable
-      :rows="rows"
-      @add="toggleForm"
-      @edit="editItem"
-      @delete="deleteItem"
-      @toggle-status="changeStatus"
-    />
+      <TipoAlmacenTable
+        :rows="rows"
+        :puede-crear="escritura"
+        :puede-editar="editar"
+        :puede-eliminar="eliminar"
+        @add="toggleForm"
+        @edit="editItem"
+        @delete="deleteItem"
+        @toggle-status="changeStatus"
+      />
+    </template>
+
+    <div v-else class="flex flex-center q-pa-xl">
+      <q-card flat bordered class="q-pa-lg text-center" style="max-width: 520px">
+        <q-icon name="lock" size="64px" color="grey-6" />
+        <div class="text-h6 q-mt-md">Acceso Restringido</div>
+        <div class="text-body2 text-grey-7 q-mt-sm">
+          No tiene permisos para consultar el módulo de Tipos de Almacén. Contacte al administrador
+          del sistema para solicitar acceso.
+        </div>
+      </q-card>
+    </div>
   </q-page>
 </template>
 
@@ -47,7 +63,11 @@ import TipoAlmacenTable from 'components/general/tipoAlmacen/TableTipoAlmacen.vu
 import { idempresa_md5 } from 'src/composables/FuncionesGenerales'
 import { api } from 'boot/axios' // Asegúrate de tener esto configurado
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
+import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
 const idempresa = idempresa_md5()
+const [escritura, lectura, editar, eliminar] = obtenerPermisosPagina()
+console.log('Resultado Permisos')
+console.log(escritura, lectura, editar, eliminar)
 const $q = useQuasar()
 const { t } = useI18n()
 const showForm = ref(false)
@@ -73,6 +93,15 @@ async function loadRows() {
   }
 }
 function toggleForm() {
+  if (!showForm.value && !escritura) {
+    $q.notify({
+      type: 'warning',
+      message: 'No tiene permiso para crear registros en este módulo.',
+      icon: 'warning',
+      position: 'top-right',
+    })
+    return
+  }
   showForm.value = !showForm.value
   if (!showForm.value) resetForm()
 }
@@ -88,16 +117,34 @@ function resetForm() {
 }
 
 async function handleSubmit(data) {
-  const formData = objectToFormData(data)
-  for (let [k, v] of formData.entries()) {
+  if (isEditing.value && !editar) {
+    $q.notify({
+      type: 'warning',
+      message: 'No tiene permiso para editar registros en este módulo.',
+      icon: 'warning',
+      position: 'top-right',
+    })
+    return
+  }
+  if (!isEditing.value && !escritura) {
+    $q.notify({
+      type: 'warning',
+      message: 'No tiene permiso para crear registros en este módulo.',
+      icon: 'warning',
+      position: 'top-right',
+    })
+    return
+  }
+  const formDataToSend = objectToFormData(data)
+  for (let [k, v] of formDataToSend.entries()) {
     console.log(`${k}: ${v}`)
   }
   try {
     if (isEditing.value) {
-      const response = await api.post(``, formData)
+      const response = await api.post(``, formDataToSend)
       console.log(response)
     } else {
-      const response = await api.post(``, formData)
+      const response = await api.post(``, formDataToSend)
       console.log(response)
     }
     $q.notify({
@@ -130,6 +177,15 @@ function editItem(item) {
 }
 
 async function deleteItem(item) {
+  if (!eliminar) {
+    $q.notify({
+      type: 'warning',
+      message: 'No tiene permiso para eliminar registros en este módulo.',
+      icon: 'warning',
+      position: 'top-right',
+    })
+    return
+  }
   const esAlmacenAutomatico = item.tipoalmacen === 'ALMACEN_1'
 
   if (esAlmacenAutomatico) {
@@ -216,6 +272,15 @@ async function procesarEliminacion(item) {
 }
 
 async function changeStatus(item) {
+  if (!editar) {
+    $q.notify({
+      type: 'warning',
+      message: 'No tiene permiso para cambiar el estado de los registros en este módulo.',
+      icon: 'warning',
+      position: 'top-right',
+    })
+    return
+  }
   const nuevoEstado = Number(item.estado) === 2 ? 1 : 2
   try {
     const response = await api.get(`actualizarEstadoTipoAlmacen/${item.id}/${nuevoEstado}`) // Cambia a tu ruta real

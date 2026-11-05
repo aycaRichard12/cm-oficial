@@ -63,7 +63,7 @@ import { useQuasar } from 'quasar'
 import { objectToFormData } from 'src/composables/FuncionesGenerales'
 import { obtenerPermisosPagina } from 'src/composables/FuncionesG'
 import { showDialog } from 'src/utils/dialogs'
-const [lectura, escritura, editar, eliminar] = obtenerPermisosPagina()
+const [escritura, lectura, editar, eliminar] = obtenerPermisosPagina()
 console.log(lectura, escritura, editar, eliminar)
 const $q = useQuasar()
 const contenidousuario = validarUsuario()
